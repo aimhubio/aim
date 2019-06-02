@@ -1,5 +1,6 @@
 # Changelog
 
+- Add aim-deploy command configuration in cli (sgevorg)
 - Add basic cli (sgevorg)
 - Update setup.py for cli first version (sgevorg)
 - Add initial cli specs (sgevorg)
