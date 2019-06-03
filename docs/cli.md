@@ -8,5 +8,5 @@ List of commands to be supported by aim deploy
 
 ``` shell
 # deploy the given checkpoint with the given image name locally
-aim-deploy <checkpoint_file> <image_name> 
+aim-deploy -m <checkpoint_file> -n <image_name> 
 ```
