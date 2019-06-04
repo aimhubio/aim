@@ -1,5 +1,7 @@
 import click
 
+from aim.deploy.generic import DeployFromPath
+
 
 @click.command()
 @click.option('-m', '--model', type=click.Path(exists=True),
@@ -11,3 +13,6 @@ def deploy(model, name):
     click.echo('Starting Deployment...')
     click.echo(name)
     click.echo(click.format_filename(model))
+    deployer = DeployFromPath(model)
+    deployer.generate_docker(name)
+    click.echo('GEnerated!!!')
