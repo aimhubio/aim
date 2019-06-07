@@ -1,5 +1,6 @@
 # Changelog
 
+- Add pack/unpack to add metadata to model for engine processing (sgevorg)
 - Add aim-deploy command configuration in cli (sgevorg)
 - Add basic cli (sgevorg)
 - Update setup.py for cli first version (sgevorg)
