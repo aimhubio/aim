@@ -1,7 +1,7 @@
 import torch
 import torch.onnx
 import torch.onnx.utils
-from aim.engine.aim_model import AimModel
+from aim.export.utils import export_onnx
 
 PYTORCH = 'pytorch'
 
@@ -26,17 +26,4 @@ def save_pytorch_model(model_obj, metadata, dest, name):
     graph, params, out = torch.onnx.utils._model_to_graph(
         model_obj, trace_input)
     proto, export_map = graph._export_onnx(params)
-    model = AimModel()
-    model.set_meta(metadata)
-    model.set_onnx(proto)
-    model.serialize(dest, name)
-
-
-# Iteration 1. Use PyTorch Tracing to save the onnx file of the model
-    # Use 2-3 different architectures to test in .aim-test
-# Iteration 2. Extend the onnx and save as .aim
-# Iteration 3. improve the code structure for aim.export
-# Iteration 4. go over the other parts such as origin and re-evaluate
-
-
-# Model input shapes should be part of the metadata.
+    export_onnx(proto, metadata, dest, name)
