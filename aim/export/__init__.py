@@ -20,9 +20,6 @@ def save_pytorch_model(model_obj, metadata, dest, name):
     input_shape = metadata['input_shape']
     trace_input = torch.rand(*input_shape, requires_grad=True)
     model_obj.eval()
-    # torch.onnx._export(
-    #     model_obj, trace_input, path, export_params=True)
-
     graph, params, out = torch.onnx.utils._model_to_graph(
         model_obj, trace_input)
     proto, export_map = graph._export_onnx(params)

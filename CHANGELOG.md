@@ -1,5 +1,7 @@
 # Changelog
 
+- Add Docker image generate skeleton (sgevorg)
+- Add AimModel.load_mode static function to parse `.aim` files (sgevorg)
 - Update exporter to decouple from specifics of exporting and framework (sgevorg)
 - Add model export with `.aim` extension (sgevorg)
 - Remove pack/unpack of the metadata (sgevorg)

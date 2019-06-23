@@ -43,6 +43,22 @@ class AimModel:
         os.remove(metadata_path)
         os.remove(model_path)
 
+    @staticmethod
+    def load_model(dest, name):
+        model_path = os.path.abspath('{}/{}.aim'.format(dest, name))
+        with tarfile.open(name=model_path, mode='r:gz') as model_tar:
+            # TODO: verify members
+            metadata = model_tar.extractfile(
+                'metadata.json').read().decode('utf8')
+            onnx = model_tar.extractfile(
+                name + '.onnx').read()
+            print(onnx[0:100])
+        aim_model = AimModel()
+        aim_model.set_meta(json.loads(metadata))
+        aim_model.set_onnx(onnx)
+        print(type(onnx))
+        return aim_model
+
     def model(self):
         pass
 
@@ -86,3 +102,15 @@ class ModelMetadata():
         meta_io = StringIO()
         json.dump(metadata_dict, meta_io)
         return meta_io
+
+
+am = AimModel.load_model(
+    '/Users/gevorg/repos/sgevorg/aim/.aim/models/test',
+    'mnist-test01')
+print(am)
+
+# with open(
+#     '/Users/gevorg/repos/sgevorg/aim/.aim/temp-onnx/mnist-test-1.onnx',
+#     'r') as on:
+#     onnx = on.read()
+#     print(onnx[0:10])

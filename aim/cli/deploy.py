@@ -1,6 +1,6 @@
 import click
 
-from aim.deploy.generic import DeployFromPath
+from aim.deploy.docker_image import DockerDeploy
 
 
 @click.command()
@@ -9,10 +9,13 @@ from aim.deploy.generic import DeployFromPath
 @click.option('-n', '--name', type=click.STRING,
               required=True,
               help='Name of the Inference Docker Conatainer')
-def deploy(model, name):
+@click.option('-v', '--version', type=click.STRING,
+              required=True,
+              help='The model version')
+def deploy(model, name, version):
     click.echo('Starting Deployment...')
     click.echo(name)
     click.echo(click.format_filename(model))
-    deployer = DeployFromPath(model)
-    deployer.generate_docker(name)
+    deployer = DockerDeploy(model)
+    deployer.create_image()
     click.echo('GEnerated!!!')
