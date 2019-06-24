@@ -1,6 +1,6 @@
 import click
-
-from aim.deploy.docker_image import DockerDeploy
+import os
+from aim.deploy.docker.build import DockerDeploy
 
 
 @click.command()
@@ -16,6 +16,14 @@ def deploy(model, name, version):
     click.echo('Starting Deployment...')
     click.echo(name)
     click.echo(click.format_filename(model))
-    deployer = DockerDeploy(model)
-    deployer.create_image()
+    click.echo('.................................')
+    # TODO: add checks and implement properly
+    aim_dir = os.environ['AIM_DIR']
+    build_dir = os.path.abspath(
+        '{}/{}/{}'.format(aim_dir, 'deploy_temp', name))
+    deployer = DockerDeploy(model, build_dir)
+    deployer.set_img_name(name)
+    deployer.set_img_version(version)
+    deployer.build_image()
+    click.echo('.................................')
     click.echo('GEnerated!!!')

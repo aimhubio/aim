@@ -26,6 +26,12 @@ class AimModel:
         self.onnx = onnx
         return self
 
+    def serialize_onnx(self, dest, name):
+        onnx_name = name + '.onnx'
+        path = os.path.abspath('{}/{}'.format(dest, onnx_name))
+        with open(path, 'wb+') as onnx_file:
+            onnx_file.write(self.onnx)
+
     def serialize(self, dest, name):
         metadata_path = os.path.abspath(dest + '/metadata.json')
         self.metadata.serialize(metadata_path)
@@ -52,15 +58,19 @@ class AimModel:
                 'metadata.json').read().decode('utf8')
             onnx = model_tar.extractfile(
                 name + '.onnx').read()
-            print(onnx[0:100])
         aim_model = AimModel()
         aim_model.set_meta(json.loads(metadata))
         aim_model.set_onnx(onnx)
-        print(type(onnx))
         return aim_model
 
     def model(self):
         pass
+
+    def framework(self):
+        return self.metadata.framework
+
+    def input_shape(self):
+        return self.metadata.input_shape
 
 
 class ModelMetadata():
@@ -102,15 +112,3 @@ class ModelMetadata():
         meta_io = StringIO()
         json.dump(metadata_dict, meta_io)
         return meta_io
-
-
-am = AimModel.load_model(
-    '/Users/gevorg/repos/sgevorg/aim/.aim/models/test',
-    'mnist-test01')
-print(am)
-
-# with open(
-#     '/Users/gevorg/repos/sgevorg/aim/.aim/temp-onnx/mnist-test-1.onnx',
-#     'r') as on:
-#     onnx = on.read()
-#     print(onnx[0:10])

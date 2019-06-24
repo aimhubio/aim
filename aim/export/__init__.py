@@ -3,6 +3,7 @@ import torch.onnx
 import torch.onnx.utils
 from aim.export.utils import export_onnx
 
+
 PYTORCH = 'pytorch'
 
 
@@ -22,5 +23,11 @@ def save_pytorch_model(model_obj, metadata, dest, name):
     model_obj.eval()
     graph, params, out = torch.onnx.utils._model_to_graph(
         model_obj, trace_input)
-    proto, export_map = graph._export_onnx(params)
+    # taken from torch.onnx.symbolic_helper.py
+    _default_onnx_opset_version = 9
+    opset_version = _default_onnx_opset_version
+    proto, export_map = graph._export_onnx(
+        params, opset_version, False,
+        torch.onnx.OperatorExportTypes.ONNX, True)
+
     export_onnx(proto, metadata, dest, name)

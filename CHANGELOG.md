@@ -1,5 +1,6 @@
 # Changelog
 
+- Add Docker Deploy via `aim-deploy` command (sgevorg)
 - Add Docker image generate skeleton (sgevorg)
 - Add AimModel.load_mode static function to parse `.aim` files (sgevorg)
 - Update exporter to decouple from specifics of exporting and framework (sgevorg)
