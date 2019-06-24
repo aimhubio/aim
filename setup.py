@@ -6,7 +6,7 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'aim-deploy'
+NAME = 'aim'
 SRC_NAME = 'aim'
 DESCRIPTION = 'AI Deployment tool'
 URL = 'https://github.com/SGevorg/aim-deploy'

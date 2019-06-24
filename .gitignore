@@ -102,5 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-aim-deploy.sublime-*
+aim.sublime-*
 .aim/
+.aim-test/
