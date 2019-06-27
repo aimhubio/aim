@@ -1,12 +1,17 @@
 # Command Line Interface
 
-Details for the CLI of the project.
+Reference for the aim cli features.
 
 ## CLI Specs
 
-List of commands to be supported by aim deploy
+List of the commands supported by the aim cli
 
+
+### Aim Deploy
+
+Command:
 ``` shell
-# deploy the given checkpoint with the given image name locally
-aim-deploy -m <checkpoint_file> -n <image_name> 
+aim-deploy -m <checkpoint_file> -n <image_name> -v <version>
+
 ```
+Deploys the given `.aim` model file with the given image name as a docker container which serves the model as HTTP server.
