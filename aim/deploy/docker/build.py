@@ -49,6 +49,10 @@ class DockerDeploy():
 
         server_prep.save_app()
 
+    def cleanup_generated_files(self):
+        docker_ops = DockerOps(self.paths)
+        docker_ops.flush_tmp_dir(cleanup=True)
+
     def build_image(self):
         self.generate_files()
         image_tag = self.image_name + ':' + self.image_version
@@ -64,4 +68,7 @@ class DockerDeploy():
         for line in docker_build[1]:
             # time.sleep(1)
             print(line)
+        print('Cleanup and Remove the Temp dir {} ...'.format(
+            self.paths.build_dir))
+        self.cleanup_generated_files()
         return image_tag

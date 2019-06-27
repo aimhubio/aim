@@ -13,10 +13,11 @@ class DockerOps():
         self.paths = paths
 
     # Flush the directory before saving the files.
-    def flush_tmp_dir(self):
+    def flush_tmp_dir(self, cleanup=False):
         if os.path.exists(os.path.normpath(self.paths.build_dir)):
             rmtree(os.path.normpath(self.paths.build_dir))
-        os.mkdir(self.paths.build_dir)
+        if cleanup is False:
+            os.mkdir(self.paths.build_dir)
 
     def save_dockerfile(self):
         dest, model = self.paths.model_dest_name()

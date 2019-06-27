@@ -1,5 +1,6 @@
 # Changelog
 
+- Add docker deploy .aim/deploy_temp/<model> cleanup at the end of the build (sgevorg)
 - Add Docker Deploy via `aim-deploy` command (sgevorg)
 - Add Docker image generate skeleton (sgevorg)
 - Add AimModel.load_mode static function to parse `.aim` files (sgevorg)
