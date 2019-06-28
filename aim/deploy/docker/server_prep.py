@@ -1,4 +1,5 @@
 from __future__ import print_function
+from aim.deploy.docker.configs import *
 from shutil import copyfile
 import os
 
@@ -16,4 +17,4 @@ class ServerFiles():
         copyfile(src_path, dest_path)
 
     def save_app(self):
-        self._copy('app.py')
+        self._copy(WEB_APP_TEMPLATE)

@@ -5,12 +5,12 @@ import os
 
 class Paths():
     def __init__(self, build_dir, model_path):
-        self.cwd = os.path.dirname(os.path.realpath(__file__))
         self.build_dir = build_dir
         self.model_path = model_path
-        self.ops_path = os.path.normpath('{}/{}'.format(self.cwd, OPS_DIR))
+        self.ops_path = os.path.normpath('{}/{}'.format(
+            DEPLOY_TEMPLATES_PATH, OPS_DIR))
         self.srvr_files_path = os.path.normpath(
-            '{}/{}'.format(self.cwd, SERVER_FILES_DIR))
+            '{}/{}'.format(DEPLOY_TEMPLATES_PATH, SERVER_FILES_DIR))
         self.dockerfile_path = os.path.normpath(
             '{}/{}'.format(self.ops_path, DOCKER_FILE_TEMPLATE))
 
