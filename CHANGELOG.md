@@ -1,5 +1,7 @@
 # Changelog
 
+- Remove setup.cfg file (maybe temporarily) (sgevorg)
+- Update the location for docker build template files, move to data/ (sgevorg)
 - Update the `docs/cli.md` for aim-deploy docs (sgevorg)
 - Add docker deploy `.aim/deploy_temp/<model>` cleanup at the end of the build (sgevorg)
 - Add Docker Deploy via `aim-deploy` command (sgevorg)

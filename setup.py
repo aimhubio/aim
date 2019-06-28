@@ -106,6 +106,12 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
+    data_files=[
+        ('data/deploy/_ops', [
+            'data/deploy/_ops/Dockerfile',
+            'data/deploy/_ops/requirements.txt']),
+        ('data/deploy/_server_files', [
+            'data/deploy/_server_files/app.py'])],
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers

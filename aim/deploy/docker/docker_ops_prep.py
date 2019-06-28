@@ -36,10 +36,10 @@ class DockerOps():
         return self
 
     def save_requirements(self):
-        req_src_path = os.path.normpath(
-            self.paths.ops_path + '/requirements.txt.py')
-        req_dest_path = os.path.normpath(
-            self.paths.build_dir + '/requirements.txt')
+        req_src_path = os.path.normpath('{}/{}'.format(
+            self.paths.ops_path, REQUIREMENTS_TEMPLATE))
+        req_dest_path = os.path.normpath('{}/{}'.format(
+            self.paths.build_dir, '/requirements.txt'))
         copyfile(req_src_path, req_dest_path)
         return self
 
