@@ -1,5 +1,6 @@
 # Changelog
 
+- Update README.MD with changed Aim messaging (sgevorg)
 - Remove setup.cfg file (maybe temporarily) (sgevorg)
 - Update the location for docker build template files, move to data/ (sgevorg)
 - Update the `docs/cli.md` for aim-deploy docs (sgevorg)
