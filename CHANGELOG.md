@@ -1,5 +1,6 @@
 # Changelog
 
+- Update the output of doker image build to be more informative and intuitive (sgevorg)
 - Update README.MD with changed Aim messaging (sgevorg)
 - Remove setup.cfg file (maybe temporarily) (sgevorg)
 - Update the location for docker build template files, move to data/ (sgevorg)

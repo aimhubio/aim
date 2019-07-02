@@ -1,5 +1,6 @@
 import click
 import os
+import time
 from aim.deploy.docker.build import DockerDeploy
 
 
@@ -14,9 +15,11 @@ from aim.deploy.docker.build import DockerDeploy
               help='The model version')
 def deploy(model, name, version):
     click.echo('Starting Deployment...')
-    click.echo(name)
-    click.echo(click.format_filename(model))
-    click.echo('.................................')
+    time.sleep(0.3)
+    click.echo('Building the image {}:{}'.format(name, version))
+    time.sleep(0.2)
+    click.echo('Retrieving the model {}'.format(click.format_filename(model)))
+    click.echo('\n')
     # TODO: add checks and implement properly
     aim_dir = os.environ['AIM_DIR']
     build_dir = os.path.abspath(
@@ -25,5 +28,3 @@ def deploy(model, name, version):
     deployer.set_img_name(name)
     deployer.set_img_version(version)
     deployer.build_image()
-    click.echo('.................................')
-    click.echo('GEnerated!!!')
