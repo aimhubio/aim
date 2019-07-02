@@ -5,6 +5,7 @@ from aim.deploy.docker.server_prep import ServerFiles
 from aim.deploy.docker.utils import Paths
 import docker
 import os
+import time
 
 """
     Deploys to docker as a docker api...
@@ -65,10 +66,16 @@ class DockerDeploy():
             'quiet': False
         }
         docker_build = client.images.build(**build_params)
-        for line in docker_build[1]:
-            # time.sleep(1)
-            print(line)
-        print('Cleanup and Remove the Temp dir {} ...'.format(
+
+        self._print_build_messages(docker_build[1])
+        print('Cleanup and Remove the Temp dir {}'.format(
             self.paths.build_dir))
         self.cleanup_generated_files()
         return image_tag
+
+    def _print_build_messages(self, docker_build_iterable):
+        for line in docker_build_iterable:
+            keys = line.keys()
+            if 'stream' in keys and len(line['stream'].strip()) > 0:
+                print(line['stream'].strip())
+                time.sleep(0.1)
