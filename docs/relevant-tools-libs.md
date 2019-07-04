@@ -18,3 +18,9 @@ https://github.com/pytorch/pytorch/issues/14867
 
 ## Packaging
 https://github.com/pypa/sampleproject
+
+
+## Test Model Resources
+https://pytorch.org/hub
+https://paperswithcode.com/
+https://modelzoo.co/
