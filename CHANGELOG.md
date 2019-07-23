@@ -1,5 +1,7 @@
 # Changelog
 
+- Update metadata structure and handling (sgevorg)
+- Add support for seq2seq models (sgevorg)
 - Update the output of doker image build to be more informative and intuitive (sgevorg)
 - Update README.MD with changed Aim messaging (sgevorg)
 - Remove setup.cfg file (maybe temporarily) (sgevorg)

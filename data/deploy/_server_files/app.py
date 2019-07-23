@@ -25,7 +25,7 @@ class Infer(Resource):
         X_input = numpy.array(payload_dict['input'])
         pred_onx = sess.run([label_name],
             {input_name: X_input.astype(numpy.float32)})[0]
-        return jsonify({'pred': pred_onx})
+        return jsonify({'pred': pred_onx.tolist()})
 
 
 if __name__ == '__main__':
