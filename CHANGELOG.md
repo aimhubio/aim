@@ -1,5 +1,6 @@
 # Changelog
 
+- Add dummy exporting files from .aim-test (sgevorg)
 - Add description for Testing Environment (sgevorg)
 - Update metadata structure and handling (sgevorg)
 - Add support for seq2seq models (sgevorg)
