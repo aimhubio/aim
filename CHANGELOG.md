@@ -1,5 +1,6 @@
 # Changelog
 
+- Add description for Testing Environment (sgevorg)
 - Update metadata structure and handling (sgevorg)
 - Add support for seq2seq models (sgevorg)
 - Update the output of doker image build to be more informative and intuitive (sgevorg)
