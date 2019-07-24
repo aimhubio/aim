@@ -10,6 +10,11 @@ torch.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+"""
+    Pytorch models are self initialized.
+    No need to initialize them after model is created.
+"""
+
 
 class Encoder(nn.Module):
     def __init__(self, input_dim, emb_dim, hid_dim, n_layers, dropout):
@@ -163,12 +168,12 @@ dec = Decoder(OUTPUT_DIM, DEC_EMB_DIM, HID_DIM, N_LAYERS, DEC_DROPOUT)
 model = Seq2Seq(enc, dec, device).to(device)
 
 
-def init_weights(m):
-    for name, param in m.named_parameters():
-        nn.init.uniform_(param.data, -0.08, 0.08)
+# def init_weights(m):
+#     for name, param in m.named_parameters():
+#         nn.init.uniform_(param.data, -0.08, 0.08)
 
 
-model.apply(init_weights)
+# model.apply(init_weights)
 
 # print('>>>>>>>>>> Printing Parameters')
 # for p in model.parameters():
@@ -180,6 +185,8 @@ BATCH_SIZE = 10
 # src = torch.rand(3, BATCH_SIZE).type(torch.LongTensor)
 # trg = torch.rand(4, BATCH_SIZE).type(torch.LongTensor)
 # v = model(src, trg, 0)
+
+# print(v)
 
 # graph, params, out = torch.onnx.utils._model_to_graph(model, (src, trg))
 # print(graph)

@@ -1,11 +1,14 @@
 from aim.export import save_model
-import torch
+# import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-model_path = '/Users/gevorg/repos/sgevorg/aim/.aim/models/test/0977'
-onnx_path = '/Users/gevorg/repos/sgevorg/aim/.aim/temp-onnx/mnist-test-1.onnx'
 final_dest = '/Users/gevorg/repos/sgevorg/aim/.aim/models/test'
+
+"""
+    Pytorch models are self initialized.
+    No need to initialize them after model is created.
+"""
 
 
 class Net(nn.Module):
@@ -28,14 +31,12 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
 
 
-checkpoint = torch.load(model_path)
 model = Net()
-model.load_state_dict(checkpoint['model_state_dict'])
-model.eval()
-# for p in model.parameters():
-#     print(p.size())
 
-x = torch.rand(1, 1, 28, 28)
+# a pytorch model is initialized by itself
+# model.eval()
+# x = torch.rand(1, 1, 28, 28)
+# y = torch.rand(1, 1, 28, 28)
 
 metadata = {
     'input': [
