@@ -1,5 +1,6 @@
 # Changelog
 
+- Add testing env first skeleton and versions (sgevorg)
 - Add dummy exporting files from .aim-test (sgevorg)
 - Add description for Testing Environment (sgevorg)
 - Update metadata structure and handling (sgevorg)
