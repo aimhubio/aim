@@ -105,3 +105,6 @@ venv.bak/
 aim.sublime-*
 .aim/
 .aim-test/
+
+.DS_Store
+.idea

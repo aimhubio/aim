@@ -100,7 +100,11 @@ setup(
     # py_modules=['mypackage'],
 
     entry_points={
-        'console_scripts': ['aim-deploy=aim.cli.deploy:deploy'],
+        'console_scripts': [
+            'aim-init=aim.cli.init:init',
+            'aim-push=aim.cli.push:push',
+            'aim-deploy=aim.cli.deploy:deploy',
+        ],
     },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
@@ -111,7 +115,10 @@ setup(
             'data/deploy/_ops/Dockerfile',
             'data/deploy/_ops/requirements.txt']),
         ('data/deploy/_server_files', [
-            'data/deploy/_server_files/app.py'])],
+            'data/deploy/_server_files/app.py']),
+        ('data/init', [
+            'data/init/default_config.yaml']),
+    ],
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
