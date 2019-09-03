@@ -117,7 +117,7 @@ setup(
         ('data/deploy/_server_files', [
             'data/deploy/_server_files/app.py']),
         ('data/init', [
-            'data/init/default_config.yaml']),
+            'data/init/default_config.json']),
     ],
     classifiers=[
         # Trove classifiers
