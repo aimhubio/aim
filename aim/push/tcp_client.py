@@ -18,9 +18,8 @@ class FileServerClient:
         Send files to file server over tcp connection
         """
         try:
-            self.sock.send((str(message) + "\r\n").encode())
-            self.sock.recv(1)
+            self.sock.send((str(message) + "\n").encode())
+            data = self.sock.recv(1024)
+            return data
         except Exception:
             return False
-
-        return True

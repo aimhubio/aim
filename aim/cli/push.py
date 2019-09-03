@@ -3,6 +3,7 @@ import os
 
 from aim.init.repo import AimRepo
 from aim.push.tcp_client import FileServerClient
+from aim.push.configs import *
 
 
 @click.command()
@@ -24,26 +25,31 @@ def push():
             working_dir = os.path.split(working_dir)[0]
 
     if repo is None:
-        click.echo('Repository is empty')
+        click.echo('Repository does not exist')
         return
 
     files = repo.ls_files()
     files_len = len(files)
 
     # open connection
-    tcp_client = FileServerClient('0.0.0.0', 801)
+    tcp_client = FileServerClient(TCP_ADDRESS, TCP_PORT)
 
-    # send files
+    # send files count
     tcp_client.write(files_len)
 
     for f in files:
-        with open(f, 'r') as content_file:
-            content = content_file.read()
+        # send file path
         send_file_path = '{project_name}/{file_path}'.format(project_name=repo.get_project_name(),
                                                              file_path=f[len(repo.path)+1:])
         tcp_client.write(send_file_path)
-        tcp_client.write(content)
+
+        # send file content line by line
+        with open(f, 'r') as content_file:
+            for l in content_file.readlines():
+                tcp_client.write(l)
+
+        # send end tag
+        tcp_client.write('---ENDOFDATA---')
 
     # close connection
     del tcp_client
-
