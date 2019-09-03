@@ -2,7 +2,7 @@ import click
 import os
 
 from aim.init.repo import AimRepo
-from aim.push.tcp_client import FileServerClient
+from aim.push.tcp_client import FileserverClient
 from aim.push.configs import *
 
 
@@ -32,7 +32,7 @@ def push():
     files_len = len(files)
 
     # open connection
-    tcp_client = FileServerClient(TCP_ADDRESS, TCP_PORT)
+    tcp_client = FileserverClient(TCP_ADDRESS, TCP_PORT)
 
     # send files count
     tcp_client.write(files_len)

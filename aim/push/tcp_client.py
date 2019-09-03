@@ -1,7 +1,7 @@
 import socket
 
 
-class FileServerClient:
+class FileserverClient:
     def __init__(self, address, port):
         """
         Create tcp/ip socket
