@@ -1,28 +1,14 @@
 import click
 import os
 
-from aim.init.repo import AimRepo
+from aim.engine.aim_repo import AimRepo
 from aim.push.tcp_client import FileserverClient
 from aim.push.configs import *
 
 
 @click.command()
 def push():
-    # Get working directory path
-    working_dir = os.environ['PWD']
-
-    # Try to find closest .aim repository
-    repo = None
-    while True:
-        if len(working_dir) <= 1:
-            break
-
-        repo = AimRepo(working_dir)
-        if repo.exists():
-            break
-        else:
-            repo = None
-            working_dir = os.path.split(working_dir)[0]
+    repo = AimRepo.get_working_repo()
 
     if repo is None:
         click.echo('Repository does not exist')

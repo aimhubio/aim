@@ -1,7 +1,7 @@
 import click
 import os
 
-from aim.init.repo import AimRepo
+from aim.engine.aim_repo import AimRepo
 
 
 @click.command()
