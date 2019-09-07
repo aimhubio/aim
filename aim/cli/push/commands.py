@@ -26,7 +26,7 @@ def push(repo, remote):
         tcp_client = FileserverClient(parsed_remote.hostname,
                                       parsed_remote.port)
     except Exception:
-        click.echo('Can not open connection to remote.'
+        click.echo('Can not open connection to remote. ' +
                    'Check if remote {} exists'.format(remote))
         return
 

@@ -8,7 +8,7 @@ from aim.engine.aim_repo import AimRepo
 def init(repo):
     # Check whether repo already exists
     if repo.exists():
-        re_init = click.confirm('Aim repository is already initialized.'
+        re_init = click.confirm('Aim repository is already initialized. ' +
                                 'Do you want to re-initialize it?')
         if not re_init:
             return
