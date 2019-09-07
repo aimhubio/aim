@@ -70,6 +70,15 @@ class AimRepo:
         config = self.config
         return config['project_name']
 
+    def get_remote_url(self, remote_name):
+        """
+        Returns remote url specified by remote name
+        """
+        for i in self.config['remotes']:
+            if i['name'] == remote_name:
+                return i['url']
+        return None
+
     def init(self):
         """
         Initializes empty Aim repository

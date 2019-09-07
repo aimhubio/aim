@@ -1,5 +1,6 @@
 # Changelog
 
+- Update push command for sending repo to a given remote (gorarakelyan)
 - Add cli remote commands (gorarakelyan)
 - Refactor cli architecture from single group of commands to multiple groups (gorarakelyan)
 - Add testing env first skeleton and versions (sgevorg)
