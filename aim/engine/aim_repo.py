@@ -10,6 +10,10 @@ from aim.init.utils import is_path_creatable, ls_dir
 class AimRepo:
     @staticmethod
     def get_working_repo():
+        """
+        Searches for .aim repository in working directory
+        and returns AimRepo object if exists
+        """
         # Get working directory path
         working_dir = os.environ['PWD']
 
@@ -34,6 +38,30 @@ class AimRepo:
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.objects_dir_path = os.path.join(self.path, AIM_OBJECTS_DIR_NAME)
+        self._config = None
+
+    @property
+    def config(self):
+        """
+        Config property getter, loads config file if not already loaded and
+        returns json object
+        """
+        if self._config is None:
+            with open(self.config_path, 'r') as f:
+                config = json.load(f)
+            self._config = config
+        return self._config
+
+    @config.setter
+    def config(self, config):
+        self._config = config
+
+    def save_config(self):
+        """
+        Saves object config to config file
+        """
+        with open(self.config_path, 'w') as f:
+            f.write(json.dumps(self._config))
 
     def init(self):
         """
@@ -49,7 +77,10 @@ class AimRepo:
 
         # Create `config` file and fill in default configs
         # TODO: improve relative path
-        default_config = pkg_resources.resource_filename(__name__, os.path.join('..', '..', DEFAULT_CONFIG_PATH))
+        default_config_path = os.path.join('..', '..', DEFAULT_CONFIG_PATH)
+        default_config = pkg_resources.resource_filename(__name__,
+                                                         default_config_path)
+
         with open(self.config_path, 'w') as config_file:
             with open(default_config, 'r') as default_config_file:
                 for line in default_config_file:
@@ -79,8 +110,7 @@ class AimRepo:
         """
         Returns project name from config file
         """
-        with open(self.config_path, 'r') as f:
-            config = json.load(f)
+        config = self.config
         return config['project_name']
 
     def store_json(self, path, data):

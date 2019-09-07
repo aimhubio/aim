@@ -1,4 +1,7 @@
+import os
 import click
+
+from aim.engine.aim_repo import AimRepo
 
 from .configs import *
 from .init import commands as init_commands
@@ -9,9 +12,13 @@ from .deploy import commands as deploy_commands
 
 @click.group()
 @click.option('-v', '--verbose', is_flag=True)
-def cli_entry_point(verbose):
+@click.pass_context
+def cli_entry_point(ctx, verbose):
     if verbose:
         click.echo('Verbose mode is on')
+
+    # Init repo instance
+    ctx.obj = AimRepo.get_working_repo()
 
 
 cli_entry_point.add_command(init_commands.init, INIT_NAME)
