@@ -4,7 +4,7 @@ import os
 import json
 
 from .configs import *
-from aim.init.utils import is_path_creatable, ls_dir
+from .utils import is_path_creatable, ls_dir
 
 
 class AimRepo:
