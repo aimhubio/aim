@@ -63,6 +63,13 @@ class AimRepo:
         with open(self.config_path, 'w') as f:
             f.write(json.dumps(self._config))
 
+    def get_project_name(self):
+        """
+        Returns project name from config file
+        """
+        config = self.config
+        return config['project_name']
+
     def init(self):
         """
         Initializes empty Aim repository
@@ -105,13 +112,6 @@ class AimRepo:
         Returns list containing repository files
         """
         return ls_dir([self.path])
-
-    def get_project_name(self):
-        """
-        Returns project name from config file
-        """
-        config = self.config
-        return config['project_name']
 
     def store_json(self, path, data):
         """

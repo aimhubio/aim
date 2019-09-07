@@ -1,4 +1,3 @@
-import os
 import click
 
 from aim.engine.aim_repo import AimRepo
