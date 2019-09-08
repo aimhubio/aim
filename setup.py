@@ -101,9 +101,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'aim-init=aim.cli.init:init',
-            'aim-push=aim.cli.push:push',
-            'aim-deploy=aim.cli.deploy:deploy',
+            'aim=aim.cli.cli:cli_entry_point',
         ],
     },
     install_requires=REQUIRED,
@@ -131,6 +129,7 @@ setup(
     ],
     # $ setup.py publish support.
     cmdclass={
-        'upload': UploadCommand,
+        'upload': UploadCommand
+        ,
     },
 )
