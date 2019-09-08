@@ -6,7 +6,7 @@ from .configs import *
 from aim.cli.init import commands as init_commands
 from aim.cli.remote import commands as remote_commands
 from .push import commands as push_commands
-from .deploy import commands as deploy_commands
+from aim.cli.deploy import commands as deploy_commands
 
 
 @click.group()
