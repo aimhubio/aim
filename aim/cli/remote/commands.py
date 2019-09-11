@@ -16,6 +16,10 @@ def entry_point(repo):
 @click.option('-u', '--url', required=True, type=str)
 @click.pass_obj
 def add(repo, name, url):
+    if repo is None:
+        click.echo('Repository does not exist')
+        return
+
     remotes = repo.config['remotes']
 
     for r in remotes:
@@ -37,6 +41,10 @@ def add(repo, name, url):
 @click.option('-n', '--name', required=True, type=str)
 @click.pass_obj
 def rm(repo, name):
+    if repo is None:
+        click.echo('Repository does not exist')
+        return
+
     remote_exists = False
     for r in repo.config['remotes']:
         if r['name'] == name:
@@ -57,6 +65,10 @@ def rm(repo, name):
 @entry_point.command()
 @click.pass_obj
 def ls(repo):
+    if repo is None:
+        click.echo('Repository does not exist')
+        return
+
     remotes = repo.config.get('remotes')
 
     if not len(remotes):
