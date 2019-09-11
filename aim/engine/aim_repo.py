@@ -122,24 +122,56 @@ class AimRepo:
         """
         return ls_dir([self.path])
 
-    def store_json(self, path, data):
+    def get_object_paths(self, name):
         """
-        Appends new data to json file file
+        Get tracking object paths (directory_path, metafile_path, datafile_path)
         """
-        obj_path = os.path.join(self.objects_dir_path, path)
+        return (os.path.join(self.objects_dir_path, name),
+                os.path.join(self.objects_dir_path, name, 'meta.json'),
+                os.path.join(self.objects_dir_path, name, 'data.json'))
 
-        # Read file if exists
-        history = []
-        if os.path.isfile(obj_path):
-            with open(obj_path, 'r') as obj_file:
-                history = json.loads(obj_file.read())
+    def add_object_val(self, name, val, step):
+        """
+        Appends new data to specified object
+        """
+        dir_path, meta_file_path, data_file_path = self.get_object_paths(name)
 
-        # Append new data
-        history.append(data)
+        if not os.path.isdir(dir_path):
+            # Create object directory
+            os.mkdir(dir_path)
 
-        # Save
-        with open(obj_path, 'w') as obj_file:
-            obj_file.write(json.dumps(history))
+            # Init default content if object does not exist
+            meta_file_content = {
+                "name": name,
+                "step": 0,
+            }
+            data_file_content = []
+
+            # Create and open object files
+            meta_file = open(meta_file_path, 'w+')
+            data_file = open(data_file_path, 'w+')
+        else:
+            # Open object meta file and data file
+            meta_file = open(meta_file_path, 'r+')
+            data_file = open(data_file_path, 'r+')
+
+            # Get object content
+            meta_file_content = json.loads(meta_file.read())
+            data_file_content = json.loads(data_file.read())
+
+        # Update and close meta file
+        meta_file_content['step'] += 1
+        meta_file.seek(0)
+        meta_file.truncate()
+        meta_file.write(json.dumps(meta_file_content))
+        meta_file.close()
+
+        # Update and close data file
+        data_file_content.append(val)
+        data_file.seek(0)
+        data_file.truncate()
+        data_file.write(json.dumps(data_file_content))
+        data_file.close()
 
     def __str__(self):
         return self.path
