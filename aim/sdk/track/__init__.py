@@ -1,14 +1,20 @@
+# Annotation
+from aim.sdk.track.annotation import Annotation
+
 # Metrics
 from aim.sdk.track.metric import Accuracy, Loss
 
-# Tracking
-from aim.sdk.track.track import Track
+# Media
+from aim.sdk.track.media import Image
 
 
 __all__ = [
+    # Annotation
+    'Annotation',
+
     # Metrics
     'Accuracy', 'Loss',
 
-    # Tracking
-    'Track',
+    # Media
+    'Image',
 ]

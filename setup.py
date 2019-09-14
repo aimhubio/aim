@@ -17,7 +17,7 @@ VERSION = '0.1.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'click>=6.7'
+    'click>=6.7',
 ]
 
 # What packages are optional?

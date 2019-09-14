@@ -1,7 +1,8 @@
 import os
 from copy import deepcopy
 from functools import reduce
-
+from random import choice
+from string import ascii_letters
 
 def deep_merge(*dicts, update=False):
     """
@@ -43,3 +44,10 @@ def ls_dir(paths):
         return ls_dir(ls_head + (paths[1:] if len(paths) > 1 else []))
     else:
         return [paths[0]] + (ls_dir(paths[1:]) if len(paths) > 1 else [])
+
+
+def random_str(string_length=10):
+    """
+    Generate a random string of fixed length
+    """
+    return ''.join(choice(ascii_letters) for _ in range(string_length))

@@ -19,7 +19,7 @@ def push(repo, remote):
 
     click.echo('{} file(s) to send:'.format(files_len))
 
-    # open connection
+    # Open connection
     parsed_remote = urlparse(repo.get_remote_url(remote))
     remote_project = parsed_remote.path.strip('/')
     try:
@@ -30,23 +30,30 @@ def push(repo, remote):
                    'Check if remote {} exists'.format(remote))
         return
 
-    # send files count
+    # Send files count
     tcp_client.write(files_len)
 
     with click.progressbar(files) as bar:
         for f in bar:
-            # send file path
+            # Send file path
             send_file_path = '{project}/{file_path}'.format(
                 project=remote_project,
                 file_path=f[len(repo.path) + 1:])
             tcp_client.write(send_file_path)
 
-            # send file content line by line
-            with open(f, 'r') as content_file:
-                for l in content_file.readlines():
-                    tcp_client.write(l)
+            # Open file
+            if send_file_path.lower().split('.')[-1] in ['jpg', 'png']:
+                content_file = open(f, 'rb')
+            else:
+                content_file = open(f, 'r')
 
-            # send end tag
+            # Send file content line by line
+            for l in content_file.readlines():
+                tcp_client.write(l)
+
+            content_file.close()
+
+            # Send end tag
             tcp_client.write('---ENDOFDATA---')
 
     # close connection
