@@ -10,16 +10,26 @@ class FileserverClient:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((address, port))
 
-    def __del__(self):
+    def close(self):
         self.sock.close()
 
-    def write(self, message):
+    def write_line(self, message):
         """
-        Send files to file server over tcp connection
+        Send string to file server over tcp connection
         """
         try:
             self.sock.send((str(message) + "\n").encode())
             data = self.sock.recv(1024)
             return data
+        except Exception:
+            return False
+
+    def write_bytes(self, bytes_msg):
+        """
+        Send bytes message to file server over tcp connection
+        """
+        try:
+            self.sock.send(bytes_msg)
+            return True
         except Exception:
             return False

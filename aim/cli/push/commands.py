@@ -22,39 +22,30 @@ def push(repo, remote):
     # Open connection
     parsed_remote = urlparse(repo.get_remote_url(remote))
     remote_project = parsed_remote.path.strip('/')
-    try:
-        tcp_client = FileserverClient(parsed_remote.hostname,
-                                      parsed_remote.port)
-    except Exception:
-        click.echo('Can not open connection to remote. ' +
-                   'Check if remote {} exists'.format(remote))
-        return
-
-    # Send files count
-    tcp_client.write(files_len)
 
     with click.progressbar(files) as bar:
         for f in bar:
+            # Open connection
+            try:
+                tcp_client = FileserverClient(parsed_remote.hostname,
+                                              parsed_remote.port)
+            except Exception:
+                click.echo('Can not open connection to remote. ' +
+                           'Check if remote {} exists'.format(remote))
+                break
+
             # Send file path
             send_file_path = '{project}/{file_path}'.format(
                 project=remote_project,
                 file_path=f[len(repo.path) + 1:])
-            tcp_client.write(send_file_path)
+            tcp_client.write_line(send_file_path)
 
             # Open file
-            if send_file_path.lower().split('.')[-1] in ['jpg', 'png']:
-                content_file = open(f, 'rb')
-            else:
-                content_file = open(f, 'r')
+            content_file = open(f, 'rb')
+            tcp_client.write_bytes(content_file.read())
 
-            # Send file content line by line
-            for l in content_file.readlines():
-                tcp_client.write(l)
-
+            # Close file
             content_file.close()
 
-            # Send end tag
-            tcp_client.write('---ENDOFDATA---')
-
-    # close connection
-    del tcp_client
+            # Close connection
+            tcp_client.close()
