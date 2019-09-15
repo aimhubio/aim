@@ -1,5 +1,6 @@
 # Changelog
 
+- Update tcp client to send images (gorarakelyan)
 - Update sdk track functionality to support multiple metrics (gorarakelyan)
 - Update push command for sending repo to a given remote (gorarakelyan)
 - Add cli remote commands (gorarakelyan)
