@@ -13,23 +13,27 @@ class FileserverClient:
     def close(self):
         self.sock.close()
 
-    def write_line(self, message):
+    def write(self, message):
         """
-        Send string to file server over tcp connection
+        Send a message to server over tcp connection
         """
         try:
-            self.sock.send((str(message) + "\n").encode())
-            data = self.sock.recv(1024)
-            return data
+            self.sock.send(message)
+            return True
         except Exception:
             return False
 
-    def write_bytes(self, bytes_msg):
+    def write_line(self, message):
+        self.write(message)
+        self.sock.send("\n".encode())
+        return self.read()
+
+    def read(self, buf=1024):
         """
-        Send bytes message to file server over tcp connection
+        Read a message from server over tcp connection
         """
         try:
-            self.sock.send(bytes_msg)
-            return True
+            data = self.sock.recv(buf)
+            return str(data.decode())
         except Exception:
             return False
