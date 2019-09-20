@@ -99,15 +99,20 @@ class AimRepo:
         os.mkdir(self.objects_dir_path)
 
         # Create `config` file and fill in default configs
-        # TODO: improve relative path
-        default_config_path = os.path.join('..', '..', DEFAULT_CONFIG_PATH)
-        default_config = pkg_resources.resource_filename(__name__,
-                                                         default_config_path)
+        # pkg_name, _, _ = __name__.partition('.')
+        # default_config_path = os.path.join('..', DEFAULT_CONFIG_PATH)
+        # default_config = pkg_resources.resource_filename('engine',
+        #                                                  default_config_path)
+        #
+        # with open(self.config_path, 'w') as config_file:
+        #     with open(default_config, 'r') as default_config_file:
+        #         for line in default_config_file:
+        #             config_file.write(line)
 
         with open(self.config_path, 'w') as config_file:
-            with open(default_config, 'r') as default_config_file:
-                for line in default_config_file:
-                    config_file.write(line)
+            config_file.write(json.dumps({
+                'remotes': [],
+            }))
 
         return True
 

@@ -1,5 +1,6 @@
 # Changelog
 
+- Update setup py to build cython extensions (gorarakelyan)
 - Update tcp client to send multiple files through one connection (gorarakelyan)
 - Update tcp client to send images (gorarakelyan)
 - Update sdk track functionality to support multiple metrics (gorarakelyan)

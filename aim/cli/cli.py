@@ -2,7 +2,7 @@ import click
 
 from aim.engine.aim_repo import AimRepo
 
-from .configs import *
+from aim.cli.configs import *
 from aim.cli.init import commands as init_commands
 from aim.cli.remote import commands as remote_commands
 from aim.cli.push import commands as push_commands
