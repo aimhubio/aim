@@ -1,4 +1,3 @@
-from aim.export import save_model
 import torch
 import torch.nn as nn
 import random
@@ -191,20 +190,20 @@ BATCH_SIZE = 10
 # graph, params, out = torch.onnx.utils._model_to_graph(model, (src, trg))
 # print(graph)
 
-model_dest = '/Users/gevorg/repos/sgevorg/aim/.aim/models/test'
-
-metadata = {
-    'input': [
-        {
-            'shape': ['*', BATCH_SIZE],
-            'type': 'long'
-        },
-        {
-            'shape': ['*', BATCH_SIZE],
-            'type': 'long'
-        }
-    ],
-    'framework': 'pytorch'
-}
-
-save_model(model, metadata, model_dest, 'seq2seq_01')
+# model_dest = '/Users/gevorg/repos/sgevorg/aim/.aim/models/test'
+#
+# metadata = {
+#     'input': [
+#         {
+#             'shape': ['*', BATCH_SIZE],
+#             'type': 'long'
+#         },
+#         {
+#             'shape': ['*', BATCH_SIZE],
+#             'type': 'long'
+#         }
+#     ],
+#     'framework': 'pytorch'
+# }
+#
+# save_model(model, metadata, model_dest, 'seq2seq_01')
