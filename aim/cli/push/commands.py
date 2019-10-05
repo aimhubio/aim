@@ -1,6 +1,7 @@
 import click
 from urllib.parse import urlparse
 import math
+import struct
 
 from aim.push.tcp_client import FileserverClient
 
@@ -43,7 +44,7 @@ def push(repo, remote):
     tcp_client.write_line(str(files_len).encode())
 
     # Send files
-    chunk_size = 2048
+    chunk_size = 1024 * 1024
     with click.progressbar(files) as bar:
         for f in bar:
             # Send file path
@@ -56,21 +57,38 @@ def push(repo, remote):
             send_file = open(f, 'rb')
             file_content = send_file.read()
 
-            # Send file chunks count
-            chunk_len = math.ceil(len(file_content) / chunk_size)
-            tcp_client.write_line(str(chunk_len).encode())
+            # Prepare to send the file
+            content_pointer = 0
+            content_len = left_content_len = len(file_content)
+            chunk_len = math.ceil(content_len / chunk_size)
+            chunks_left = chunk_len
 
-            # Send file chunks
-            chunk_index = 0
             for i in range(chunk_len):
-                if i < chunk_len - 1:
-                    chunk = file_content[chunk_index:
-                                         chunk_index + chunk_size]
+                if left_content_len > chunk_size:
+                    curr_chunk_size = chunk_size
                 else:
-                    chunk = file_content[chunk_index:]
+                    curr_chunk_size = left_content_len
 
+                # Convert chunk size and count to 4-len bytes
+                curr_chunk_size_b = struct.pack('>i', curr_chunk_size)
+                chunks_left_b = struct.pack('>i', chunks_left)
+
+                # Construct chunk body
+                chunk_body_b = file_content[content_pointer:
+                                            content_pointer + curr_chunk_size]
+
+                # Implode chunk header and body
+                chunk = (curr_chunk_size_b +
+                         chunks_left_b +
+                         chunk_body_b)
+
+                # Send message
                 tcp_client.write(chunk)
-                chunk_index += chunk_size
+
+                # Dec chunk flags
+                left_content_len -= curr_chunk_size
+                content_pointer += curr_chunk_size
+                chunks_left -= 1
 
             # Close file
             send_file.close()
