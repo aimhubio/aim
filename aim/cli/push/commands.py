@@ -58,6 +58,7 @@ def push(repo, remote):
             file_content = send_file.read()
 
             # Prepare to send the file
+            # Get file size and chunks count
             content_pointer = 0
             content_len = left_content_len = len(file_content)
             chunk_len = math.ceil(content_len / chunk_size)
@@ -69,15 +70,25 @@ def push(repo, remote):
                 else:
                     curr_chunk_size = left_content_len
 
-                # Convert chunk size and count to 4-len bytes
+                # Convert the number of remaining chunks and
+                # current chunk size to 4-len bytes
                 curr_chunk_size_b = struct.pack('>i', curr_chunk_size)
                 chunks_left_b = struct.pack('>i', chunks_left)
 
-                # Construct chunk body
+                # Get appropriate chunk body from content slice
                 chunk_body_b = file_content[content_pointer:
                                             content_pointer + curr_chunk_size]
 
                 # Implode chunk header and body
+                # Header contains (the number of remaining chunks)[4B]
+                # and (current chunk size)[4B]
+                #
+                # +-------------------------------------------+
+                # |    HEADER    |           |      BODY      |
+                # +----+    +----+           +---------------+
+                # | 4B |----| 4B |-----------| {chunk_size} B |
+                # +----+    +----+           +----------------+
+                #
                 chunk = (curr_chunk_size_b +
                          chunks_left_b +
                          chunk_body_b)
