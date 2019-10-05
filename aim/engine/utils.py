@@ -4,6 +4,7 @@ from functools import reduce
 from random import choice
 from string import ascii_letters
 
+
 def deep_merge(*dicts, update=False):
     """
     Merges dicts deeply

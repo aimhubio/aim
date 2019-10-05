@@ -1,5 +1,6 @@
 import click
 from urllib.parse import urlparse
+import math
 
 from aim.push.tcp_client import FileserverClient
 
@@ -42,6 +43,7 @@ def push(repo, remote):
     tcp_client.write_line(str(files_len).encode())
 
     # Send files
+    chunk_size = 2048
     with click.progressbar(files) as bar:
         for f in bar:
             # Send file path
@@ -54,10 +56,21 @@ def push(repo, remote):
             send_file = open(f, 'rb')
             file_content = send_file.read()
 
-            # Send file length
-            tcp_client.write_line(str(len(file_content)).encode())
-            tcp_client.write(file_content)
-            tcp_client.read()
+            # Send file chunks count
+            chunk_len = math.ceil(len(file_content) / chunk_size)
+            tcp_client.write_line(str(chunk_len).encode())
+
+            # Send file chunks
+            chunk_index = 0
+            for i in range(chunk_len):
+                if i < chunk_len - 1:
+                    chunk = file_content[chunk_index:
+                                         chunk_index + chunk_size]
+                else:
+                    chunk = file_content[chunk_index:]
+
+                tcp_client.write(chunk)
+                chunk_index += chunk_size
 
             # Close file
             send_file.close()
