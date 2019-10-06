@@ -1,14 +1,15 @@
 import shutil
-import pkg_resources
 import os
 import json
 import time
 import math
+import zipfile
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir, random_str
 from aim.sdk.track.metric import Metric
 from aim.sdk.track.media import Media, Image
+from aim.sdk.save.model import Checkpoint, Model
 from aim.sdk.track.annotation import Annotation
 
 
@@ -144,6 +145,10 @@ class AimRepo:
             return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
         elif obj_type == 'annotation':
             return AIM_ANNOT_DIR_NAME
+        elif obj_type == 'model':
+            return AIM_MODELS_DIR_NAME
+        elif obj_type == 'checkpoint':
+            return AIM_MODELS_DIR_NAME
 
     def objects_push_val(self, name, val):
         """
@@ -237,9 +242,51 @@ class AimRepo:
         data_file.write(json.dumps(data_file_content))
         data_file.close()
 
-    def objects_push(self, push_obj, step):
+    def objects_push_model(self, obj):
         """
-        Push a new object to repository
+        Saves a model to repository
+        """
+        root_path = os.path.join(self.objects_dir_path,
+                                 self.get_object_root('model'))
+
+        dir_name = obj.checkpoint_name
+        dir_path = os.path.join(root_path, dir_name)
+        model_file_name = 'model.pt'
+        model_file_path = os.path.join(dir_path,
+                                       model_file_name)
+        meta_file_path = os.path.join(dir_path, 'model.json')
+
+        # Create directory
+        os.makedirs(dir_path, exist_ok=True)
+
+        # Save model
+        obj.save(model_file_path)
+
+        # Create meta file
+        meta_file_content = {
+            'name': obj.name,
+            'epoch': obj.epoch,
+        }
+        with open(meta_file_path, 'w+') as meta_file:
+            meta_file.write(json.dumps(meta_file_content))
+
+        # Archive root directory
+        zip_name = '{}.aim'.format(dir_name)
+        zip_path = os.path.join(root_path, zip_name)
+        zip_file = zipfile.ZipFile(zip_path, 'w')
+        with zip_file:
+            # Writing each file one by one
+            for file in ls_dir([dir_path]):
+                zip_file.write(file, file[len(dir_path):])
+
+        # Remove model directory
+        shutil.rmtree(dir_path)
+
+        return dir_name
+
+    def objects_push(self, push_obj, step=None):
+        """
+        Pushes a new object to repository
         """
         meta_file_path = os.path.join(self.objects_dir_path, 'meta.json')
         if os.path.isfile(meta_file_path):
@@ -250,25 +297,37 @@ class AimRepo:
             meta_file = open(meta_file_path, 'w+')
             meta_file_content = {}
 
+        obj_name = obj_type = ''
+        obj_data = {}
         if isinstance(push_obj, Metric):
             self.objects_push_val(push_obj.name, push_obj.val)
+            obj_name = push_obj.name
             obj_type = 'metric'
         elif isinstance(push_obj, Media):
             if isinstance(push_obj, Image):
                 self.objects_push_image(push_obj)
+                obj_name = push_obj.name
                 obj_type = 'image'
         elif isinstance(push_obj, Annotation):
             self.objects_push_annotation(push_obj)
+            obj_name = push_obj.name
             obj_type = 'annotation'
+        elif isinstance(push_obj, Checkpoint):
+            self.objects_push_model(push_obj)
+            obj_name = push_obj.checkpoint_name
+            obj_type = 'checkpoint'
+            obj_data['model_name'] = push_obj.name
+            obj_data['epoch'] = push_obj.epoch
+            obj_data['meta'] = push_obj.meta
         else:
             raise ValueError('Undefined type')
 
-        obj_name = push_obj.name
         if obj_name not in meta_file_content:
             meta_file_content[obj_name] = {
                 'name': obj_name,
+                'data': obj_data,
                 'type': obj_type,
-                'data_path': self.get_object_root(obj_type)
+                'data_path': self.get_object_root(obj_type),
             }
 
         # Update and close meta file

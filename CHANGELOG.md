@@ -1,5 +1,8 @@
 # Changelog
 
+- Update file sending protocol (gorarakelyan)
+- Add model tracking (gorarakelyan)
+
 ## 0.1.0 - Sep 23 2019
 - Update setup py to build cython extensions (gorarakelyan)
 - Update tcp client to send multiple files through one connection (gorarakelyan)

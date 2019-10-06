@@ -1,5 +1,7 @@
 import click
 from urllib.parse import urlparse
+import math
+import struct
 
 from aim.push.tcp_client import FileserverClient
 
@@ -42,6 +44,7 @@ def push(repo, remote):
     tcp_client.write_line(str(files_len).encode())
 
     # Send files
+    chunk_size = 1024 * 1024
     with click.progressbar(files) as bar:
         for f in bar:
             # Send file path
@@ -54,10 +57,49 @@ def push(repo, remote):
             send_file = open(f, 'rb')
             file_content = send_file.read()
 
-            # Send file length
-            tcp_client.write_line(str(len(file_content)).encode())
-            tcp_client.write(file_content)
-            tcp_client.read()
+            # Prepare to send the file
+            # Get file size and chunks count
+            content_pointer = 0
+            content_len = left_content_len = len(file_content)
+            chunk_len = math.ceil(content_len / chunk_size)
+            chunks_left = chunk_len
+
+            for i in range(chunk_len):
+                if left_content_len > chunk_size:
+                    curr_chunk_size = chunk_size
+                else:
+                    curr_chunk_size = left_content_len
+
+                # Convert the number of remaining chunks and
+                # current chunk size to 4-len bytes
+                curr_chunk_size_b = struct.pack('>i', curr_chunk_size)
+                chunks_left_b = struct.pack('>i', chunks_left)
+
+                # Get appropriate chunk body from content slice
+                chunk_body_b = file_content[content_pointer:
+                                            content_pointer + curr_chunk_size]
+
+                # Implode chunk header and body
+                # Header contains (the number of remaining chunks)[4B]
+                # and (current chunk size)[4B]
+                #
+                # +-------------------------------------------+
+                # |    HEADER    |           |      BODY      |
+                # +----+    +----+           +---------------+
+                # | 4B |----| 4B |-----------| {chunk_size} B |
+                # +----+    +----+           +----------------+
+                #
+                chunk = (curr_chunk_size_b +
+                         chunks_left_b +
+                         chunk_body_b)
+
+                # Send message
+                tcp_client.write(chunk)
+
+                # Dec chunk flags
+                left_content_len -= curr_chunk_size
+                content_pointer += curr_chunk_size
+                chunks_left -= 1
 
             # Close file
             send_file.close()

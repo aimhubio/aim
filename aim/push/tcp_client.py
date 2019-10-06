@@ -19,14 +19,17 @@ class FileserverClient:
         """
         try:
             self.sock.send(message)
-            return True
+            return self.read()
         except Exception:
             return False
 
     def write_line(self, message):
-        self.write(message)
-        self.sock.send("\n".encode())
-        return self.read()
+        try:
+            self.sock.send(message)
+            self.sock.send("\n".encode())
+            return self.read()
+        except Exception:
+            return False
 
     def read(self, buf=1024):
         """
