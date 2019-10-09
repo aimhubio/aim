@@ -1,4 +1,5 @@
 import torch
+from keras import Model as KerasModel
 
 
 class Model:
@@ -8,7 +9,8 @@ class Model:
 class Checkpoint:
     def __init__(self, name, checkpoint_name,
                  model, epoch, lr_rate=None, opt=None, meta=None):
-        if isinstance(model, torch.nn.Module):
+        if isinstance(model, torch.nn.Module) \
+                or isinstance(model, KerasModel):
             self.name = name
             self.checkpoint_name = checkpoint_name
             self.model = model
@@ -17,11 +19,17 @@ class Checkpoint:
             self.lr_rate = lr_rate
             self.meta = meta
         else:
-            raise ValueError('model should be an instance of nn.Module')
+            raise ValueError('model can be an instance of ' +
+                             'torch.nn.Module or keras.Model')
 
     def save(self, path):
         # Save torch model to path
-        torch.save({
-            'model': self.model,
-            'opt': self.opt,
-        }, path)
+        if isinstance(self.model, torch.nn.Module):
+            model_path = '{}.pt'.format(path)
+            torch.save({
+                'model': self.model,
+                'opt': self.opt,
+            }, path)
+        elif isinstance(self.model, KerasModel):
+            model_path = '{}.h5'.format(path)
+            self.model.save(model_path)
