@@ -15,7 +15,7 @@ class TestSDKSave(unittest.TestCase):
                                 pooling=None,
                                 classes=1000)
 
-        for e in range(3):
+        for e in range(2):
             save(Checkpoint('vgg_model',
                             'vgg_checkpoint_{}'.format(e),
                             vgg_model, epoch=e, meta={'foo': 'bar'}))

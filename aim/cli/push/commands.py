@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 import math
 import struct
 
-from aim.push.tcp_client import FileserverClient
+from aim.engine.aim_protocol import FileserverClient
 
 
 @click.command()
