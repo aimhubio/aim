@@ -1,0 +1,1 @@
+Run tests via command `python -m unittest discover -s tests`

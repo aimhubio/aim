@@ -28,6 +28,8 @@
 ![CV Architectures Comparison](https://i.imgur.com/9yQwrmb.png "CV Architectures Comparison")
 ![CV Architectures Comparison](https://i.imgur.com/wlFccpY.png "CV Architectures Comparison")
 
+#### [Some aforementioned models implemented in TensorFlow](https://github.com/tensorflow/models/tree/master/research/slim/nets)
+
 ### Open Datasets for CV
 - [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html): Consists of 60,000 32×32 colour images in 10 classes, with 6,000 images per class
 - [CIFAR-100](https://www.cs.toronto.edu/~kriz/cifar.html): Just like the CIFAR-10, except it it has 100 classes containing 600 images each
