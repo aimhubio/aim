@@ -1,5 +1,6 @@
 # Changelog
 
+- Add model checkpoint save tests (gorarakelyan)
 - Update file sending protocol (gorarakelyan)
 - Add model tracking (gorarakelyan)
 

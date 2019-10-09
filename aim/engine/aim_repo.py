@@ -251,7 +251,7 @@ class AimRepo:
 
         dir_name = obj.checkpoint_name
         dir_path = os.path.join(root_path, dir_name)
-        model_file_name = 'model.pt'
+        model_file_name = 'model'
         model_file_path = os.path.join(dir_path,
                                        model_file_name)
         meta_file_path = os.path.join(dir_path, 'model.json')
