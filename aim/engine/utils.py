@@ -52,3 +52,13 @@ def random_str(string_length=10):
     Generate a random string of fixed length
     """
     return ''.join(choice(ascii_letters) for _ in range(string_length))
+
+
+def is_keras_model(obj):
+    """
+    Check whether an obj is instance of keras model
+    """
+    if type(obj).__module__ == 'keras.engine.training' and \
+            type(obj).__name__ == 'Model':
+        return True
+    return False

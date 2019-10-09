@@ -1,5 +1,6 @@
 import torch
-from keras import Model as KerasModel
+
+from aim.engine.utils import is_keras_model
 
 
 class Model:
@@ -10,7 +11,7 @@ class Checkpoint:
     def __init__(self, name, checkpoint_name,
                  model, epoch, lr_rate=None, opt=None, meta=None):
         if isinstance(model, torch.nn.Module) \
-                or isinstance(model, KerasModel):
+                or is_keras_model(model):
             self.name = name
             self.checkpoint_name = checkpoint_name
             self.model = model
@@ -30,6 +31,6 @@ class Checkpoint:
                 'model': self.model,
                 'opt': self.opt,
             }, path)
-        elif isinstance(self.model, KerasModel):
+        elif is_keras_model(self.model):
             model_path = '{}.h5'.format(path)
             self.model.save(model_path)

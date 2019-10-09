@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 import math
 import struct
 
-from aim.push.tcp_client import FileserverClient
+from aim.engine.aim_protocol import FileserverClient
 
 
 @click.command()
@@ -16,10 +16,10 @@ def push(repo, remote):
 
     # Prepare to send the repo
     # List and count files
-    click.echo('Counting objects')
     files = repo.ls_files()
     files_len = len(files)
-    click.echo('{} file(s) to send:'.format(files_len))
+    click.echo(click.style('{} file(s) to send:'.format(files_len),
+                           fg='yellow'))
 
     # Set up tcp connection
     parsed_remote = urlparse(repo.get_remote_url(remote))
@@ -44,27 +44,34 @@ def push(repo, remote):
     tcp_client.write_line(str(files_len).encode())
 
     # Send files
-    chunk_size = 1024 * 1024
-    with click.progressbar(files) as bar:
-        for f in bar:
-            # Send file path
-            send_file_path = '{project}/{file_path}'.format(
-                project=remote_project,
-                file_path=f[len(repo.path) + 1:])
-            tcp_client.write_line(send_file_path.encode())
+    chunk_size = 4 * 1024 * 1024
+    for f in files:
+        # Prepare to send the file
+        file_path = f[len(repo.path) + 1:]
+        send_file_path = '{project}/{file_path}'.format(
+            project=remote_project,
+            file_path=file_path)
 
-            # Open file
-            send_file = open(f, 'rb')
-            file_content = send_file.read()
+        # Open file
+        send_file = open(f, 'rb')
+        file_content = send_file.read()
+        content_len = len(file_content)
+        send_file_formatted_size = math.ceil(content_len / 1024)
 
-            # Prepare to send the file
-            # Get file size and chunks count
-            content_pointer = 0
-            content_len = left_content_len = len(file_content)
-            chunk_len = math.ceil(content_len / chunk_size)
-            chunks_left = chunk_len
+        # Send file name
+        tcp_client.write_line(send_file_path.encode())
+        click.echo('{name} ({size:,}KB)'.format(name=file_path,
+                                                size=send_file_formatted_size))
 
-            for i in range(chunk_len):
+        # Prepare to send the file
+        # Get file size and chunks count
+        content_pointer = 0
+        left_content_len = content_len
+        chunk_len = math.ceil(content_len / chunk_size)
+        chunks_left = chunk_len
+
+        with click.progressbar(range(chunk_len)) as bar:
+            for i in bar:
                 if left_content_len > chunk_size:
                     curr_chunk_size = chunk_size
                 else:
@@ -103,6 +110,9 @@ def push(repo, remote):
 
             # Close file
             send_file.close()
+        print('\x1b[1A' + '\x1b[2K' + '\x1b[1A')
+
+    click.echo(click.style('Done', fg='yellow'))
 
     # Close connection
     tcp_client.close()

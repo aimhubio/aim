@@ -40,7 +40,6 @@ extensions = [
 
     # aim cli packages
     Extension("aim.cli.*", ["aim/cli/*.py"]),
-    Extension("aim.cli.deploy.*", ["aim/cli/deploy/*.py"]),
     Extension("aim.cli.init.*", ["aim/cli/init/*.py"]),
     Extension("aim.cli.push.*", ["aim/cli/push/*.py"]),
     Extension("aim.cli.remote.*", ["aim/cli/remote/*.py"]),
@@ -51,12 +50,7 @@ extensions = [
     Extension("aim.sdk.save.*", ["aim/sdk/save/*.py"]),
 
     # Other packages
-    Extension("aim.deploy.*", ["aim/deploy/*.py"]),
-    Extension("aim.deploy.docker.*", ["aim/deploy/docker/*.py"]),
     Extension("aim.engine.*", ["aim/engine/*.py"]),
-    Extension("aim.export.*", ["aim/export/*.py"]),
-    Extension("aim.push.*", ["aim/push/*.py"]),
-
 ]
 
 # List of file name patterns to exclude from cythonizing
