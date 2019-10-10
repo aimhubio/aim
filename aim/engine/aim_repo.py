@@ -260,12 +260,13 @@ class AimRepo:
         os.makedirs(dir_path, exist_ok=True)
 
         # Save model
-        obj.save(model_file_path)
+        model_save_meta = obj.save(model_file_path)
 
         # Create meta file
         meta_file_content = {
             'name': obj.name,
             'epoch': obj.epoch,
+            'model': model_save_meta,
         }
         with open(meta_file_path, 'w+') as meta_file:
             meta_file.write(json.dumps(meta_file_content))
