@@ -1,6 +1,6 @@
 # Changelog
 
-- A (gorarakelyan)
+- Add model load sdk method (gorarakelyan)
 - Add model checkpoint save tests (gorarakelyan)
 - Update file sending protocol (gorarakelyan)
 - Add model tracking (gorarakelyan)
