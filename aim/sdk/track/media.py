@@ -1,7 +1,6 @@
 import os
 
 from torch import Tensor
-from torchvision.utils import save_image
 
 
 class Media:
@@ -27,5 +26,7 @@ class Image(Media):
             os.makedirs(dir_path, exist_ok=True)
 
         if isinstance(self._data, Tensor):
+            from torchvision.utils import save_image
+
             # Save pytorch tensor as an image
             save_image(self._data, path)
