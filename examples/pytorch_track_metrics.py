@@ -12,7 +12,7 @@ device = torch.device('cpu')
 # Hyper parameters
 num_epochs = 5
 num_classes = 10
-batch_size = 10
+batch_size = 50
 learning_rate = 0.01
 
 # MNIST dataset
@@ -91,6 +91,15 @@ for epoch in range(num_epochs):
 
             # aim - Track model loss function
             track(aim.loss, 'loss', loss.item())
+
+            # aim - Track model loss function
+            correct = 0
+            total = 0
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+            track(aim.accuracy, 'accuracy', 100 * correct / total)
 
 # Test the model
 model.eval()
