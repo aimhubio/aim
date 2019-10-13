@@ -1,5 +1,5 @@
-from aim.sdk.load import Model
-from aim.sdk.load.load import load
+import aim
+from aim import Checkpoint
 
 # Test pyTorch #
 import torch
@@ -41,5 +41,5 @@ class ConvNet(nn.Module):
 
 # Load and print the model
 MODEL_PATH = ''
-model = load(Model(MODEL_PATH))
+model = Checkpoint.load(MODEL_PATH)
 print(model)

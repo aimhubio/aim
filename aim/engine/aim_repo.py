@@ -7,10 +7,6 @@ import zipfile
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir, random_str
-from aim.sdk.track.metric import Metric
-from aim.sdk.track.media import Media, Image
-from aim.sdk.save.model import Checkpoint, Model
-from aim.sdk.track.annotation import Annotation
 
 
 class AimRepo:
@@ -40,6 +36,32 @@ class AimRepo:
 
         return AimRepo(working_dir)
 
+    @staticmethod
+    def cat_to_dir(cat):
+        """
+        Finds file directory by it's  category
+        """
+        if cat[0] == 'metrics':
+            return AIM_METRICS_DIR_NAME
+        elif cat[0] == 'media':
+            if cat[1] == 'images':
+                return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
+        elif cat[0] == 'misclassification':
+            return AIM_ANNOT_DIR_NAME
+        elif cat[0] == 'models':
+            return AIM_MODELS_DIR_NAME
+
+    @staticmethod
+    def archive_dir(zip_path, dir_path):
+        zip_file = zipfile.ZipFile(zip_path, 'w')
+        with zip_file:
+            # Writing each file one by one
+            for file in ls_dir([dir_path]):
+                zip_file.write(file, file[len(dir_path):])
+
+        # Remove model directory
+        shutil.rmtree(dir_path)
+
     def __init__(self, path):
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
@@ -47,6 +69,9 @@ class AimRepo:
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
         self._config = None
+
+    def __str__(self):
+        return self.path
 
     @property
     def config(self):
@@ -99,17 +124,6 @@ class AimRepo:
         os.mkdir(self.path)
         os.mkdir(self.objects_dir_path)
 
-        # Create `config` file and fill in default configs
-        # pkg_name, _, _ = __name__.partition('.')
-        # default_config_path = os.path.join('..', DEFAULT_CONFIG_PATH)
-        # default_config = pkg_resources.resource_filename('engine',
-        #                                                  default_config_path)
-        #
-        # with open(self.config_path, 'w') as config_file:
-        #     with open(default_config, 'r') as default_config_file:
-        #         for line in default_config_file:
-        #             config_file.write(line)
-
         with open(self.config_path, 'w') as config_file:
             config_file.write(json.dumps({
                 'remotes': [],
@@ -135,159 +149,9 @@ class AimRepo:
         """
         return ls_dir([self.path])
 
-    def get_object_root(self, obj_type):
+    def load_meta_file(self):
         """
-        Returns object's root directory
-        """
-        if obj_type == 'metric':
-            return AIM_METRICS_DIR_NAME
-        elif obj_type == 'image':
-            return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
-        elif obj_type == 'annotation':
-            return AIM_ANNOT_DIR_NAME
-        elif obj_type == 'model':
-            return AIM_MODELS_DIR_NAME
-        elif obj_type == 'checkpoint':
-            return AIM_MODELS_DIR_NAME
-
-    def objects_push_val(self, name, val):
-        """
-        Appends new data to specified object
-        """
-        dir_path = os.path.join(self.objects_dir_path,
-                                self.get_object_root('metric'))
-        data_file_name = '{}.json'.format(name)
-        data_file_path = os.path.join(dir_path, data_file_name)
-
-        if not os.path.isdir(dir_path):
-            # Create data file
-            data_file_content = []
-            os.makedirs(dir_path, exist_ok=True)
-            data_file = open(data_file_path, 'w+')
-        else:
-            # Get object content
-            data_file = open(data_file_path, 'r+')
-            data_file_content = json.loads(data_file.read())
-
-        # Update and close data file
-        data_file_content.append(val)
-        data_file.seek(0)
-        data_file.truncate()
-        data_file.write(json.dumps(data_file_content))
-        data_file.close()
-
-    def objects_push_image(self, img):
-        """
-        Stores image and appends path to meta.json
-        """
-        dir_name = AIM_IMAGES_DIR_NAME
-        images_dir_path = os.path.join(self.media_dir_path, dir_name)
-
-        # Get image path
-        img_name_time = math.floor(time.time() * 1000)
-        img_name_random = random_str(10)
-        img_name = '{time}__{random}.jpg'.format(time=img_name_time,
-                                                 random=img_name_random)
-        img_path = os.path.join(images_dir_path, img_name)
-
-        # Save image at specified path
-        img.save(img_path)
-
-        img_rel_path = os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
-
-        return img_name, img_rel_path
-
-    def objects_push_annotation(self, annotation_obj):
-        """
-        Stores annotated object and updates meta file
-        """
-
-        # Process annotated object
-        annot_obj_name = annot_obj_dir = annot_obj_type = None
-        if isinstance(annotation_obj.obj, Image):
-            annot_obj_type = 'image'
-            annot_obj_name, annot_obj_dir = \
-                self.objects_push_image(annotation_obj.obj)
-
-        # Get object directory
-        obj_dir = os.path.join(self.objects_dir_path,
-                               self.get_object_root('annotation'))
-
-        file_name = '{}.json'.format(annotation_obj.name)
-        data_file_path = os.path.join(obj_dir, file_name)
-
-        if not os.path.isfile(data_file_path):
-            # Create directory and file
-            os.makedirs(obj_dir, exist_ok=True)
-            data_file = open(data_file_path, 'w+')
-
-            data_file_content = []
-        else:
-            # Read object data file
-            data_file = open(data_file_path, 'r+')
-            data_file_content = json.loads(data_file.read())
-
-        # Save value for current step
-        step_val = {
-            'object_name': annot_obj_name,
-            'object_path': annot_obj_dir,
-            'object_type': annot_obj_type,
-            'meta': annotation_obj.meta,
-        }
-
-        # Update and close data file
-        data_file_content.append(step_val)
-        data_file.seek(0)
-        data_file.truncate()
-        data_file.write(json.dumps(data_file_content))
-        data_file.close()
-
-    def objects_push_model(self, obj):
-        """
-        Saves a model to repository
-        """
-        root_path = os.path.join(self.objects_dir_path,
-                                 self.get_object_root('model'))
-
-        dir_name = obj.checkpoint_name
-        dir_path = os.path.join(root_path, dir_name)
-        model_file_name = 'model'
-        model_file_path = os.path.join(dir_path,
-                                       model_file_name)
-        meta_file_path = os.path.join(dir_path, 'model.json')
-
-        # Create directory
-        os.makedirs(dir_path, exist_ok=True)
-
-        # Save model
-        model_save_meta = obj.save(model_file_path)
-
-        # Create meta file
-        meta_file_content = {
-            'name': obj.name,
-            'epoch': obj.epoch,
-            'model': model_save_meta,
-        }
-        with open(meta_file_path, 'w+') as meta_file:
-            meta_file.write(json.dumps(meta_file_content))
-
-        # Archive root directory
-        zip_name = '{}.aim'.format(dir_name)
-        zip_path = os.path.join(root_path, zip_name)
-        zip_file = zipfile.ZipFile(zip_path, 'w')
-        with zip_file:
-            # Writing each file one by one
-            for file in ls_dir([dir_path]):
-                zip_file.write(file, file[len(dir_path):])
-
-        # Remove model directory
-        shutil.rmtree(dir_path)
-
-        return dir_name
-
-    def objects_push(self, push_obj, step=None):
-        """
-        Pushes a new object to repository
+        Returns meta file and its content
         """
         meta_file_path = os.path.join(self.objects_dir_path, 'meta.json')
         if os.path.isfile(meta_file_path):
@@ -298,44 +162,162 @@ class AimRepo:
             meta_file = open(meta_file_path, 'w+')
             meta_file_content = {}
 
-        obj_name = obj_type = ''
-        obj_data = {}
-        if isinstance(push_obj, Metric):
-            self.objects_push_val(push_obj.name, push_obj.val)
-            obj_name = push_obj.name
-            obj_type = 'metric'
-        elif isinstance(push_obj, Media):
-            if isinstance(push_obj, Image):
-                self.objects_push_image(push_obj)
-                obj_name = push_obj.name
-                obj_type = 'image'
-        elif isinstance(push_obj, Annotation):
-            self.objects_push_annotation(push_obj)
-            obj_name = push_obj.name
-            obj_type = 'annotation'
-        elif isinstance(push_obj, Checkpoint):
-            self.objects_push_model(push_obj)
-            obj_name = push_obj.checkpoint_name
-            obj_type = 'checkpoint'
-            obj_data['model_name'] = push_obj.name
-            obj_data['epoch'] = push_obj.epoch
-            obj_data['meta'] = push_obj.meta
-        else:
-            raise ValueError('Undefined type')
+        return meta_file, meta_file_content
 
-        if obj_name not in meta_file_content:
-            meta_file_content[obj_name] = {
-                'name': obj_name,
-                'data': obj_data,
-                'type': obj_type,
-                'data_path': self.get_object_root(obj_type),
-            }
+    def update_meta_file(self, item_key, item_content):
+        """
+        Updates meta file content and closes the file
+        """
+        meta_file, meta_file_content = self.load_meta_file()
 
-        # Update and close meta file
+        meta_file_content[item_key] = item_content
+
+        # Update and close the file
         meta_file.seek(0)
         meta_file.truncate()
         meta_file.write(json.dumps(meta_file_content))
         meta_file.close()
 
-    def __str__(self):
-        return self.path
+    def store_file(self, name, cat, content, mode='a'):
+        """
+        Appends new data to the specified file or rewrites it
+        and updates repo meta file
+        """
+        cat_path = self.cat_to_dir(cat)
+        dir_path = os.path.join(self.objects_dir_path, cat_path)
+        data_file_path = os.path.join(dir_path, name)
+
+        # Create directory if not exists
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+
+        if not os.path.isfile(data_file_path):
+            # Create data file
+            data_file_content = []
+            data_file = open(data_file_path, 'w+')
+        else:
+            # Get object content
+            data_file = open(data_file_path, 'r+')
+            data_file_content = json.loads(data_file.read())
+
+        # Set data file content
+        if mode == 'a':
+            data_file_content.append(content)
+        elif mode == 'w':
+            data_file_content = [content]
+
+        # Update and close data file
+        data_file.seek(0)
+        data_file.truncate()
+        data_file.write(json.dumps(data_file_content))
+        data_file.close()
+
+        # Update meta file
+        self.update_meta_file(name, {
+            'name': name,
+            'type': cat[-1],
+            'data': {},
+            'data_path': cat_path,
+        })
+
+        return {
+            'path': os.path.join(cat_path, name),
+            'abs_path': data_file_path,
+        }
+
+    def store_image(self, name, cat, save_to_meta=False):
+        """
+        Returns saved object full path
+        and updates repo meta file
+        """
+        images_dir_path = os.path.join(self.media_dir_path,
+                                       AIM_IMAGES_DIR_NAME)
+
+        img_rel_path = os.path.join(AIM_MEDIA_DIR_NAME,
+                                    AIM_IMAGES_DIR_NAME)
+        img_abs_path = os.path.join(images_dir_path, name)
+
+        # Create image directory if not exists
+        dir_path = os.path.dirname(img_abs_path)
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+
+        # Update meta file
+        if save_to_meta:
+            self.update_meta_file(name, {
+                'name': name,
+                'type': cat[-1],
+                'data': {},
+                'data_path': img_rel_path,
+            })
+
+        return {
+            'path': os.path.join(img_rel_path, name),
+            'abs_path': img_abs_path,
+        }
+
+    def store_model_file(self, checkpoint_name, cat):
+        """
+        Saves a model file into repo
+        """
+        root_path = os.path.join(self.objects_dir_path,
+                                 self.cat_to_dir(cat))
+
+        dir_name = checkpoint_name
+        dir_path = os.path.join(root_path, dir_name)
+        model_file_name = 'model'
+        model_file_path = os.path.join(dir_path,
+                                       model_file_name)
+
+        # Create directory
+        os.makedirs(dir_path, exist_ok=True)
+
+        return model_file_path
+
+    def store_model(self, checkpoint_name, name, epoch,
+                    meta_info, model_info, cat):
+        """
+        Saves a model into repo
+        """
+        root_path = os.path.join(self.objects_dir_path,
+                                 self.cat_to_dir(cat))
+
+        dir_name = checkpoint_name
+        dir_path = os.path.join(root_path, dir_name)
+        model_file_name = 'model'
+        model_file_path = os.path.join(dir_path,
+                                       model_file_name)
+        meta_file_path = os.path.join(dir_path, 'model.json')
+
+        # Create directory
+        os.makedirs(dir_path, exist_ok=True)
+
+        # Create meta file
+        with open(meta_file_path, 'w+') as meta_file:
+            meta_file.write(json.dumps({
+                'name': name,
+                'epoch': epoch,
+                'model': model_info,
+            }))
+
+        zip_name = '{}.aim'.format(dir_name)
+        zip_path = os.path.join(root_path, zip_name)
+
+        # Update repo meta file
+        self.update_meta_file(checkpoint_name, {
+            'name': checkpoint_name,
+            'type': cat[-1],
+            'data': {
+                'name': name,
+                'epoch': epoch,
+                'meta': meta_info,
+                'model': model_info,
+            },
+            'data_path': dir_name,
+        })
+
+        return {
+            'model_path': model_file_path,
+            'dir_path': dir_path,
+            'zip_path': zip_path,
+        }

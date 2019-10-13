@@ -62,3 +62,13 @@ def is_keras_model(obj):
             type(obj).__name__ == 'Model':
         return True
     return False
+
+
+def is_pytorch_module(obj):
+    """
+    Check whether an obj is instance of pytorch module
+    """
+    from torch.nn import Module
+    if isinstance(obj, Module):
+        return True
+    return False

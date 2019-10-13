@@ -1,5 +1,6 @@
 # Changelog
 
+- Update skd interface (gorarakelyan)
 - Add pytorch examples inside examples directory (gorarakelyan)
 - Add model load sdk method (gorarakelyan)
 - Add model checkpoint save tests (gorarakelyan)

@@ -1,7 +1,5 @@
-from aim.sdk.save import Checkpoint
-from aim.sdk.save.save import save
-from aim.sdk.track import Loss, Annotation, Image
-from aim.sdk.track.track import track
+import aim
+from aim import track
 
 import torch
 import torch.nn as nn
@@ -93,15 +91,14 @@ for epoch in range(num_epochs):
 
         for l in range(len(labels)):
             if labels[l].item() != outputs[l].argmax().item():
-                # Track images
-                if epoch >= 2 and saved_img < 50:
+                if saved_img < 50:
                     saved_img += 1
-                    track(Annotation(Image(images[l]),
-                                     name='misclassified_mnist',
-                                     meta={
-                                        'label': labels[l].item(),
-                                        'pred_label': outputs[l].argmax().item(),
-                                     }))
+
+                    # aim - Track misclassified images
+                    img = track(aim.image, images[l])
+                    track(aim.misclassification, 'miscls', img,
+                          labels[l].item(),
+                          outputs[l].argmax().item())
 
 # Test the model
 model.eval()

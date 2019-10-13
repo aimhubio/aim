@@ -1,5 +1,5 @@
-from aim.sdk.save import Checkpoint
-from aim.sdk.save.save import save
+import aim
+from aim import track
 
 import torch
 import torch.nn as nn
@@ -101,17 +101,20 @@ for epoch in range(num_epochs):
                 false_negatives += 1
 
     learning_rate /= 2
-    save(Checkpoint('checkpoint_test', 'chp_epoch_{}'.format(epoch),
-                    model, epoch, lr_rate=learning_rate,
-                    meta={
-                        'learning_rate': learning_rate,
-                        'false_positives': false_positives,
-                        'false_negatives': false_negatives,
-                        'drop_out': 0.5,
-                        'batch_size': 10,
-                        'kernel_size': 2,
-                        'stride': 2,
-                    }))
+
+    # aim - Track model checkpoints
+    track(aim.checkpoint,
+          'checkpoint_test', 'chp_epoch_{}'.format(epoch),
+          model, epoch, lr_rate=learning_rate,
+          meta={
+              'learning_rate': learning_rate,
+              'false_positives': false_positives,
+              'false_negatives': false_negatives,
+              'drop_out': 0.5,
+              'batch_size': 10,
+              'kernel_size': 2,
+              'stride': 2,
+          })
 
 # Test the model
 model.eval()
