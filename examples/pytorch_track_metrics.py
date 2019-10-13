@@ -1,5 +1,5 @@
-from aim.sdk.track import Loss, Annotation, Image
-from aim.sdk.track.track import track
+import aim
+from aim import track
 
 import torch
 import torch.nn as nn
@@ -89,8 +89,8 @@ for epoch in range(num_epochs):
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
 
-            # Track model loss function
-            track(Loss(loss.item()))
+            # aim - Track model loss function
+            track(aim.loss, 'loss', loss.item())
 
 # Test the model
 model.eval()

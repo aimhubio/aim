@@ -46,9 +46,7 @@ extensions = [
 
     # aim sdk packages
     Extension("aim.sdk.*", ["aim/sdk/*.py"]),
-    Extension("aim.sdk.track.*", ["aim/sdk/track/*.py"]),
-    Extension("aim.sdk.save.*", ["aim/sdk/save/*.py"]),
-    Extension("aim.sdk.load.*", ["aim/sdk/load/*.py"]),
+    Extension("aim.sdk.artifacts.*", ["aim/sdk/artifacts/*.py"]),
 
     # Other packages
     Extension("aim.engine.*", ["aim/engine/*.py"]),

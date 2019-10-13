@@ -1,7 +1,5 @@
-from aim.sdk.save import Checkpoint
-from aim.sdk.save.save import save
-from aim.sdk.track import Loss, Annotation, Image
-from aim.sdk.track.track import track
+import aim
+from aim import track
 
 import torch
 import torch.nn as nn
@@ -91,8 +89,8 @@ for epoch in range(num_epochs):
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
 
-            # Track model loss function
-            track(Loss(loss.item()))
+            # aim - Track model loss function
+            track(aim.loss, 'loss', loss.item())
 
         for l in range(len(labels)):
             for o in range(len(outputs)):
@@ -108,24 +106,27 @@ for epoch in range(num_epochs):
                 # track images
                 if epoch >= 2 and saved_img < 50:
                     saved_img += 1
-                    track(Annotation(Image(images[l]),
-                                     name='misclassified_mnist',
-                                     meta={
-                                        'label': labels[l].item(),
-                                        'pred_label': outputs[l].argmax().item(),
-                                     }))
+                    # aim - Track misclassified images
+                    img = track(aim.image, images[l])
+                    track(aim.misclassification, 'miscls', img,
+                          labels[l].item(),
+                          outputs[l].argmax().item())
+
     learning_rate /= 2
-    save(Checkpoint('checkpoint_test', 'chp_epoch_{}'.format(epoch),
-                    model, epoch, lr_rate=learning_rate,
-                    meta={
-                        'learning_rate': learning_rate,
-                        'false_positives': false_positives,
-                        'false_negatives': false_negatives,
-                        'drop_out': 0.5,
-                        'batch_size': 10,
-                        'kernel_size': 2,
-                        'stride': 2,
-                    }))
+
+    # aim - Track model checkpoints
+    track(aim.checkpoint,
+          'checkpoint_test', 'chp_epoch_{}'.format(epoch),
+          model, epoch, lr_rate=learning_rate,
+          meta={
+              'learning_rate': learning_rate,
+              'false_positives': false_positives,
+              'false_negatives': false_negatives,
+              'drop_out': 0.5,
+              'batch_size': 10,
+              'kernel_size': 2,
+              'stride': 2,
+          })
 
 # Test the model
 model.eval()
