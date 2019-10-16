@@ -36,20 +36,21 @@ REQUIRED = [
 # List of extensions to compile
 extensions = [
     # aim
-    Extension("aim.*", ["aim/*.py"]),
+    Extension('aim.*', ['aim/*.py']),
 
     # aim cli packages
-    Extension("aim.cli.*", ["aim/cli/*.py"]),
-    Extension("aim.cli.init.*", ["aim/cli/init/*.py"]),
-    Extension("aim.cli.push.*", ["aim/cli/push/*.py"]),
-    Extension("aim.cli.remote.*", ["aim/cli/remote/*.py"]),
+    Extension('aim.cli.*', ['aim/cli/*.py']),
+    Extension('aim.cli.init.*', ['aim/cli/init/*.py']),
+    Extension('aim.cli.push.*', ['aim/cli/push/*.py']),
+    Extension('aim.cli.remote.*', ['aim/cli/remote/*.py']),
+    Extension('aim.cli.branch.*', ['aim/cli/branch/*.py']),
 
     # aim sdk packages
-    Extension("aim.sdk.*", ["aim/sdk/*.py"]),
-    Extension("aim.sdk.artifacts.*", ["aim/sdk/artifacts/*.py"]),
+    Extension('aim.sdk.*', ['aim/sdk/*.py']),
+    Extension('aim.sdk.artifacts.*', ['aim/sdk/artifacts/*.py']),
 
     # Other packages
-    Extension("aim.engine.*", ["aim/engine/*.py"]),
+    Extension('aim.engine.*', ['aim/engine/*.py']),
 ]
 
 # List of file name patterns to exclude from cythonizing
@@ -94,16 +95,16 @@ def not_cythonized(tup):
 
 # Define commands
 class CompileCommand(Command):
-    """Support setup.py compile.
-    """
+    '''Support setup.py compile.
+    '''
 
     description = 'Compile and build the package.'
     user_options = []
 
     @staticmethod
     def status(s):
-        """Prints things in bold.
-        """
+        '''Prints things in bold.
+        '''
         print('\033[1m{0}\033[0m'.format(s))
 
     def initialize_options(self):
@@ -127,16 +128,16 @@ class CompileCommand(Command):
 
 
 class UploadCommand(Command):
-    """Support setup.py upload.
-    """
+    '''Support setup.py upload.
+    '''
 
     description = 'Publish the package.'
     user_options = []
 
     @staticmethod
     def status(s):
-        """Prints things in bold.
-        """
+        '''Prints things in bold.
+        '''
         print('\033[1m{0}\033[0m'.format(s))
 
     def initialize_options(self):

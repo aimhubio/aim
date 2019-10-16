@@ -1,12 +1,10 @@
 import shutil
 import os
 import json
-import time
-import math
 import zipfile
 
 from aim.engine.configs import *
-from aim.engine.utils import is_path_creatable, ls_dir, random_str
+from aim.engine.utils import is_path_creatable, ls_dir
 
 
 class AimRepo:
@@ -63,12 +61,20 @@ class AimRepo:
         shutil.rmtree(dir_path)
 
     def __init__(self, path):
+        self._config = {}
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
-        self.objects_dir_path = os.path.join(self.path, AIM_OBJECTS_DIR_NAME)
+
+        if self.config:
+            self.branch = self.config.get('active_branch')
+        else:
+            self.branch = AIM_DEFAULT_BRANCH_NAME
+
+        self.objects_dir_path = os.path.join(self.path,
+                                             self.branch,
+                                             AIM_OBJECTS_DIR_NAME)
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
-        self._config = None
 
     def __str__(self):
         return self.path
@@ -79,10 +85,11 @@ class AimRepo:
         Config property getter, loads config file if not already loaded and
         returns json object
         """
-        if self._config is None:
-            with open(self.config_path, 'r') as f:
-                config = json.load(f)
-            self._config = config
+        if len(self._config) == 0:
+            if os.path.isfile(self.config_path):
+                with open(self.config_path, 'r') as f:
+                    config = json.load(f)
+                self._config = config
         return self._config
 
     @config.setter
@@ -120,14 +127,19 @@ class AimRepo:
         if not is_path_creatable(self.path):
             return False
 
-        # Create `.aim` repo and `objects` directory
+        # Create `.aim` repo
         os.mkdir(self.path)
-        os.mkdir(self.objects_dir_path)
 
+        # Create config file
         with open(self.config_path, 'w') as config_file:
             config_file.write(json.dumps({
                 'remotes': [],
+                'branches': [],
+                'active_branch': '',
             }))
+
+        self.create_branch(AIM_DEFAULT_BRANCH_NAME)
+        self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
 
         return True
 
@@ -321,3 +333,70 @@ class AimRepo:
             'dir_path': dir_path,
             'zip_path': zip_path,
         }
+
+    def create_branch(self, branch):
+        """
+        Creates a new branch - a sub-directory in repo
+        """
+        dir_path = os.path.join(self.path, branch)
+
+        # Save branch in repo config file
+        branches = self.config['branches']
+        for b in branches:
+            if b.get('name') == branch:
+                raise AttributeError('branch {} already exists'.format(branch))
+
+        # Create branch directory
+        objects_dir_path = os.path.join(dir_path, AIM_OBJECTS_DIR_NAME)
+        os.makedirs(objects_dir_path)
+
+        branches.append({
+            'name': branch,
+        })
+        self.save_config()
+
+    def checkout_branch(self, branch):
+        """
+        Checkouts to specified branch
+        """
+        branches = self.config.get('branches')
+        for b in branches:
+            if branch == b.get('name'):
+                self.config['active_branch'] = branch
+                self.branch = branch
+                self.save_config()
+                return
+
+        raise AttributeError('branch {} does not exist'.format(branch))
+
+    def remove_branch(self, branch):
+        """
+        Removes specified branch
+        """
+        if branch == AIM_DEFAULT_BRANCH_NAME:
+            msg = '{} branch can not be deleted'.format(AIM_DEFAULT_BRANCH_NAME)
+            raise AttributeError(msg)
+
+        branches = self.config.get('branches')
+
+        branch_exists = False
+        for b in branches:
+            if b.get('name') == branch:
+                branch_exists = True
+                break
+
+        if not branch_exists:
+            raise AttributeError('branch {} does not exist'.format(branch))
+
+        # Remove branch
+        self.config['branches'] = list(filter(lambda i: i.get('name') != branch,
+                                              self.config['branches']))
+        self.save_config()
+
+        # Remove branch sub-directory
+        dir_path = os.path.join(self.path, branch)
+        shutil.rmtree(dir_path)
+
+        # Set active branch to default if selected branch was active
+        if self.branch == branch:
+            self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)

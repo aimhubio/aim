@@ -1,5 +1,6 @@
 # Changelog
 
+- Add branching command line interface (gorarakelyan)
 - Update skd interface (gorarakelyan)
 - Add pytorch examples inside examples directory (gorarakelyan)
 - Add model load sdk method (gorarakelyan)
