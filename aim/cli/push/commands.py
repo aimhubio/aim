@@ -16,7 +16,10 @@ def push(repo, remote):
 
     # Prepare to send the repo
     # List and count files
-    files = repo.ls_files()
+    branches = repo.list_branches()
+    files = []
+    for b in branches:
+        files += repo.ls_branch_files(b)
     files_len = len(files)
     click.echo(click.style('{} file(s) to send:'.format(files_len),
                            fg='yellow'))
