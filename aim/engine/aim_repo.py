@@ -157,7 +157,7 @@ class AimRepo:
 
     def ls_files(self):
         """
-        Returns list containing repository files
+        Returns list of repository files
         """
         return ls_dir([self.path])
 
@@ -400,3 +400,18 @@ class AimRepo:
         # Set active branch to default if selected branch was active
         if self.branch == branch:
             self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
+
+    def list_branches(self):
+        """
+        Returns list of existing branches
+        """
+        return filter(lambda b: b != '',
+                      map(lambda b: b.get('name') if b else '',
+                          self.config.get('branches')))
+
+    def ls_branch_files(self, branch):
+        """
+        Returns list of files of the specified branch
+        """
+        branch_path = os.path.join(self.path, branch)
+        return ls_dir([branch_path])

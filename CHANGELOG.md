@@ -1,5 +1,6 @@
 # Changelog
 
+- Update push to send only branches (gorarakelyan)
 - Add branching command line interface (gorarakelyan)
 - Update skd interface (gorarakelyan)
 - Add pytorch examples inside examples directory (gorarakelyan)
