@@ -40,6 +40,7 @@ extensions = [
 
     # aim cli packages
     Extension('aim.cli.*', ['aim/cli/*.py']),
+    Extension('aim.cli.auth.*', ['aim/cli/auth/*.py']),
     Extension('aim.cli.init.*', ['aim/cli/init/*.py']),
     Extension('aim.cli.push.*', ['aim/cli/push/*.py']),
     Extension('aim.cli.remote.*', ['aim/cli/remote/*.py']),

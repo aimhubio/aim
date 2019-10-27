@@ -7,3 +7,7 @@ AIM_IMAGES_DIR_NAME = 'images'
 AIM_MODELS_DIR_NAME = 'models'
 AIM_CONFIG_FILE_NAME = 'config.json'
 AIM_DEFAULT_BRANCH_NAME = 'default'
+
+AIM_PROFILE_NAME = '.aim_profile'
+AIM_PROFILE_CONFIG_FILE_NAME = 'config.json'
+AIM_PROFILE_SSH_DIR_NAME = '.ssh'

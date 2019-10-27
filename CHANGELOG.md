@@ -1,5 +1,7 @@
 # Changelog
 
+- Add cli auth command (gorarakelyan)
+- Add public key authentication (gorarakelyan)
 - Update push to send only branches (gorarakelyan)
 - Add branching command line interface (gorarakelyan)
 - Update skd interface (gorarakelyan)
