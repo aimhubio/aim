@@ -1,6 +1,7 @@
 import os
 import click
 from urllib.parse import urlparse
+import struct
 
 from aim.engine.aim_protocol import FileServerClient, File
 from aim.engine.aim_profile import AimProfile
@@ -28,6 +29,9 @@ def push(repo, remote):
     else:
         click.echo('Repo is empty')
         return
+
+    # +1 for `.flags` file
+    files_len += 1
 
     remote_url = repo.get_remote_url(remote)
 
@@ -82,6 +86,13 @@ def push(repo, remote):
 
         # Clear progress bar
         print('\x1b[1A' + '\x1b[2K' + '\x1b[1A')
+
+    # Push `.flags` file indicating that push was successfully done
+    send_file_path = '{project}/{file_path}'.format(
+        project=remote_project,
+        file_path='.flags')
+    client.send_line(send_file_path.encode())
+    client.send(struct.pack('>i', 1) + struct.pack('>i', 0) + b'\n')
 
     click.echo(click.style('Done', fg='yellow'))
 

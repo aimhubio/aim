@@ -33,7 +33,8 @@ class FileServerClient:
         except IOError:
             raise ConnectionError('Unable to open host keys file')
 
-        # Check server's host key -- this is important
+        # Check server's host key
+        # TODO: automatically save server key in `known_hosts` file
         key = self.t.get_remote_server_key()
         if self.address not in keys:
             print_func('*** WARNING: Unknown host key! ***')
