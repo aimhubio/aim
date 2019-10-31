@@ -1,5 +1,6 @@
 # Changelog
 
+## 0.2.0 Nov 1 2019
 - Update the repo to prep for open source pypi push (sgevorg)
 - Add error and activity logging (sgevorg)
 - Add push command robustness (gorarakelyan)
