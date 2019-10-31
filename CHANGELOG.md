@@ -1,5 +1,6 @@
 # Changelog
 
+- Add push command robustness (gorarakelyan)
 - Add cli auth command (gorarakelyan)
 - Add public key authentication (gorarakelyan)
 - Update push to send only branches (gorarakelyan)
