@@ -1,5 +1,6 @@
 # Changelog
 
+- Add error and activity logging (sgevorg)
 - Add push command robustness (gorarakelyan)
 - Add cli auth command (gorarakelyan)
 - Add public key authentication (gorarakelyan)

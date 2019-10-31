@@ -50,8 +50,9 @@ class Serializable(metaclass=ABCMeta):
                 # Get image name and abs path
                 img_name_time = math.floor(time.time() * 1000)
                 img_name_random = random_str(10)
-                img_name = '{time}__{random}.jpg'.format(time=img_name_time,
-                                                         random=img_name_random)
+                img_name = '{time}__{random}.jpg'.format(
+                    time=img_name_time,
+                    random=img_name_random)
                 res = repo.store_image(img_name, content['cat'])
 
                 # Save image at specified path
