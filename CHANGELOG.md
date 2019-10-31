@@ -1,5 +1,6 @@
 # Changelog
 
+- Update the repo to prep for open source pypi push (sgevorg)
 - Add error and activity logging (sgevorg)
 - Add push command robustness (gorarakelyan)
 - Add cli auth command (gorarakelyan)
