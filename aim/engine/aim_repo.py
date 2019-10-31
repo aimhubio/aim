@@ -138,6 +138,7 @@ class AimRepo:
                 'active_branch': '',
             }))
 
+        self.create_logs()
         self.create_branch(AIM_DEFAULT_BRANCH_NAME)
         self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
 
@@ -415,3 +416,14 @@ class AimRepo:
         """
         branch_path = os.path.join(self.path, branch)
         return ls_dir([branch_path])
+
+    def create_logs(self):
+        """
+        Creates the logs dir in .aim to store error and activity logs
+        for cli and sdk respectively
+        """
+        logs_path = os.path.join(self.path, AIM_LOGGING_DIR_NAME)
+        os.mkdir(logs_path)
+
+    def get_logs_dir(self):
+        return os.path.join(self.path, AIM_LOGGING_DIR_NAME)

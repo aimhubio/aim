@@ -90,7 +90,7 @@ for epoch in range(num_epochs):
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            track(aim.loss, 'loss', loss.item())
+            track('sfsdf', 'loss', loss.item())
 
         for l in range(len(labels)):
             for o in range(len(outputs)):

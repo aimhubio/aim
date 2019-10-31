@@ -1,5 +1,6 @@
 # Changelog
 
+- Add error and activity logging (sgevorg)
 - Update push to send only branches (gorarakelyan)
 - Add branching command line interface (gorarakelyan)
 - Update skd interface (gorarakelyan)

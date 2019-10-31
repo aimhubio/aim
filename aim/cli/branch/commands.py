@@ -1,4 +1,3 @@
-import os
 import click
 
 
@@ -9,7 +8,8 @@ def branch_entry_point(repo):
         click.echo('Repository does not exist')
         return
 
-    click.echo(click.style('Repository found at {} '.format(repo), fg='yellow'))
+    click.echo(
+        click.style('Repository found at {} '.format(repo), fg='yellow'))
 
 
 @branch_entry_point.command()
@@ -83,4 +83,3 @@ def rm(repo, name):
         return
 
     click.echo('Remote {} is removed'.format(name))
-
