@@ -3,7 +3,7 @@ import click
 
 @click.group()
 @click.pass_obj
-def entry_point(repo):
+def remote_entry_point(repo):
     if repo is None:
         click.echo('Repository does not exist')
         return
@@ -11,13 +11,12 @@ def entry_point(repo):
     click.echo(click.style('Repository found at {} '.format(repo), fg='yellow'))
 
 
-@entry_point.command()
+@remote_entry_point.command()
 @click.option('-n', '--name', required=True, type=str)
 @click.option('-u', '--url', required=True, type=str)
 @click.pass_obj
 def add(repo, name, url):
     if repo is None:
-        click.echo('Repository does not exist')
         return
 
     remotes = repo.config['remotes']
@@ -37,12 +36,11 @@ def add(repo, name, url):
     click.echo('New remote is added')
 
 
-@entry_point.command()
+@remote_entry_point.command()
 @click.option('-n', '--name', required=True, type=str)
 @click.pass_obj
 def rm(repo, name):
     if repo is None:
-        click.echo('Repository does not exist')
         return
 
     remote_exists = False
@@ -62,17 +60,16 @@ def rm(repo, name):
     click.echo('Remote {} is removed'.format(name))
 
 
-@entry_point.command()
+@remote_entry_point.command()
 @click.pass_obj
 def ls(repo):
     if repo is None:
-        click.echo('Repository does not exist')
         return
 
     remotes = repo.config.get('remotes')
 
     if not len(remotes):
-        click.echo('No remote found')
+        click.echo('No remote was found')
         return
 
     for r in remotes:

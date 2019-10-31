@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0 Nov 1 2019
+- Update the repo to prep for open source pypi push (sgevorg)
+- Add error and activity logging (sgevorg)
+- Add push command robustness (gorarakelyan)
+- Add cli auth command (gorarakelyan)
+- Add public key authentication (gorarakelyan)
+- Update push to send only branches (gorarakelyan)
+- Add branching command line interface (gorarakelyan)
+- Update skd interface (gorarakelyan)
+- Add pytorch examples inside examples directory (gorarakelyan)
+- Add model load sdk method (gorarakelyan)
+- Add model checkpoint save tests (gorarakelyan)
+- Update file sending protocol (gorarakelyan)
+- Add model tracking (gorarakelyan)
+
 ## 0.1.0 - Sep 23 2019
 - Update setup py to build cython extensions (gorarakelyan)
 - Update tcp client to send multiple files through one connection (gorarakelyan)

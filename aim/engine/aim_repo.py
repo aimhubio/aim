@@ -1,15 +1,11 @@
 import shutil
-import pkg_resources
 import os
 import json
+import zipfile
 import time
-import math
 
 from aim.engine.configs import *
-from aim.engine.utils import is_path_creatable, ls_dir, random_str
-from aim.sdk.track.metric import Metric
-from aim.sdk.track.media import Media, Image
-from aim.sdk.track.annotation import Annotation
+from aim.engine.utils import is_path_creatable, ls_dir
 
 
 class AimRepo:
@@ -39,13 +35,50 @@ class AimRepo:
 
         return AimRepo(working_dir)
 
+    @staticmethod
+    def cat_to_dir(cat):
+        """
+        Finds file directory by it's  category
+        """
+        if cat[0] == 'metrics':
+            return AIM_METRICS_DIR_NAME
+        elif cat[0] == 'media':
+            if cat[1] == 'images':
+                return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
+        elif cat[0] == 'misclassification':
+            return AIM_ANNOT_DIR_NAME
+        elif cat[0] == 'models':
+            return AIM_MODELS_DIR_NAME
+
+    @staticmethod
+    def archive_dir(zip_path, dir_path):
+        zip_file = zipfile.ZipFile(zip_path, 'w')
+        with zip_file:
+            # Writing each file one by one
+            for file in ls_dir([dir_path]):
+                zip_file.write(file, file[len(dir_path):])
+
+        # Remove model directory
+        shutil.rmtree(dir_path)
+
     def __init__(self, path):
+        self._config = {}
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
-        self.objects_dir_path = os.path.join(self.path, AIM_OBJECTS_DIR_NAME)
+
+        if self.config:
+            self.branch = self.config.get('active_branch')
+        else:
+            self.branch = AIM_DEFAULT_BRANCH_NAME
+
+        self.objects_dir_path = os.path.join(self.path,
+                                             self.branch,
+                                             AIM_OBJECTS_DIR_NAME)
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
-        self._config = None
+
+    def __str__(self):
+        return self.path
 
     @property
     def config(self):
@@ -53,10 +86,11 @@ class AimRepo:
         Config property getter, loads config file if not already loaded and
         returns json object
         """
-        if self._config is None:
-            with open(self.config_path, 'r') as f:
-                config = json.load(f)
-            self._config = config
+        if len(self._config) == 0:
+            if os.path.isfile(self.config_path):
+                with open(self.config_path, 'r') as f:
+                    config = json.load(f)
+                self._config = config
         return self._config
 
     @config.setter
@@ -94,25 +128,20 @@ class AimRepo:
         if not is_path_creatable(self.path):
             return False
 
-        # Create `.aim` repo and `objects` directory
+        # Create `.aim` repo
         os.mkdir(self.path)
-        os.mkdir(self.objects_dir_path)
 
-        # Create `config` file and fill in default configs
-        # pkg_name, _, _ = __name__.partition('.')
-        # default_config_path = os.path.join('..', DEFAULT_CONFIG_PATH)
-        # default_config = pkg_resources.resource_filename('engine',
-        #                                                  default_config_path)
-        #
-        # with open(self.config_path, 'w') as config_file:
-        #     with open(default_config, 'r') as default_config_file:
-        #         for line in default_config_file:
-        #             config_file.write(line)
-
+        # Create config file
         with open(self.config_path, 'w') as config_file:
             config_file.write(json.dumps({
                 'remotes': [],
+                'branches': [],
+                'active_branch': '',
             }))
+
+        self.create_logs()
+        self.create_branch(AIM_DEFAULT_BRANCH_NAME)
+        self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
 
         return True
 
@@ -130,116 +159,13 @@ class AimRepo:
 
     def ls_files(self):
         """
-        Returns list containing repository files
+        Returns list of repository files
         """
         return ls_dir([self.path])
 
-    def get_object_root(self, obj_type):
+    def load_meta_file(self):
         """
-        Returns object's root directory
-        """
-        if obj_type == 'metric':
-            return AIM_METRICS_DIR_NAME
-        elif obj_type == 'image':
-            return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
-        elif obj_type == 'annotation':
-            return AIM_ANNOT_DIR_NAME
-
-    def objects_push_val(self, name, val):
-        """
-        Appends new data to specified object
-        """
-        dir_path = os.path.join(self.objects_dir_path,
-                                self.get_object_root('metric'))
-        data_file_name = '{}.json'.format(name)
-        data_file_path = os.path.join(dir_path, data_file_name)
-
-        if not os.path.isdir(dir_path):
-            # Create data file
-            data_file_content = []
-            os.makedirs(dir_path, exist_ok=True)
-            data_file = open(data_file_path, 'w+')
-        else:
-            # Get object content
-            data_file = open(data_file_path, 'r+')
-            data_file_content = json.loads(data_file.read())
-
-        # Update and close data file
-        data_file_content.append(val)
-        data_file.seek(0)
-        data_file.truncate()
-        data_file.write(json.dumps(data_file_content))
-        data_file.close()
-
-    def objects_push_image(self, img):
-        """
-        Stores image and appends path to meta.json
-        """
-        dir_name = AIM_IMAGES_DIR_NAME
-        images_dir_path = os.path.join(self.media_dir_path, dir_name)
-
-        # Get image path
-        img_name_time = math.floor(time.time() * 1000)
-        img_name_random = random_str(10)
-        img_name = '{time}__{random}.jpg'.format(time=img_name_time,
-                                                 random=img_name_random)
-        img_path = os.path.join(images_dir_path, img_name)
-
-        # Save image at specified path
-        img.save(img_path)
-
-        img_rel_path = os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
-
-        return img_name, img_rel_path
-
-    def objects_push_annotation(self, annotation_obj):
-        """
-        Stores annotated object and updates meta file
-        """
-
-        # Process annotated object
-        annot_obj_name = annot_obj_dir = annot_obj_type = None
-        if isinstance(annotation_obj.obj, Image):
-            annot_obj_type = 'image'
-            annot_obj_name, annot_obj_dir = \
-                self.objects_push_image(annotation_obj.obj)
-
-        # Get object directory
-        obj_dir = os.path.join(self.objects_dir_path,
-                               self.get_object_root('annotation'))
-
-        file_name = '{}.json'.format(annotation_obj.name)
-        data_file_path = os.path.join(obj_dir, file_name)
-
-        if not os.path.isfile(data_file_path):
-            # Create directory and file
-            os.makedirs(obj_dir, exist_ok=True)
-            data_file = open(data_file_path, 'w+')
-
-            data_file_content = []
-        else:
-            # Read object data file
-            data_file = open(data_file_path, 'r+')
-            data_file_content = json.loads(data_file.read())
-
-        # Save value for current step
-        step_val = {
-            'object_name': annot_obj_name,
-            'object_path': annot_obj_dir,
-            'object_type': annot_obj_type,
-            'meta': annotation_obj.meta,
-        }
-
-        # Update and close data file
-        data_file_content.append(step_val)
-        data_file.seek(0)
-        data_file.truncate()
-        data_file.write(json.dumps(data_file_content))
-        data_file.close()
-
-    def objects_push(self, push_obj, step):
-        """
-        Push a new object to repository
+        Returns meta file and its content
         """
         meta_file_path = os.path.join(self.objects_dir_path, 'meta.json')
         if os.path.isfile(meta_file_path):
@@ -250,32 +176,255 @@ class AimRepo:
             meta_file = open(meta_file_path, 'w+')
             meta_file_content = {}
 
-        if isinstance(push_obj, Metric):
-            self.objects_push_val(push_obj.name, push_obj.val)
-            obj_type = 'metric'
-        elif isinstance(push_obj, Media):
-            if isinstance(push_obj, Image):
-                self.objects_push_image(push_obj)
-                obj_type = 'image'
-        elif isinstance(push_obj, Annotation):
-            self.objects_push_annotation(push_obj)
-            obj_type = 'annotation'
-        else:
-            raise ValueError('Undefined type')
+        return meta_file, meta_file_content
 
-        obj_name = push_obj.name
-        if obj_name not in meta_file_content:
-            meta_file_content[obj_name] = {
-                'name': obj_name,
-                'type': obj_type,
-                'data_path': self.get_object_root(obj_type)
-            }
+    def update_meta_file(self, item_key, item_content):
+        """
+        Updates meta file content and closes the file
+        """
+        meta_file, meta_file_content = self.load_meta_file()
 
-        # Update and close meta file
+        meta_file_content[item_key] = item_content
+
+        # Update and close the file
         meta_file.seek(0)
         meta_file.truncate()
         meta_file.write(json.dumps(meta_file_content))
         meta_file.close()
 
-    def __str__(self):
-        return self.path
+    def store_file(self, name, cat, content, mode='a'):
+        """
+        Appends new data to the specified file or rewrites it
+        and updates repo meta file
+        """
+        cat_path = self.cat_to_dir(cat)
+        dir_path = os.path.join(self.objects_dir_path, cat_path)
+        data_file_path = os.path.join(dir_path, name)
+
+        # Create directory if not exists
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+
+        if not os.path.isfile(data_file_path):
+            # Create data file
+            data_file_content = []
+            data_file = open(data_file_path, 'w+')
+        else:
+            # Get object content
+            data_file = open(data_file_path, 'r+')
+            data_file_content = json.loads(data_file.read())
+
+        # Set data file content
+        if mode == 'a':
+            data_file_content.append(content)
+        elif mode == 'w':
+            data_file_content = [content]
+
+        # Update and close data file
+        data_file.seek(0)
+        data_file.truncate()
+        data_file.write(json.dumps(data_file_content))
+        data_file.close()
+
+        # Update meta file
+        self.update_meta_file(name, {
+            'name': name,
+            'type': cat[-1],
+            'data': {},
+            'data_path': cat_path,
+        })
+
+        return {
+            'path': os.path.join(cat_path, name),
+            'abs_path': data_file_path,
+        }
+
+    def store_image(self, name, cat, save_to_meta=False):
+        """
+        Returns saved object full path
+        and updates repo meta file
+        """
+        images_dir_path = os.path.join(self.media_dir_path,
+                                       AIM_IMAGES_DIR_NAME)
+
+        img_rel_path = os.path.join(AIM_MEDIA_DIR_NAME,
+                                    AIM_IMAGES_DIR_NAME)
+        img_abs_path = os.path.join(images_dir_path, name)
+
+        # Create image directory if not exists
+        dir_path = os.path.dirname(img_abs_path)
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+
+        # Update meta file
+        if save_to_meta:
+            self.update_meta_file(name, {
+                'name': name,
+                'type': cat[-1],
+                'data': {},
+                'data_path': img_rel_path,
+            })
+
+        return {
+            'path': os.path.join(img_rel_path, name),
+            'abs_path': img_abs_path,
+        }
+
+    def store_model_file(self, checkpoint_name, cat):
+        """
+        Saves a model file into repo
+        """
+        root_path = os.path.join(self.objects_dir_path,
+                                 self.cat_to_dir(cat))
+
+        dir_name = checkpoint_name
+        dir_path = os.path.join(root_path, dir_name)
+        model_file_name = 'model'
+        model_file_path = os.path.join(dir_path,
+                                       model_file_name)
+
+        # Create directory
+        os.makedirs(dir_path, exist_ok=True)
+
+        return model_file_path
+
+    def store_model(self, checkpoint_name, name, epoch,
+                    meta_info, model_info, cat):
+        """
+        Saves a model into repo
+        """
+        root_path = os.path.join(self.objects_dir_path,
+                                 self.cat_to_dir(cat))
+
+        dir_name = checkpoint_name
+        dir_path = os.path.join(root_path, dir_name)
+        model_file_name = 'model'
+        model_file_path = os.path.join(dir_path,
+                                       model_file_name)
+        meta_file_path = os.path.join(dir_path, 'model.json')
+
+        # Create directory
+        os.makedirs(dir_path, exist_ok=True)
+
+        # Create meta file
+        with open(meta_file_path, 'w+') as meta_file:
+            meta_file.write(json.dumps({
+                'name': name,
+                'epoch': epoch,
+                'model': model_info,
+            }))
+
+        zip_name = '{}.aim'.format(dir_name)
+        zip_path = os.path.join(root_path, zip_name)
+
+        # Update repo meta file
+        self.update_meta_file(checkpoint_name, {
+            'name': checkpoint_name,
+            'type': cat[-1],
+            'data': {
+                'name': name,
+                'epoch': epoch,
+                'meta': meta_info,
+                'model': model_info,
+            },
+            'data_path': dir_name,
+        })
+
+        return {
+            'model_path': model_file_path,
+            'dir_path': dir_path,
+            'zip_path': zip_path,
+        }
+
+    def create_branch(self, branch):
+        """
+        Creates a new branch - a sub-directory in repo
+        """
+        dir_path = os.path.join(self.path, branch)
+
+        # Save branch in repo config file
+        branches = self.config['branches']
+        for b in branches:
+            if b.get('name') == branch:
+                raise AttributeError('branch {} already exists'.format(branch))
+
+        # Create branch directory
+        objects_dir_path = os.path.join(dir_path, AIM_OBJECTS_DIR_NAME)
+        os.makedirs(objects_dir_path)
+
+        branches.append({
+            'name': branch,
+        })
+        self.save_config()
+
+    def checkout_branch(self, branch):
+        """
+        Checkouts to specified branch
+        """
+        branches = self.config.get('branches')
+        for b in branches:
+            if branch == b.get('name'):
+                self.config['active_branch'] = branch
+                self.branch = branch
+                self.save_config()
+                return
+
+        raise AttributeError('branch {} does not exist'.format(branch))
+
+    def remove_branch(self, branch):
+        """
+        Removes specified branch
+        """
+        if branch == AIM_DEFAULT_BRANCH_NAME:
+            msg = '{} branch can not be deleted'.format(AIM_DEFAULT_BRANCH_NAME)
+            raise AttributeError(msg)
+
+        branches = self.config.get('branches')
+
+        branch_exists = False
+        for b in branches:
+            if b.get('name') == branch:
+                branch_exists = True
+                break
+
+        if not branch_exists:
+            raise AttributeError('branch {} does not exist'.format(branch))
+
+        # Remove branch
+        self.config['branches'] = list(filter(lambda i: i.get('name') != branch,
+                                              self.config['branches']))
+        self.save_config()
+
+        # Remove branch sub-directory
+        dir_path = os.path.join(self.path, branch)
+        shutil.rmtree(dir_path)
+
+        # Set active branch to default if selected branch was active
+        if self.branch == branch:
+            self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
+
+    def list_branches(self):
+        """
+        Returns list of existing branches
+        """
+        return filter(lambda b: b != '',
+                      map(lambda b: b.get('name') if b else '',
+                          self.config.get('branches')))
+
+    def ls_branch_files(self, branch):
+        """
+        Returns list of files of the specified branch
+        """
+        branch_path = os.path.join(self.path, branch)
+        return ls_dir([branch_path])
+
+    def create_logs(self):
+        """
+        Creates the logs dir in .aim to store error and activity logs
+        for cli and sdk respectively
+        """
+        logs_path = os.path.join(self.path, AIM_LOGGING_DIR_NAME)
+        os.mkdir(logs_path)
+
+    def get_logs_dir(self):
+        return os.path.join(self.path, AIM_LOGGING_DIR_NAME)
