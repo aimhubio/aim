@@ -1,5 +1,7 @@
 # Changelog
 
+- Add paramiko to required in setup.py (sgevorg)
+
 ## 0.2.0 Nov 1 2019
 - Update the repo to prep for open source pypi push (sgevorg)
 - Add error and activity logging (sgevorg)
