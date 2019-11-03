@@ -1,5 +1,5 @@
 from aim.engine.aim_repo import AimRepo
-# from aim.sdk.artifacts import *
+from aim.sdk.artifacts import *
 
 import aim.logger
 
