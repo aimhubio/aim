@@ -1,5 +1,6 @@
 # Changelog
 
+## 0.2.2 Nov 3 2019
 - Update package requirements (gorarakelyan)
 
 ## 0.2.1 Nov 1 2019
