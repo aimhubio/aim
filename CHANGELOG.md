@@ -1,7 +1,14 @@
 # Changelog
 
-## 0.2.2 Nov 3 2019
+## 0.2.4 Nov 3 2019
+- Update aim auth print format (gorarakelyan)
+- Update setup.py requirements (gorarakelyan)
+
+## 0.2.3 Nov 3 2019
 - Update package requirements (gorarakelyan)
+
+## 0.2.2 Nov 1 2019
+- Update package requirements (sgevorg)
 
 ## 0.2.1 Nov 1 2019
 - Add paramiko to required in setup.py (sgevorg)
