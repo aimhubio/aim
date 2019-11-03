@@ -20,5 +20,3 @@ def auth(address):
                            fg='yellow'))
     click.echo(public_key)
     click.echo()
-
-    click.echo(address)
