@@ -28,8 +28,10 @@ except FileNotFoundError:
 # What packages are required for this module to be executed?
 REQUIRED = [
     'click>=6.7',
-    'torchvision>=0.4.0',
     'paramiko==2.6.0',
+    'torch==1.3.0.post2',
+    'torchvision==0.4.1.post2',
+    'Keras==2.2.4',
 ]
 
 
