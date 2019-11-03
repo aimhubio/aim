@@ -1,5 +1,7 @@
 # Changelog
 
+- Update package requirements (gorarakelyan)
+
 ## 0.2.1 Nov 1 2019
 - Add paramiko to required in setup.py (sgevorg)
 
