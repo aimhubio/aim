@@ -1,5 +1,7 @@
 import aim
 from aim import track
+import random
+import math
 
 import torch
 import torch.nn as nn
@@ -100,6 +102,9 @@ for epoch in range(num_epochs):
             correct += (predicted == labels).sum().item()
 
             track(aim.accuracy, 'accuracy', 100 * correct / total)
+            track(aim.metric, 'random', random.random())
+            track(aim.metric, 'random-md', random.random() * 10)
+            track(aim.metric, 'random-lg', math.ceil(random.random() * 100))
 
 # Test the model
 model.eval()
