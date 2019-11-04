@@ -1,5 +1,7 @@
 # Changelog
 
+- Add single branch push to aim push command (gorarakelyan)
+
 ## 0.2.4 Nov 3 2019
 - Update aim auth print format (gorarakelyan)
 - Update setup.py requirements (gorarakelyan)
