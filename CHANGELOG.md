@@ -1,5 +1,6 @@
 # Changelog
 
+- Add branch name validation (gorarakelyan)
 - Add single branch push to aim push command (gorarakelyan)
 
 ## 0.2.4 Nov 3 2019
