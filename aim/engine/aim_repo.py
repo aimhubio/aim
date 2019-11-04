@@ -2,6 +2,7 @@ import shutil
 import os
 import json
 import zipfile
+import re
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
@@ -340,6 +341,11 @@ class AimRepo:
         Creates a new branch - a sub-directory in repo
         """
         dir_path = os.path.join(self.path, branch)
+
+        if not re.match(r'^[A-Za-z0-9_\-]{2,}$', branch):
+            raise AttributeError('branch name must be at least 2 characters ' +
+                                 'and contain only latin letters, numbers, ' +
+                                 'dash and underscore')
 
         # Save branch in repo config file
         branches = self.config['branches']
