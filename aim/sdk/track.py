@@ -27,5 +27,5 @@ def track(name: str, *args, **kwargs):
     except Exception as e:
         print('An error occured in Aim tracker and iterations are skipped')
         print('Please run tail aim log errors to view the error')
-        error_logger = aim.logging.error_logger()
+        error_logger = aim.logger.error_logger()
         error_logger.error('Tracker Error: ', e)

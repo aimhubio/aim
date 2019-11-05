@@ -1,5 +1,7 @@
 # Changelog
 
+- Update aim track logger (gorarakelyan)
+
 ## 0.2.5 Nov 4 2019
 - Add branch name validation (gorarakelyan)
 - Add single branch push to aim push command (gorarakelyan)
