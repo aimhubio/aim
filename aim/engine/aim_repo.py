@@ -49,6 +49,8 @@ class AimRepo:
             return AIM_ANNOT_DIR_NAME
         elif cat[0] == 'models':
             return AIM_MODELS_DIR_NAME
+        elif cat[0] == 'correlation':
+            return AIM_CORR_DIR_NAME
 
     @staticmethod
     def archive_dir(zip_path, dir_path):
@@ -192,7 +194,7 @@ class AimRepo:
         meta_file.write(json.dumps(meta_file_content))
         meta_file.close()
 
-    def store_file(self, name, cat, content, mode='a'):
+    def store_file(self, name, cat, content, mode='a', data={}):
         """
         Appends new data to the specified file or rewrites it
         and updates repo meta file
@@ -230,7 +232,7 @@ class AimRepo:
         self.update_meta_file(name, {
             'name': name,
             'type': cat[-1],
-            'data': {},
+            'data': data,
             'data_path': cat_path,
         })
 

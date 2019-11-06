@@ -42,10 +42,12 @@ class Serializable(metaclass=ABCMeta):
             if stored_obj == self.JSON_FILE:
                 # Store artifact inside json file
                 file_name = '{}.json'.format(content['name'])
+                data = content['data'] if 'data' in content else {}
                 res = repo.store_file(file_name,
                                       content['cat'],
                                       content['content'],
-                                      content['mode'])
+                                      content['mode'],
+                                      data)
             elif stored_obj == self.IMAGE:
                 # Get image name and abs path
                 img_name_time = math.floor(time.time() * 1000)
