@@ -32,6 +32,7 @@ REQUIRED = [
     'torch==1.3.0.post2',
     'torchvision==0.4.1.post2',
     'Keras==2.2.4',
+    'numpy>=1.17.3',
 ]
 
 
