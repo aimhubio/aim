@@ -93,6 +93,7 @@ for epoch in range(num_epochs):
 
             # aim - Track model weights
             track(aim.weights, model)
+            track(aim.gradients, model)
 
 # Test the model
 model.eval()

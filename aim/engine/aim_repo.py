@@ -255,7 +255,12 @@ class AimRepo:
         data_file.close()
 
         # Update meta file
-        self.update_meta_file(name, {
+        if rel_dir_path is not None:
+            file_name_for_meta = '{}/{}'.format(rel_dir_path, name)
+        else:
+            file_name_for_meta = name
+
+        self.update_meta_file(file_name_for_meta, {
             'name': name,
             'type': cat[-1],
             'data': data,
