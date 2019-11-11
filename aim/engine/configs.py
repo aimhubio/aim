@@ -6,6 +6,7 @@ AIM_MEDIA_DIR_NAME = 'media'
 AIM_IMAGES_DIR_NAME = 'images'
 AIM_MODELS_DIR_NAME = 'models'
 AIM_CORR_DIR_NAME = 'correlations'
+AIM_CORR_DIRS_NAME = 'dirs'
 AIM_CONFIG_FILE_NAME = 'config.json'
 AIM_DEFAULT_BRANCH_NAME = 'default'
 
