@@ -91,7 +91,7 @@ for epoch in range(num_epochs):
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
 
-            # aim - Track model weights
+            # aim - Track model
             track(aim.weights, model)
             track(aim.gradients, model)
 

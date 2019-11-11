@@ -12,7 +12,7 @@ device = torch.device('cpu')
 # Hyper parameters
 num_epochs = 5
 num_classes = 10
-batch_size = 10
+batch_size = 50
 learning_rate = 0.01
 
 # MNIST dataset
@@ -90,7 +90,16 @@ for epoch in range(num_epochs):
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            track('sfsdf', 'loss', loss.item())
+            track(aim.loss, 'loss', loss.item())
+
+            # aim - Track last layer correlation
+            track(aim.label_correlation, 'corr', outputs, labels=[
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+            ])
+
+            # aim - Track model weights and gradients
+            track(aim.weights, model)
+            track(aim.gradients, model)
 
         for l in range(len(labels)):
             for o in range(len(outputs)):
