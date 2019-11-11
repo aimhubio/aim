@@ -194,12 +194,38 @@ class AimRepo:
         meta_file.write(json.dumps(meta_file_content))
         meta_file.close()
 
-    def store_file(self, name, cat, content, mode='a', data={}):
+    def store_dir(self, name, data={}):
+        """
+        Creates a new directory inside repo and returns it's relative path
+        """
+        # Create directory if not exists
+        dir_rel_path = os.path.join(AIM_CORR_DIRS_NAME, name)
+        dir_path = os.path.join(self.objects_dir_path,
+                                dir_rel_path)
+
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+
+        self.update_meta_file(name, {
+            'name': name,
+            'type': 'dir',
+            'data': data,
+            'data_path': dir_rel_path,
+        })
+
+        return dir_path, dir_rel_path
+
+    def store_file(self, name, cat, content, mode='a', data={},
+                   rel_dir_path=None):
         """
         Appends new data to the specified file or rewrites it
         and updates repo meta file
         """
-        cat_path = self.cat_to_dir(cat)
+        if not rel_dir_path:
+            cat_path = self.cat_to_dir(cat)
+        else:
+            cat_path = rel_dir_path
+
         dir_path = os.path.join(self.objects_dir_path, cat_path)
         data_file_path = os.path.join(dir_path, name)
 

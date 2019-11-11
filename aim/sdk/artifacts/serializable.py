@@ -12,6 +12,7 @@ class Serializable(metaclass=ABCMeta):
     """
     # List of types in which passed serialized content can be saved
     JSON_FILE = 'json_file'
+    DIR = 'dir'
     IMAGE = 'image'
     MODEL = 'model'
 
@@ -31,6 +32,18 @@ class Serializable(metaclass=ABCMeta):
         """
         ...
 
+    @staticmethod
+    def store_json(repo, content, dir_path=None) -> dict:
+        file_name = '{}.json'.format(content['name'])
+        data = content['data'] if 'data' in content else {}
+        res = repo.store_file(file_name,
+                              content['cat'],
+                              content['content'],
+                              content['mode'],
+                              data,
+                              dir_path)
+        return res
+
     def save(self, repo: AimRepo) -> bool:
         """
         Stores serialized instance into .aim repo
@@ -41,13 +54,17 @@ class Serializable(metaclass=ABCMeta):
         for stored_obj, content in list(serialized_inst.items()):
             if stored_obj == self.JSON_FILE:
                 # Store artifact inside json file
-                file_name = '{}.json'.format(content['name'])
-                data = content['data'] if 'data' in content else {}
-                res = repo.store_file(file_name,
-                                      content['cat'],
-                                      content['content'],
-                                      content['mode'],
-                                      data)
+                res = self.store_json(repo, content)
+            elif stored_obj == self.DIR:
+                dir_path, dir_rel_path = repo.store_dir(content['name'],
+                                                        content['data'])
+                res = []
+                for f in content['files']:
+                    # Store dir files
+                    for _, f_content in f.items():
+                        res.append(self.store_json(repo,
+                                                   f_content,
+                                                   dir_rel_path))
             elif stored_obj == self.IMAGE:
                 # Get image name and abs path
                 img_name_time = math.floor(time.time() * 1000)
