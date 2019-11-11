@@ -1,5 +1,6 @@
 # Changelog
 
+- Update all insights example (gorarakelyan)
 - Add model gradients tracking (gorarakelyan)
 - Add model weights distribution tracking (gorarakelyan)
 - Add aim correlation tracking (gorarakelyan)
