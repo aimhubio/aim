@@ -36,6 +36,7 @@ class Serializable(metaclass=ABCMeta):
     def store_json(repo, content, dir_path=None) -> dict:
         file_name = '{}.json'.format(content['name'])
         data = content['data'] if 'data' in content else {}
+
         res = repo.store_file(file_name,
                               content['cat'],
                               content['content'],
