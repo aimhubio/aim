@@ -1,5 +1,6 @@
 # Changelog
 
+- Add version control system factory (gorarakelyan)
 - Update all insights example (gorarakelyan)
 - Add model gradients tracking (gorarakelyan)
 - Add model weights distribution tracking (gorarakelyan)

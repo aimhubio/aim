@@ -1,9 +1,11 @@
-from aim.version_control.git import Git
+from aim.version_control.git import GitAdapter
 
 
 class Factory:
+    GIT = 'git'
+
     factories = {
-        'git': Git,
+        GIT: GitAdapter,
     }
 
     @classmethod
