@@ -1,5 +1,6 @@
 # Changelog
 
+- Add aim commit command synchronized with git commits (gorarakelyan)
 - Add version control system factory (gorarakelyan)
 - Update all insights example (gorarakelyan)
 - Add model gradients tracking (gorarakelyan)
