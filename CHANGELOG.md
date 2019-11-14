@@ -1,5 +1,6 @@
 # Changelog
 
+- Add commit structure implementation (gorarakelyan)
 - Add aim commit command synchronized with git commits (gorarakelyan)
 - Add version control system factory (gorarakelyan)
 - Update all insights example (gorarakelyan)
