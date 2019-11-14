@@ -33,6 +33,7 @@ REQUIRED = [
     'torchvision==0.4.1.post2',
     'Keras==2.2.4',
     'numpy>=1.17.3',
+    'GitPython==3.0.4',
 ]
 
 
