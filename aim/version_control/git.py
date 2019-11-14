@@ -43,6 +43,7 @@ class GitAdapter(Base):
         Commits changes to a new created branch and returns branch name
         """
         branch = '{}{}'.format(branch_prefix, branch_name)
+        branch_hash = None
 
         try:
             repo = self.get_repo()
@@ -66,6 +67,8 @@ class GitAdapter(Base):
                 git.add('.')
                 repo.index.commit(commit_msg)
 
+            branch_hash = self.get_head_hash()
+
             # Checkout to previous branch
             git.checkout(active_branch_name)
 
@@ -78,7 +81,7 @@ class GitAdapter(Base):
                             'to recover git index state manually' +
                             ''.format(branch=branch))
 
-        return branch
+        return branch, branch_hash
 
     def get_index_diff(self, target):
         """

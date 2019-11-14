@@ -3,7 +3,6 @@ import os
 import json
 import zipfile
 import re
-import uuid
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
@@ -77,7 +76,7 @@ class AimRepo:
         self.branch_path = os.path.join(self.path,
                                         self.branch)
         self.index_path = os.path.join(self.branch_path,
-                                       AIM_INDEX_DIR_NAME)
+                                       AIM_COMMIT_INDEX_DIR_NAME)
         self.objects_dir_path = os.path.join(self.index_path,
                                              AIM_OBJECTS_DIR_NAME)
         self.media_dir_path = os.path.join(self.objects_dir_path,
@@ -393,7 +392,7 @@ class AimRepo:
         # Create branch directory
         objects_dir_path = os.path.join(dir_path,
                                         branch,
-                                        AIM_INDEX_DIR_NAME,
+                                        AIM_COMMIT_INDEX_DIR_NAME,
                                         AIM_OBJECTS_DIR_NAME)
         os.makedirs(objects_dir_path)
 
@@ -456,24 +455,44 @@ class AimRepo:
                       map(lambda b: b.get('name') if b else '',
                           self.config.get('branches')))
 
-    def commit(self, commit_dir_name=None):
+    def is_index_empty(self):
+        """
+        Returns `True` if index directory is empty and
+        `False` otherwise
+        """
+        if len(os.listdir(self.index_path)):
+            return False
+        return True
+
+    def commit(self, commit_hash, vc_branch, vc_hash):
         """
         Moves current uncommitted artefacts temporary storage(aka `index`)
         to commit directory and re-initializes `index`
         """
         index_dir = self.index_path
 
-        if commit_dir_name is None:
-            commit_dir_name = str(uuid.uuid1())
-
+        # Commit dir name is same as commit hash
         commit_dir = os.path.join(self.branch_path,
-                                  commit_dir_name)
+                                  commit_hash)
 
         # Move index to commit dir
         shutil.move(index_dir, commit_dir)
 
         # Init new index
         os.makedirs(index_dir)
+
+        # Create commit config file
+        config_file_path = os.path.join(commit_dir,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+        with open(config_file_path, 'w+') as config_file:
+            config_file.write(json.dumps({
+                'hash': commit_hash,
+                'vc': {
+                    'system': 'git',
+                    'branch': vc_branch,
+                    'hash': vc_hash,
+                },
+            }))
 
     def ls_branch_files(self, branch):
         """
