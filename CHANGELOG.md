@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.7 Nov 14 2019
+- Update dependencies torch and torchvision versions (sgevorg)
+
 ## 0.2.6 Nov 5 2019
 - Update aim track logger (gorarakelyan)
 
