@@ -8,6 +8,10 @@ class Base(ABC):
         ...
 
     @abstractmethod
+    def get_head_hash(self):
+        ...
+
+    @abstractmethod
     def get_untracked_files(self):
         ...
 
@@ -16,5 +20,5 @@ class Base(ABC):
         ...
 
     @abstractmethod
-    def get_diff(self):
+    def get_index_diff(self, target):
         ...

@@ -3,6 +3,7 @@ import os
 import json
 import zipfile
 import re
+import uuid
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
@@ -73,8 +74,11 @@ class AimRepo:
         else:
             self.branch = AIM_DEFAULT_BRANCH_NAME
 
-        self.objects_dir_path = os.path.join(self.path,
-                                             self.branch,
+        self.branch_path = os.path.join(self.path,
+                                        self.branch)
+        self.index_path = os.path.join(self.branch_path,
+                                       AIM_INDEX_DIR_NAME)
+        self.objects_dir_path = os.path.join(self.index_path,
                                              AIM_OBJECTS_DIR_NAME)
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
@@ -387,7 +391,10 @@ class AimRepo:
                 raise AttributeError('branch {} already exists'.format(branch))
 
         # Create branch directory
-        objects_dir_path = os.path.join(dir_path, AIM_OBJECTS_DIR_NAME)
+        objects_dir_path = os.path.join(dir_path,
+                                        branch,
+                                        AIM_INDEX_DIR_NAME,
+                                        AIM_OBJECTS_DIR_NAME)
         os.makedirs(objects_dir_path)
 
         branches.append({
@@ -448,6 +455,25 @@ class AimRepo:
         return filter(lambda b: b != '',
                       map(lambda b: b.get('name') if b else '',
                           self.config.get('branches')))
+
+    def commit(self, commit_dir_name=None):
+        """
+        Moves current uncommitted artefacts temporary storage(aka `index`)
+        to commit directory and re-initializes `index`
+        """
+        index_dir = self.index_path
+
+        if commit_dir_name is None:
+            commit_dir_name = str(uuid.uuid1())
+
+        commit_dir = os.path.join(self.branch_path,
+                                  commit_dir_name)
+
+        # Move index to commit dir
+        shutil.move(index_dir, commit_dir)
+
+        # Init new index
+        os.makedirs(index_dir)
 
     def ls_branch_files(self, branch):
         """

@@ -9,18 +9,32 @@ from aim.version_control.factory import Factory
 @click.option('-m', '--message', required=True, type=str)
 @click.pass_obj
 def commit(repo, message):
+    commit_id = str(uuid.uuid1())
     message = message.strip()
 
-    # Get Git adapter
     vc = Factory.create(Factory.GIT)
 
-    # Check if there are any untracked files
-    untracked_files = vc.get_untracked_files()
-    if len(untracked_files):
+    # Check whether version control repo exists
+    if vc is None:
+        click.echo('No git repository (or any parent up to mount point /) ' +
+                   'found. Initialize git repository by running `git init`')
+        return
+
+    # Check untracked files
+    if len(vc.get_untracked_files()):
         click.echo('You have untracked files, please add them to the ' +
-                   'index before committing your changes. ' +
-                   'Simply run `git add -A`')
+                   'index before committing your changes by running ' +
+                   '`git add -A`')
+        return
+
+    # Check if HEAD exists
+    if not vc.get_head_hash():
+        click.echo('Needed a single revision. ' +
+                   'You do not have the git initial commit yet.')
         return
 
     # Commit changes to a new created branch and return branch name
-    branch_name = vc.commit_changes_to_branch(message, uuid.uuid1())
+    branch_name = vc.commit_changes_to_branch(message, commit_id)
+
+    # Run aim commit
+    repo.commit(commit_id)

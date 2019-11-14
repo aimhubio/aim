@@ -9,6 +9,7 @@ AIM_CORR_DIR_NAME = 'correlations'
 AIM_CORR_DIRS_NAME = 'dirs'
 AIM_CONFIG_FILE_NAME = 'config.json'
 AIM_DEFAULT_BRANCH_NAME = 'default'
+AIM_INDEX_DIR_NAME = 'index'
 
 AIM_LOGGING_DIR_NAME = 'logs'
 AIM_CLI_ACTIVITIED_LOG = 'activities.log'
