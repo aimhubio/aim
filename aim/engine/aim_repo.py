@@ -391,7 +391,6 @@ class AimRepo:
 
         # Create branch directory
         objects_dir_path = os.path.join(dir_path,
-                                        branch,
                                         AIM_COMMIT_INDEX_DIR_NAME,
                                         AIM_OBJECTS_DIR_NAME)
         os.makedirs(objects_dir_path)
@@ -451,9 +450,24 @@ class AimRepo:
         """
         Returns list of existing branches
         """
-        return filter(lambda b: b != '',
-                      map(lambda b: b.get('name') if b else '',
-                          self.config.get('branches')))
+        return list(filter(lambda b: b != '',
+                           map(lambda b: b.get('name') if b else '',
+                               self.config.get('branches'))))
+
+    def list_branch_commits(self, branch):
+        """
+        Returns list of specified branches commits
+        """
+        branch_path = os.path.join(self.path, branch.strip())
+
+        commits = []
+        for i in os.listdir(branch_path):
+            if os.path.isdir(os.path.join(branch_path, i)) \
+                    and i != AIM_COMMIT_INDEX_DIR_NAME:
+
+                commits.append(i)
+
+        return commits
 
     def is_index_empty(self):
         """
@@ -500,6 +514,14 @@ class AimRepo:
         """
         branch_path = os.path.join(self.path, branch)
         return ls_dir([branch_path])
+
+    def ls_commit_files(self, branch, commit):
+        """
+        Returns list of files of the specified commit
+        """
+        commit_path = os.path.join(self.path, branch, commit)
+
+        return ls_dir([commit_path])
 
     def create_logs(self):
         """
