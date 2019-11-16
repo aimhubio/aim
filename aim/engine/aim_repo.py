@@ -3,6 +3,7 @@ import os
 import json
 import zipfile
 import re
+import time
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
@@ -478,7 +479,7 @@ class AimRepo:
             return False
         return True
 
-    def commit(self, commit_hash, vc_branch, vc_hash):
+    def commit(self, commit_hash, commit_msg, vc_branch, vc_hash):
         """
         Moves current uncommitted artefacts temporary storage(aka `index`)
         to commit directory and re-initializes `index`
@@ -501,6 +502,8 @@ class AimRepo:
         with open(config_file_path, 'w+') as config_file:
             config_file.write(json.dumps({
                 'hash': commit_hash,
+                'date': int(time.time()),
+                'message': commit_msg,
                 'vc': {
                     'system': 'git',
                     'branch': vc_branch,
