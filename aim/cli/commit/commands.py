@@ -41,4 +41,4 @@ def commit(repo, message):
     # Commit changes to a new created branch and return branch name
     branch_name, branch_hash = vc.commit_changes_to_branch(message, commit_hash)
 
-    repo.commit(commit_hash, branch_name, branch_hash)
+    repo.commit(commit_hash, message, branch_name, branch_hash)

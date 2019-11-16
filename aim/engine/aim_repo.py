@@ -3,6 +3,7 @@ import os
 import json
 import zipfile
 import re
+import time
 
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
@@ -391,7 +392,6 @@ class AimRepo:
 
         # Create branch directory
         objects_dir_path = os.path.join(dir_path,
-                                        branch,
                                         AIM_COMMIT_INDEX_DIR_NAME,
                                         AIM_OBJECTS_DIR_NAME)
         os.makedirs(objects_dir_path)
@@ -451,9 +451,24 @@ class AimRepo:
         """
         Returns list of existing branches
         """
-        return filter(lambda b: b != '',
-                      map(lambda b: b.get('name') if b else '',
-                          self.config.get('branches')))
+        return list(filter(lambda b: b != '',
+                           map(lambda b: b.get('name') if b else '',
+                               self.config.get('branches'))))
+
+    def list_branch_commits(self, branch):
+        """
+        Returns list of specified branches commits
+        """
+        branch_path = os.path.join(self.path, branch.strip())
+
+        commits = []
+        for i in os.listdir(branch_path):
+            if os.path.isdir(os.path.join(branch_path, i)) \
+                    and i != AIM_COMMIT_INDEX_DIR_NAME:
+
+                commits.append(i)
+
+        return commits
 
     def is_index_empty(self):
         """
@@ -464,7 +479,7 @@ class AimRepo:
             return False
         return True
 
-    def commit(self, commit_hash, vc_branch, vc_hash):
+    def commit(self, commit_hash, commit_msg, vc_branch, vc_hash):
         """
         Moves current uncommitted artefacts temporary storage(aka `index`)
         to commit directory and re-initializes `index`
@@ -487,6 +502,8 @@ class AimRepo:
         with open(config_file_path, 'w+') as config_file:
             config_file.write(json.dumps({
                 'hash': commit_hash,
+                'date': int(time.time()),
+                'message': commit_msg,
                 'vc': {
                     'system': 'git',
                     'branch': vc_branch,
@@ -500,6 +517,14 @@ class AimRepo:
         """
         branch_path = os.path.join(self.path, branch)
         return ls_dir([branch_path])
+
+    def ls_commit_files(self, branch, commit):
+        """
+        Returns list of files of the specified commit
+        """
+        commit_path = os.path.join(self.path, branch, commit)
+
+        return ls_dir([commit_path])
 
     def create_logs(self):
         """

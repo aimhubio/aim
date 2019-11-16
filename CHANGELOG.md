@@ -1,5 +1,6 @@
 # Changelog
 
+- Update aim push command to send commits (gorarakelyan)
 - Add commit structure implementation (gorarakelyan)
 - Add aim commit command synchronized with git commits (gorarakelyan)
 - Add version control system factory (gorarakelyan)
