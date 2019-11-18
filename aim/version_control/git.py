@@ -1,7 +1,7 @@
 from aim.version_control.base import Base
 import os
 
-from git import Repo, InvalidGitRepositoryError
+from git import Repo, InvalidGitRepositoryError, GitCommandError
 
 
 class GitAdapter(Base):
@@ -50,9 +50,12 @@ class GitAdapter(Base):
             git = repo.git
             active_branch_name = repo.active_branch.name
 
-            # Stash changes
+            # Stash changes if there is diff between index and work-tree or
+            # between index and HEAD
             stashed = False
-            if len(self.get_index_diff('HEAD')):
+            if len(self.get_index_diff('HEAD')) \
+                    or len(self.get_index_diff(None)):
+
                 git.stash('save')
                 stashed = True
 
@@ -64,7 +67,7 @@ class GitAdapter(Base):
                 git.stash('apply')
 
                 # Add and commit changes
-                git.add('.')
+                git.add(A=True)
                 repo.index.commit(commit_msg)
 
             branch_hash = self.get_head_hash()
@@ -98,3 +101,15 @@ class GitAdapter(Base):
                 changes.append(diff_item)
 
         return changes
+
+    def get_diff_text(self, a_hash, b_hash):
+        """
+        Saves git diff to a file
+        """
+        repo = self.get_repo()
+        git = repo.git()
+
+        try:
+            return git.diff(a_hash, b_hash)
+        except GitCommandError:
+            return ''

@@ -1,7 +1,6 @@
 import os
 import click
 from urllib.parse import urlparse
-import struct
 
 from aim.engine.aim_protocol import FileServerClient, File
 from aim.engine.aim_profile import AimProfile
