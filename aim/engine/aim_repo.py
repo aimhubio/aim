@@ -479,6 +479,28 @@ class AimRepo:
             return False
         return True
 
+    def get_latest_vc_branch(self):
+        """
+        Returns latest created branch name and hash
+        """
+        # Get commits
+        commits = {}
+        for c in os.listdir(self.branch_path):
+            commit_path = os.path.join(self.branch_path, c)
+            if os.path.isdir(commit_path) and c != AIM_COMMIT_INDEX_DIR_NAME:
+                config_file_path = os.path.join(commit_path,
+                                                AIM_COMMIT_CONFIG_FILE_NAME)
+                with open(config_file_path, 'r') as config_file:
+                    commits[c] = json.loads(config_file.read())
+
+        # Find latest commit
+        latest_commit = None
+        for _, c in commits.items():
+            if latest_commit is None or c['date'] > latest_commit['date']:
+                latest_commit = c
+
+        return latest_commit.get('vc') if latest_commit else None
+
     def commit(self, commit_hash, commit_msg, vc_branch, vc_hash):
         """
         Moves current uncommitted artefacts temporary storage(aka `index`)
@@ -511,6 +533,27 @@ class AimRepo:
                 },
             }))
 
+        return {
+            'branch': self.config.get('active_branch'),
+            'commit': commit_hash,
+        }
+
+    def save_diff(self, diff):
+        """
+        Saves diff to the repo
+        """
+        diff_dir_path = os.path.join(self.objects_dir_path,
+                                     AIM_DIFF_DIR_NAME)
+        diff_file_path = os.path.join(diff_dir_path,
+                                      AIM_DIFF_FILE_NAME)
+
+        # Create `diff` directory
+        os.makedirs(diff_dir_path, exist_ok=True)
+
+        # Write diff content to the `diff` file
+        with open(diff_file_path, 'w+') as diff_file:
+            diff_file.write(diff)
+
     def ls_branch_files(self, branch):
         """
         Returns list of files of the specified branch
@@ -523,7 +566,6 @@ class AimRepo:
         Returns list of files of the specified commit
         """
         commit_path = os.path.join(self.path, branch, commit)
-
         return ls_dir([commit_path])
 
     def create_logs(self):

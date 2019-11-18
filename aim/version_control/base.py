@@ -16,6 +16,10 @@ class Base(ABC):
         ...
 
     @abstractmethod
+    def get_diff_text(self, a_hash, b_hash):
+        ...
+
+    @abstractmethod
     def commit_changes_to_branch(self, commit_msg, branch_name, branch_prefix):
         ...
 

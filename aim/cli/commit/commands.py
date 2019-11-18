@@ -41,4 +41,20 @@ def commit(repo, message):
     # Commit changes to a new created branch and return branch name
     branch_name, branch_hash = vc.commit_changes_to_branch(message, commit_hash)
 
-    repo.commit(commit_hash, message, branch_name, branch_hash)
+    # Get the latest branch
+    latest_branch = repo.get_latest_vc_branch() or {}
+    latest_branch = latest_branch.get('branch')
+    if latest_branch is None:
+        latest_branch = vc.get_head_hash()
+
+    # Get diff between current commit and latest commit(or HEAD)
+    diff = vc.get_diff_text(latest_branch, branch_name)
+    repo.save_diff(diff)
+
+    # Commit
+    commit_res = repo.commit(commit_hash, message, branch_name, branch_hash)
+
+    click.echo(click.style('[{b}/{c} commit]'.format(
+        b=commit_res['branch'],
+        c=commit_res['commit']), fg='yellow'))
+    click.echo(message)
