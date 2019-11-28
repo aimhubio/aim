@@ -52,16 +52,19 @@ class ModelDistribution(Serializable, metaclass=ABCMeta):
 
         for name, params in self.hist.items():
             serialized_dir = serialized[self.DIR]
+            w_dist_name = b_dist_name = ''
 
             # Serialize layer weights
-            w_dist_name = '{}__weight'.format(name)
-            w_dist = Distribution(w_dist_name, params['weight'])
-            serialized_dir['files'].append(w_dist.serialize())
+            if 'weight' in params:
+                w_dist_name = '{}__weight'.format(name)
+                w_dist = Distribution(w_dist_name, params['weight'])
+                serialized_dir['files'].append(w_dist.serialize())
 
             # Serialize layer biases
-            b_dist_name = '{}__bias'.format(name)
-            b_dist = Distribution(b_dist_name, params['bias'])
-            serialized_dir['files'].append(b_dist.serialize())
+            if 'bias' in params:
+                b_dist_name = '{}__bias'.format(name)
+                b_dist = Distribution(b_dist_name, params['bias'])
+                serialized_dir['files'].append(b_dist.serialize())
 
             serialized_dir['data']['layers'].append({
                 'name': name,
@@ -92,25 +95,32 @@ class WeightsDistribution(ModelDistribution):
                     layers.update(cls.get_layers(m,
                                                  '{}.Sequential'.format(name)))
                 else:
-                    if hasattr(m, 'weight'):
-                        layer_name = '{}__{}'.format(parent_name, name) \
-                            if parent_name \
-                            else name
-                        layer_name += '.{}'.format(type(m).__name__)
+                    layer_name = '{}__{}'.format(parent_name, name) \
+                        if parent_name \
+                        else name
+                    layer_name += '.{}'.format(type(m).__name__)
+
+                    layers[layer_name] = {}
+
+                    if hasattr(m, 'weight') \
+                            and m.weight is not None \
+                            and hasattr(m.weight, 'data'):
 
                         weight_hist = np.histogram(m.weight.data.numpy(), 30)
-                        bias_hist = np.histogram(m.bias.data.numpy(), 30)
+                        layers[layer_name]['weight'] = [
+                            weight_hist[0].tolist(),
+                            weight_hist[1].tolist(),
+                        ]
 
-                        layers[layer_name] = {
-                            'weight': [
-                                weight_hist[0].tolist(),
-                                weight_hist[1].tolist(),
-                            ],
-                            'bias': [
-                                bias_hist[0].tolist(),
-                                bias_hist[1].tolist(),
-                            ],
-                        }
+                    if hasattr(m, 'bias') \
+                            and m.bias is not None \
+                            and hasattr(m.bias, 'data'):
+
+                        bias_hist = np.histogram(m.bias.data.numpy(), 30)
+                        layers[layer_name]['bias'] = [
+                            bias_hist[0].tolist(),
+                            bias_hist[1].tolist(),
+                        ]
 
         return layers
 
@@ -130,24 +140,31 @@ class GradientsDistribution(ModelDistribution):
                     layers.update(cls.get_layers(m,
                                                  '{}.Sequential'.format(name)))
                 else:
-                    if hasattr(m, 'weight'):
-                        layer_name = '{}__{}'.format(parent_name, name) \
-                            if parent_name \
-                            else name
-                        layer_name += '.{}'.format(type(m).__name__)
+                    layer_name = '{}__{}'.format(parent_name, name) \
+                        if parent_name \
+                        else name
+                    layer_name += '.{}'.format(type(m).__name__)
+
+                    layers[layer_name] = {}
+
+                    if hasattr(m, 'weight') \
+                            and m.weight is not None \
+                            and hasattr(m.weight, 'grad'):
 
                         weight_hist = np.histogram(m.weight.grad.numpy(), 30)
-                        bias_hist = np.histogram(m.bias.grad.numpy(), 30)
+                        layers[layer_name]['weight'] = [
+                            weight_hist[0].tolist(),
+                            weight_hist[1].tolist(),
+                        ]
 
-                        layers[layer_name] = {
-                            'weight': [
-                                weight_hist[0].tolist(),
-                                weight_hist[1].tolist(),
-                            ],
-                            'bias': [
-                                bias_hist[0].tolist(),
-                                bias_hist[1].tolist(),
-                            ],
-                        }
+                    if hasattr(m, 'bias') \
+                            and m.bias is not None \
+                            and hasattr(m.bias, 'grad'):
+
+                        bias_hist = np.histogram(m.bias.grad.numpy(), 30)
+                        layers[layer_name]['bias'] = [
+                            bias_hist[0].tolist(),
+                            bias_hist[1].tolist(),
+                        ]
 
         return layers
