@@ -164,6 +164,12 @@ class File:
     def __len__(self):
         return math.ceil(self.content_len/self.chunk_size)
 
+    @staticmethod
+    def empty_chunk():
+        return (struct.pack('>i', 1) +
+                struct.pack('>i', 0) +
+                b'\n')
+
     def format_size(self):
         """
         Returns file size in human readable format

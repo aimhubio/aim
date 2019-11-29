@@ -117,9 +117,12 @@ def push(repo, remote, branch):
                                                     size=file.format_size()))
 
             # Send file chunks
-            with click.progressbar(file) as file_chunks:
-                for chunk in file_chunks:
-                    client.send(chunk)
+            if file.content_len:
+                with click.progressbar(file) as file_chunks:
+                    for chunk in file_chunks:
+                        client.send(chunk)
+            else:
+                client.send(file.empty_chunk())
 
             # Clear progress bar
             print('\x1b[1A' + '\x1b[2K' + '\x1b[1A')

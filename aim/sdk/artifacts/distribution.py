@@ -88,18 +88,15 @@ class WeightsDistribution(ModelDistribution):
     def get_layers(cls, model, parent_name=None):
         layers = {}
         if is_pytorch_module(model):
-            from torch import nn
-
             for name, m in model.named_children():
-                if isinstance(m, nn.Sequential):
-                    layers.update(cls.get_layers(m,
-                                                 '{}.Sequential'.format(name)))
-                else:
-                    layer_name = '{}__{}'.format(parent_name, name) \
-                        if parent_name \
-                        else name
-                    layer_name += '.{}'.format(type(m).__name__)
+                layer_name = '{}__{}'.format(parent_name, name) \
+                    if parent_name \
+                    else name
+                layer_name += '.{}'.format(type(m).__name__)
 
+                if len(list(m.named_children())):
+                    layers.update(cls.get_layers(m, layer_name))
+                else:
                     layers[layer_name] = {}
 
                     if hasattr(m, 'weight') \
@@ -133,18 +130,15 @@ class GradientsDistribution(ModelDistribution):
     def get_layers(cls, model, parent_name=None):
         layers = {}
         if is_pytorch_module(model):
-            from torch import nn
-
             for name, m in model.named_children():
-                if isinstance(m, nn.Sequential):
-                    layers.update(cls.get_layers(m,
-                                                 '{}.Sequential'.format(name)))
-                else:
-                    layer_name = '{}__{}'.format(parent_name, name) \
-                        if parent_name \
-                        else name
-                    layer_name += '.{}'.format(type(m).__name__)
+                layer_name = '{}__{}'.format(parent_name, name) \
+                    if parent_name \
+                    else name
+                layer_name += '.{}'.format(type(m).__name__)
 
+                if len(list(m.named_children())):
+                    layers.update(cls.get_layers(m, layer_name))
+                else:
                     layers[layer_name] = {}
 
                     if hasattr(m, 'weight') \
