@@ -1,5 +1,6 @@
 # Changelog
 
+## 0.2.9 Nov 30 2019
 - Update push tolerance when remote origin is invalid (gorarakelyan)
 
 ## 0.2.8 Nov 30 2019
