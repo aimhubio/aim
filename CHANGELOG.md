@@ -1,5 +1,7 @@
 # Changelog
 
+- Update push tolerance when remote origin is invalid (gorarakelyan)
+
 ## 0.2.8 Nov 30 2019
 - Update aim auth public key search algorithm (gorarakelyan)
 
