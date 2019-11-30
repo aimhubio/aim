@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.8 Nov 30 2019
+- Update aim auth public key search algorithm (gorarakelyan)
+
 ## 0.2.7 Nov 14 2019
 - Update dependencies torch and torchvision versions (sgevorg)
 
