@@ -46,22 +46,36 @@ def push(repo, remote, branch):
         return
 
     remote_url = repo.get_remote_url(remote)
+    if not remote_url:
+        click.echo('Invalid remote {}'.format(remote))
+        return
+
     parsed_remote = urlparse(remote_url)
+    remote_hostname = parsed_remote.hostname or remote_url
+    remote_port = parsed_remote.port or 8002
+
+    if not remote_hostname:
+        click.echo('Invalid {} hostname'.format(remote))
+        return
 
     # Get authentication remote and key
     profile = AimProfile()
     auth = profile.config['auth']
     private_key = ''
     for auth_remote, info in auth.items():
-        if auth_remote.find(parsed_remote.hostname) != -1:
+        if auth_remote.find(remote_hostname) != -1:
             private_key = info['key']
             break
+
+    if not private_key:
+        click.echo('Authentication key not found for remote {}'.format(remote))
+        return
 
     # Open connection
     remote_project = parsed_remote.path.strip(os.sep)
     try:
-        client = FileServerClient(parsed_remote.hostname,
-                                  parsed_remote.port,
+        client = FileServerClient(remote_hostname,
+                                  remote_port,
                                   private_key, click.echo)
     except Exception as e:
         click.echo('Can not open connection to remote. ')
