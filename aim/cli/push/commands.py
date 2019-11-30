@@ -57,9 +57,6 @@ def push(repo, remote, branch):
             private_key = info['key']
             break
 
-    print(private_key)
-    exit()
-
     # Open connection
     remote_project = parsed_remote.path.strip(os.sep)
     try:
