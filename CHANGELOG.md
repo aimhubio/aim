@@ -11,6 +11,12 @@
 - Add model weights distribution tracking (gorarakelyan)
 - Add aim correlation tracking (gorarakelyan)
 
+## 0.2.9 Nov 30 2019
+- Update push tolerance when remote origin is invalid (gorarakelyan)
+
+## 0.2.8 Nov 30 2019
+- Update aim auth public key search algorithm (gorarakelyan)
+
 ## 0.2.7 Nov 14 2019
 - Update dependencies torch and torchvision versions (sgevorg)
 
