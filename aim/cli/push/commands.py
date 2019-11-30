@@ -46,18 +46,18 @@ def push(repo, remote, branch):
         return
 
     remote_url = repo.get_remote_url(remote)
+    parsed_remote = urlparse(remote_url)
 
     # Get authentication remote and key
     profile = AimProfile()
     auth = profile.config['auth']
     private_key = ''
     for auth_remote, info in auth.items():
-        if remote_url.find(auth_remote) != -1:
+        if auth_remote.find(parsed_remote.hostname) != -1:
             private_key = info['key']
             break
 
     # Open connection
-    parsed_remote = urlparse(remote_url)
     remote_project = parsed_remote.path.strip(os.sep)
     try:
         client = FileServerClient(parsed_remote.hostname,
