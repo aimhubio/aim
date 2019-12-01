@@ -69,7 +69,7 @@ def push(repo, remote, branch):
     profile = AimProfile()
     auth = profile.config['auth']
     private_key = ''
-    for auth_remote, info in auth.items():
+    for auth_remote, info in reversed(auth.items()):
         if auth_remote.find(remote_hostname) != -1:
             private_key = info['key']
             break

@@ -111,7 +111,7 @@ class Checkpoint(Serializable):
 
             # Save model and optimizer
             torch.save({
-                'model': self.model,
+                'model': self.model.state_dict(),
                 'opt': self.opt,
             }, model_path)
 
