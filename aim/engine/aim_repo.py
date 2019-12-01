@@ -538,6 +538,22 @@ class AimRepo:
             'commit': commit_hash,
         }
 
+    def reset_index(self):
+        """
+        Removes all files inside repo's index dir
+        """
+        index_dir = self.index_path
+
+        # List all files inside index
+        for filename in os.listdir(index_dir):
+            file_path = os.path.join(index_dir, filename)
+
+            # Delete files, links and dirs
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+
     def save_diff(self, diff):
         """
         Saves diff to the repo
