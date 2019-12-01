@@ -146,10 +146,11 @@ def train(train_loader, model, criterion, optimizer, epoch):
             print('Epoch: [{0}][{1}/{2}]\t'.format(
                       epoch, i, len(train_loader)))
 
-            track(aim.weights, model)
-            track(aim.gradients, model)
-
-
+            # track(aim.weights, model)
+            # track(aim.gradients, model)
+            track(aim.checkpoint,
+                  'checkpoint_test', 'chp_epoch_{}'.format(epoch),
+                  model, epoch,)
 
 
 for epoch in range(5):
