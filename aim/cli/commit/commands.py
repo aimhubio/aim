@@ -9,6 +9,10 @@ from aim.version_control.factory import Factory
 @click.option('-m', '--message', required=True, type=str)
 @click.pass_obj
 def commit(repo, message):
+    if repo is None:
+        click.echo('Repository does not exist')
+        return
+
     commit_hash = str(uuid.uuid1())
     message = message.strip()
 
