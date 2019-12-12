@@ -5,6 +5,7 @@ import numpy as np
 
 from aim.sdk.artifacts.serializable import Serializable
 from aim.engine.utils import is_pytorch_module
+from aim.sdk.artifacts.utils import get_pt_tensor
 
 
 class Distribution(Serializable):
@@ -103,7 +104,8 @@ class WeightsDistribution(ModelDistribution):
                             and m.weight is not None \
                             and hasattr(m.weight, 'data'):
 
-                        weight_hist = np.histogram(m.weight.data.numpy(), 30)
+                        weight_arr = get_pt_tensor(m.weight.data).numpy()
+                        weight_hist = np.histogram(weight_arr, 30)
                         layers[layer_name]['weight'] = [
                             weight_hist[0].tolist(),
                             weight_hist[1].tolist(),
@@ -113,7 +115,8 @@ class WeightsDistribution(ModelDistribution):
                             and m.bias is not None \
                             and hasattr(m.bias, 'data'):
 
-                        bias_hist = np.histogram(m.bias.data.numpy(), 30)
+                        bias_arr = get_pt_tensor(m.bias.data).numpy()
+                        bias_hist = np.histogram(bias_arr, 30)
                         layers[layer_name]['bias'] = [
                             bias_hist[0].tolist(),
                             bias_hist[1].tolist(),
@@ -145,7 +148,8 @@ class GradientsDistribution(ModelDistribution):
                             and m.weight is not None \
                             and hasattr(m.weight, 'grad'):
 
-                        weight_hist = np.histogram(m.weight.grad.numpy(), 30)
+                        weight_grad_arr = get_pt_tensor(m.bias.grad).numpy()
+                        weight_hist = np.histogram(weight_grad_arr, 30)
                         layers[layer_name]['weight'] = [
                             weight_hist[0].tolist(),
                             weight_hist[1].tolist(),
@@ -155,7 +159,8 @@ class GradientsDistribution(ModelDistribution):
                             and m.bias is not None \
                             and hasattr(m.bias, 'grad'):
 
-                        bias_hist = np.histogram(m.bias.grad.numpy(), 30)
+                        bias_grad_arr = get_pt_tensor(m.bias.grad).numpy()
+                        bias_hist = np.histogram(bias_grad_arr, 30)
                         layers[layer_name]['bias'] = [
                             bias_hist[0].tolist(),
                             bias_hist[1].tolist(),
