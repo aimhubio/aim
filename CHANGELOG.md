@@ -1,5 +1,6 @@
 # Changelog
 
+- Add pytorch cuda support to existing sdk artefacts (gorarakelyan)
 - Add cli reset command (gorarakelyan)
 - Add nested module tracking support to aim sdk (gorarakelyan)
 - Add code difference tracking to aim sdk (gorarakelyan)
