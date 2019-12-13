@@ -121,6 +121,8 @@ def push(repo, remote, branch):
     client.send_line(str(files_len).encode())
 
     for commit, files in files.items():
+        commit_prefix = '{b}/{c}'.format(b=commit[0], c=commit[1])
+        click.echo('{}:'.format(commit_prefix))
         for f in files:
             # Send a file
             file = File(f)
@@ -131,8 +133,9 @@ def push(repo, remote, branch):
 
             # Send file name
             client.send_line(send_file_path.encode())
-            click.echo('{name} ({size:,}KB)'.format(name=file_path,
-                                                    size=file.format_size()))
+            file_print_name = file_path[len(commit_prefix)+1:]
+            click.echo('-> {name} ({size:,}KB)'.format(name=file_print_name,
+                                                      size=file.format_size()))
 
             # Send file chunks
             if file.content_len:
