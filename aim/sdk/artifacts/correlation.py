@@ -20,7 +20,7 @@ class Correlation(Serializable):
     def serialize(self) -> dict:
         corr = self.get_correlation()
         serialized = {
-            self.JSON_FILE: {
+            self.LOG_FILE: {
                 'name': self.name,
                 'cat': self.cat,
                 'content': corr,

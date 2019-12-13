@@ -22,7 +22,7 @@ class Distribution(Serializable):
 
     def serialize(self) -> dict:
         serialized = {
-            self.JSON_FILE: {
+            self.LOG_FILE: {
                 'name': self.name,
                 'cat': self.cat,
                 'content': self.dist,

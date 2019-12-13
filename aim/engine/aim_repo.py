@@ -219,7 +219,7 @@ class AimRepo:
 
         return dir_path, dir_rel_path
 
-    def store_file(self, name, cat, content, mode='a', data={},
+    def store_file(self, file_name, ext, name, cat, content, mode='a', data={},
                    rel_dir_path=None):
         """
         Appends new data to the specified file or rewrites it
@@ -231,12 +231,37 @@ class AimRepo:
             cat_path = rel_dir_path
 
         dir_path = os.path.join(self.objects_dir_path, cat_path)
-        data_file_path = os.path.join(dir_path, name)
+        data_file_path = os.path.join(dir_path, file_name)
 
         # Create directory if not exists
         if not os.path.isdir(dir_path):
             os.makedirs(dir_path, exist_ok=True)
 
+        if ext == 'json':
+            self.append_to_json(data_file_path, mode, content)
+        elif ext == 'log':
+            self.append_to_log(data_file_path, mode, content)
+
+        # Update meta file
+        if rel_dir_path is not None:
+            file_name_for_meta = '{}/{}'.format(rel_dir_path, file_name)
+        else:
+            file_name_for_meta = file_name
+
+        self.update_meta_file(file_name_for_meta, {
+            'name': name,
+            'type': cat[-1],
+            'data': data,
+            'data_path': cat_path,
+        })
+
+        return {
+            'path': os.path.join(cat_path, file_name),
+            'abs_path': data_file_path,
+        }
+
+    @staticmethod
+    def append_to_json(data_file_path, mode, content):
         if not os.path.isfile(data_file_path):
             # Create data file
             data_file_content = []
@@ -258,23 +283,18 @@ class AimRepo:
         data_file.write(json.dumps(data_file_content))
         data_file.close()
 
-        # Update meta file
-        if rel_dir_path is not None:
-            file_name_for_meta = '{}/{}'.format(rel_dir_path, name)
-        else:
-            file_name_for_meta = name
+    @staticmethod
+    def append_to_log(data_file_path, mode, content):
+        data_file = None
+        if mode == 'a':
+            data_file = open(data_file_path, 'a')
+        elif mode == 'w':
+            data_file = open(data_file_path, 'w')
 
-        self.update_meta_file(file_name_for_meta, {
-            'name': name,
-            'type': cat[-1],
-            'data': data,
-            'data_path': cat_path,
-        })
-
-        return {
-            'path': os.path.join(cat_path, name),
-            'abs_path': data_file_path,
-        }
+        if data_file is not None:
+            if content:
+                data_file.writelines([json.dumps(content), '\n'])
+            data_file.close()
 
     def store_image(self, name, cat, save_to_meta=False):
         """

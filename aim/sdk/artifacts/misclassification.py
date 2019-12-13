@@ -26,7 +26,7 @@ class Misclassification(Serializable):
         }
 
         serialized = {
-            self.JSON_FILE: {
+            self.LOG_FILE: {
                 'name': self.name,
                 'cat': self.cat,
                 'content': content,
