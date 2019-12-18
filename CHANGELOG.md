@@ -1,5 +1,6 @@
 # Changelog
 
+- Add hyper parameters tracking (gorarakelyan)
 - Update push command to print shorter file names when pushing to remote (gorarakelyan)
 - Update tracking artifacts to be saved in log format (gorarakelyan)
 - Add pytorch cuda support to existing sdk artefacts (gorarakelyan)

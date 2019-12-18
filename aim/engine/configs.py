@@ -11,6 +11,7 @@ AIM_CORR_DIRS_NAME = 'dirs'
 AIM_CONFIG_FILE_NAME = 'config.json'
 AIM_DIFF_DIR_NAME = 'diff'
 AIM_DIFF_FILE_NAME = 'diff.txt'
+AIM_PARAMS_DIR_NAME = 'hyperparameters'
 
 # Branches
 AIM_DEFAULT_BRANCH_NAME = 'default'
