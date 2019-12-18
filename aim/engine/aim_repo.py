@@ -52,6 +52,8 @@ class AimRepo:
             return AIM_MODELS_DIR_NAME
         elif cat[0] == 'correlation':
             return AIM_CORR_DIR_NAME
+        elif cat[0] == 'hyperparameters':
+            return AIM_PARAMS_DIR_NAME
 
     @staticmethod
     def archive_dir(zip_path, dir_path):
