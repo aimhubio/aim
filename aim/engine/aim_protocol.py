@@ -88,7 +88,6 @@ class FileServerClient:
             self.chan.sendall(message)
             return True
         except Exception:
-            print('exc')
             return False
 
     def send_line(self, message):

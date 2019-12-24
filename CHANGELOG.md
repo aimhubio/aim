@@ -1,5 +1,6 @@
 # Changelog
 
+- Update push command to send username and check storage availability (gorarakelyan)
 - Add hyper parameters tracking (gorarakelyan)
 - Update push command to print shorter file names when pushing to remote (gorarakelyan)
 - Update tracking artifacts to be saved in log format (gorarakelyan)

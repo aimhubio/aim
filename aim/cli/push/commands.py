@@ -43,9 +43,9 @@ def push(repo, remote, branch):
     commits = []
     for b in branches:
         branch_commits = repo.list_branch_commits(b)
-        commits += list(map(lambda c: (b, c), branch_commits))
-        remote_commits += list(map(lambda c: "{}/{}/{}".format(remote_project,
-                                                               b, c),
+        commits += list(map(lambda co: (b, co), branch_commits))
+        remote_commits += list(map(lambda co: "{}/{}/{}".format(remote_project,
+                                                                b, co),
                                    branch_commits))
 
     if not len(remote_commits):
@@ -89,6 +89,15 @@ def push(repo, remote, branch):
         click.echo('Connection error: {}'.format(e))
         return
 
+    # Send user name
+    user_name, _, query = (parsed_remote.path or '').strip('/').partition('/')
+    if not user_name:
+        click.echo('User not found')
+        return
+
+    # Send user name
+    client.send_line(user_name.encode())
+
     # Send commits comma separated list to get know
     # which commits are not pushed to the remote yet
     commits_cs = ','.join(remote_commits)
@@ -121,6 +130,7 @@ def push(repo, remote, branch):
     client.send_line(str(files_len).encode())
 
     for commit, files in files.items():
+        commit_sent = True
         commit_prefix = '{b}/{c}'.format(b=commit[0], c=commit[1])
         click.echo('{}:'.format(commit_prefix))
         for f in files:
@@ -135,27 +145,45 @@ def push(repo, remote, branch):
             client.send_line(send_file_path.encode())
             file_print_name = file_path[len(commit_prefix)+1:]
             click.echo('-> {name} ({size:,}KB)'.format(name=file_print_name,
-                                                      size=file.format_size()))
+                                                       size=file.format_size()))
 
             # Send file chunks
+            successfully_sent = True
             if file.content_len:
                 with click.progressbar(file) as file_chunks:
                     for chunk in file_chunks:
-                        client.send(chunk)
+                        if not client.send(chunk):
+                            commit_sent = False
+                            successfully_sent = False
+                            break
             else:
                 client.send(file.empty_chunk())
 
             # Clear progress bar
             print('\x1b[1A' + '\x1b[2K' + '\x1b[1A')
 
-        # Push `.flags` file indicating that commit push was successfully done
-        send_flags_file(client, '{project}/{branch}/{commit}/{path}'.format(
-            project=remote_project,
-            branch=commit[0],
-            commit=commit[1],
-            path='.flags'))
+            if not successfully_sent:
+                break
 
-    click.echo(click.style('Done', fg='yellow'))
+        if commit_sent:
+            # Push `.flags` file indicating that
+            # commit was successfully pushed to remote
+            send_flags_file(client, '{project}/{branch}/{commit}/{path}'.format(
+                project=remote_project,
+                branch=commit[0],
+                commit=commit[1],
+                path='.flags'))
+        else:
+            break
+
+    # Get connection status: 200 - ok, 400 - err
+    status = client.receive_str().strip()
+    if status == '200':
+        # Success
+        click.echo(click.style('Done', fg='yellow'))
+    else:
+        click.echo(click.style('File was not sent. ' +
+                               'Probably your storage is full.', fg='red'))
 
     # Close connection
     client.close()
