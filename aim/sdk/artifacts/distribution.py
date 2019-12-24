@@ -148,7 +148,7 @@ class GradientsDistribution(ModelDistribution):
                             and m.weight is not None \
                             and hasattr(m.weight, 'grad'):
 
-                        weight_grad_arr = get_pt_tensor(m.bias.grad).numpy()
+                        weight_grad_arr = get_pt_tensor(m.weight.grad).numpy()
                         weight_hist = np.histogram(weight_grad_arr, 30)
                         layers[layer_name]['weight'] = [
                             weight_hist[0].tolist(),
