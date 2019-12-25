@@ -1,5 +1,6 @@
 # Changelog
 
+- Add aim version number in commit config file (gorarakelyan)
 - Update push command to send username and check storage availability (gorarakelyan)
 - Add hyper parameters tracking (gorarakelyan)
 - Update push command to print shorter file names when pushing to remote (gorarakelyan)

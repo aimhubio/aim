@@ -5,6 +5,7 @@ import zipfile
 import re
 import time
 
+from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
 
@@ -548,6 +549,9 @@ class AimRepo:
                 'hash': commit_hash,
                 'date': int(time.time()),
                 'message': commit_msg,
+                'aim': {
+                    'version': aim_version,
+                },
                 'vc': {
                     'system': 'git',
                     'branch': vc_branch,
