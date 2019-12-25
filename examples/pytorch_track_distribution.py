@@ -1,5 +1,7 @@
 import aim
 from aim import track
+import random
+import math
 
 import torch
 import torch.nn as nn
@@ -40,7 +42,7 @@ class ConvNet(nn.Module):
     def __init__(self, num_classes=10):
         super(ConvNet, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2, bias=False),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
@@ -89,53 +91,9 @@ for epoch in range(num_epochs):
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
 
-            # aim - Track model loss function
-            track(aim.loss, 'loss', loss.item())
-
-            # aim - Track last layer correlation
-            track(aim.label_correlation, 'corr', outputs, labels=[
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-            ])
-
-            # aim - Track model weights and gradients
+            # aim - Track model
             track(aim.weights, model)
             track(aim.gradients, model)
-
-        for l in range(len(labels)):
-            for o in range(len(outputs)):
-                if labels[l].item() == outputs[o].argmax().item() and l != o:
-                    # count fp
-                    false_positives += 1
-
-        for l in range(len(labels)):
-            if labels[l].item() != outputs[l].argmax().item():
-                # count fn
-                false_negatives += 1
-
-                # track images
-                if epoch >= 2 and saved_img < 50:
-                    saved_img += 1
-                    # aim - Track misclassified images
-                    img = track(aim.image, images[l])
-                    track(aim.misclassification, 'miscls', img,
-                          labels[l].item(),
-                          outputs[l].argmax().item())
-
-    learning_rate /= 2
-
-    # aim - Track model checkpoints
-    track(aim.checkpoint,
-          'checkpoint_test', 'chp_epoch_{}'.format(epoch),
-          model, epoch, lr_rate=learning_rate,
-          meta={
-              'learning_rate': learning_rate,
-              'false_positives': false_positives,
-              'false_negatives': false_negatives,
-              'drop_out': 0.5,
-              'batch_size': 10,
-              'kernel_size': 2,
-              'stride': 2,
-          })
 
 # Test the model
 model.eval()

@@ -3,7 +3,9 @@ import os
 import json
 import zipfile
 import re
+import time
 
+from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
 
@@ -49,6 +51,10 @@ class AimRepo:
             return AIM_ANNOT_DIR_NAME
         elif cat[0] == 'models':
             return AIM_MODELS_DIR_NAME
+        elif cat[0] == 'correlation':
+            return AIM_CORR_DIR_NAME
+        elif cat[0] == 'hyperparameters':
+            return AIM_PARAMS_DIR_NAME
 
     @staticmethod
     def archive_dir(zip_path, dir_path):
@@ -71,8 +77,11 @@ class AimRepo:
         else:
             self.branch = AIM_DEFAULT_BRANCH_NAME
 
-        self.objects_dir_path = os.path.join(self.path,
-                                             self.branch,
+        self.branch_path = os.path.join(self.path,
+                                        self.branch)
+        self.index_path = os.path.join(self.branch_path,
+                                       AIM_COMMIT_INDEX_DIR_NAME)
+        self.objects_dir_path = os.path.join(self.index_path,
                                              AIM_OBJECTS_DIR_NAME)
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
@@ -192,19 +201,70 @@ class AimRepo:
         meta_file.write(json.dumps(meta_file_content))
         meta_file.close()
 
-    def store_file(self, name, cat, content, mode='a'):
+    def store_dir(self, name, data={}):
+        """
+        Creates a new directory inside repo and returns it's relative path
+        """
+        # Create directory if not exists
+        dir_rel_path = os.path.join(AIM_CORR_DIRS_NAME, name)
+        dir_path = os.path.join(self.objects_dir_path,
+                                dir_rel_path)
+
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+
+        self.update_meta_file(name, {
+            'name': name,
+            'type': 'dir',
+            'data': data,
+            'data_path': dir_rel_path,
+        })
+
+        return dir_path, dir_rel_path
+
+    def store_file(self, file_name, ext, name, cat, content, mode='a', data={},
+                   rel_dir_path=None):
         """
         Appends new data to the specified file or rewrites it
         and updates repo meta file
         """
-        cat_path = self.cat_to_dir(cat)
+        if not rel_dir_path:
+            cat_path = self.cat_to_dir(cat)
+        else:
+            cat_path = rel_dir_path
+
         dir_path = os.path.join(self.objects_dir_path, cat_path)
-        data_file_path = os.path.join(dir_path, name)
+        data_file_path = os.path.join(dir_path, file_name)
 
         # Create directory if not exists
         if not os.path.isdir(dir_path):
             os.makedirs(dir_path, exist_ok=True)
 
+        if ext == 'json':
+            self.append_to_json(data_file_path, mode, content)
+        elif ext == 'log':
+            self.append_to_log(data_file_path, mode, content)
+
+        # Update meta file
+        if rel_dir_path is not None:
+            file_name_for_meta = '{}/{}'.format(rel_dir_path, file_name)
+        else:
+            file_name_for_meta = file_name
+
+        self.update_meta_file(file_name_for_meta, {
+            'name': name,
+            'type': cat[-1],
+            'data': data,
+            'data_path': cat_path,
+        })
+
+        return {
+            'path': os.path.join(cat_path, file_name),
+            'abs_path': data_file_path,
+        }
+
+    @staticmethod
+    def append_to_json(data_file_path, mode, content):
         if not os.path.isfile(data_file_path):
             # Create data file
             data_file_content = []
@@ -226,18 +286,18 @@ class AimRepo:
         data_file.write(json.dumps(data_file_content))
         data_file.close()
 
-        # Update meta file
-        self.update_meta_file(name, {
-            'name': name,
-            'type': cat[-1],
-            'data': {},
-            'data_path': cat_path,
-        })
+    @staticmethod
+    def append_to_log(data_file_path, mode, content):
+        data_file = None
+        if mode == 'a':
+            data_file = open(data_file_path, 'a')
+        elif mode == 'w':
+            data_file = open(data_file_path, 'w')
 
-        return {
-            'path': os.path.join(cat_path, name),
-            'abs_path': data_file_path,
-        }
+        if data_file is not None:
+            if content:
+                data_file.writelines([json.dumps(content), '\n'])
+            data_file.close()
 
     def store_image(self, name, cat, save_to_meta=False):
         """
@@ -354,7 +414,9 @@ class AimRepo:
                 raise AttributeError('branch {} already exists'.format(branch))
 
         # Create branch directory
-        objects_dir_path = os.path.join(dir_path, AIM_OBJECTS_DIR_NAME)
+        objects_dir_path = os.path.join(dir_path,
+                                        AIM_COMMIT_INDEX_DIR_NAME,
+                                        AIM_OBJECTS_DIR_NAME)
         os.makedirs(objects_dir_path)
 
         branches.append({
@@ -412,9 +474,127 @@ class AimRepo:
         """
         Returns list of existing branches
         """
-        return filter(lambda b: b != '',
-                      map(lambda b: b.get('name') if b else '',
-                          self.config.get('branches')))
+        return list(filter(lambda b: b != '',
+                           map(lambda b: b.get('name') if b else '',
+                               self.config.get('branches'))))
+
+    def list_branch_commits(self, branch):
+        """
+        Returns list of specified branches commits
+        """
+        branch_path = os.path.join(self.path, branch.strip())
+
+        commits = []
+        for i in os.listdir(branch_path):
+            if os.path.isdir(os.path.join(branch_path, i)) \
+                    and i != AIM_COMMIT_INDEX_DIR_NAME:
+
+                commits.append(i)
+
+        return commits
+
+    def is_index_empty(self):
+        """
+        Returns `True` if index directory is empty and
+        `False` otherwise
+        """
+        if len(os.listdir(self.index_path)):
+            return False
+        return True
+
+    def get_latest_vc_branch(self):
+        """
+        Returns latest created branch name and hash
+        """
+        # Get commits
+        commits = {}
+        for c in os.listdir(self.branch_path):
+            commit_path = os.path.join(self.branch_path, c)
+            if os.path.isdir(commit_path) and c != AIM_COMMIT_INDEX_DIR_NAME:
+                config_file_path = os.path.join(commit_path,
+                                                AIM_COMMIT_CONFIG_FILE_NAME)
+                with open(config_file_path, 'r') as config_file:
+                    commits[c] = json.loads(config_file.read())
+
+        # Find latest commit
+        latest_commit = None
+        for _, c in commits.items():
+            if latest_commit is None or c['date'] > latest_commit['date']:
+                latest_commit = c
+
+        return latest_commit.get('vc') if latest_commit else None
+
+    def commit(self, commit_hash, commit_msg, vc_branch, vc_hash):
+        """
+        Moves current uncommitted artefacts temporary storage(aka `index`)
+        to commit directory and re-initializes `index`
+        """
+        index_dir = self.index_path
+
+        # Commit dir name is same as commit hash
+        commit_dir = os.path.join(self.branch_path,
+                                  commit_hash)
+
+        # Move index to commit dir
+        shutil.move(index_dir, commit_dir)
+
+        # Init new index
+        os.makedirs(index_dir)
+
+        # Create commit config file
+        config_file_path = os.path.join(commit_dir,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+        with open(config_file_path, 'w+') as config_file:
+            config_file.write(json.dumps({
+                'hash': commit_hash,
+                'date': int(time.time()),
+                'message': commit_msg,
+                'aim': {
+                    'version': aim_version,
+                },
+                'vc': {
+                    'system': 'git',
+                    'branch': vc_branch,
+                    'hash': vc_hash,
+                },
+            }))
+
+        return {
+            'branch': self.config.get('active_branch'),
+            'commit': commit_hash,
+        }
+
+    def reset_index(self):
+        """
+        Removes all files inside repo's index dir
+        """
+        index_dir = self.index_path
+
+        # List all files inside index
+        for filename in os.listdir(index_dir):
+            file_path = os.path.join(index_dir, filename)
+
+            # Delete files, links and dirs
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+
+    def save_diff(self, diff):
+        """
+        Saves diff to the repo
+        """
+        diff_dir_path = os.path.join(self.objects_dir_path,
+                                     AIM_DIFF_DIR_NAME)
+        diff_file_path = os.path.join(diff_dir_path,
+                                      AIM_DIFF_FILE_NAME)
+
+        # Create `diff` directory
+        os.makedirs(diff_dir_path, exist_ok=True)
+
+        # Write diff content to the `diff` file
+        with open(diff_file_path, 'w+') as diff_file:
+            diff_file.write(diff)
 
     def ls_branch_files(self, branch):
         """
@@ -422,6 +602,13 @@ class AimRepo:
         """
         branch_path = os.path.join(self.path, branch)
         return ls_dir([branch_path])
+
+    def ls_commit_files(self, branch, commit):
+        """
+        Returns list of files of the specified commit
+        """
+        commit_path = os.path.join(self.path, branch, commit)
+        return ls_dir([commit_path])
 
     def create_logs(self):
         """

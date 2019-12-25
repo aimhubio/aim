@@ -88,7 +88,6 @@ class FileServerClient:
             self.chan.sendall(message)
             return True
         except Exception:
-            print('exc')
             return False
 
     def send_line(self, message):
@@ -163,6 +162,12 @@ class File:
 
     def __len__(self):
         return math.ceil(self.content_len/self.chunk_size)
+
+    @staticmethod
+    def empty_chunk():
+        return (struct.pack('>i', 1) +
+                struct.pack('>i', 0) +
+                b'\n')
 
     def format_size(self):
         """

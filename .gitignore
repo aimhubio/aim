@@ -111,3 +111,5 @@ aim.sublime-*
 .idea
 
 data
+examples/.aim
+examples/.git

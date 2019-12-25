@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.0 Dec 25 2019
+- Add aim version number in commit config file (gorarakelyan)
+- Update push command to send username and check storage availability (gorarakelyan)
+- Add hyper parameters tracking (gorarakelyan)
+- Update push command to print shorter file names when pushing to remote (gorarakelyan)
+- Update tracking artifacts to be saved in log format (gorarakelyan)
+- Add pytorch cuda support to existing sdk artefacts (gorarakelyan)
+- Add cli reset command (gorarakelyan)
+- Add nested module tracking support to aim sdk (gorarakelyan)
+- Add code difference tracking to aim sdk (gorarakelyan)
+- Update aim push command to send commits (gorarakelyan)
+- Add commit structure implementation (gorarakelyan)
+- Add aim commit command synchronized with git commits (gorarakelyan)
+- Add version control system factory (gorarakelyan)
+- Update all insights example (gorarakelyan)
+- Add model gradients tracking (gorarakelyan)
+- Add model weights distribution tracking (gorarakelyan)
+- Add aim correlation tracking (gorarakelyan)
+
 ## 0.2.9 Nov 30 2019
 - Update push tolerance when remote origin is invalid (gorarakelyan)
 

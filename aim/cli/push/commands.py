@@ -1,7 +1,6 @@
 import os
 import click
 from urllib.parse import urlparse
-import struct
 
 from aim.engine.aim_protocol import FileServerClient, File
 from aim.engine.aim_profile import AimProfile
@@ -17,32 +16,40 @@ def push(repo, remote, branch):
         click.echo('Repository does not exist')
         return
 
-    # Prepare to send the repo
-    # List and count files
     branch = branch.strip()
+
+    # Get remote host and project name
+    remote_url = repo.get_remote_url(remote)
+    if remote_url is None:
+        click.echo('Remote {} not found'.format(remote))
+        return
+
+    parsed_remote = urlparse(remote_url)
+    remote_project = parsed_remote.path.strip(os.sep)
+
+    if not remote_project:
+        click.echo('Project name is not specified')
+        return
+
+    # Prepare to send the repo: list branches with their commits
+    # List branches
     if branch:
         branches = [branch]
     else:
         branches = repo.list_branches()
 
-    files = {}
-    files_len = 0
+    # List commits
+    remote_commits = []
+    commits = []
     for b in branches:
-        files[b] = repo.ls_branch_files(b)
-        files_len += len(files[b])
+        branch_commits = repo.list_branch_commits(b)
+        commits += list(map(lambda co: (b, co), branch_commits))
+        remote_commits += list(map(lambda co: "{}/{}/{}".format(remote_project,
+                                                                b, co),
+                                   branch_commits))
 
-    # add `.flags` files for each branch
-    files_len += len(files)
-
-    # add general `.flags` file
-    if not branch:
-        files_len += 1
-
-    if files_len > 0:
-        click.echo(click.style('{} file(s) to be sent'.format(files_len),
-                               fg='yellow'))
-    else:
-        click.echo('Repo is empty')
+    if not len(remote_commits):
+        click.echo('Nothing to send')
         return
 
     remote_url = repo.get_remote_url(remote)
@@ -82,24 +89,50 @@ def push(repo, remote, branch):
         click.echo('Connection error: {}'.format(e))
         return
 
-    # Send project header to get status from server
-    # `{project}` stands for the whole project push
-    # `{project}/{branch}` stands for specific branch push
-    if branch:
-        header = '{project}/{branch}'.format(project=remote_project,
-                                             branch=branch)
-    else:
-        header = remote_project
-    response = client.send_line(header.encode())
-    if response.startswith('already-pushed'):
-        click.echo('Your run has already been pushed to '
-                   'remote {}'.format(remote))
+    # Send user name
+    user_name, _, query = (parsed_remote.path or '').strip('/').partition('/')
+    if not user_name:
+        click.echo('User not found')
         return
+
+    # Send user name
+    client.send_line(user_name.encode())
+
+    # Send commits comma separated list to get know
+    # which commits are not pushed to the remote yet
+    commits_cs = ','.join(remote_commits)
+    push_commits_bin = client.send_line(commits_cs.encode())
+
+    push_commits_res_rep = int(push_commits_bin)
+    push_commits_rep_bin = format(push_commits_res_rep, 'b')
+
+    if not push_commits_res_rep:
+        click.echo('Nothing to send')
+        client.send_line('0'.encode())
+        return
+
+    push_commits = []
+    offset = len(commits) - len(push_commits_rep_bin)
+    for c in range(len(commits)):
+        if c >= offset and push_commits_rep_bin[c-offset] == '1':
+            push_commits.append(commits[c])
+
+    files = {}
+    files_len = 0
+    for c in push_commits:
+        files[c] = repo.ls_commit_files(c[0], c[1])
+        files_len += len(files[c]) + 1
+
+    click.echo(click.style('{} file(s) to be sent'.format(files_len),
+                           fg='yellow'))
 
     # Send the number of files)
     client.send_line(str(files_len).encode())
 
-    for branch_name, files in files.items():
+    for commit, files in files.items():
+        commit_sent = True
+        commit_prefix = '{b}/{c}'.format(b=commit[0], c=commit[1])
+        click.echo('{}:'.format(commit_prefix))
         for f in files:
             # Send a file
             file = File(f)
@@ -110,30 +143,47 @@ def push(repo, remote, branch):
 
             # Send file name
             client.send_line(send_file_path.encode())
-            click.echo('{name} ({size:,}KB)'.format(name=file_path,
-                                                    size=file.format_size()))
+            file_print_name = file_path[len(commit_prefix)+1:]
+            click.echo('-> {name} ({size:,}KB)'.format(name=file_print_name,
+                                                       size=file.format_size()))
 
             # Send file chunks
-            with click.progressbar(file) as file_chunks:
-                for chunk in file_chunks:
-                    client.send(chunk)
+            successfully_sent = True
+            if file.content_len:
+                with click.progressbar(file) as file_chunks:
+                    for chunk in file_chunks:
+                        if not client.send(chunk):
+                            commit_sent = False
+                            successfully_sent = False
+                            break
+            else:
+                client.send(file.empty_chunk())
 
             # Clear progress bar
             print('\x1b[1A' + '\x1b[2K' + '\x1b[1A')
 
-        # Push `.flags` file indicating that branch push was successfully done
-        send_flags_file(client, '{project}/{branch}/{file_path}'.format(
-            project=remote_project,
-            branch=branch_name,
-            file_path='.flags'))
+            if not successfully_sent:
+                break
 
-    # Push `.flags` file indicating that push was successfully done
-    if not branch:
-        send_flags_file(client, '{project}/{file_path}'.format(
-            project=remote_project,
-            file_path='.flags'))
+        if commit_sent:
+            # Push `.flags` file indicating that
+            # commit was successfully pushed to remote
+            send_flags_file(client, '{project}/{branch}/{commit}/{path}'.format(
+                project=remote_project,
+                branch=commit[0],
+                commit=commit[1],
+                path='.flags'))
+        else:
+            break
 
-    click.echo(click.style('Done', fg='yellow'))
+    # Get connection status: 200 - ok, 400 - err
+    status = client.receive_str().strip()
+    if status == '200':
+        # Success
+        click.echo(click.style('Done', fg='yellow'))
+    else:
+        click.echo(click.style('File was not sent. ' +
+                               'Probably your storage is full.', fg='red'))
 
     # Close connection
     client.close()

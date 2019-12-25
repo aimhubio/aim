@@ -12,8 +12,14 @@ class Serializable(metaclass=ABCMeta):
     """
     # List of types in which passed serialized content can be saved
     JSON_FILE = 'json_file'
+    LOG_FILE = 'log_file'
+    DIR = 'dir'
     IMAGE = 'image'
     MODEL = 'model'
+
+    # List of available file extensions
+    JSON_EXT = 'json'
+    LOG_EXT = 'log'
 
     # List of different modes of storing serialized content to a file
     CONTENT_MODE_WRITE = 'w'
@@ -31,6 +37,22 @@ class Serializable(metaclass=ABCMeta):
         """
         ...
 
+    @staticmethod
+    def store_file(repo, ext, content, dir_path=None) -> dict:
+        data = content['data'] if 'data' in content else {}
+        file_name = '{n}.{e}'.format(n=content['name'],
+                                     e=ext)
+
+        res = repo.store_file(file_name,
+                              ext,
+                              content['name'],
+                              content['cat'],
+                              content['content'],
+                              content['mode'],
+                              data,
+                              dir_path)
+        return res
+
     def save(self, repo: AimRepo) -> bool:
         """
         Stores serialized instance into .aim repo
@@ -41,11 +63,22 @@ class Serializable(metaclass=ABCMeta):
         for stored_obj, content in list(serialized_inst.items()):
             if stored_obj == self.JSON_FILE:
                 # Store artifact inside json file
-                file_name = '{}.json'.format(content['name'])
-                res = repo.store_file(file_name,
-                                      content['cat'],
-                                      content['content'],
-                                      content['mode'])
+                res = self.store_file(repo, self.JSON_EXT, content)
+            elif stored_obj == self.LOG_FILE:
+                # Store artifact as log file
+                res = self.store_file(repo, self.LOG_EXT, content)
+            elif stored_obj == self.DIR:
+                dir_path, dir_rel_path = repo.store_dir(content['name'],
+                                                        content['data'])
+                res = []
+                for f in content['files']:
+                    # Store dir files
+                    for _, f_content in f.items():
+                        res.append(self.store_file(repo,
+                                                   # TODO: get ext from content
+                                                   'log',
+                                                   f_content,
+                                                   dir_rel_path))
             elif stored_obj == self.IMAGE:
                 # Get image name and abs path
                 img_name_time = math.floor(time.time() * 1000)

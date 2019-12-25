@@ -4,14 +4,14 @@ from abc import ABCMeta
 from aim.sdk.artifacts.serializable import Serializable
 
 
-class Metric(Serializable, metaclass=ABCMeta):
-    cat = ('metrics',)
+class HyperParameters(Serializable, metaclass=ABCMeta):
+    name = 'hyperparameters'
+    cat = ('hyperparameters',)
 
-    def __init__(self, name: str, value: Any):
-        self.name = name
+    def __init__(self, value: Any):
         self.value = value
 
-        super(Metric, self).__init__(self.cat)
+        super(HyperParameters, self).__init__(self.cat)
 
     def __str__(self):
         return '{name}: {value}'.format(name=self.name,
@@ -23,16 +23,8 @@ class Metric(Serializable, metaclass=ABCMeta):
                 'name': self.name,
                 'cat': self.cat,
                 'content': self.value,
-                'mode': self.CONTENT_MODE_APPEND,
+                'mode': self.CONTENT_MODE_WRITE,
             },
         }
 
         return serialized
-
-
-class Accuracy(Metric):
-    name = 'accuracy'
-
-
-class Loss(Metric):
-    name = 'loss'

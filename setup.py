@@ -32,6 +32,8 @@ REQUIRED = [
     'torch>=1.3.0',
     'torchvision>=0.4.1',
     'Keras==2.2.4',
+    'numpy>=1.17.3',
+    'GitPython==3.0.4',
 ]
 
 
