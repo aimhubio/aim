@@ -2,6 +2,7 @@ import os
 import click
 from urllib.parse import urlparse
 
+from aim.__version__ import __version__ as aim_version
 from aim.engine.aim_protocol import FileServerClient, File
 from aim.engine.aim_profile import AimProfile
 from aim.cli.push.utils import send_flags_file
@@ -88,6 +89,9 @@ def push(repo, remote, branch):
         click.echo('Can not open connection to remote. ')
         click.echo('Connection error: {}'.format(e))
         return
+
+    # Send version number
+    client.send_line(aim_version.encode())
 
     # Send user name
     user_name, _, query = (parsed_remote.path or '').strip('/').partition('/')

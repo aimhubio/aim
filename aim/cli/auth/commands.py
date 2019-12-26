@@ -9,10 +9,6 @@ from aim.engine.aim_profile import AimProfile
 def auth(address):
     profile = AimProfile()
 
-    if profile.is_auth(address):
-        click.echo('You are already authenticated')
-        return
-
     keys = profile.auth(address)
     public_key = keys['public_key']
 

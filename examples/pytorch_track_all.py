@@ -92,6 +92,14 @@ for epoch in range(num_epochs):
             # aim - Track model loss function
             track(aim.loss, 'loss', loss.item())
 
+            # aim - Track model accuracy
+            correct = 0
+            total = 0
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+            track(aim.accuracy, 'accuracy', 100 * correct / total)
+
             # aim - Track last layer correlation
             track(aim.label_correlation, 'corr', outputs, labels=[
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
