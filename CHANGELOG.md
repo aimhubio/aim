@@ -1,5 +1,7 @@
 # Changelog
 
+- Add cil command to print aim current version (gorarakelyan)
+
 ## 1.0.0 Dec 25 2019
 - Add aim version number in commit config file (gorarakelyan)
 - Update push command to send username and check storage availability (gorarakelyan)
