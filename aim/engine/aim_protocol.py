@@ -37,13 +37,13 @@ class FileServerClient:
         # TODO: automatically save server key in `known_hosts` file
         key = self.t.get_remote_server_key()
         if self.address not in keys:
-            print_func('*** WARNING: Unknown host key! ***')
+            pass
+            # print_func('*** WARNING: Unknown host key! ***')
         elif key.get_name() not in keys[self.address]:
-            print_func('*** WARNING: Unknown host key! ***')
+            pass
+            # print_func('*** WARNING: Unknown host key! ***')
         elif keys[self.address][key.get_name()] != key:
             raise ConnectionError('*** WARNING: Host key has changed ***')
-        else:
-            print_func('Host key OK')
 
         try:
             key = paramiko.RSAKey.from_private_key_file(key_path)
