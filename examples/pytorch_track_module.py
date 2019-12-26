@@ -142,7 +142,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         loss = loss.float()
 
         # aim - Track model loss function
-        track(aim.loss, 'loss', loss.item())
+        # track(aim.loss, 'loss', loss.item())
 
         if i % 50 == 0:
             print('Epoch: [{0}][{1}/{2}]\t'.format(
@@ -162,8 +162,8 @@ def train(train_loader, model, criterion, optimizer, epoch):
                 'truck',
             ])
 
-            track(aim.weights, model)
-            track(aim.gradients, model)
+            # track(aim.weights, model)
+            # track(aim.gradients, model)
 
 
 for epoch in range(5):
