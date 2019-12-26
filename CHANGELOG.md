@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.0.1 Dec 26 2019
 - Add cil command to print aim current version (gorarakelyan)
 
 ## 1.0.0 Dec 25 2019
