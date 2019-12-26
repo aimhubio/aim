@@ -24,7 +24,7 @@ def commit(repo, message):
     vc = Factory.create(Factory.GIT)
 
     # Check if version control repo exists
-    if vc is None:
+    if vc is None or vc.get_repo() is None:
         click.echo('No git repository (or any parent up to mount point /) ' +
                    'found. Initialize git repository by running `git init`')
         return
