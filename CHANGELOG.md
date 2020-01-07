@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2 Jan 7 2020
+- Remove objects dir from empty .aim branch index
+
 ## 1.0.1 Dec 26 2019
 - Add cil command to print aim current version (gorarakelyan)
 
