@@ -18,7 +18,7 @@ class AimRepo:
         and returns AimRepo object if exists
         """
         # Get working directory path
-        working_dir = os.environ['PWD']
+        working_dir = os.getcwd()
 
         # Try to find closest .aim repository
         repo_found = False
