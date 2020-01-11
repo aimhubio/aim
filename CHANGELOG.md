@@ -1,5 +1,6 @@
 # Changelog
 
+- Update push command to commit if msg argument is specified (gorarakelyan)
 - Add ability to initialize repo from within the sdk (gorarakelyan)
 
 ## 1.0.2 Jan 7 2020
