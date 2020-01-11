@@ -415,8 +415,7 @@ class AimRepo:
 
         # Create branch directory
         objects_dir_path = os.path.join(dir_path,
-                                        AIM_COMMIT_INDEX_DIR_NAME,
-                                        AIM_OBJECTS_DIR_NAME)
+                                        AIM_COMMIT_INDEX_DIR_NAME)
         os.makedirs(objects_dir_path)
 
         branches.append({
