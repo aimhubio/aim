@@ -18,7 +18,7 @@ class Checkpoint(Serializable):
 
         if not os.path.isfile(path):
             # Try to get absolute path
-            working_dir = os.environ['PWD']
+            working_dir = os.getcwd()
             model_path = os.path.join(working_dir, path)
             if not os.path.isfile(model_path):
                 return False, None
