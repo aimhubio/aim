@@ -1,5 +1,8 @@
 import aim
 from aim import track
+
+aim.init(overwrite=False)
+
 import random
 import math
 
