@@ -1,5 +1,6 @@
 # Changelog
 
+- Update aim repo to correctly identify cwd (gorarakelyan)
 - Update push command to commit if msg argument is specified (gorarakelyan)
 - Add ability to initialize repo from within the sdk (gorarakelyan)
 
