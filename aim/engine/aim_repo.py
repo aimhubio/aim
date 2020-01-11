@@ -523,7 +523,7 @@ class AimRepo:
 
         return latest_commit.get('vc') if latest_commit else None
 
-    def commit(self, commit_hash, commit_msg, vc_branch, vc_hash):
+    def commit(self, commit_hash, commit_msg, vc_branch=None, vc_hash=None):
         """
         Moves current uncommitted artefacts temporary storage(aka `index`)
         to commit directory and re-initializes `index`
@@ -544,19 +544,23 @@ class AimRepo:
         config_file_path = os.path.join(commit_dir,
                                         AIM_COMMIT_CONFIG_FILE_NAME)
         with open(config_file_path, 'w+') as config_file:
-            config_file.write(json.dumps({
+            configs = {
                 'hash': commit_hash,
                 'date': int(time.time()),
                 'message': commit_msg,
                 'aim': {
                     'version': aim_version,
                 },
-                'vc': {
+            }
+
+            if vc_branch and vc_hash:
+                configs['vc'] = {
                     'system': 'git',
                     'branch': vc_branch,
                     'hash': vc_hash,
-                },
-            }))
+                }
+
+            config_file.write(json.dumps(configs))
 
         return {
             'branch': self.config.get('active_branch'),
