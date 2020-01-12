@@ -9,7 +9,7 @@ def init(overwrite):
     # Init repo if doesn't exist and return repo instance
     repo = AimRepo.get_working_repo()
     if not repo:
-        repo = AimRepo(os.environ['PWD'])
+        repo = AimRepo(os.getcwd())
         repo.init()
 
     # Check if repo index is empty or not
