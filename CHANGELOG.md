@@ -1,5 +1,6 @@
 # Changelog
 
+- Update code diff tracking to be optional (gorarakelyan)
 - Add default False value to aim init function (gorarakelyan)
 - Update aim repo to correctly identify cwd (gorarakelyan)
 - Update push command to commit if msg argument is specified (gorarakelyan)
