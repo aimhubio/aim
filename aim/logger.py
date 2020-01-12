@@ -9,20 +9,20 @@ from aim.engine.aim_repo import AimRepo
 
 class LoggerHandlerActivities(logging.FileHandler):
     def __init__(self):
-        repo = AimRepo(os.environ['PWD'])
+        repo = AimRepo(os.getcwd())
         log_path = os.path.join(repo.get_logs_dir(), AIM_CLI_ACTIVITIED_LOG)
         logging.FileHandler.__init__(self, log_path, 'a')
 
 
 class LoggerHandlerErrors(logging.FileHandler):
     def __init__(self):
-        repo = AimRepo(os.environ['PWD'])
+        repo = AimRepo(os.getcwd())
         log_path = os.path.join(repo.get_logs_dir(), AIM_SDK_ERROR_LOG)
         logging.FileHandler.__init__(self, log_path, 'a')
 
 
 def activity_logger():
-    repo = AimRepo(os.environ['PWD'])
+    repo = AimRepo(os.getcwd())
     if repo is not None:
         setup()
         return logging.getLogger('activity')
@@ -30,7 +30,7 @@ def activity_logger():
 
 
 def error_logger():
-    repo = AimRepo(os.environ['PWD'])
+    repo = AimRepo(os.getcwd())
     if repo is not None:
         setup()
         return logging.getLogger('error')

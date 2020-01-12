@@ -1,6 +1,7 @@
 import os
 import click
 from urllib.parse import urlparse
+import uuid
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.aim_protocol import FileServerClient, File
@@ -11,11 +12,28 @@ from aim.cli.push.utils import send_flags_file
 @click.command()
 @click.option('-r', '--remote', default='origin', type=str)
 @click.option('-b', '--branch', default='', type=str)
+@click.option('-m', '--message', default='', type=str)
 @click.pass_obj
-def push(repo, remote, branch):
+def push(repo, remote, branch, message):
     if repo is None:
         click.echo('Repository does not exist')
         return
+
+    if message:
+        commit_hash = str(uuid.uuid1())
+        message = message.strip()
+
+        # Check if there is anything to commit
+        if repo.is_index_empty():
+            click.echo('Nothing to commit')
+        else:
+            # Commit changes
+            commit_res = repo.commit(commit_hash, message)
+
+            click.echo(click.style('[{b}/{c} commit]'.format(
+                b=commit_res['branch'],
+                c=commit_res['commit']), fg='yellow'))
+            click.echo(message)
 
     branch = branch.strip()
 

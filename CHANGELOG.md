@@ -1,7 +1,14 @@
 # Changelog
 
+## 1.1.0 Jan 12 2020
+- Update code diff tracking to be optional (gorarakelyan)
+- Add default False value to aim init function (gorarakelyan)
+- Update aim repo to correctly identify cwd (gorarakelyan)
+- Update push command to commit if msg argument is specified (gorarakelyan)
+- Add ability to initialize repo from within the sdk (gorarakelyan)
+
 ## 1.0.2 Jan 7 2020
-- Remove objects dir from empty .aim branch index
+- Remove objects dir from empty .aim branch index (gorarakelyan)
 
 ## 1.0.1 Dec 26 2019
 - Add cil command to print aim current version (gorarakelyan)

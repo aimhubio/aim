@@ -16,7 +16,9 @@ def init(repo):
             return
         # Reinitialize repo -> clear old one and init empty repo
         repo.rm()
-    repo = AimRepo(os.environ['PWD'])
+
+    repo = AimRepo(os.getcwd())
+
     if repo.init():
         if re_init:
             click.echo(

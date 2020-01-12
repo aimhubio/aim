@@ -8,7 +8,7 @@ class GitAdapter(Base):
     @staticmethod
     def get_repo():
         try:
-            return Repo(os.environ['PWD'], search_parent_directories=True)
+            return Repo(os.getcwd(), search_parent_directories=True)
         except InvalidGitRepositoryError:
             return None
 

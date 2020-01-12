@@ -1,4 +1,5 @@
 from aim.sdk.track import *
+from aim.sdk.init import *
 
 
 # Serializable classes references

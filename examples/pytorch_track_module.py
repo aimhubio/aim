@@ -142,29 +142,31 @@ def train(train_loader, model, criterion, optimizer, epoch):
         loss = loss.float()
 
         # aim - Track model loss function
-        track(aim.loss, 'loss', loss.item())
+        # track(aim.loss, 'loss', loss.item())
 
-        if i % 50 == 0:
+        if i % 10 == 0:
             print('Epoch: [{0}][{1}/{2}]\t'.format(
                       epoch, i, len(train_loader)))
 
             # aim - Track last layer correlation
-            track(aim.label_correlation, 'corr', output, labels=[
-                'airplane',
-                'automobile',
-                'bird',
-                'cat',
-                'deer',
-                'dog',
-                'frog',
-                'horse',
-                'ship',
-                'truck',
-            ])
+            # track(aim.label_correlation, 'corr', output, labels=[
+            #     'airplane',
+            #     'automobile',
+            #     'bird',
+            #     'cat',
+            #     'deer',
+            #     'dog',
+            #     'frog',
+            #     'horse',
+            #     'ship',
+            #     'truck',
+            # ])
 
-            track(aim.weights, model)
-            track(aim.gradients, model)
-
+            # track(aim.weights, model)
+            # track(aim.gradients, model)
+            # track(aim.checkpoint,
+            #       'checkpoint_test', 'chp_epoch_{}'.format(epoch),
+            #       model, epoch, meta={'iteration': i})
 
 for epoch in range(5):
     train(train_loader, model, criterion, optimizer, epoch)
