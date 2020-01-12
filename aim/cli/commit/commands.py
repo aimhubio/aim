@@ -2,13 +2,14 @@ import click
 import uuid
 
 from aim.engine.aim_repo import AimRepo
-from aim.version_control.factory import Factory
 
 
 @click.command()
 @click.option('-m', '--message', required=True, type=str)
 @click.pass_obj
 def commit(repo, message):
+    from aim.version_control.factory import Factory
+
     if repo is None:
         click.echo('Repository does not exist')
         return
