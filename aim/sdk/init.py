@@ -5,7 +5,7 @@ import time
 from aim.engine.aim_repo import AimRepo
 
 
-def init(overwrite):
+def init(overwrite=False):
     # Init repo if doesn't exist and return repo instance
     repo = AimRepo.get_working_repo()
     if not repo:
