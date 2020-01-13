@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Any
 
 from aim.sdk.artifacts.serializable import Serializable
+from aim.engine.utils import get_module
 
 
 class Media(Serializable, metaclass=ABCMeta):
@@ -52,10 +53,10 @@ class Image(Media):
         self.path = path
         self.abs_path = abs_path
         if type(self.media_data).__name__ == 'Tensor':
-            from torchvision.utils import save_image
+            torchvision_utils = get_module('torchvision.utils')
 
             # Save pytorch tensor as an image
-            save_image(self.media_data, abs_path)
+            torchvision_utils.save_image(self.media_data, abs_path)
 
             return True
 

@@ -2,6 +2,7 @@ from typing import Any
 
 from aim.sdk.artifacts.serializable import Serializable
 from aim.sdk.artifacts.utils import get_pt_tensor
+from aim.engine.utils import get_module
 
 
 class Correlation(Serializable):
@@ -34,7 +35,7 @@ class Correlation(Serializable):
         return serialized
 
     def get_correlation(self) -> list:
-        import numpy as np
+        np = get_module('numpy')
         if isinstance(self.value, list):
             return np.corrcoef(self.value).tolist()
         elif type(self.value).__name__ == 'Tensor':
@@ -46,7 +47,7 @@ class Correlation(Serializable):
 
 class LabelCorrelation(Correlation):
     def get_correlation(self) -> list:
-        import numpy as np
+        np = get_module('numpy')
         if isinstance(self.value, list):
             return np.corrcoef(self.value).tolist()
         elif type(self.value).__name__ == 'Tensor':

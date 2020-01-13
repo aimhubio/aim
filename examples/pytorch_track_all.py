@@ -15,6 +15,14 @@ num_classes = 10
 batch_size = 50
 learning_rate = 0.01
 
+# aim - Track hyper parameters
+track(aim.hyperparams, {
+    'num_epochs': num_epochs,
+    'num_classes': num_classes,
+    'batch_size': batch_size,
+    'learning_rate': learning_rate,
+})
+
 # MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data/',
                                            train=True,
