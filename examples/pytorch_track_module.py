@@ -162,8 +162,8 @@ def train(train_loader, model, criterion, optimizer, epoch):
             #     'truck',
             # ])
 
-            # track(aim.weights, model)
-            # track(aim.gradients, model)
+            track(aim.weights, model)
+            track(aim.gradients, model)
             # track(aim.checkpoint,
             #       'checkpoint_test', 'chp_epoch_{}'.format(epoch),
             #       model, epoch, meta={'iteration': i})

@@ -1,10 +1,8 @@
 from typing import Any
 from abc import ABCMeta, abstractmethod
 
-import numpy as np
-
 from aim.sdk.artifacts.serializable import Serializable
-from aim.engine.utils import is_pytorch_module
+from aim.engine.utils import is_pytorch_module, get_module
 from aim.sdk.artifacts.utils import get_pt_tensor
 
 
@@ -87,6 +85,8 @@ class WeightsDistribution(ModelDistribution):
 
     @classmethod
     def get_layers(cls, model, parent_name=None):
+        np = get_module('numpy')
+
         layers = {}
         if is_pytorch_module(model):
             for name, m in model.named_children():
@@ -131,6 +131,8 @@ class GradientsDistribution(ModelDistribution):
 
     @classmethod
     def get_layers(cls, model, parent_name=None):
+        np = get_module('numpy')
+
         layers = {}
         if is_pytorch_module(model):
             for name, m in model.named_children():
