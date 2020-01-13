@@ -20,8 +20,8 @@ learning_rate = 0.01
 # aim - Track hyper parameters
 track(aim.hyperparams, {
     'num_epochs': num_epochs,
-    'num_classes': num_classes ,
-    'batch_size': batch_size ,
+    'num_classes': num_classes,
+    'batch_size': batch_size,
     'learning_rate': learning_rate,
 })
 

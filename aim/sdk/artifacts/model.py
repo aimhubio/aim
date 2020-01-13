@@ -4,7 +4,7 @@ import json
 import tempfile
 from typing import Any
 
-from aim.engine.utils import is_keras_model, is_pytorch_module
+from aim.engine.utils import is_keras_model, is_pytorch_module, get_module
 from aim.sdk.artifacts.serializable import Serializable
 
 
@@ -35,10 +35,11 @@ class Checkpoint(Serializable):
 
         # Load the model
         if meta_info['model']['lib'] == 'keras':
-            from keras.models import model_from_json
+            keras_models = get_module('keras.models')
 
             # Create model architecture
-            model = model_from_json(model_arch.read(meta_info['model']['arch']))
+            arch = meta_info['model']['arch']
+            model = keras_models.model_from_json(model_arch.read(arch))
 
             # Create weights file to load weights from it
             tmp_model_weights_file = tempfile.NamedTemporaryFile()
@@ -50,7 +51,7 @@ class Checkpoint(Serializable):
 
             return True, model
         if meta_info['model']['lib'] == 'pytorch':
-            import torch
+            torch = get_module('torch')
 
             # Create weights file to load weights from it
             tmp_model_file = tempfile.NamedTemporaryFile()
@@ -104,7 +105,7 @@ class Checkpoint(Serializable):
     def save_model(self, path: str) -> dict:
         # Save torch model to path
         if self.lib == 'pytorch':
-            import torch
+            torch = get_module('torch')
 
             model_path = '{}.pt'.format(path)
             _, _, model_file_name = model_path.rpartition('/')

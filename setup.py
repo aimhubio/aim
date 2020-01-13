@@ -29,11 +29,8 @@ except FileNotFoundError:
 REQUIRED = [
     'click>=6.7',
     'paramiko==2.6.0',
-    'torch>=1.3.0',
-    'torchvision>=0.4.1',
-    'Keras==2.2.4',
-    'numpy>=1.17.3',
     'GitPython==3.0.4',
+    'requests>=2.0.0',
 ]
 
 
