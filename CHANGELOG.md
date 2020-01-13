@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.1.1 Jan 14 2020
 - Remove aim dependencies such as keras, pytorch and etc  (gorarakelyan)
 
 ## 1.1.0 Jan 12 2020
