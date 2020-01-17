@@ -1,5 +1,6 @@
 from aim.sdk.track import *
 from aim.sdk.init import *
+from aim.sdk.profiler import *
 
 
 # Serializable classes references
@@ -14,3 +15,4 @@ label_correlation = 'LabelCorrelation'
 weights = 'WeightsDistribution'
 gradients = 'GradientsDistribution'
 hyperparams = 'HyperParameters'
+stats = 'Stats'

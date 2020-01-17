@@ -19,3 +19,4 @@ torchvision==0.4.1.post2
 gitdb2==2.0.6
 GitPython==3.0.4
 smmap2==2.0.5
+psutil>=5.6.7

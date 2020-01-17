@@ -31,6 +31,8 @@ REQUIRED = [
     'paramiko==2.6.0',
     'GitPython==3.0.4',
     'requests>=2.0.0',
+    'psutil>=5.6.7',
+    'pynvml>=8.0.4',
 ]
 
 
