@@ -203,7 +203,7 @@ class AimRepo:
         meta_file.write(json.dumps(meta_file_content))
         meta_file.close()
 
-    def store_dir(self, name, data={}):
+    def store_dir(self, name, cat, data={}):
         """
         Creates a new directory inside repo and returns it's relative path
         """
@@ -218,6 +218,7 @@ class AimRepo:
         self.update_meta_file(name, {
             'name': name,
             'type': 'dir',
+            'cat': cat,
             'data': data,
             'data_path': dir_rel_path,
         })

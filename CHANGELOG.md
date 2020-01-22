@@ -1,5 +1,6 @@
 # Changelog
 
+- Update profiler to track GPU usage (gorarakelyan)
 - Add machine resource usage profiler (gorarakelyan)
 
 ## 1.1.1 Jan 14 2020

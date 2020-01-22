@@ -69,6 +69,7 @@ class Serializable(metaclass=ABCMeta):
                 res = self.store_file(repo, self.LOG_EXT, content)
             elif stored_obj == self.DIR:
                 dir_path, dir_rel_path = repo.store_dir(content['name'],
+                                                        content['cat'],
                                                         content['data'])
                 res = []
                 for f in content['files']:

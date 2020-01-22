@@ -42,6 +42,7 @@ class ModelDistribution(Serializable, metaclass=ABCMeta):
         serialized = {
             self.DIR: {
                 'name': self.name,
+                'cat': self.cat[0],
                 'files': [],
                 'data': {
                     'layers': [],

@@ -19,7 +19,8 @@ class Stats(Serializable, metaclass=ABCMeta):
     def serialize(self) -> dict:
         serialized = {
             self.DIR: {
-                'name': self.cat[0],
+                'name': self.name,
+                'cat': self.cat[0],
                 'files': [],
                 'data': {
                     'stats': [],
