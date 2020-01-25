@@ -32,7 +32,7 @@ REQUIRED = [
     'GitPython==3.0.4',
     'requests>=2.0.0',
     'psutil>=5.6.7',
-    'pynvml>=8.0.4',
+    'py3nvml>=0.2.5',
 ]
 
 

@@ -11,7 +11,7 @@ class Profiler(metaclass=Singleton):
     STAT_INTERVAL_MIN = 5
     STAT_INTERVAL_MAX = 500
     STAT_INTERVAL_DEFAULT = 10
-    STAT_SEC_INTERVAL_DEFAULT = 2
+    STAT_SEC_INTERVAL_DEFAULT = 5
     SQUASH_AMOUNT = 10
 
     def __init__(self):
@@ -100,13 +100,22 @@ class Profiler(metaclass=Singleton):
                         squashed_cycles.setdefault(k, [])
                         squashed_cycles[k].append(cycle[k])
 
+                sys_stats = {}
+                gpu_stats = []
                 for k in squashed_cycles.keys():
-                    aggregate_cycle = Stat.aggregate_items(squashed_cycles[k],
-                                                           Stat.AGG_MODE_AVG,
-                                                           True).to_dict()
-                    squashed_cycles[k] = aggregate_cycle
+                    sys, gpu = Stat.aggregate_items(squashed_cycles[k],
+                                                    Stat.AGG_MODE_AVG,
+                                                    True).to_dict()
+                    sys_stats[k] = sys
+                    for g in range(len(gpu)):
+                        if g == len(gpu_stats):
+                            gpu_stats.append({})
+                        gpu_stats[g][k] = gpu[g]
 
-                track('Stats', 'system', squashed_cycles)
+                track('Stats', 'system', sys_stats)
+                for g in range(len(gpu_stats)):
+                    gpu_stat_key = 'gpu_{}'.format(g)
+                    track('Stats', gpu_stat_key, gpu_stats[g])
 
                 self.cycle_index = 0
                 self.cycles = []
@@ -119,7 +128,15 @@ class Profiler(metaclass=Singleton):
         self.curr_cycle_keys.append(key)
 
     def cycle(self, key):
+        self.cycle_write_lock = True
+
         self.curr_cycle_tracked_keys.remove(key)
+
+        stats = Stat(self._process)
+        stats.set_stats()
+        self.curr_cycle[key].append(stats)
+
+        self.cycle_write_lock = False
 
     def _stat_collector(self):
         while True:
