@@ -30,3 +30,7 @@ AIM_SDK_ERROR_LOG = 'errors.log'
 AIM_PROFILE_NAME = '.aim_profile'
 AIM_PROFILE_CONFIG_FILE_NAME = 'config.json'
 AIM_PROFILE_SSH_DIR_NAME = '.ssh'
+
+# aim Container
+AIM_CONTAINER_IMAGE = 'aimhub-live:latest'
+AIM_CONTAINER_PREFIX = 'aim_container'

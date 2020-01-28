@@ -4,6 +4,7 @@ import json
 import zipfile
 import re
 import time
+import base64
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
@@ -73,6 +74,8 @@ class AimRepo:
         self._config = {}
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
+        self.hash = base64.b64encode(path.encode('utf-8')).decode('utf-8')
+        self.name = path.split(os.sep)[-1]
 
         if self.config:
             self.branch = self.config.get('active_branch')
