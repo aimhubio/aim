@@ -125,6 +125,8 @@ class Stat:
         Get system statistics and assign to `self`
         """
         memory_usage = psutil.virtual_memory()
+        disk_usage = psutil.disk_usage('/')
+        net = psutil.net_io_counters()
         self.system = {
             # CPU utilization percent(can be over 100%)
             'cpu': self.round(self._process.cpu_percent(0.0)),
@@ -135,10 +137,13 @@ class Stat:
             'p_memory_percent': self.round(self._process.memory_percent()),
 
             # Whole system memory usage
-            'memory_used': self.round(memory_usage.used
-                                      / 1024 / 1024),
+            'memory_used': self.round(memory_usage.used / 1024 / 1024),
             'memory_percent': self.round(memory_usage.used * 100
                                          / memory_usage.total),
+
+            # Disk usage
+            'disk_used': self.round(disk_usage.used / 1024 / 1024),
+            'disk_percent': self.round(disk_usage.percent),
         }
 
         # Collect GPU statistics

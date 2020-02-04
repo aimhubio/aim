@@ -1,5 +1,6 @@
 # Changelog
 
+- Add disk space usage tracking (gorarakelyan)
 - Add profiler support for Keras (gorarakelyan)
 - Add TensorFlow graph nodes profiler (gorarakelyan)
 - Add command to run aim live container mounted on aim repo (gorarakelyan)
