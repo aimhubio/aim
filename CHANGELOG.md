@@ -1,5 +1,6 @@
 # Changelog
 
+- Add profiler support for Keras (gorarakelyan)
 - Add TensorFlow graph nodes profiler (gorarakelyan)
 - Add command to run aim live container mounted on aim repo (gorarakelyan)
 - Update profiler to track GPU usage (gorarakelyan)

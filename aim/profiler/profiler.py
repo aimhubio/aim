@@ -55,8 +55,10 @@ class Profiler(metaclass=Singleton):
         return self._squash
 
     @squash.setter
-    def squash(self, squash: int):
-        if squash >= 1:
+    def squash(self, squash):
+        if squash is None:
+            self._squash = self.SQUASH_AMOUNT
+        elif isinstance(squash, int) and squash >= 1:
             self._squash = int(squash)
 
     @property
@@ -153,14 +155,14 @@ class Profiler(metaclass=Singleton):
         """
         Stop storing statistics under key
         """
+        # Acquire lock to tell other threads to wait until
+        # removal of keys is done and process can be continued
+        self.cycle_write_lock.acquire()
+
         if key not in self.curr_cycle or \
                 key not in self.curr_cycle_tracked_keys:
             print('Label \'{}\' was not set'.format(key))
             return
-
-        # Acquire lock to tell other threads to wait until
-        # removal of keys is done and process can be continued
-        self.cycle_write_lock.acquire()
 
         # Remove `key` from array of tracked keys
         self.curr_cycle_tracked_keys.remove(key)
@@ -196,5 +198,6 @@ class Profiler(metaclass=Singleton):
             # Safely append stat to the current cycle
             self.cycle_write_lock.acquire()
             for k in self.curr_cycle_tracked_keys:
-                self.curr_cycle[k].append(stats)
+                if k in self.curr_cycle.keys():
+                    self.curr_cycle[k].append(stats)
             self.cycle_write_lock.release()
