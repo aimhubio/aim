@@ -1,17 +1,21 @@
+from aim.profiler.profiler import Profiler as ProfilerBase
 import aim.profiler.interfaces as interfaces
 
 
 class Profiler:
-    # @classmethod
-    # def configure(cls, sec_interval, squash=Profiler.SQUASH_AMOUNT):
-    #     p = Profiler()
-    #     p.sec_interval = sec_interval
-    #     p.squash = squash
+    keras = interfaces.KerasInterface
+    tf = interfaces.TensorFlowInterface
 
     @classmethod
-    def label(cls, key, inp=None):
-        return interfaces.TensorFlowInterface.label(key, inp)
+    def configure(cls, sec_interval, squash=None):
+        p = ProfilerBase()
+        p.sec_interval = sec_interval
+        p.squash = squash
 
     @classmethod
-    def loop(cls, key, inp=None):
-        return interfaces.TensorFlowInterface.loop(key, inp)
+    def label(cls, key):
+        return interfaces.DefaultInterface.label(key)
+
+    @classmethod
+    def loop(cls, key):
+        return interfaces.DefaultInterface.loop(key)

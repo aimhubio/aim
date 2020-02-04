@@ -5,13 +5,8 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
-# Profiler.Node.label()
-# Profiler.Node.loop()
-#
-# Profiler.label()
-# Profiler.loop()
-#
-# profiler.lable()
+from aim import Profiler
+Profiler.configure(5)
 
 batch_size = 128
 num_classes = 10
@@ -45,18 +40,24 @@ y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
+
+# Conv block
+model.add(Profiler.keras.label('conv'))
 model.add(Conv2D(32, kernel_size=(3, 3),
                  activation='relu',
                  input_shape=input_shape))
 model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
+model.add(Profiler.keras.loop('conv'))
+
+# Dense block
+model.add(Profiler.keras.label('dense'))
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
-# a = Dense(128, activation='relu')
-# model.add(a)
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
+model.add(Profiler.keras.loop('dense'))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),

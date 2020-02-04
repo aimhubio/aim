@@ -7,8 +7,7 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 
-import aim
-aim.init(overwrite=True)
+from aim import Profiler
 
 # Device configuration
 device = torch.device('cpu')
@@ -56,37 +55,33 @@ class ConvNet(nn.Module):
         self.fc = nn.Linear(7 * 7 * 32, num_classes)
 
     def forward(self, x):
-        aim.profiler('full_loop')
-
-        aim.profiler('sleep_1')
+        Profiler.label('sleep_1')
         time.sleep(0.3)
-        aim.cycle('sleep_1')
+        Profiler.loop('sleep_1')
 
-        aim.profiler('layer1')
+        Profiler.label('layer1')
         out = self.layer1(x)
-        aim.cycle('layer1')
+        Profiler.loop('layer1')
 
-        aim.profiler('computation')
+        Profiler.label('computation')
         reduce(lambda a, b: a*b, range(int((random.random() * 50000) + 50000)))
-        aim.cycle('computation')
+        Profiler.loop('computation')
 
-        aim.profiler('sleep_2')
+        Profiler.label('sleep_2')
         time.sleep(0.5)
-        aim.cycle('sleep_2')
+        Profiler.loop('sleep_2')
 
-        aim.profiler('layer2')
+        Profiler.label('layer2')
         out = self.layer2(out)
-        aim.cycle('layer2')
+        Profiler.loop('layer2')
 
-        aim.profiler('reshape_layer')
+        Profiler.label('reshape_layer')
         out = out.reshape(out.size(0), -1)
-        aim.cycle('reshape_layer')
+        Profiler.loop('reshape_layer')
 
-        aim.profiler('fully_connected')
+        Profiler.label('fully_connected')
         out = self.fc(out)
-        aim.cycle('fully_connected')
-
-        aim.cycle('full_loop')
+        Profiler.loop('fully_connected')
 
         return out
 
@@ -120,18 +115,3 @@ for epoch in range(num_epochs):
             print('Epoch [{}/{}], Step [{}/{}], '
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
-
-# Test the model
-model.eval()
-with torch.no_grad():
-    correct = 0
-    total = 0
-    for images, labels in test_loader:
-        images = images.to(device)
-        labels = labels.to(device)
-        outputs = model(images)
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
-
-    print('Test Accuracy: {} %'.format(100 * correct / total))
