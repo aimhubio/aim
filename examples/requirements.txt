@@ -1,8 +1,7 @@
-aim-cli==0.2.0
+aim-cli>=1.1.1
 Keras==2.2.4
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
-keras2onnx==1.4.0
 numpy==1.16.4
 Pillow==6.2.0
 scikit-learn==0.21.2
