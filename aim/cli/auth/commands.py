@@ -13,6 +13,6 @@ def auth(address):
     public_key = keys['public_key']
 
     click.echo(click.style('Your public key for {}'.format(address),
-                           fg='yellow'))
+                           fg='yellow'), err=True)
     click.echo(public_key)
     click.echo()
