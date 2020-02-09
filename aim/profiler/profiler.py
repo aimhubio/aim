@@ -19,7 +19,7 @@ class Profiler(metaclass=Singleton):
         # Statistics collection interval
         self._interval = self.STAT_INTERVAL_DEFAULT
 
-        # Minimum interval(in seconds_ that must be passed
+        # Minimum interval in seconds that must be passed
         # before squashing collected cycles
         self._sec_interval = self.STAT_SEC_INTERVAL_DEFAULT
 
