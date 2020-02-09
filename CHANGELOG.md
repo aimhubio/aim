@@ -1,5 +1,6 @@
 # Changelog
 
+- Add direct CLI entry point in `cli/cli.py` (gorarakelyan)
 - Add disk space usage tracking (gorarakelyan)
 - Add profiler support for Keras (gorarakelyan)
 - Add TensorFlow graph nodes profiler (gorarakelyan)

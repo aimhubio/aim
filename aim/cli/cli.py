@@ -34,3 +34,7 @@ cli_entry_point.add_command(commit_commands.commit, COMMIT_NAME)
 cli_entry_point.add_command(reset_commands.reset, RESET_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 cli_entry_point.add_command(view_commands.view, VIEW_NAME)
+
+
+if __name__ == '__main__':
+    cli_entry_point()
