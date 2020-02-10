@@ -109,6 +109,7 @@ aim.sublime-*
 
 .DS_Store
 .idea
+.vim
 
 data
 examples/.aim
