@@ -111,19 +111,25 @@ def push(repo, remote, branch, message):
     # Send version number
     client.send_line(aim_version.encode())
 
-    # Send user name
+    # Parse and send user name
     user_name, _, query = (parsed_remote.path or '').strip('/').partition('/')
     if not user_name:
         click.echo('User not found')
         return
 
-    # Send user name
     client.send_line(user_name.encode())
 
     # Send commits comma separated list to get know
     # which commits are not pushed to the remote yet
     commits_cs = ','.join(remote_commits)
     push_commits_bin = client.send_line(commits_cs.encode())
+
+    # Exit push if empty string is returned
+    # TODO: Return forbidden status code from the server and
+    #  implement appropriate check
+    if push_commits_bin == '':
+        click.echo('Forbidden: you don\'t have permission to access this repo')
+        return
 
     push_commits_res_rep = int(push_commits_bin)
     push_commits_rep_bin = format(push_commits_res_rep, 'b')

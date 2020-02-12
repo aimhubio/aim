@@ -1,7 +1,16 @@
 # Changelog
 
+## 1.2.0 Feb 13 2020
+- Make aim CLI directly accessible from main.py (gorarakelyan)
+- Add disk space usage tracking (gorarakelyan)
+- Add profiler support for Keras (gorarakelyan)
+- Add TensorFlow graph nodes profiler (gorarakelyan)
+- Add command to run aim live container mounted on aim repo (gorarakelyan)
+- Update profiler to track GPU usage (gorarakelyan)
+- Add machine resource usage profiler (gorarakelyan)
+
 ## 1.1.1 Jan 14 2020
-- Remove aim dependencies such as keras, pytorch and etc  (gorarakelyan)
+- Remove aim dependencies such as keras, pytorch and etc (gorarakelyan)
 
 ## 1.1.0 Jan 12 2020
 - Update code diff tracking to be optional (gorarakelyan)

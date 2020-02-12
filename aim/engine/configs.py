@@ -12,6 +12,7 @@ AIM_CONFIG_FILE_NAME = 'config.json'
 AIM_DIFF_DIR_NAME = 'diff'
 AIM_DIFF_FILE_NAME = 'diff.txt'
 AIM_PARAMS_DIR_NAME = 'hyperparameters'
+AIM_STATS_DIR_NAME = 'stats'
 
 # Branches
 AIM_DEFAULT_BRANCH_NAME = 'default'
@@ -29,3 +30,7 @@ AIM_SDK_ERROR_LOG = 'errors.log'
 AIM_PROFILE_NAME = '.aim_profile'
 AIM_PROFILE_CONFIG_FILE_NAME = 'config.json'
 AIM_PROFILE_SSH_DIR_NAME = '.ssh'
+
+# aim Container
+AIM_CONTAINER_IMAGE = 'aimhub-live:latest'
+AIM_CONTAINER_PREFIX = 'aim_container'
