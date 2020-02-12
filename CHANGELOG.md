@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.1 Feb 13 2020
 - Edit README.md to pass reStructuredText validation on pypi (gorarakelyan)
 
 ## 1.2.0 Feb 13 2020
