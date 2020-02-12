@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.0 Feb 13 2020
 - Make aim CLI directly accessible from main.py (gorarakelyan)
 - Add disk space usage tracking (gorarakelyan)
 - Add profiler support for Keras (gorarakelyan)
