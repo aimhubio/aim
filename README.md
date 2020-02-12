@@ -6,7 +6,7 @@ See the docs [here](https://docs.aimhub.io).
 
 ## Development
 
-### Requirments
+### Requirements
 
 * Python 3
 
@@ -22,7 +22,6 @@ pip install -r requirements.txt
 ### Project Structure
 
 
-```
 ├── aim  <----------------  main project code
 │   ├── cli <-------------  command line interface
 │   ├── engine <----------  business logic for interracting with Aim Hub
@@ -32,5 +31,3 @@ pip install -r requirements.txt
 ├── docs <----------------  development documentation
 ├── examples <------------  example usages of aim SDK
 └── tests
-    └── models
-```

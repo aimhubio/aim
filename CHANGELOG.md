@@ -1,5 +1,7 @@
 # Changelog
 
+- Edit README.md to pass reStructuredText validation on pypi (gorarakelyan)
+
 ## 1.2.0 Feb 13 2020
 - Make aim CLI directly accessible from main.py (gorarakelyan)
 - Add disk space usage tracking (gorarakelyan)
