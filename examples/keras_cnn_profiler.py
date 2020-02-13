@@ -5,7 +5,13 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
+import aim
 from aim import Profiler
+
+# Init aim with overwrite=False, every run will be committed and pushed
+aim.init(overwrite=False)
+
+# Configure profiler (optional)
 Profiler.configure(5)
 
 batch_size = 128
