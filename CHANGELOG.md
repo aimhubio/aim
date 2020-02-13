@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2 Feb 13 2020
+- Downgrade required python version (gorarakelyan)
+
 ## 1.2.1 Feb 13 2020
 - Edit README.md to pass reStructuredText validation on pypi (gorarakelyan)
 
