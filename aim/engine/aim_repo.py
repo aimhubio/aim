@@ -138,6 +138,10 @@ class AimRepo:
         """
         Initializes empty Aim repository
         """
+        # Return if repo exists
+        if os.path.exists(self.path):
+            return True
+
         # Check whether user has sufficient permissions
         if not is_path_creatable(self.path):
             return False

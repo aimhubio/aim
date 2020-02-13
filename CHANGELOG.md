@@ -1,5 +1,7 @@
 # Changelog
 
+- Set minimum required python version to 3.5.2 (gorarakelyan)
+
 ## 1.2.2 Feb 13 2020
 - Downgrade required python version (gorarakelyan)
 
