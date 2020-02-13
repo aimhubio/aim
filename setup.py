@@ -16,7 +16,7 @@ packages = find_packages(exclude=('tests',))
 NAME = 'aim-cli'
 DESCRIPTION = 'Version control for AI'
 VERSION = __version__
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.5.0'
 
 # Get long description from the README file
 try:
