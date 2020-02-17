@@ -1,6 +1,6 @@
 from aim.sdk.track import *
 from aim.sdk.init import *
-from aim.sdk.profiler import *
+from aim.sdk.profiler import Profiler
 
 
 # Serializable classes references

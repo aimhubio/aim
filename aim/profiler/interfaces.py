@@ -1,11 +1,23 @@
+import os
+
 from aim.profiler.profiler import Profiler
 from aim.engine.utils import get_module
+from aim.engine.configs import AIM_PROFILER_ENABLED
 
 
 class BaseInterface:
     """
     Base interface for `Profiler` integration with various ML frameworks
     """
+
+    @staticmethod
+    def enabled():
+        """
+        Returns `True` if Profiler is enabled and should collect statistics
+        and `False` otherwise
+        """
+        env = os.getenv(AIM_PROFILER_ENABLED)
+        return env and env == 'true'
 
     def label(self, *args, **kwargs):
         raise NotImplementedError('method not implemented')
@@ -21,13 +33,15 @@ class DefaultInterface(BaseInterface):
 
     @classmethod
     def label(cls, key):
-        p = Profiler()
-        p.track(key)
+        if cls.enabled():
+            p = Profiler()
+            p.track(key)
 
     @classmethod
     def loop(cls, key):
-        p = Profiler()
-        p.cycle(key)
+        if cls.enabled():
+            p = Profiler()
+            p.cycle(key)
 
 
 class TensorFlowInterface(BaseInterface):
@@ -48,6 +62,10 @@ class TensorFlowInterface(BaseInterface):
         call profiler `label` function. That tells `Profiler` to start
         tracking system statistics and collect them under `key` label
         """
+        # Return `inp` back if profiler is not enabled
+        if not cls.enabled():
+            return inp
+
         cls._init()
         tf = cls.tf
 
@@ -69,6 +87,10 @@ class TensorFlowInterface(BaseInterface):
         tracking system statistics under `key` label and aggregate
         collected stats
         """
+        # Return `inp` back if profiler is not enabled
+        if not cls.enabled():
+            return inp
+
         cls._init()
         tf = cls.tf
 
@@ -126,16 +148,23 @@ class KerasInterface(TensorFlowInterface):
 
     label_layer_cls = None
     loop_layer_cls = None
+    neutral_layer_cls = None
 
     @classmethod
     def label(cls, key, **kwargs):
+        if not cls.enabled():
+            return cls.neutral_layer_cls()
+
         cls._init()
         return cls.label_layer_cls(key)
 
     @classmethod
     def loop(cls, key, **kwargs):
+        if not cls.enabled():
+            return cls.neutral_layer_cls()
+
         cls._init()
-        return cls.label_layer_cls(key)
+        return cls.loop_layer_cls(key)
 
     @classmethod
     def _init(cls):
@@ -154,10 +183,10 @@ class KerasInterface(TensorFlowInterface):
 
         # Implement `keras` layer wrapper for profiler `track` method
         if cls.label_layer_cls is None:
-            class LabelLayer(cls.keras.layers.Layer):
+            class ProfilerLabelLayer(cls.keras.layers.Layer):
                 def __init__(self, key, **kwargs):
                     self.key = key
-                    super(LabelLayer, self).__init__(**kwargs)
+                    super(ProfilerLabelLayer, self).__init__(**kwargs)
 
                 def call(self, inp):
                     profiler_start_f = keras_interface.PROFILER_NODE_START
@@ -173,14 +202,14 @@ class KerasInterface(TensorFlowInterface):
                 def compute_output_shape(self, input_shape):
                     return input_shape
 
-            cls.label_layer_cls = LabelLayer
+            cls.label_layer_cls = ProfilerLabelLayer
 
         # Implement `keras` layer wrapper for profiler `cycle` method
         if cls.loop_layer_cls is None:
-            class LoopLayer(cls.keras.layers.Layer):
+            class ProfilerLoopLayer(cls.keras.layers.Layer):
                 def __init__(self, key, **kwargs):
                     self.key = key
-                    super(LoopLayer, self).__init__(**kwargs)
+                    super(ProfilerLoopLayer, self).__init__(**kwargs)
 
                 def call(self, inp):
                     profiler_end_f = keras_interface.PROFILER_NODE_END
@@ -196,4 +225,16 @@ class KerasInterface(TensorFlowInterface):
                 def compute_output_shape(self, input_shape):
                     return input_shape
 
-            cls.loop_layer_cls = LoopLayer
+            cls.loop_layer_cls = ProfilerLoopLayer
+
+        # Implement `keras` layer that does nothing, but passes input
+        # to the next layer. This layer is used when profiler is disabled.
+        if cls.neutral_layer_cls is None:
+            class ProfilerNeutralLayer(cls.keras.layers.Layer):
+                def call(self, inp):
+                    return inp
+
+                def compute_output_shape(self, input_shape):
+                    return input_shape
+
+            cls.neutral_layer_cls = ProfilerNeutralLayer

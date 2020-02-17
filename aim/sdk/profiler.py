@@ -7,6 +7,17 @@ class Profiler:
     tf = interfaces.TensorFlowInterface
 
     @classmethod
+    def init(cls):
+        """
+        Enables Profiler, e.g. for training or evaluation.
+        Profiler will not act until this method is called.
+        `start` method sets environment variable and starts
+        collecting statistics.
+        """
+        p = ProfilerBase()
+        p.start()
+
+    @classmethod
     def configure(cls, sec_interval, squash=None):
         p = ProfilerBase()
         p.sec_interval = sec_interval
