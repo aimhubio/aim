@@ -1,11 +1,13 @@
+import os
 import time
 import psutil
 import threading
 from collections import OrderedDict
 
+from aim.profiler.stat import Stat
 from aim.sdk.track import track
 from aim.engine.types import Singleton
-from aim.profiler.stat import Stat
+from aim.engine.configs import AIM_PROFILER_ENABLED
 
 
 class Profiler(metaclass=Singleton):
@@ -44,11 +46,9 @@ class Profiler(metaclass=Singleton):
             self._process = None
 
         # Start thread to collect stats at interval
+        self._thread = threading.Thread(target=self._stat_collector,
+                                        daemon=True)
         self._shutdown = False
-        stat_collector = threading.Thread(target=self._stat_collector,
-                                          daemon=True)
-        stat_collector.start()
-        self._thread = stat_collector
 
     @property
     def squash(self):
@@ -78,6 +78,16 @@ class Profiler(metaclass=Singleton):
     def sec_interval(self, interval: float):
         if 0.1 <= interval <= 60 * 60:
             self._sec_interval = interval
+
+    def start(self):
+        """
+        Start profiler: enable profiler and run statistics collection thread
+        """
+        # Set environment variable indicating profiler to
+        os.environ[AIM_PROFILER_ENABLED] = 'true'
+
+        # Start thread to asynchronously collect statistics
+        self._thread.start()
 
     def track(self, key):
         """

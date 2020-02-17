@@ -1,5 +1,7 @@
 # Changelog
 
+- Ability to disable profiler for evaluation or inference (gorarakelyan)
+
 ## 1.2.3 Feb 13 2020
 - Set minimum required python version to 3.5.2 (gorarakelyan)
 
