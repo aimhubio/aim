@@ -8,6 +8,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 from aim import Profiler
+Profiler.init()
 
 # Device configuration
 device = torch.device('cpu')
