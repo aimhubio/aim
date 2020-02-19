@@ -46,7 +46,7 @@ class UploadCommand(Command):
 
     description = 'Build and publish the package.'
     user_options = [
-        ('dev', 'd', 'Specify the foo to bar.'),
+        ('dev', 'd', 'Specify the development mode.'),
     ]
 
     @staticmethod
