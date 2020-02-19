@@ -7,6 +7,8 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
+from examples.tf_profiler_model import neural_net
+
 learning_rate = 0.1
 num_steps = 500
 batch_size = 128
@@ -19,8 +21,8 @@ num_input = 784 # MNIST data input (img shape: 28*28)
 num_classes = 10 # MNIST total classes (0-9 digits)
 
 # tf Graph input
-X = tf.placeholder("float", [None, num_input])
-Y = tf.placeholder("float", [None, num_classes])
+X = tf.placeholder('float', [None, num_input])
+Y = tf.placeholder('float', [None, num_classes])
 
 # Store layers weight & bias
 weights = {
@@ -34,23 +36,7 @@ biases = {
     'out': tf.Variable(tf.random_normal([num_classes]))
 }
 
-
-# Create model
-def neural_net(x):
-    # Hidden fully connected layer with 256 neurons
-    layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
-
-    # Hidden fully connected layer with 256 neurons
-    layer_2 = Profiler.tf.label('layer2', inp=layer_1)
-    layer_2 = tf.add(tf.matmul(layer_2, weights['h2']), biases['b2'])
-    layer_2 = Profiler.tf.loop('layer2', inp=layer_2)
-
-    # Output fully connected layer with a neuron for each class
-    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
-    return out_layer
-
-
-logits = neural_net(X)
+logits = neural_net(X, weights, biases)
 
 # Define loss and optimizer
 loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
@@ -65,11 +51,13 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 # Initialize the variables (i.e. assign their default value)
 init = tf.global_variables_initializer()
 
+saver = tf.train.Saver()
+
 with tf.Session() as sess:
     # Run the initializer
     sess.run(init)
 
-    for e in range(10):
+    for e in range(5):
         for step in range(1, num_steps+1):
             batch_x, batch_y = mnist.train.next_batch(batch_size)
             # Run optimization op (backprop)
@@ -84,9 +72,5 @@ with tf.Session() as sess:
                       "{:.4f}".format(loss) + ", Training Accuracy= " +
                       "{:.3f}".format(acc))
 
-    print("Optimization Finished!")
-
-    # Calculate accuracy for MNIST test images
-    print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={X: mnist.test.images,
-                                      Y: mnist.test.labels}))
+    # Save model
+    save_path = saver.save(sess, "./models/model.ckpt")

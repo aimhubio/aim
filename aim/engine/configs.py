@@ -34,3 +34,6 @@ AIM_PROFILE_SSH_DIR_NAME = '.ssh'
 # aim Container
 AIM_CONTAINER_IMAGE = 'aimhub-live:latest'
 AIM_CONTAINER_PREFIX = 'aim_container'
+
+# aim Profiler
+AIM_PROFILER_ENABLED = 'AIM_PROFILER_ENABLED'

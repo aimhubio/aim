@@ -1,11 +1,16 @@
-from aim import Profiler
-Profiler.init()
-
+import time
 import tensorflow as tf
 
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+
+import aim
+aim.init(overwrite=False)
+
+from aim import Profiler
+Profiler.init(auto_detect_cycles=False)
+
+mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)
 
 learning_rate = 0.1
 num_steps = 500
@@ -13,14 +18,14 @@ batch_size = 128
 display_step = 100
 
 # Network Parameters
-n_hidden_1 = 256 # 1st layer number of neurons
-n_hidden_2 = 256 # 2nd layer number of neurons
-num_input = 784 # MNIST data input (img shape: 28*28)
-num_classes = 10 # MNIST total classes (0-9 digits)
+n_hidden_1 = 256
+n_hidden_2 = 256
+num_input = 784
+num_classes = 10
 
 # tf Graph input
-X = tf.placeholder("float", [None, num_input])
-Y = tf.placeholder("float", [None, num_classes])
+X = tf.placeholder('float', [None, num_input])
+Y = tf.placeholder('float', [None, num_classes])
 
 # Store layers weight & bias
 weights = {
@@ -40,13 +45,38 @@ def neural_net(x):
     # Hidden fully connected layer with 256 neurons
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
 
-    # Hidden fully connected layer with 256 neurons
-    layer_2 = Profiler.tf.label('layer2', inp=layer_1)
+    def loop_body(b, index):
+        layer = tf.add(tf.matmul(b, weights['h2']), biases['b2'])
+
+        layer = Profiler.tf.label('denses', layer)
+        layer = Profiler.tf.label('dense', layer)
+        layer = tf.add(tf.matmul(layer, weights['h2']), biases['b2'])
+        layer = Profiler.tf.loop('dense', layer)
+
+        layer = Profiler.tf.label('dense2', layer)
+        layer = tf.add(tf.matmul(layer, weights['h2']), biases['b2'])
+        layer = Profiler.tf.loop('dense2', layer)
+        layer = Profiler.tf.loop('denses', layer)
+
+        layer = Profiler.tf.label('dense-out', layer)
+        layer = tf.add(tf.matmul(layer, weights['h2']), biases['b2'])
+        layer = Profiler.tf.loop('dense-out', layer)
+
+        return layer, index + 1
+
+    layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
+
+    layer_2, _ = tf.while_loop(lambda b, index: index < 6,
+                               loop_body, [layer_2, 0])
+
+    layer_2 = Profiler.tf.label('layer2', inp=layer_2)
     layer_2 = tf.add(tf.matmul(layer_2, weights['h2']), biases['b2'])
     layer_2 = Profiler.tf.loop('layer2', inp=layer_2)
 
     # Output fully connected layer with a neuron for each class
     out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
+    out_layer = Profiler.tf.cycle(out_layer)
+
     return out_layer
 
 
@@ -69,24 +99,28 @@ with tf.Session() as sess:
     # Run the initializer
     sess.run(init)
 
-    for e in range(10):
+    t = time.time()
+
+    for e in range(4):
         for step in range(1, num_steps+1):
             batch_x, batch_y = mnist.train.next_batch(batch_size)
             # Run optimization op (backprop)
             sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
+
             if step % display_step == 0 or step == 1:
                 # Calculate batch loss and accuracy
                 loss, acc = sess.run([loss_op, accuracy], feed_dict={X: batch_x,
                                                                      Y: batch_y,
                                                                      })
-                print("Step " + str(step) + ", Epoch " + str(e+1) +
-                      ", Minibatch Loss= " +
-                      "{:.4f}".format(loss) + ", Training Accuracy= " +
-                      "{:.3f}".format(acc))
+                print('Step ' + str(step) + ', Epoch ' + str(e+1) +
+                      ', Minibatch Loss= ' +
+                      '{:.4f}'.format(loss) + ', Training Accuracy= ' +
+                      '{:.3f}'.format(acc))
 
-    print("Optimization Finished!")
+    print('Optimization Finished! ' + str(t - time.time()))
 
     # Calculate accuracy for MNIST test images
-    print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={X: mnist.test.images,
-                                      Y: mnist.test.labels}))
+    print('Testing Accuracy:', sess.run(accuracy, feed_dict={
+        X: mnist.test.images,
+        Y: mnist.test.labels,
+    }))

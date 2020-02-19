@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4 Feb 20 2020
+- Enable profiler to track nodes inside loops (gorarakelyan)
+- Ability to disable profiler for evaluation or inference (gorarakelyan)
+
 ## 1.2.3 Feb 13 2020
 - Set minimum required python version to 3.5.2 (gorarakelyan)
 

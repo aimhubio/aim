@@ -1,11 +1,13 @@
+import os
 import time
 import psutil
 import threading
 from collections import OrderedDict
 
+from aim.profiler.stat import Stat
 from aim.sdk.track import track
 from aim.engine.types import Singleton
-from aim.profiler.stat import Stat
+from aim.engine.configs import AIM_PROFILER_ENABLED
 
 
 class Profiler(metaclass=Singleton):
@@ -31,10 +33,21 @@ class Profiler(metaclass=Singleton):
         self.cycle_index = 0
         self.cycles = []
 
-        self.curr_cycle_keys = []
-        self.curr_cycle_tracked_keys = []
+        # Dict consisting of `key: [<array of Stat items>]` pairs,
+        # where key is the current cycle tracked key and
+        # value is an array of tracked statistics
         self.curr_cycle = OrderedDict()
+        # OrderedDict consisting of `key: [<count>, <tracked_key_pos>]`,
+        # where `count` is the number of duplications of the same `key` and
+        # `tracked_key_pos` is an array of tracked positions at the moment.
+        # Such situation can occur if `key` is passed inside a loop
+        # (e.g. tf.while_loop or tf.repeat).
+        self.curr_cycle_keys = OrderedDict()
+        # This lock must be acquired when accessing shared objects of
+        # the current cycle to avoid race conditions
         self.cycle_write_lock = threading.Lock()
+        # Auto detection mode of cycles
+        self.auto_detect_cycle = False
 
         # Set current running process
         try:
@@ -44,11 +57,10 @@ class Profiler(metaclass=Singleton):
             self._process = None
 
         # Start thread to collect stats at interval
+        self._thread = threading.Thread(target=self._stat_collector,
+                                        daemon=True)
         self._shutdown = False
-        stat_collector = threading.Thread(target=self._stat_collector,
-                                          daemon=True)
-        stat_collector.start()
-        self._thread = stat_collector
+        self._started = False
 
     @property
     def squash(self):
@@ -79,102 +91,167 @@ class Profiler(metaclass=Singleton):
         if 0.1 <= interval <= 60 * 60:
             self._sec_interval = interval
 
-    def track(self, key):
+    def start(self, auto_detect_cycles=True):
         """
-        Signal collector-thread to start storing statistics under
-        `curr_cycle[key]`. Aggregate collected stat records if
-        conditions are met
+        Start profiler: enable profiler and run statistics collection thread
         """
-        # Acquire lock to tell other threads to wait until aggregation process
-        # is done
+        if not self._started:
+            self._started = True
+
+            self.auto_detect_cycle = auto_detect_cycles
+
+            # Set environment variable indicating that profiler is enabled
+            os.environ[AIM_PROFILER_ENABLED] = 'true'
+
+            # Start thread to asynchronously collect statistics
+            self._thread.start()
+
+    def label_tracking_start(self, key):
+        """
+        Signal collector-thread to start storing statistics under `key`(or
+        `key-index` in case of loops exist in the current cycle)
+        """
+        # Acquire lock on cycle objects to make other threads wait
+        # until lock is released
         self.cycle_write_lock.acquire()
 
-        # Check if cycle is done and append it to the cycles storage
-        if key in self.curr_cycle_keys and key == self.curr_cycle_keys[0]:
-            agg_cycle = {}
-            for k, cycle_stats in self.curr_cycle.items():
-                agg_cycle[k] = Stat.aggregate_items(cycle_stats,
-                                                    Stat.AGG_MODE_AVG,
-                                                    False)
-
-            self.cycles.append(agg_cycle)
-            self.cycle_index += 1
-            self.curr_cycle_keys = []
-            self.curr_cycle = OrderedDict()
-
-            # Squash cycles to get higher accuracy and save space
-            squash_cycles = self.cycle_index >= self.squash
-            if squash_cycles:
-                squash_cycles = (time.time() - self.last_squash_timestamp
-                                 >= self.sec_interval)
-
-            if squash_cycles:
-                self.last_squash_timestamp = time.time()
-
-                squashed_cycles = {}
-                for cycle in self.cycles:
-                    for k in cycle.keys():
-                        squashed_cycles.setdefault(k, [])
-                        squashed_cycles[k].append(cycle[k])
-
-                # Squash cycles
-                sys_stats = {}
-                gpu_stats = []
-                for k in squashed_cycles.keys():
-                    sys, gpu = Stat.aggregate_items(squashed_cycles[k],
-                                                    Stat.AGG_MODE_AVG,
-                                                    True).to_dict()
-                    sys_stats[k] = sys
-                    for g in range(len(gpu)):
-                        if g == len(gpu_stats):
-                            gpu_stats.append({})
-                        gpu_stats[g][k] = gpu[g]
-
-                # Add records to `.aim` repo
-                track('Stats', 'system', sys_stats)
-                for g in range(len(gpu_stats)):
-                    gpu_stat_key = 'gpu_{}'.format(g)
-                    track('Stats', gpu_stat_key, gpu_stats[g])
-
-                # Empty profiler state
-                self.cycle_index = 0
-                self.cycles = []
+        # Check if auto detection mode is enabled and store cycle if
+        # conditions are met
+        if self.auto_detect_cycle and key in self.curr_cycle_keys:
+            if key == list(self.curr_cycle_keys.keys())[0]:
+                self.store_cycle()
+            else:
+                print('Error. Auto detection of cycles is enabled and ' +
+                      'duplicate keys are found')
+                self.cycle_write_lock.release()
+                return
 
         # Reset process interval
         Stat.reset_proc_interval()
 
-        # Add `key` to current cycle and to array of tracked keys
-        self.curr_cycle.update({key: []})
-        self.curr_cycle_tracked_keys.append(key)
-        self.curr_cycle_keys.append(key)
+        # Add `key` to curr_cycle_keys
+        if key not in self.curr_cycle_keys:
+            self.curr_cycle_keys.setdefault(key, [0, [0]])
+        else:
+            self.curr_cycle_keys[key][0] += 1
+            self.curr_cycle_keys[key][1].append(self.curr_cycle_keys[key][0])
 
-        # Release cycle memory lock
+        key_name = self._get_key_name(key)
+
+        # Add `key` to current cycle and to array of tracked keys
+        self.curr_cycle.update({key_name: []})
+
+        # Allow other threads to access shared objects
         self.cycle_write_lock.release()
 
-    def cycle(self, key):
+    def label_tracking_stop(self, key):
         """
-        Stop storing statistics under key
+        Remove `key` from array of tracked keys to stop collecting statistics
         """
-        # Acquire lock to tell other threads to wait until
-        # removal of keys is done and process can be continued
+        # Get current statistics before acquiring lock
+        stats = Stat(self._process)
+        stats.set_stats()
+
         self.cycle_write_lock.acquire()
 
         if key not in self.curr_cycle or \
-                key not in self.curr_cycle_tracked_keys:
-            print('Label \'{}\' was not set'.format(key))
+                key not in self.curr_cycle_keys or \
+                len(self.curr_cycle_keys[key][1]) == 0:
+            self.cycle_write_lock.release()
             return
 
-        # Remove `key` from array of tracked keys
-        self.curr_cycle_tracked_keys.remove(key)
+        key_name = self._get_key_name(key)
+
+        # Remove the latest position of tracked `key`
+        self.curr_cycle_keys[key][1].pop()
 
         # Append current statistics to cycle to ensure that
         # it will have at least one item
-        stats = Stat(self._process)
-        stats.set_stats()
-        self.curr_cycle[key].append(stats)
+        self.curr_cycle[key_name].append(stats)
 
-        # Release lock
         self.cycle_write_lock.release()
+
+    def store_cycle(self):
+        """
+        Aggregate, serialize and store cycle
+        """
+        # Check if cycle is done and append it to the cycles storage
+        if len(self.curr_cycle.keys()) == 0:
+            return
+
+        agg_cycle = {}
+        for k, cycle_stats in self.curr_cycle.items():
+            agg_cycle[k] = Stat.aggregate_items(cycle_stats,
+                                                Stat.AGG_MODE_AVG,
+                                                False)
+
+        self.cycles.append(agg_cycle)
+        self.cycle_index += 1
+        self.curr_cycle_keys = OrderedDict()
+        self.curr_cycle = OrderedDict()
+
+        # Squash cycles to get higher accuracy and save space
+        squash_cycles = self.cycle_index >= self.squash
+        if squash_cycles:
+            squash_cycles = (time.time() - self.last_squash_timestamp
+                             >= self.sec_interval)
+
+        if squash_cycles:
+            self.last_squash_timestamp = time.time()
+
+            squashed_cycles = {}
+            for cycle in self.cycles:
+                for k in cycle.keys():
+                    squashed_cycles.setdefault(k, [])
+                    squashed_cycles[k].append(cycle[k])
+
+            # Squash cycles
+            sys_stats = {}
+            gpu_stats = []
+            for k in squashed_cycles.keys():
+                sys, gpu = Stat.aggregate_items(squashed_cycles[k],
+                                                Stat.AGG_MODE_AVG,
+                                                True).to_dict()
+                sys_stats[k] = sys
+                for g in range(len(gpu)):
+                    if g == len(gpu_stats):
+                        gpu_stats.append({})
+                    gpu_stats[g][k] = gpu[g]
+
+            # Add records to `.aim` repo
+            track('Stats', 'system', sys_stats)
+            for g in range(len(gpu_stats)):
+                gpu_stat_key = 'gpu_{}'.format(g)
+                track('Stats', gpu_stat_key, gpu_stats[g])
+
+            # Empty profiler state
+            self.cycle_index = 0
+            self.cycles = []
+
+    def cycle_end(self):
+        """
+        End one full cycle(is used when auto dection mode is disabled)
+        """
+        self.cycle_write_lock.acquire()
+        self.store_cycle()
+        self.cycle_write_lock.release()
+
+    def _get_key_name(self, key, index=None):
+        """
+        Return full name of `key`. It can be auto-indexed if duplication
+        of the same key is found.
+        """
+        if key not in self.curr_cycle_keys:
+            raise KeyError('key \'{}\' not found'.format(key))
+
+        if not index:
+            if self.curr_cycle_keys[key][0] == 0 or \
+                    len(self.curr_cycle_keys[key][1]) == 0:
+                return key
+            else:
+                index = self.curr_cycle_keys[key][1][-1]
+
+        return '{}-{}'.format(key, index) if index > 0 else key
 
     def _stat_collector(self):
         """
@@ -197,7 +274,9 @@ class Profiler(metaclass=Singleton):
 
             # Safely append stat to the current cycle
             self.cycle_write_lock.acquire()
-            for k in self.curr_cycle_tracked_keys:
-                if k in self.curr_cycle.keys():
-                    self.curr_cycle[k].append(stats)
+            for k, index_info in self.curr_cycle_keys.items():
+                for i in index_info[1]:
+                    key_name = self._get_key_name(k, i)
+                    if key_name in self.curr_cycle:
+                        self.curr_cycle[key_name].append(stats)
             self.cycle_write_lock.release()

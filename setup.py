@@ -9,14 +9,18 @@ from aim.__version__ import __version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-# Get packages
-packages = find_packages(exclude=('tests',))
-
 # Package meta-data.
-NAME = 'aim-cli'
+NAME = os.getenv('PKG_NAME') or 'aim-cli'
 DESCRIPTION = 'Version control for AI'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.5.2'
+
+if not NAME:
+    print('Invalid package name')
+    sys.exit()
+
+# Get packages
+packages = find_packages(exclude=('tests',))
 
 # Get long description from the README file
 try:
@@ -41,7 +45,9 @@ class UploadCommand(Command):
     """Support setup.py upload."""
 
     description = 'Build and publish the package.'
-    user_options = []
+    user_options = [
+        ('dev', 'd', 'Specify the development mode.'),
+    ]
 
     @staticmethod
     def status(s):
@@ -49,7 +55,7 @@ class UploadCommand(Command):
         print('\033[1m{0}\033[0m'.format(s))
 
     def initialize_options(self):
-        pass
+        self.dev = 0
 
     def finalize_options(self):
         pass
@@ -62,16 +68,22 @@ class UploadCommand(Command):
             pass
 
         self.status('Building Source and Wheel (universal) distribution…')
-        os.system(
-            '{0} setup.py sdist bdist_wheel --universal'
-            .format(sys.executable))
+        if self.dev:
+            os.system(
+                'PKG_NAME=aimd {0} setup.py sdist bdist_wheel --universal'
+                .format(sys.executable))
+        else:
+            os.system(
+                'PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
+                .format(sys.executable, NAME))
 
-        self.status('Uploading the package to PyPI via Twine…')
+        # self.status('Uploading the package to PyPI via Twine…')
         os.system('twine upload dist/*')
 
-        self.status('Pushing git tags…')
-        os.system('git tag v{0}'.format(VERSION))
-        os.system('git push --tags')
+        if not self.dev:
+            self.status('Pushing git tags…')
+            os.system('git tag v{0}'.format(VERSION))
+            os.system('git push --tags')
 
         sys.exit()
 
