@@ -1,5 +1,6 @@
 # Changelog
 
+- Enable profiler to track nodes inside loops (gorarakelyan)
 - Ability to disable profiler for evaluation or inference (gorarakelyan)
 
 ## 1.2.3 Feb 13 2020

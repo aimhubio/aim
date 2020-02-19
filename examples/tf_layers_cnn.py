@@ -10,6 +10,7 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 from __future__ import division, print_function, absolute_import
 
 from aim import Profiler
+Profiler.init()
 
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
@@ -121,6 +122,4 @@ input_fn = tf.estimator.inputs.numpy_input_fn(
     x={'images': mnist.test.images}, y=mnist.test.labels,
     batch_size=batch_size, shuffle=False)
 # Use the Estimator 'evaluate' method
-e = model.evaluate(input_fn)
-
-print("Testing Accuracy:", e['accuracy'])
+# e = model.evaluate(input_fn)
