@@ -66,15 +66,19 @@ def neural_net(x):
 
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
 
-    layer_2, _ = tf.while_loop(lambda b, index: index < 6,
+    layer_2, _ = tf.while_loop(lambda b, index: index < 2,
                                loop_body, [layer_2, 0])
 
-    layer_2 = Profiler.tf.label('layer2', inp=layer_2)
+    layer_2 = Profiler.tf.label('layer2', layer_2)
     layer_2 = tf.add(tf.matmul(layer_2, weights['h2']), biases['b2'])
-    layer_2 = Profiler.tf.loop('layer2', inp=layer_2)
+    layer_2 = Profiler.tf.loop('layer2', layer_2)
 
     # Output fully connected layer with a neuron for each class
-    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
+    out_layer = layer_2
+    out_layer = Profiler.tf.label('output', out_layer)
+    out_layer = tf.matmul(out_layer, weights['out']) + biases['out']
+    out_layer = Profiler.tf.loop('output', out_layer)
+
     out_layer = Profiler.tf.cycle(out_layer)
 
     return out_layer
@@ -99,7 +103,7 @@ with tf.Session() as sess:
     # Run the initializer
     sess.run(init)
 
-    t = time.time()
+    start_time = time.time()
 
     for e in range(4):
         for step in range(1, num_steps+1):
@@ -117,7 +121,9 @@ with tf.Session() as sess:
                       '{:.4f}'.format(loss) + ', Training Accuracy= ' +
                       '{:.3f}'.format(acc))
 
-    print('Optimization Finished! ' + str(t - time.time()))
+    end_time = time.time()
+
+    print('Optimization Finished! Time: {}s'.format(end_time - start_time))
 
     # Calculate accuracy for MNIST test images
     print('Testing Accuracy:', sess.run(accuracy, feed_dict={

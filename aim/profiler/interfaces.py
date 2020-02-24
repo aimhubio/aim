@@ -72,7 +72,8 @@ class TensorFlowInterface(BaseInterface):
 
         # Create TensorFlow op which wraps python function and calls eagerly
         x = tf.stop_gradient(
-            tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_START,key),
+            tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_START,
+                                                   key),
                            inp=[inp], Tout=inp.dtype))
 
         # Set node shape
@@ -96,9 +97,8 @@ class TensorFlowInterface(BaseInterface):
         tf = cls.tf
 
         # Create TensorFlow op which wraps python function and calls eagerly
-        x = tf.stop_gradient(
-            tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_END, key),
-                           inp=[inp], Tout=inp.dtype))
+        x = tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_END, key),
+                           inp=[inp], Tout=inp.dtype)
 
         # Set node shape
         x.set_shape(inp.get_shape())
