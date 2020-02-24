@@ -20,6 +20,7 @@ AIM_DEFAULT_BRANCH_NAME = 'default'
 # Commits
 AIM_COMMIT_INDEX_DIR_NAME = 'index'
 AIM_COMMIT_CONFIG_FILE_NAME = 'config.json'
+AIM_COMMIT_META_FILE_NAME = 'meta.json'
 
 # Logger
 AIM_LOGGING_DIR_NAME = 'logs'

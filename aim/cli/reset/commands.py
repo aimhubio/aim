@@ -1,7 +1,4 @@
-import os
 import click
-
-from aim.engine.aim_profile import AimProfile
 
 
 @click.command()
