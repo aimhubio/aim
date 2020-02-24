@@ -78,12 +78,12 @@ class AimRepo:
         self.name = path.split(os.sep)[-1]
 
         if self.config:
-            self.branch = self.config.get('active_branch')
+            self._branch = self.config.get('active_branch')
         else:
-            self.branch = AIM_DEFAULT_BRANCH_NAME
+            self._branch = AIM_DEFAULT_BRANCH_NAME
 
         self.branch_path = os.path.join(self.path,
-                                        self.branch)
+                                        self._branch)
         self.index_path = os.path.join(self.branch_path,
                                        AIM_COMMIT_INDEX_DIR_NAME)
         self.objects_dir_path = os.path.join(self.index_path,
@@ -110,6 +110,14 @@ class AimRepo:
     @config.setter
     def config(self, config):
         self._config = config
+
+    @property
+    def branch(self):
+        return self._branch
+
+    @branch.setter
+    def branch(self, branch):
+        self._branch = branch
 
     def save_config(self):
         """
@@ -185,7 +193,8 @@ class AimRepo:
         """
         Returns meta file and its content
         """
-        meta_file_path = os.path.join(self.objects_dir_path, 'meta.json')
+        meta_file_path = os.path.join(self.objects_dir_path,
+                                      AIM_COMMIT_META_FILE_NAME)
         if os.path.isfile(meta_file_path):
             meta_file = open(meta_file_path, 'r+')
             meta_file_content = json.loads(meta_file.read())
@@ -592,6 +601,21 @@ class AimRepo:
                 os.unlink(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
+
+    def get_index_meta(self):
+        """
+        Returns parsed meta file of index or `False` if file does not exist
+        """
+        meta_file_path = os.path.join(self.objects_dir_path,
+                                      AIM_COMMIT_META_FILE_NAME)
+
+        if not os.path.isfile(meta_file_path):
+            return False
+
+        with open(meta_file_path, 'r') as meta_file:
+            meta_file_content = json.load(meta_file)
+
+        return meta_file_content
 
     def save_diff(self, diff):
         """

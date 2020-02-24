@@ -1,5 +1,6 @@
 # Changelog
 
+- Add cli status command to list branch uncommitted artifacts (gorarakelyan)
 - Add an ability to aggregate duplicated nodes within a loop (gorarakelyan)
 - Remove gradient break issue when profiling output nodes (gorarakelyan)
 

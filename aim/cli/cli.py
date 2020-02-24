@@ -12,6 +12,7 @@ from aim.cli.commit import commands as commit_commands
 from aim.cli.reset import commands as reset_commands
 from aim.cli.version import commands as version_commands
 from aim.cli.view import commands as view_commands
+from aim.cli.status import commands as status_commands
 
 
 @click.group()
@@ -34,3 +35,4 @@ cli_entry_point.add_command(commit_commands.commit, COMMIT_NAME)
 cli_entry_point.add_command(reset_commands.reset, RESET_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 cli_entry_point.add_command(view_commands.view, VIEW_NAME)
+cli_entry_point.add_command(status_commands.status, STATUS_NAME)
