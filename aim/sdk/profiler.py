@@ -1,13 +1,18 @@
 from aim.profiler.profiler import Profiler as ProfilerBase
 import aim.profiler.interfaces as interfaces
+from aim.profiler.stat import Stat
 
 
 class Profiler:
+    MEAN = Stat.AGG_MODE_AVG
+    MIN = Stat.AGG_MODE_MIN
+    MAX = Stat.AGG_MODE_MAX
+
     keras = interfaces.KerasInterface
     tf = interfaces.TensorFlowInterface
 
     @classmethod
-    def init(cls, auto_detect_cycles=True, **kwargs):
+    def init(cls, auto_detect_cycles=True, agg_duplicates=False, **kwargs):
         """
         Enables Profiler(e.g. for training or evaluation).
         Profiler will not act until this method is called.
@@ -15,7 +20,7 @@ class Profiler:
         collecting statistics.
         """
         p = ProfilerBase()
-        p.start(auto_detect_cycles)
+        p.start(auto_detect_cycles, agg_duplicates)
 
         # Set minimum cycles aggregation interval in seconds
         if kwargs.get('sec_interval'):
