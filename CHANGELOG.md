@@ -1,5 +1,6 @@
 # Changelog
 
+- Add an ability to aggregate duplicated nodes within a loop (gorarakelyan)
 - Remove gradient break issue when profiling output nodes (gorarakelyan)
 
 ## 1.2.4 Feb 20 2020
