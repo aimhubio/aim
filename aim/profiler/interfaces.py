@@ -25,6 +25,9 @@ class BaseInterface:
     def loop(self,  *args, **kwargs):
         raise NotImplementedError('method not implemented')
 
+    def cycle(self,  *args, **kwargs):
+        raise NotImplementedError('method not implemented')
+
 
 class DefaultInterface(BaseInterface):
     """
@@ -42,6 +45,12 @@ class DefaultInterface(BaseInterface):
         if cls.enabled():
             p = Profiler()
             p.label_tracking_stop(key)
+
+    @classmethod
+    def cycle(cls):
+        if cls.enabled():
+            p = Profiler()
+            p.cycle_end()
 
 
 class TensorFlowInterface(BaseInterface):

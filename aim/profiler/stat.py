@@ -92,9 +92,9 @@ class Stat:
 
         # Compute or get execution time average
         if agg_exec_time:
+            mode = cls.AGG_DEFAULT if agg_exec_time is True else agg_exec_time
             exec_times = [s.op_exec_time for s in items]
-            aggregated_stat.op_exec_time = cls.aggregate(exec_times,
-                                                         cls.AGG_DEFAULT)
+            aggregated_stat.op_exec_time = cls.aggregate(exec_times, mode)
         else:
             exec_times = [s.time for s in items]
             aggregated_stat.op_exec_time = cls.aggregate(exec_times,

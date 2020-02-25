@@ -8,7 +8,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 from aim import Profiler
-Profiler.init()
+Profiler.init(auto_detect_cycles=False, aggregate=Profiler.MEAN)
 
 # Device configuration
 device = torch.device('cpu')
@@ -56,21 +56,13 @@ class ConvNet(nn.Module):
         self.fc = nn.Linear(7 * 7 * 32, num_classes)
 
     def forward(self, x):
-        Profiler.label('sleep_1')
-        time.sleep(0.3)
-        Profiler.loop('sleep_1')
-
         Profiler.label('layer1')
         out = self.layer1(x)
         Profiler.loop('layer1')
 
-        Profiler.label('computation')
-        reduce(lambda a, b: a*b, range(int((random.random() * 50000) + 50000)))
-        Profiler.loop('computation')
-
-        Profiler.label('sleep_2')
-        time.sleep(0.5)
-        Profiler.loop('sleep_2')
+        # Profiler.label('computation')
+        # reduce(lambda a, b: a*b, range(int((random.random() * 50000) + 50000)))
+        # Profiler.loop('computation')
 
         Profiler.label('layer2')
         out = self.layer2(out)
@@ -80,9 +72,18 @@ class ConvNet(nn.Module):
         out = out.reshape(out.size(0), -1)
         Profiler.loop('reshape_layer')
 
-        Profiler.label('fully_connected')
+        for j in range(10):
+            Profiler.label('cond_sleep')
+            if j == 5:
+                reduce(lambda a, b: a * b,
+                       range(int((random.random() * 50000) + 50000)))
+            else:
+                time.sleep(0.1)
+            Profiler.loop('cond_sleep')
+
         out = self.fc(out)
-        Profiler.loop('fully_connected')
+
+        Profiler.cycle()
 
         return out
 

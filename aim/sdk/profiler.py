@@ -12,7 +12,8 @@ class Profiler:
     tf = interfaces.TensorFlowInterface
 
     @classmethod
-    def init(cls, auto_detect_cycles=True, agg_duplicates=False, **kwargs):
+    def init(cls, auto_detect_cycles=True,
+             aggregate=False, **kwargs):
         """
         Enables Profiler(e.g. for training or evaluation).
         Profiler will not act until this method is called.
@@ -20,7 +21,7 @@ class Profiler:
         collecting statistics.
         """
         p = ProfilerBase()
-        p.start(auto_detect_cycles, agg_duplicates)
+        p.start(auto_detect_cycles, aggregate)
 
         # Set minimum cycles aggregation interval in seconds
         if kwargs.get('sec_interval'):
@@ -37,3 +38,7 @@ class Profiler:
     @classmethod
     def loop(cls, key):
         return interfaces.DefaultInterface.loop(key)
+
+    @classmethod
+    def cycle(cls):
+        return interfaces.DefaultInterface.cycle()

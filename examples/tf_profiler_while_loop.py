@@ -8,8 +8,7 @@ import aim
 aim.init(overwrite=True)
 
 from aim import Profiler
-Profiler.init(auto_detect_cycles=False,
-              agg_duplicates=None)
+Profiler.init(auto_detect_cycles=False, aggregate=Profiler.MAX)
 
 mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)
 
@@ -67,7 +66,7 @@ def neural_net(x):
 
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
 
-    layer_2, _ = tf.while_loop(lambda b, index: index < 3,
+    layer_2, _ = tf.while_loop(lambda b, index: index < 8,
                                loop_body, [layer_2, 0])
 
     layer_2 = Profiler.tf.label('layer2', layer_2)
