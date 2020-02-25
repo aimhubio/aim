@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.5 Feb 25 2020
 - Add autocommit feature to push command: `aim push -c [-m <msg>]` (gorarakelyan)
 - Add cli status command to list branch uncommitted artifacts (gorarakelyan)
 - Add an ability to aggregate duplicated nodes within a loop (gorarakelyan)
