@@ -204,7 +204,7 @@ class Profiler(metaclass=Singleton):
             if self.agg_duplicates:
                 agg_cycle[k] = Stat.aggregate_items(indexed_agg.values(),
                                                     self.agg_duplicates,
-                                                    False)
+                                                    self.agg_duplicates)
             else:
                 agg_cycle[k] = indexed_agg[0]
 
