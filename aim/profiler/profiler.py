@@ -33,9 +33,9 @@ class Profiler(metaclass=Singleton):
         self.cycle_index = 0
         self.cycles = []
 
-        # Dict consisting of `key: [<array of Stat items>]` pairs,
+        # Dict consisting of `key: [<stat_items_arr>]` pairs,
         # where key is the current cycle tracked key and
-        # value is an array of tracked statistics
+        # value is an array of arrays of tracked statistics
         self.curr_cycle = OrderedDict()
         # OrderedDict consisting of `key: [<count>, <tracked_key_pos>]`,
         # where `count` is the number of duplications of the same `key` and
@@ -48,6 +48,8 @@ class Profiler(metaclass=Singleton):
         self.cycle_write_lock = threading.Lock()
         # Auto detection mode of cycles
         self.auto_detect_cycle = False
+        # Aggregate duplicate labels
+        self.agg_duplicates = False
 
         # Set current running process
         try:
@@ -91,7 +93,7 @@ class Profiler(metaclass=Singleton):
         if 0.1 <= interval <= 60 * 60:
             self._sec_interval = interval
 
-    def start(self, auto_detect_cycles=True):
+    def start(self, auto_detect_cycles=True, agg_duplicates=False):
         """
         Start profiler: enable profiler and run statistics collection thread
         """
@@ -99,6 +101,7 @@ class Profiler(metaclass=Singleton):
             self._started = True
 
             self.auto_detect_cycle = auto_detect_cycles
+            self.agg_duplicates = agg_duplicates
 
             # Set environment variable indicating that profiler is enabled
             os.environ[AIM_PROFILER_ENABLED] = 'true'
@@ -122,7 +125,7 @@ class Profiler(metaclass=Singleton):
                 self.store_cycle()
             else:
                 print('Error. Auto detection of cycles is enabled and ' +
-                      'duplicate keys are found')
+                      'duplicated keys are found')
                 self.cycle_write_lock.release()
                 return
 
@@ -136,10 +139,16 @@ class Profiler(metaclass=Singleton):
             self.curr_cycle_keys[key][0] += 1
             self.curr_cycle_keys[key][1].append(self.curr_cycle_keys[key][0])
 
-        key_name = self._get_key_name(key)
+        if self.agg_duplicates:
+            key_index = self._get_key_index(key)
+            key_name = key
+        else:
+            key_index = 0
+            key_name = self._get_key_name(key)
 
         # Add `key` to current cycle and to array of tracked keys
-        self.curr_cycle.update({key_name: []})
+        self.curr_cycle.setdefault(key_name, {})
+        self.curr_cycle[key_name].setdefault(key_index, [])
 
         # Allow other threads to access shared objects
         self.cycle_write_lock.release()
@@ -160,14 +169,19 @@ class Profiler(metaclass=Singleton):
             self.cycle_write_lock.release()
             return
 
-        key_name = self._get_key_name(key)
+        if self.agg_duplicates:
+            key_index = self._get_key_index(key)
+            key_name = key
+        else:
+            key_index = 0
+            key_name = self._get_key_name(key)
 
         # Remove the latest position of tracked `key`
         self.curr_cycle_keys[key][1].pop()
 
         # Append current statistics to cycle to ensure that
         # it will have at least one item
-        self.curr_cycle[key_name].append(stats)
+        self.curr_cycle[key_name][key_index].append(stats)
 
         self.cycle_write_lock.release()
 
@@ -181,9 +195,18 @@ class Profiler(metaclass=Singleton):
 
         agg_cycle = {}
         for k, cycle_stats in self.curr_cycle.items():
-            agg_cycle[k] = Stat.aggregate_items(cycle_stats,
-                                                Stat.AGG_MODE_AVG,
-                                                False)
+            indexed_agg = {}
+            for k_index, indexed_stats in cycle_stats.items():
+                indexed_agg[k_index] = Stat.aggregate_items(indexed_stats,
+                                                            Stat.AGG_MODE_AVG,
+                                                            False)
+
+            if self.agg_duplicates:
+                agg_cycle[k] = Stat.aggregate_items(indexed_agg.values(),
+                                                    self.agg_duplicates,
+                                                    self.agg_duplicates)
+            else:
+                agg_cycle[k] = indexed_agg[0]
 
         self.cycles.append(agg_cycle)
         self.cycle_index += 1
@@ -238,8 +261,8 @@ class Profiler(metaclass=Singleton):
 
     def _get_key_name(self, key, index=None):
         """
-        Return full name of `key`. It can be auto-indexed if duplication
-        of the same key is found.
+        Return full name of the `key`. Name can be auto-indexed if
+        duplication of the same key is found.
         """
         if key not in self.curr_cycle_keys:
             raise KeyError('key \'{}\' not found'.format(key))
@@ -252,6 +275,20 @@ class Profiler(metaclass=Singleton):
                 index = self.curr_cycle_keys[key][1][-1]
 
         return '{}-{}'.format(key, index) if index > 0 else key
+
+    def _get_key_index(self, key):
+        """
+        Returns position of the key in current cycle. Index is always 0 if
+        there are no duplications of the same key in the cycle.
+        """
+        if key not in self.curr_cycle_keys:
+            raise KeyError('key \'{}\' not found'.format(key))
+
+        if self.curr_cycle_keys[key][0] == 0 or \
+                len(self.curr_cycle_keys[key][1]) == 0:
+            return 0
+        else:
+            return self.curr_cycle_keys[key][1][-1]
 
     def _stat_collector(self):
         """
@@ -276,7 +313,14 @@ class Profiler(metaclass=Singleton):
             self.cycle_write_lock.acquire()
             for k, index_info in self.curr_cycle_keys.items():
                 for i in index_info[1]:
-                    key_name = self._get_key_name(k, i)
-                    if key_name in self.curr_cycle:
-                        self.curr_cycle[key_name].append(stats)
+                    if self.agg_duplicates:
+                        key_index = i
+                        key_name = k
+                    else:
+                        key_index = 0
+                        key_name = self._get_key_name(k, i)
+
+                    if key_name in self.curr_cycle and \
+                            key_index in self.curr_cycle[key_name]:
+                        self.curr_cycle[key_name][key_index].append(stats)
             self.cycle_write_lock.release()

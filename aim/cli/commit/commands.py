@@ -1,11 +1,10 @@
 import click
 import uuid
-
-from aim.engine.aim_repo import AimRepo
+import time
 
 
 @click.command()
-@click.option('-m', '--message', required=True, type=str)
+@click.option('-m', '--message', default='', type=str)
 @click.option('--code', is_flag=True)
 @click.pass_obj
 def commit(repo, message, code):
@@ -14,7 +13,7 @@ def commit(repo, message, code):
         return
 
     commit_hash = str(uuid.uuid1())
-    message = message.strip()
+    message = message.strip() or int(time.time())
 
     # Check if there is anything to commit
     if repo.is_index_empty():

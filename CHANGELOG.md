@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.5 Feb 25 2020
+- Add autocommit feature to push command: `aim push -c [-m <msg>]` (gorarakelyan)
+- Add cli status command to list branch uncommitted artifacts (gorarakelyan)
+- Add an ability to aggregate duplicated nodes within a loop (gorarakelyan)
+- Remove gradient break issue when profiling output nodes (gorarakelyan)
+
 ## 1.2.4 Feb 20 2020
 - Enable profiler to track nodes inside loops (gorarakelyan)
 - Ability to disable profiler for evaluation or inference (gorarakelyan)

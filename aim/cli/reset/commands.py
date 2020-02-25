@@ -1,7 +1,4 @@
-import os
 import click
-
-from aim.engine.aim_profile import AimProfile
 
 
 @click.command()
@@ -9,6 +6,10 @@ from aim.engine.aim_profile import AimProfile
 def reset(repo):
     if repo is None:
         click.echo('Repository does not exist')
+        return
+
+    if repo.is_index_empty():
+        click.echo('Nothing to reset')
         return
 
     reset_check = click.confirm('Are you sure you want to reset your ' +
