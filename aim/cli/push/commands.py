@@ -2,6 +2,7 @@ import os
 import click
 from urllib.parse import urlparse
 import uuid
+import time
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.aim_protocol import FileServerClient, File
@@ -12,16 +13,17 @@ from aim.cli.push.utils import send_flags_file
 @click.command()
 @click.option('-r', '--remote', default='origin', type=str)
 @click.option('-b', '--branch', default='', type=str)
+@click.option('-c', '--commit', is_flag=True)
 @click.option('-m', '--message', default='', type=str)
 @click.pass_obj
-def push(repo, remote, branch, message):
+def push(repo, remote, branch, commit, message):
     if repo is None:
         click.echo('Repository does not exist')
         return
 
-    if message:
+    if commit or message:
         commit_hash = str(uuid.uuid1())
-        message = message.strip()
+        message = message.strip() or int(time.time())
 
         # Check if there is anything to commit
         if repo.is_index_empty():
@@ -34,6 +36,14 @@ def push(repo, remote, branch, message):
                 b=commit_res['branch'],
                 c=commit_res['commit']), fg='yellow'))
             click.echo(message)
+    else:
+        if not repo.is_index_empty():
+            click.echo(click.style('You have uncommitted artifacts',
+                                   fg='yellow'))
+            click.echo('    (use "aim push -c [-m <message>]" to commit and ' +
+                       'push to remote)')
+            click.echo('    (use "aim commit [-m <message>]" to commit)')
+            click.echo('-'*67)
 
     branch = branch.strip()
 
