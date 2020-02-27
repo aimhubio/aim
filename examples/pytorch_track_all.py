@@ -100,6 +100,8 @@ for epoch in range(num_epochs):
             # aim - Track model loss function
             track(aim.loss, 'loss', loss.item())
 
+            track(aim.learning_rate, optimizer)
+
             # aim - Track model accuracy
             correct = 0
             total = 0

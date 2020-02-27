@@ -2,6 +2,7 @@
 AIM_REPO_NAME = '.aim'
 AIM_OBJECTS_DIR_NAME = 'objects'
 AIM_METRICS_DIR_NAME = 'metrics'
+AIM_METRIC_GR_DIR_NAME = 'metric_groups'
 AIM_ANNOT_DIR_NAME = 'annotations'
 AIM_MEDIA_DIR_NAME = 'media'
 AIM_IMAGES_DIR_NAME = 'images'
