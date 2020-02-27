@@ -123,6 +123,13 @@ def is_pytorch_module(inst):
     return inst_has_typename(inst, ['torch', 'Module'])
 
 
+def is_pytorch_optim(inst):
+    """
+    Check whether an inst is instance of pytorch optimizer
+    """
+    return inst_has_typename(inst, ['torch', 'optim'])
+
+
 def get_module(name, required=True):
     """
     Return specified module or None otherwise,

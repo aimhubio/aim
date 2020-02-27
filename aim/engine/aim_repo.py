@@ -45,6 +45,8 @@ class AimRepo:
         """
         if cat[0] == 'metrics':
             return AIM_METRICS_DIR_NAME
+        elif cat[0] == 'metric_groups':
+            return AIM_METRIC_GR_DIR_NAME
         elif cat[0] == 'media':
             if cat[1] == 'images':
                 return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
