@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.6 Feb 28 2020
 - Add learning rate update tracking (gorarakelyan)
 
 ## 1.2.5 Feb 25 2020
