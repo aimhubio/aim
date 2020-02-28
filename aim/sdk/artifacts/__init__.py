@@ -6,3 +6,4 @@ from aim.sdk.artifacts.correlation import *
 from aim.sdk.artifacts.distribution import *
 from aim.sdk.artifacts.hyperparameters import *
 from aim.sdk.artifacts.stats import *
+from aim.sdk.artifacts.metric_group import *

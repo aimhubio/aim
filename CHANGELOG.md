@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.6 Feb 28 2020
+- Add learning rate update tracking (gorarakelyan)
+
 ## 1.2.5 Feb 25 2020
 - Add autocommit feature to push command: `aim push -c [-m <msg>]` (gorarakelyan)
 - Add cli status command to list branch uncommitted artifacts (gorarakelyan)
