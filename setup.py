@@ -51,7 +51,7 @@ class UploadCommand(Command):
         print('\033[1m{0}\033[0m'.format(s))
 
     def initialize_options(self):
-        self.release_candidate = 0
+        self.rc = 0
 
     def finalize_options(self):
         pass
@@ -71,7 +71,7 @@ class UploadCommand(Command):
         # self.status('Uploading the package to PyPI via Twine…')
         os.system('twine upload dist/*')
 
-        if not self.release_candidate:
+        if not self.rc:
             self.status('Pushing git tags…')
             os.system('git tag v{0}'.format(VERSION))
             os.system('git push --tags')
