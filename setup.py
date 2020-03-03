@@ -10,14 +10,10 @@ from aim.__version__ import __version__
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
-NAME = os.getenv('PKG_NAME') or 'aim-cli'
+NAME = 'aim-cli'
 DESCRIPTION = 'Version control for AI'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.5.2'
-
-if not NAME:
-    print('Invalid package name')
-    sys.exit()
 
 # Get packages
 packages = find_packages(exclude=('tests',))
@@ -46,7 +42,7 @@ class UploadCommand(Command):
 
     description = 'Build and publish the package.'
     user_options = [
-        ('dev', 'd', 'Specify the development mode.'),
+        ('rc', None, 'Tag version as a release candidate'),
     ]
 
     @staticmethod
@@ -55,7 +51,7 @@ class UploadCommand(Command):
         print('\033[1m{0}\033[0m'.format(s))
 
     def initialize_options(self):
-        self.dev = 0
+        self.rc = 0
 
     def finalize_options(self):
         pass
@@ -68,19 +64,14 @@ class UploadCommand(Command):
             pass
 
         self.status('Building Source and Wheel (universal) distribution…')
-        if self.dev:
-            os.system(
-                'PKG_NAME=aimd {0} setup.py sdist bdist_wheel --universal'
-                .format(sys.executable))
-        else:
-            os.system(
-                'PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
-                .format(sys.executable, NAME))
+        os.system(
+            '{0} setup.py sdist bdist_wheel --universal'
+            .format(sys.executable, NAME))
 
         # self.status('Uploading the package to PyPI via Twine…')
         os.system('twine upload dist/*')
 
-        if not self.dev:
+        if not self.rc:
             self.status('Pushing git tags…')
             os.system('git tag v{0}'.format(VERSION))
             os.system('git push --tags')
