@@ -39,8 +39,8 @@ def up(repo):
     if not cont.up():
         click.echo('Failed to run aim board.')
         click.echo(('    Please check if ports {c} and {s} ' +
-                   'are accessible.').format(c=AIM_BOARD_PORT_CLIENT,
-                                            s=AIM_BOARD_PORT_SERVER))
+                    'are accessible.').format(c=AIM_BOARD_PORT_CLIENT,
+                                              s=AIM_BOARD_PORT_SERVER))
         return
 
     # Implement SIGINT signal handler to kill container after
