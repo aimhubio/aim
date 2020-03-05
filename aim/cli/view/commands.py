@@ -3,6 +3,7 @@ import sys
 import click
 
 from aim.engine.aim_container import AimContainer
+from aim.engine.configs import AIM_BOARD_PORT_CLIENT, AIM_BOARD_PORT_SERVER
 
 
 @click.group()
@@ -19,14 +20,14 @@ def up(repo):
     cont = AimContainer(repo)
 
     click.echo(
-        click.style('Mounting board to {} '.format(repo), fg='yellow'))
+        click.style('Board is mounted to {} '.format(repo), fg='yellow'))
 
     # Kill all identical running containers
     cont.kill()
 
     # Check if image exist
     if not cont.image_exist():
-        click.echo('Pulling aim board image')
+        click.echo('Pulling aim board image, please wait...')
         if not cont.pull():
             click.echo('An error occurred')
             click.echo('    (use "docker login" for authentication)')
@@ -36,7 +37,10 @@ def up(repo):
 
     # Run container
     if not cont.up():
-        click.echo('Failed to run aim board')
+        click.echo('Failed to run aim board.')
+        click.echo(('    Please check if ports {c} and {s} ' +
+                   'are accessible.').format(c=AIM_BOARD_PORT_CLIENT,
+                                            s=AIM_BOARD_PORT_SERVER))
         return
 
     # Implement SIGINT signal handler to kill container after
