@@ -34,7 +34,7 @@ AIM_PROFILE_CONFIG_FILE_NAME = 'config.json'
 AIM_PROFILE_SSH_DIR_NAME = '.ssh'
 
 # aim Container
-AIM_CONTAINER_IMAGE = 'aimhub-live:latest'
+AIM_CONTAINER_IMAGE = 'aimhubio/aim-board:latest'
 AIM_CONTAINER_PREFIX = 'aim_container'
 
 # aim Profiler
