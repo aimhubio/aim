@@ -1,5 +1,6 @@
 # Changelog
 
+- Update board name hash algorithm to md5 (gorarakelyan)
 - Add board CLI commands: up, down and upgrade (gorarakelyan)
 - Add ability to tag version as a release candidate (gorarakelyan)
 

@@ -4,7 +4,7 @@ from aim.engine.utils import get_module
 
 class AimContainer:
     def __init__(self, repo):
-        self.name = '{}_{}'.format(AIM_CONTAINER_PREFIX, repo.hash[-22:])
+        self.name = '{}_{}'.format(AIM_CONTAINER_PREFIX, repo.hash)
         self.ports = {
             '8000/tcp': 8000,
             '8001/tcp': 8001,
@@ -19,8 +19,8 @@ class AimContainer:
 
     def up(self):
         """
-        Runs docker container in background mounted on aim repo
-        Returns `id` of the container or `None` if an error occurred
+        Runs docker container in background mounted to aim repo.
+        Returns `id` of the container or `None` if an error occurred.
         """
         try:
             container = self.client.containers.run(AIM_CONTAINER_IMAGE,

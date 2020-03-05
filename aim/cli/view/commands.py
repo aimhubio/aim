@@ -10,7 +10,7 @@ from aim.engine.aim_container import AimContainer
 def view_entry_point(repo):
     if repo is None:
         click.echo('Repository does not exist')
-        return
+        exit()
 
 
 @view_entry_point.command()
