@@ -1,4 +1,5 @@
-from aim.engine.configs import AIM_CONTAINER_PREFIX, AIM_CONTAINER_IMAGE
+from aim.engine.configs import AIM_CONTAINER_PREFIX, AIM_CONTAINER_IMAGE, \
+    AIM_BOARD_PORT_CLIENT, AIM_BOARD_PORT_SERVER
 from aim.engine.utils import get_module
 
 
@@ -6,8 +7,8 @@ class AimContainer:
     def __init__(self, repo):
         self.name = '{}_{}'.format(AIM_CONTAINER_PREFIX, repo.hash)
         self.ports = {
-            '8000/tcp': 8000,
-            '8001/tcp': 8001,
+            '{}/tcp'.format(AIM_BOARD_PORT_CLIENT): AIM_BOARD_PORT_CLIENT,
+            '{}/tcp'.format(AIM_BOARD_PORT_SERVER): AIM_BOARD_PORT_SERVER,
         }
         self.volumes = {
             repo.path: {'bind': '/store', 'mode': 'rw'},
