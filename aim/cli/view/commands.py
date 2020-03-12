@@ -15,9 +15,10 @@ def view_entry_point(repo):
 
 
 @view_entry_point.command()
+@click.option('--dev', is_flag=True)
 @click.pass_obj
-def up(repo):
-    cont = AimContainer(repo)
+def up(repo, dev):
+    cont = AimContainer(repo, dev=dev)
 
     click.echo(
         click.style('Board is mounted to {} '.format(repo), fg='yellow'))

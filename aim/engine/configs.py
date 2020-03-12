@@ -35,6 +35,7 @@ AIM_PROFILE_SSH_DIR_NAME = '.ssh'
 
 # aim Container
 AIM_CONTAINER_IMAGE = 'aimhubio/aim-board:latest'
+AIM_CONTAINER_IMAGE_DEV = 'aimhub-live'
 AIM_CONTAINER_PREFIX = 'aim_container'
 
 # aim Profiler
@@ -43,3 +44,4 @@ AIM_PROFILER_ENABLED = 'AIM_PROFILER_ENABLED'
 # aim Board
 AIM_BOARD_PORT_CLIENT = 8000
 AIM_BOARD_PORT_SERVER = 8001
+AIM_BOARD_PORT_WS = 8002

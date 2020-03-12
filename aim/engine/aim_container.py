@@ -1,14 +1,14 @@
-from aim.engine.configs import AIM_CONTAINER_PREFIX, AIM_CONTAINER_IMAGE, \
-    AIM_BOARD_PORT_CLIENT, AIM_BOARD_PORT_SERVER
+from aim.engine.configs import *
 from aim.engine.utils import get_module
 
 
 class AimContainer:
-    def __init__(self, repo):
+    def __init__(self, repo, dev=False):
         self.name = '{}_{}'.format(AIM_CONTAINER_PREFIX, repo.hash)
         self.ports = {
             '{}/tcp'.format(AIM_BOARD_PORT_CLIENT): AIM_BOARD_PORT_CLIENT,
             '{}/tcp'.format(AIM_BOARD_PORT_SERVER): AIM_BOARD_PORT_SERVER,
+            '{}/tcp'.format(AIM_BOARD_PORT_WS): AIM_BOARD_PORT_WS,
         }
         self.volumes = {
             repo.path: {'bind': '/store', 'mode': 'rw'},
@@ -18,13 +18,17 @@ class AimContainer:
         docker = get_module('docker')
         self.client = docker.from_env()
 
+        self.dev = dev
+
     def up(self):
         """
         Runs docker container in background mounted to aim repo.
         Returns `id` of the container or `None` if an error occurred.
         """
         try:
-            container = self.client.containers.run(AIM_CONTAINER_IMAGE,
+            image_name = AIM_CONTAINER_IMAGE_DEV if self.dev \
+                else AIM_CONTAINER_IMAGE
+            container = self.client.containers.run(image_name,
                                                    name=self.name,
                                                    ports=self.ports,
                                                    volumes=self.volumes,
