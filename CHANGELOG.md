@@ -1,5 +1,6 @@
 # Changelog
 
+- Remove issue with autograd inside while loop (gorarakelyan)
 - Add aim board development mode (gorarakelyan)
 - Update board name hash algorithm to md5 (gorarakelyan)
 - Add board CLI commands: up, down and upgrade (gorarakelyan)
