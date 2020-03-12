@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to profile graph output nodes (gorarakelyan)
 - Remove issue with autograd inside while loop (gorarakelyan)
 - Add aim board development mode (gorarakelyan)
 - Update board name hash algorithm to md5 (gorarakelyan)

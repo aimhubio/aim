@@ -75,9 +75,9 @@ def neural_net(x):
 
     # Output fully connected layer with a neuron for each class
     out_layer = layer_2
-    # out_layer = Profiler.tf.label('output', out_layer)
+    out_layer = Profiler.tf.label('output', out_layer)
     out_layer = tf.matmul(out_layer, weights['out']) + biases['out']
-    # out_layer = Profiler.tf.loop('output', out_layer)
+    out_layer = Profiler.tf.loop('output', out_layer, gradient=True)
 
     out_layer = Profiler.tf.cycle(out_layer)
 
