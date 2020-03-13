@@ -59,7 +59,8 @@ def up(repo, dev):
     # Add keyboard signal interruption listener
     signal.signal(signal.SIGINT, signal_handler)
 
-    click.echo('Open http://127.0.0.1:8000/default/index')
+    click.echo('Open http://127.0.0.1:{}/default/index'
+               .format(AIM_BOARD_PORT_CLIENT))
     click.echo('Press Ctrl+C to exit')
 
     # Wait for signal
