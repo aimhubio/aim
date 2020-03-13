@@ -16,8 +16,9 @@ def view_entry_point(repo):
 
 @view_entry_point.command()
 @click.option('--dev', is_flag=True)
+@click.option('-v', '--version', default='latest', type=str)
 @click.pass_obj
-def up(repo, dev):
+def up(repo, dev, version):
     cont = AimContainer(repo, dev=dev)
 
     click.echo(
@@ -27,9 +28,9 @@ def up(repo, dev):
     cont.kill()
 
     # Check if image exist
-    if not cont.image_exist():
+    if not cont.image_exist(version):
         click.echo('Pulling aim board image, please wait...')
-        if not cont.pull():
+        if not cont.pull(version):
             click.echo('An error occurred')
             click.echo('    (use "docker login" for authentication)')
             return
@@ -37,7 +38,7 @@ def up(repo, dev):
             click.echo('Successfully pulled aim board image')
 
     # Run container
-    if not cont.up():
+    if not cont.up(version):
         click.echo('Failed to run aim board.')
         click.echo(('    Please check if ports {c} and {s} ' +
                     'are accessible.').format(c=AIM_BOARD_PORT_CLIENT,
@@ -84,6 +85,22 @@ def upgrade(repo):
     click.echo('Pulling latest aim board release')
 
     update = cont.pull()
+    if update:
+        click.echo('Done')
+    else:
+        click.echo('An error occurred')
+        click.echo('    (use "docker login" for authentication)')
+
+
+@view_entry_point.command()
+@click.option('-v', '--version', required=True, type=str)
+@click.pass_obj
+def pull(repo, version):
+    cont = AimContainer(repo)
+
+    click.echo('Pulling aim board v{}'.format(version))
+
+    update = cont.pull(version)
     if update:
         click.echo('Done')
     else:
