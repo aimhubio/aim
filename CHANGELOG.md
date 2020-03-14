@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.7 Mar 14 2020
 - Add board pull command (gorarakelyan)
 - Change board ports to 43800,1,2 (gorarakelyan)
 - Add ability to profile graph output nodes (gorarakelyan)
