@@ -6,7 +6,7 @@ import click
 def remote_entry_point(repo):
     if repo is None:
         click.echo('Repository does not exist')
-        return
+        exit()
 
     click.echo(click.style('Repository found at {} '.format(repo), fg='yellow'))
 

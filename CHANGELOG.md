@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.7 Mar 14 2020
+- Add board pull command (gorarakelyan)
+- Change board ports to 43800,1,2 (gorarakelyan)
+- Add ability to profile graph output nodes (gorarakelyan)
+- Remove issue with autograd inside while loop (gorarakelyan)
+- Add aim board development mode (gorarakelyan)
+- Update board name hash algorithm to md5 (gorarakelyan)
+- Add board CLI commands: up, down and upgrade (gorarakelyan)
+- Add ability to tag version as a release candidate (gorarakelyan)
+
 ## 1.2.6 Feb 28 2020
 - Add learning rate update tracking (gorarakelyan)
 

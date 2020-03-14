@@ -66,7 +66,7 @@ class TensorFlowInterface(BaseInterface):
     profiler = None
 
     @classmethod
-    def label(cls, key, inp):
+    def label(cls, key, inp, gradient=False):
         """
         Inserts node after `inp` node which will execute eagerly and
         call profiler `label_tracking_start` function. That tells `Profiler`
@@ -80,10 +80,12 @@ class TensorFlowInterface(BaseInterface):
         tf = cls.tf
 
         # Create TensorFlow op which wraps python function and calls eagerly
-        x = tf.stop_gradient(
-            tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_START,
+        x = tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_START,
                                                    key),
-                           inp=[inp], Tout=inp.dtype))
+                           inp=[inp], Tout=inp.dtype)
+
+        if not gradient:
+            x = tf.stop_gradient(x)
 
         # Set node shape
         x.set_shape(inp.get_shape())
@@ -91,7 +93,7 @@ class TensorFlowInterface(BaseInterface):
         return x
 
     @classmethod
-    def loop(cls, key, inp):
+    def loop(cls, key, inp, gradient=False):
         """
         Inserts node after `inp` node which will execute eagerly and
         call profiler `label_tracking_stop` function. That tells `Profiler`
@@ -106,8 +108,12 @@ class TensorFlowInterface(BaseInterface):
         tf = cls.tf
 
         # Create TensorFlow op which wraps python function and calls eagerly
-        x = tf.py_function(func=cls._profiler_node(cls.PROFILER_NODE_END, key),
-                           inp=[inp], Tout=inp.dtype)
+        x = tf.py_function(
+            func=cls._profiler_node(cls.PROFILER_NODE_END, key),
+            inp=[inp], Tout=inp.dtype)
+
+        if not gradient:
+            x = tf.stop_gradient(x)
 
         # Set node shape
         x.set_shape(inp.get_shape())
