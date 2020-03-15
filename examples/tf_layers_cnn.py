@@ -9,6 +9,9 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 """
 from __future__ import division, print_function, absolute_import
 
+import aim
+aim.init()
+
 from aim import Profiler
 Profiler.init()
 

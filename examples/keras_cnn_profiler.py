@@ -6,13 +6,12 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
 import aim
-from aim import Profiler
-
 # Init aim with overwrite=False, every run will be committed and pushed
 aim.init(overwrite=False)
 
-# Configure profiler (optional)
-Profiler.configure(5)
+from aim import Profiler
+# initialize profiler
+Profiler.init(sec_interval=2, squash=10)
 
 batch_size = 128
 num_classes = 10

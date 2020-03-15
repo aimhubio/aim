@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.8 Mar 15 2020
+- Update profiler interface for keras (gorarakelyan)
+
 ## 1.2.7 Mar 14 2020
 - Add board pull command (gorarakelyan)
 - Change board ports to 43800,1,2 (gorarakelyan)

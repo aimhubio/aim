@@ -1,3 +1,6 @@
+import aim
+aim.init()
+
 from aim import Profiler
 Profiler.init()
 
@@ -41,6 +44,7 @@ logits = neural_net(X, weights, biases)
 # Define loss and optimizer
 loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
     logits=logits, labels=Y))
+
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)
 

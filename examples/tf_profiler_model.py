@@ -15,6 +15,6 @@ def neural_net(x, weights, biases):
     # Output fully connected layer with a neuron for each class
     out_layer = Profiler.tf.label('output', inp=layer_2)
     out_layer = tf.matmul(out_layer, weights['out']) + biases['out']
-    out_layer = Profiler.tf.loop('output', inp=out_layer)
+    out_layer = Profiler.tf.loop('output', inp=out_layer, gradient=True)
 
     return out_layer
