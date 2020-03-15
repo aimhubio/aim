@@ -1,5 +1,8 @@
+import aim
+aim.init()
+
 from aim import Profiler
-Profiler.init()
+Profiler.init(sec_interval=1, squash=1)
 
 import tensorflow as tf
 
@@ -46,7 +49,10 @@ def neural_net(x):
     layer_2 = Profiler.tf.loop('layer2', inp=layer_2)
 
     # Output fully connected layer with a neuron for each class
-    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
+    out_layer = Profiler.tf.label('out', inp=layer_2)
+    out_layer = tf.matmul(out_layer, weights['out']) + biases['out']
+    out_layer = Profiler.tf.loop('out', inp=out_layer, gradient=True)
+
     return out_layer
 
 
