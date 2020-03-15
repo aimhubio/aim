@@ -193,31 +193,39 @@ class TensorFlowInterface(BaseInterface):
 class KerasInterface(TensorFlowInterface):
     """
     Keras(only TF backend supported) interface for `Profiler` integration
-    TODO: Adjust to updated `Profiler` interface
     TODO: Add other backends support
     """
 
     keras = None
 
-    label_layer_cls = None
-    loop_layer_cls = None
-    neutral_layer_cls = None
+    _label_layer_cls = None
+    _loop_layer_cls = None
+    _cycle_layer_cls = None
+    _neutral_layer_cls = None
 
     @classmethod
-    def label(cls, key, **kwargs):
+    def label(cls, key, gradient=True, **kwargs):
         if not cls.enabled():
-            return cls.neutral_layer_cls()
+            return cls._neutral_layer_cls()
 
         cls._init()
-        return cls.label_layer_cls(key)
+        return cls._label_layer_cls(key, gradient)
 
     @classmethod
-    def loop(cls, key, **kwargs):
+    def loop(cls, key, gradient=True, **kwargs):
         if not cls.enabled():
-            return cls.neutral_layer_cls()
+            return cls._neutral_layer_cls()
 
         cls._init()
-        return cls.loop_layer_cls(key)
+        return cls._loop_layer_cls(key, gradient)
+
+    @classmethod
+    def cycle(cls, **kwargs):
+        if not cls.enabled():
+            return cls._neutral_layer_cls()
+
+        cls._init()
+        return cls._cycle_layer_cls()
 
     @classmethod
     def _init(cls):
@@ -234,19 +242,24 @@ class KerasInterface(TensorFlowInterface):
         keras_interface = cls
         tf = cls.tf
 
-        # Implement `keras` layer wrapper for profiler `track` method
-        if cls.label_layer_cls is None:
+        # Implement `keras` layer wrapper for profiler
+        # `label_tracking_start` method
+        if cls._label_layer_cls is None:
             class ProfilerLabelLayer(cls.keras.layers.Layer):
-                def __init__(self, key, **kwargs):
+                def __init__(self, key, gradient, **kwargs):
                     self.key = key
+                    self.gradient = gradient
                     super(ProfilerLabelLayer, self).__init__(**kwargs)
 
                 def call(self, inp):
                     profiler_start_f = keras_interface.PROFILER_NODE_START
-                    x = tf.stop_gradient(tf.py_function(
-                        func=keras_interface._profiler_node(self.key,
-                                                            profiler_start_f),
-                        inp=[inp], Tout=inp.dtype))
+                    x = tf.py_function(
+                        func=keras_interface._profiler_node(profiler_start_f,
+                                                            self.key),
+                        inp=[inp], Tout=inp.dtype)
+
+                    if not self.gradient:
+                        x = tf.stop_gradient(x)
 
                     # Set node shape
                     x.set_shape(inp.get_shape())
@@ -255,21 +268,26 @@ class KerasInterface(TensorFlowInterface):
                 def compute_output_shape(self, input_shape):
                     return input_shape
 
-            cls.label_layer_cls = ProfilerLabelLayer
+            cls._label_layer_cls = ProfilerLabelLayer
 
-        # Implement `keras` layer wrapper for profiler `cycle` method
-        if cls.loop_layer_cls is None:
+        # Implement `keras` layer wrapper for profiler
+        # `label_tracking_stop` method
+        if cls._loop_layer_cls is None:
             class ProfilerLoopLayer(cls.keras.layers.Layer):
-                def __init__(self, key, **kwargs):
+                def __init__(self, key, gradient, **kwargs):
                     self.key = key
+                    self.gradient = gradient
                     super(ProfilerLoopLayer, self).__init__(**kwargs)
 
                 def call(self, inp):
                     profiler_end_f = keras_interface.PROFILER_NODE_END
-                    x = tf.stop_gradient(tf.py_function(
-                        func=keras_interface._profiler_node(self.key,
-                                                            profiler_end_f),
-                        inp=[inp], Tout=inp.dtype))
+                    x = tf.py_function(
+                        func=keras_interface._profiler_node(profiler_end_f,
+                                                            self.key),
+                        inp=[inp], Tout=inp.dtype)
+
+                    if not self.gradient:
+                        x = tf.stop_gradient(x)
 
                     # Set node shape
                     x.set_shape(inp.get_shape())
@@ -278,11 +296,32 @@ class KerasInterface(TensorFlowInterface):
                 def compute_output_shape(self, input_shape):
                     return input_shape
 
-            cls.loop_layer_cls = ProfilerLoopLayer
+            cls._loop_layer_cls = ProfilerLoopLayer
+
+        # Implement `keras` layer wrapper for profiler `cycle_end` method
+        if cls._cycle_layer_cls is None:
+            class ProfilerCycleLayer(cls.keras.layers.Layer):
+                def __init__(self, **kwargs):
+                    super(ProfilerCycleLayer, self).__init__(**kwargs)
+
+                def call(self, inp):
+                    profiler_cycle_f = keras_interface.PROFILER_NODE_CYCLE_END
+                    x = tf.py_function(
+                        func=keras_interface._profiler_node(profiler_cycle_f),
+                        inp=[inp], Tout=inp.dtype)
+
+                    # Set node shape
+                    x.set_shape(inp.get_shape())
+                    return x
+
+                def compute_output_shape(self, input_shape):
+                    return input_shape
+
+            cls._cycle_layer_cls = ProfilerCycleLayer
 
         # Implement `keras` layer that does nothing, but passes input
         # to the next layer. This layer is used when profiler is disabled.
-        if cls.neutral_layer_cls is None:
+        if cls._neutral_layer_cls is None:
             class ProfilerNeutralLayer(cls.keras.layers.Layer):
                 def call(self, inp):
                     return tf.stop_gradient(inp)
@@ -290,4 +329,4 @@ class KerasInterface(TensorFlowInterface):
                 def compute_output_shape(self, input_shape):
                     return input_shape
 
-            cls.neutral_layer_cls = ProfilerNeutralLayer
+            cls._neutral_layer_cls = ProfilerNeutralLayer
