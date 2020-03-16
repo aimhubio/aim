@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.9 Mar 16 2020
 - Alert prerequisites installation message for running board (gorarakelyan)
 
 ## 1.2.8 Mar 15 2020
