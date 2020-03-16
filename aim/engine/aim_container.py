@@ -8,6 +8,18 @@ class AimContainer:
         return '{name}:{version}'.format(name=AIM_CONTAINER_IMAGE_NAME,
                                          version=version)
 
+    @staticmethod
+    def is_docker_installed():
+        # Check if docker is installed
+        docker = get_module('docker')
+        client = docker.from_env()
+
+        try:
+            client.ping()
+            return True
+        except:
+            return False
+
     def __init__(self, repo, dev=False):
         self.name = '{}_{}'.format(AIM_CONTAINER_PREFIX, repo.hash)
         self.ports = {
