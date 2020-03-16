@@ -13,6 +13,11 @@ def view_entry_point(repo):
         click.echo('Repository does not exist')
         exit()
 
+    if not AimContainer.is_docker_installed():
+        click.echo('Oops! You don\'t have docker installed. ' +
+                   'AimBoard needs docker to run. Please install docker.')
+        exit()
+
 
 @view_entry_point.command()
 @click.option('--dev', is_flag=True)
@@ -31,7 +36,10 @@ def up(repo, dev, version):
     if not cont.image_exist(version):
         click.echo('Pulling aim board image, please wait...')
         if not cont.pull(version):
-            click.echo('An error occurred')
+            click.echo('An error occurred. If you don\'t have access to ' +
+                       'board docker image, please share you DockerID ' +
+                       'with AimHub to get access and continue ' +
+                       'tracking your ML experiments.')
             click.echo('    (use "docker login" for authentication)')
             return
         else:

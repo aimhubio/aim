@@ -1,5 +1,7 @@
 # Changelog
 
+- Alert prerequisites installation message for running board (gorarakelyan)
+
 ## 1.2.8 Mar 15 2020
 - Update profiler interface for keras (gorarakelyan)
 
