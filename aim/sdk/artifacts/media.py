@@ -1,11 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
 from aim.engine.utils import get_module
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.record import Record
 
 
-class Media(Serializable, metaclass=ABCMeta):
+class Media(Artifact, metaclass=ABCMeta):
     cat = ('media',)
 
     def __init__(self, media_data: Any):
@@ -15,27 +16,17 @@ class Media(Serializable, metaclass=ABCMeta):
 
         super(Media, self).__init__(self.cat)
 
-    def serialize(self):
-        serialized = {
-            self.get_type(): {
-                'cat': self.cat,
-            },
-        }
-
-        return serialized
+    def serialize(self) -> Record:
+        return Record(
+            cat=self.cat,
+            binary_type=self.get_type()
+        )
 
     @abstractmethod
     def get_type(self) -> str:
         """
         Returns content type from Serializer in which
         instance content should be saved
-        """
-        ...
-
-    @abstractmethod
-    def save_media(self, path: str, abs_path: str) -> bool:
-        """
-        Stores media at the specified path
         """
         ...
 
@@ -46,7 +37,7 @@ class Image(Media):
     def get_type(self) -> str:
         return self.IMAGE
 
-    def save_media(self, path: str, abs_path: str) -> bool:
+    def save_blobs(self, path: str, abs_path: str = None) -> bool:
         """
         Saves image at specified path
         """

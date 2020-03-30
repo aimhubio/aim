@@ -1,10 +1,11 @@
 from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.artifact import Record
 from aim.sdk.artifacts.media import Media
 
 
-class Misclassification(Serializable):
+class Misclassification(Artifact):
     cat = ('misclassification',)
 
     def __init__(self, name: str, obj: Media, label: Any, meta_label: Any):
@@ -25,13 +26,11 @@ class Misclassification(Serializable):
             }
         }
 
-        serialized = {
-            self.LOG_FILE: {
-                'name': self.name,
-                'cat': self.cat,
-                'content': content,
-                'mode': self.CONTENT_MODE_APPEND,
-            },
-        }
+        return Record(
+            name=self.name,
+            cat=self.cat,
+            content=content,
+        )
 
-        return serialized
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass

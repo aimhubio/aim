@@ -1,5 +1,6 @@
 from aim.engine.aim_repo import AimRepo
 from aim.sdk.artifacts import *
+from aim.sdk.artifacts.artifact_writer import ArtifactWriter
 
 import aim.logger
 
@@ -22,5 +23,6 @@ def track(name: str, *args, **kwargs):
         print('Aim repository not found \n')
         return
 
-    inst.save(repo)
+    writer = ArtifactWriter()
+    writer.save(repo, inst)
     return inst
