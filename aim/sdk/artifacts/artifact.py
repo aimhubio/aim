@@ -12,9 +12,7 @@ class Artifact(metaclass=ABCMeta):
     # List of binary artifact which are processed differently
     IMAGE = 'image'
     MODEL = 'model'
-
-    # List of available file extensions
-    LOG_EXT = 'log'
+    PROTOBUF = 'protobuf'
 
     def __init__(self, cat: tuple):
         self.cat = cat
@@ -31,6 +29,7 @@ class Artifact(metaclass=ABCMeta):
     @abstractmethod
     def save_blobs(self, name: str, abs_path: str = None):
         """
-        Saves additional binary objects (blobs) which are cannot be processed by default ArtifactWriter
+        Saves additional binary objects (blobs) which cannot be processed
+        by default ArtifactWriter
         """
         ...

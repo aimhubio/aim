@@ -2,8 +2,8 @@ from typing import List, Any, Tuple
 
 
 class Record:
-    def __init__(self, cat: Tuple[str], name: str = None, content: Any = None, is_singular: bool = False,
-                 data: Any = None,
+    def __init__(self, cat: Tuple[str], name: str = None, content: Any = None,
+                 is_singular: bool = False, data: Any = None,
                  binary_type: str = None):
         self.name = name
         self.cat = cat
@@ -14,7 +14,8 @@ class Record:
 
 
 class RecordCollection:
-    def __init__(self, name: str, cat: str, records: List[Record] = None, is_singular: bool = False, data: Any = None):
+    def __init__(self, name: str, cat: str, records: List[Record] = None,
+                 is_singular: bool = False, data: Any = None):
         self.name = name
         self.cat = cat
         self.records = records if records is not None else []

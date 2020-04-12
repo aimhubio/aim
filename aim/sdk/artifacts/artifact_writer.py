@@ -1,11 +1,11 @@
 import time
-
 import math
 
 from aim.engine.aim_repo import AimRepo
 from aim.engine.utils import random_str
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record, RecordCollection
+from aim.sdk.artifacts.record_writer import RecordWriter
 
 Writable = [Record, RecordCollection]
 
@@ -33,22 +33,6 @@ class ArtifactWriter:
                 res.append(ArtifactWriter._save_record(repo, artifact, record, dir_rel_path))
 
         # Save dict
-        return res
-
-    @staticmethod
-    def store_file(repo: AimRepo, record: Record, dir_path: str = None) -> dict:
-        file_name = '{n}.{e}'.format(n=record.name,
-                                     e=Artifact.LOG_EXT)
-        write_mode = 'w' if record.is_singular else 'a'
-
-        res = repo.store_file(file_name,
-                              Artifact.LOG_EXT,
-                              record.name,
-                              record.cat,
-                              record.content,
-                              write_mode,
-                              record.data,
-                              dir_path)
         return res
 
     @staticmethod
@@ -81,7 +65,23 @@ class ArtifactWriter:
 
             # Archive model directory
             repo.archive_dir(res['zip_path'], res['dir_path'])
+        elif record.binary_type == Artifact.PROTOBUF:
+            res = repo.store_artifact(record.name,
+                                      record.cat,
+                                      record.data)
+            write_mode = 'w' if record.is_singular else 'a'
+            writer = RecordWriter.get_writer(RecordWriter.AIMRECORDS_WRITER,
+                                             repo.records_storage)
+            writer.write(record.name, write_mode, record.content)
         else:
-            res = ArtifactWriter.store_file(repo, record, dir_path)
+            file_name = '{}.log'.format(record.name)
+            res = repo.store_file(file_name,
+                                  record.name,
+                                  record.cat,
+                                  record.data,
+                                  dir_path)
+            write_mode = 'w' if record.is_singular else 'a'
+            writer = RecordWriter.get_writer(RecordWriter.JSON_LOG_WRITER)
+            writer.write(res['abs_path'], write_mode, record.content)
 
         return res
