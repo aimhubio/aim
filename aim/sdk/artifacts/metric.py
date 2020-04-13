@@ -39,7 +39,7 @@ class Metric(Artifact, metaclass=ABCMeta):
             name=self.name,
             cat=self.cat,
             content=data_bytes,
-            binary_type=self.PROTOBUF,
+            binary_type=self.PROTOBUF
         )
 
     def save_blobs(self, name: str, abs_path: str = None):
