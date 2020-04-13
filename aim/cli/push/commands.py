@@ -5,14 +5,16 @@ import uuid
 import time
 
 from aim.__version__ import __version__ as aim_version
+from aim.cli.remote.utils import get_remotes
 from aim.engine.aim_protocol import FileServerClient, File
 from aim.engine.aim_profile import AimProfile
 from aim.cli.push.utils import send_flags_file
+from aim.cli.branch.utils import get_branches
 
 
 @click.command()
-@click.option('-r', '--remote', default='origin', type=str)
-@click.option('-b', '--branch', default='', type=str)
+@click.option('-r', '--remote', default='origin', type=str, autocompletion=get_remotes)
+@click.option('-b', '--branch', default='', type=str, autocompletion=get_branches)
 @click.option('-c', '--commit', is_flag=True)
 @click.option('-m', '--message', default='', type=str)
 @click.pass_obj

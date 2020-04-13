@@ -11,7 +11,7 @@ from aim.cli.branch import commands as branch_commands
 from aim.cli.commit import commands as commit_commands
 from aim.cli.reset import commands as reset_commands
 from aim.cli.version import commands as version_commands
-from aim.cli.view import commands as view_commands
+from aim.cli.board import commands as view_commands
 from aim.cli.status import commands as status_commands
 
 
@@ -28,11 +28,11 @@ def cli_entry_point(ctx, verbose):
 
 cli_entry_point.add_command(auth_commands.auth, AUTH_NAME)
 cli_entry_point.add_command(init_commands.init, INIT_NAME)
-cli_entry_point.add_command(remote_commands.remote_entry_point, REMOTE_NAME)
-cli_entry_point.add_command(branch_commands.branch_entry_point, BRANCH_NAME)
+cli_entry_point.add_command(remote_commands.remote, REMOTE_NAME)
+cli_entry_point.add_command(branch_commands.branch, BRANCH_NAME)
 cli_entry_point.add_command(push_commands.push, PUSH_NAME)
 cli_entry_point.add_command(commit_commands.commit, COMMIT_NAME)
 cli_entry_point.add_command(reset_commands.reset, RESET_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
-cli_entry_point.add_command(view_commands.view_entry_point, VIEW_NAME)
+cli_entry_point.add_command(view_commands.board, BOARD_NAME)
 cli_entry_point.add_command(status_commands.status, STATUS_NAME)

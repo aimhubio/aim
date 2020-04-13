@@ -8,7 +8,7 @@ from aim.engine.configs import AIM_BOARD_PORT_CLIENT, AIM_BOARD_PORT_SERVER
 
 @click.group()
 @click.pass_obj
-def view_entry_point(repo):
+def board(repo):
     if repo is None:
         click.echo('Repository does not exist')
         exit()
@@ -19,7 +19,7 @@ def view_entry_point(repo):
         exit()
 
 
-@view_entry_point.command()
+@board.command()
 @click.option('--dev', is_flag=True)
 @click.option('-v', '--version', default='latest', type=str)
 @click.pass_obj
@@ -76,7 +76,7 @@ def up(repo, dev, version):
     signal.pause()
 
 
-@view_entry_point.command()
+@board.command()
 @click.pass_obj
 def down(repo):
     cont = AimContainer(repo)
@@ -85,7 +85,7 @@ def down(repo):
     cont.kill()
 
 
-@view_entry_point.command()
+@board.command()
 @click.pass_obj
 def upgrade(repo):
     cont = AimContainer(repo)
@@ -100,7 +100,7 @@ def upgrade(repo):
         click.echo('    (use "docker login" for authentication)')
 
 
-@view_entry_point.command()
+@board.command()
 @click.option('-v', '--version', required=True, type=str)
 @click.pass_obj
 def pull(repo, version):

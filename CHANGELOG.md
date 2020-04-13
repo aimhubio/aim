@@ -1,5 +1,7 @@
 # Changelog
 
+- Add autocompletion for CLI commands (mike1808)
+
 ## 1.2.11 Apr 16 2020
 - Make epoch property optional for Metric (gorarakelyan)
 

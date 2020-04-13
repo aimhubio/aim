@@ -1,9 +1,11 @@
 import click
 
+from aim.cli.remote.utils import get_remotes
+
 
 @click.group()
 @click.pass_obj
-def remote_entry_point(repo):
+def remote(repo):
     if repo is None:
         click.echo('Repository does not exist')
         exit()
@@ -11,7 +13,7 @@ def remote_entry_point(repo):
     click.echo(click.style('Repository found at {} '.format(repo), fg='yellow'))
 
 
-@remote_entry_point.command()
+@remote.command()
 @click.option('-n', '--name', required=True, type=str)
 @click.option('-u', '--url', required=True, type=str)
 @click.pass_obj
@@ -36,8 +38,8 @@ def add(repo, name, url):
     click.echo('New remote is added')
 
 
-@remote_entry_point.command()
-@click.option('-n', '--name', required=True, type=str)
+@remote.command()
+@click.option('-n', '--name', required=True, type=str, autocompletion=get_remotes)
 @click.pass_obj
 def rm(repo, name):
     if repo is None:
@@ -60,7 +62,7 @@ def rm(repo, name):
     click.echo('Remote {} is removed'.format(name))
 
 
-@remote_entry_point.command()
+@remote.command()
 @click.pass_obj
 def ls(repo):
     if repo is None:

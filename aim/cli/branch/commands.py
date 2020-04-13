@@ -1,9 +1,11 @@
 import click
 
+from aim.cli.branch.utils import get_branches
+
 
 @click.group()
 @click.pass_obj
-def branch_entry_point(repo):
+def branch(repo):
     if repo is None:
         click.echo('Repository does not exist')
         exit()
@@ -12,7 +14,7 @@ def branch_entry_point(repo):
         click.style('Repository found at {} '.format(repo), fg='yellow'))
 
 
-@branch_entry_point.command()
+@branch.command()
 @click.option('-n', '--name', required=True, type=str)
 @click.pass_obj
 def add(repo, name):
@@ -36,7 +38,7 @@ def add(repo, name):
     click.echo('New branch is added')
 
 
-@branch_entry_point.command()
+@branch.command()
 @click.pass_obj
 def ls(repo):
     if repo is None:
@@ -52,8 +54,8 @@ def ls(repo):
             click.echo(branch_output)
 
 
-@branch_entry_point.command()
-@click.option('-n', '--name', required=True, type=str)
+@branch.command()
+@click.option('-n', '--name', required=True, type=str, autocompletion=get_branches)
 @click.pass_obj
 def checkout(repo, name):
     if repo is None:
@@ -68,8 +70,8 @@ def checkout(repo, name):
     click.echo('Checkout to {} branch'.format(name))
 
 
-@branch_entry_point.command()
-@click.option('-n', '--name', required=True, type=str)
+@branch.command()
+@click.option('-n', '--name', required=True, type=str, autocompletion=get_branches)
 @click.pass_obj
 def rm(repo, name):
     if repo is None:
