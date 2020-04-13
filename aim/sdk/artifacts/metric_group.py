@@ -1,12 +1,13 @@
-from typing import Any
-from abc import ABCMeta
 import json
+from abc import ABCMeta
+from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
 from aim.engine.utils import is_pytorch_optim
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.record import Record
 
 
-class MetricGroup(Serializable, metaclass=ABCMeta):
+class MetricGroup(Artifact, metaclass=ABCMeta):
     cat = ('metric_groups',)
 
     def __init__(self, name: str, value: Any, labels: list = None):
@@ -34,22 +35,20 @@ class MetricGroup(Serializable, metaclass=ABCMeta):
         return '{name}: {values}'.format(name=self.name,
                                          values=self.values)
 
-    def serialize(self) -> dict:
-        serialized = {
-            self.LOG_FILE: {
-                'name': self.name,
-                'cat': self.cat,
-                'content': json.dumps(self.values),
-                'mode': self.CONTENT_MODE_APPEND,
-                'data': {
-                    'labels': self.labels,
-                    'range': self.labels_range,
-                    'meta': self.meta,
-                },
+    def serialize(self) -> Record:
+        return Record(
+            name=self.name,
+            cat=self.cat,
+            content=json.dumps(self.values),
+            data={
+                'labels': self.labels,
+                'range': self.labels_range,
+                'meta': self.meta,
             },
-        }
+        )
 
-        return serialized
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass
 
 
 class LearningRate(MetricGroup):

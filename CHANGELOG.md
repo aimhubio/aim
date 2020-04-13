@@ -1,5 +1,8 @@
 # Changelog
 
+- Create RecordWriter factory which handles artifact records saving (gorarakelyan)
+- Extract artifact serialization to ArtifactWriter (mike1808)
+
 ## 1.2.9 Mar 16 2020
 - Alert prerequisites installation message for running board (gorarakelyan)
 

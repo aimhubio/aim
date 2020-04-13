@@ -6,6 +6,8 @@ import re
 import time
 import hashlib
 
+from aimrecords import Storage
+
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir
@@ -79,19 +81,16 @@ class AimRepo:
         self.hash = hashlib.md5(path.encode('utf-8')).hexdigest()
         self.name = path.split(os.sep)[-1]
 
-        if self.config:
-            self._branch = self.config.get('active_branch')
-        else:
-            self._branch = AIM_DEFAULT_BRANCH_NAME
+        self.branch_path = None
+        self.index_path = None
+        self.objects_dir_path = None
+        self.media_dir_path = None
+        self.records_storage = None
 
-        self.branch_path = os.path.join(self.path,
-                                        self._branch)
-        self.index_path = os.path.join(self.branch_path,
-                                       AIM_COMMIT_INDEX_DIR_NAME)
-        self.objects_dir_path = os.path.join(self.index_path,
-                                             AIM_OBJECTS_DIR_NAME)
-        self.media_dir_path = os.path.join(self.objects_dir_path,
-                                           AIM_MEDIA_DIR_NAME)
+        if self.config:
+            self.branch = self.config.get('active_branch')
+        else:
+            self.branch = AIM_DEFAULT_BRANCH_NAME
 
     def __str__(self):
         return self.path
@@ -120,6 +119,27 @@ class AimRepo:
     @branch.setter
     def branch(self, branch):
         self._branch = branch
+
+        self.branch_path = os.path.join(self.path,
+                                        self._branch)
+        self.index_path = os.path.join(self.branch_path,
+                                       AIM_COMMIT_INDEX_DIR_NAME)
+        self.objects_dir_path = os.path.join(self.index_path,
+                                             AIM_OBJECTS_DIR_NAME)
+        self.media_dir_path = os.path.join(self.objects_dir_path,
+                                           AIM_MEDIA_DIR_NAME)
+
+        if self.records_storage:
+            self.records_storage.close()
+        self.records_storage = Storage(self.objects_dir_path,
+                                       Storage.WRITING_MODE)
+
+    def close_records_storage(self):
+        """
+        Finalizes and closes records storage
+        """
+        if self.records_storage:
+            self.records_storage.close()
 
     def save_config(self):
         """
@@ -243,8 +263,7 @@ class AimRepo:
 
         return dir_path, dir_rel_path
 
-    def store_file(self, file_name, ext, name, cat, content, mode='a', data={},
-                   rel_dir_path=None):
+    def store_file(self, file_name, name, cat, data={}, rel_dir_path=None):
         """
         Appends new data to the specified file or rewrites it
         and updates repo meta file
@@ -260,11 +279,6 @@ class AimRepo:
         # Create directory if not exists
         if not os.path.isdir(dir_path):
             os.makedirs(dir_path, exist_ok=True)
-
-        if ext == 'json':
-            self.append_to_json(data_file_path, mode, content)
-        elif ext == 'log':
-            self.append_to_log(data_file_path, mode, content)
 
         # Update meta file
         if rel_dir_path is not None:
@@ -284,41 +298,20 @@ class AimRepo:
             'abs_path': data_file_path,
         }
 
-    @staticmethod
-    def append_to_json(data_file_path, mode, content):
-        if not os.path.isfile(data_file_path):
-            # Create data file
-            data_file_content = []
-            data_file = open(data_file_path, 'w+')
-        else:
-            # Get object content
-            data_file = open(data_file_path, 'r+')
-            data_file_content = json.loads(data_file.read())
+    def store_artifact(self, name, cat, data={}):
+        """
+        Adds artifact info to the repo meta file
+        """
+        self.update_meta_file(name, {
+            'name': name,
+            'type': cat[-1],
+            'data': data,
+            'data_path': '__AIMRECORDS__',
+        })
 
-        # Set data file content
-        if mode == 'a':
-            data_file_content.append(content)
-        elif mode == 'w':
-            data_file_content = [content]
-
-        # Update and close data file
-        data_file.seek(0)
-        data_file.truncate()
-        data_file.write(json.dumps(data_file_content))
-        data_file.close()
-
-    @staticmethod
-    def append_to_log(data_file_path, mode, content):
-        data_file = None
-        if mode == 'a':
-            data_file = open(data_file_path, 'a')
-        elif mode == 'w':
-            data_file = open(data_file_path, 'w')
-
-        if data_file is not None:
-            if content:
-                data_file.writelines([json.dumps(content), '\n'])
-            data_file.close()
+        return {
+            'name': name,
+        }
 
     def store_image(self, name, cat, save_to_meta=False):
         """

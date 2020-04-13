@@ -1,10 +1,11 @@
-from typing import Any
 from abc import ABCMeta
+from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.record import Record
 
 
-class HyperParameters(Serializable, metaclass=ABCMeta):
+class HyperParameters(Artifact, metaclass=ABCMeta):
     name = 'hyperparameters'
     cat = ('hyperparameters',)
 
@@ -17,14 +18,13 @@ class HyperParameters(Serializable, metaclass=ABCMeta):
         return '{name}: {value}'.format(name=self.name,
                                         value=self.value)
 
-    def serialize(self) -> dict:
-        serialized = {
-            self.LOG_FILE: {
-                'name': self.name,
-                'cat': self.cat,
-                'content': self.value,
-                'mode': self.CONTENT_MODE_WRITE,
-            },
-        }
+    def serialize(self) -> Record:
+        return Record(
+            name=self.name,
+            cat=self.cat,
+            content=self.value,
+            is_singular=True,
+        )
 
-        return serialized
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass

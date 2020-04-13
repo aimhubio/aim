@@ -1,10 +1,11 @@
-from typing import Any
 from abc import ABCMeta
+from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
+from aim.sdk.artifacts import Record
+from aim.sdk.artifacts.artifact import Artifact
 
 
-class Metric(Serializable, metaclass=ABCMeta):
+class Metric(Artifact, metaclass=ABCMeta):
     cat = ('metrics',)
 
     def __init__(self, name: str, value: Any):
@@ -17,17 +18,15 @@ class Metric(Serializable, metaclass=ABCMeta):
         return '{name}: {value}'.format(name=self.name,
                                         value=self.value)
 
-    def serialize(self) -> dict:
-        serialized = {
-            self.LOG_FILE: {
-                'name': self.name,
-                'cat': self.cat,
-                'content': self.value,
-                'mode': self.CONTENT_MODE_APPEND,
-            },
-        }
+    def serialize(self) -> Record:
+        return Record(
+            name=self.name,
+            cat=self.cat,
+            content=self.value,
+        )
 
-        return serialized
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass
 
 
 class Accuracy(Metric):

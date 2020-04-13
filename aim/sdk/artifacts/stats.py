@@ -1,10 +1,11 @@
-from typing import Any
 from abc import ABCMeta
+from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.record import Record, RecordCollection
 
 
-class Stats(Serializable, metaclass=ABCMeta):
+class Stats(Artifact, metaclass=ABCMeta):
     cat = ('stats',)
 
     def __init__(self, name: str, stats: Any):
@@ -16,17 +17,9 @@ class Stats(Serializable, metaclass=ABCMeta):
     def __str__(self):
         return self.name
 
-    def serialize(self) -> dict:
-        serialized = {
-            self.DIR: {
-                'name': self.name,
-                'cat': self.cat[0],
-                'files': [],
-                'data': {
-                    'stats': [],
-                },
-            },
-        }
+    def serialize(self) -> RecordCollection:
+        records = []
+        stats = []
 
         transposed_stats = {}
         for stat_key, stat_value in self.stats.items():
@@ -36,19 +29,22 @@ class Stats(Serializable, metaclass=ABCMeta):
 
         for resource_key, resource_usage in transposed_stats.items():
             serialized_item = self.serialize_item(resource_key, resource_usage)
-            serialized[self.DIR]['files'].append(serialized_item)
-            serialized[self.DIR]['data']['stats'].append(resource_key)
+            records.append(serialized_item)
+            stats.append(resource_key)
 
-        return serialized
+        return RecordCollection(
+            name=self.name,
+            cat=self.cat[0],
+            records=records,
+            data={'stats': stats},
+        )
 
     def serialize_item(self, file_name, content):
-        serialized = {
-            self.LOG_FILE: {
-                'name': file_name,
-                'cat': self.cat,
-                'content': content,
-                'mode': self.CONTENT_MODE_APPEND,
-            },
-        }
+        return Record(
+            name=file_name,
+            cat=self.cat,
+            content=content,
+        )
 
-        return serialized
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass
