@@ -66,13 +66,16 @@ class ArtifactWriter:
             # Archive model directory
             repo.archive_dir(res['zip_path'], res['dir_path'])
         elif record.binary_type == Artifact.PROTOBUF:
-            res = repo.store_artifact(record.name,
-                                      record.cat,
-                                      record.data)
+            writer_type = RecordWriter.AIMRECORDS_WRITER
             write_mode = 'w' if record.is_singular else 'a'
-            writer = RecordWriter.get_writer(RecordWriter.AIMRECORDS_WRITER,
+            writer = RecordWriter.get_writer(writer_type,
                                              repo.records_storage)
             writer.write(record.name, write_mode, record.content)
+            res = repo.store_artifact(record.name,
+                                      record.cat,
+                                      record.data,
+                                      writer_type,
+                                      record.binary_type)
         else:
             file_name = '{}.log'.format(record.name)
             res = repo.store_file(file_name,

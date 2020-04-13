@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package artifacts.proto;
+
+message MetricRecord {
+  double value = 1;
+}

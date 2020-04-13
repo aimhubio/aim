@@ -1,6 +1,9 @@
 from abc import ABCMeta, abstractmethod
+import time
+from google.protobuf.reflection import GeneratedProtocolMessageType
 
 from aim.sdk.artifacts.record import Record, RecordCollection
+from aim.sdk.artifacts.proto.base_pb2 import BaseRecord
 
 Writable = [Record, RecordCollection]
 
@@ -33,3 +36,14 @@ class Artifact(metaclass=ABCMeta):
         by default ArtifactWriter
         """
         ...
+
+    def serialize_pb_object(self, artifact: GeneratedProtocolMessageType,
+                            step: int = None, epoch: int = None) -> bytes:
+        base_pb = BaseRecord()
+        base_pb.step = step
+        base_pb.timestamp = int(time.time())
+        base_pb.artifact = artifact.SerializeToString()
+        base_pb.epoch = epoch
+        base_bytes = base_pb.SerializeToString()
+
+        return base_bytes
