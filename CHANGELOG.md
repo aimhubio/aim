@@ -1,5 +1,6 @@
 # Changelog
 
+- Serialize and store `Metric` records using protobuf and aimrecords (gorarakelyan)
 - Create RecordWriter factory which handles artifact records saving (gorarakelyan)
 - Extract artifact serialization to ArtifactWriter (mike1808)
 

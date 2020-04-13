@@ -298,7 +298,8 @@ class AimRepo:
             'abs_path': data_file_path,
         }
 
-    def store_artifact(self, name, cat, data={}):
+    def store_artifact(self, name, cat, data, artifact_format=None,
+                       binary_format=None):
         """
         Adds artifact info to the repo meta file
         """
@@ -307,6 +308,10 @@ class AimRepo:
             'type': cat[-1],
             'data': data,
             'data_path': '__AIMRECORDS__',
+            'format': {
+                'artifact_format': artifact_format,
+                'record_format': binary_format,
+            },
         })
 
         return {
