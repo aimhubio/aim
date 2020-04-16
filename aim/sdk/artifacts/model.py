@@ -1,14 +1,15 @@
-import os
-import zipfile
 import json
+import os
 import tempfile
+import zipfile
 from typing import Any
 
 from aim.engine.utils import is_keras_model, is_pytorch_module, get_module
-from aim.sdk.artifacts.serializable import Serializable
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.record import Record
 
 
-class Checkpoint(Serializable):
+class Checkpoint(Artifact):
     cat = ('models',)
 
     @staticmethod
@@ -82,27 +83,24 @@ class Checkpoint(Serializable):
 
         # Define model backend lib
         lib = 'keras' if is_keras_model(self.model) else \
-              'pytorch' if is_pytorch_module(self.model) else None
+            'pytorch' if is_pytorch_module(self.model) else None
         self.lib = lib
 
         super(Checkpoint, self).__init__(self.cat)
 
-    def serialize(self) -> dict:
-        serialized = {
-            self.MODEL: {
-                'name': self.checkpoint_name,
-                'cat': self.cat,
-                'data': {
-                    'epoch': self.epoch,
-                    'model_name': self.name,
-                    'meta': self.meta,
-                },
+    def serialize(self) -> Record:
+        return Record(
+            binary_type=self.MODEL,
+            name=self.checkpoint_name,
+            cat=self.cat,
+            data={
+                'epoch': self.epoch,
+                'model_name': self.name,
+                'meta': self.meta,
             },
-        }
+        )
 
-        return serialized
-
-    def save_model(self, path: str) -> dict:
+    def save_blobs(self, path: str, abs_path: str = None) -> dict:
         # Save torch model to path
         if self.lib == 'pytorch':
             torch = get_module('torch')

@@ -1,12 +1,13 @@
-from typing import Any
 from abc import ABCMeta, abstractmethod
+from typing import Any
 
-from aim.sdk.artifacts.serializable import Serializable
 from aim.engine.utils import is_pytorch_module, get_module
+from aim.sdk.artifacts.artifact import Artifact
+from aim.sdk.artifacts.record import Record, RecordCollection
 from aim.sdk.artifacts.utils import get_pt_tensor
 
 
-class Distribution(Serializable):
+class Distribution(Artifact):
     cat = ('distribution',)
 
     def __init__(self, name: str, dist: Any):
@@ -18,61 +19,60 @@ class Distribution(Serializable):
     def __str__(self):
         return '{name}'.format(name=self.name)
 
-    def serialize(self) -> dict:
-        serialized = {
-            self.LOG_FILE: {
-                'name': self.name,
-                'cat': self.cat,
-                'content': self.dist,
-                'mode': self.CONTENT_MODE_APPEND,
-            },
-        }
+    def serialize(self) -> Record:
+        return Record(
+            name=self.name,
+            cat=self.cat,
+            content=self.dist,
+        )
 
-        return serialized
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass
 
 
-class ModelDistribution(Serializable, metaclass=ABCMeta):
+class ModelDistribution(Artifact, metaclass=ABCMeta):
     def __init__(self, model: Any):
         self.model = model
         self.hist = self.get_layers(self.model)
 
         super(ModelDistribution, self).__init__(self.cat)
 
-    def serialize(self):
-        serialized = {
-            self.DIR: {
-                'name': self.name,
-                'cat': self.cat[0],
-                'files': [],
-                'data': {
-                    'layers': [],
-                },
-            },
-        }
+    def serialize(self) -> RecordCollection:
+        records = []
+        layers = []
 
         for name, params in self.hist.items():
-            serialized_dir = serialized[self.DIR]
             w_dist_name = b_dist_name = ''
 
             # Serialize layer weights
             if 'weight' in params:
                 w_dist_name = '{}__weight'.format(name)
                 w_dist = Distribution(w_dist_name, params['weight'])
-                serialized_dir['files'].append(w_dist.serialize())
+                records.append(w_dist.serialize())
 
             # Serialize layer biases
             if 'bias' in params:
                 b_dist_name = '{}__bias'.format(name)
                 b_dist = Distribution(b_dist_name, params['bias'])
-                serialized_dir['files'].append(b_dist.serialize())
+                records.append(b_dist.serialize())
 
-            serialized_dir['data']['layers'].append({
+            layers.append({
                 'name': name,
                 'weight': w_dist_name,
                 'bias': b_dist_name,
             })
 
-        return serialized
+        return RecordCollection(
+            name=self.name,
+            cat=self.cat[0],
+            records=records,
+            data={
+                'layers': layers,
+            },
+        )
+
+    def save_blobs(self, name: str, abs_path: str = None):
+        pass
 
     @staticmethod
     @abstractmethod
@@ -104,7 +104,6 @@ class WeightsDistribution(ModelDistribution):
                     if hasattr(m, 'weight') \
                             and m.weight is not None \
                             and hasattr(m.weight, 'data'):
-
                         weight_arr = get_pt_tensor(m.weight.data).numpy()
                         weight_hist = np.histogram(weight_arr, 30)
                         layers[layer_name]['weight'] = [
@@ -115,7 +114,6 @@ class WeightsDistribution(ModelDistribution):
                     if hasattr(m, 'bias') \
                             and m.bias is not None \
                             and hasattr(m.bias, 'data'):
-
                         bias_arr = get_pt_tensor(m.bias.data).numpy()
                         bias_hist = np.histogram(bias_arr, 30)
                         layers[layer_name]['bias'] = [
@@ -150,7 +148,6 @@ class GradientsDistribution(ModelDistribution):
                     if hasattr(m, 'weight') \
                             and m.weight is not None \
                             and hasattr(m.weight, 'grad'):
-
                         weight_grad_arr = get_pt_tensor(m.weight.grad).numpy()
                         weight_hist = np.histogram(weight_grad_arr, 30)
                         layers[layer_name]['weight'] = [
@@ -161,7 +158,6 @@ class GradientsDistribution(ModelDistribution):
                     if hasattr(m, 'bias') \
                             and m.bias is not None \
                             and hasattr(m.bias, 'grad'):
-
                         bias_grad_arr = get_pt_tensor(m.bias.grad).numpy()
                         bias_hist = np.histogram(bias_grad_arr, 30)
                         layers[layer_name]['bias'] = [

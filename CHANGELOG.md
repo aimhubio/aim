@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.10 Apr 16 2020
+- Serialize and store `Metric` records using protobuf and aimrecords (gorarakelyan)
+- Create RecordWriter factory which handles artifact records saving (gorarakelyan)
+- Extract artifact serialization to ArtifactWriter (mike1808)
+
 ## 1.2.9 Mar 16 2020
 - Alert prerequisites installation message for running board (gorarakelyan)
 
