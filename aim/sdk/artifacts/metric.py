@@ -14,7 +14,7 @@ class Metric(Artifact, metaclass=ABCMeta):
                  step: int = None):
         self.name = name
         self.value = value
-        self.epoch = epoch
+        self.epoch = epoch or 0
 
         if step is not None:
             self.step = step
