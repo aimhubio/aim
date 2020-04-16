@@ -34,7 +34,7 @@ REQUIRED = [
     'psutil>=5.6.7',
     'py3nvml>=0.2.5',
     'docker>=4.1.0',
-    'aimrecords>=0.0.2',
+    'aimrecords>=0.0.3',
     'protobuf>=3.11.0',
 ]
 
