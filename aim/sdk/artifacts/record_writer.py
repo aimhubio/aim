@@ -3,8 +3,6 @@ from abc import ABCMeta, abstractmethod
 import json
 from typing import Any
 
-import aimrecords
-
 
 class AbstractRecordWriter(metaclass=ABCMeta):
     APPEND_MODE = 'a'
@@ -53,13 +51,15 @@ class JsonLogRecordWriter(AbstractRecordWriter):
 
 
 class AimRecordWriter(AbstractRecordWriter):
-    def __init__(self, storage: aimrecords.Storage):
+    def __init__(self, storage):
         self.storage = storage
 
     def write(self, artifact_name: str, mode: str, content: bytes) -> int:
         if artifact_name not in self.storage:
             self.storage.open(artifact_name, compression='gzip')
-        return self.storage.append_record(artifact_name, content)
+        record_id = self.storage.append_record(artifact_name, content)
+        self.storage.flush(artifact_name)
+        return record_id
 
 
 class RecordWriter:

@@ -6,11 +6,9 @@ import re
 import time
 import hashlib
 
-from aimrecords import Storage
-
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
-from aim.engine.utils import is_path_creatable, ls_dir
+from aim.engine.utils import is_path_creatable, ls_dir, import_module
 
 
 class AimRepo:
@@ -131,8 +129,11 @@ class AimRepo:
 
         if self.records_storage:
             self.records_storage.close()
-        self.records_storage = Storage(self.objects_dir_path,
-                                       Storage.WRITING_MODE)
+
+        aimrecords = import_module('aimrecords')
+        storage = aimrecords.Storage
+        self.records_storage = storage(self.objects_dir_path,
+                                       storage.WRITING_MODE)
 
     def close_records_storage(self):
         """
