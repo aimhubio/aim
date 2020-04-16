@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.11 Apr 16 2020
+- Make epoch property optional for Metric (gorarakelyan)
+
 ## 1.2.10 Apr 16 2020
 - Serialize and store `Metric` records using protobuf and aimrecords (gorarakelyan)
 - Create RecordWriter factory which handles artifact records saving (gorarakelyan)
