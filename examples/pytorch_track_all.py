@@ -108,7 +108,7 @@ for epoch in range(num_epochs):
 
             # aim - Track model loss function
             scheduler.step(loss)
-            track(aim.loss, 'loss', loss.item())
+            track(aim.loss, 'loss', loss.item(), epoch)
 
             track(aim.learning_rate, optimizer, [
                 'layer1_conv',
@@ -124,7 +124,7 @@ for epoch in range(num_epochs):
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-            track(aim.accuracy, 'accuracy', 100 * correct / total)
+            track(aim.accuracy, 'accuracy', 100 * correct / total, epoch)
 
             # aim - Track last layer correlation
             track(aim.label_correlation, 'corr', outputs, labels=[
