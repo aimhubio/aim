@@ -87,8 +87,6 @@ class AimRepo:
 
         if self.config:
             self.branch = self.config.get('active_branch')
-        else:
-            self.branch = AIM_DEFAULT_BRANCH_NAME
 
     def __str__(self):
         return self.path
@@ -130,10 +128,11 @@ class AimRepo:
         if self.records_storage:
             self.records_storage.close()
 
-        aimrecords = import_module('aimrecords')
-        storage = aimrecords.Storage
-        self.records_storage = storage(self.objects_dir_path,
-                                       storage.WRITING_MODE)
+        if os.path.exists(self.branch_path):
+            aimrecords = import_module('aimrecords')
+            storage = aimrecords.Storage
+            self.records_storage = storage(self.objects_dir_path,
+                                           storage.WRITING_MODE)
 
     def close_records_storage(self):
         """
