@@ -42,7 +42,11 @@ class Artifact(metaclass=ABCMeta):
         base_pb.step = step
         base_pb.timestamp = int(time.time())
         base_pb.artifact = artifact.SerializeToString()
-        base_pb.epoch = epoch
+        if epoch is not None:
+            base_pb.epoch = epoch
+            base_pb.has_epoch = True
+        else:
+            base_pb.has_epoch = False
         base_bytes = base_pb.SerializeToString()
 
         return base_bytes

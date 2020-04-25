@@ -7,3 +7,4 @@ from aim.sdk.artifacts.metric_group import *
 from aim.sdk.artifacts.misclassification import *
 from aim.sdk.artifacts.model import *
 from aim.sdk.artifacts.stats import *
+from aim.sdk.artifacts.segmentation import *

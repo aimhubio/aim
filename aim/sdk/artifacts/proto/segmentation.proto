@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package artifacts.proto;
+
+message SegmentationRecord {
+  string cat = 1;
+  string path = 2;
+  repeated SegmentationMask mask = 3;
+}
+
+message SegmentationMask {
+  repeated double data = 1;
+}
