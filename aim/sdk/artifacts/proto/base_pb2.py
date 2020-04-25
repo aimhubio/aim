@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='base.proto',
   package='artifacts.proto',
   syntax='proto3',
-  serialized_pb=_b('\n\nbase.proto\x12\x0f\x61rtifacts.proto\"N\n\nBaseRecord\x12\x0c\n\x04step\x18\x01 \x01(\x05\x12\x11\n\ttimestamp\x18\x02 \x01(\x03\x12\x10\n\x08\x61rtifact\x18\x03 \x01(\x0c\x12\r\n\x05\x65poch\x18\x04 \x01(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\nbase.proto\x12\x0f\x61rtifacts.proto\"a\n\nBaseRecord\x12\x0c\n\x04step\x18\x01 \x01(\x05\x12\x11\n\ttimestamp\x18\x02 \x01(\x03\x12\x10\n\x08\x61rtifact\x18\x03 \x01(\x0c\x12\r\n\x05\x65poch\x18\x04 \x01(\x05\x12\x11\n\thas_epoch\x18\x05 \x01(\x08\x62\x06proto3')
 )
 
 
@@ -60,6 +60,13 @@ _BASERECORD = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='has_epoch', full_name='artifacts.proto.BaseRecord.has_epoch', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -73,7 +80,7 @@ _BASERECORD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=31,
-  serialized_end=109,
+  serialized_end=128,
 )
 
 DESCRIPTOR.message_types_by_name['BaseRecord'] = _BASERECORD

@@ -1,5 +1,7 @@
 # Changelog
 
+- Add image semantic segmentation tracking (gorarakelyan)
+
 ## 1.2.12 Apr 20 2020
 - Add missing init file for aim.sdk.artifacts.proto (@mike1808)
 

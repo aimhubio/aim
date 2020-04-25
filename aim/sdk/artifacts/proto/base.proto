@@ -7,4 +7,5 @@ message BaseRecord {
   int64 timestamp = 2;
   bytes artifact = 3;
   int32 epoch = 4;
+  bool has_epoch = 5;
 }
