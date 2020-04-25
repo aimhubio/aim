@@ -52,6 +52,8 @@ class AimRepo:
                 return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
         elif cat[0] == 'misclassification':
             return AIM_ANNOT_DIR_NAME
+        elif cat[0] == 'segmentation':
+            return AIM_SEG_DIR_NAME
         elif cat[0] == 'models':
             return AIM_MODELS_DIR_NAME
         elif cat[0] == 'correlation':
@@ -516,7 +518,7 @@ class AimRepo:
         Returns `True` if index directory is empty and
         `False` otherwise
         """
-        if len(os.listdir(self.index_path)):
+        if len(ls_dir([self.index_path])):
             return False
         return True
 
