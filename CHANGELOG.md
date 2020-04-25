@@ -1,5 +1,6 @@
 # Changelog
 
+- Remove GitHub security alert (gorarakelyan)
 - Add image semantic segmentation tracking (gorarakelyan)
 
 ## 1.2.12 Apr 20 2020
