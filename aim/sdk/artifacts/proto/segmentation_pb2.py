@@ -19,11 +19,71 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='segmentation.proto',
   package='artifacts.proto',
   syntax='proto3',
-  serialized_pb=_b('\n\x12segmentation.proto\x12\x0f\x61rtifacts.proto\"`\n\x12SegmentationRecord\x12\x0b\n\x03\x63\x61t\x18\x01 \x01(\t\x12\x0c\n\x04path\x18\x02 \x01(\t\x12/\n\x04mask\x18\x03 \x03(\x0b\x32!.artifacts.proto.SegmentationMask\" \n\x10SegmentationMask\x12\x0c\n\x04\x64\x61ta\x18\x01 \x03(\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x12segmentation.proto\x12\x0f\x61rtifacts.proto\"\xb2\x01\n\x12SegmentationRecord\x12\x0b\n\x03\x63\x61t\x18\x01 \x01(\t\x12\x0c\n\x04path\x18\x02 \x01(\t\x12\x0c\n\x04mask\x18\x03 \x01(\x0c\x12\x17\n\x0fgzip_compressed\x18\x04 \x01(\x08\x1aZ\n\x04Mask\x12:\n\x04rows\x18\x01 \x03(\x0b\x32,.artifacts.proto.SegmentationRecord.Mask.Row\x1a\x16\n\x03Row\x12\x0f\n\x07\x63olumns\x18\x01 \x03(\x01\x62\x06proto3')
 )
 
 
 
+
+_SEGMENTATIONRECORD_MASK_ROW = _descriptor.Descriptor(
+  name='Row',
+  full_name='artifacts.proto.SegmentationRecord.Mask.Row',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='columns', full_name='artifacts.proto.SegmentationRecord.Mask.Row.columns', index=0,
+      number=1, type=1, cpp_type=5, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=196,
+  serialized_end=218,
+)
+
+_SEGMENTATIONRECORD_MASK = _descriptor.Descriptor(
+  name='Mask',
+  full_name='artifacts.proto.SegmentationRecord.Mask',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rows', full_name='artifacts.proto.SegmentationRecord.Mask.rows', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_SEGMENTATIONRECORD_MASK_ROW, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=128,
+  serialized_end=218,
+)
 
 _SEGMENTATIONRECORD = _descriptor.Descriptor(
   name='SegmentationRecord',
@@ -48,46 +108,22 @@ _SEGMENTATIONRECORD = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='mask', full_name='artifacts.proto.SegmentationRecord.mask', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=39,
-  serialized_end=135,
-)
-
-
-_SEGMENTATIONMASK = _descriptor.Descriptor(
-  name='SegmentationMask',
-  full_name='artifacts.proto.SegmentationMask',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='artifacts.proto.SegmentationMask.data', index=0,
-      number=1, type=1, cpp_type=5, label=3,
-      has_default_value=False, default_value=[],
+      name='gzip_compressed', full_name='artifacts.proto.SegmentationRecord.gzip_compressed', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_SEGMENTATIONRECORD_MASK, ],
   enum_types=[
   ],
   options=None,
@@ -96,28 +132,38 @@ _SEGMENTATIONMASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=137,
-  serialized_end=169,
+  serialized_start=40,
+  serialized_end=218,
 )
 
-_SEGMENTATIONRECORD.fields_by_name['mask'].message_type = _SEGMENTATIONMASK
+_SEGMENTATIONRECORD_MASK_ROW.containing_type = _SEGMENTATIONRECORD_MASK
+_SEGMENTATIONRECORD_MASK.fields_by_name['rows'].message_type = _SEGMENTATIONRECORD_MASK_ROW
+_SEGMENTATIONRECORD_MASK.containing_type = _SEGMENTATIONRECORD
 DESCRIPTOR.message_types_by_name['SegmentationRecord'] = _SEGMENTATIONRECORD
-DESCRIPTOR.message_types_by_name['SegmentationMask'] = _SEGMENTATIONMASK
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 SegmentationRecord = _reflection.GeneratedProtocolMessageType('SegmentationRecord', (_message.Message,), dict(
+
+  Mask = _reflection.GeneratedProtocolMessageType('Mask', (_message.Message,), dict(
+
+    Row = _reflection.GeneratedProtocolMessageType('Row', (_message.Message,), dict(
+      DESCRIPTOR = _SEGMENTATIONRECORD_MASK_ROW,
+      __module__ = 'segmentation_pb2'
+      # @@protoc_insertion_point(class_scope:artifacts.proto.SegmentationRecord.Mask.Row)
+      ))
+    ,
+    DESCRIPTOR = _SEGMENTATIONRECORD_MASK,
+    __module__ = 'segmentation_pb2'
+    # @@protoc_insertion_point(class_scope:artifacts.proto.SegmentationRecord.Mask)
+    ))
+  ,
   DESCRIPTOR = _SEGMENTATIONRECORD,
   __module__ = 'segmentation_pb2'
   # @@protoc_insertion_point(class_scope:artifacts.proto.SegmentationRecord)
   ))
 _sym_db.RegisterMessage(SegmentationRecord)
-
-SegmentationMask = _reflection.GeneratedProtocolMessageType('SegmentationMask', (_message.Message,), dict(
-  DESCRIPTOR = _SEGMENTATIONMASK,
-  __module__ = 'segmentation_pb2'
-  # @@protoc_insertion_point(class_scope:artifacts.proto.SegmentationMask)
-  ))
-_sym_db.RegisterMessage(SegmentationMask)
+_sym_db.RegisterMessage(SegmentationRecord.Mask)
+_sym_db.RegisterMessage(SegmentationRecord.Mask.Row)
 
 
 # @@protoc_insertion_point(module_scope)

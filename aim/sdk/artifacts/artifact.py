@@ -50,3 +50,10 @@ class Artifact(metaclass=ABCMeta):
         base_bytes = base_pb.SerializeToString()
 
         return base_bytes
+
+    def get_inst_unique_name(self):
+        """
+        Returns unique name for an artifact instance. Is useful when the same
+        type of artifact need to be distributed across files
+        """
+        return self.name if hasattr(self, 'name') else None
