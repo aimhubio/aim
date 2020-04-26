@@ -70,7 +70,9 @@ class ArtifactWriter:
             write_mode = 'w' if record.is_singular else 'a'
             writer = RecordWriter.get_writer(writer_type,
                                              repo.records_storage)
-            writer.write(record.name, write_mode, record.content)
+            writer.write(artifact.get_inst_unique_name(),
+                         write_mode,
+                         record.content)
             res = repo.store_artifact(record.name,
                                       record.cat,
                                       record.data,
