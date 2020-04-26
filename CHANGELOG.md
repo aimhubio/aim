@@ -1,5 +1,7 @@
 # Changelog
 
+- Optimize segmentation tracking insight to load faster (gorarakelyan)
+
 ## 1.2.13 Apr 25 2020
 - Remove GitHub security alert (gorarakelyan)
 - Add image semantic segmentation tracking (gorarakelyan)
