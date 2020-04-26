@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.14 Apr 27 2020
 - Optimize segmentation tracking insight to load faster (gorarakelyan)
 
 ## 1.2.13 Apr 25 2020
