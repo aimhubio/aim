@@ -8,3 +8,4 @@ from aim.sdk.artifacts.misclassification import *
 from aim.sdk.artifacts.model import *
 from aim.sdk.artifacts.stats import *
 from aim.sdk.artifacts.segmentation import *
+from aim.sdk.artifacts.images import *
