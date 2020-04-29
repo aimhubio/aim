@@ -110,23 +110,30 @@ def inst_has_typename(inst, types):
 
 def is_keras_model(inst):
     """
-    Check whether an inst is instance of keras model
+    Check whether `inst` is instance of keras model
     """
     return inst_has_typename(inst, ['keras', 'Model'])
 
 
 def is_pytorch_module(inst):
     """
-    Check whether an inst is instance of pytorch module
+    Check whether `inst` is instance of pytorch module
     """
     return inst_has_typename(inst, ['torch', 'Module'])
 
 
 def is_pytorch_optim(inst):
     """
-    Check whether an inst is instance of pytorch optimizer
+    Check whether `inst` is instance of pytorch optimizer
     """
     return inst_has_typename(inst, ['torch', 'optim'])
+
+
+def is_numpy_array(inst):
+    """
+    Check whether `inst` is instance of numpy array
+    """
+    return inst_has_typename(inst, ['numpy', 'ndarray'])
 
 
 def get_module(name, required=True):

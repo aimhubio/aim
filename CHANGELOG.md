@@ -1,5 +1,7 @@
 # Changelog
 
+- Add ability to pass numpy array as a segmentation mask (gorarakelyan)
+
 ## 1.2.15 Apr 29 2020
 - Add basic image list tracking (gorarakelyan)
 
