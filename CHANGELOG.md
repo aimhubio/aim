@@ -1,5 +1,6 @@
 # Changelog
 
+## 1.2.15 Apr 29 2020
 - Add basic image list tracking (gorarakelyan)
 
 ## 1.2.14 Apr 27 2020
