@@ -1,5 +1,7 @@
 # Changelog
 
+- Add basic image list tracking (gorarakelyan)
+
 ## 1.2.14 Apr 27 2020
 - Optimize segmentation tracking insight to load faster (gorarakelyan)
 
