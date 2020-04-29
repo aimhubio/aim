@@ -3,11 +3,13 @@ from typing import Optional
 import gzip
 import io
 import json
+from typing import Any
 
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record
 from aim.sdk.artifacts.media import Image
 from aim.sdk.artifacts.proto.segmentation_pb2 import SegmentationRecord
+from aim.engine.utils import is_numpy_array
 
 
 class Segmentation(Artifact):
@@ -15,13 +17,19 @@ class Segmentation(Artifact):
     _step_counter = {}
     _image_paths = {}
 
-    def __init__(self, name: str, obj: Image, mask: list, epoch: int = None,
+    def __init__(self, name: str, obj: Image, mask: Any, epoch: int = None,
                  step: int = None, class_labels: Optional[dict] = None):
         self.name = name
         self.obj = obj
-        self.mask = mask
         self.class_labels = class_labels
         self.epoch = epoch
+
+        if isinstance(mask, list):
+            self.mask = mask
+        elif is_numpy_array(mask):
+            self.mask = mask.tolist()
+        else:
+            raise TypeError('invalid mask type')
 
         if step is not None:
             self.step = step

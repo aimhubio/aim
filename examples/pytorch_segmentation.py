@@ -68,5 +68,5 @@ for img in images:
     track(aim.segmentation, 'seg', aim_img, mask=bad_om_2.tolist(), class_labels=labels, epoch=3)
     track(aim.segmentation, 'seg', aim_img, mask=om.tolist(), class_labels=labels, epoch=4)
 
-    track(aim.segmentation, 'seg_2', aim_img, mask=bad_om_2.tolist(), class_labels=labels, epoch=1)
-    track(aim.segmentation, 'seg_2', aim_img, mask=om.tolist(), class_labels=labels, epoch=2)
+    track(aim.segmentation, 'seg_2', aim_img, mask=bad_om_2, class_labels=labels, epoch=1)
+    track(aim.segmentation, 'seg_2', aim_img, mask=om, class_labels=labels, epoch=2)
