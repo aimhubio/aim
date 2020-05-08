@@ -1,4 +1,4 @@
-# Model Testing Environment
+# Testing
 
 ## Goals
 Be able to test the correctness of the

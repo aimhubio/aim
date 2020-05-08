@@ -14,6 +14,7 @@ AIM_CONFIG_FILE_NAME = 'config.json'
 AIM_DIFF_DIR_NAME = 'diff'
 AIM_DIFF_FILE_NAME = 'diff.txt'
 AIM_PARAMS_DIR_NAME = 'hyperparameters'
+AIM_MAP_DIR_NAME = 'map'
 AIM_STATS_DIR_NAME = 'stats'
 
 # Branches

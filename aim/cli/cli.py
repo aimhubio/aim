@@ -1,4 +1,6 @@
 import click
+from click import core
+core._verify_python3_env = lambda: None
 
 from aim.engine.aim_repo import AimRepo
 
@@ -13,6 +15,7 @@ from aim.cli.reset import commands as reset_commands
 from aim.cli.version import commands as version_commands
 from aim.cli.view import commands as view_commands
 from aim.cli.status import commands as status_commands
+from aim.cli.config import commands as config_commands
 
 
 @click.group()
@@ -36,3 +39,4 @@ cli_entry_point.add_command(reset_commands.reset, RESET_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 cli_entry_point.add_command(view_commands.view_entry_point, VIEW_NAME)
 cli_entry_point.add_command(status_commands.status, STATUS_NAME)
+cli_entry_point.add_command(config_commands.config, CONFIG_NAME)
