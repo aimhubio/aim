@@ -20,13 +20,13 @@ def get_repo():
     return repo
 
 
-def track(name: str, *args, **kwargs):
-    if name not in globals():
-        print('Aim cannot track: \'{0}\''.format(name))
+def track(artifact_name: str, *args, **kwargs):
+    if artifact_name not in globals():
+        print('Aim cannot track: \'{0}\''.format(artifact_name))
         return
 
     # Get corresponding class
-    obj = globals()[name]
+    obj = globals()[artifact_name]
 
     # Create an instance
     inst = obj(*args, **kwargs)

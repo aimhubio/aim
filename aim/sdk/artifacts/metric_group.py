@@ -7,21 +7,14 @@ from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record
 
 
-class MetricGroup(Artifact, metaclass=ABCMeta):
+class MetricGroup(Artifact):
     cat = ('metric_groups',)
 
     def __init__(self, name: str, value: Any, labels: list = None):
         self.name = name
         self.meta = {}
-
-        if is_pytorch_optim(value) and hasattr(value, 'param_groups'):
-            self.values = [g.get('lr') for g in value.param_groups]
-            self.meta = {
-                'lib': 'pytorch',
-                'source': 'param_groups',
-            }
-        elif isinstance(value, list):
-            self.values = value
+        self.values = value
+        self.set_values(value)
 
         if labels and len(labels) != len(self.values):
             raise ValueError('length of values and labels do not match')
@@ -50,9 +43,25 @@ class MetricGroup(Artifact, metaclass=ABCMeta):
     def save_blobs(self, name: str, abs_path: str = None):
         pass
 
+    def set_values(self, value):
+        if isinstance(value, list):
+            self.values = value
+        else:
+            raise
+
 
 class LearningRate(MetricGroup):
     name = 'learning_rate'
 
     def __init__(self, *args, **kwargs):
         super(LearningRate, self).__init__(self.name, *args, **kwargs)
+
+    def set_values(self, value):
+        if is_pytorch_optim(value) and hasattr(value, 'param_groups'):
+            self.values = [g.get('lr') for g in value.param_groups]
+            self.meta = {
+                'lib': 'pytorch',
+                'source': 'param_groups',
+            }
+        elif isinstance(value, list):
+            self.values = value
