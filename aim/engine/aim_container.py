@@ -68,7 +68,7 @@ class AimContainer:
         for c in aim_containers:
             try:
                 c.kill()
-                c.remove()
+                c.remove(force=True)
             except Exception:
                 pass
 

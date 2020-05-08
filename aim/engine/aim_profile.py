@@ -1,6 +1,7 @@
 import os
 import json
 import paramiko
+import re
 
 from aim.engine.utils import random_str
 from aim.engine.configs import \
@@ -107,3 +108,26 @@ class AimProfile:
             'private_key_path': private_key_path,
             'public_key': public_key,
         }
+
+    def get_username(self):
+        """
+        Returns username or None
+        """
+        user = self.config.get('user')
+        if user:
+            return user.get('username')
+        return None
+
+    def set_username(self, username):
+        """
+        Sets username
+        """
+        if not isinstance(username, str):
+            raise TypeError()
+
+        if not re.match(r'^[A-Za-z0-9_\-]{2,}$', username):
+            raise AttributeError()
+
+        self.config.setdefault('user', {})
+        self.config['user']['username'] = username.strip()
+        self.save_config()

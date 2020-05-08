@@ -110,6 +110,16 @@ for epoch in range(num_epochs):
             track(aim.metric, 'random-lg',
                   math.ceil(random.random() * 100), epoch)
 
+            track(aim.metric_group, 'random', [
+                random.random(),
+                random.random() * 10,
+                math.ceil(random.random() * 100),
+            ], [
+                'random',
+                'random-md',
+                'random-lg',
+            ])
+
 # Test the model
 model.eval()
 with torch.no_grad():

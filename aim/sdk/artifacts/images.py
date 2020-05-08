@@ -1,3 +1,5 @@
+from typing import Optional
+
 from aim.sdk.artifacts import Record
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.media import Image
@@ -8,11 +10,12 @@ class ImageSet(Artifact):
     cat = ('image_set',)
     _step_counter = {}
 
-    def __init__(self, name: str, image: Image, epoch: int = None,
-                 step: int = None):
+    def __init__(self, name: str, image: Image, epoch: Optional[int] = None,
+                 step: Optional[int] = None, meta: Optional[dict] = None):
         self.name = name
         self.image = image
         self.epoch = epoch or 0
+        self.meta = meta
 
         if step is not None:
             self.step = step
@@ -29,6 +32,12 @@ class ImageSet(Artifact):
     def serialize(self) -> Record:
         image_pb = ImageSetRecord()
         image_pb.path = self.image.path
+
+        if self.meta:
+            for k, v in self.meta.items():
+                meta_record = image_pb.meta.add()
+                meta_record.key = str(k)
+                meta_record.value = str(v)
 
         data_bytes = self.serialize_pb_object(image_pb, self.step, self.epoch)
 

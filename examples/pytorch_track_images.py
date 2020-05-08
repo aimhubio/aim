@@ -101,9 +101,11 @@ for epoch in range(num_epochs):
             # track images
             if saved_img < 50:
                 saved_img += 1
-                # aim - Track misclassified images
                 img_0 = track(aim.image, images[0])
-                track(aim.image_set, 'set_1', img_0)
+                track(aim.image_set, 'set_1', img_0, meta={
+                    'img_idx': saved_img,
+                    'label': 1,
+                })
 
                 img_1 = track(aim.image, images[1])
                 track(aim.image_set, 'set_2', img_1)
