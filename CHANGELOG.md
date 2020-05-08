@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.17 May 8 2020
+- Add config command (gorarakelyan)
+- Tune artifacts: images, metric_groups, params (gorarakelyan)
+
 ## 1.2.16 Apr 29 2020
 - Add ability to pass numpy array as a segmentation mask (gorarakelyan)
 
