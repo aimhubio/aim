@@ -9,6 +9,7 @@ import hashlib
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import is_path_creatable, ls_dir, import_module
+from aim.engine.aim_profile import AimProfile
 
 
 class AimRepo:
@@ -60,6 +61,8 @@ class AimRepo:
             return AIM_CORR_DIR_NAME
         elif cat[0] == 'hyperparameters':
             return AIM_PARAMS_DIR_NAME
+        elif cat[0] == 'map':
+            return AIM_MAP_DIR_NAME
         elif cat[0] == 'stats':
             return AIM_STATS_DIR_NAME
 
@@ -573,6 +576,13 @@ class AimRepo:
                     'version': aim_version,
                 },
             }
+
+            profile = AimProfile()
+            username = profile.get_username()
+            if username:
+                configs['user'] = {
+                    'username': username,
+                }
 
             if vc_branch and vc_hash:
                 configs['vc'] = {
