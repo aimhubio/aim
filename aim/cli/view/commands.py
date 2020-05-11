@@ -3,7 +3,7 @@ import sys
 import click
 
 from aim.engine.aim_container import AimContainer
-from aim.engine.configs import AIM_BOARD_PORT_CLIENT, AIM_BOARD_PORT_SERVER
+from aim.engine.configs import AIM_CONTAINER_DEFAULT_PORT
 
 
 @click.group()
@@ -21,16 +21,14 @@ def view_entry_point(repo):
 
 @view_entry_point.command()
 @click.option('--dev', is_flag=True)
+@click.option('-p', '--port', default=AIM_CONTAINER_DEFAULT_PORT, type=int)
 @click.option('-v', '--version', default='latest', type=str)
 @click.pass_obj
-def up(repo, dev, version):
+def up(repo, dev, port, version):
     cont = AimContainer(repo, dev=dev)
 
     click.echo(
-        click.style('Board is mounted to {} '.format(repo), fg='yellow'))
-
-    # Kill all identical running containers
-    cont.kill()
+        click.style('Running board on repo `{}`'.format(repo), fg='yellow'))
 
     # Check if image exist
     if not cont.image_exist(version):
@@ -45,12 +43,20 @@ def up(repo, dev, version):
         else:
             click.echo('Successfully pulled aim board image')
 
+    if cont.get_container(running_only=True):
+        kill = click.confirm('Board is already running. ' +
+                             'Do you want to restart it?')
+        if not kill:
+            return
+
+    # Kill all identical running containers
+    cont.kill()
+
     # Run container
-    if not cont.up(version):
+    if not cont.up(port, version):
         click.echo('Failed to run aim board.')
-        click.echo(('    Please check if ports {c} and {s} ' +
-                    'are accessible.').format(c=AIM_BOARD_PORT_CLIENT,
-                                              s=AIM_BOARD_PORT_SERVER))
+        click.echo(('    Please check if port {c} is ' +
+                    'accessible.').format(c=port))
         return
 
     # Implement SIGINT signal handler to kill container after
@@ -68,8 +74,7 @@ def up(repo, dev, version):
     # Add keyboard signal interruption listener
     signal.signal(signal.SIGINT, signal_handler)
 
-    click.echo('Open http://127.0.0.1:{}/default/index'
-               .format(AIM_BOARD_PORT_CLIENT))
+    click.echo('Open http://127.0.0.1:{}'.format(port))
     click.echo('Press Ctrl+C to exit')
 
     # Wait for signal
