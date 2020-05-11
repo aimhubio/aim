@@ -1,5 +1,7 @@
 # Changelog
 
+- Add ability to pass aim board port as an argument (gorarakelyan)
+
 ## 1.2.17 May 8 2020
 - Add config command (gorarakelyan)
 - Tune artifacts: images, metric_groups, params (gorarakelyan)
