@@ -65,6 +65,8 @@ class AimRepo:
             return AIM_MAP_DIR_NAME
         elif cat[0] == 'stats':
             return AIM_STATS_DIR_NAME
+        elif cat[0] == 'text':
+            return AIM_TEXT_DIR_NAME
 
     @staticmethod
     def archive_dir(zip_path, dir_path):
