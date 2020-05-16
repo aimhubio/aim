@@ -13,7 +13,6 @@ class Text(Artifact, metaclass=ABCMeta):
         self.document_name = document_name
         self.text = text
         self.timestamp = int(time.time())
-        self.json = {"text": self.text, "timestamp": self.timestamp}
 
         super(Text, self).__init__(self.cat)
 
@@ -22,10 +21,12 @@ class Text(Artifact, metaclass=ABCMeta):
                                                 text=self.text)
 
     def serialize(self) -> Record:
+        content = {"text": self.text, "timestamp": self.timestamp}
+
         return Record(
             name=self.document_name,
             cat=self.cat,
-            content=self.json
+            content=content
         )
 
     def save_blobs(self, name: str, abs_path: str = None):
