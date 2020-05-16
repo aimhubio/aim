@@ -1,4 +1,5 @@
 import aim
 from aim import track
 
-track(aim.text, "document_name", "text")
+for i in range(10):
+    track(aim.text, "document_name", "text{index}".format(index=i))
