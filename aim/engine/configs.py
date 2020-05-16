@@ -16,6 +16,7 @@ AIM_DIFF_FILE_NAME = 'diff.txt'
 AIM_PARAMS_DIR_NAME = 'hyperparameters'
 AIM_MAP_DIR_NAME = 'map'
 AIM_STATS_DIR_NAME = 'stats'
+AIM_TEXT_DIR_NAME = 'document_text'
 
 # Branches
 AIM_DEFAULT_BRANCH_NAME = 'default'
