@@ -101,20 +101,35 @@ class TestAimRepo(unittest.TestCase):
             ar = AimRepo(tmpdirname)
             ar.init()
             # store a random test file used to commit
-            ar.store_file("test file one", "test file one", )
+            test_file_one_path = os.path.join(ar.index_path, 'test_file_one.txt')
+            test_file_one = open(test_file_one_path,"w+")
+            test_file_one.write("Test file one contents.")
+            test_file_one.close()
+            ar.store_file("test_file_one", "test_file_one", ("text",))
             # commit in master branch
             result = ar.commit("1", "test commit message first")
+            # after the commit, there shoukd be three files (config, meta, test_file_one)
+            self.assertEqual(len(ar.ls_commit_files("default", "1")), 3)
             self.assertEqual(result, {
                 'branch': "default",
                 'commit': "1"
             })
+            # checkout to test branch
             ar.create_branch(branch_name)
             ar.checkout_branch(branch_name)
+            # store random test file
+            test_file_two_path = os.path.join(ar.index_path, 'test_file_two.txt')
+            test_file_two = open(test_file_two_path,"w+")
+            test_file_two.write("Test file one contents.")
+            test_file_two.close()
+            # commit again in test branch
             result_two = ar.commit("2", "test commit message second")
             self.assertEqual(result_two, {
                 'branch': 'test',
                 'commit': '2'
             })
+            # should be two files (config, test_file_two)
+            self.assertEqual(len(ar.ls_commit_files("test", "2")), 2)
 
 
 
