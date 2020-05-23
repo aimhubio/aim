@@ -1,5 +1,5 @@
-from aim.engine.aim_repo import * 
-from aim.engine.configs import * 
+from aim.engine.aim_repo import *
+from aim.engine.configs import *
 import unittest
 import tempfile
 import os
@@ -38,10 +38,12 @@ class TestAimRepo(unittest.TestCase):
             ar = AimRepo(tmpdirname)
             ar.init()
             # repo should be found in the current temporary folder.
-            self.assertNotEqual(TestAimRepo.get_aim_repo(tmpdirname), None, 'AimRepo not created successfully.')
+            self.assertNotEqual(TestAimRepo.get_aim_repo(
+                tmpdirname), None, 'AimRepo not created successfully.')
             self.assertTrue(ar.exists())
             # Examine config & branch
-            self.assertEqual(ar.config.get('active_branch'), AIM_DEFAULT_BRANCH_NAME)
+            self.assertEqual(ar.config.get('active_branch'),
+                             AIM_DEFAULT_BRANCH_NAME)
             self.assertEqual(len(ar.config.get('branches')), 1)
 
     def test_remove_repo(self):
@@ -69,7 +71,8 @@ class TestAimRepo(unittest.TestCase):
             ar.init()
             # create branch 'test'
             ar.create_branch(branch_name)
-            self.assertEqual(ar.config.get('active_branch'), AIM_DEFAULT_BRANCH_NAME)
+            self.assertEqual(ar.config.get('active_branch'),
+                             AIM_DEFAULT_BRANCH_NAME)
             branches = ar.config.get('branches')
             self.assertEqual(len(branches), 2)
             is_found = False
@@ -88,7 +91,7 @@ class TestAimRepo(unittest.TestCase):
             self.assertRaises(AttributeError, ar.checkout_branch, branch_name)
             # remove branch 'test' again
             self.assertRaises(AttributeError, ar.remove_branch, branch_name)
-    
+
     def test_commits(self):
         """
         Test commit operations.
@@ -101,8 +104,9 @@ class TestAimRepo(unittest.TestCase):
             ar = AimRepo(tmpdirname)
             ar.init()
             # store a random test file used to commit
-            test_file_one_path = os.path.join(ar.index_path, 'test_file_one.txt')
-            test_file_one = open(test_file_one_path,'w+')
+            test_file_one_path = os.path.join(
+                ar.index_path, 'test_file_one.txt')
+            test_file_one = open(test_file_one_path, 'w+')
             test_file_one.write('Test file one contents.')
             test_file_one.close()
             ar.store_file('test_file_one', 'test_file_one', ('text',))
@@ -118,8 +122,9 @@ class TestAimRepo(unittest.TestCase):
             ar.create_branch(branch_name)
             ar.checkout_branch(branch_name)
             # store random test file
-            test_file_two_path = os.path.join(ar.index_path, 'test_file_two.txt')
-            test_file_two = open(test_file_two_path,'w+')
+            test_file_two_path = os.path.join(
+                ar.index_path, 'test_file_two.txt')
+            test_file_two = open(test_file_two_path, 'w+')
             test_file_two.write('Test file one contents.')
             test_file_two.close()
             # commit again in test branch
@@ -132,9 +137,5 @@ class TestAimRepo(unittest.TestCase):
             self.assertEqual(len(ar.ls_commit_files('test', '2')), 2)
 
 
-
 if __name__ == '__main__':
     unittest.main()
-
-
-
