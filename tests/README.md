@@ -20,4 +20,4 @@ tests
 ```
 
 ## Run
-Run tests via command `python -m unittest discover -s tests`
+Run tests via command `python -m unittest discover -s tests` in the root folder.
