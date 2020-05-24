@@ -1,3 +1,4 @@
+from aim import Profiler
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -9,7 +10,6 @@ import aim
 # Init aim with overwrite=False, every run will be committed and pushed
 aim.init(overwrite=False)
 
-from aim import Profiler
 # initialize profiler
 Profiler.init(sec_interval=2, squash=10)
 

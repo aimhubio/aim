@@ -1,21 +1,19 @@
+from aim.cli.config import commands as config_commands
+from aim.cli.status import commands as status_commands
+from aim.cli.view import commands as view_commands
+from aim.cli.version import commands as version_commands
+from aim.cli.reset import commands as reset_commands
+from aim.cli.commit import commands as commit_commands
+from aim.cli.branch import commands as branch_commands
+from aim.cli.push import commands as push_commands
+from aim.cli.remote import commands as remote_commands
+from aim.cli.init import commands as init_commands
+from aim.cli.auth import commands as auth_commands
+from aim.cli.configs import *
+from aim.engine.aim_repo import AimRepo
 import click
 from click import core
 core._verify_python3_env = lambda: None
-
-from aim.engine.aim_repo import AimRepo
-
-from aim.cli.configs import *
-from aim.cli.auth import commands as auth_commands
-from aim.cli.init import commands as init_commands
-from aim.cli.remote import commands as remote_commands
-from aim.cli.push import commands as push_commands
-from aim.cli.branch import commands as branch_commands
-from aim.cli.commit import commands as commit_commands
-from aim.cli.reset import commands as reset_commands
-from aim.cli.version import commands as version_commands
-from aim.cli.view import commands as view_commands
-from aim.cli.status import commands as status_commands
-from aim.cli.config import commands as config_commands
 
 
 @click.group()

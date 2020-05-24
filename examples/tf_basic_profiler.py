@@ -1,13 +1,13 @@
+from tensorflow.examples.tutorials.mnist import input_data
+import tensorflow as tf
+from aim import Profiler
 import aim
 aim.init()
 
-from aim import Profiler
 Profiler.init(sec_interval=1, squash=1)
 
-import tensorflow as tf
 
 # Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 learning_rate = 0.1
@@ -16,10 +16,10 @@ batch_size = 128
 display_step = 100
 
 # Network Parameters
-n_hidden_1 = 256 # 1st layer number of neurons
-n_hidden_2 = 256 # 2nd layer number of neurons
-num_input = 784 # MNIST data input (img shape: 28*28)
-num_classes = 10 # MNIST total classes (0-9 digits)
+n_hidden_1 = 256  # 1st layer number of neurons
+n_hidden_2 = 256  # 2nd layer number of neurons
+num_input = 784  # MNIST data input (img shape: 28*28)
+num_classes = 10  # MNIST total classes (0-9 digits)
 
 # tf Graph input
 X = tf.placeholder("float", [None, num_input])
@@ -93,6 +93,6 @@ with tf.Session() as sess:
     print("Optimization Finished!")
 
     # Calculate accuracy for MNIST test images
-    print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={X: mnist.test.images,
-                                      Y: mnist.test.labels}))
+    print("Testing Accuracy:",
+          sess.run(accuracy, feed_dict={X: mnist.test.images,
+                                        Y: mnist.test.labels}))

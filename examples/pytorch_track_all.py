@@ -73,12 +73,12 @@ model = ConvNet(num_classes).to(device)
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD([
-        {'params': model.layer1[0].parameters(), 'lr': 0.1},
-        {'params': model.layer1[1:].parameters(), 'lr': 0.05},
-        {'params': model.layer2[0].parameters(), 'lr': 0.01},
-        {'params': model.layer2[1:].parameters(), 'lr': 0.005},
-        {'params': model.fc.parameters(), 'lr': 0.001},
-    ], lr=0.001, momentum=0.9)
+    {'params': model.layer1[0].parameters(), 'lr': 0.1},
+    {'params': model.layer1[1:].parameters(), 'lr': 0.05},
+    {'params': model.layer2[0].parameters(), 'lr': 0.01},
+    {'params': model.layer2[1:].parameters(), 'lr': 0.005},
+    {'params': model.fc.parameters(), 'lr': 0.001},
+], lr=0.001, momentum=0.9)
 
 scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=0)
 

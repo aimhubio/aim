@@ -1,3 +1,4 @@
+from aim import Profiler
 import time
 import tensorflow as tf
 
@@ -7,7 +8,6 @@ from tensorflow.examples.tutorials.mnist import input_data
 import aim
 aim.init(overwrite=True)
 
-from aim import Profiler
 Profiler.init(auto_detect_cycles=False, aggregate=Profiler.MEAN)
 
 mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)

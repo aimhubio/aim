@@ -12,7 +12,7 @@ aim.init(True)
 images = [
     Image.open('./data/bird.jpg'),
     Image.open('./data/car.jpeg'),
-    ]
+]
 
 labels = {
     0: 'background',

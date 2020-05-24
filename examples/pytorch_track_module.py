@@ -14,7 +14,7 @@ from aim import track
 
 def _weights_init(m):
     classname = m.__class__.__name__
-    #print(classname)
+    # print(classname)
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
         init.kaiming_normal_(m.weight)
 
@@ -33,7 +33,8 @@ class BasicBlock(nn.Module):
 
     def __init__(self, in_planes, planes, stride=1, option='B'):
         super(BasicBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=3,
+                               stride=stride, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
@@ -48,8 +49,9 @@ class BasicBlock(nn.Module):
                                             F.pad(x[:, :, ::2, ::2], (0, 0, 0, 0, planes//4, planes//4), "constant", 0))
             elif option == 'B':
                 self.shortcut = nn.Sequential(
-                     nn.Conv2d(in_planes, self.expansion * planes, kernel_size=1, stride=stride, bias=False),
-                     nn.BatchNorm2d(self.expansion * planes)
+                    nn.Conv2d(in_planes, self.expansion * planes,
+                              kernel_size=1, stride=stride, bias=False),
+                    nn.BatchNorm2d(self.expansion * planes)
                 )
 
     def forward(self, x):
@@ -98,14 +100,14 @@ normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 
 train_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR10(root='./data', train=True, transform=transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomCrop(32, 4),
-            transforms.ToTensor(),
-            normalize,
-        ]), download=True),
-        batch_size=16, shuffle=True,
-        num_workers=1, pin_memory=True)
+    datasets.CIFAR10(root='./data', train=True, transform=transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomCrop(32, 4),
+        transforms.ToTensor(),
+        normalize,
+    ]), download=True),
+    batch_size=16, shuffle=True,
+    num_workers=1, pin_memory=True)
 
 
 model = ResNet(BasicBlock, [5, 5, 5])
@@ -146,7 +148,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         if i % 10 == 0:
             print('Epoch: [{0}][{1}/{2}]\t'.format(
-                      epoch, i, len(train_loader)))
+                epoch, i, len(train_loader)))
 
             # aim - Track last layer correlation
             # track(aim.label_correlation, 'corr', output, labels=[
@@ -167,6 +169,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
             # track(aim.checkpoint,
             #       'checkpoint_test', 'chp_epoch_{}'.format(epoch),
             #       model, epoch, meta={'iteration': i})
+
 
 for epoch in range(5):
     train(train_loader, model, criterion, optimizer, epoch)

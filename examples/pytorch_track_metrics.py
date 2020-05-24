@@ -1,15 +1,14 @@
+import torchvision.transforms as transforms
+import torchvision
+import torch.nn as nn
+import torch
+import math
+import random
 import aim
 from aim import track
 
 aim.init(overwrite=True)
 
-import random
-import math
-
-import torch
-import torch.nn as nn
-import torchvision
-import torchvision.transforms as transforms
 
 # Device configuration
 device = torch.device('cpu')

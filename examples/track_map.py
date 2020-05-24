@@ -1,7 +1,6 @@
+from aim import track
 import aim
 aim.init()
-
-from aim import track
 
 
 track(aim.hyperparams, {

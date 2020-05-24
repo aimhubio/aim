@@ -1,4 +1,5 @@
 aimrecords>=0.0.3
+autopep8==1.5.2
 bcrypt==3.1.7
 certifi==2019.11.28
 cffi==1.14.0
@@ -20,3 +21,4 @@ smmap2==2.0.5
 urllib3==1.25.8
 websocket-client==0.57.0
 py3nvml>=0.2.5
+pycodestyle>=2.5.0

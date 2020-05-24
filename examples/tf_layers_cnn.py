@@ -8,18 +8,18 @@ Author: Aymeric Damien
 Project: https://github.com/aymericdamien/TensorFlow-Examples/
 """
 from __future__ import division, print_function, absolute_import
+import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
+from aim import Profiler
 
 import aim
 aim.init()
 
-from aim import Profiler
 Profiler.init()
 
 # Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=False)
 
-import tensorflow as tf
 
 # Training Parameters
 learning_rate = 0.001
@@ -27,9 +27,9 @@ num_steps = 2000
 batch_size = 128
 
 # Network Parameters
-num_input = 784 # MNIST data input (img shape: 28*28)
-num_classes = 10 # MNIST total classes (0-9 digits)
-dropout = 0.25 # Dropout, probability to drop a unit
+num_input = 784  # MNIST data input (img shape: 28*28)
+num_classes = 10  # MNIST total classes (0-9 digits)
+dropout = 0.25  # Dropout, probability to drop a unit
 
 
 # Create the neural network
@@ -108,6 +108,7 @@ def model_fn(features, labels, mode):
         eval_metric_ops={'accuracy': acc_op})
 
     return estim_specs
+
 
 # Build the Estimator
 model = tf.estimator.Estimator(model_fn)

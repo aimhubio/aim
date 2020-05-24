@@ -1,14 +1,13 @@
+import torchvision.transforms as transforms
+import torchvision
+import torch.nn as nn
+import torch
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import aim
 from aim import track
 
 aim.init(overwrite=True)
 
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-import torch
-import torch.nn as nn
-import torchvision
-import torchvision.transforms as transforms
 
 # Device configuration
 device = torch.device('cpu')
@@ -68,12 +67,12 @@ model = ConvNet(num_classes).to(device)
 criterion = nn.CrossEntropyLoss()
 
 optimizer = torch.optim.SGD([
-        {'params': model.layer1[0].parameters(), 'lr': 0.1},
-        {'params': model.layer1[1:].parameters(), 'lr': 0.05},
-        {'params': model.layer2[0].parameters(), 'lr': 0.01},
-        {'params': model.layer2[1:].parameters(), 'lr': 0.005},
-        {'params': model.fc.parameters(), 'lr': 0.001},
-    ], lr=0.001, momentum=0.9)
+    {'params': model.layer1[0].parameters(), 'lr': 0.1},
+    {'params': model.layer1[1:].parameters(), 'lr': 0.05},
+    {'params': model.layer2[0].parameters(), 'lr': 0.01},
+    {'params': model.layer2[1:].parameters(), 'lr': 0.005},
+    {'params': model.fc.parameters(), 'lr': 0.001},
+], lr=0.001, momentum=0.9)
 
 scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=0)
 

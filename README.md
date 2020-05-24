@@ -32,3 +32,10 @@ pip install -r requirements.txt
 ├── examples <------------  example usages of aim SDK
 └── tests
 ```
+
+### Code Style
+We follow [pep8](https://www.python.org/dev/peps/pep-0008/) style guide for python code. We use [autopep8](https://pypi.org/project/autopep8/) and [pycodestyle](https://pypi.org/project/pycodestyle/) to enable checking and formatting Python code. 
+
+To check code styles, run `pycodestyle .` in the root folder. 
+
+To auto format, run `autopep8 --in-place --recursive .` in the root folder.
