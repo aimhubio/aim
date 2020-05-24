@@ -120,7 +120,25 @@ class WeightsDistribution(ModelDistribution):
                             bias_hist[0].tolist(),
                             bias_hist[1].tolist(),
                         ]
-
+        else:
+            params = model
+            num_of_layers = int(len(params) / 2)
+            weights = model[num_of_layers: ]
+            biases = model[: num_of_layers]
+            for i in range(num_of_layers):
+                layer_name = f"Layer{i+1}"
+                weight_arr = weights[i]
+                weight_hist = np.histogram(weight_arr, 30)
+                layers[layer_name]['weight'] = [
+                    weight_hist[0].tolist(),
+                    weight_hist[1].tolist(),
+                ]
+                bias_arr = biases[i]
+                bias_hist = np.histogram(bias_arr, 30)
+                layers[layer_name]['bias'] = [
+                    bias_hist[0].tolist(),
+                    bias_hist[1].tolist(),
+                ]
         return layers
 
 
