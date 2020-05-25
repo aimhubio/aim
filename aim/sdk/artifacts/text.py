@@ -17,8 +17,8 @@ class Text(Artifact, metaclass=ABCMeta):
         super(Text, self).__init__(self.cat)
 
     def __str__(self):
-        return '{document_name}: {text}'.format(document_name=self.document_name,
-                                                text=self.text)
+        return '{document_name}: {text}'.format(
+            document_name=self.document_name, text=self.text)
 
     def serialize(self) -> Record:
         content = {"text": self.text, "timestamp": self.timestamp}

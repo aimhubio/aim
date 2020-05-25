@@ -95,7 +95,7 @@ class TestAimRepo(unittest.TestCase):
     def test_commits(self):
         """
         Test commit operations.
-        Init => store test file => commit in default branch 
+        Init => store test file => commit in default branch
         => checkout 'test' branch => store another test file => commit
         """
         prefix = os.getcwd() + '/'
@@ -112,7 +112,8 @@ class TestAimRepo(unittest.TestCase):
             ar.store_file('test_file_one', 'test_file_one', ('text',))
             # commit in master branch
             result = ar.commit('1', 'test commit message first')
-            # after the commit, there shoukd be three files (config, meta, test_file_one)
+            # after the commit, there shoukd be three files (config, meta,
+            # test_file_one)
             self.assertEqual(len(ar.ls_commit_files('default', '1')), 3)
             self.assertEqual(result, {
                 'branch': 'default',

@@ -103,7 +103,7 @@ class FileServerClient:
 
 
 class File:
-    def __init__(self, path, chunk_size=4*1024*1024):
+    def __init__(self, path, chunk_size=4 * 1024 * 1024):
         self.path = path
         self.file = open(path, 'rb')
         self.content = self.file.read()
@@ -161,7 +161,7 @@ class File:
         return chunk
 
     def __len__(self):
-        return math.ceil(self.content_len/self.chunk_size)
+        return math.ceil(self.content_len / self.chunk_size)
 
     @staticmethod
     def empty_chunk():
@@ -173,4 +173,4 @@ class File:
         """
         Returns file size in human readable format
         """
-        return math.ceil(self.content_len/1024)
+        return math.ceil(self.content_len / 1024)

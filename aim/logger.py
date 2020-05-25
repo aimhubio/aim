@@ -45,35 +45,25 @@ def setup():
             'formatters': {
                 'activity_format': {
                     'format': 'Date: %(asctime)s\n\x1b[33;21mActivity: %(message)s\n',
-                    'datefmt': '%a %b %d %H:%M:%S %Y %z'
-                },
+                    'datefmt': '%a %b %d %H:%M:%S %Y %z'},
                 'error_format': {
                     'format': 'Date: %(asctime)s\n\x1b[31;21mError: %(message)s',
-                    'datefmt': '%a %b %d %H:%M:%S %Y %z'
-                }
-            },
+                    'datefmt': '%a %b %d %H:%M:%S %Y %z'}},
             'handlers': {
                 'activity_handler': {
                     'class': 'aim.logger.LoggerHandlerActivities',
                     'level': 'DEBUG',
-                    'formatter': 'activity_format'
-                },
+                    'formatter': 'activity_format'},
                 'error_handler': {
                     'class': 'aim.logger.LoggerHandlerErrors',
                     'level': 'ERROR',
-                    'formatter': 'error_format'
-                }
-            },
+                    'formatter': 'error_format'}},
             'loggers': {
                 'activity': {
                     'level': 'DEBUG',
                     'handlers': ['activity_handler'],
-                    'propagate': 'no'
-                },
+                    'propagate': 'no'},
                 'error': {
                     'level': 'ERROR',
                     'handlers': ['error_handler'],
-                    'propagate': 'no'
-                }
-            }
-        })
+                    'propagate': 'no'}}})

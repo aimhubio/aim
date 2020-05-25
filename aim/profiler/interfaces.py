@@ -22,10 +22,10 @@ class BaseInterface:
     def label(self, *args, **kwargs):
         raise NotImplementedError('method not implemented')
 
-    def loop(self,  *args, **kwargs):
+    def loop(self, *args, **kwargs):
         raise NotImplementedError('method not implemented')
 
-    def cycle(self,  *args, **kwargs):
+    def cycle(self, *args, **kwargs):
         raise NotImplementedError('method not implemented')
 
 
