@@ -18,6 +18,8 @@ class Artifact(metaclass=ABCMeta):
 
     def __init__(self, cat: tuple):
         self.cat = cat
+        self._step_counter = {}
+        self.step = 0
 
     @abstractmethod
     def serialize(self) -> Writable:
@@ -35,6 +37,17 @@ class Artifact(metaclass=ABCMeta):
         by default ArtifactWriter
         """
         ...
+
+    def initialize_step_counter(self, step: int, name: str):
+        """
+        Initializes the step counter if step number is not given
+        """
+        if step is not None:
+            self.step = step
+        else:
+            self._step_counter.setdefault(name, 0)
+            self._step_counter[name] += 1
+            self.step = self._step_counter[name]
 
     def serialize_pb_object(self, artifact, step: int = None,
                             epoch: int = None) -> bytes:

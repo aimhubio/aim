@@ -31,12 +31,7 @@ class Segmentation(Artifact):
         else:
             raise TypeError('invalid mask type')
 
-        if step is not None:
-            self.step = step
-        else:
-            self._step_counter.setdefault(name, 0)
-            self._step_counter[name] += 1
-            self.step = self._step_counter[name]
+        self.initialize_step_counter(step, self.name)
 
         self._image_paths.setdefault(name, set())
         self._image_paths[name].add(obj.path)

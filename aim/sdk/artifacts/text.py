@@ -14,15 +14,9 @@ class Text(Artifact, metaclass=ABCMeta):
         self.name = name
         self.text = text
         self.timestamp = int(time.time())
-
         self.epoch = epoch or 0
 
-        if step is not None:
-            self.step = step
-        else:
-            self._step_counter.setdefault(name, 0)
-            self._step_counter[name] += 1
-            self.step = self._step_counter[name]
+        self.initialize_step_counter(step, self.name)
 
         super(Text, self).__init__(self.cat)
 
