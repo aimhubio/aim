@@ -1,5 +1,6 @@
 # Changelog
 
+- Refactor Text artifact to store sentences using protobuf and aimrecords (jamesj-jiao)
 - Add ability to pass aim board port as an argument (gorarakelyan)
 
 ## 1.2.17 May 8 2020
