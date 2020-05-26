@@ -78,7 +78,7 @@ class GitAdapter(Base):
             # Apply and remove the last stash
             if stashed:
                 git.stash('pop')
-        except:
+        except BaseException:
             raise Exception('failed to commit changes to {branch}, ' +
                             'find your uncommitted changes in stash list ' +
                             'to recover git index state manually' +

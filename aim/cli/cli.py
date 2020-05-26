@@ -1,6 +1,5 @@
 import click
 from click import core
-core._verify_python3_env = lambda: None
 
 from aim.engine.aim_repo import AimRepo
 
@@ -16,6 +15,8 @@ from aim.cli.version import commands as version_commands
 from aim.cli.view import commands as view_commands
 from aim.cli.status import commands as status_commands
 from aim.cli.config import commands as config_commands
+
+core._verify_python3_env = lambda: None
 
 
 @click.group()
