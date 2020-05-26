@@ -43,7 +43,7 @@ def push(repo, remote, branch, commit, message):
             click.echo('    (use "aim push -c [-m <message>]" to commit and ' +
                        'push to remote)')
             click.echo('    (use "aim commit [-m <message>]" to commit)')
-            click.echo('-'*67)
+            click.echo('-' * 67)
 
     branch = branch.strip()
 
@@ -152,7 +152,7 @@ def push(repo, remote, branch, commit, message):
     push_commits = []
     offset = len(commits) - len(push_commits_rep_bin)
     for c in range(len(commits)):
-        if c >= offset and push_commits_rep_bin[c-offset] == '1':
+        if c >= offset and push_commits_rep_bin[c - offset] == '1':
             push_commits.append(commits[c])
 
     files = {}
@@ -181,7 +181,7 @@ def push(repo, remote, branch, commit, message):
 
             # Send file name
             client.send_line(send_file_path.encode())
-            file_print_name = file_path[len(commit_prefix)+1:]
+            file_print_name = file_path[len(commit_prefix) + 1:]
             click.echo('-> {name} ({size:,}KB)'.format(name=file_print_name,
                                                        size=file.format_size()))
 

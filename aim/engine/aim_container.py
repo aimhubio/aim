@@ -17,7 +17,7 @@ class AimContainer:
         try:
             client.ping()
             return True
-        except:
+        except BaseException:
             return False
 
     def __init__(self, repo, dev=False):

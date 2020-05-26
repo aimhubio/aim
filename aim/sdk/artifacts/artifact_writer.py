@@ -30,13 +30,19 @@ class ArtifactWriter:
             res = []
             for record in item.records:
                 # Store dir files
-                res.append(ArtifactWriter._save_record(repo, artifact, record, dir_rel_path))
+                res.append(
+                    ArtifactWriter._save_record(
+                        repo, artifact, record, dir_rel_path))
 
         # Save dict
         return res
 
     @staticmethod
-    def _save_record(repo: AimRepo, artifact: Artifact, record: Record, dir_path: str = None):
+    def _save_record(
+            repo: AimRepo,
+            artifact: Artifact,
+            record: Record,
+            dir_path: str = None):
         if record.binary_type is Artifact.IMAGE:
             # Get image name and abs path
             img_name_time = math.floor(time.time() * 1000)
