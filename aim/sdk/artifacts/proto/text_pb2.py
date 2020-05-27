@@ -18,7 +18,6 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='artifacts.proto',
   syntax='proto3',
   serialized_options=None,
-  create_key=_descriptor._internal_create_key,
   serialized_pb=b'\n\ntext.proto\x12\x0f\x61rtifacts.proto\"\x1a\n\nTextRecord\x12\x0c\n\x04text\x18\x01 \x01(\tb\x06proto3'
 )
 
@@ -31,7 +30,6 @@ _TEXTRECORD = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='text', full_name='artifacts.proto.TextRecord.text', index=0,
@@ -39,7 +37,7 @@ _TEXTRECORD = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
