@@ -17,12 +17,7 @@ class ImageSet(Artifact):
         self.epoch = epoch or 0
         self.meta = meta
 
-        if step is not None:
-            self.step = step
-        else:
-            self._step_counter.setdefault(name, 0)
-            self._step_counter[name] += 1
-            self.step = self._step_counter[name]
+        self.initialize_step_counter(step, self.name)
 
         super(ImageSet, self).__init__(self.cat)
 
