@@ -3,6 +3,7 @@ from aim import track
 
 import tensorflow as tf
 
+
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
@@ -22,32 +23,23 @@ num_classes = 10 # MNIST total classes (0-9 digits)
 X = tf.placeholder("float", [None, num_input])
 Y = tf.placeholder("float", [None, num_classes])
 
-# Store layers weight & bias
-weights = {
-    'h1': tf.Variable(tf.random_normal([num_input, n_hidden_1])),
-    'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
-    'out': tf.Variable(tf.random_normal([n_hidden_2, num_classes]))
-}
-biases = {
-    'b1': tf.Variable(tf.random_normal([n_hidden_1])),
-    'b2': tf.Variable(tf.random_normal([n_hidden_2])),
-    'out': tf.Variable(tf.random_normal([num_classes]))
-}
+# Need only if layers are created NOT BY tf.layers object
+# weights = tf.Variable(tf.random_normal([num_input, n_hidden_1]))
+# biases = tf.Variable(tf.random_normal([n_hidden_1]))
 
 
-# Create model
 def neural_net(x):
-    # Hidden fully connected layer with 256 neurons
-    layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
+    # Input Layer
+    input_layer = tf.layers.dense(inputs=x, units=num_input)
 
-    # Hidden fully connected layer with 256 neurons
-    layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
+    # Hidden fully connected layer with 256 neurons  # can have `name` parameter
+    hidden_1 = tf.layers.dense(inputs=input_layer, units=n_hidden_1, activation=tf.nn.relu)
+    hidden_2 = tf.layers.dense(inputs=hidden_1, units=n_hidden_2, activation=tf.nn.relu)
 
     # Output fully connected layer with a neuron for each class
-    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
+    out_layer = tf.layers.dense(inputs=hidden_2, units=num_classes)
 
     return out_layer
-
 
 logits = neural_net(X)
 
@@ -78,16 +70,13 @@ with tf.Session() as sess:
                 loss, acc = sess.run([loss_op, accuracy], feed_dict={X: batch_x,
                                                                      Y: batch_y,
                                                                      })
-                params = tf.trainable_variables()
-                param_vals = sess.run(params)
-                track(aim.weights, param_vals)
+                t_vars = tf.trainable_variables()
+                params = sess.run(t_vars)
+                track(aim.weights, zip(t_vars, params))
                 print("Step " + str(step) + ", Epoch " + str(e+1) +
                       ", Minibatch Loss= " +
                       "{:.4f}".format(loss) + ", Training Accuracy= " +
                       "{:.3f}".format(acc))
-    # Final 
-    vars_ = tf.trainable_variables()
-    vars_vals = sess.run(vars_)
     print("Optimization Finished!")
 
     # Calculate accuracy for MNIST test images
@@ -96,5 +85,3 @@ with tf.Session() as sess:
                                       Y: mnist.test.labels}))
 
 
-# for i in range(len(param_vals)):
-#     print(param_vals[i].shape)
