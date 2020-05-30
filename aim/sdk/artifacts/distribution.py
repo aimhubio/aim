@@ -143,7 +143,7 @@ class WeightsDistribution(ModelDistribution):
                 ]
                 else:
                     raise ValueError(f"Couldn't trak the {param_id} for {layer_name}")
-            return layers
+        return layers
 
 
 class GradientsDistribution(ModelDistribution):
