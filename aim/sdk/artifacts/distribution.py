@@ -121,25 +121,29 @@ class WeightsDistribution(ModelDistribution):
                             bias_hist[1].tolist(),
                         ]
         else:
-            params = model
-            num_of_layers = int(len(params) / 2)
-            weights = model[num_of_layers: ]
-            biases = model[: num_of_layers]
-            for i in range(num_of_layers):
-                layer_name = f"Layer{i+1}"
-                weight_arr = weights[i]
-                weight_hist = np.histogram(weight_arr, 30)
-                layers[layer_name]['weight'] = [
+            weight_id = "kernel"
+            bias_id = "bias"
+            for tr_var, param in model:
+                if "/" not in tr_var.name:
+                    continue
+                layer_name, param_id = tr_var.name.split("/")
+                if layer_name not in layers:
+                    layers[layer_name] = {}
+                if weight_id in param_id:
+                    weight_hist = np.histogram(param, 30)
+                    layers[layer_name]["weight"] = [
                     weight_hist[0].tolist(),
                     weight_hist[1].tolist(),
                 ]
-                bias_arr = biases[i]
-                bias_hist = np.histogram(bias_arr, 30)
-                layers[layer_name]['bias'] = [
+                elif bias_id in param_id:
+                    bias_hist = np.histogram(param, 30)
+                    layers[layer_name]['bias'] = [
                     bias_hist[0].tolist(),
                     bias_hist[1].tolist(),
                 ]
-        return layers
+                else:
+                    raise ValueError(f"Couldn't trak the {param_id} for {layer_name}")
+            return layers
 
 
 class GradientsDistribution(ModelDistribution):
