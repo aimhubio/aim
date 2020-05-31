@@ -4,7 +4,7 @@ from typing import Any
 from aim.engine.utils import is_pytorch_module, get_module
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record, RecordCollection
-from aim.sdk.artifacts.utils import get_pt_tensor
+from aim.sdk.artifacts.utils import get_pt_tensor, TfUtils
 
 
 class Distribution(Artifact):
@@ -121,28 +121,17 @@ class WeightsDistribution(ModelDistribution):
                             bias_hist[1].tolist(),
                         ]
         else:
-            weight_id = "kernel"
-            bias_id = "bias"
-            for tr_var, param in model:
-                if "/" not in tr_var.name:
-                    continue
-                layer_name, param_id = tr_var.name.split("/")
-                if layer_name not in layers:
-                    layers[layer_name] = {}
-                if weight_id in param_id:
-                    weight_hist = np.histogram(param, 30)
-                    layers[layer_name]["weight"] = [
-                    weight_hist[0].tolist(),
-                    weight_hist[1].tolist(),
-                ]
-                elif bias_id in param_id:
-                    bias_hist = np.histogram(param, 30)
-                    layers[layer_name]['bias'] = [
-                    bias_hist[0].tolist(),
-                    bias_hist[1].tolist(),
-                ]
-                else:
-                    raise ValueError(f"Couldn't trak the {param_id} for {layer_name}")
+            t_vars = TfUtils.get_tf_t_vars(model)
+            layers_ = TfUtils.get_layers(t_vars)
+            weights = TfUtils.get_weights(t_vars, model)
+            biases = TfUtils.get_biases(t_vars, model)
+            for layer_idx, layer_name in enumerate(layers_):
+                layers[layer_name] = {}
+                weight_arr = weights[layer_idx]
+                layers[layer_name]['weight'] = TfUtils.get_vals_hist(weight_arr, 30)
+                
+                bias_arr = biases[layer_idx]
+                layers[layer_name]['bias'] = TfUtils.get_vals_hist(bias_arr, 30)
         return layers
 
 
