@@ -29,6 +29,12 @@ def view_entry_point(repo):
 @click.option('-v', '--version', default='latest', type=str)
 @click.pass_obj
 def up(repo, dev, port, version):
+    """
+    :param dev:
+    0 => pull and run official image of container
+    1 => run production build from local environment
+    2 => run in development mode
+    """
     cont = AimContainer(repo, dev=bool(dev))
 
     click.echo(
@@ -65,8 +71,8 @@ def up(repo, dev, port, version):
             return
 
     cont_cmd = AimContainerCMD(AIM_CONTAINER_DEFAULT_PORT
-                          if dev < 2
-                          else AIM_CONTAINER_CMD_DEV_PORT)
+                               if dev < 2
+                               else AIM_CONTAINER_CMD_DEV_PORT)
     cont_cmd.listen()
 
     # Kill container after keyboard interruption
