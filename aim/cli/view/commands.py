@@ -1,9 +1,13 @@
 import signal
 import sys
 import click
+from time import sleep
 
-from aim.engine.aim_container import AimContainer
-from aim.engine.configs import AIM_CONTAINER_DEFAULT_PORT
+from aim.engine.aim_container import AimContainer, AimContainerCMD
+from aim.engine.configs import (
+    AIM_CONTAINER_DEFAULT_PORT,
+    AIM_CONTAINER_CMD_DEV_PORT,
+)
 
 
 @click.group()
@@ -20,12 +24,12 @@ def view_entry_point(repo):
 
 
 @view_entry_point.command()
-@click.option('--dev', is_flag=True)
+@click.option('--dev', default=0, type=int)
 @click.option('-p', '--port', default=AIM_CONTAINER_DEFAULT_PORT, type=int)
 @click.option('-v', '--version', default='latest', type=str)
 @click.pass_obj
 def up(repo, dev, port, version):
-    cont = AimContainer(repo, dev=dev)
+    cont = AimContainer(repo, dev=bool(dev))
 
     click.echo(
         click.style('Running board on repo `{}`'.format(repo), fg='yellow'))
@@ -53,32 +57,45 @@ def up(repo, dev, port, version):
     cont.kill()
 
     # Run container
-    if not cont.up(port, version):
-        click.echo('Failed to run aim board.')
-        click.echo(('    Please check if port {c} is ' +
-                    'accessible.').format(c=port))
-        return
+    if dev < 2:
+        if not cont.up(port, version):
+            click.echo('Failed to run aim board.')
+            click.echo(('    Please check if port {c} is ' +
+                        'accessible.').format(c=port))
+            return
 
-    # Implement SIGINT signal handler to kill container after
-    # keyboard interruption
-    def signal_handler(sig, frame):
+    cont_cmd = AimContainerCMD(AIM_CONTAINER_DEFAULT_PORT
+                          if dev < 2
+                          else AIM_CONTAINER_CMD_DEV_PORT)
+    cont_cmd.listen()
+
+    # Kill container after keyboard interruption
+    def graceful_shutdown():
+        cont_cmd.kill()
+
         click.echo('')
         click.echo('Shutting down...')
         try:
             cont.kill()
         except Exception:
             pass
-        click.echo('Shutdown')
+        click.echo('Done')
         sys.exit(0)
 
     # Add keyboard signal interruption listener
-    signal.signal(signal.SIGINT, signal_handler)
+    # signal.signal(signal.SIGINT, graceful_shutdown)
+    # signal.pause()
 
     click.echo('Open http://127.0.0.1:{}'.format(port))
     click.echo('Press Ctrl+C to exit')
 
-    # Wait for signal
-    signal.pause()
+    # Graceful shutdown
+    try:
+        while True:
+            sleep(1)
+    except KeyboardInterrupt:
+        graceful_shutdown()
+        sys.exit(0)
 
 
 @view_entry_point.command()
