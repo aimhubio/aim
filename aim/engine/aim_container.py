@@ -1,3 +1,9 @@
+import shlex
+import subprocess
+import socket
+import threading
+from time import sleep
+
 from aim.engine.configs import *
 from aim.engine.utils import get_module
 
@@ -102,3 +108,109 @@ class AimContainer:
 
     def add_port(self, port):
         self.ports['80/tcp'] = port
+
+
+class AimContainerCMD:
+    commands = {}
+
+    def __init__(self, port):
+        self.port = port
+        self.sock = None
+        self._listenerd = None
+        self._shutdown = False
+        self._reconnect = True
+
+    def listen(self):
+        self._listenerd = threading.Thread(target=self._listener_body,
+                                           daemon=True)
+        self._shutdown = False
+        self.sock = None
+        self._listenerd.start()
+
+    def kill(self):
+        self._shutdown = True
+        self.sock.close()
+
+    def _listener_body(self):
+        while True:
+            if self._shutdown:
+                return
+
+            try:
+                if self.sock is None:
+                    if not self._reconnect:
+                        return
+
+                    self.sock = socket.socket(socket.AF_INET,
+                                              socket.SOCK_STREAM)
+                    self.sock.settimeout(120)
+                    self.sock.connect(('0.0.0.0', self.port))
+
+                line = self._read_line()
+                if line:
+                    self.sock.send(b'ok')
+                    self._exec_command(line)
+                else:
+                    raise ValueError
+            except:
+                self.sock = None
+                sleep(0.1)
+
+    def _read_line(self):
+        buffer_size = 4096
+        buffer = self.sock.recv(buffer_size).decode('utf-8')
+        buffering = True
+        while buffering:
+            if '\n' in buffer:
+                (line, buffer) = buffer.split('\n', 1)
+                return line + '\n'
+            else:
+                more = self.sock.recv(buffer_size).decode('utf-8')
+                if not more:
+                    buffering = False
+                else:
+                    buffer += more
+        if buffer:
+            return buffer
+        else:
+            return ''
+
+    def _exec_command(self, command_line):
+        command = Command(command_line)
+        command_pid = command.start()
+        self.commands[command_pid] = command
+
+
+class Command:
+    def __init__(self, command_line):
+        self.command_line = command_line
+        self.process = None
+        self.pid = None
+        self.stdout = None
+        self.stderr = None
+        self._thread = threading.Thread(target=self._exec, daemon=True)
+
+    def start(self):
+        self._thread.start()
+        while True:
+            if self.pid:
+                return self.pid
+            else:
+                sleep(0.01)
+
+    def _exec(self):
+        args = shlex.split(self.command_line)
+        self.process = subprocess.Popen(args,
+                                        shell=False,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=subprocess.PIPE,
+                                        # preexec_fn=self.preexec
+                                        )
+        self.pid = self.process.pid
+        self.stdout, self.stderr = self.process.communicate()
+
+    # def preexec(self):
+    #     # Don't forward signals.
+    #     import os
+    #     os.setpgrp()
