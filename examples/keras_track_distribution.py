@@ -3,6 +3,7 @@ from aim import track
 
 import numpy as np
 import mnist
+import keras
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
@@ -10,6 +11,10 @@ from keras.utils import to_categorical
 """
 Citation for Keras Example Model: victorzhou.com/blog/keras-neural-network-tutorial/
 """
+
+class TrackCallBack(keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs=None):
+    track(aim.weights, model)
 
 train_images = mnist.train_images()
 train_labels = mnist.train_labels()
@@ -44,6 +49,7 @@ model.fit(
   to_categorical(train_labels),
   epochs=5,
   batch_size=32,
+  callbacks=[TrackCallBack()]
 )
 
 # Evaluate the model.
@@ -51,6 +57,3 @@ model.evaluate(
   test_images,
   to_categorical(test_labels)
 )
-
-weights, biases = model.layers[0].get_weights()
-track(aim.weights, model)
