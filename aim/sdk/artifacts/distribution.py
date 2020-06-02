@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any
 
-from aim.engine.utils import is_pytorch_module, get_module
+from aim.engine.utils import is_pytorch_module, get_module, is_keras_model
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record, RecordCollection
 from aim.sdk.artifacts.utils import get_pt_tensor
@@ -120,7 +120,27 @@ class WeightsDistribution(ModelDistribution):
                             bias_hist[0].tolist(),
                             bias_hist[1].tolist(),
                         ]
+        elif is_keras_model(model):
+            for i in range(len(model.layers)):
+                #Choose Layer Name
+                layer_name = model.layers[i].name # Example: "dense_1" (For the first dense layer)
+                layers[layer_name] = {}
 
+                weights, biases = model.layers[i].get_weights()
+                weights = np.array(weights)
+                biases = np.array(biases)
+                weight_hist = np.histogram(weights, 30) #30 is chosen based on pytorch integration
+                bias_hist = np.histogram(biases, 30)
+
+                layers[layer_name]['weight'] = [
+                    weight_hist[0].tolist(),
+                    weight_hist[1].tolist()
+                ]
+                layers[layer_name]['bias'] = [
+                    bias_hist[0].tolist(),
+                    bias_hist[1].tolist()
+                ]
+                
         return layers
 
 
