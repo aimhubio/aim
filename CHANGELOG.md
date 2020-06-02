@@ -1,5 +1,6 @@
 # Changelog
 
+- Keep executed processes for monitoring and management (gorarakelyan)
 - Add container command handler to exec commands on the host (gorarakelyan)
 - Refactor Text artifact to store sentences using protobuf and aimrecords (jamesj-jiao)
 - Add ability to pass aim board port as an argument (gorarakelyan)

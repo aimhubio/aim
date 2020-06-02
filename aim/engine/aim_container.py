@@ -3,6 +3,8 @@ import subprocess
 import socket
 import threading
 from time import sleep
+import json
+from base64 import b64decode
 
 from aim.engine.configs import *
 from aim.engine.utils import get_module
@@ -119,6 +121,7 @@ class AimContainerCMD:
         self._listenerd = None
         self._shutdown = False
         self._reconnect = True
+        self._commands = {}
 
     def listen(self):
         self._listenerd = threading.Thread(target=self._listener_body,
@@ -129,7 +132,25 @@ class AimContainerCMD:
 
     def kill(self):
         self._shutdown = True
-        self.sock.close()
+        if self.sock:
+            self.sock.close()
+
+    def event(self, data):
+        parsed_data = b64decode(data.encode('utf-8')).decode('utf-8')
+        parsed_data = json.loads(parsed_data)
+        res = {
+            'status': 200,
+        }
+        if parsed_data['action'] == 'execute':
+            command = Command(parsed_data['data']['command'])
+            command_pid = command.start()
+            self._commands[command] = command
+            res['pid'] = command_pid
+        else:
+            res = {
+                'status': 500,
+            }
+        return json.dumps(res)
 
     def _listener_body(self):
         while True:
@@ -143,13 +164,13 @@ class AimContainerCMD:
 
                     self.sock = socket.socket(socket.AF_INET,
                                               socket.SOCK_STREAM)
-                    self.sock.settimeout(120)
+                    # self.sock.settimeout(120)
                     self.sock.connect(('0.0.0.0', self.port))
 
                 line = self._read_line()
                 if line:
-                    self.sock.send(b'ok')
-                    self._exec_command(line)
+                    res = self.event(line)
+                    self._send_line(res)
                 else:
                     raise ValueError
             except:
@@ -175,10 +196,11 @@ class AimContainerCMD:
         else:
             return ''
 
-    def _exec_command(self, command_line):
-        command = Command(command_line)
-        command_pid = command.start()
-        self.commands[command_pid] = command
+    def _send_line(self, line):
+        if not line.endswith('\n'):
+            line += '\n'
+
+        self.sock.send(line.encode())
 
 
 class Command:
