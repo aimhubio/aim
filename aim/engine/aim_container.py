@@ -1,4 +1,7 @@
+import os
 import shlex
+import psutil
+import signal
 import subprocess
 import socket
 import threading
@@ -121,7 +124,7 @@ class AimContainerCMD:
         self._listenerd = None
         self._shutdown = False
         self._reconnect = True
-        self._commands = {}
+        self._commands = []
 
     def listen(self):
         self._listenerd = threading.Thread(target=self._listener_body,
@@ -134,6 +137,8 @@ class AimContainerCMD:
         self._shutdown = True
         if self.sock:
             self.sock.close()
+        for p in self._commands:
+            p.kill()
 
     def event(self, data):
         parsed_data = b64decode(data.encode('utf-8')).decode('utf-8')
@@ -142,10 +147,32 @@ class AimContainerCMD:
             'status': 200,
         }
         if parsed_data['action'] == 'execute':
-            command = Command(parsed_data['data']['command'])
+            command = Command(parsed_data['data'])
             command_pid = command.start()
-            self._commands[command] = command
+            self._commands.append(command)
             res['pid'] = command_pid
+        elif parsed_data['action'] == 'kill':
+            for p in self._commands:
+                if str(p.pid) == parsed_data['data']['pid']:
+                    p.kill()
+                    self._commands.remove(p)
+            res['pid'] = parsed_data['data']['pid']
+        elif parsed_data['action'] == 'select':
+            res['processes'] = []
+            for p in self._commands:
+                if not p.alive:
+                    self._commands.remove(p)
+            for p in self._commands:
+                res['processes'].append({
+                    'pid': p.pid,
+                    'name': p.name,
+                    'script_path': p.script_path,
+                    'arguments': p.arguments,
+                    'interpreter_path': p.interpreter_path,
+                    'working_dir': p.working_dir,
+                    'env_vars': p.env_vars,
+                    'command': p.command,
+                })
         else:
             res = {
                 'status': 500,
@@ -172,8 +199,9 @@ class AimContainerCMD:
                     res = self.event(line)
                     self._send_line(res)
                 else:
-                    raise ValueError
-            except:
+                    raise ValueError('empty message')
+            except Exception as e:
+                # print(e)
                 self.sock = None
                 sleep(0.1)
 
@@ -204,12 +232,20 @@ class AimContainerCMD:
 
 
 class Command:
-    def __init__(self, command_line):
-        self.command_line = command_line
+    def __init__(self, data):
+        self.name = data.get('name')
+        self.script_path = data.get('script_path')
+        self.arguments = data.get('arguments')
+        self.interpreter_path = data.get('interpreter_path')
+        self.working_dir = data.get('working_dir')
+        self.env_vars = data.get('env_vars')
+        self.command = self.build_command()
+
         self.process = None
         self.pid = None
         self.stdout = None
         self.stderr = None
+        self.alive = True
         self._thread = threading.Thread(target=self._exec, daemon=True)
 
     def start(self):
@@ -220,10 +256,38 @@ class Command:
             else:
                 sleep(0.01)
 
+    def kill(self):
+        try:
+            current_process = psutil.Process(self.pid)
+            children = current_process.children(recursive=True)
+            for child in children:
+                os.kill(child.pid, signal.SIGKILL)
+            os.kill(self.pid, signal.SIGKILL)
+            self._thread.join()
+        except Exception as e:
+            pass
+        self.alive = False
+
+    def build_command(self):
+        script_path = self.script_path
+        arguments = self.arguments or ''
+        interpreter_path = self.interpreter_path or 'python'
+        env_vars = self.env_vars or ''
+        work_dir = ''
+        if self.working_dir:
+            work_dir = 'cd {} && '.format(self.working_dir)
+
+        command = ('{work_dir} {env_vars} {interpt} ' +
+                   '{script_path} {arguments}').format(work_dir=work_dir,
+                                                       env_vars=env_vars,
+                                                       interpt=interpreter_path,
+                                                       script_path=script_path,
+                                                       arguments=arguments)
+        return command
+
     def _exec(self):
-        args = shlex.split(self.command_line)
-        self.process = subprocess.Popen(args,
-                                        shell=False,
+        self.process = subprocess.Popen(self.command,
+                                        shell=True,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
                                         stdin=subprocess.PIPE,
@@ -231,6 +295,7 @@ class Command:
                                         )
         self.pid = self.process.pid
         self.stdout, self.stderr = self.process.communicate()
+        self.alive = False
 
     # def preexec(self):
     #     # Don't forward signals.
