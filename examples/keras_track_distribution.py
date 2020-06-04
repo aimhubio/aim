@@ -1,6 +1,5 @@
 import aim
-from aim import track
-
+from aim import track, TrackCallBack
 import numpy as np
 import mnist
 import keras
@@ -12,9 +11,7 @@ from keras.utils import to_categorical
 Citation for Keras Example Model: victorzhou.com/blog/keras-neural-network-tutorial/
 """
 
-class TrackCallBack(keras.callbacks.Callback):
-  def on_epoch_end(self, epoch, logs=None):
-    track(aim.weights, model)
+
 
 train_images = mnist.train_images()
 train_labels = mnist.train_labels()
@@ -49,7 +46,7 @@ model.fit(
   to_categorical(train_labels),
   epochs=5,
   batch_size=32,
-  callbacks=[TrackCallBack()]
+  callbacks=[TrackCallBack(2)]
 )
 
 # Evaluate the model.

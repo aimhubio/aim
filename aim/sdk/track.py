@@ -4,6 +4,7 @@ from aim.engine.aim_repo import AimRepo
 from aim.sdk.artifacts import *
 from aim.sdk.artifacts.artifact_writer import ArtifactWriter
 import aim.logger
+import keras
 
 
 repo = None
@@ -40,3 +41,19 @@ def track(artifact_name: str, *args, **kwargs):
     writer.save(repo, inst)
 
     return inst
+
+class TrackCallBack(keras.callbacks.Callback):
+
+  def __init__(self, k=1):
+      super(TrackCallBack, self).__init__()
+      self.k = k
+
+  def on_epoch_end(self, epoch, logs=None):
+    track(aim.weights, model)
+
+  def on_train_batch_end(self, batch, logs=None):
+    if self.k != 0 and batch % self.k == 0:
+        track(aim.weights, model)
+
+
+
