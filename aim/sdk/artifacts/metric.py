@@ -8,6 +8,7 @@ from aim.sdk.artifacts.proto.metric_pb2 import MetricRecord
 
 class Metric(Artifact, metaclass=ABCMeta):
     cat = ('metrics',)
+    _step_counter = {}
 
     def __init__(self, name: str, value: Union[int, float], epoch: int = None,
                  step: int = None):
