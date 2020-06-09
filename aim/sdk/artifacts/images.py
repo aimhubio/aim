@@ -8,7 +8,6 @@ from aim.sdk.artifacts.proto.image_set_pb2 import ImageSetRecord
 
 class ImageSet(Artifact):
     cat = ('image_set',)
-    _step_counter = {}
 
     def __init__(self, name: str, image: Image, epoch: Optional[int] = None,
                  step: Optional[int] = None, meta: Optional[dict] = None):
@@ -17,9 +16,8 @@ class ImageSet(Artifact):
         self.epoch = epoch or 0
         self.meta = meta
 
-        self.initialize_step_counter(step, self.name)
-
         super(ImageSet, self).__init__(self.cat)
+        self.initialize_step_counter(step, self.name)
 
     def __str__(self):
         return self.name

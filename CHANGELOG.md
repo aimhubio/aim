@@ -1,5 +1,6 @@
 # Changelog
 
+- Execute process and store logs into a commit of specific experiment (gorarakelyan)
 - Kill running process and its children recursively (gorarakelyan)
 - Keep executed processes for monitoring and management (gorarakelyan)
 - Add container command handler to exec commands on the host (gorarakelyan)

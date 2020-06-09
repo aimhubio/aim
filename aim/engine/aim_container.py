@@ -8,6 +8,7 @@ import threading
 from time import sleep
 import json
 from base64 import b64decode
+import uuid
 
 from aim.engine.configs import *
 from aim.engine.utils import get_module
@@ -238,7 +239,12 @@ class Command:
         self.arguments = data.get('arguments')
         self.interpreter_path = data.get('interpreter_path')
         self.working_dir = data.get('working_dir')
-        self.env_vars = data.get('env_vars')
+
+        # Parse env vars
+        parsed_vars = self._parse_env_vars(data.get('env_vars'))
+        self.automated_info = parsed_vars
+        self.env_vars = parsed_vars['env_vars']
+
         self.command = self.build_command()
 
         self.process = None
@@ -261,8 +267,8 @@ class Command:
             current_process = psutil.Process(self.pid)
             children = current_process.children(recursive=True)
             for child in children:
-                os.kill(child.pid, signal.SIGKILL)
-            os.kill(self.pid, signal.SIGKILL)
+                os.kill(child.pid, signal.SIGINT)
+            os.kill(self.pid, signal.SIGINT)
             self._thread.join()
         except Exception as e:
             pass
@@ -272,7 +278,8 @@ class Command:
         script_path = self.script_path
         arguments = self.arguments or ''
         interpreter_path = self.interpreter_path or 'python'
-        env_vars = self.env_vars or ''
+        env_vars = self.env_vars
+
         work_dir = ''
         if self.working_dir:
             work_dir = 'cd {} && '.format(self.working_dir)
@@ -284,6 +291,40 @@ class Command:
                                                        script_path=script_path,
                                                        arguments=arguments)
         return command
+
+    def _parse_env_vars(self, env_vars):
+        env_vars = env_vars or ''
+        env_vars_arr = env_vars.split(' ')
+        filtered_env_vars = []
+
+        automated = False
+        automated_branch = None
+        automated_commit = None
+        for e in env_vars_arr:
+            if AIM_AUTOMATED_EXEC_ENV_VAR in e:
+                automated = True
+            elif AIM_BRANCH_ENV_VAR in e:
+                _, _, automated_branch = e.rpartition('=')
+            else:
+                filtered_env_vars.append(e)
+
+        if automated:
+            if not automated_branch:
+                automated_branch = AIM_DEFAULT_BRANCH_NAME
+            automated_commit = str(uuid.uuid1())
+
+            filtered_env_vars.append('{}={}'.format(AIM_BRANCH_ENV_VAR,
+                                                    automated_branch))
+            filtered_env_vars.append('{}={}'.format(AIM_COMMIT_ENV_VAR,
+                                                    automated_commit))
+            filtered_env_vars.append('{}=1'.format(AIM_AUTOMATED_EXEC_ENV_VAR))
+
+        return {
+            'env_vars': ' '.join(filtered_env_vars),
+            'automated': automated,
+            'automated_branch': automated_branch,
+            'automated_commit': automated_commit,
+        }
 
     def _exec(self):
         self.process = subprocess.Popen(self.command,

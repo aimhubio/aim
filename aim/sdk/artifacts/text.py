@@ -8,7 +8,6 @@ from aim.sdk.artifacts.proto.text_pb2 import TextRecord
 
 class Text(Artifact, metaclass=ABCMeta):
     cat = ('text',)
-    _step_counter = {}
 
     def __init__(self, name: str, text: str, epoch: int = None, step: int = None):
         self.name = name
@@ -16,9 +15,8 @@ class Text(Artifact, metaclass=ABCMeta):
         self.timestamp = int(time.time())
         self.epoch = epoch or 0
 
-        self.initialize_step_counter(step, self.name)
-
         super(Text, self).__init__(self.cat)
+        self.initialize_step_counter(step, self.name)
 
     def __str__(self):
         return '{document_name}: {text}'.format(document_name=self.name,

@@ -16,9 +16,10 @@ class Artifact(metaclass=ABCMeta):
     MODEL = 'model'
     PROTOBUF = 'protobuf'
 
+    _step_counter = {}
+
     def __init__(self, cat: tuple):
         self.cat = cat
-        self._step_counter = {}
         self.step = 0
 
     @abstractmethod
@@ -45,9 +46,10 @@ class Artifact(metaclass=ABCMeta):
         if step is not None:
             self.step = step
         else:
-            self._step_counter.setdefault(name, 0)
-            self._step_counter[name] += 1
-            self.step = self._step_counter[name]
+            self._step_counter.setdefault(self.cat, {})
+            self._step_counter[self.cat].setdefault(name, 0)
+            self.step = self._step_counter[self.cat][name]
+            self._step_counter[self.cat][name] += 1
 
     def serialize_pb_object(self, artifact, step: int = None,
                             epoch: int = None) -> bytes:

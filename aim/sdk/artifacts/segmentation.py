@@ -14,7 +14,6 @@ from aim.engine.utils import is_numpy_array
 
 class Segmentation(Artifact):
     cat = ('segmentation',)
-    _step_counter = {}
     _image_paths = {}
 
     def __init__(self, name: str, obj: Image, mask: Any, epoch: int = None,
@@ -31,12 +30,11 @@ class Segmentation(Artifact):
         else:
             raise TypeError('invalid mask type')
 
-        self.initialize_step_counter(step, self.name)
-
         self._image_paths.setdefault(name, set())
         self._image_paths[name].add(obj.path)
 
         super(Segmentation, self).__init__(self.cat)
+        self.initialize_step_counter(step, self.name)
 
     def serialize(self):
         seg_pb = SegmentationRecord()
