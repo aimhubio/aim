@@ -163,7 +163,7 @@ class AimContainerCMD:
             for p in self._commands:
                 if not p.alive:
                     self._commands.remove(p)
-            for p in self._commands:
+            for p in self._select_commands(parsed_data.get('data')):
                 res['processes'].append({
                     'pid': p.pid,
                     'name': p.name,
@@ -179,6 +179,27 @@ class AimContainerCMD:
                 'status': 500,
             }
         return json.dumps(res)
+
+    def _select_commands(self, filters=None):
+        if filters is None:
+            return self._commands
+
+        result = []
+        experiment = filters.get('experiment')
+        commit = filters.get('commit_hash')
+
+        for p in self._commands:
+            if experiment is not None \
+                    and experiment != p.automated_info['automated_branch']:
+                continue
+
+            if commit is not None \
+                    and commit != p.automated_info['automated_commit']:
+                continue
+
+            result.append(p)
+
+        return result
 
     def _listener_body(self):
         while True:
