@@ -628,6 +628,7 @@ class AimRepo:
                 'process': {
                     'start': True,
                     'finish': False,
+                    'uuid': os.getenv(AIM_PROCESS_ENV_VAR),
                 },
                 'aim': {
                     'version': aim_version,
@@ -651,10 +652,7 @@ class AimRepo:
         curr_timestamp = int(time.time())
         configs['date'] = curr_timestamp
         configs['message'] = curr_timestamp
-        configs['process'] = {
-            'start': True,
-            'finish': True,
-        }
+        configs['process']['finish'] = True
         with open(config_file_path, 'w+') as config_file:
             config_file.write(json.dumps(configs))
 
