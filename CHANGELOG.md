@@ -1,5 +1,6 @@
 # Changelog
 
+- Save passed process uuid to commit configs (gorarakelyan)
 - Ability to query processes (gorarakelyan)
 - Execute process and store logs into a commit of specific experiment (gorarakelyan)
 - Kill running process and its children recursively (gorarakelyan)

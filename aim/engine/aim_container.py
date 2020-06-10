@@ -166,6 +166,7 @@ class AimContainerCMD:
             for p in self._select_commands(parsed_data.get('data')):
                 res['processes'].append({
                     'pid': p.pid,
+                    'process_uuid': p.process_uuid,
                     'name': p.name,
                     'script_path': p.script_path,
                     'arguments': p.arguments,
@@ -260,6 +261,7 @@ class Command:
         self.arguments = data.get('arguments')
         self.interpreter_path = data.get('interpreter_path')
         self.working_dir = data.get('working_dir')
+        self.process_uuid = data.get('process_uuid')
 
         # Parse env vars
         parsed_vars = self._parse_env_vars(data.get('env_vars'))
@@ -338,6 +340,8 @@ class Command:
                                                     automated_branch))
             filtered_env_vars.append('{}={}'.format(AIM_COMMIT_ENV_VAR,
                                                     automated_commit))
+            filtered_env_vars.append('{}={}'.format(AIM_PROCESS_ENV_VAR,
+                                                    self.process_uuid))
             filtered_env_vars.append('{}=1'.format(AIM_AUTOMATED_EXEC_ENV_VAR))
 
         return {
