@@ -7,6 +7,15 @@ def get_pt_tensor(t):
 
     return t
 
+def get_unique(a):
+    s = set()
+    unique = []
+    for element in a:
+        if element not in s:
+            unique.append(element)
+            s.add(element)
+    return np.array(unique)
+
 
 class TfUtils:
 
@@ -42,7 +51,7 @@ class TfUtils:
         """Return the names of layers in net."""
         if TfUtils._is_op_defined(t_vars):
             return [t_var.name for t_var in t_vars][: len(t_vars) // 2 ]
-        return np.unique([t_var.name.split("/")[0] for t_var in t_vars if "/" in t_var.name])
+        return get_unique([t_var.name.split("/")[0] for t_var in t_vars if "/" in t_var.name])
 
     @staticmethod
     def get_weights(t_vars, sess):
