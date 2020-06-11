@@ -1,5 +1,6 @@
 # Changelog
 
+- Update AimContainerCMD to open connection on custom port (gorarakelyan)
 - Save passed process uuid to commit configs (gorarakelyan)
 - Ability to query processes (gorarakelyan)
 - Execute process and store logs into a commit of specific experiment (gorarakelyan)

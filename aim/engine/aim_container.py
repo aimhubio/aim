@@ -37,6 +37,7 @@ class AimContainer:
         self.ports = {}
         self.volumes = {
             repo.path: {'bind': '/store', 'mode': 'rw'},
+            repo.name: {'bind': '/var/lib/postgresql/data', 'mode': 'rw'},
         }
         self.env = ['PROJECT_NAME={}'.format(repo.name)]
 
@@ -112,8 +113,11 @@ class AimContainer:
 
         return False
 
-    def add_port(self, port):
-        self.ports['80/tcp'] = port
+    def add_port(self, port, to=None):
+        if to is None:
+            self.ports['80/tcp'] = port
+        else:
+            self.ports['{}/tcp'.format(to)] = port
 
 
 class AimContainerCMD:
