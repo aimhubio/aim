@@ -6,7 +6,7 @@ from time import sleep
 from aim.engine.aim_container import AimContainer, AimContainerCMD
 from aim.engine.configs import (
     AIM_CONTAINER_DEFAULT_PORT,
-    AIM_CONTAINER_CMD_DEV_PORT,
+    AIM_CONTAINER_CMD_PORT,
 )
 
 
@@ -41,7 +41,7 @@ def up(repo, dev, port, version):
         click.style('Running board on repo `{}`'.format(repo), fg='yellow'))
 
     # Check if image exist
-    if not cont.image_exist(version):
+    if dev == 0 and not cont.image_exist(version):
         click.echo('Pulling aim board image, please wait...')
         if not cont.pull(version):
             click.echo('An error occurred. If you don\'t have access to ' +
@@ -64,15 +64,17 @@ def up(repo, dev, port, version):
 
     # Run container
     if dev < 2:
+        cont.add_port(port + 1, AIM_CONTAINER_CMD_PORT)
         if not cont.up(port, version):
             click.echo('Failed to run aim board.')
             click.echo(('    Please check if port {c} is ' +
                         'accessible.').format(c=port))
             return
+        else:
+            sleep(4)
 
-    cont_cmd = AimContainerCMD(AIM_CONTAINER_DEFAULT_PORT
-                               if dev < 2
-                               else AIM_CONTAINER_CMD_DEV_PORT)
+    cont_cmd = AimContainerCMD((port + 1) if dev < 2
+                               else AIM_CONTAINER_CMD_PORT)
     cont_cmd.listen()
 
     # Kill container after keyboard interruption
