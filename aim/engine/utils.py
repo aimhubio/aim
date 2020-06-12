@@ -125,7 +125,7 @@ def is_tensorflow_session(inst):
     """
     Check whether `inst` is isntance of tensorflow session
     """
-    return inst_has_typename(inst, ['session'])
+    return inst_has_typename(inst, ['tensorflow', 'session'])
     
 def is_pytorch_optim(inst):
     """
