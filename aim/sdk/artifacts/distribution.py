@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any
 
-from aim.engine.utils import is_pytorch_module, get_module
+from aim.engine.utils import is_pytorch_module, is_tensorflow_session, get_module
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record, RecordCollection
-from aim.sdk.artifacts.utils import get_pt_tensor
+from aim.sdk.artifacts.utils import get_pt_tensor, TfUtils
 
 
 class Distribution(Artifact):
@@ -120,7 +120,18 @@ class WeightsDistribution(ModelDistribution):
                             bias_hist[0].tolist(),
                             bias_hist[1].tolist(),
                         ]
-
+        elif is_tensorflow_session(model):
+            t_vars = TfUtils.get_tf_t_vars(model)
+            layers_ = TfUtils.get_layers(t_vars)
+            weights = TfUtils.get_weights(t_vars, model)
+            biases = TfUtils.get_biases(t_vars, model)
+            for layer_idx, layer_name in enumerate(layers_):
+                layers[layer_name] = {}
+                weight_arr = weights[layer_idx]
+                layers[layer_name]['weight'] = TfUtils.get_vals_hist(weight_arr, 30)
+                
+                bias_arr = biases[layer_idx]
+                layers[layer_name]['bias'] = TfUtils.get_vals_hist(bias_arr, 30)
         return layers
 
 

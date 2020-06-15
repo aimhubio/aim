@@ -27,3 +27,4 @@ for r in storage.read_records('accuracy', slice(None, None)):
     print('accuracy', base_pb, metric_pb)
 
 storage.close()
+

@@ -110,7 +110,13 @@ aim.sublime-*
 .DS_Store
 .idea
 .vim
+.vscode/
+
 
 data
 examples/.aim
 examples/.git
+
+models/
+
+temp.py
