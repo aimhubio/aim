@@ -66,7 +66,7 @@ def neural_net_with_layers(x):
     return out_layer
 
 
-logits = neural_net_with_layers(X)
+logits = neural_net_with_ops(X)
 
 # Define loss and optimizer
 loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
@@ -102,7 +102,7 @@ with tf.Session() as sess:
                       "{:.3f}".format(acc))
         track(aim.checkpoint,
              'checkpoint_test', 'chp_epoch_{}'.format(e),
-              sess, e, learning_rate=learning_rate,
+              sess, e, lr_rate=learning_rate,
               meta={
                   'learning_rate': learning_rate,
                   'batch_size': batch_size

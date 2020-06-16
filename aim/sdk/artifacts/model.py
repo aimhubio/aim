@@ -4,7 +4,7 @@ import tempfile
 import zipfile
 from typing import Any
 
-from aim.engine.utils import is_keras_model, is_pytorch_module, get_module
+from aim.engine.utils import is_keras_model, is_pytorch_module, is_tensorflow_session, get_module
 from aim.sdk.artifacts.artifact import Artifact
 from aim.sdk.artifacts.record import Record
 
@@ -83,7 +83,8 @@ class Checkpoint(Artifact):
 
         # Define model backend lib
         lib = 'keras' if is_keras_model(self.model) else \
-            'pytorch' if is_pytorch_module(self.model) else None
+            'pytorch' if is_pytorch_module(self.model) else \
+            'tensorflow' if is_tensorflow_session(self.model) else None
         self.lib = lib
 
         super(Checkpoint, self).__init__(self.cat)
@@ -140,6 +141,24 @@ class Checkpoint(Artifact):
                 'lib': 'keras',
                 'weights': weights_file_name,
                 'arch': arch_file_name,
+            }
+
+            return model_save_meta
+        elif self.lib == 'tensorflow':
+            tf = get_module('tensorflow')
+            saver = tf.train.Saver()
+
+            saver.save(self.model, path)
+
+            _, _, model_path = path.rpartition('/')
+
+            #Specify meta information
+            model_save_meta = {
+                'lib': 'tensorflow',
+                'graph': model_path+'.meta',
+                'vars': model_path+'.data-00000-of-00001',
+                'index': model_path+'.index',
+                'checkpoint': 'checkpoint'
             }
 
             return model_save_meta
