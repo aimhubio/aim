@@ -33,7 +33,7 @@ def add(repo, name):
         click.echo(e)
         return
 
-    click.echo('New branch is added')
+    click.echo('New experiment is added')
 
 
 @exp_entry_point.command()
@@ -65,7 +65,7 @@ def checkout(repo, name):
         click.echo(e)
         return
 
-    click.echo('Checkout to {} branch'.format(name))
+    click.echo('Checkout to {} experiment'.format(name))
 
 
 @exp_entry_point.command()
