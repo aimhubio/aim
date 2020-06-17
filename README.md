@@ -26,7 +26,7 @@ pip install -r requirements.txt
 │   ├── cli <-------------  command line interface
 │   ├── engine <----------  business logic
 │   ├── sdk <-------------  Python SDK
-│   ├── artifacts <-------  managig tracked data
+│   ├── artifacts <-------  managing tracked data
 │   └── version_control <-  managing files and code
 ├── examples <------------  example usages of aim SDK
 └── tests
