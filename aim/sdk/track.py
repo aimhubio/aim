@@ -1,15 +1,14 @@
 import atexit
 
 from aim.engine.aim_repo import AimRepo
-from aim.sdk.artifacts import *
-from aim.sdk.artifacts.artifact_writer import ArtifactWriter
+from aim.artifacts import *
+from aim.artifacts.artifact_writer import ArtifactWriter
 import aim.logger
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
     AIM_COMMIT_ENV_VAR,
     AIM_AUTOMATED_EXEC_ENV_VAR,
 )
-
 
 
 repo = None
