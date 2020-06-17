@@ -1,5 +1,6 @@
 # Changelog
 
+- Tidy up aim and remove some artifacts (gorarakelyan)
 - Update AimContainerCMD to open connection on custom port (gorarakelyan)
 - Save passed process uuid to commit configs (gorarakelyan)
 - Ability to query processes (gorarakelyan)
@@ -28,7 +29,7 @@
 - Add image semantic segmentation tracking (gorarakelyan)
 
 ## 1.2.12 Apr 20 2020
-- Add missing init file for aim.sdk.artifacts.proto (@mike1808)
+- Add missing init file for aim.artifacts.proto (@mike1808)
 
 ## 1.2.11 Apr 16 2020
 - Make epoch property optional for Metric (gorarakelyan)

@@ -24,11 +24,10 @@ pip install -r requirements.txt
 ```
 ├── aim  <----------------  main project code
 │   ├── cli <-------------  command line interface
-│   ├── engine <----------  business logic for interracting with Aim Hub
-│   ├── profiler <--------  experimental profiler for ML models
+│   ├── engine <----------  business logic
 │   ├── sdk <-------------  Python SDK
-│   └── version_control <-  managing files and tracked data
-├── docs <----------------  development documentation
+│   ├── artifacts <-------  managig tracked data
+│   └── version_control <-  managing files and code
 ├── examples <------------  example usages of aim SDK
 └── tests
 ```

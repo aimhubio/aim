@@ -95,7 +95,7 @@ for epoch in range(num_epochs):
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            track(aim.loss, 'loss', loss.item(), epoch)
+            track(aim.metric, 'loss', loss.item(), epoch)
 
             # aim - Track model loss function
             correct = 0
@@ -104,21 +104,11 @@ for epoch in range(num_epochs):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-            track(aim.accuracy, 'accuracy', 100 * correct / total, epoch)
+            track(aim.metric, 'accuracy', 100 * correct / total, epoch)
             track(aim.metric, 'random', random.random(), epoch)
             track(aim.metric, 'random-md', random.random() * 10, epoch)
             track(aim.metric, 'random-lg',
                   math.ceil(random.random() * 100), epoch)
-
-            track(aim.metric_group, 'random', [
-                random.random(),
-                random.random() * 10,
-                math.ceil(random.random() * 100),
-            ], [
-                'random',
-                'random-md',
-                'random-lg',
-            ])
 
 # Test the model
 model.eval()
