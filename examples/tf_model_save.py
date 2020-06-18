@@ -105,8 +105,10 @@ with tf.Session() as sess:
               sess, e, lr_rate=learning_rate,
               meta={
                   'learning_rate': learning_rate,
-                  'batch_size': batch_size
+                  'batch_size': batch_size,
+                  'classes': num_classes,
               })
+        learning_rate = learning_rate / 2.0
     print("Optimization Finished!")
 
     # Calculate accuracy for MNIST test images
