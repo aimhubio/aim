@@ -3,6 +3,7 @@ import os
 import tempfile
 import zipfile
 from typing import Any
+import shutil
 
 from aim.engine.utils import is_keras_model, is_pytorch_module, is_tensorflow_session, get_module
 from aim.artifacts.artifact import Artifact
@@ -63,6 +64,37 @@ class Checkpoint(Artifact):
             tmp_model_file.close()
 
             return True, model['model']
+        if meta_info['model']['lib'] == 'tensorflow':
+            tf = get_module('tensorflow')
+
+            # Create directory for TensorFlow Saver files
+            dir_name = 'tmp_model'
+            os.mkdir(dir_name)
+            
+            # Recreate .meta, .data-00000-of-00001, .index, and checkpoint
+            model_file_name = meta_info['model']['graph']
+            model_file = open(os.path.join(dir_name, model_file_name), 'wb')
+            model_file.write(model_arch.read(model_file_name))
+
+            data_file_name = meta_info['model']['vars']
+            data_file = open(os.path.join(dir_name, data_file_name), 'wb')
+            data_file.write(model_arch.read(data_file_name))
+
+            index_file_name = meta_info['model']['index']
+            index_file = open(os.path.join(dir_name, index_file_name), 'wb')
+            index_file.write(model_arch.read(index_file_name))
+
+            checkpoint_file_name = meta_info['model']['checkpoint']
+            checkpoint_file = open(os.path.join(dir_name, checkpoint_file_name), 'wb')
+            checkpoint_file.write(model_arch.read(checkpoint_file_name))
+
+            # Restore session
+            with tf.Session() as sess:
+                saver = tf.train.import_meta_graph(os.path.join(dir_name, model_file_name))
+                saver.restore(sess, os.path.join(dir_name, meta_info['model']['name']))
+
+                shutil.rmtree(dir_name)
+                return True, sess
 
         return False, None
 
