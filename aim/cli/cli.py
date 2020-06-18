@@ -1,21 +1,19 @@
 import click
 from click import core
-core._verify_python3_env = lambda: None
 
 from aim.engine.aim_repo import AimRepo
 
 from aim.cli.configs import *
-from aim.cli.auth import commands as auth_commands
 from aim.cli.init import commands as init_commands
-from aim.cli.remote import commands as remote_commands
-from aim.cli.push import commands as push_commands
-from aim.cli.branch import commands as branch_commands
+from aim.cli.experiment import commands as experiment_commands
 from aim.cli.commit import commands as commit_commands
 from aim.cli.reset import commands as reset_commands
 from aim.cli.version import commands as version_commands
-from aim.cli.view import commands as view_commands
+from aim.cli.de import commands as de_commands
 from aim.cli.status import commands as status_commands
 from aim.cli.config import commands as config_commands
+
+core._verify_python3_env = lambda: None
 
 
 @click.group()
@@ -29,14 +27,12 @@ def cli_entry_point(ctx, verbose):
     ctx.obj = AimRepo.get_working_repo()
 
 
-cli_entry_point.add_command(auth_commands.auth, AUTH_NAME)
 cli_entry_point.add_command(init_commands.init, INIT_NAME)
-cli_entry_point.add_command(remote_commands.remote_entry_point, REMOTE_NAME)
-cli_entry_point.add_command(branch_commands.branch_entry_point, BRANCH_NAME)
-cli_entry_point.add_command(push_commands.push, PUSH_NAME)
+cli_entry_point.add_command(experiment_commands.exp_entry_point,
+                            EXPERIMENT_NAME)
 cli_entry_point.add_command(commit_commands.commit, COMMIT_NAME)
 cli_entry_point.add_command(reset_commands.reset, RESET_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
-cli_entry_point.add_command(view_commands.view_entry_point, VIEW_NAME)
+cli_entry_point.add_command(de_commands.de_entry_point, DE_NAME)
 cli_entry_point.add_command(status_commands.status, STATUS_NAME)
 cli_entry_point.add_command(config_commands.config, CONFIG_NAME)

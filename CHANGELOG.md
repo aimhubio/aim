@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0 Jun 18 2020
+- Tidy up aim and remove some artifacts (gorarakelyan)
+- Update AimContainerCMD to open connection on custom port (gorarakelyan)
+- Save passed process uuid to commit configs (gorarakelyan)
+- Ability to query processes (gorarakelyan)
+- Execute process and store logs into a commit of specific experiment (gorarakelyan)
+- Kill running process and its children recursively (gorarakelyan)
+- Keep executed processes for monitoring and management (gorarakelyan)
+- Add container command handler to exec commands on the host (gorarakelyan)
+- Refactor Text artifact to store sentences using protobuf and aimrecords (jamesj-jiao)
+- Add ability to pass aim board port as an argument (gorarakelyan)
+
 ## 1.2.17 May 8 2020
 - Add config command (gorarakelyan)
 - Tune artifacts: images, metric_groups, params (gorarakelyan)
@@ -18,7 +30,7 @@
 - Add image semantic segmentation tracking (gorarakelyan)
 
 ## 1.2.12 Apr 20 2020
-- Add missing init file for aim.sdk.artifacts.proto (@mike1808)
+- Add missing init file for aim.artifacts.proto (@mike1808)
 
 ## 1.2.11 Apr 16 2020
 - Make epoch property optional for Metric (gorarakelyan)

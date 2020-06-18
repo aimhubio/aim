@@ -1,7 +1,7 @@
 import os
 
-from aim.sdk.artifacts.proto.base_pb2 import BaseRecord
-from aim.sdk.artifacts.proto.metric_pb2 import MetricRecord
+from aim.artifacts.proto.base_pb2 import BaseRecord
+from aim.artifacts.proto.metric_pb2 import MetricRecord
 
 from aimrecords import Storage
 

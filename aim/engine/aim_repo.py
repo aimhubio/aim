@@ -14,7 +14,7 @@ from aim.engine.aim_profile import AimProfile
 
 class AimRepo:
     @staticmethod
-    def get_working_repo():
+    def get_working_repo(*args, **kwargs):
         """
         Searches for .aim repository in working directory
         and returns AimRepo object if exists
@@ -37,7 +37,7 @@ class AimRepo:
         if not repo_found:
             return None
 
-        return AimRepo(working_dir)
+        return AimRepo(working_dir, *args, **kwargs)
 
     @staticmethod
     def cat_to_dir(cat):
@@ -65,6 +65,8 @@ class AimRepo:
             return AIM_MAP_DIR_NAME
         elif cat[0] == 'stats':
             return AIM_STATS_DIR_NAME
+        elif cat[0] == 'text':
+            return AIM_TEXT_DIR_NAME
 
     @staticmethod
     def archive_dir(zip_path, dir_path):
@@ -77,12 +79,13 @@ class AimRepo:
         # Remove model directory
         shutil.rmtree(dir_path)
 
-    def __init__(self, path):
+    def __init__(self, path, repo_branch=None, repo_commit=None):
         self._config = {}
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.hash = hashlib.md5(path.encode('utf-8')).hexdigest()
         self.name = path.split(os.sep)[-1]
+        self.active_commit = repo_commit or AIM_COMMIT_INDEX_DIR_NAME
 
         self.branch_path = None
         self.index_path = None
@@ -90,8 +93,11 @@ class AimRepo:
         self.media_dir_path = None
         self.records_storage = None
 
-        if self.config:
-            self.branch = self.config.get('active_branch')
+        if not repo_branch:
+            if self.config:
+                self.branch = self.config.get('active_branch')
+        else:
+            self.branch = repo_branch
 
     def __str__(self):
         return self.path
@@ -121,14 +127,20 @@ class AimRepo:
     def branch(self, branch):
         self._branch = branch
 
+        if not self._branch in self.list_branches():
+            self.create_branch(self._branch)
+
         self.branch_path = os.path.join(self.path,
                                         self._branch)
         self.index_path = os.path.join(self.branch_path,
-                                       AIM_COMMIT_INDEX_DIR_NAME)
+                                       self.active_commit)
         self.objects_dir_path = os.path.join(self.index_path,
                                              AIM_OBJECTS_DIR_NAME)
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
+
+        if not os.path.isdir(self.index_path):
+            os.makedirs(self.index_path)
 
         if self.records_storage:
             self.records_storage.close()
@@ -597,6 +609,54 @@ class AimRepo:
             'branch': self.config.get('active_branch'),
             'commit': commit_hash,
         }
+
+    def commit_init(self):
+        index_dir = self.index_path
+        if not os.path.isdir(index_dir):
+            os.makedirs(index_dir, exist_ok=True)
+
+        # Create commit config file
+        config_file_path = os.path.join(index_dir,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+        curr_timestamp = int(time.time())
+        with open(config_file_path, 'w+') as config_file:
+            configs = {
+                'hash': self.active_commit,
+                'start_date': curr_timestamp,
+                'date': curr_timestamp,
+                'message': curr_timestamp,
+                'process': {
+                    'start': True,
+                    'finish': False,
+                    'uuid': os.getenv(AIM_PROCESS_ENV_VAR),
+                },
+                'aim': {
+                    'version': aim_version,
+                },
+            }
+            config_file.write(json.dumps(configs))
+
+        return True
+
+    def commit_finish(self):
+        index_dir = self.index_path
+        config_file_path = os.path.join(index_dir,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+
+        with open(config_file_path, 'r+') as config_file:
+            try:
+                configs = json.loads(config_file.read())
+            except:
+                configs = {}
+
+        curr_timestamp = int(time.time())
+        configs['date'] = curr_timestamp
+        configs['message'] = curr_timestamp
+        configs['process']['finish'] = True
+        with open(config_file_path, 'w+') as config_file:
+            config_file.write(json.dumps(configs))
+
+        return True
 
     def reset_index(self):
         """

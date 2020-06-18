@@ -1,6 +1,5 @@
 # aim
-
-Version control and collaboration for AI.
+#### Version control for AI
 
 See the docs [here](https://docs.aimhub.io).
 
@@ -24,11 +23,17 @@ pip install -r requirements.txt
 ```
 ├── aim  <----------------  main project code
 │   ├── cli <-------------  command line interface
-│   ├── engine <----------  business logic for interracting with Aim Hub
-│   ├── profiler <--------  experimental profiler for ML models
+│   ├── engine <----------  business logic
 │   ├── sdk <-------------  Python SDK
-│   └── version_control <-  managing files and tracked data
-├── docs <----------------  development documentation
+│   ├── artifacts <-------  managing tracked data
+│   └── version_control <-  managing files and code
 ├── examples <------------  example usages of aim SDK
 └── tests
 ```
+
+### Code Style
+We follow [pep8](https://www.python.org/dev/peps/pep-0008/) style guide for python code. We use [autopep8](https://pypi.org/project/autopep8/) and [pycodestyle](https://pypi.org/project/pycodestyle/) to enable checking and formatting Python code. 
+
+To check code styles, run `pycodestyle .` in the root folder. 
+
+To auto format, run `autopep8 --in-place --recursive --aggressive --aggressive .` in the root folder.

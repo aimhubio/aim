@@ -1,8 +1,8 @@
 import aim
-aim.init()
-
 from aim import track
 
+
+aim.init()
 
 track(aim.hyperparams, {
     'num_epochs': 10,

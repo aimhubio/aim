@@ -90,7 +90,7 @@ class AimProfile:
         private_key_path = os.path.join(self.ssh_path, private_file_name)
 
         # Generate rsa key
-        k = paramiko.RSAKey.generate(bits=4*1024)
+        k = paramiko.RSAKey.generate(bits=4 * 1024)
 
         # Save keys inside ssh dir
         k.write_private_key_file(private_key_path, password=None)
