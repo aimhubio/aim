@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 
-Tracks and versions AI training runs along with the metadata and the models
+Tracks and versions AI training runs along with the metadata and the models.
 
 See the documentation [here](https://docs.aimstack.io).
 
@@ -16,7 +16,7 @@ local machine for development and testing purposes.
 
 ### Requirements
 
-* Python 3
+* Python >= 3.5.0
 
 We suggest to use [virtual
 environment](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments) for managing local dependencies.
