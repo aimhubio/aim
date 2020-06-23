@@ -26,6 +26,7 @@ class Checkpoint(Artifact):
             if not os.path.isfile(model_path):
                 return False, None
         
+        # Create temporary directory
         dir_name = 'tmp_model'
         os.mkdir(dir_name)
         shutil.copy2(model_path, dir_name)
@@ -40,6 +41,7 @@ class Checkpoint(Artifact):
         except Exception:
             return False, None
         
+        # Delete directory if not working with tensorflow
         if meta_info['model']['lib'] != 'tensorflow':
             shutil.rmtree(dir_name)
 
@@ -182,10 +184,6 @@ class Checkpoint(Artifact):
             #Specify meta information
             model_save_meta = {
                 'lib': 'tensorflow',
-                'graph': model_path+'.meta',
-                'vars': model_path+'.data-00000-of-00001',
-                'index': model_path+'.index',
-                'checkpoint': 'checkpoint',
                 'name': model_path
             }
 
