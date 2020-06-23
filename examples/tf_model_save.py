@@ -85,7 +85,7 @@ with tf.Session() as sess:
     # Run the initializer
     sess.run(init)
 
-    for e in range(10):
+    for e in range(1):
         for step in range(1, num_steps+1):
             batch_x, batch_y = mnist.train.next_batch(batch_size)
             # Run optimization op (backprop)

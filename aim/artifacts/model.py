@@ -4,6 +4,7 @@ import tempfile
 import zipfile
 from typing import Any
 import shutil
+from pathlib import Path
 
 from aim.engine.utils import is_keras_model, is_pytorch_module, is_tensorflow_session, get_module
 from aim.artifacts.artifact import Artifact
@@ -24,6 +25,10 @@ class Checkpoint(Artifact):
             model_path = os.path.join(working_dir, path)
             if not os.path.isfile(model_path):
                 return False, None
+        
+        dir_name = 'tmp_model'
+        os.mkdir(dir_name)
+        shutil.copy2(model_path, dir_name)
 
         # Open model archive
         model_arch = zipfile.ZipFile(model_path, 'r')
@@ -34,6 +39,9 @@ class Checkpoint(Artifact):
             meta_info = json.loads(meta_file)
         except Exception:
             return False, None
+        
+        if meta_info['model']['lib'] != 'tensorflow':
+            shutil.rmtree(dir_name)
 
         # Load the model
         if meta_info['model']['lib'] == 'keras':
@@ -67,32 +75,19 @@ class Checkpoint(Artifact):
         if meta_info['model']['lib'] == 'tensorflow':
             tf = get_module('tensorflow')
 
-            # Create directory for TensorFlow Saver files
-            dir_name = 'tmp_model'
-            os.mkdir(dir_name)
-            
-            # Recreate .meta, .data-00000-of-00001, .index, and checkpoint
-            model_file_name = meta_info['model']['graph']
-            model_file = open(os.path.join(dir_name, model_file_name), 'wb')
-            model_file.write(model_arch.read(model_file_name))
+            model_name = meta_info['model']['name']
 
-            data_file_name = meta_info['model']['vars']
-            data_file = open(os.path.join(dir_name, data_file_name), 'wb')
-            data_file.write(model_arch.read(data_file_name))
-
-            index_file_name = meta_info['model']['index']
-            index_file = open(os.path.join(dir_name, index_file_name), 'wb')
-            index_file.write(model_arch.read(index_file_name))
-
-            checkpoint_file_name = meta_info['model']['checkpoint']
-            checkpoint_file = open(os.path.join(dir_name, checkpoint_file_name), 'wb')
-            checkpoint_file.write(model_arch.read(checkpoint_file_name))
+            # Unzip copied .aim file in created directory
+            file_path = Path(dir_name)
+            files = (x for x in file_path.iterdir() if x.is_file())
+            zip_file = next(files)
+            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                zip_ref.extractall(dir_name)
 
             # Restore session
             with tf.Session() as sess:
-                saver = tf.train.import_meta_graph(os.path.join(dir_name, model_file_name))
-                saver.restore(sess, os.path.join(dir_name, meta_info['model']['name']))
-
+                saver = tf.train.import_meta_graph(os.path.join(dir_name, model_name+'.meta'))
+                saver.restore(sess, os.path.join(dir_name, model_name))
                 shutil.rmtree(dir_name)
                 return True, sess
 
@@ -178,7 +173,7 @@ class Checkpoint(Artifact):
             return model_save_meta
         elif self.lib == 'tensorflow':
             tf = get_module('tensorflow')
-            saver = tf.train.Saver()
+            saver = tf.train.Saver(save_relative_paths=True)
 
             saver.save(self.model, path)
 
