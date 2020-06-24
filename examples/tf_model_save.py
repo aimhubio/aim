@@ -1,5 +1,6 @@
 import aim
 from aim import track
+from aim.artifacts.utils import TfUtils
 
 import tensorflow as tf
 

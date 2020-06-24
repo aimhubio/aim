@@ -1,5 +1,6 @@
 import aim
 from aim import Checkpoint
+from aim.artifacts.utils import TfUtils
 
 import tensorflow as tf
 
@@ -35,6 +36,7 @@ def neural_net_with_layers(x):
 
     return out_layer
 
-MODEL_PATH = ''
+MODEL_PATH = '/Users/bkalisetti658/desktop/aim/.aim/default/index/objects/models/chp_epoch_0.aim'
 sess = Checkpoint.load(MODEL_PATH)
-print(sess)
+sess = sess[1]
+print(TfUtils.get_biases(TfUtils.get_tf_t_vars(sess), sess))

@@ -87,11 +87,11 @@ class Checkpoint(Artifact):
                 zip_ref.extractall(dir_name)
 
             # Restore session
-            with tf.Session() as sess:
-                saver = tf.train.import_meta_graph(os.path.join(dir_name, model_name+'.meta'))
-                saver.restore(sess, os.path.join(dir_name, model_name))
-                shutil.rmtree(dir_name)
-                return True, sess
+            sess = tf.Session()
+            saver = tf.train.import_meta_graph(os.path.join(dir_name, model_name+'.meta'))
+            saver.restore(sess, os.path.join(dir_name, model_name))
+            shutil.rmtree(dir_name)
+            return True, sess
 
         return False, None
 
