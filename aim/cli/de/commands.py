@@ -24,7 +24,7 @@ def de_entry_point(ctx):
 
     if not AimContainer.is_docker_installed():
         click.echo('Oops! You don\'t have docker installed. ' +
-                   'AimBoard needs docker to run. Please install docker.')
+                   'AimDE needs docker to run. Please install docker.')
         exit()
 
 
@@ -41,23 +41,19 @@ def up(repo, dev, port, version):
     cont = AimContainer(repo, dev=bool(dev))
 
     click.echo(
-        click.style('Running board on repo `{}`'.format(repo), fg='yellow'))
+        click.style('Running AimDE on repo `{}`'.format(repo), fg='yellow'))
 
     # Check if image exist
     if dev == 0 and not cont.image_exist(version):
-        click.echo('Pulling aim board image, please wait...')
+        click.echo('Pulling AimDE image, please wait...')
         if not cont.pull(version):
-            click.echo('An error occurred. If you don\'t have access to ' +
-                       'board docker image, please share you DockerID ' +
-                       'with AimHub to get access and continue ' +
-                       'tracking your ML experiments.')
-            click.echo('    (use "docker login" for authentication)')
+            click.echo('An error occurred. Try again.')
             return
         else:
-            click.echo('Successfully pulled aim board image')
+            click.echo('Successfully pulled AimDE image')
 
     if cont.get_container(running_only=True):
-        kill = click.confirm('Board is already running. ' +
+        kill = click.confirm('AimDE is already running. ' +
                              'Do you want to restart it?')
         if not kill:
             return
@@ -69,7 +65,7 @@ def up(repo, dev, port, version):
     if dev < 2:
         cont.add_port(port + 1, AIM_CONTAINER_CMD_PORT)
         if not cont.up(port, version):
-            click.echo('Failed to run aim board.')
+            click.echo('Failed to run AimDE.')
             click.echo(('    Please check if port {c} is ' +
                         'accessible.').format(c=port))
             return
@@ -123,7 +119,7 @@ def down(repo):
 def upgrade(repo):
     cont = AimContainer(repo)
 
-    click.echo('Pulling latest aim board release')
+    click.echo('Pulling latest AimDE release')
 
     update = cont.pull()
     if update:
@@ -139,7 +135,7 @@ def upgrade(repo):
 def pull(repo, version):
     cont = AimContainer(repo)
 
-    click.echo('Pulling aim board v{}'.format(version))
+    click.echo('Pulling AimDE v{}'.format(version))
 
     update = cont.pull(version)
     if update:
