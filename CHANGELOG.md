@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1 Jun 24 2020
+- Fix inconsistent DE naming (gorarakelyan)
+
 ## 2.0.0 Jun 18 2020
 - Tidy up aim and remove some artifacts (gorarakelyan)
 - Update AimContainerCMD to open connection on custom port (gorarakelyan)
