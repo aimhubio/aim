@@ -36,7 +36,7 @@ def neural_net_with_layers(x):
 
     return out_layer
 
-MODEL_PATH = '/Users/bkalisetti658/desktop/aim/.aim/default/index/objects/models/chp_epoch_0.aim'
+MODEL_PATH = '' #Path to .aim zip file
 sess = Checkpoint.load(MODEL_PATH)
 sess = sess[1]
-print(TfUtils.get_biases(TfUtils.get_tf_t_vars(sess), sess))
+print(TfUtils.get_weights(TfUtils.get_tf_t_vars(sess), sess))

@@ -27,9 +27,9 @@ class Checkpoint(Artifact):
                 return False, None
         
         # Create temporary directory
-        dir_name = 'tmp_model'
-        os.mkdir(dir_name)
-        shutil.copy2(model_path, dir_name)
+        tmp_copy_dir = tempfile.TemporaryDirectory()
+        copy_dir_name = tmp_copy_dir.name
+        shutil.copy2(model_path, copy_dir_name)
 
         # Open model archive
         model_arch = zipfile.ZipFile(model_path, 'r')
@@ -43,7 +43,7 @@ class Checkpoint(Artifact):
         
         # Delete directory if not working with tensorflow
         if meta_info['model']['lib'] != 'tensorflow':
-            shutil.rmtree(dir_name)
+            tmp_copy_dir.cleanup()
 
         # Load the model
         if meta_info['model']['lib'] == 'keras':
@@ -80,17 +80,17 @@ class Checkpoint(Artifact):
             model_name = meta_info['model']['name']
 
             # Unzip copied .aim file in created directory
-            file_path = Path(dir_name)
+            file_path = Path(copy_dir_name)
             files = (x for x in file_path.iterdir() if x.is_file())
             zip_file = next(files)
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-                zip_ref.extractall(dir_name)
+                zip_ref.extractall(copy_dir_name)
 
             # Restore session
             sess = tf.Session()
-            saver = tf.train.import_meta_graph(os.path.join(dir_name, model_name+'.meta'))
-            saver.restore(sess, os.path.join(dir_name, model_name))
-            shutil.rmtree(dir_name)
+            saver = tf.train.import_meta_graph(os.path.join(copy_dir_name, model_name+'.meta'))
+            saver.restore(sess, os.path.join(copy_dir_name, model_name))
+            tmp_copy_dir.cleanup()
             return True, sess
 
         return False, None
