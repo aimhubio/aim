@@ -1,6 +1,9 @@
 import numpy as np
 import tensorflow as tf
 
+import aim
+from aim import track
+
 def get_pt_tensor(t):
     if hasattr(t, 'is_cuda') and t.is_cuda:
         return t.cpu()
@@ -68,3 +71,16 @@ class TfUtils:
             num_of_layers = len(TfUtils.get_layers(t_vars))
             return [sess.run(t_var) for t_var in t_vars[num_of_layers : ]]
         return [sess.run(t_var) for t_var in t_vars if "bias" in t_var.name]
+
+class CheckpointCallback(tf.keras.callbacks.Callback):
+    '''
+    Custom callback for tracking checkpoints in Keras/tf.keras models.
+    '''
+
+    def on_epoch_end(self, epoch, logs=None):
+        track(aim.checkpoint, 'checkpoint-test', 'mnist-'+str(epoch+1),
+            self.model, epoch,
+            meta={
+                'classes':10,
+                'loss': logs['loss']
+            })

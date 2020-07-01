@@ -1,6 +1,6 @@
 import aim
 from aim import track
-from aim.artifacts.utils import TfUtils
+from aim.artifacts.utils import CheckpointCallback
 
 import tensorflow as tf
 
@@ -16,16 +16,6 @@ model = tf.keras.models.Sequential([
   tf.keras.layers.Dropout(0.2),
   tf.keras.layers.Dense(10)
 ])
-
-class CustomCallback(tf.keras.callbacks.Callback):
-
-  def on_epoch_end(self, epoch, logs=None):
-    track(aim.checkpoint, 'checkpoint-test', 'mnist-'+str(epoch+1),
-          self.model, epoch,
-          meta={
-            'classes':10,
-            'loss': logs['loss']
-          })
 
 track(aim.checkpoint, 'checkpoint-test',
      'mnist-0', model, 0,
@@ -43,6 +33,6 @@ model.compile(optimizer='adam',
               loss=loss_fn,
               metrics=['accuracy'])
 
-model.fit(x_train, y_train, epochs=5, callbacks=[CustomCallback()])
+model.fit(x_train, y_train, epochs=5, callbacks=[CheckpointCallback()])
 model.evaluate(x_test,  y_test, verbose=2)
 
