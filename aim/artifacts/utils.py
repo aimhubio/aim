@@ -74,10 +74,13 @@ class TfUtils:
 
 class CheckpointCallback(tf.keras.callbacks.Callback):
     '''
-    Custom callback for tracking checkpoints in Keras/tf.keras models.
+    Custom callback for tracking checkpoints in Keras models.
     '''
 
     def on_epoch_end(self, epoch, logs=None):
+        '''
+        Tracks checkpoint at the end of each epoch.
+        '''
         track(aim.checkpoint, 'checkpoint-test', 'mnist-'+str(epoch+1),
             self.model, epoch,
             meta={

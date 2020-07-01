@@ -1,10 +1,9 @@
 import aim
 from aim import Checkpoint
-from aim.artifacts.utils import TfUtils
 
 import tensorflow as tf
 
-MODEL_PATH = '/Users/bkalisetti658/desktop/aim/.aim/default/index/objects/models/mnist-3.aim'
+MODEL_PATH = ''
 model = Checkpoint.load(MODEL_PATH)
 model = model[1]
 
