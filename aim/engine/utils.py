@@ -96,6 +96,9 @@ def inst_has_typename(inst, types):
     inst_type, inst_cls_type = get_inst_type_str(inst)
     inst_types = [inst_type, inst_cls_type] + get_inst_base_types(inst)
 
+    print(inst_types)
+    print(types)
+
     for i in inst_types:
         found = True
         for t in types:
@@ -123,9 +126,15 @@ def is_pytorch_module(inst):
 
 def is_tensorflow_session(inst):
     """
-    Check whether `inst` is isntance of tensorflow session
+    Check whether `inst` is instance of tensorflow session
     """
     return inst_has_typename(inst, ['tensorflow', 'session'])
+
+def is_tensorflow_estimator(inst):
+    """
+    Check whether `inst` is instance of tensorflow estimator
+    """
+    return inst_has_typename(inst, ['tensorflow', 'estimator'])
 
 def is_pytorch_optim(inst):
     """
