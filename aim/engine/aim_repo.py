@@ -79,6 +79,15 @@ class AimRepo:
         # Remove model directory
         shutil.rmtree(dir_path)
 
+    @staticmethod
+    def get_artifact_cat(cat: tuple):
+        if isinstance(cat, tuple):
+            if len(cat) > 1:
+                return cat
+            elif len(cat) == 1:
+                return cat[0]
+        return None
+
     def __init__(self, path, repo_branch=None, repo_commit=None):
         self._config = {}
         self.path = os.path.join(path, AIM_REPO_NAME)
@@ -305,7 +314,7 @@ class AimRepo:
 
         self.update_meta_file(file_name_for_meta, {
             'name': name,
-            'type': cat[-1],
+            'type': self.get_artifact_cat(cat),
             'data': data,
             'data_path': cat_path,
         })
@@ -322,7 +331,7 @@ class AimRepo:
         """
         self.update_meta_file(name, {
             'name': name,
-            'type': cat[-1],
+            'type': self.get_artifact_cat(cat),
             'data': data,
             'data_path': '__AIMRECORDS__',
             'format': {
@@ -356,7 +365,7 @@ class AimRepo:
         if save_to_meta:
             self.update_meta_file(name, {
                 'name': name,
-                'type': cat[-1],
+                'type': self.get_artifact_cat(cat),
                 'data': {},
                 'data_path': img_rel_path,
             })
@@ -416,7 +425,7 @@ class AimRepo:
         # Update repo meta file
         self.update_meta_file(checkpoint_name, {
             'name': checkpoint_name,
-            'type': cat[-1],
+            'type': self.get_artifact_cat(cat),
             'data': {
                 'name': name,
                 'epoch': epoch,

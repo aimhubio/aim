@@ -1,10 +1,10 @@
-from typing import List, Any, Tuple
+from typing import List, Any, Tuple, Optional
 
 
 class Record:
     def __init__(self, cat: Tuple[str], name: str = None, content: Any = None,
                  is_singular: bool = False, data: Any = None,
-                 binary_type: str = None):
+                 binary_type: Optional[str] = None):
         self.name = name
         self.cat = cat
         self.content = content

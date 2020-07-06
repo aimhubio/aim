@@ -85,6 +85,10 @@ class ArtifactWriter:
                                       writer_type,
                                       record.binary_type)
         else:
+            if record.binary_type == Artifact.JSON:
+                writer = RecordWriter.JSON_WRITER
+            else:
+                writer = RecordWriter.JSON_LOG_WRITER
             file_name = '{}.log'.format(record.name)
             res = repo.store_file(file_name,
                                   record.name,
@@ -92,7 +96,7 @@ class ArtifactWriter:
                                   record.data,
                                   dir_path)
             write_mode = 'w' if record.is_singular else 'a'
-            writer = RecordWriter.get_writer(RecordWriter.JSON_LOG_WRITER)
+            writer = RecordWriter.get_writer(writer)
             writer.write(res['abs_path'], write_mode, record.content)
 
         return res
