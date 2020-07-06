@@ -1,5 +1,6 @@
 # Changelog
 
+- Remove first required argument(artifact name) from sdk track function (gorarakelyan)
 - Add general dictionary artifact for tracking `key: value` parameters (gorarakelyan)
 
 ## 2.0.1 Jun 24 2020

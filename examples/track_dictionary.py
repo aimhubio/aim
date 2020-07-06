@@ -1,19 +1,17 @@
 import aim
-from aim import track
-
-
 aim.init()
 
-track(aim.dictionary, {
+
+aim.track({
     'num_epochs': 10,
     'fc_units': 128,
 }, namespace='params')
 
-track(aim.dictionary, {
+aim.track({
     'name': 'Dataset name',
     'version': 'Dataset version',
 }, namespace='dataset')
 
-track(aim.dictionary, {
+aim.track({
     'foo': 'bar',
 })

@@ -1,6 +1,4 @@
 import aim
-from aim import track
-
 aim.init(overwrite=True)
 
 import random
@@ -95,20 +93,20 @@ for epoch in range(num_epochs):
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            track(aim.metric, 'loss', loss.item(), epoch)
+            aim.track(loss.item(), name='loss', epoch=epoch)
 
-            # aim - Track model loss function
             correct = 0
             total = 0
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-            track(aim.metric, 'accuracy', 100 * correct / total, epoch)
-            track(aim.metric, 'random', random.random(), epoch)
-            track(aim.metric, 'random-md', random.random() * 10, epoch)
-            track(aim.metric, 'random-lg',
-                  math.ceil(random.random() * 100), epoch)
+            # aim - Track metrics
+            aim.track(100 * correct / total, name='accuracy', epoch=epoch)
+            aim.track(random.random(), name='random', epoch=epoch)
+            aim.track(random.random() * 10, name='random-md', epoch=epoch)
+            aim.track(math.ceil(random.random() * 100), name='random-lg', epoch=epoch)
+
 
 # Test the model
 model.eval()
