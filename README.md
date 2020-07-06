@@ -14,12 +14,12 @@ pip3 install aim-cli
 import aim
 aim.init() # initialize aim recorder
 ...
-aim.track(aim.metric, metric_value, 'my-meaningful-metric-name')
-aim.track(aim.hyperparams, hyperparam_dict)
+aim.track(metric_value, 'my-meaningful-metric-name')
+aim.track(hyperparam_dict, 'hyperparams-name-that-makes-sense')
 ```
 3. Run the training and start the AI Dev Environment
 ```shell
-aim de up
+aim up
 ```
 
 ## Contributor Guide
