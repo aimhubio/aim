@@ -9,6 +9,7 @@ from aim.engine.configs import (
     AIM_CONTAINER_CMD_PORT,
 )
 from aim.engine.aim_repo import AimRepo
+from aim.cli.de.utils import repo_init_alert, docker_requirement_alert
 
 
 @click.group()
@@ -16,15 +17,13 @@ from aim.engine.aim_repo import AimRepo
 def de_entry_point(ctx):
     repo = ctx.obj or AimRepo.get_working_repo()
     if repo is None:
-        click.echo('Repository not found')
-        click.echo('    (use "aim init" to initialize empty repository)')
+        repo_init_alert()
         exit()
 
     ctx.obj = repo
 
     if not AimContainer.is_docker_installed():
-        click.echo('Oops! You don\'t have docker installed. ' +
-                   'AimDE needs docker to run. Please install docker.')
+        docker_requirement_alert()
         exit()
 
 
@@ -34,6 +33,14 @@ def de_entry_point(ctx):
 @click.option('-v', '--version', default='latest', type=str)
 @click.pass_obj
 def up(repo, dev, port, version):
+    if repo is None:
+        repo_init_alert()
+        return
+
+    if not AimContainer.is_docker_installed():
+        docker_requirement_alert()
+        return
+
     # Dev param
     # 0 => pull and run official image of container
     # 1 => run production build from local environment
