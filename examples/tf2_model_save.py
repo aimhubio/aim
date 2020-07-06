@@ -34,8 +34,10 @@ model.compile(optimizer='adam',
               loss=loss_fn,
               metrics=['accuracy'])
 
+meta = {'classes': 10}
+
 # Train model with checkpoints callbacks
-model.fit(x_train, y_train, epochs=5, callbacks=[CheckpointCallback()])
+model.fit(x_train, y_train, epochs=5, callbacks=[CheckpointCallback(meta)])
 
 model.evaluate(x_test,  y_test, verbose=2)
 
