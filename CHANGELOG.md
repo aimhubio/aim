@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to automatically commit runs after exit (gorarakelyan)
 - Add `aim up` shortcut for running development environment (gorarakelyan)
 - Remove first required argument(artifact name) from sdk track function (gorarakelyan)
 - Add general dictionary artifact for tracking `key: value` parameters (gorarakelyan)
