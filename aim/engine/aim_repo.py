@@ -5,6 +5,7 @@ import zipfile
 import re
 import time
 import hashlib
+import uuid
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
@@ -38,6 +39,10 @@ class AimRepo:
             return None
 
         return AimRepo(working_dir, *args, **kwargs)
+
+    @staticmethod
+    def generate_commit_hash():
+        return str(uuid.uuid1())
 
     @staticmethod
     def cat_to_dir(cat):
@@ -86,6 +91,13 @@ class AimRepo:
                 return cat
             elif len(cat) == 1:
                 return cat[0]
+        return None
+
+    @classmethod
+    def get_active_branch_if_exists(cls):
+        repo = cls.get_working_repo()
+        if repo:
+            return repo.branch
         return None
 
     def __init__(self, path, repo_branch=None, repo_commit=None):
