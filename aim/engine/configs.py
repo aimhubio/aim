@@ -26,6 +26,9 @@ AIM_COMMIT_INDEX_DIR_NAME = 'index'
 AIM_COMMIT_CONFIG_FILE_NAME = 'config.json'
 AIM_COMMIT_META_FILE_NAME = 'meta.json'
 
+# Artifacts
+AIM_NESTED_MAP_DEFAULT = 'default'
+
 # Logger
 AIM_LOGGING_DIR_NAME = 'logs'
 AIM_CLI_ACTIVITIED_LOG = 'activities.log'

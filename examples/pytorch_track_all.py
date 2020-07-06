@@ -1,7 +1,7 @@
 import aim
 from aim import track
 
-aim.init(overwrite=False)
+aim.init(overwrite=True)
 
 import random
 import math
@@ -21,12 +21,12 @@ batch_size = 50
 learning_rate = 0.01
 
 # aim - Track hyper parameters
-track(aim.hyperparams, {
+track(aim.dictionary, {
     'num_epochs': num_epochs,
     'num_classes': num_classes,
     'batch_size': batch_size,
     'learning_rate': learning_rate,
-})
+}, 'params')
 
 # MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data/',

@@ -15,6 +15,7 @@ class Artifact(metaclass=ABCMeta):
     IMAGE = 'image'
     MODEL = 'model'
     PROTOBUF = 'protobuf'
+    JSON = 'JSON'
 
     _step_counter = {}
 

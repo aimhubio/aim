@@ -6,4 +6,10 @@ from aim.sdk.init import *
 metric = 'Metric'
 hyperparams = 'HyperParameters'
 dataset = 'Dataset'
+map = 'Map'
+nested_map = 'NestedMap'
 checkpoint = 'Checkpoint'
+
+# Serializable aliases
+params = hyperparams
+dictionary = nested_map

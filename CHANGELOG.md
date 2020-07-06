@@ -1,5 +1,7 @@
 # Changelog
 
+- Add general dictionary artifact for tracking `key: value` parameters (gorarakelyan)
+
 ## 2.0.1 Jun 24 2020
 - Fix inconsistent DE naming (gorarakelyan)
 
