@@ -2,11 +2,12 @@ import json
 import os
 import tempfile
 import zipfile
-from typing import Any
+from typing import Any, Callable
 import shutil
 from pathlib import Path
 
-from aim.engine.utils import is_keras_model, is_pytorch_module, is_tensorflow_session, get_module
+from aim.engine.utils import is_keras_model, is_pytorch_module, \
+    is_tensorflow_session, is_tensorflow_estimator, get_module
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
 
@@ -100,6 +101,7 @@ class Checkpoint(Artifact):
                  epoch: int,
                  lr_rate: float = None,
                  opt: Any = None,
+                 fn: Callable[[], Any] = None,
                  meta: dict = None):
         self.name = name
         self.checkpoint_name = checkpoint_name
@@ -107,13 +109,15 @@ class Checkpoint(Artifact):
         self.opt = opt
         self.epoch = epoch
         self.lr_rate = lr_rate
+        self.fn = fn
         self.meta = meta
         self.path = ''
 
         # Define model backend lib
         lib = 'keras' if is_keras_model(self.model) else \
             'pytorch' if is_pytorch_module(self.model) else \
-            'tensorflow' if is_tensorflow_session(self.model) else None
+            'tensorflow' if is_tensorflow_session(self.model) else \
+            'tensorflow-est' if is_tensorflow_estimator(self.model) else None
         self.lib = lib
 
         super(Checkpoint, self).__init__(self.cat)
@@ -188,4 +192,15 @@ class Checkpoint(Artifact):
             }
 
             return model_save_meta
+        elif self.lib == 'tensorflow-est':
+            tf = get_module('tensorflow')
+
+            self.model.export_saved_model(path, self.fn)
+
+            _, _, model_path = path.rpartition('/')
+
+            #Specify meta information
+            model_save_meta = {
+                'lib': 'tensorflow'
+            }
         return {}

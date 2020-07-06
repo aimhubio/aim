@@ -96,9 +96,6 @@ def inst_has_typename(inst, types):
     inst_type, inst_cls_type = get_inst_type_str(inst)
     inst_types = [inst_type, inst_cls_type] + get_inst_base_types(inst)
 
-    print(inst_types)
-    print(types)
-
     for i in inst_types:
         found = True
         for t in types:
