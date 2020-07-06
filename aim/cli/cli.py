@@ -36,3 +36,6 @@ cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 cli_entry_point.add_command(de_commands.de_entry_point, DE_NAME)
 cli_entry_point.add_command(status_commands.status, STATUS_NAME)
 cli_entry_point.add_command(config_commands.config, CONFIG_NAME)
+
+# CLI Shortcuts
+cli_entry_point.add_command(de_commands.up, DE_UP_SHORTCUT)
