@@ -1,7 +1,5 @@
 import aim
-from aim import track
-import random
-import math
+aim.init()
 
 import torch
 import torch.nn as nn
@@ -18,7 +16,7 @@ batch_size = 50
 learning_rate = 0.01
 
 # aim - Track hyper parameters
-track(aim.dictionary, {
+aim.track({
     'num_epochs': num_epochs,
     'num_classes': num_classes,
     'batch_size': batch_size,
