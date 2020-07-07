@@ -43,7 +43,7 @@ class Checkpoint(Artifact):
             return False, None
         
         # Delete directory if not working with tensorflow
-        if meta_info['model']['lib'] != 'tensorflow':
+        if 'tensorflow' not in meta_info['model']['lib']:
             tmp_copy_dir.cleanup()
 
         # Load the model
@@ -93,6 +93,21 @@ class Checkpoint(Artifact):
             saver.restore(sess, os.path.join(copy_dir_name, model_name))
             tmp_copy_dir.cleanup()
             return True, sess
+        if meta_info['model']['lib'] == 'tensorflow-est':
+            tf = get_module('tensorflow')
+
+            model_name = meta_info['model']['name']
+
+            # Unzip copied .aim file in created directory
+            file_path = Path(copy_dir_name)
+            files = (x for x in file_path.iterdir() if x.is_file())
+            zip_file = next(files)
+            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                zip_ref.extractall(copy_dir_name)
+            
+            imported = tf.saved_model.load(os.path.join(copy_dir_name, model_name))
+            tmp_copy_dir.cleanup()
+            return True, imported
 
         return False, None
 
@@ -199,8 +214,12 @@ class Checkpoint(Artifact):
 
             _, _, model_path = path.rpartition('/')
 
+            model_path = model_path+'/'+os.listdir(path=path)[0]
+
             #Specify meta information
             model_save_meta = {
-                'lib': 'tensorflow'
+                'lib': 'tensorflow-est',
+                'name': model_path
             }
+            return model_save_meta
         return {}
