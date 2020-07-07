@@ -95,11 +95,12 @@ Display the version of the currently installed Aim CLI.
 ```shell
 $ aim version
 ```
+
+### experiment
 Create new experiment branches to organize the training runs related to the same experiment
 Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
-### experiment
 ```
 | Command    | Args                            | Description                                               |
 | -----------| ------------------------------- | --------------------------------------------------------- |
