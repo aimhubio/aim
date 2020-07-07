@@ -2,7 +2,7 @@
 
 ## Components and Architecture
 
-<img width="500px" src="https://user-images.githubusercontent.com/3179216/86598147-c2670400-bfad-11ea-96e8-1ad3a13a6fb2.jpg">
+<img src="https://user-images.githubusercontent.com/3179216/86799150-a7b28f00-c082-11ea-8bde-abed93cc0973.png">
 
 
 ### Requirements
