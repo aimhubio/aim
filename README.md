@@ -101,17 +101,37 @@ Here is how it works:
 $ aim experiment COMMAND [ARGS]
 ### experiment
 ```
-| Command    | Args                     | Description                                               |
-| -----------| ------------------------ | --------------------------------------------------------- |
-| `add`      | `-n &#124; --name <exp_name>` | Add new experiment branch with a given name.              |
-| `checkout` | `-n &#124; --name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
-| `ls`       |                          | List all the experiments of the repo.                     |
-| `rm`       | `-n &#124; --name <exp_name>` | Remove an experiment with the given name.                 |
+| Command    | Args                            | Description                                               |
+| -----------| ------------------------------- | --------------------------------------------------------- |
+| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment branch with a given name.              |
+| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
+| `ls`       |                                 | List all the experiments of the repo.                     |
+| `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
-*_Disclaimer:_* Removing the experiment also removes the recorded experiment data.
+***Disclaimer:*** Removing the experiment also removes the recorded experiment data.
 
 ### de
-S
+AI Development Environment is a web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
+
+Start up the AI Development Environment (ADE)
+```shell
+$ aim de [COMMAND]
+```
+***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
+Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
+
+| Command        | Args                             | Description                                                          |
+| -------------- | -------------------------------  | -------------------------------------------------------------------- |
+| `up`           | `-p <port>` &#124; `-v version`  | Starts the AI Development Environment for the given repo                  |
+| `down`         |                                  | Turn off the AI Development Environment and the docker container that the ADE is running on|
+| `pull`         | `-v <version>`                   | Pull the ADE of the given version |
+| `upgrade`      |                                  | Upgrade the ADE to its latest version|
+
+### up
+An alias to `aim de up` :
+```shell
+$ aim up
+```
 
 ## Python SDK examples
 
