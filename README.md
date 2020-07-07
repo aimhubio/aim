@@ -23,13 +23,11 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ```shell
 aim up
 ```
-
 ## Contents
 
 - [Aim](#aim)
   - [Contents](#contents)
   - [Getting Started In Three Steps](#getting-started-in-three-steps)
-  - [How It Works](#how-it-works)
   - [Installation](#installation)
   - [Command Line Interface](#command-line-interface)
     - [init](#init)
@@ -38,15 +36,9 @@ aim up
     - [de](#de)
     - [up](#up)
   - [Python Library](#python-library)
+  - [How It Works](#how-it-works)
   - [How to Use Development Environment](#how-to-use-development-environment)
   - [Contributor Guide](#contributor-guide)
-
-## How it works
-The stack of projects that enable AI Development Environment:
-<img src="https://user-images.githubusercontent.com/3179216/86799150-a7b28f00-c082-11ea-8bde-abed93cc0973.png">
-- [Aim](#aim) - Version Control for AI Experiments.
-- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
-- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
@@ -147,6 +139,13 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ...
 ```
 Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
+
+## How it works
+The stack of projects that enable AI Development Environment:
+<img src="https://user-images.githubusercontent.com/3179216/86802291-f0b81280-c085-11ea-8715-6fd650c4a45d.png">
+- [Aim](#aim) - Version Control for AI Experiments.
+- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
+- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
 
 ## How to use development environment
 
