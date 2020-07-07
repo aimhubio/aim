@@ -23,6 +23,7 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ```shell
 aim up
 ```
+
 ## Contents
 
 - [Aim](#aim)
@@ -37,7 +38,7 @@ aim up
     - [up](#up)
   - [Python Library](#python-library)
   - [How It Works](#how-it-works)
-  - [How to Use Development Environment](#how-to-use-development-environment)
+  - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](#contributor-guide)
 
 ## Installation
@@ -147,7 +148,9 @@ The stack of projects that enable AI Development Environment:
 - [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
 - [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
 
-## How to use development environment
+## Sneak peek at AI development environment
+
+```TODO```
 
 ## Contributor Guide
 Visit [contributor guide](docs/contributor-guide.md) for further details.
