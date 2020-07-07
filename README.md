@@ -39,7 +39,7 @@ aim up
   - [Python Library](#python-library)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
-  - [Contributor Guide](#contributor-guide)
+  - [Contributor Guide](docs/contributor-guide.md)
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
@@ -151,6 +151,3 @@ The stack of projects that enable AI Development Environment:
 ## Sneak peek at AI development environment
 
 ```TODO```
-
-## Contributor Guide
-Visit [contributor guide](docs/contributor-guide.md) for further details.
