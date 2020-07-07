@@ -54,11 +54,8 @@ $ aim up
 ```
 
 ## Command Line Interface
-Aim CLI is installed via command
-```shell
-$ pip3 install aim-cli
-```
-Once installed, it offers a simple CLI to easily organize and record the experiments.
+
+Aim CLI offers a simple interface to easily organize and record the experiments.
 Paired with the [PyThon Library](#python-library), Aim becomes a powerful utility to record, search and compare AI experiments.
 This is how the commands look like:
 
