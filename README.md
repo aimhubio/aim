@@ -103,10 +103,10 @@ $ aim experiment COMMAND [ARGS]
 ```
 | Command    | Args                     | Description                                               |
 | -----------| ------------------------ | --------------------------------------------------------- |
-| `add`      | `-n | --name <exp_name>` | Add new experiment branch with a given name.              |
-| `checkout` | `-n | --name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
+| `add`      | `-n &#124; --name <exp_name>` | Add new experiment branch with a given name.              |
+| `checkout` | `-n &#124; --name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
 | `ls`       |                          | List all the experiments of the repo.                     |
-| `rm`       | `-n | --name <exp_name>` | Remove an experiment with the given name.                 |
+| `rm`       | `-n &#124; --name <exp_name>` | Remove an experiment with the given name.                 |
 
 *_Disclaimer:_* Removing the experiment also removes the recorded experiment data.
 
