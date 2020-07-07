@@ -4,6 +4,8 @@
 
 A super-easy way to record, search and compare AI experiments.
 
+<img src="https://user-images.githubusercontent.com/3179216/86800037-ab92e100-c083-11ea-86e0-5810ca4cb0bd.png">
+
 ## Getting started in three steps
 1. Install Aim in your training environment
 ```shell
