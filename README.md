@@ -5,7 +5,7 @@
 A super-easy way to record, search and compare AI experiments.
 **As easy as starting a Jupyter Notebook!**
 
-## Getting Started in three steps
+## Getting started in three steps
 1. Install Aim in your training environment
 ```shell
 pip3 install aim-cli
@@ -15,8 +15,8 @@ pip3 install aim-cli
 import aim
 aim.init() # initialize aim recorder
 ...
-aim.track(metric_value, 'my-meaningful-metric-name')
-aim.track(hyperparam_dict, 'hyperparams-name-that-makes-sense')
+aim.track(metric_value, name='my-meaningful-metric-name', epoch=the_epoch)
+aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ```
 3. Run the training and start the AI Dev Environment
 ```shell
@@ -36,7 +36,7 @@ aim up
       - [version](#version)
       - [status](#status)
       - [experiment](#experiment)
-      - [up](#up)-
+      - [up](#up)
     - [Python Library](#python-library)
       - [metric](#metric)
       - [hyperparams](#hyperparams)
@@ -62,7 +62,7 @@ Run the command to start the aim development environment.
 $ aim up
 ```
 
-## Command Line Interface examples
+## Command Line Interface
 Aim CLI is installed via command
 ```shell
 $ pip3 install aim-cli
@@ -120,12 +120,12 @@ $ aim de [COMMAND]
 ***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
 
-| Command        | Args                             | Description                                                          |
-| -------------- | -------------------------------  | -------------------------------------------------------------------- |
-| `up`           | `-p <port>` &#124; `-v version`  | Starts the AI Development Environment for the given repo                  |
+| Command        | Args                             | Description                                                                                |
+| -------------- | -------------------------------  | ------------------------------------------------------------------------------------------ |
+| `up`           | `-p <port>` &#124; `-v version`  | Starts the AI Development Environment for the given repo                                   |
 | `down`         |                                  | Turn off the AI Development Environment and the docker container that the ADE is running on|
-| `pull`         | `-v <version>`                   | Pull the ADE of the given version |
-| `upgrade`      |                                  | Upgrade the ADE to its latest version|
+| `pull`         | `-v <version>`                   | Pull the ADE of the given version                                                          |
+| `upgrade`      |                                  | Upgrade the ADE to its latest version                                                      |
 
 ### up
 An alias to `aim de up` :
@@ -133,12 +133,23 @@ An alias to `aim de up` :
 $ aim up
 ```
 
-## Python SDK examples
+## Python Library
+Use Python Library to instrument your training code to record the experiments.
+The instrumentation only takes 2 lines:
+```py
+import aim
+aim.init()
+```
+Afterwards, simply use the `aim.track` function to track either metrics or hyperparameters (any dict really).
+```py
+...
+aim.track(metric_value, name='my-meaningful-metric-name', epoch=current_epoch)
+aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
+...
+```
+Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
 
 ## How to use development environment
-
-
-
 
 ## Contributor Guide
 Visit [contributor guide](docs/contributor-guide.md) for further details.
