@@ -30,19 +30,25 @@ aim up
   - [Getting started - in three steps](#getting-started-in-three-steps)
   - [How It Works](#how-it-works)
   - [Installation](#installation)
-  - [Aim V2](#aim-v2)
-  - [Command Line Interface Examples](#command-line-interface-examples)
-    - [aim init](#aim-init)
-  - [Python SDK Examples](#python-sdk-examples)
+  - [Documentation](#documentation)
+    - [Command Line Interface](#command-line-interface)
+      - [init](#init)
+      - [version](#version)
+      - [status](#status)
+      - [experiment](#experiment)
+      - [up](#up)-
+    - [Python Library](#python-library)
+      - [metric](#metric)
+      - [hyperparams](#hyperparams)
+  - [End to End Examples](#python-sdk-examples)
   - [How to Use Development Environment](#how-to-use-development-environment)
+  - [Contributor Guide](#contributor-guide)
 
 ## How it works
 Aim Development Environment is a super-easy way to record, search and compare AI experiments.
 Fundamental tech behind the Aim is the aim version control for AI which records and versions experiments and its adjacent metadata.
 Aim version control uses AimRecords - an efficient records storage library that enables easy and efficient storage of experiment metadata generated during AI training
 AI Development Environment enables an intuitive user interface to execute, record, search and compare the experiments.
-### Workflow
-
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
@@ -56,22 +62,54 @@ Run the command to start the aim development environment.
 $ aim up
 ```
 
-## Aim V2
-Currently available Aim Version is V2.0.1
-
-
 ## Command Line Interface examples
-Aim CLI helps quickly initiate and navigate through basic version control features
+Aim CLI is installed via command
+```shell
+$ pip3 install aim-cli
+```
+Once installed, it offers a simple CLI to easily organize and record the experiments.
+Paired with the [PyThon Library](#python-library), Aim becomes a powerful utility to record, search and compare AI experiments.
+This is how the commands look like:
 
-### aim init
+
+| Command       | Description                                                          |
+| --------------| -------------------------------------------------------------------- |
+| `init`        | Initialize the `aim` repository.                                     |
+| `version`     | Displays the version of aim cli currently installed.                 |
+| `experiment`  | Creates a new experiment branch to group similar training runs into. |
+| `de`          | Starts the AI Development Environment.                               |
+| `up`          | An alias to `aim de up`.                                             |
+
+### init
 Initialize the aim repo to record the experiments.
 ```shell
 $ aim init
 ```
 Creates `.aim` directory to save the recorded experiments to.
-Running `aim init` in an existing repository will ask to for user confirmation before re-initializing. Re-initializing the repo clears the old one and initializes a new empty one.
+Running `aim init` in an existing repository will prompt the user for re-initialization.
+**_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
+Also see how to initialize repo safely by Python Library.
 
-### Aim Version
+### version
+Display the version of the currently installed Aim CLI.
+```shell
+$ aim version
+```
+### experiment
+Create new experiment branches to organize the training runs related to the same experiment
+Here is how it works:
+```shell
+$ aim experiment COMMAND [ARGS]
+```
+| Command    | Args                     |
+| -----------| ------------------------ | --------------------------------------------------------- |
+| `add`      | `-n | --name <exp_name>` | Add new experiment branch with a given name.              |
+| `checkout` | `-n | --name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
+| `ls`       |                          | List all the experiments of the repo.                     |
+| `rm`       | `-n | --name <exp_name>` | Remove an experiment with the given name.                 |
+
+
+
 
 ## Python SDK examples
 
