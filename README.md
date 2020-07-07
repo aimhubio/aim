@@ -1,70 +1,150 @@
-# AIM - Version control for AI
+# Aim
 
-![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim)
-[![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+A super-easy way to record, search and compare AI experiments.
 
-Tracks and versions AI training runs along with the metadata and the models.
+<img src="https://user-images.githubusercontent.com/3179216/86801320-eea18400-c084-11ea-8480-87ee60ae95cd.png">
 
-See the documentation [here](https://docs.aimstack.io).
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your 
-local machine for development and testing purposes.
-
-### Requirements
-
-* Python >= 3.5.0
-
-We suggest to use [virtual
-environment](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments) for managing local dependencies.
-
-To start development first install all dependencies:
-
-```bash
-pip install -r requirements.txt
+## Getting started in three steps
+1. Install Aim in your training environment
+```shell
+pip3 install aim-cli
+```
+2. Import Aim in your training code
+```py
+import aim
+aim.init() # initialize aim recorder
+...
+aim.track(metric_value, name='my-meaningful-metric-name', epoch=the_epoch)
+aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
+```
+3. Run the training and start the AI Dev Environment
+```shell
+aim up
 ```
 
-### Project Structure
+## Contents
 
+- [Aim](#aim)
+  - [Contents](#contents)
+  - [Getting Started In Three Steps](#getting-started-in-three-steps)
+  - [Installation](#installation)
+  - [Command Line Interface](#command-line-interface)
+    - [init](#init)
+    - [version](#version)
+    - [experiment](#experiment)
+    - [de](#de)
+    - [up](#up)
+  - [Python Library](#python-library)
+  - [How It Works](#how-it-works)
+  - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
+  - [Contributor Guide](docs/contributor-guide.md)
+
+## Installation
+To install Aim, you need to have python3 and pip3 installed in your environment
+1. Install Aim python packaage
+```shell
+$ pip3 install aim-cli
 ```
-├── aim  <----------------  main project code
-│   ├── cli <-------------  command line interface
-│   ├── engine <----------  business logic
-│   ├── sdk <-------------  Python SDK
-│   ├── artifacts <-------  managing tracked data
-│   └── version_control <-  managing files and code
-├── examples <------------  example usages of aim SDK
-└── tests
+Aim Development Environment requires Docker to be installed in the environment.
+Run the command to start the aim development environment.
+```shell
+$ aim up
 ```
 
-## Running the tests
+## Command Line Interface
 
-Run tests via command `python -m unittest discover -s tests` in the root folder.
+Aim CLI offers a simple interface to easily organize and record the experiments.
+Paired with the [PyThon Library](#python-library), Aim becomes a powerful utility to record, search and compare AI experiments.
+This is how the commands look like:
 
-### Code Style
-We follow [pep8](https://www.python.org/dev/peps/pep-0008/) style guide 
-for python code. We use [autopep8](https://pypi.org/project/autopep8/) 
-and [pycodestyle](https://pypi.org/project/pycodestyle/) to enable checking 
-and formatting Python code. 
 
-To check code styles, run `pycodestyle .` in the root folder. 
+| Command       | Description                                                          |
+| --------------| -------------------------------------------------------------------- |
+| `init`        | Initialize the `aim` repository.                                     |
+| `version`     | Displays the version of aim cli currently installed.                 |
+| `experiment`  | Creates a new experiment branch to group similar training runs into. |
+| `de`          | Starts the AI Development Environment.                               |
+| `up`          | An alias to `aim de up`.                                             |
 
-To auto format, run 
-`autopep8 --in-place --recursive --aggressive --aggressive .` in the root folder.
+### init
+Initialize the aim repo to record the experiments.
+```shell
+$ aim init
+```
+Creates `.aim` directory to save the recorded experiments to.
+Running `aim init` in an existing repository will prompt the user for re-initialization.
+**_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
+Also see how to initialize repo safely by Python Library.
 
-## Contributing
+### version
+Display the version of the currently installed Aim CLI.
+```shell
+$ aim version
+```
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our 
-code of conduct, and the process for submitting pull requests to us.
+### experiment
+Create new experiment branches to organize the training runs related to the same experiment
+Here is how it works:
+```shell
+$ aim experiment COMMAND [ARGS]
+```
+| Command    | Args                            | Description                                               |
+| -----------| ------------------------------- | --------------------------------------------------------- |
+| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment branch with a given name.              |
+| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
+| `ls`       |                                 | List all the experiments of the repo.                     |
+| `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
-## Versioning
+***Disclaimer:*** Removing the experiment also removes the recorded experiment data.
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available,
-see the [tags on this repository](https://github.com/aimhubio/aim/tags).
+### de
+AI Development Environment is a web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
 
-## License
+Start up the AI Development Environment (ADE)
+```shell
+$ aim de [COMMAND]
+```
+***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
+Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+| Command   | Args                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `up`      | `-p <port>` &#124; `-v version` | Starts the AI Development Environment for the given repo  |
+| `down`    |                                 | Turn off the AI Development Environment                   |
+| `pull`    | `-v <version>`                  | Pull the ADE of the given version                         |
+| `upgrade` |                                 | Upgrade the ADE to its latest version                     |
+
+### up
+An alias to `aim de up` :
+```shell
+$ aim up
+```
+
+## Python Library
+Use Python Library to instrument your training code to record the experiments.
+The instrumentation only takes 2 lines:
+```py
+import aim
+aim.init()
+```
+Afterwards, simply use the `aim.track` function to track either metrics or hyperparameters (any dict really).
+```py
+...
+aim.track(metric_value, name='my-meaningful-metric-name', epoch=current_epoch)
+aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
+...
+```
+Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
+
+## How it works
+The stack of projects that enable AI Development Environment:
+<img src="https://user-images.githubusercontent.com/3179216/86802291-f0b81280-c085-11ea-8715-6fd650c4a45d.png">
+- [Aim](#aim) - Version Control for AI Experiments.
+- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
+- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
+
+## Sneak peek at AI development environment
+
+```TODO```
