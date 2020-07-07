@@ -3,7 +3,6 @@
 ![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 A super-easy way to record, search and compare AI experiments.
-**As easy as starting a Jupyter Notebook!**
 
 ## Getting started in three steps
 1. Install Aim in your training environment
@@ -33,8 +32,8 @@ aim up
   - [Command Line Interface](#command-line-interface)
     - [init](#init)
     - [version](#version)
-    - [status](#status)
     - [experiment](#experiment)
+    - [de](#de)
     - [up](#up)
   - [Python Library](#python-library)
     - [metric](#metric)
@@ -120,12 +119,12 @@ $ aim de [COMMAND]
 ***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
 
-| Command        | Args                             | Description                                                                                |
-| -------------- | -------------------------------  | ------------------------------------------------------------------------------------------ |
-| `up`           | `-p <port>` &#124; `-v version`  | Starts the AI Development Environment for the given repo                                   |
-| `down`         |                                  | Turn off the AI Development Environment and the docker container that the ADE is running on|
-| `pull`         | `-v <version>`                   | Pull the ADE of the given version                                                          |
-| `upgrade`      |                                  | Upgrade the ADE to its latest version                                                      |
+| Command   | Args                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `up`      | `-p <port>` &#124; `-v version` | Starts the AI Development Environment for the given repo  |
+| `down`    |                                 | Turn off the AI Development Environment                   |
+| `pull`    | `-v <version>`                  | Pull the ADE of the given version                         |
+| `upgrade` |                                 | Upgrade the ADE to its latest version                     |
 
 ### up
 An alias to `aim de up` :
