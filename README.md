@@ -44,9 +44,9 @@ aim up
 ## How it works
 The stack of projects that enable AI Development Environment:
 <img src="https://user-images.githubusercontent.com/3179216/86799150-a7b28f00-c082-11ea-8bde-abed93cc0973.png">
-[Aim](#aim) - Version Control for AI Experiments.
-[Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
-[Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
+- [Aim](#aim) - Version Control for AI Experiments.
+- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
+- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
