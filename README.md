@@ -101,15 +101,17 @@ Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
 ```
-| Command    | Args                     |
+| Command    | Args                     |                                                           |
 | -----------| ------------------------ | --------------------------------------------------------- |
 | `add`      | `-n | --name <exp_name>` | Add new experiment branch with a given name.              |
 | `checkout` | `-n | --name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
 | `ls`       |                          | List all the experiments of the repo.                     |
 | `rm`       | `-n | --name <exp_name>` | Remove an experiment with the given name.                 |
 
+*_Disclaimer:_* Removing the experiment also removes the recorded experiment data.
 
-
+### de
+S
 
 ## Python SDK examples
 
