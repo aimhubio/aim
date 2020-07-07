@@ -643,12 +643,13 @@ class AimRepo:
         with open(config_file_path, 'w+') as config_file:
             configs = {
                 'hash': self.active_commit,
-                'start_date': curr_timestamp,
                 'date': curr_timestamp,
                 'message': curr_timestamp,
                 'process': {
                     'start': True,
                     'finish': False,
+                    'start_date': curr_timestamp,
+                    'finish_date': 0,
                     'uuid': os.getenv(AIM_PROCESS_ENV_VAR),
                 },
                 'aim': {
@@ -674,6 +675,7 @@ class AimRepo:
         configs['date'] = curr_timestamp
         configs['message'] = curr_timestamp
         configs['process']['finish'] = True
+        configs['process']['finish_date'] = curr_timestamp
         with open(config_file_path, 'w+') as config_file:
             config_file.write(json.dumps(configs))
 

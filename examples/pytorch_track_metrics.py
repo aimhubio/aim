@@ -102,7 +102,7 @@ for epoch in range(num_epochs):
             correct += (predicted == labels).sum().item()
 
             # aim - Track metrics
-            aim.track(100 * correct / total, name='accuracy', epoch=epoch)
+            aim.track(100 * correct / total, name='accuracy')
             aim.track(random.random(), name='random', epoch=epoch)
             aim.track(random.random() * 10, name='random-md', epoch=epoch)
             aim.track(math.ceil(random.random() * 100), name='random-lg', epoch=epoch)

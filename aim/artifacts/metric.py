@@ -13,7 +13,7 @@ class Metric(Artifact):
                  step: int = None):
         self.name = name
         self.value = value
-        self.epoch = epoch or 0
+        self.epoch = epoch
 
         super(Metric, self).__init__(self.cat)
         self.initialize_step_counter(step, self.name)
