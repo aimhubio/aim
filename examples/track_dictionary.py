@@ -1,15 +1,17 @@
 import aim
-from aim import track
-
-
 aim.init()
 
-track(aim.hyperparams, {
+
+aim.track({
     'num_epochs': 10,
     'fc_units': 128,
-})
+}, namespace='params')
 
-track(aim.dataset, {
+aim.track({
     'name': 'Dataset name',
     'version': 'Dataset version',
+}, namespace='dataset')
+
+aim.track({
+    'foo': 'bar',
 })

@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 import json
 from typing import Any
 
+from aim.engine.utils import deep_merge
+
 
 class AbstractRecordWriter(metaclass=ABCMeta):
     APPEND_MODE = 'a'
@@ -18,10 +20,10 @@ class AbstractRecordWriter(metaclass=ABCMeta):
 
 
 class JSONRecordWriter(AbstractRecordWriter):
-    def write(self, data_file_path: str, mode: str, content: Any):
+    def write(self, data_file_path: str, mode: str, content: dict):
         if not os.path.isfile(data_file_path):
             # Create data file
-            data_file_content = []
+            data_file_content = {}
             data_file = open(data_file_path, 'w+')
         else:
             # Get object content
@@ -30,9 +32,9 @@ class JSONRecordWriter(AbstractRecordWriter):
 
         # Set data file content
         if mode == self.APPEND_MODE:
-            data_file_content.append(content)
+            deep_merge(data_file_content, content, update=True)
         elif mode == self.WRITE_MODE:
-            data_file_content = [content]
+            data_file_content = content
 
         # Update and close data file
         data_file.seek(0)

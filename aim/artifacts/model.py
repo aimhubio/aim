@@ -3,8 +3,10 @@ import os
 import tempfile
 import zipfile
 from typing import Any
+import shutil
+from pathlib import Path
 
-from aim.engine.utils import is_keras_model, is_pytorch_module, get_module
+from aim.engine.utils import is_keras_model, is_pytorch_module, is_tensorflow_session, get_module
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
 
@@ -23,6 +25,11 @@ class Checkpoint(Artifact):
             model_path = os.path.join(working_dir, path)
             if not os.path.isfile(model_path):
                 return False, None
+        
+        # Create temporary directory
+        tmp_copy_dir = tempfile.TemporaryDirectory()
+        copy_dir_name = tmp_copy_dir.name
+        shutil.copy2(model_path, copy_dir_name)
 
         # Open model archive
         model_arch = zipfile.ZipFile(model_path, 'r')
@@ -33,6 +40,10 @@ class Checkpoint(Artifact):
             meta_info = json.loads(meta_file)
         except Exception:
             return False, None
+        
+        # Delete directory if not working with tensorflow
+        if meta_info['model']['lib'] != 'tensorflow':
+            tmp_copy_dir.cleanup()
 
         # Load the model
         if meta_info['model']['lib'] == 'keras':
@@ -63,6 +74,24 @@ class Checkpoint(Artifact):
             tmp_model_file.close()
 
             return True, model['model']
+        if meta_info['model']['lib'] == 'tensorflow':
+            tf = get_module('tensorflow')
+
+            model_name = meta_info['model']['name']
+
+            # Unzip copied .aim file in created directory
+            file_path = Path(copy_dir_name)
+            files = (x for x in file_path.iterdir() if x.is_file())
+            zip_file = next(files)
+            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                zip_ref.extractall(copy_dir_name)
+
+            # Restore session
+            sess = tf.Session()
+            saver = tf.train.import_meta_graph(os.path.join(copy_dir_name, model_name+'.meta'))
+            saver.restore(sess, os.path.join(copy_dir_name, model_name))
+            tmp_copy_dir.cleanup()
+            return True, sess
 
         return False, None
 
@@ -83,7 +112,8 @@ class Checkpoint(Artifact):
 
         # Define model backend lib
         lib = 'keras' if is_keras_model(self.model) else \
-            'pytorch' if is_pytorch_module(self.model) else None
+            'pytorch' if is_pytorch_module(self.model) else \
+            'tensorflow' if is_tensorflow_session(self.model) else None
         self.lib = lib
 
         super(Checkpoint, self).__init__(self.cat)
@@ -143,5 +173,19 @@ class Checkpoint(Artifact):
             }
 
             return model_save_meta
+        elif self.lib == 'tensorflow':
+            tf = get_module('tensorflow')
+            saver = tf.train.Saver(save_relative_paths=True)
 
+            saver.save(self.model, path)
+
+            _, _, model_path = path.rpartition('/')
+
+            #Specify meta information
+            model_save_meta = {
+                'lib': 'tensorflow',
+                'name': model_path
+            }
+
+            return model_save_meta
         return {}

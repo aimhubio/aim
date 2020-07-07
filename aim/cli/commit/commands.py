@@ -1,6 +1,7 @@
 import click
-import uuid
 import time
+
+from aim.engine.aim_repo import AimRepo
 
 
 @click.command()
@@ -12,7 +13,7 @@ def commit(repo, message, code):
         click.echo('Repository does not exist')
         return
 
-    commit_hash = str(uuid.uuid1())
+    commit_hash = AimRepo.generate_commit_hash()
     message = message.strip() or int(time.time())
 
     # Check if there is anything to commit

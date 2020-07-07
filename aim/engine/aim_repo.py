@@ -5,6 +5,7 @@ import zipfile
 import re
 import time
 import hashlib
+import uuid
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
@@ -38,6 +39,10 @@ class AimRepo:
             return None
 
         return AimRepo(working_dir, *args, **kwargs)
+
+    @staticmethod
+    def generate_commit_hash():
+        return str(uuid.uuid1())
 
     @staticmethod
     def cat_to_dir(cat):
@@ -78,6 +83,22 @@ class AimRepo:
 
         # Remove model directory
         shutil.rmtree(dir_path)
+
+    @staticmethod
+    def get_artifact_cat(cat: tuple):
+        if isinstance(cat, tuple):
+            if len(cat) > 1:
+                return cat
+            elif len(cat) == 1:
+                return cat[0]
+        return None
+
+    @classmethod
+    def get_active_branch_if_exists(cls):
+        repo = cls.get_working_repo()
+        if repo:
+            return repo.branch
+        return None
 
     def __init__(self, path, repo_branch=None, repo_commit=None):
         self._config = {}
@@ -305,7 +326,7 @@ class AimRepo:
 
         self.update_meta_file(file_name_for_meta, {
             'name': name,
-            'type': cat[-1],
+            'type': self.get_artifact_cat(cat),
             'data': data,
             'data_path': cat_path,
         })
@@ -322,7 +343,7 @@ class AimRepo:
         """
         self.update_meta_file(name, {
             'name': name,
-            'type': cat[-1],
+            'type': self.get_artifact_cat(cat),
             'data': data,
             'data_path': '__AIMRECORDS__',
             'format': {
@@ -356,7 +377,7 @@ class AimRepo:
         if save_to_meta:
             self.update_meta_file(name, {
                 'name': name,
-                'type': cat[-1],
+                'type': self.get_artifact_cat(cat),
                 'data': {},
                 'data_path': img_rel_path,
             })
@@ -416,7 +437,7 @@ class AimRepo:
         # Update repo meta file
         self.update_meta_file(checkpoint_name, {
             'name': checkpoint_name,
-            'type': cat[-1],
+            'type': self.get_artifact_cat(cat),
             'data': {
                 'name': name,
                 'epoch': epoch,
@@ -622,12 +643,13 @@ class AimRepo:
         with open(config_file_path, 'w+') as config_file:
             configs = {
                 'hash': self.active_commit,
-                'start_date': curr_timestamp,
                 'date': curr_timestamp,
                 'message': curr_timestamp,
                 'process': {
                     'start': True,
                     'finish': False,
+                    'start_date': curr_timestamp,
+                    'finish_date': 0,
                     'uuid': os.getenv(AIM_PROCESS_ENV_VAR),
                 },
                 'aim': {
@@ -653,6 +675,7 @@ class AimRepo:
         configs['date'] = curr_timestamp
         configs['message'] = curr_timestamp
         configs['process']['finish'] = True
+        configs['process']['finish_date'] = curr_timestamp
         with open(config_file_path, 'w+') as config_file:
             config_file.write(json.dumps(configs))
 

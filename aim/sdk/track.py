@@ -29,8 +29,26 @@ def get_repo():
     return repo
 
 
-def track(artifact_name: str, *args, **kwargs):
-    if artifact_name not in globals():
+def track(*args, **kwargs):
+    artifact_name = None
+
+    if not len(args):
+        print('Artifact is not specified')
+
+    if isinstance(args[0], str):
+        artifact_name = args[0]
+    elif isinstance(args[0], int) or isinstance(args[0], float):
+        # Autodetect Metric artifact
+        artifact_name = aim.metric
+        kwargs['value'] = args[0]
+        args = []
+    elif isinstance(args[0], dict):
+        # Autodetect Dictionary(Map) artifact
+        artifact_name = aim.dictionary
+        kwargs['value'] = args[0]
+        args = []
+
+    if artifact_name is None or artifact_name not in globals():
         print('Aim cannot track: \'{0}\''.format(artifact_name))
         return
 

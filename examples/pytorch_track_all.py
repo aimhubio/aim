@@ -1,7 +1,5 @@
 import aim
-from aim import track
-
-aim.init(overwrite=False)
+aim.init(overwrite=True)
 
 import random
 import math
@@ -21,12 +19,12 @@ batch_size = 50
 learning_rate = 0.01
 
 # aim - Track hyper parameters
-track(aim.hyperparams, {
+aim.track({
     'num_epochs': num_epochs,
     'num_classes': num_classes,
     'batch_size': batch_size,
     'learning_rate': learning_rate,
-})
+}, namespace='params')
 
 # MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data/',
@@ -94,13 +92,13 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if i % 10 == 0:
+        if i % 30 == 0:
             print('Epoch [{}/{}], Step [{}/{}], '
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            track(aim.metric, 'loss', loss.item(), epoch)
+            aim.track(loss.item(), name='loss', epoch=epoch)
 
             correct = 0
             total = 0
@@ -109,14 +107,13 @@ for epoch in range(num_epochs):
             correct += (predicted == labels).sum().item()
 
             # aim - Track metrics
-            track(aim.metric, 'accuracy', 100 * correct / total, epoch)
-            track(aim.metric, 'random', random.random(), epoch)
-            track(aim.metric, 'random-md', random.random() * 10, epoch)
-            track(aim.metric, 'random-lg',
-                  math.ceil(random.random() * 100), epoch)
+            aim.track(100 * correct / total, name='accuracy', epoch=epoch)
+            aim.track(random.random(), name='random', epoch=epoch)
+            aim.track(random.random() * 10, name='random-md', epoch=epoch)
+            aim.track(math.ceil(random.random() * 100), name='random-lg', epoch=epoch)
 
     # aim - Save checkpoint
-    track(aim.checkpoint,
+    aim.track(aim.checkpoint,
           'checkpoint_test', 'chp_epoch_{}'.format(epoch),
           model, epoch, lr_rate=learning_rate,
           meta={
