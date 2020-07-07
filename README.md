@@ -1,4 +1,4 @@
-# AIM
+# Aim
 
 ![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
@@ -26,7 +26,7 @@ aim up
 
 ## Contents
 
-- [AIM](#aim)
+- [Aim](#aim)
   - [Contents](#contents)
   - [Getting Started In Three Steps](#getting-started-in-three-steps)
   - [How It Works](#how-it-works)
