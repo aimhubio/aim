@@ -39,7 +39,10 @@ class AimContainer:
             repo.path: {'bind': '/store', 'mode': 'rw'},
             repo.name: {'bind': '/var/lib/postgresql/data', 'mode': 'rw'},
         }
-        self.env = ['PROJECT_NAME={}'.format(repo.name)]
+        self.env = [
+            'PROJECT_NAME={}'.format(repo.name),
+            'PROJECT_PATH={}'.format(repo.root_path),
+        ]
 
         docker = get_module('docker')
         self.client = docker.from_env()
