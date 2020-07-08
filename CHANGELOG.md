@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.3 Jul 8 2020
 - Pass project path to development environment container (gorarakelyan)
 
 ## 2.0.2 Jul 7 2020
