@@ -102,6 +102,7 @@ class AimRepo:
 
     def __init__(self, path, repo_branch=None, repo_commit=None):
         self._config = {}
+        self.root_path = path
         self.path = os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.hash = hashlib.md5(path.encode('utf-8')).hexdigest()
