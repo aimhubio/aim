@@ -3,7 +3,7 @@ from aim import Checkpoint
 
 import tensorflow as tf
 
-MODEL_PATH = '/Users/bkalisetti658/desktop/aim/.aim/default/index/objects/models/mnist-0.aim'
+MODEL_PATH = '' # Path to .aim zip file
 model = Checkpoint.load(MODEL_PATH)
 model = model[1]
 

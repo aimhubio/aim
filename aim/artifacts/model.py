@@ -214,7 +214,7 @@ class Checkpoint(Artifact):
 
             _, _, model_path = path.rpartition('/')
 
-            model_path = model_path+'/'+os.listdir(path=path)[0]
+            model_path = os.path.join(model_path, os.listdir(path=path)[0])
 
             #Specify meta information
             model_save_meta = {
