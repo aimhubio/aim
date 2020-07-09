@@ -154,7 +154,7 @@ The stack of projects that enable AI Development Environment:
 ![AimDE Experiments](https://user-images.githubusercontent.com/3179216/87040316-95129400-c201-11ea-97e5-519ac6ffba94.gif)
 
 #### Explore old training runs and start new ones
-![AimDE Processes](https://user-images.githubusercontent.com/3179216/87040393-ac518180-c201-11ea-930c-d446adab573e.gif)
+![AimDE Processes](https://user-images.githubusercontent.com/3179216/87041965-10754500-c204-11ea-924c-c9853b801cf3.gif)
 
 #### Tag the experiments / training runs for better search
 ![AimDE Tags](https://user-images.githubusercontent.com/3179216/87041412-3fd78200-c203-11ea-8cca-27a26752df99.gif)
