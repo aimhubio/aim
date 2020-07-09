@@ -146,6 +146,7 @@ The stack of projects that enable AI Development Environment:
 - [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
 
 ## Sneak peek at AI development environment
+Demo AimDE: [http://demo-1.aimstack.io/](http://demo-1.aimstack.io/)
 
 #### The search and compare panel
 ![AimDE Panel](https://user-images.githubusercontent.com/3179216/87037877-fe90a380-c1fd-11ea-9242-05ea1798a176.gif)
@@ -153,8 +154,8 @@ The stack of projects that enable AI Development Environment:
 #### All experiments at hand
 ![AimDE Experiments](https://user-images.githubusercontent.com/3179216/87040316-95129400-c201-11ea-97e5-519ac6ffba94.gif)
 
-#### Explore old training runs and start new ones
-![AimDE Processes](https://user-images.githubusercontent.com/3179216/87041965-10754500-c204-11ea-924c-c9853b801cf3.gif)
+#### Easily start new experiments
+![AimDE Processes](https://user-images.githubusercontent.com/3179216/87042902-57176f00-c205-11ea-830e-e69168b9d269.gif)
 
 #### Tag the experiments / training runs for better search
 ![AimDE Tags](https://user-images.githubusercontent.com/3179216/87041412-3fd78200-c203-11ea-8cca-27a26752df99.gif)
