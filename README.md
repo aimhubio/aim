@@ -147,4 +147,11 @@ The stack of projects that enable AI Development Environment:
 
 ## Sneak peek at AI development environment
 
+#### The search and compare panel
 ![AimDE Panel](https://user-images.githubusercontent.com/3179216/87037877-fe90a380-c1fd-11ea-9242-05ea1798a176.gif)
+
+#### All experiments at hand
+![AimDE Experiments](https://user-images.githubusercontent.com/3179216/87040316-95129400-c201-11ea-97e5-519ac6ffba94.gif)
+
+#### Explore old training runs and start new ones
+![gif-10mb-3](https://user-images.githubusercontent.com/3179216/87040393-ac518180-c201-11ea-930c-d446adab573e.gif)
