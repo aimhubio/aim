@@ -147,4 +147,4 @@ The stack of projects that enable AI Development Environment:
 
 ## Sneak peek at AI development environment
 
-```TODO```
+![AimDE Panel](https://user-images.githubusercontent.com/3179216/87037877-fe90a380-c1fd-11ea-9242-05ea1798a176.gif)
