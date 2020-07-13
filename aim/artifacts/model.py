@@ -6,10 +6,15 @@ from typing import Any, Callable
 import shutil
 from pathlib import Path
 
-from aim.engine.utils import is_keras_model, is_pytorch_module, \
-    is_tensorflow_session, is_tensorflow_estimator, get_module
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
+from aim.engine.utils import (
+    is_keras_model,
+    is_pytorch_module,
+    is_tensorflow_session,
+    is_tensorflow_estimator,
+    get_module
+)
 
 
 class Checkpoint(Artifact):
@@ -89,7 +94,8 @@ class Checkpoint(Artifact):
 
             # Restore session
             sess = tf.Session()
-            saver = tf.train.import_meta_graph(os.path.join(copy_dir_name, model_name+'.meta'))
+            saver = tf.train.import_meta_graph(
+                os.path.join(copy_dir_name, '{}.meta'.format(model_name)))
             saver.restore(sess, os.path.join(copy_dir_name, model_name))
             tmp_copy_dir.cleanup()
             return True, sess
@@ -105,7 +111,8 @@ class Checkpoint(Artifact):
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:
                 zip_ref.extractall(copy_dir_name)
             
-            imported = tf.saved_model.load(os.path.join(copy_dir_name, model_name))
+            imported = tf.saved_model.load(os.path.join(copy_dir_name,
+                                                        model_name))
             tmp_copy_dir.cleanup()
             return True, imported
 
@@ -211,12 +218,10 @@ class Checkpoint(Artifact):
             tf = get_module('tensorflow')
 
             self.model.export_saved_model(path, self.fn)
-
             _, _, model_path = path.rpartition('/')
-
             model_path = os.path.join(model_path, os.listdir(path=path)[0])
 
-            #Specify meta information
+            # Specify meta information
             model_save_meta = {
                 'lib': 'tensorflow-est',
                 'name': model_path
