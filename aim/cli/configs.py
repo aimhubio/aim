@@ -6,3 +6,6 @@ VERSION_NAME = 'version'
 DE_NAME = 'de'
 STATUS_NAME = 'status'
 CONFIG_NAME = 'config'
+
+# Shortcuts
+DE_UP_SHORTCUT = 'up'

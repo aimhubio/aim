@@ -8,10 +8,10 @@ import threading
 from time import sleep
 import json
 from base64 import b64decode
-import uuid
 
 from aim.engine.configs import *
 from aim.engine.utils import get_module
+from aim.engine.aim_repo import AimRepo
 
 
 class AimContainer:
@@ -39,7 +39,10 @@ class AimContainer:
             repo.path: {'bind': '/store', 'mode': 'rw'},
             repo.name: {'bind': '/var/lib/postgresql/data', 'mode': 'rw'},
         }
-        self.env = ['PROJECT_NAME={}'.format(repo.name)]
+        self.env = [
+            'PROJECT_NAME={}'.format(repo.name),
+            'PROJECT_PATH={}'.format(repo.root_path),
+        ]
 
         docker = get_module('docker')
         self.client = docker.from_env()
@@ -338,7 +341,7 @@ class Command:
         if automated:
             if not automated_branch:
                 automated_branch = AIM_DEFAULT_BRANCH_NAME
-            automated_commit = str(uuid.uuid1())
+            automated_commit = AimRepo.generate_commit_hash()
 
             filtered_env_vars.append('{}={}'.format(AIM_BRANCH_ENV_VAR,
                                                     automated_branch))

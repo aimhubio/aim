@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.3 Jul 8 2020
+- Pass project path to development environment container (gorarakelyan)
+
+## 2.0.2 Jul 7 2020
+- Make `epoch` argument optional for `Metric` artifact (gorarakelyan)
+- Add ability to automatically commit runs after exit (gorarakelyan)
+- Add `aim up` shortcut for running development environment (gorarakelyan)
+- Remove first required argument(artifact name) from sdk track function (gorarakelyan)
+- Add general dictionary artifact for tracking `key: value` parameters (gorarakelyan)
+
 ## 2.0.1 Jun 24 2020
 - Fix inconsistent DE naming (gorarakelyan)
 
