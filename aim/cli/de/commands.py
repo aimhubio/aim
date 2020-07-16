@@ -7,6 +7,7 @@ from aim.engine.aim_container import AimContainer, AimContainerCMD
 from aim.engine.configs import (
     AIM_CONTAINER_DEFAULT_PORT,
     AIM_CONTAINER_CMD_PORT,
+    AIM_TF_LOGS_PATH,
 )
 from aim.engine.aim_repo import AimRepo
 from aim.cli.de.utils import repo_init_alert, docker_requirement_alert
@@ -31,8 +32,9 @@ def de_entry_point(ctx):
 @click.option('--dev', default=0, type=int)
 @click.option('-p', '--port', default=AIM_CONTAINER_DEFAULT_PORT, type=int)
 @click.option('-v', '--version', default='latest', type=str)
+@click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.pass_obj
-def up(repo, dev, port, version):
+def up(repo, dev, port, version, tf_logs):
     if repo is None:
         repo_init_alert()
         return
@@ -46,6 +48,9 @@ def up(repo, dev, port, version):
     # 1 => run production build from local environment
     # 2 => run in development mode
     cont = AimContainer(repo, dev=bool(dev))
+
+    if tf_logs:
+        cont.mount_volume(tf_logs, AIM_TF_LOGS_PATH)
 
     click.echo(
         click.style('Running AimDE on repo `{}`'.format(repo), fg='yellow'))

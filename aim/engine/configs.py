@@ -1,4 +1,4 @@
-# aim
+# Aim
 AIM_REPO_NAME = '.aim'
 AIM_OBJECTS_DIR_NAME = 'objects'
 AIM_METRICS_DIR_NAME = 'metrics'
@@ -34,24 +34,25 @@ AIM_LOGGING_DIR_NAME = 'logs'
 AIM_CLI_ACTIVITIED_LOG = 'activities.log'
 AIM_SDK_ERROR_LOG = 'errors.log'
 
-# aim Profile
+# Aim Profile
 AIM_PROFILE_NAME = '.aim_profile'
 AIM_PROFILE_CONFIG_FILE_NAME = 'config.json'
 AIM_PROFILE_SSH_DIR_NAME = '.ssh'
 
-# aim Container
+# Aim Container
 AIM_CONTAINER_IMAGE_NAME = 'aimhubio/aim-board'
 AIM_CONTAINER_IMAGE_DEFAULT_TAG = 'latest'
 AIM_CONTAINER_IMAGE_DEV = 'aimhub-live'
 AIM_CONTAINER_PREFIX = 'aim_container'
 
-# aim Profiler
+# Aim Profiler
 AIM_PROFILER_ENABLED = 'AIM_PROFILER_ENABLED'
 
-# aim Board
+# AimDE
 AIM_CONTAINER_DEFAULT_PORT = 43800
 AIM_CONTAINER_CMD_PORT = 43803
 AIM_PROCESS_ENV_VAR = '__AIM_PROCESS_UUID__'
 AIM_BRANCH_ENV_VAR = '__AIM_BRANCH__'
 AIM_COMMIT_ENV_VAR = '__AIM_COMMIT__'
 AIM_AUTOMATED_EXEC_ENV_VAR = '__AIM_AUTOMATED_EXEC__'
+AIM_TF_LOGS_PATH = '/tf_logs'
