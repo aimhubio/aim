@@ -116,6 +116,26 @@ class Checkpoint(Artifact):
                                                         model_name))
             tmp_copy_dir.cleanup()
             return True, imported
+        if meta_info['model']['lib'] == 'sklearn':
+            sk = get_module('sklearn')
+            joblib = get_module('joblib')
+
+            # Create temporary directory
+            tmp_copy_dir = tempfile.TemporaryDirectory()
+            copy_dir_name = tmp_copy_dir.name
+            shutil.copy2(model_path, copy_dir_name)
+
+            # Unzip copied .aim file in created directory
+            file_path = Path(copy_dir_name)
+            files = (x for x in file_path.iterdir() if x.is_file())
+            zip_file = next(files)
+            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                zip_ref.extractall(copy_dir_name)
+            
+            model_name = meta_info['model']['model']
+            loaded_model = joblib.load(os.path.join(copy_dir_name, model_name))
+            
+            return True, loaded_model
 
         return False, None
 
@@ -234,13 +254,14 @@ class Checkpoint(Artifact):
             sk = get_module('sklearn')
             joblib = get_module('joblib')
 
-            joblib.dump(self.model, path+'.sav')
+            model_path = '{}.sav'.format(path)
+            joblib.dump(self.model, model_path)
 
-            _, _, model_path = path.rpartition('/')
+            _, _, model_file_name = path.rpartition('/')
 
             model_save_meta = {
                 'lib': 'sklearn',
-                'name': model_path
+                'model': model_file_name+'.sav'
             }
             return model_save_meta
 
