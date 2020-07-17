@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.5 Jul 18 2020
 - Fix issue with PyPI reStructuredText format compatibility (gorarakelyan)
 
 ## 2.0.4 Jul 18 2020
