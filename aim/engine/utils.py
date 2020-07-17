@@ -123,9 +123,15 @@ def is_pytorch_module(inst):
 
 def is_tensorflow_session(inst):
     """
-    Check whether `inst` is isntance of tensorflow session
+    Check whether `inst` is instance of tensorflow session
     """
     return inst_has_typename(inst, ['tensorflow', 'session'])
+
+def is_tensorflow_estimator(inst):
+    """
+    Check whether `inst` is instance of tensorflow estimator
+    """
+    return inst_has_typename(inst, ['tensorflow', 'estimator'])
 
 def is_pytorch_optim(inst):
     """

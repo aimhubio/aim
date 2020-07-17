@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4 Jul 18 2020
+- Add ability to attach tf.summary logs to AimDE (gorarakelyan)
+
 ## 2.0.3 Jul 8 2020
 - Pass project path to development environment container (gorarakelyan)
 

@@ -122,6 +122,13 @@ class AimContainer:
         else:
             self.ports['{}/tcp'.format(to)] = port
 
+    def mount_volume(self, path, mount_to):
+        if path and mount_to and path not in self.volumes:
+            self.volumes[path] = {
+                'bind': mount_to,
+                'mode': 'rw',
+            }
+
 
 class AimContainerCMD:
     commands = {}

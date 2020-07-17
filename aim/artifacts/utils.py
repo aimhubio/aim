@@ -1,6 +1,10 @@
 import numpy as np
 import tensorflow as tf
 
+from aim.sdk.track import track
+from aim.sdk import checkpoint
+
+
 def get_pt_tensor(t):
     if hasattr(t, 'is_cuda') and t.is_cuda:
         return t.cpu()
@@ -19,7 +23,7 @@ def get_unique(a):
 
 class TfUtils:
 
-    #FIXME:  statics as properties, and __init__(sess)
+    # FIXME: statics as properties, and __init__(sess)
 
     @staticmethod    
     def get_tf_t_vars(sess):
@@ -68,3 +72,25 @@ class TfUtils:
             num_of_layers = len(TfUtils.get_layers(t_vars))
             return [sess.run(t_var) for t_var in t_vars[num_of_layers : ]]
         return [sess.run(t_var) for t_var in t_vars if "bias" in t_var.name]
+
+
+class CheckpointCallback(tf.keras.callbacks.Callback):
+    """
+    Custom callback for tracking checkpoints in Keras models.
+    """
+
+    def __init__(self, name, checkpoint_name, meta):
+            super(CheckpointCallback, self).__init__()
+            self.name = name
+            self.checkpoint_name = checkpoint_name
+            self.meta = meta
+
+    def on_epoch_end(self, epoch, logs=None):
+        """Tracks checkpoint at the end of each epoch"""
+        if '{e}' in self.checkpoint_name:
+            checkpoint_name = self.checkpoint_name.format(e=epoch)
+        else:
+            checkpoint_name = '{e}-{n}'.format(n=self.checkpoint_name,
+                                               e=epoch)
+        track(checkpoint, self.name, checkpoint_name,
+              self.model, epoch, meta=self.meta)

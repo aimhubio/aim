@@ -2,13 +2,19 @@ import json
 import os
 import tempfile
 import zipfile
-from typing import Any
+from typing import Any, Callable
 import shutil
 from pathlib import Path
 
-from aim.engine.utils import is_keras_model, is_pytorch_module, is_tensorflow_session, get_module
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
+from aim.engine.utils import (
+    is_keras_model,
+    is_pytorch_module,
+    is_tensorflow_session,
+    is_tensorflow_estimator,
+    get_module
+)
 
 
 class Checkpoint(Artifact):
@@ -42,7 +48,7 @@ class Checkpoint(Artifact):
             return False, None
         
         # Delete directory if not working with tensorflow
-        if meta_info['model']['lib'] != 'tensorflow':
+        if 'tensorflow' not in meta_info['model']['lib']:
             tmp_copy_dir.cleanup()
 
         # Load the model
@@ -88,10 +94,27 @@ class Checkpoint(Artifact):
 
             # Restore session
             sess = tf.Session()
-            saver = tf.train.import_meta_graph(os.path.join(copy_dir_name, model_name+'.meta'))
+            saver = tf.train.import_meta_graph(
+                os.path.join(copy_dir_name, '{}.meta'.format(model_name)))
             saver.restore(sess, os.path.join(copy_dir_name, model_name))
             tmp_copy_dir.cleanup()
             return True, sess
+        if meta_info['model']['lib'] == 'tensorflow-est':
+            tf = get_module('tensorflow')
+
+            model_name = meta_info['model']['name']
+
+            # Unzip copied .aim file in created directory
+            file_path = Path(copy_dir_name)
+            files = (x for x in file_path.iterdir() if x.is_file())
+            zip_file = next(files)
+            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                zip_ref.extractall(copy_dir_name)
+            
+            imported = tf.saved_model.load(os.path.join(copy_dir_name,
+                                                        model_name))
+            tmp_copy_dir.cleanup()
+            return True, imported
 
         return False, None
 
@@ -100,6 +123,7 @@ class Checkpoint(Artifact):
                  epoch: int,
                  lr_rate: float = None,
                  opt: Any = None,
+                 fn: Callable[[], Any] = None,
                  meta: dict = None):
         self.name = name
         self.checkpoint_name = checkpoint_name
@@ -107,13 +131,15 @@ class Checkpoint(Artifact):
         self.opt = opt
         self.epoch = epoch
         self.lr_rate = lr_rate
+        self.fn = fn
         self.meta = meta
         self.path = ''
 
         # Define model backend lib
         lib = 'keras' if is_keras_model(self.model) else \
             'pytorch' if is_pytorch_module(self.model) else \
-            'tensorflow' if is_tensorflow_session(self.model) else None
+            'tensorflow' if is_tensorflow_session(self.model) else \
+            'tensorflow-est' if is_tensorflow_estimator(self.model) else None
         self.lib = lib
 
         super(Checkpoint, self).__init__(self.cat)
@@ -187,5 +213,18 @@ class Checkpoint(Artifact):
                 'name': model_path
             }
 
+            return model_save_meta
+        elif self.lib == 'tensorflow-est':
+            tf = get_module('tensorflow')
+
+            self.model.export_saved_model(path, self.fn)
+            _, _, model_path = path.rpartition('/')
+            model_path = os.path.join(model_path, os.listdir(path=path)[0])
+
+            # Specify meta information
+            model_save_meta = {
+                'lib': 'tensorflow-est',
+                'name': model_path
+            }
             return model_save_meta
         return {}

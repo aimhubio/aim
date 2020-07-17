@@ -112,17 +112,6 @@ for epoch in range(num_epochs):
             aim.track(random.random() * 10, name='random-md', epoch=epoch)
             aim.track(math.ceil(random.random() * 100), name='random-lg', epoch=epoch)
 
-    # aim - Save checkpoint
-    aim.track(aim.checkpoint,
-          'checkpoint_test', 'chp_epoch_{}'.format(epoch),
-          model, epoch, lr_rate=learning_rate,
-          meta={
-              'drop_out': 0.5,
-              'batch_size': 10,
-              'kernel_size': 2,
-              'stride': 2,
-          })
-
 # Test the model
 model.eval()
 with torch.no_grad():
