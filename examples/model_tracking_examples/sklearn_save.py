@@ -1,12 +1,12 @@
-
-# Save Model Using Pickle
 import aim
 from aim import track
 
 import pandas
 from sklearn import model_selection
 from sklearn.linear_model import LogisticRegression
+
 import pickle
+
 url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv"
 names = ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class']
 dataframe = pandas.read_csv(url, names=names)

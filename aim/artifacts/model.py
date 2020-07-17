@@ -230,4 +230,18 @@ class Checkpoint(Artifact):
                 'name': model_path
             }
             return model_save_meta
+        elif self.lib == 'sklearn':
+            sk = get_module('sklearn')
+            joblib = get_module('joblib')
+
+            joblib.dump(self.model, path+'.sav')
+
+            _, _, model_path = path.rpartition('/')
+
+            model_save_meta = {
+                'lib': 'sklearn',
+                'name': model_path
+            }
+            return model_save_meta
+
         return {}
