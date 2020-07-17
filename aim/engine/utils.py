@@ -139,6 +139,12 @@ def is_pytorch_optim(inst):
     """
     return inst_has_typename(inst, ['torch', 'optim'])
 
+def is_sklearn_model(inst):
+    """
+    Check whether `inst` is instance of sklearn model
+    """
+    return inst_has_typename(inst, ['sklearn'])
+
 
 def is_numpy_array(inst):
     """

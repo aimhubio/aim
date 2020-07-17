@@ -19,7 +19,7 @@ model = tf.keras.models.Sequential([
 ])
 
 track(aim.checkpoint, 'checkpoint-test',
-     'mnist-0', model, 0,
+     '0-mnist', model, 0,
       meta={
         'classes': 10,
       })
@@ -37,7 +37,8 @@ model.compile(optimizer='adam',
 meta = {'classes': 10}
 
 # Train model with checkpoints callbacks
-model.fit(x_train, y_train, epochs=5, callbacks=[CheckpointCallback(meta)])
+model.fit(x_train, y_train, epochs=5,
+          callbacks=[CheckpointCallback('checkpoint-test', 'mnist', meta)])
 
 model.evaluate(x_test,  y_test, verbose=2)
 

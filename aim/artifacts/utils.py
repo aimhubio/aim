@@ -91,6 +91,6 @@ class CheckpointCallback(tf.keras.callbacks.Callback):
             checkpoint_name = self.checkpoint_name.format(e=epoch)
         else:
             checkpoint_name = '{e}-{n}'.format(n=self.checkpoint_name,
-                                               e=epoch)
+                                               e=(epoch + 1))
         track(checkpoint, self.name, checkpoint_name,
               self.model, epoch, meta=self.meta)

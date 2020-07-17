@@ -13,6 +13,7 @@ from aim.engine.utils import (
     is_pytorch_module,
     is_tensorflow_session,
     is_tensorflow_estimator,
+    is_sklearn_model,
     get_module
 )
 
@@ -118,7 +119,8 @@ class Checkpoint(Artifact):
 
         return False, None
 
-    def __init__(self, name: str, checkpoint_name: str,
+    def __init__(self, type: str, name: str,
+                 checkpoint_name: str,
                  model: Any,
                  epoch: int,
                  lr_rate: float = None,
@@ -139,7 +141,8 @@ class Checkpoint(Artifact):
         lib = 'keras' if is_keras_model(self.model) else \
             'pytorch' if is_pytorch_module(self.model) else \
             'tensorflow' if is_tensorflow_session(self.model) else \
-            'tensorflow-est' if is_tensorflow_estimator(self.model) else None
+            'tensorflow-est' if is_tensorflow_estimator(self.model) else \
+            'sklearn' if is_sklearn_model(self.model) else None
         self.lib = lib
 
         super(Checkpoint, self).__init__(self.cat)
