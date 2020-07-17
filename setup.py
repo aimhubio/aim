@@ -18,12 +18,8 @@ REQUIRES_PYTHON = '>=3.5.2'
 # Get packages
 packages = find_packages(exclude=('tests',))
 
-# Get long description from the README file
-try:
-    with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
-        LONG_DESCRIPTION = '\n' + f.read()
-except FileNotFoundError:
-    LONG_DESCRIPTION = DESCRIPTION
+# TODO: Get long description from the README file
+LONG_DESCRIPTION = DESCRIPTION
 
 # What packages are required for this module to be executed?
 REQUIRED = [

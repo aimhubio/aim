@@ -37,6 +37,7 @@ aim up
     - [de](#de)
     - [up](#up)
   - [Python Library](#python-library)
+  - [Searching Experiments](#searching-experiments)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](docs/contributor-guide.md)
@@ -137,6 +138,9 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ...
 ```
 Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
+
+## Searching Experiments
+[TODO]
 
 ## How it works
 The stack of projects that enable AI Development Environment:
