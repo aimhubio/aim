@@ -15,7 +15,7 @@ test_size = 0.33
 seed = 7
 X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size, random_state=seed)
 
-path = '.aim/default/index/objects/models/diabetes.aim'
+path = ''
 loaded_model = Checkpoint.load(path)
 loaded_model = loaded_model[1]
 

@@ -48,12 +48,10 @@ class Checkpoint(Artifact):
         except Exception:
             return False, None
         
-        # Delete directory if not working with tensorflow
-        if 'tensorflow' not in meta_info['model']['lib']:
-            tmp_copy_dir.cleanup()
 
         # Load the model
         if meta_info['model']['lib'] == 'keras':
+            tmp_copy_dir.cleanup()
             keras_models = get_module('keras.models')
 
             # Create model architecture
@@ -70,6 +68,7 @@ class Checkpoint(Artifact):
 
             return True, model
         if meta_info['model']['lib'] == 'pytorch':
+            tmp_copy_dir.cleanup()
             torch = get_module('torch')
 
             # Create weights file to load weights from it
@@ -117,13 +116,7 @@ class Checkpoint(Artifact):
             tmp_copy_dir.cleanup()
             return True, imported
         if meta_info['model']['lib'] == 'sklearn':
-            sk = get_module('sklearn')
             joblib = get_module('joblib')
-
-            # Create temporary directory
-            tmp_copy_dir = tempfile.TemporaryDirectory()
-            copy_dir_name = tmp_copy_dir.name
-            shutil.copy2(model_path, copy_dir_name)
 
             # Unzip copied .aim file in created directory
             file_path = Path(copy_dir_name)
@@ -135,6 +128,7 @@ class Checkpoint(Artifact):
             model_name = meta_info['model']['model']
             loaded_model = joblib.load(os.path.join(copy_dir_name, model_name))
             
+            tmp_copy_dir.cleanup()
             return True, loaded_model
 
         return False, None
@@ -251,17 +245,17 @@ class Checkpoint(Artifact):
             }
             return model_save_meta
         elif self.lib == 'sklearn':
-            sk = get_module('sklearn')
             joblib = get_module('joblib')
 
+            # Save model to model.sav
             model_path = '{}.sav'.format(path)
             joblib.dump(self.model, model_path)
 
-            _, _, model_file_name = path.rpartition('/')
+            _, _, model_file_name = model_path.rpartition('/')
 
             model_save_meta = {
                 'lib': 'sklearn',
-                'model': model_file_name+'.sav'
+                'model': model_file_name
             }
             return model_save_meta
 
