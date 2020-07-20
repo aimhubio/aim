@@ -40,7 +40,7 @@ aim up
   - [Searching Experiments](#searching-experiments)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
-  - [Contributor Guide](docs/contributor-guide.md)
+  - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
