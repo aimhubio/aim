@@ -9,7 +9,7 @@ A super-easy way to record, search and compare AI experiments.
 ## Getting started in three steps
 1. Install Aim in your training environment
 ```shell
-pip3 install aim-cli
+$ pip3 install aim-cli
 ```
 2. Import Aim in your training code
 ```py
@@ -21,7 +21,7 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ```
 3. Run the training and start the AI Dev Environment
 ```shell
-aim up
+$ aim up
 ```
 
 ## Contents
@@ -38,6 +38,7 @@ aim up
     - [up](#up)
   - [Python Library](#python-library)
   - [Searching Experiments](#searching-experiments)
+  - [TensorBoard Experiments](#tensorboard-experiments)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](docs/contributor-guide.md)
@@ -141,6 +142,15 @@ Use `track` function anywhere with any framework to track the metrics. Metrics w
 
 ## Searching Experiments
 [TODO]
+
+## TensorBoard Experiments
+Easily run Aim on experiments tracked by TensorBoard. Here is how:
+```
+$ aim up --tf_logs path/to/logs
+```
+This command will spin up Aim on the tensorboard logs and load the logs recursively from the given logs path.
+Available search command for Tensorboard are:
+`tf_scalar:accuracy` - search by the tf_scalar.
 
 ## How it works
 The stack of projects that enable AI Development Environment:
