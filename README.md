@@ -141,7 +141,25 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
 
 ## Searching Experiments
-[TODO]
+Aim enables rich search capabilities to search experiments.
+Here are the ways you can search on Aim:
+**Search by metric**
+```
+metric:metric_name
+```
+**Search by param**
+```
+param:param_key=param_value
+```
+**Search by tag**
+```
+tag:tag_name
+```
+### Search Examples
+- Display the `loss`es of experiments tagged as `benchmark` whose learning rate is 0.001
+  `metric:loss tag:benchmark param:learning_rate=0.001`
+- Display the accuracies of experiments tagged as `daily`
+  `metric:accuracy tag:daily`
 
 ## TensorBoard Experiments
 Easily run Aim on experiments tracked by TensorBoard. Here is how:
