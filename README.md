@@ -150,10 +150,10 @@ Here are the ways you can search on Aim:
 - **Search by tag** - `tag:tag_name`
 
 ### Search Examples
-- Display the `loss`es of experiments tagged as `benchmark` whose learning rate is 0.001
-  `metric:loss tag:benchmark param:learning_rate=0.001`
-- Display the accuracies of experiments tagged as `daily`
-  `metric:accuracy tag:daily`
+- Display the `loss`es of experiments tagged as `benchmark` whose learning rate is 0.001:
+  - `metric:loss tag:benchmark param:learning_rate=0.001`
+- Display the accuracies of experiments tagged as `daily`:
+  - `metric:accuracy tag:daily`
 
 ## TensorBoard Experiments
 Easily run Aim on experiments tracked by TensorBoard. Here is how:
