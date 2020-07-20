@@ -151,8 +151,11 @@ Here are the ways you can search on Aim:
 
 ### Search Examples
 - Display the losses of experiments tagged as benchmark whose learning rate is 0.001:
+
 ```metric:loss tag:benchmark param:learning_rate=0.001```
+
 - Display the accuracies of experiments tagged as daily:
+
 ```metric:accuracy tag:daily```
 
 ## TensorBoard Experiments
