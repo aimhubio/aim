@@ -38,6 +38,7 @@ $ aim up
     - [up](#up)
   - [Python Library](#python-library)
   - [Searching Experiments](#searching-experiments)
+    - [Search Examples](#search-examples)
   - [TensorBoard Experiments](#tensorboard-experiments)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
@@ -143,18 +144,11 @@ Use `track` function anywhere with any framework to track the metrics. Metrics w
 ## Searching Experiments
 Aim enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
-**Search by metric**
-```
-metric:metric_name
-```
-**Search by param**
-```
-param:param_key=param_value
-```
-**Search by tag**
-```
-tag:tag_name
-```
+
+- **Search by metric** - `metric:metric_name`
+- **Search by param** - `param:param_key=param_value`
+- **Search by tag** - `tag:tag_name`
+
 ### Search Examples
 - Display the `loss`es of experiments tagged as `benchmark` whose learning rate is 0.001
   `metric:loss tag:benchmark param:learning_rate=0.001`
