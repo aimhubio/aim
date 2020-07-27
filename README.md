@@ -161,8 +161,9 @@ Easily run Aim on experiments tracked by TensorBoard. Here is how:
 $ aim up --tf_logs path/to/logs
 ```
 This command will spin up Aim on the tensorboard logs and load the logs recursively from the given logs path.
-Available search command for Tensorboard are:
-`tf_scalar:accuracy` - search by the tf_scalar.
+To make TensorBoard logs also appear in the dashboard, just add the following to the search bar:
+`inclue:tf_logs` - search by the tf_scalar
+Everything else is the same for the search.
 
 ## How it works
 The stack of projects that enable AI Development Environment:
