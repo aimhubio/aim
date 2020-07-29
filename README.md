@@ -7,9 +7,10 @@ A super-easy way to record, search and compare AI experiments.
 <img src="https://user-images.githubusercontent.com/3179216/86801320-eea18400-c084-11ea-8480-87ee60ae95cd.png">
 
 ## Getting started in three steps
-1. Install Aim in your training environment
+1. Install Aim in your training environment and init in the project folder
 ```shell
 $ pip3 install aim-cli
+$ aim init
 ```
 2. Import Aim in your training code
 ```py
