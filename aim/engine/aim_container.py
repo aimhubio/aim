@@ -136,6 +136,7 @@ class AimContainerCMD:
     def __init__(self, port):
         self.port = port
         self.sock = None
+        self.track_sock = None
         self._listenerd = None
         self._shutdown = False
         self._reconnect = True
@@ -146,6 +147,7 @@ class AimContainerCMD:
                                            daemon=True)
         self._shutdown = False
         self.sock = None
+        self.track_sock = None
         self._listenerd.start()
 
     def kill(self):
@@ -154,6 +156,13 @@ class AimContainerCMD:
             self.sock.close()
         for p in self._commands:
             p.kill()
+
+    def track_sock_event(self, data):
+        parsed_data = b64decode(data.encode('utf-8')).decode('utf-8')
+        parsed_data = json.loads(parsed_data)
+        res = {
+            'status': 200,
+        }
 
     def event(self, data):
         parsed_data = b64decode(data.encode('utf-8')).decode('utf-8')
@@ -231,27 +240,42 @@ class AimContainerCMD:
                     # self.sock.settimeout(120)
                     self.sock.connect(('0.0.0.0', self.port))
 
-                line = self._read_line()
+                # if self.track_sock is None:
+                #     if not self._reconnect:
+                #         return
+
+                #     self.track_sock = socket.socket(socket.AF_INET,
+                #                               socket.SOCK_STREAM)
+                #     # self.sock.settimeout(120)
+                #     self.track_sock.connect(('0.0.0.0', 43805))
+
+                line = self._read_line(self.sock)
+                # track_sock_line = self._read_line(self.track_sock)
                 if line:
                     res = self.event(line)
                     self._send_line(res)
                 else:
                     raise ValueError('empty message')
+                # if track_sock_line:
+                #     # res = self.track_sock_event(line)
+                #     # self._send_line(res)
+                #     self._send_line(track_sock_line)
+                    
             except Exception as e:
                 # print(e)
                 self.sock = None
                 sleep(0.1)
 
-    def _read_line(self):
+    def _read_line(self, socket):
         buffer_size = 4096
-        buffer = self.sock.recv(buffer_size).decode('utf-8')
+        buffer = socket.recv(buffer_size).decode('utf-8')
         buffering = True
         while buffering:
             if '\n' in buffer:
                 (line, buffer) = buffer.split('\n', 1)
                 return line + '\n'
             else:
-                more = self.sock.recv(buffer_size).decode('utf-8')
+                more = socket.recv(buffer_size).decode('utf-8')
                 if not more:
                     buffering = False
                 else:

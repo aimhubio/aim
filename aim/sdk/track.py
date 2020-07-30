@@ -13,6 +13,8 @@ from aim.engine.configs import (
 
 repo = None
 
+HOST = '0.0.0.0'
+PORT = 43085
 
 def get_repo():
     # Get ENV VARS
@@ -65,5 +67,12 @@ def track(*args, **kwargs):
 
     writer = ArtifactWriter()
     writer.save(repo, inst)
+
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(b'Hello, world')
+        data = s.recv(1024)
+
 
     return inst
