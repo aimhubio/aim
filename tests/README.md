@@ -2,8 +2,9 @@
 
 ## Goals
 Be able to test the correctness of the
+ - `aim engine`
  - `aim sdk`
- - `aim cli`
+ - `aim ql`
 
 ### Folder Structure
 
@@ -11,9 +12,9 @@ Be able to test the correctness of the
 tests
   engine
     test_*.py
-  cli
-    test_*.py
   sdk
+    test_*.py
+  ql
     test_*.py
 ```
 
