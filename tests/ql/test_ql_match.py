@@ -13,13 +13,13 @@ class TestStatementMatch(unittest.TestCase):
             '10 == 10 and (10 == 3 or 2 > 1)': ({}, True),
             '10 == 10 and (10 == 3 or 2 > 1) and 8 < 10': ({}, True),
             '10 == 10 and (10 == 3 or 2 < 1)': ({}, False),
-            '10 == 10 and (10 == 3 or 2 in (1,2))': ({}, True),
-            '10 == 10 and (10 == 3 or 2 not in (1,2))': ({}, False),
+            '10 == 10 and ((10 == 3) or 2 in (1,2))': ({}, True),
+            '10 == 10 and (10 == 3 or (2 not in (1,2)))': ({}, False),
             '10 == 10 and (10 == 3 or "a1" in ("a1", "a2", "a3"))': ({}, True),
             '10 == 10 and (10 == 3 or a1 in (a1, a2, a3))': ({}, True),
             '10 == 10 and (10 == 3 or "a1" in ("a2", "a3"))': ({}, False),
-            '10 == 10 and (10 == 3 or "1" in "1234")': ({}, True),
-            'a in (x, y)': ({}, False),
+            '(10 == 10 and (10 == 3 or "1" in "1234"))': ({}, True),
+            '(a in (x, y)) and False == False': ({}, False),
             'a in (x, y, a)': ({}, True),
 
             # Fields
