@@ -60,6 +60,8 @@ class TestStatementMatch(unittest.TestCase):
             # Nested parenthesis
             '(10 == 10) and 5 == 5':
                 ({}, True),
+            '(((((10 == 10) and 5 == 5))))':
+                ({}, True),
             '(10 == 10) and (((c == c))) and ((5 == 5) or p == p)':
                 ({}, True),
             '10 == 10 and (((c == c))) and ((5 == 5) or p == p)':
