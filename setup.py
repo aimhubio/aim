@@ -24,7 +24,7 @@ LONG_DESCRIPTION = DESCRIPTION
 # What packages are required for this module to be executed?
 REQUIRED = [
     'click>=6.7',
-    'paramiko>=2.6.0',
+    'pyrser>=0.2.0',
     'GitPython>=3.0.4',
     'requests>=2.0.0',
     'psutil>=5.6.7',
