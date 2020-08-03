@@ -24,6 +24,7 @@ LONG_DESCRIPTION = DESCRIPTION
 # What packages are required for this module to be executed?
 REQUIRED = [
     'click>=6.7',
+    'anytree>=2.8.0',
     'pyrser>=0.2.0',
     'GitPython>=3.0.4',
     'requests>=2.0.0',

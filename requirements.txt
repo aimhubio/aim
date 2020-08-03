@@ -1,4 +1,5 @@
 aimrecords>=0.0.3
+anytree>=2.8.0
 bcrypt==3.1.7
 certifi==2019.11.28
 cffi==1.14.0

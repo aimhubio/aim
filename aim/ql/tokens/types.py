@@ -16,6 +16,7 @@ class TokenType(tuple):
 
 token_type = TokenType()
 
+
 # - Literals
 Literal = token_type.Literal
 # -- Primitive
@@ -40,4 +41,3 @@ Path = Identifier.Path
 
 # - Expression
 Expression = token_type.Expression
-

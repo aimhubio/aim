@@ -1,3 +1,5 @@
+from typing import Any
+
 from aim.ql.tokens.types import *
 
 
@@ -10,7 +12,7 @@ class Token(object):
         Expression,
     ]
 
-    def __init__(self, value, ltype):
+    def __init__(self, value: Any, ltype: str):
         if ltype == 'Number':
             if '.' in value:
                 cleaned_value, ttype = float(value), Float
@@ -51,33 +53,27 @@ class Token(object):
         return '{}: {}'.format(self.type, self.value)
 
     @property
-    def value(self):
+    def value(self) -> Any:
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: Any):
         # TODO
         self._value = value
 
     @property
-    def type(self):
+    def type(self) -> TokenType:
         return self._ttype
 
     @type.setter
-    def type(self, ttype):
+    def type(self, ttype: TokenType):
         # TODO
         self._ttype = ttype
 
-    def is_group(self) -> bool:
-        return False
-
 
 class TokenList(Token):
-    def __init__(self, ttype):
-        super(TokenList, self).__init__([], ttype)
+    def __init__(self, ttype: str, tokens: list = []):
+        super(TokenList, self).__init__(tokens, ttype)
 
-    def append(self, item):
+    def append(self, item: Token):
         self._value.append(item)
-
-    def is_group(self) -> bool:
-        return True
