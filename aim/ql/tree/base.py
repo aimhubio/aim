@@ -81,7 +81,10 @@ class Tree(object):
     #     else:
     #         return type_check and node.token.value == bval
     #
-    #
     # @classmethod
     # def is_node_identifier(cls, node) -> bool:
-    #     return cls.check_node_type(node, 'Identifier')
+    #     return cls.check_node_type(node, 'Token.Identifier')
+
+    # @classmethod
+    # def is_node_path(cls, node) -> bool:
+    #     return cls.check_node_type(node, 'Token.Identifier.Path')
