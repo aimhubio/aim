@@ -1,3 +1,5 @@
+import re
+import jmespath
 from typing import Any
 
 from aim.ql.tokens.types import *
@@ -36,7 +38,7 @@ class Token(object):
         elif ltype == 'Expression':
             cleaned_value, ttype = [], Expression
         elif ltype == 'Operator':
-            cleaned_value = value.strip()
+            cleaned_value = re.sub(' +', ' ', value.strip())
             if cleaned_value == 'and' \
                     or cleaned_value == 'or' \
                     or cleaned_value == 'not':
@@ -69,6 +71,19 @@ class Token(object):
     def type(self, ttype: TokenType):
         # TODO
         self._ttype = ttype
+
+    def get_cleaned_value(self, fields: dict = None):
+        if self.type == Identifier:
+            # FIXME: return `None`, not self.value
+            #  if `NoneType` value is assigned to the corresponding path
+            search_field = jmespath.search(self.value, fields)
+            return search_field or self.value
+        elif self.type == Path:
+            path = '.'.join([token.value for token in self.value])
+            return jmespath.search(path, fields)
+        elif self.type == List:
+            return [token.get_cleaned_value(fields) for token in self.value]
+        return self.value
 
 
 class TokenList(Token):

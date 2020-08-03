@@ -1,6 +1,6 @@
 from pyrser import grammar, meta
 
-from aim.ql.tokens import TokenList, Token
+from aim.ql.tokens.token import TokenList, Token
 
 
 class Atom(grammar.Grammar):

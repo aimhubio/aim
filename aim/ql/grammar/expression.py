@@ -1,7 +1,7 @@
 from pyrser import grammar, meta
 from pyrser.hooks import set
 
-from aim.ql.tokens import TokenList, Token
+from aim.ql.tokens.token import TokenList, Token
 from aim.ql.grammar.atom import Atom
 
 

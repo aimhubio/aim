@@ -5,6 +5,7 @@ from anytree import RenderTree
 from anytree.exporter import UniqueDotExporter
 
 from aim.ql.tree.node import Node
+from aim.ql.tokens.types import *
 
 
 class Tree(object):
@@ -27,15 +28,15 @@ class Tree(object):
         UniqueDotExporter(self.head).to_picture(os.path.join(path, name))
 
     @classmethod
-    def check_node_type(cls, node: NODE, node_type: str) -> bool:
+    def check_node_type(cls, node: NODE, node_type: TokenType) -> bool:
         if not isinstance(node, cls.NODE) \
                 or not hasattr(node, 'token'):
             return False
-        return str(node.token.type) == node_type
+        return node.token.type == node_type
 
     @classmethod
     def is_node_expression(cls, node: NODE) -> bool:
-        return cls.check_node_type(node, 'Token.Expression')
+        return cls.check_node_type(node, Expression)
 
     @classmethod
     def is_node_operator(cls, node: NODE,
@@ -46,7 +47,7 @@ class Tree(object):
     @classmethod
     def is_node_logical_operator(cls, node: NODE,
                                  operator: Optional[str] = None) -> bool:
-        type_check = cls.check_node_type(node, 'Token.Operator.Logical')
+        type_check = cls.check_node_type(node, Logical)
         if operator is None:
             return type_check
         else:
@@ -55,11 +56,19 @@ class Tree(object):
     @classmethod
     def is_node_comparison_operator(cls, node: NODE,
                                     operator: Optional[str] = None) -> bool:
-        type_check = cls.check_node_type(node, 'Token.Operator.Comparison')
+        type_check = cls.check_node_type(node, Comparison)
         if operator is None:
             return type_check
         else:
             return type_check and node.token.value == operator
+
+    @classmethod
+    def is_node_identifier(cls, node, path: bool = True) -> bool:
+        if path:
+            return cls.check_node_type(node, Identifier) \
+                   or cls.check_node_type(node, Path)
+        else:
+            return cls.check_node_type(node, Identifier)
 
     # @classmethod
     # def is_node_string(cls, node) -> bool:
@@ -80,11 +89,3 @@ class Tree(object):
     #         return type_check
     #     else:
     #         return type_check and node.token.value == bval
-    #
-    # @classmethod
-    # def is_node_identifier(cls, node) -> bool:
-    #     return cls.check_node_type(node, 'Token.Identifier')
-
-    # @classmethod
-    # def is_node_path(cls, node) -> bool:
-    #     return cls.check_node_type(node, 'Token.Identifier.Path')

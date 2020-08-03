@@ -7,7 +7,6 @@ class BinaryExpressionTree(Tree):
         self.head = self._build_tree(tree.head)
 
     def match(self, fields: dict = {}):
-        print(self.head)
         return self._evaluate(self.head, fields)
 
     @classmethod
@@ -36,8 +35,14 @@ class BinaryExpressionTree(Tree):
             return left_eval > right_eval
         elif cls.is_node_comparison_operator(tree, '<'):
             return left_eval < right_eval
+        elif cls.is_node_comparison_operator(tree, 'in'):
+            return left_eval in right_eval
+        elif cls.is_node_comparison_operator(tree, 'not in'):
+            return left_eval not in right_eval
 
-        return tree.token.value
+        val = tree.token.get_cleaned_value(fields)
+
+        return val
 
     @classmethod
     def _build_tree(cls, tree):

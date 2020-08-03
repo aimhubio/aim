@@ -25,6 +25,7 @@ LONG_DESCRIPTION = DESCRIPTION
 REQUIRED = [
     'click>=6.7',
     'anytree>=2.8.0',
+    'jmespath>=0.10.0',
     'pyrser>=0.2.0',
     'GitPython>=3.0.4',
     'requests>=2.0.0',
