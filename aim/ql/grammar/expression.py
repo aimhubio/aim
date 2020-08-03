@@ -13,8 +13,8 @@ class Expression(grammar.Grammar, Atom):
         expr = 
         [
             [
-                compound_expr
-                | simple_expr
+                simple_expr
+                | compound_expr
             ]:>_
         ]
         
@@ -46,7 +46,8 @@ class Expression(grammar.Grammar, Atom):
             [
                 not_expr
                 | atom
-                | expr
+                | compound_expr
+                | simple_expr
             ]:>_
         ]
         

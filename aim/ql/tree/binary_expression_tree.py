@@ -26,7 +26,7 @@ class BinaryExpressionTree(Tree):
         elif cls.is_node_comparison_operator(tree, '=='):
             return left_eval == right_eval
         elif cls.is_node_comparison_operator(tree, '!='):
-            return left_eval == right_eval
+            return left_eval != right_eval
         elif cls.is_node_comparison_operator(tree, '>='):
             return left_eval >= right_eval
         elif cls.is_node_comparison_operator(tree, '<='):

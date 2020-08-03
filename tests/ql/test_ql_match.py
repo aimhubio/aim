@@ -56,6 +56,28 @@ class TestStatementMatch(unittest.TestCase):
                     },
                 },
             }, False),
+
+            # Nested parenthesis
+            '(10 == 10) and 5 == 5':
+                ({}, True),
+            '(10 == 10) and (((c == c))) and ((5 == 5) or p == p)':
+                ({}, True),
+            '10 == 10 and (((c == c))) and ((5 == 5) or p == p)':
+                ({}, True),
+            '(10 == 10 and (((c == c))) and ((5 == 5) or p != p))':
+                ({}, True),
+            '(10 == 10 and (((c == c))) and ((5 != 5) or p != p))':
+                ({}, False),
+            '((10 == 10 and (((c == c)))) and ((5 == 5) or p == p))':
+                ({}, True),
+            '((10 != 10 and (((c == c)))) and ((5 == 5) or p == p))':
+                ({}, False),
+            'n == n and ((10 == 10 and (((c == c)))) and ((5 == 5) or p == p))':
+                ({}, True),
+            'm == 8 and ((10 == 10 and (((c == c)))) and ((5 == 5) or p == p))':
+                ({'m': 8}, True),
+            'm == m and ((10 == 10 and (((c == 1)))) and ((5 == 5) or p == p))':
+                ({'c': 2}, False),
         }
 
         for expr, fields in expressions.items():
