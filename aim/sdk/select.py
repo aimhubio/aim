@@ -15,7 +15,7 @@ def parse_search_statement(search_statement: str):
     return parser.parse(search_statement)
 
 
-def search(search_statement: str) -> Optional[List[Run]]:
+def select(search_statement: str) -> Optional[List[Run]]:
     repo = AimRepo.get_working_repo()
 
     if not repo:
