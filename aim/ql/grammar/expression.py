@@ -101,14 +101,6 @@ def is_op(self, ast, operator):
     return True
 
 
-@meta.hook(Expression)
-def add_expression(self, ast, expression, operation=None):
-    if operation is not None:
-        ast.node.append(operation.node)
-    ast.node.append(expression.node)
-    return True
-
-
 if __name__ == '__main__':
     parser = Expression()
 
