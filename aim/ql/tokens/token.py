@@ -72,18 +72,34 @@ class Token(object):
         # TODO
         self._ttype = ttype
 
-    def get_cleaned_value(self, fields: dict = None):
+    def get_cleaned_value(self, fields: dict = None, *add_fields):
+        if self.type == List:
+            return [token.get_cleaned_value(fields, *add_fields)
+                    for token in self.value]
+
+        if self.type not in (Identifier, Path):
+            return self.value
+
         if self.type == Identifier:
-            # FIXME: return `None`, not self.value
-            #  if `NoneType` value is assigned to the corresponding path
-            search_field = jmespath.search(self.value, fields)
-            return search_field or self.value
-        elif self.type == Path:
+            path = self.value
+        else:
             path = '.'.join([token.value for token in self.value])
-            return jmespath.search(path, fields)
-        elif self.type == List:
-            return [token.get_cleaned_value(fields) for token in self.value]
-        return self.value
+
+        all_fields = [fields] + list(*add_fields)
+        search_field_match = None
+        for fields in all_fields:
+            search_field_match = jmespath.search(path, fields)
+            if search_field_match is not None:
+                break
+
+        if self.type == Identifier:
+            # Treat as string
+            # FIXME: return `None` instead of self.value,
+            #  if `NoneType` value is assigned to the given path
+            return search_field_match or self.value
+        else:
+            # Treat as None
+            return search_field_match
 
 
 class TokenList(Token):
