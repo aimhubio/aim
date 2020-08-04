@@ -4,7 +4,7 @@ from aim.ql.grammar.expression import Expression
 
 
 parser = Expression()
-expr = parser.parse('(10 == 10) and 5 == 5')
+expr = parser.parse('((3 != 2) and 10 >= 5)')
 
 ast = AbstractSyntaxTree()
 ast.build_from_expression(expr)

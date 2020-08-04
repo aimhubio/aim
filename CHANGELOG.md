@@ -1,5 +1,8 @@
 # Changelog
 
+- Add SDK `search` method to select runs (gorarakelyan)
+- Implement search query language (gorarakelyan)
+
 ## 2.0.5 Jul 18 2020
 - Fix issue with PyPI reStructuredText format compatibility (gorarakelyan)
 

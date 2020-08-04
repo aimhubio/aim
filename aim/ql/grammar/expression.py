@@ -61,6 +61,7 @@ class Expression(grammar.Grammar, Atom):
                 | "!="
                 | '<'
                 | '>'
+                | "is"
                 | "in"
                 | ["not" "in"]
             ]:o #is_op(_, o)

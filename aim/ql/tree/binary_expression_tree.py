@@ -6,16 +6,16 @@ class BinaryExpressionTree(Tree):
     def build_from_ast(self, tree: AbstractSyntaxTree):
         self.head = self._build_tree(tree.head)
 
-    def match(self, fields: dict = {}):
-        return self._evaluate(self.head, fields)
+    def match(self, fields: dict = {}, *add_fields):
+        return self._evaluate(self.head, fields, *add_fields)
 
     @classmethod
-    def _evaluate(cls, tree, fields: dict) -> bool:
+    def _evaluate(cls, tree, fields: dict, *add_fields) -> bool:
         left_eval = right_eval = None
         if len(tree.children) > 0:
-            left_eval = cls._evaluate(tree.children[0], fields)
+            left_eval = cls._evaluate(tree.children[0], fields, *add_fields)
         if len(tree.children) > 1:
-            right_eval = cls._evaluate(tree.children[1], fields)
+            right_eval = cls._evaluate(tree.children[1], fields, *add_fields)
 
         if cls.is_node_logical_operator(tree, 'and'):
             return left_eval and right_eval
@@ -23,24 +23,30 @@ class BinaryExpressionTree(Tree):
             return left_eval or right_eval
         elif cls.is_node_logical_operator(tree, 'not'):
             return not left_eval
-        elif cls.is_node_comparison_operator(tree, '=='):
-            return left_eval == right_eval
-        elif cls.is_node_comparison_operator(tree, '!='):
-            return left_eval != right_eval
-        elif cls.is_node_comparison_operator(tree, '>='):
-            return left_eval >= right_eval
-        elif cls.is_node_comparison_operator(tree, '<='):
-            return left_eval <= right_eval
-        elif cls.is_node_comparison_operator(tree, '>'):
-            return left_eval > right_eval
-        elif cls.is_node_comparison_operator(tree, '<'):
-            return left_eval < right_eval
-        elif cls.is_node_comparison_operator(tree, 'in'):
-            return left_eval in right_eval
-        elif cls.is_node_comparison_operator(tree, 'not in'):
-            return left_eval not in right_eval
 
-        val = tree.token.get_cleaned_value(fields)
+        try:
+            if cls.is_node_comparison_operator(tree, '=='):
+                return left_eval == right_eval
+            elif cls.is_node_comparison_operator(tree, '!='):
+                return left_eval != right_eval
+            elif cls.is_node_comparison_operator(tree, '>='):
+                return left_eval >= right_eval
+            elif cls.is_node_comparison_operator(tree, '<='):
+                return left_eval <= right_eval
+            elif cls.is_node_comparison_operator(tree, '>'):
+                return left_eval > right_eval
+            elif cls.is_node_comparison_operator(tree, '<'):
+                return left_eval < right_eval
+            elif cls.is_node_comparison_operator(tree, 'is'):
+                return left_eval is right_eval
+            elif cls.is_node_comparison_operator(tree, 'in'):
+                return left_eval in right_eval
+            elif cls.is_node_comparison_operator(tree, 'not in'):
+                return left_eval not in right_eval
+        except:
+            return False
+
+        val = tree.token.get_cleaned_value(fields, *add_fields)
 
         return val
 
