@@ -1,6 +1,6 @@
 # Changelog
 
-- Add SDK `search` method to select runs (gorarakelyan)
+- Add SDK `select` method to select runs and artifacts (gorarakelyan)
 - Implement search query language (gorarakelyan)
 
 ## 2.0.5 Jul 18 2020
