@@ -4,6 +4,8 @@ from functools import reduce
 from random import choice
 from string import ascii_letters
 from importlib import import_module
+import shutil
+import zipfile
 
 
 def deep_merge(*dicts, update=False):
@@ -121,17 +123,20 @@ def is_pytorch_module(inst):
     """
     return inst_has_typename(inst, ['torch', 'Module'])
 
+
 def is_tensorflow_session(inst):
     """
     Check whether `inst` is instance of tensorflow session
     """
     return inst_has_typename(inst, ['tensorflow', 'session'])
 
+
 def is_tensorflow_estimator(inst):
     """
     Check whether `inst` is instance of tensorflow estimator
     """
     return inst_has_typename(inst, ['tensorflow', 'estimator'])
+
 
 def is_pytorch_optim(inst):
     """
@@ -158,3 +163,17 @@ def get_module(name, required=True):
         if required:
             raise ValueError('No module named: \'{}\''.format(name))
         return None
+
+
+def archive_dir(zip_path, dir_path):
+    """
+    Archive a directory
+    """
+    zip_file = zipfile.ZipFile(zip_path, 'w')
+    with zip_file:
+        # Writing each file one by one
+        for file in ls_dir([dir_path]):
+            zip_file.write(file, file[len(dir_path):])
+
+    # Remove model directory
+    shutil.rmtree(dir_path)

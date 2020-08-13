@@ -16,12 +16,12 @@ batch_size = 50
 learning_rate = 0.01
 
 # aim - Track hyper parameters
-aim.track({
+aim.set_params({
     'num_epochs': num_epochs,
     'num_classes': num_classes,
     'batch_size': batch_size,
     'learning_rate': learning_rate,
-})
+}, name='hparams')
 
 # MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data/',
@@ -74,11 +74,8 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Train the model
-saved_img = 0
 total_step = len(train_loader)
 for epoch in range(num_epochs):
-    false_positives = 0
-    false_negatives = 0
     for i, (images, labels) in enumerate(train_loader):
         images = images.to(device)
         labels = labels.to(device)
@@ -92,16 +89,23 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if (i + 1) % 100 == 0:
+        if i % 30 == 0:
             print('Epoch [{}/{}], Step [{}/{}], '
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
+
+            # aim - Track model loss function
+            aim.track(loss.item(), name='loss', epoch=epoch)
 
             correct = 0
             total = 0
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+
+            # aim - Track metrics
+            aim.track(100 * correct / total, name='accuracy', epoch=epoch)
+
 # Test the model
 model.eval()
 with torch.no_grad():

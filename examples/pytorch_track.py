@@ -1,8 +1,5 @@
 import aim
-aim.init(overwrite=True)
-
-import random
-import math
+aim.init()
 
 import torch
 import torch.nn as nn
@@ -17,6 +14,14 @@ num_epochs = 5
 num_classes = 10
 batch_size = 50
 learning_rate = 0.01
+
+# aim - Track hyper parameters
+aim.set_params({
+    'num_epochs': num_epochs,
+    'num_classes': num_classes,
+    'batch_size': batch_size,
+    'learning_rate': learning_rate,
+}, name='hparams')
 
 # MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data/',
@@ -69,11 +74,8 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Train the model
-saved_img = 0
 total_step = len(train_loader)
 for epoch in range(num_epochs):
-    false_positives = 0
-    false_negatives = 0
     for i, (images, labels) in enumerate(train_loader):
         images = images.to(device)
         labels = labels.to(device)
@@ -87,25 +89,28 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if (i + 1) % 100 == 0:
+        if i % 30 == 0:
             print('Epoch [{}/{}], Step [{}/{}], '
                   'Loss: {:.4f}'.format(epoch + 1, num_epochs, i + 1,
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            aim.track(loss.item(), name='loss', epoch=epoch)
+            aim.track(loss.item(), name='loss', epoch=epoch, subset='train')
 
             correct = 0
             total = 0
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+            acc = 100 * correct / total
 
             # aim - Track metrics
-            aim.track(100 * correct / total, name='accuracy')
-            aim.track(random.random(), name='random', epoch=epoch)
-            aim.track(random.random() * 10, name='random-md', epoch=epoch)
-            aim.track(math.ceil(random.random() * 100), name='random-lg', epoch=epoch)
+            aim.track(acc, name='accuracy', epoch=epoch, subset='train')
+
+            # TODO: Do actual validation
+            if i % 300 == 0:
+                aim.track(loss.item(), name='loss', epoch=epoch, subset='val')
+                aim.track(acc, name='accuracy', epoch=epoch, subset='val')
 
 
 # Test the model

@@ -7,9 +7,10 @@ A super-easy way to record, search and compare AI experiments.
 <img src="https://user-images.githubusercontent.com/3179216/86801320-eea18400-c084-11ea-8480-87ee60ae95cd.png">
 
 ## Getting started in three steps
-1. Install Aim in your training environment
+1. Install Aim in your training environment and init in the project folder
 ```shell
-pip3 install aim-cli
+$ pip3 install aim-cli
+$ aim init
 ```
 2. Import Aim in your training code
 ```py
@@ -21,7 +22,7 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 ```
 3. Run the training and start the AI Dev Environment
 ```shell
-aim up
+$ aim up
 ```
 
 ## Contents
@@ -38,9 +39,11 @@ aim up
     - [up](#up)
   - [Python Library](#python-library)
   - [Searching Experiments](#searching-experiments)
+    - [Search Examples](#search-examples)
+  - [TensorBoard Experiments](#tensorboard-experiments)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
-  - [Contributor Guide](docs/contributor-guide.md)
+  - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
@@ -140,7 +143,28 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
 
 ## Searching Experiments
-[TODO]
+Aim enables rich search capabilities to search experiments.
+Here are the ways you can search on Aim:
+
+- **Search by metric** - `metric:metric_name`
+- **Search by param** - `param:param_key=param_value`
+- **Search by tag** - `tag:tag_name`
+
+### Search Examples
+- Display the losses of experiments tagged as benchmark whose learning rate is 0.001:
+  - `metric:loss tag:benchmark param:learning_rate=0.001`
+- Display the accuracies of experiments tagged as daily:
+  - `metric:accuracy tag:daily`
+
+## TensorBoard Experiments
+Easily run Aim on experiments tracked by TensorBoard. Here is how:
+```
+$ aim up --tf_logs path/to/logs
+```
+This command will spin up Aim on the tensorboard logs and load the logs recursively from the given logs path.
+To make TensorBoard logs also appear in the dashboard, just add the following to the search bar:
+`inclue:tf_logs` - search by the tf_scalar
+Everything else is the same for the search.
 
 ## How it works
 The stack of projects that enable AI Development Environment:

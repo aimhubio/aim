@@ -9,14 +9,23 @@ from aim.artifacts.proto.metric_pb2 import MetricRecord
 class Metric(Artifact):
     cat = ('metrics',)
 
-    def __init__(self, name: str, value: Union[int, float], epoch: int = None,
-                 step: int = None):
+    def __init__(self, name: str,
+                 value: Union[int, float],
+                 epoch: int = None,
+                 step: int = None,
+                 **kwargs):
         self.name = name
         self.value = value
         self.epoch = epoch
+        self.context = kwargs if len(kwargs.keys()) else None
 
         super(Metric, self).__init__(self.cat)
-        self.initialize_step_counter(step, self.name)
+
+        if self.context is not None:
+            step_meta = tuple(sorted(self.context.items()))
+        else:
+            step_meta = None
+        self.initialize_step_counter(step, self.name, step_meta)
 
     def __str__(self):
         return '{name}: {value}'.format(name=self.name,
@@ -32,7 +41,8 @@ class Metric(Artifact):
             name=self.name,
             cat=self.cat,
             content=data_bytes,
-            binary_type=self.PROTOBUF
+            context=self.context,
+            binary_type=self.PROTOBUF,
         )
 
     def save_blobs(self, name: str, abs_path: str = None):

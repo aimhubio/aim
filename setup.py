@@ -24,13 +24,13 @@ LONG_DESCRIPTION = DESCRIPTION
 # What packages are required for this module to be executed?
 REQUIRED = [
     'click>=6.7',
-    'paramiko>=2.6.0',
+    'anytree>=2.8.0',
+    'pyrser>=0.2.0',
     'GitPython>=3.0.4',
     'requests>=2.0.0',
     'psutil>=5.6.7',
-    'py3nvml>=0.2.5',
     'docker>=4.1.0',
-    'aimrecords>=0.0.3',
+    'aimrecords==0.0.4',
     'protobuf>=3.11.0',
 ]
 

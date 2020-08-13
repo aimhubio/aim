@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.6 Aug 13 2020
+- Add ability to retrieve metrics and traces from repo (gorarakelyan)
+- Add SDK `select` method to select runs and artifacts (gorarakelyan)
+- Implement search query language (gorarakelyan)
+
 ## 2.0.5 Jul 18 2020
 - Fix issue with PyPI reStructuredText format compatibility (gorarakelyan)
 
