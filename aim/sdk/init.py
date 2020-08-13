@@ -1,9 +1,8 @@
 import os
-import uuid
 import time
 
 from aim.sdk.utils import set_automated_env_vars
-from aim.engine.aim_repo import AimRepo
+from aim.engine.repo import AimRepo
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
     AIM_COMMIT_ENV_VAR,

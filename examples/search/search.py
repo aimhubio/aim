@@ -1,6 +1,11 @@
 from aim.sdk import select
+from aim.engine.repo import AimRepo
+from aim.ql.grammar.statement import Statement
 
 
 if __name__ == '__main__':
-    res = select('loss where hparams.learning_rate == 0.01 and hparams.num_epochs in (5, 10)')
+    res = select('loss if '
+                 'context.subset == train '
+                 )
+
     print(res)

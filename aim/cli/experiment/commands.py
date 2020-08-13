@@ -82,4 +82,4 @@ def rm(repo, name):
         click.echo(e)
         return
 
-    click.echo('Remote {} is removed'.format(name))
+    click.echo('Experiment {} is removed'.format(name))

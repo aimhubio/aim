@@ -1,6 +1,5 @@
 import os
 import json
-import paramiko
 import re
 
 from aim.engine.utils import random_str
@@ -80,35 +79,6 @@ class AimProfile:
         """
         return self.config['auth'].get(remote) is not None
 
-    def auth(self, remote):
-        """
-        Generates RSA key pair for `remote` authentication
-        """
-        remote = remote.strip()
-        private_file_name = 'rsa_{r}'.format(o=remote,
-                                             r=random_str(16))
-        private_key_path = os.path.join(self.ssh_path, private_file_name)
-
-        # Generate rsa key
-        k = paramiko.RSAKey.generate(bits=4 * 1024)
-
-        # Save keys inside ssh dir
-        k.write_private_key_file(private_key_path, password=None)
-        public_key = k.get_base64()
-        with open('{}.pub'.format(private_key_path), 'w') as pub_file:
-            pub_file.write(public_key)
-
-        # Save auth detail into config file
-        self.config['auth'][remote] = {
-            'key': private_key_path,
-        }
-        self.save_config()
-
-        return {
-            'private_key_path': private_key_path,
-            'public_key': public_key,
-        }
-
     def get_username(self):
         """
         Returns username or None
@@ -131,3 +101,32 @@ class AimProfile:
         self.config.setdefault('user', {})
         self.config['user']['username'] = username.strip()
         self.save_config()
+
+    # def auth(self, remote):
+    #     """
+    #     Generates RSA key pair for `remote` authentication
+    #     """
+    #     remote = remote.strip()
+    #     private_file_name = 'rsa_{r}'.format(o=remote,
+    #                                          r=random_str(16))
+    #     private_key_path = os.path.join(self.ssh_path, private_file_name)
+    #
+    #     # Generate rsa key
+    #     k = paramiko.RSAKey.generate(bits=4 * 1024)
+    #
+    #     # Save keys inside ssh dir
+    #     k.write_private_key_file(private_key_path, password=None)
+    #     public_key = k.get_base64()
+    #     with open('{}.pub'.format(private_key_path), 'w') as pub_file:
+    #         pub_file.write(public_key)
+    #
+    #     # Save auth detail into config file
+    #     self.config['auth'][remote] = {
+    #         'key': private_key_path,
+    #     }
+    #     self.save_config()
+    #
+    #     return {
+    #         'private_key_path': private_key_path,
+    #         'public_key': public_key,
+    #     }

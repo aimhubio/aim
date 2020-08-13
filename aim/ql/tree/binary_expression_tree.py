@@ -3,45 +3,52 @@ from aim.ql.tree.abstract_syntax_tree import AbstractSyntaxTree
 
 
 class BinaryExpressionTree(Tree):
+    def __init__(self):
+        super(BinaryExpressionTree, self).__init__()
+        self.strict = True
+
     def build_from_ast(self, tree: AbstractSyntaxTree):
         self.head = self._build_tree(tree.head)
 
     def match(self, fields: dict = {}, *add_fields):
-        return self._evaluate(self.head, fields, *add_fields)
+        return bool(self._evaluate(self.head, fields, *add_fields))
 
-    @classmethod
-    def _evaluate(cls, tree, fields: dict, *add_fields) -> bool:
+    def _evaluate(self, tree, fields: dict, *add_fields) -> bool:
         left_eval = right_eval = None
         if len(tree.children) > 0:
-            left_eval = cls._evaluate(tree.children[0], fields, *add_fields)
+            left_eval = self._evaluate(tree.children[0], fields, *add_fields)
+            if self.strict is False:
+                left_eval = self.normalize_type(left_eval)
         if len(tree.children) > 1:
-            right_eval = cls._evaluate(tree.children[1], fields, *add_fields)
+            right_eval = self._evaluate(tree.children[1], fields, *add_fields)
+            if self.strict is False:
+                right_eval = self.normalize_type(right_eval)
 
-        if cls.is_node_logical_operator(tree, 'and'):
+        if self.is_node_logical_operator(tree, 'and'):
             return left_eval and right_eval
-        elif cls.is_node_logical_operator(tree, 'or'):
+        elif self.is_node_logical_operator(tree, 'or'):
             return left_eval or right_eval
-        elif cls.is_node_logical_operator(tree, 'not'):
+        elif self.is_node_logical_operator(tree, 'not'):
             return not left_eval
 
         try:
-            if cls.is_node_comparison_operator(tree, '=='):
+            if self.is_node_comparison_operator(tree, '=='):
                 return left_eval == right_eval
-            elif cls.is_node_comparison_operator(tree, '!='):
+            elif self.is_node_comparison_operator(tree, '!='):
                 return left_eval != right_eval
-            elif cls.is_node_comparison_operator(tree, '>='):
+            elif self.is_node_comparison_operator(tree, '>='):
                 return left_eval >= right_eval
-            elif cls.is_node_comparison_operator(tree, '<='):
+            elif self.is_node_comparison_operator(tree, '<='):
                 return left_eval <= right_eval
-            elif cls.is_node_comparison_operator(tree, '>'):
+            elif self.is_node_comparison_operator(tree, '>'):
                 return left_eval > right_eval
-            elif cls.is_node_comparison_operator(tree, '<'):
+            elif self.is_node_comparison_operator(tree, '<'):
                 return left_eval < right_eval
-            elif cls.is_node_comparison_operator(tree, 'is'):
+            elif self.is_node_comparison_operator(tree, 'is'):
                 return left_eval is right_eval
-            elif cls.is_node_comparison_operator(tree, 'in'):
+            elif self.is_node_comparison_operator(tree, 'in'):
                 return left_eval in right_eval
-            elif cls.is_node_comparison_operator(tree, 'not in'):
+            elif self.is_node_comparison_operator(tree, 'not in'):
                 return left_eval not in right_eval
         except:
             return False
@@ -106,3 +113,22 @@ class BinaryExpressionTree(Tree):
                     else:
                         right_nodes.append(node)
             return left_nodes, head, right_nodes
+
+    @staticmethod
+    def normalize_type(val):
+        if isinstance(val, str):
+            if val == 'True':
+                return True
+            elif val == 'False':
+                return False
+            elif val == 'None':
+                return None
+
+            try:
+                val = int(val)
+            except:
+                try:
+                    val = float(val)
+                except:
+                    pass
+        return val

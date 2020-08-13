@@ -2,16 +2,16 @@ import aim
 aim.init()
 
 
-aim.track({
+aim.set_params({
     'num_epochs': 10,
     'fc_units': 128,
-}, namespace='params')
+}, name='hparams')
 
-aim.track({
+aim.set_params({
     'name': 'Dataset name',
     'version': 'Dataset version',
-}, namespace='dataset')
+}, name='dataset')
 
-aim.track({
+aim.set_params({
     'foo': 'bar',
 })

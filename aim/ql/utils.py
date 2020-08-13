@@ -12,7 +12,8 @@ def parse(query: str):
     return expression
 
 
-def match(statement: str, fields: Optional[dict] = None, *add_fields):
+def match(strict: bool, statement: str,
+          fields: Optional[dict] = None, *add_fields):
     if isinstance(statement, str):
         expression = parse(statement)
     elif isinstance(statement, (Token, TokenList)):
@@ -25,6 +26,7 @@ def match(statement: str, fields: Optional[dict] = None, *add_fields):
 
     bet = BinaryExpressionTree()
     bet.build_from_ast(ast)
+    bet.strict = strict
 
     match_res = bet.match(fields, add_fields)
     return match_res

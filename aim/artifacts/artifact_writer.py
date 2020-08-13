@@ -1,8 +1,8 @@
 import time
 import math
 
-from aim.engine.aim_repo import AimRepo
-from aim.engine.utils import random_str
+from aim.engine.repo import AimRepo
+from aim.engine.utils import random_str, archive_dir
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record, RecordCollection
 from aim.artifacts.record_writer import RecordWriter
@@ -70,7 +70,7 @@ class ArtifactWriter:
                                    record.cat)
 
             # Archive model directory
-            repo.archive_dir(res['zip_path'], res['dir_path'])
+            archive_dir(res['zip_path'], res['dir_path'])
         elif record.binary_type == Artifact.PROTOBUF:
             writer_type = RecordWriter.AIMRECORDS_WRITER
             write_mode = 'w' if record.is_singular else 'a'
@@ -78,12 +78,14 @@ class ArtifactWriter:
                                              repo.records_storage)
             writer.write(artifact.get_inst_unique_name(),
                          write_mode,
-                         record.content)
+                         record.content,
+                         record.context)
             res = repo.store_artifact(record.name,
                                       record.cat,
                                       record.data,
                                       writer_type,
-                                      record.binary_type)
+                                      record.binary_type,
+                                      record.context)
         else:
             if record.binary_type == Artifact.JSON:
                 writer = RecordWriter.JSON_WRITER

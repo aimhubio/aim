@@ -1,4 +1,4 @@
-from aim.engine.aim_repo import *
+from aim.engine.repo import *
 from aim.engine.configs import *
 import unittest
 import tempfile
