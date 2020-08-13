@@ -1,4 +1,4 @@
-aimrecords>=0.0.3
+aimrecords==0.0.4
 anytree>=2.8.0
 bcrypt==3.1.7
 certifi==2019.11.28
