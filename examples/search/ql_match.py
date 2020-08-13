@@ -57,4 +57,4 @@ expressions = {
 l = max(*[len(e) for e in expressions.keys()])
 
 for expr, fields in expressions.items():
-    print('`{}` {}|=> {}'.format(expr, ' '*(l-len(expr)), match(expr, fields)))
+    print('`{}` {}|=> {}'.format(expr, ' '*(l-len(expr)), match(True, expr, fields)))

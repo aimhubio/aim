@@ -1,7 +1,7 @@
 import click
 from click import core
 
-from aim.engine.aim_repo import AimRepo
+from aim.engine.repo import AimRepo
 
 from aim.cli.configs import *
 from aim.cli.init import commands as init_commands

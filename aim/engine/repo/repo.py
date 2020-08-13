@@ -1,16 +1,28 @@
 import shutil
 import os
 import json
-import zipfile
 import re
 import time
 import hashlib
 import uuid
+from typing import List
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
-from aim.engine.utils import is_path_creatable, ls_dir, import_module
-from aim.engine.aim_profile import AimProfile
+from aim.engine.utils import (
+    is_path_creatable, ls_dir, import_module,
+)
+from aim.engine.profile import AimProfile
+from aim.engine.repo.run import Run
+from aim.engine.repo.utils import (
+    cat_to_dir,
+    get_experiment_path,
+    get_experiment_run_path,
+    get_run_objects_dir_path,
+    get_run_objects_meta_file_path,
+)
+from aim.ql.grammar import Expression
+from aim.ql.utils import match
 
 
 class AimRepo:
@@ -45,46 +57,6 @@ class AimRepo:
         return str(uuid.uuid1())
 
     @staticmethod
-    def cat_to_dir(cat):
-        """
-        Finds file directory by it's  category
-        """
-        if cat[0] == 'metrics':
-            return AIM_METRICS_DIR_NAME
-        elif cat[0] == 'metric_groups':
-            return AIM_METRIC_GR_DIR_NAME
-        elif cat[0] == 'media':
-            if cat[1] == 'images':
-                return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
-        elif cat[0] == 'misclassification':
-            return AIM_ANNOT_DIR_NAME
-        elif cat[0] == 'segmentation':
-            return AIM_SEG_DIR_NAME
-        elif cat[0] == 'models':
-            return AIM_MODELS_DIR_NAME
-        elif cat[0] == 'correlation':
-            return AIM_CORR_DIR_NAME
-        elif cat[0] == 'hyperparameters':
-            return AIM_PARAMS_DIR_NAME
-        elif cat[0] == 'map':
-            return AIM_MAP_DIR_NAME
-        elif cat[0] == 'stats':
-            return AIM_STATS_DIR_NAME
-        elif cat[0] == 'text':
-            return AIM_TEXT_DIR_NAME
-
-    @staticmethod
-    def archive_dir(zip_path, dir_path):
-        zip_file = zipfile.ZipFile(zip_path, 'w')
-        with zip_file:
-            # Writing each file one by one
-            for file in ls_dir([dir_path]):
-                zip_file.write(file, file[len(dir_path):])
-
-        # Remove model directory
-        shutil.rmtree(dir_path)
-
-    @staticmethod
     def get_artifact_cat(cat: tuple):
         if isinstance(cat, tuple):
             if len(cat) > 1:
@@ -100,7 +72,12 @@ class AimRepo:
             return repo.branch
         return None
 
-    def __init__(self, path, repo_branch=None, repo_commit=None):
+    WRITING_MODE = 'w'
+    READING_MODE = 'r'
+
+    def __init__(self, path, repo_branch=None,
+                 repo_commit=None,
+                 mode=WRITING_MODE):
         self._config = {}
         self.root_path = path
         self.path = os.path.join(path, AIM_REPO_NAME)
@@ -114,6 +91,7 @@ class AimRepo:
         self.objects_dir_path = None
         self.media_dir_path = None
         self.records_storage = None
+        self.mode = mode
 
         if not repo_branch:
             if self.config:
@@ -149,17 +127,22 @@ class AimRepo:
     def branch(self, branch):
         self._branch = branch
 
-        if not self._branch in self.list_branches():
+        if self._branch not in self.list_branches():
             self.create_branch(self._branch)
 
-        self.branch_path = os.path.join(self.path,
-                                        self._branch)
-        self.index_path = os.path.join(self.branch_path,
-                                       self.active_commit)
-        self.objects_dir_path = os.path.join(self.index_path,
-                                             AIM_OBJECTS_DIR_NAME)
+        self.branch_path = get_experiment_path(self.path, self._branch)
+        self.index_path = get_experiment_run_path(self.path, self._branch,
+                                                  self.active_commit)
+        self.objects_dir_path = get_run_objects_dir_path(self.path,
+                                                         self._branch,
+                                                         self.active_commit)
         self.media_dir_path = os.path.join(self.objects_dir_path,
                                            AIM_MEDIA_DIR_NAME)
+
+        self.meta_file_content = None
+        self.meta_file_path = get_run_objects_meta_file_path(self.path,
+                                                             self._branch,
+                                                             self.active_commit)
 
         if not os.path.isdir(self.index_path):
             os.makedirs(self.index_path)
@@ -171,7 +154,7 @@ class AimRepo:
             aimrecords = import_module('aimrecords')
             storage = aimrecords.Storage
             self.records_storage = storage(self.objects_dir_path,
-                                           storage.WRITING_MODE)
+                                           self.mode)
 
     def close_records_storage(self):
         """
@@ -251,34 +234,25 @@ class AimRepo:
         return ls_dir([self.path])
 
     def load_meta_file(self):
-        """
-        Returns meta file and its content
-        """
-        meta_file_path = os.path.join(self.objects_dir_path,
-                                      AIM_COMMIT_META_FILE_NAME)
-        if os.path.isfile(meta_file_path):
-            meta_file = open(meta_file_path, 'r+')
-            meta_file_content = json.loads(meta_file.read())
-        else:
-            os.makedirs(os.path.dirname(meta_file_path), exist_ok=True)
-            meta_file = open(meta_file_path, 'w+')
-            meta_file_content = {}
+        if self.meta_file_content is None:
+            if os.path.isfile(self.meta_file_path):
+                with open(self.meta_file_path, 'r+') as meta_file:
+                    self.meta_file_content = json.loads(meta_file.read())
+            else:
+                os.makedirs(os.path.dirname(self.meta_file_path), exist_ok=True)
+                self.meta_file_content = {}
+                with open(self.meta_file_path, 'w+') as meta_file:
+                    meta_file.write(json.dumps(self.meta_file_content))
 
-        return meta_file, meta_file_content
+    def update_meta_file(self, item_key, item_content, flush=True):
+        self.load_meta_file()
+        self.meta_file_content[item_key] = item_content
+        if flush:
+            self.flush_meta_file()
 
-    def update_meta_file(self, item_key, item_content):
-        """
-        Updates meta file content and closes the file
-        """
-        meta_file, meta_file_content = self.load_meta_file()
-
-        meta_file_content[item_key] = item_content
-
-        # Update and close the file
-        meta_file.seek(0)
-        meta_file.truncate()
-        meta_file.write(json.dumps(meta_file_content))
-        meta_file.close()
+    def flush_meta_file(self):
+        with open(self.meta_file_path, 'w+') as meta_file:
+            meta_file.write(json.dumps(self.meta_file_content))
 
     def store_dir(self, name, cat, data={}):
         """
@@ -308,7 +282,7 @@ class AimRepo:
         and updates repo meta file
         """
         if not rel_dir_path:
-            cat_path = self.cat_to_dir(cat)
+            cat_path = cat_to_dir(cat)
         else:
             cat_path = rel_dir_path
 
@@ -338,11 +312,13 @@ class AimRepo:
         }
 
     def store_artifact(self, name, cat, data, artifact_format=None,
-                       binary_format=None):
+                       binary_format=None, context=None):
         """
         Adds artifact info to the repo meta file
         """
-        self.update_meta_file(name, {
+        self.load_meta_file()
+
+        self.meta_file_content.setdefault(name, {
             'name': name,
             'type': self.get_artifact_cat(cat),
             'data': data,
@@ -351,7 +327,15 @@ class AimRepo:
                 'artifact_format': artifact_format,
                 'record_format': binary_format,
             },
+            'context': [],
         })
+        if context is not None:
+            context_item = tuple(context.items())
+            if context_item not in self.meta_file_content[name]['context']:
+                self.meta_file_content[name]['context'].append(context_item)
+
+        # TODO: FLush effectively
+        self.flush_meta_file()
 
         return {
             'name': name,
@@ -393,7 +377,7 @@ class AimRepo:
         Saves a model file into repo
         """
         root_path = os.path.join(self.objects_dir_path,
-                                 self.cat_to_dir(cat))
+                                 cat_to_dir(cat))
 
         dir_name = checkpoint_name
         dir_path = os.path.join(root_path, dir_name)
@@ -412,7 +396,7 @@ class AimRepo:
         Saves a model into repo
         """
         root_path = os.path.join(self.objects_dir_path,
-                                 self.cat_to_dir(cat))
+                                 cat_to_dir(cat))
 
         dir_name = checkpoint_name
         dir_path = os.path.join(root_path, dir_name)
@@ -753,3 +737,48 @@ class AimRepo:
 
     def get_logs_dir(self):
         return os.path.join(self.path, AIM_LOGGING_DIR_NAME)
+
+    def select_metrics(self, select_metrics: List[str],
+                       expression: Expression) -> List[Run]:
+        """
+        Searches repo and returns matching metrics
+        """
+        runs = {
+            exp_name: [
+                Run(self, exp_name, run_hash)
+                for run_hash in self.list_branch_commits(exp_name)
+            ]
+            for exp_name in self.list_branches()
+        }
+
+        matched_runs: List[Run] = []
+
+        for experiment_runs in runs.values():
+            for run in experiment_runs:
+                # Run parameters (`NestedMap`)
+                params = run.params
+                # Default parameters - ones passed without namespace
+                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
+                # Dictionary representing all search fields
+                fields = {'params': params}
+                easter_egg = {'shawarma': True, 'love': True}
+
+                # Search metrics
+                for metric_name, metric in run.get_all_metrics().items():
+                    if metric_name in select_metrics:
+                        for trace in metric.get_all_traces():
+                            fields['context'] = trace.context
+                            # Enable shorthands
+                            # fields['context']['keys'] = trace.context.keys()
+                            # fields['context']['values'] =
+                            # trace.context.values()
+                            # Pass fields in descending order by priority
+                            res = match(expression, fields, params,
+                                        default_params, easter_egg)
+                            if res is True:
+                                metric.append(trace)
+                                run.add(metric)
+                                if run not in matched_runs:
+                                    matched_runs.append(run)
+
+        return matched_runs

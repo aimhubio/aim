@@ -1,7 +1,7 @@
 import click
 import time
 
-from aim.engine.aim_repo import AimRepo
+from aim.engine.repo import AimRepo
 
 
 @click.command()

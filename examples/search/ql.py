@@ -4,7 +4,7 @@ from aim.ql.grammar.expression import Expression
 
 
 parser = Expression()
-expr = parser.parse('((3 != 2) and 10 >= 5)')
+expr = parser.parse('(10 == 20 or 3 > 2) and a == 10')
 
 ast = AbstractSyntaxTree()
 ast.build_from_expression(expr)
@@ -15,10 +15,11 @@ print('=' * 75)
 bet = BinaryExpressionTree()
 bet.build_from_ast(ast)
 bet.export('./img', 'ql-bet.png')
+bet.strict = False
 print(bet)
 print('=' * 75)
 
 match_res = bet.match({
     'a': 10,
 })
-print('Match: ', match_res)
+print('Match:', match_res)

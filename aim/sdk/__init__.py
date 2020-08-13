@@ -1,5 +1,5 @@
-from aim.sdk.track import *
-from aim.sdk.init import *
+from aim.sdk.track import track
+from aim.sdk.init import init
 from aim.sdk.select import select
 
 

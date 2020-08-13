@@ -1,6 +1,6 @@
 import atexit
 
-from aim.engine.aim_repo import AimRepo
+from aim.engine.repo import AimRepo
 from aim.artifacts import *
 from aim.artifacts.artifact_writer import ArtifactWriter
 import aim.logger

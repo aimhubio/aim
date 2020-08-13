@@ -3,13 +3,13 @@ import sys
 import click
 from time import sleep
 
-from aim.engine.aim_container import AimContainer, AimContainerCMD
 from aim.engine.configs import (
     AIM_CONTAINER_DEFAULT_PORT,
     AIM_CONTAINER_CMD_PORT,
     AIM_TF_LOGS_PATH,
 )
-from aim.engine.aim_repo import AimRepo
+from aim.engine.repo import AimRepo
+from aim.engine.container import AimContainer, AimContainerCommandManager
 from aim.cli.de.utils import repo_init_alert, docker_requirement_alert
 
 
@@ -84,8 +84,8 @@ def up(repo, dev, port, version, tf_logs):
         else:
             sleep(4)
 
-    cont_cmd = AimContainerCMD((port + 1) if dev < 2
-                               else AIM_CONTAINER_CMD_PORT)
+    cont_cmd = AimContainerCommandManager((port + 1) if dev < 2
+                                          else AIM_CONTAINER_CMD_PORT)
     cont_cmd.listen()
 
     # Kill container after keyboard interruption

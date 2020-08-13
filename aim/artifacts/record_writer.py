@@ -1,7 +1,7 @@
 import os
 from abc import ABCMeta, abstractmethod
 import json
-from typing import Any
+from typing import Any, Optional
 
 from aim.engine.utils import deep_merge
 
@@ -56,10 +56,11 @@ class AimRecordWriter(AbstractRecordWriter):
     def __init__(self, storage):
         self.storage = storage
 
-    def write(self, artifact_name: str, mode: str, content: bytes) -> int:
+    def write(self, artifact_name: str, mode: str, content: bytes,
+              context: Optional[dict] = None) -> int:
         if artifact_name not in self.storage:
             self.storage.open(artifact_name, compression='gzip')
-        record_id = self.storage.append_record(artifact_name, content)
+        record_id = self.storage.append_record(artifact_name, content, context)
         self.storage.flush(artifact_name)
         return record_id
 

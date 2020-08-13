@@ -5,7 +5,7 @@ import logging.config
 import os
 
 from aim.engine.configs import *
-from aim.engine.aim_repo import AimRepo
+from aim.engine.repo import AimRepo
 
 
 class LoggerHandlerActivities(logging.FileHandler):
