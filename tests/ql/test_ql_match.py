@@ -10,6 +10,8 @@ class TestStatementMatch(unittest.TestCase):
             'True == not False': ({}, True),
             '"True" == True': ({}, False),
             'None == None': ({}, True),
+            'a == "a"': ({}, True),
+            'b == "b"': ({'b': 1}, False),
             '10 == 10 and (10 == 3 or 2 > 1)': ({}, True),
             '10 == 10 and (10 == 3 or 2 > 1) and 8 < 10': ({}, True),
             '10 == 10 and (10 == 3 or 2 < 1)': ({}, False),
@@ -21,6 +23,17 @@ class TestStatementMatch(unittest.TestCase):
             '(10 == 10 and (10 == 3 or "1" in "1234"))': ({}, True),
             '(a in (x, y)) and False == False': ({}, False),
             'a in (x, y, a)': ({}, True),
+
+            # NoneTypes
+            'None is None': ({}, True),
+            'a.a is None': ({}, True),
+            'a is None': ({}, False),
+            'b is None': ({'b': None}, True),
+            'a is b': ({'b': None}, False),
+            'a.a is b': ({'b': None}, True),
+            'b is c': ({'b': None, 'c': None}, True),
+            'a.b.c is 1': ({'a': None}, False),
+            'a.b.d is 1': ({'a': {'b': {'d': 1}}}, True),
 
             # Fields
             'a == 10': ({
@@ -83,4 +96,4 @@ class TestStatementMatch(unittest.TestCase):
         }
 
         for expr, fields in expressions.items():
-            assert match(expr, fields[0]) == fields[1]
+            assert match(True, expr, fields[0]) == fields[1]

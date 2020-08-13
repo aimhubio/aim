@@ -25,7 +25,7 @@ class AimContainer:
         self.ports = {}
         self.volumes = {
             repo.path: {'bind': '/store', 'mode': 'rw'},
-            repo.name: {'bind': '/var/lib/postgresql/data', 'mode': 'rw'},
+            self.name: {'bind': '/var/lib/postgresql/data', 'mode': 'rw'},
         }
         self.env = [
             'PROJECT_NAME={}'.format(repo.name),
@@ -46,6 +46,7 @@ class AimContainer:
         self.add_port(port)
         image_name = AIM_CONTAINER_IMAGE_DEV if self.dev \
             else self.get_image_name(version)
+
         container = self.client.containers.run(image_name,
                                                name=self.name,
                                                ports=self.ports,

@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to retrieve metrics and traces from repo (gorarakelyan)
 - Add SDK `select` method to select runs and artifacts (gorarakelyan)
 - Implement search query language (gorarakelyan)
 

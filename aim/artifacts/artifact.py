@@ -1,3 +1,4 @@
+from typing import Tuple, Optional
 from abc import ABCMeta, abstractmethod
 import time
 
@@ -40,17 +41,21 @@ class Artifact(metaclass=ABCMeta):
         """
         ...
 
-    def initialize_step_counter(self, step: int, name: str):
+    def initialize_step_counter(self, step: int, name: str,
+                                meta: Optional[Tuple] = None):
         """
         Initializes the step counter if step number is not given
         """
         if step is not None:
             self.step = step
         else:
+            key = name
+            if meta is not None:
+                key = (key,) + meta
             self._step_counter.setdefault(self.cat, {})
-            self._step_counter[self.cat].setdefault(name, 0)
-            self.step = self._step_counter[self.cat][name]
-            self._step_counter[self.cat][name] += 1
+            self._step_counter[self.cat].setdefault(key, 0)
+            self.step = self._step_counter[self.cat][key]
+            self._step_counter[self.cat][key] += 1
 
     def serialize_pb_object(self, artifact, step: int = None,
                             epoch: int = None) -> bytes:

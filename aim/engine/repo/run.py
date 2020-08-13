@@ -7,6 +7,10 @@ from aim.engine.configs import (
     AIM_MAP_DIR_NAME,
     AIM_COMMIT_META_FILE_NAME,
 )
+from aim.engine.repo.utils import (
+    get_run_objects_dir_path,
+    get_run_objects_meta_file_path,
+)
 from aim.engine.repo.metric import Metric
 
 
@@ -18,6 +22,7 @@ class Run(object):
         self._params = None
         self._metrics: Optional[Dict[str, Metric]] = {}
         self._tmp_all_metrics: Optional[Dict[str, Metric]] = None
+        self._storage = None
 
     def __repr__(self):
         return '<{e}/{h}: {m}>'.format(e=self.experiment_name, h=self.run_hash,
@@ -36,6 +41,21 @@ class Run(object):
     def metrics(self) -> Dict[str, Metric]:
         return self._metrics
 
+    @property
+    def storage(self):
+        return self._storage
+
+    def open_storage(self):
+        if self._storage is None:
+            storage_path = get_run_objects_dir_path(self.repo.path,
+                                                    self.experiment_name,
+                                                    self.run_hash)
+            self._storage = self.repo.get_records_storage(storage_path, 'r')
+
+    def close_storage(self):
+        if self._storage is not None:
+            self._storage.close()
+
     def add(self, metric: Metric):
         if metric not in self._metrics:
             self._metrics.update({
@@ -46,11 +66,9 @@ class Run(object):
         if self._tmp_all_metrics is not None:
             return self._tmp_all_metrics
 
-        meta_file_path = os.path.join(self.repo.path,
-                                      self.experiment_name,
-                                      self.run_hash,
-                                      AIM_OBJECTS_DIR_NAME,
-                                      AIM_COMMIT_META_FILE_NAME)
+        meta_file_path = get_run_objects_meta_file_path(self.repo.path,
+                                                        self.experiment_name,
+                                                        self.run_hash)
         metrics = {}
         try:
             with open(meta_file_path, 'r+') as meta_file:
@@ -59,8 +77,7 @@ class Run(object):
                 for artifact in artifacts.values():
                     if artifact['type'] == 'metrics':
                         metric = Metric(self.repo,
-                                        self.experiment_name,
-                                        self.run_hash,
+                                        self,
                                         artifact['name'],
                                         artifact.get('context'))
                         metrics[artifact['name']] = metric
@@ -70,6 +87,17 @@ class Run(object):
         self._tmp_all_metrics = metrics
 
         return metrics
+
+    def to_dict(self) -> dict:
+        metrics_list = []
+        for metric_name, metric in self._metrics.items():
+            metrics_list.append(metric.to_dict())
+        return {
+            'metrics': metrics_list,
+            'experiment_name': self.experiment_name,
+            'run_hash': self.run_hash,
+            'params': self.params,
+        }
 
     def _load_params(self) -> dict:
         params_file_path = os.path.join(self.repo.path,

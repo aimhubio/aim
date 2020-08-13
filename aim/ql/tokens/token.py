@@ -1,5 +1,4 @@
 import re
-import jmespath
 from typing import Any
 
 from aim.ql.tokens.types import *
@@ -80,23 +79,37 @@ class Token(object):
         if self.type not in (Identifier, Path):
             return self.value
 
-        if self.type == Identifier:
-            path = self.value
-        else:
-            path = '.'.join([token.value for token in self.value])
-
         all_fields = [fields] + list(*add_fields)
         search_field_match = None
+        found = False
         for fields in all_fields:
-            search_field_match = jmespath.search(path, fields)
-            if search_field_match is not None:
+            if self.type == Identifier and self.value in fields.keys():
+                search_field_match = fields[self.value]
+                found = True
                 break
 
+            if self.type == Path:
+                fields_search = fields
+                path_found = True
+                for token in self.value:
+                    if isinstance(fields_search, dict) \
+                            and token.value in fields_search.keys():
+                        fields_search = fields_search[token.value]
+                        search_field_match = fields_search
+                    else:
+                        path_found = False
+                        break
+                if not path_found:
+                    search_field_match = None
+                else:
+                    found = True
+                    break
+
         if self.type == Identifier:
+            if found:
+                return search_field_match
             # Treat as string
-            # FIXME: return `None` instead of self.value,
-            #  if `NoneType` value is assigned to the given path
-            return search_field_match or self.value
+            return self.value
         else:
             # Treat as None
             return search_field_match

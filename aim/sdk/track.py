@@ -1,4 +1,5 @@
 import atexit
+from typing import Optional
 
 from aim.engine.repo import AimRepo
 from aim.artifacts import *
@@ -67,3 +68,7 @@ def track(*args, **kwargs):
     writer.save(repo, inst)
 
     return inst
+
+
+def set_params(params: dict, name: Optional[str] = None):
+    return track(params, namespace=name)

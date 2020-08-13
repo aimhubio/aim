@@ -17,10 +17,15 @@ class Metric(Artifact):
         self.name = name
         self.value = value
         self.epoch = epoch
-        self.context = kwargs
+        self.context = kwargs if len(kwargs.keys()) else None
 
         super(Metric, self).__init__(self.cat)
-        self.initialize_step_counter(step, self.name)
+
+        if self.context is not None:
+            step_meta = tuple(sorted(self.context.items()))
+        else:
+            step_meta = None
+        self.initialize_step_counter(step, self.name, step_meta)
 
     def __str__(self):
         return '{name}: {value}'.format(name=self.name,

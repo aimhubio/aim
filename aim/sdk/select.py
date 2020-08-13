@@ -1,3 +1,5 @@
+from typing import Optional
+
 from aim.engine.repo import AimRepo
 from aim.ql.grammar.statement import Statement
 
@@ -8,8 +10,11 @@ def parse_search_statement(search_statement: str):
     return parser.parse(search_statement)
 
 
-def select(search_statement: str):
-    repo = AimRepo.get_working_repo(mode=AimRepo.READING_MODE)
+def select(search_statement: str, repo_path: Optional[str] = None):
+    if repo_path is not None:
+        repo = AimRepo(repo_full_path=repo_path)
+    else:
+        repo = AimRepo.get_working_repo(mode=AimRepo.READING_MODE)
 
     if not repo:
         return None

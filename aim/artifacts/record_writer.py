@@ -59,7 +59,7 @@ class AimRecordWriter(AbstractRecordWriter):
     def write(self, artifact_name: str, mode: str, content: bytes,
               context: Optional[dict] = None) -> int:
         if artifact_name not in self.storage:
-            self.storage.open(artifact_name, compression='gzip')
+            self.storage.open(artifact_name, compression=None)
         record_id = self.storage.append_record(artifact_name, content, context)
         self.storage.flush(artifact_name)
         return record_id

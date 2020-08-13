@@ -1,4 +1,4 @@
-from aim.sdk.track import track
+from aim.sdk.track import track, set_params
 from aim.sdk.init import init
 from aim.sdk.select import select
 

@@ -36,15 +36,26 @@ class Atom(grammar.Grammar):
 
         list =
         [ 
-            [ '[' | '(' ]
-            #is_list(_) 
+            [ 
+                '[' #is_list(_) 
+                    atom:a #append_atom(_, a) [',' atom:a #append_atom(_, a)]* 
+                ']'
+            ]
+            |
             [
-                atom:a #append_atom(_, a) 
-                [ ',' atom:a #append_atom(_, a) ]*
-            ]?
-            [ ']' | ')' ]
+                '(' #is_list(_) 
+                    atom:a #append_atom(_, a) ',' 
+                ')'
+            ]
+            |
+            [
+                '(' #is_list(_)
+                    atom:a #append_atom(_, a) 
+                    [',' atom:a #append_atom(_, a)]+
+                ')'
+            ]
         ]
-
+        
         number = 
         [ 
             @ignore("null") 

@@ -11,11 +11,16 @@ class Statement(grammar.Grammar, Expression):
         statement = 
         [
             #is_stmt(_)
-            [ id | string ]:s #set_name(_, s)
-            [ ',' [ id | string ]:s #set_name(_, s) ]*
-            [ "where" | "if" ]
-            expr:e #set_expr(_, e)
-            ';'?
+            selection:s #set_name(_, s)
+            [ ',' selection:s #set_name(_, s) ]*
+            [ "if" expr:e #set_expr(_, e) ';'? ]?
+        ]
+        
+        selection =
+        [
+            [ id ":" id ]:>_
+            | id
+            | string
         ]
     """
 

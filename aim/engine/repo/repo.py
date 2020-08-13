@@ -5,7 +5,7 @@ import re
 import time
 import hashlib
 import uuid
-from typing import List
+from typing import List, Optional, Union, Tuple
 
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
@@ -26,6 +26,9 @@ from aim.ql.utils import match
 
 
 class AimRepo:
+    WRITING_MODE = 'w'
+    READING_MODE = 'r'
+
     @staticmethod
     def get_working_repo(*args, **kwargs):
         """
@@ -72,18 +75,16 @@ class AimRepo:
             return repo.branch
         return None
 
-    WRITING_MODE = 'w'
-    READING_MODE = 'r'
-
-    def __init__(self, path, repo_branch=None,
+    def __init__(self, path=None, repo_branch=None,
                  repo_commit=None,
+                 repo_full_path=None,
                  mode=WRITING_MODE):
         self._config = {}
-        self.root_path = path
-        self.path = os.path.join(path, AIM_REPO_NAME)
+        self.root_path = repo_full_path or path
+        self.path = repo_full_path or os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
-        self.hash = hashlib.md5(path.encode('utf-8')).hexdigest()
-        self.name = path.split(os.sep)[-1]
+        self.hash = hashlib.md5(self.path.encode('utf-8')).hexdigest()
+        self.name = self.root_path.split(os.sep)[-1]
         self.active_commit = repo_commit or AIM_COMMIT_INDEX_DIR_NAME
 
         self.branch_path = None
@@ -151,10 +152,15 @@ class AimRepo:
             self.records_storage.close()
 
         if os.path.exists(self.branch_path):
-            aimrecords = import_module('aimrecords')
-            storage = aimrecords.Storage
-            self.records_storage = storage(self.objects_dir_path,
-                                           self.mode)
+            self.records_storage = self.get_records_storage(
+                self.objects_dir_path,
+                self.mode)
+
+    def get_records_storage(self, path, mode):
+        aimrecords = import_module('aimrecords')
+        storage = aimrecords.Storage
+        storage_inst = storage(path, mode)
+        return storage_inst
 
     def close_records_storage(self):
         """
@@ -565,6 +571,10 @@ class AimRepo:
 
         return latest_commit.get('vc') if latest_commit else None
 
+    def run_exists(self, experiment_name: str, run_hash: str) -> bool:
+        """Return true if run exists"""
+        return os.path.isdir(os.path.join(self.path, experiment_name, run_hash))
+
     def commit(self, commit_hash, commit_msg, vc_branch=None, vc_hash=None):
         """
         Moves current uncommitted artefacts temporary storage(aka `index`)
@@ -727,22 +737,31 @@ class AimRepo:
         commit_path = os.path.join(self.path, branch, commit)
         return ls_dir([commit_path])
 
-    def create_logs(self):
-        """
-        Creates the logs dir in .aim to store error and activity logs
-        for cli and sdk respectively
-        """
-        logs_path = os.path.join(self.path, AIM_LOGGING_DIR_NAME)
-        os.mkdir(logs_path)
+    def select_run_metrics(self, experiment_name: str, run_hash: str,
+                           select_metrics: Union[str, List[str], Tuple[str]]
+                           ) -> Optional[Run]:
+        if not self.run_exists(experiment_name, run_hash):
+            return None
 
-    def get_logs_dir(self):
-        return os.path.join(self.path, AIM_LOGGING_DIR_NAME)
+        if isinstance(select_metrics, str):
+            select_metrics = [select_metrics]
 
-    def select_metrics(self, select_metrics: List[str],
-                       expression: Expression) -> List[Run]:
+        run = Run(self, experiment_name, run_hash)
+        for metric_name, metric in run.get_all_metrics().items():
+            if metric_name in select_metrics:
+                for trace in metric.get_all_traces():
+                    metric.append(trace)
+                    run.add(metric)
+        return run
+
+    def select_metrics(self, select_metrics: Union[str, List[str], Tuple[str]],
+                       expression: Optional[Expression] = None) -> List[Run]:
         """
         Searches repo and returns matching metrics
         """
+        if isinstance(select_metrics, str):
+            select_metrics = [select_metrics]
+
         runs = {
             exp_name: [
                 Run(self, exp_name, run_hash)
@@ -760,8 +779,11 @@ class AimRepo:
                 # Default parameters - ones passed without namespace
                 default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
                 # Dictionary representing all search fields
-                fields = {'params': params}
-                easter_egg = {'shawarma': True, 'love': True}
+                fields = {
+                    'params': params,
+                    'experiment': run.experiment_name,
+                    'run': run.run_hash,
+                }
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
@@ -773,8 +795,11 @@ class AimRepo:
                             # fields['context']['values'] =
                             # trace.context.values()
                             # Pass fields in descending order by priority
-                            res = match(expression, fields, params,
-                                        default_params, easter_egg)
+                            if expression is None:
+                                res = True
+                            else:
+                                res = match(True, expression, fields, params,
+                                            default_params)
                             if res is True:
                                 metric.append(trace)
                                 run.add(metric)
@@ -782,3 +807,14 @@ class AimRepo:
                                     matched_runs.append(run)
 
         return matched_runs
+
+    def create_logs(self):
+        """
+        Creates the logs dir in .aim to store error and activity logs
+        for cli and sdk respectively
+        """
+        logs_path = os.path.join(self.path, AIM_LOGGING_DIR_NAME)
+        os.mkdir(logs_path)
+
+    def get_logs_dir(self):
+        return os.path.join(self.path, AIM_LOGGING_DIR_NAME)
