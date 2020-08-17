@@ -143,28 +143,27 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
 
 ## Searching Experiments
-Aim enables rich search capabilities to search experiments.
+[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
 
-- **Search by metric** - `metric:metric_name`
-- **Search by param** - `param:param_key=param_value`
-- **Search by tag** - `tag:tag_name`
+- **Search by experiment name** - `experiment == {name}`
+- **Search by run** - `run == "{run_hash}"` or `run in ("{run_hash_1}", "{run_hash_2}")`
+- **Search by param** - `params.{key} == {value}`
+- **Search by context** - `context.{key} == {value}`
 
 ### Search Examples
-- Display the losses of experiments tagged as benchmark whose learning rate is 0.001:
-  - `metric:loss tag:benchmark param:learning_rate=0.001`
-- Display the accuracies of experiments tagged as daily:
-  - `metric:accuracy tag:daily`
+- Display the losses and accuracy metrics of experiments whose learning rate is 0.001:
+  - `loss, accuracy if params.learning_rate == 0.001`
+- Display the train loss of experiments whose learning rate is greater than 0.0001:
+  - `loss if context.subset == train and params.learning_rate > 0.0001`
 
 ## TensorBoard Experiments
-Easily run Aim on experiments tracked by TensorBoard. Here is how:
+Easily run Aim on experiments visualized by TensorBoard. Here is how:
 ```
 $ aim up --tf_logs path/to/logs
 ```
-This command will spin up Aim on the tensorboard logs and load the logs recursively from the given logs path.
-To make TensorBoard logs also appear in the dashboard, just add the following to the search bar:
-`inclue:tf_logs` - search by the tf_scalar
-Everything else is the same for the search.
+This command will spin up Aim on the TensorFlow summary logs and load the logs recursively from the given path.
+Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
 
 ## How it works
 The stack of projects that enable AI Development Environment:
