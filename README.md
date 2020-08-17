@@ -41,7 +41,6 @@ $ aim up
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [TensorBoard Experiments](#tensorboard-experiments)
-  - [AimQL](#aimql)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
@@ -144,7 +143,7 @@ aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
 Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
 
 ## Searching Experiments
-Aim enables rich search capabilities to search experiments.
+[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
 
 - **Search by experiment name** - `experiment == {name}`
@@ -165,60 +164,6 @@ $ aim up --tf_logs path/to/logs
 ```
 This command will spin up Aim on the TensorFlow summary logs and load the logs recursively from the given path.
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
-
-## AimQL
-Query language for searching runs
-
-### Literals
-Literal is a raw data given in a variable.
-
-#### Numeric Literals
-Numeric literals can belong to 2 different numerical types: `Integer`, `Float`.
-
-#### String literals
-A string literal is a sequence of characters, which can be surrounded by double quotes.
-
-#### Boolean literals
-A Boolean literal can have any of the two values: `True` or `False`.
-
-#### Special literals
-AimQL contains one special literal i.e. `None`.
-
-#### Literal Collections
-There are two different literal collections: `List` literals(`[member, member]`) and `Tuple` literals(`(member, member)`).
-
-### Operators
-Operators are special symbols that carry out logical computation. The value that the operator operates on is called the operand.
-
-#### Comparison operators
-Comparison operators are used to compare values. It returns either True or False according to the condition.
-
-| Operator   | Meaning                         | Example                                                   |
-| -----------| ------------------------------- | --------------------------------------------------------- |
-| `>`        | Greater than - True if left operand is greater than the right | x > y |
-| `<`        | Less than - True if left operand is less than the right | x < y |
-| `==`       | Equal to - True if both operands are equal | x == y |
-| `!=`       | Not equal to - True if operands are not equal | x != y |
-| `>=`       | Greater than or equal to - True if left operand is greater than or equal to the right | x >= y |
-| `<=`       | Less than or equal to - True if left operand is less than or equal to the right | x <= y |
-
-#### Logical operators
-Logical operators are the `and`, `or`, `not` operators.
-
-| Operator   | Meaning                         | Example                                                   |
-| -----------| ------------------------------- | --------------------------------------------------------- |
-| `and`      | True if both the operands are true | x and y |
-| `or`       | True if either of the operands is true | y or y |
-| `not`      | True if operand is false (complements the operand) | not x |
-
-### Identifiers
-An identifier is a name given to variables.
-
-### Statements
-
-#### Select statement
-
-[TODO]
 
 ## How it works
 The stack of projects that enable AI Development Environment:
