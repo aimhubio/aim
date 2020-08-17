@@ -41,7 +41,7 @@ $ aim up
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [TensorBoard Experiments](#tensorboard-experiments)
-  - [AimQl](#aimql)
+  - [AimQL](#aimql)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
@@ -167,7 +167,7 @@ This command will spin up Aim on the TensorFlow summary logs and load the logs r
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
 
 ## AimQL
-Query language for searching and selecting runs
+Query language for searching runs
 
 ### Literals
 Literal is a raw data given in a variable.
@@ -213,6 +213,12 @@ Logical operators are the `and`, `or`, `not` operators.
 
 ### Identifiers
 An identifier is a name given to variables.
+
+### Statements
+
+#### Select statement
+
+[TODO]
 
 ## How it works
 The stack of projects that enable AI Development Environment:
