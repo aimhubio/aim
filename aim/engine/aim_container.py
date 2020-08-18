@@ -240,26 +240,12 @@ class AimContainerCMD:
                     # self.sock.settimeout(120)
                     self.sock.connect(('0.0.0.0', self.port))
 
-                # if self.track_sock is None:
-                #     if not self._reconnect:
-                #         return
-
-                #     self.track_sock = socket.socket(socket.AF_INET,
-                #                               socket.SOCK_STREAM)
-                #     # self.sock.settimeout(120)
-                #     self.track_sock.connect(('0.0.0.0', 43805))
-
                 line = self._read_line(self.sock)
-                # track_sock_line = self._read_line(self.track_sock)
                 if line:
                     res = self.event(line)
                     self._send_line(res)
                 else:
                     raise ValueError('empty message')
-                # if track_sock_line:
-                #     # res = self.track_sock_event(line)
-                #     # self._send_line(res)
-                #     self._send_line(track_sock_line)
                     
             except Exception as e:
                 # print(e)

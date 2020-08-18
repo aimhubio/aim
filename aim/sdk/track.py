@@ -1,4 +1,6 @@
 import atexit
+import socket
+import psutil
 
 from aim.engine.aim_repo import AimRepo
 from aim.artifacts import *
@@ -13,8 +15,17 @@ from aim.engine.configs import (
 
 repo = None
 
+# HOST = '127.0.0.1'
 HOST = '0.0.0.0'
-PORT = 43085
+PORT = 43815
+connected = False
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
+    connected = True
+except:
+    print("Socket connects failed. Running process without real-time update.")
+
 
 def get_repo():
     # Get ENV VARS
@@ -33,29 +44,36 @@ def get_repo():
 
 def track(*args, **kwargs):
     artifact_name = None
+    artifact_type = None
+    artifact_epoch = None
+    value = None
 
     if not len(args):
         print('Artifact is not specified')
 
     if isinstance(args[0], str):
-        artifact_name = args[0]
+        artifact_type = args[0]
     elif isinstance(args[0], int) or isinstance(args[0], float):
         # Autodetect Metric artifact
-        artifact_name = aim.metric
+        artifact_type = aim.metric
         kwargs['value'] = args[0]
+        value = args[0]
+        artifact_name = kwargs['name']
+        artifact_epoch = kwargs['epoch']
         args = []
     elif isinstance(args[0], dict):
         # Autodetect Dictionary(Map) artifact
-        artifact_name = aim.dictionary
+        artifact_type = aim.dictionary
         kwargs['value'] = args[0]
+        value = args[0]
         args = []
 
-    if artifact_name is None or artifact_name not in globals():
-        print('Aim cannot track: \'{0}\''.format(artifact_name))
+    if artifact_type is None or artifact_type not in globals():
+        print('Aim cannot track: \'{0}\''.format(artifact_type))
         return
 
     # Get corresponding class
-    obj = globals()[artifact_name]
+    obj = globals()[artifact_type]
 
     # Create an instance
     inst = obj(*args, **kwargs)
@@ -68,11 +86,15 @@ def track(*args, **kwargs):
     writer = ArtifactWriter()
     writer.save(repo, inst)
 
+    if connected:
+        data = {
+            "pid": psutil.Process().pid,
+            "artifact_type": artifact_type,
+            "artifact_name": artifact_name,
+            "value": value,
+            "artifact_epoch": artifact_epoch
+        }
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST, PORT))
-        s.sendall(b'Hello, world')
-        data = s.recv(1024)
-
+        s.sendall(bytes(json.dumps(data) + "\n", "utf-8"))
 
     return inst
