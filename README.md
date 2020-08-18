@@ -17,8 +17,8 @@ $ aim init
 import aim
 aim.init() # initialize aim recorder
 ...
-aim.track(metric_value, name='my-meaningful-metric-name', epoch=the_epoch)
-aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
+aim.set_params(hyperparam_dict, name='param-names')
+aim.track(metric_value, name='metric-name', epoch=the_epoch)
 ```
 3. Run the training and start the AI Dev Environment
 ```shell
