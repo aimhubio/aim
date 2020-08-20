@@ -18,7 +18,7 @@ def init():
         # Clear old repo
         repo.rm()
 
-    # See AimRepo line
+    # Init repo
     new_repo = AimRepo(os.getcwd())
     if new_repo.init():
         if re_init:
