@@ -1,5 +1,7 @@
 # Changelog
 
+- Add sessions to SDK (gorarakelyan)
+
 ## 2.0.6 Aug 13 2020
 - Add ability to retrieve metrics and traces from repo (gorarakelyan)
 - Add SDK `select` method to select runs and artifacts (gorarakelyan)

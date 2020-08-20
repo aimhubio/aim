@@ -1,9 +1,12 @@
-import aim
+from aim import Session
 
 import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+
+# Create Aim Session
+aim_sess = Session()
 
 # Device configuration
 device = torch.device('cpu')
@@ -15,7 +18,7 @@ batch_size = 50
 learning_rate = 0.01
 
 # aim - Track hyper parameters
-aim.set_params({
+aim_sess.set_params({
     'num_epochs': num_epochs,
     'num_classes': num_classes,
     'batch_size': batch_size,
@@ -94,7 +97,8 @@ for epoch in range(num_epochs):
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            aim.track(loss.item(), name='loss', epoch=epoch, subset='train')
+            aim_sess.track(loss.item(), name='loss', epoch=epoch,
+                           subset='train')
 
             correct = 0
             total = 0
@@ -104,12 +108,13 @@ for epoch in range(num_epochs):
             acc = 100 * correct / total
 
             # aim - Track metrics
-            aim.track(acc, name='accuracy', epoch=epoch, subset='train')
+            aim_sess.track(acc, name='accuracy', epoch=epoch, subset='train')
 
             # TODO: Do actual validation
             if i % 300 == 0:
-                aim.track(loss.item(), name='loss', epoch=epoch, subset='val')
-                aim.track(acc, name='accuracy', epoch=epoch, subset='val')
+                aim_sess.track(loss.item(), name='loss', epoch=epoch,
+                               subset='val')
+                aim_sess.track(acc, name='accuracy', epoch=epoch, subset='val')
 
 
 # Test the model

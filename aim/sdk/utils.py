@@ -1,13 +1,10 @@
-import os
-
-from aim.engine.configs import (
-    AIM_BRANCH_ENV_VAR,
-    AIM_COMMIT_ENV_VAR,
-    AIM_AUTOMATED_EXEC_ENV_VAR,
-)
+from aim.sdk.session import Session, DefaultSession
 
 
-def set_automated_env_vars(commit_hash, branch_name):
-    os.environ[AIM_AUTOMATED_EXEC_ENV_VAR] = '1'
-    os.environ[AIM_COMMIT_ENV_VAR] = commit_hash
-    os.environ[AIM_BRANCH_ENV_VAR] = branch_name
+def get_default_session() -> Session:
+    if len(Session.sessions.keys()) > 1:
+        raise ValueError('multiple sessions are initialized')
+    elif len(Session.sessions.keys()) == 1:
+        return list(Session.sessions.values())[0]
+    elif len(Session.sessions.keys()) == 0:
+        return DefaultSession()

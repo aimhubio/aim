@@ -26,6 +26,7 @@ from aim.ql.utils import match
 
 
 class AimRepo:
+    # TODO: Refactor repo to have minimal side effects
     WRITING_MODE = 'w'
     READING_MODE = 'r'
 
@@ -200,12 +201,11 @@ class AimRepo:
         if os.path.exists(self.path):
             return True
 
-        # Check whether user has sufficient permissions
-        if not is_path_creatable(self.path):
+        try:
+            # Create `.aim` repo
+            os.makedirs(self.path, exist_ok=True)
+        except:
             return False
-
-        # Create `.aim` repo
-        os.mkdir(self.path)
 
         # Create config file
         with open(self.config_path, 'w') as config_file:
@@ -521,6 +521,9 @@ class AimRepo:
         """
         Returns list of existing branches
         """
+        if self.config.get('branches') is None:
+            return []
+
         return list(filter(lambda b: b != '',
                            map(lambda b: b.get('name') if b else '',
                                self.config.get('branches'))))
