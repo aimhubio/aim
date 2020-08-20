@@ -1,11 +1,11 @@
 import os
-import time
-from typing import Optional
+import atexit
+from typing import Optional, Dict
 
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
-from aim.sdk import metric, dictionary
 from aim.sdk.session.utils import set_automated_env_vars
+from aim.artifacts import *
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
     AIM_COMMIT_ENV_VAR,
@@ -15,25 +15,32 @@ from aim.engine.configs import (
 
 
 class Session:
-    sessions = []
+    sessions: Dict[str, 'Session'] = {}
 
-    def __init__(self, repo: Optional[AimRepo] = None):
-        if repo is None:
-            # Get ENV VARS
-            branch_name = os.getenv(AIM_BRANCH_ENV_VAR)
-            commit_hash = os.getenv(AIM_COMMIT_ENV_VAR)
-            # Get aim repo from working directory
-            repo = AimRepo.get_working_repo(branch_name, commit_hash)
+    def __init__(self, repo_path: Optional[str] = None):
+        self.repo = self.get_repo(repo_path)
 
-            # if repo is not None:
-            #     atexit.register(repo.close_records_storage)
+        if self.repo.path in Session.sessions:
+            self.repo.close_records_storage()
+            raise ValueError(('repo already opened '
+                              'at path `{}`').format(self.repo.path))
 
-        self.repo = repo
+        # TODO: Add support for multiple sessions
+        if len(Session.sessions.keys()) > 0:
+            raise ValueError('multiple sessions are not supported')
 
-        Session.sessions.append(self)
+        Session.sessions[self.repo.path] = self
+
+        # Start a new run
+        self.repo.commit_init()
+
+        # Finalize run
+        atexit.register(self.repo.close_records_storage)
+        atexit.register(self.repo.commit_finish)
 
     def __del__(self):
-        self.repo.close_records_storage()
+        if self.repo.path in Session.sessions:
+            del Session.sessions[self.repo.path]
 
     def track(self, *args, **kwargs):
         if self.repo is None:
@@ -75,13 +82,14 @@ class Session:
     def set_params(self, params: dict, name: Optional[str] = None):
         return self.track(params, namespace=name)
 
-    @classmethod
-    def init(cls, overwrite=False, autocommit=True):
-        # Automated commit
-        automated_exec = os.getenv(AIM_AUTOMATED_EXEC_ENV_VAR)
-        if autocommit and not automated_exec:
-            automated_exec = True
+    @staticmethod
+    def get_repo(path: Optional[str] = None, *args, **kwargs) -> AimRepo:
+        # Auto commit
+        if not os.getenv(AIM_AUTOMATED_EXEC_ENV_VAR):
             init_commit_hash = AimRepo.generate_commit_hash()
+            # FIXME: Get active experiment name from given repo
+            #  if path is specified. Currently active experiment name of
+            #  the highest repo in the hierarchy will be returned.
             init_branch_name = AimRepo.get_active_branch_if_exists() \
                                or AIM_DEFAULT_BRANCH_NAME
             set_automated_env_vars(init_commit_hash, init_branch_name)
@@ -90,30 +98,23 @@ class Session:
         branch_name = os.getenv(AIM_BRANCH_ENV_VAR)
         commit_hash = os.getenv(AIM_COMMIT_ENV_VAR)
 
-        # Init repo if doesn't exist and return repo instance
-        repo = AimRepo.get_working_repo(branch_name, commit_hash)
-        if not repo:
-            repo = AimRepo(os.getcwd(), branch_name, commit_hash)
-            repo.init()
-
-        if not automated_exec:
-            # Check if repo index is empty or not
-            # Reset index or commit according to `overwrite` argument
-            if not repo.is_index_empty():
-                if overwrite:
-                    repo.reset_index()
-                else:
-                    repo.commit(AimRepo.generate_commit_hash(),
-                                int(time.time()))
+        if path is not None:
+            repo = AimRepo(path)
+            if not repo.exists():
+                if not repo.init():
+                    raise ValueError('can not create repo `{}`'.format(path))
+            repo = AimRepo(path, branch_name, commit_hash)
         else:
-            # TODO: handle automated training overwrite
-            pass
+            if AimRepo.get_working_repo() is None:
+                path = os.getcwd()
+                repo = AimRepo(path)
+                if not repo.init():
+                    raise ValueError('can not create repo `{}`'.format(path))
+                repo = AimRepo(path, branch_name, commit_hash)
+            else:
+                repo = AimRepo.get_working_repo(branch_name, commit_hash)
 
-        # Handle aim commit
-        if automated_exec:
-            # Init commit
-            repo.commit_init()
+        return repo
 
-            # Finish commit
-            import atexit
-            atexit.register(repo.commit_finish)
+
+DefaultSession = Session

@@ -5,23 +5,25 @@ from aim.engine.repo import AimRepo
 
 
 @click.command()
-@click.pass_obj
-def init(repo):
+def init():
+    repo = AimRepo(os.getcwd())
     re_init = False
+
     # Check whether repo already exists
-    if repo is not None:
+    if repo.exists():
         re_init = click.confirm('Aim repository is already initialized. ' +
                                 'Do you want to re-initialize it?')
         if not re_init:
             return
-        # Reinitialize repo -> clear old one and init empty repo
+        # Clear old repo
         repo.rm()
 
-    repo = AimRepo(os.getcwd())
-
-    if repo.init():
+    # See AimRepo line
+    new_repo = AimRepo(os.getcwd())
+    if new_repo.init():
         if re_init:
             click.echo(
-                'Re-initialized empty Aim repository in {}'.format(repo))
+                'Re-initialized empty Aim repository in {}'.format(new_repo))
         else:
-            click.echo('Initialized empty Aim repository in {}'.format(repo))
+            click.echo(('Initialized empty ' +
+                        'Aim repository in {}').format(new_repo))

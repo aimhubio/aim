@@ -1,1 +1,1 @@
-from aim.sdk.session.session import Session
+from aim.sdk.session.session import Session, DefaultSession

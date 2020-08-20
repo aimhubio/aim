@@ -3,15 +3,13 @@ from aim.sdk.init import init
 from aim.sdk.select import select
 from aim.sdk.session import Session
 
-
-# Serializable classes references
-metric = 'Metric'
-hyperparams = 'HyperParameters'
-dataset = 'Dataset'
-map = 'Map'
-nested_map = 'NestedMap'
-checkpoint = 'Checkpoint'
-
-# Serializable aliases
-params = hyperparams
-dictionary = nested_map
+from aim.artifacts import (
+    metric,
+    hyperparams,
+    params,
+    dataset,
+    dictionary,
+    map,
+    nested_map,
+    checkpoint,
+)

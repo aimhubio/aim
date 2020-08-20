@@ -1,5 +1,5 @@
-from aim.sdk.session import Session
+from aim.sdk.session import DefaultSession
 
 
-def init(overwrite=False, autocommit=True):
-    Session.init(overwrite, autocommit)
+def init(*args, **kwargs):
+    DefaultSession(*args, **kwargs)
