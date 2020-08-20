@@ -1,6 +1,7 @@
 from typing import Tuple, Optional
 from abc import ABCMeta, abstractmethod
 import time
+import re
 
 from aim.artifacts.record import Record, RecordCollection
 from aim.artifacts.proto.base_pb2 import BaseRecord
@@ -19,6 +20,12 @@ class Artifact(metaclass=ABCMeta):
     JSON = 'JSON'
 
     _step_counter = {}
+
+    @staticmethod
+    def validate_name(name: str) -> bool:
+        if re.search('^[A-z0-9_\-\s]+$', str(name)) is None:
+            return False
+        return True
 
     def __init__(self, cat: tuple):
         self.cat = cat

@@ -1,5 +1,6 @@
 # Changelog
 
+- Validate Artifact values before storing (gorarakelyan)
 - Add sessions to SDK (gorarakelyan)
 
 ## 2.0.6 Aug 13 2020
