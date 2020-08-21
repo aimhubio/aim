@@ -10,12 +10,10 @@ A super-easy way to record, search and compare AI experiments.
 1. Install Aim in your training environment and init in the project folder
 ```shell
 $ pip3 install aim-cli
-$ aim init
 ```
 2. Import Aim in your training code
 ```py
 import aim
-aim.init() # initialize aim recorder
 ...
 aim.set_params(hyperparam_dict, name='param-names')
 aim.track(metric_value, name='metric-name', epoch=the_epoch)
