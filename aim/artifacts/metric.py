@@ -1,4 +1,5 @@
 from abc import ABCMeta
+import re
 from typing import Union
 
 from aim.artifacts import Record
@@ -14,7 +15,14 @@ class Metric(Artifact):
                  epoch: int = None,
                  step: int = None,
                  **kwargs):
-        self.name = name
+        if not self.validate_name(str(name)):
+            raise ValueError('Metric name can contain only letters, numbers, ' +
+                             'underscore, dash and space`')
+
+        if not isinstance(value, (int, float)):
+            raise TypeError('Metric value must be a type of int or float')
+
+        self.name = re.sub(' +', ' ', str(name))
         self.value = value
         self.epoch = epoch
         self.context = kwargs if len(kwargs.keys()) else None

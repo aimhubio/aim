@@ -1,18 +1,32 @@
 from abc import ABCMeta
+import re
 from typing import Any, Optional
 
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
+from aim.artifacts.utils import validate_dict
 from aim.engine.configs import AIM_NESTED_MAP_DEFAULT
 
 
 class Map(Artifact):
     cat = ('map',)
 
-    def __init__(self, name: str, value: Any, namespace: Optional[str] = None):
-        self.name = name
+    def __init__(self, name: str, value: dict, namespace: Optional[str] = None):
+        if not self.validate_name(str(name)):
+            ValueError('Dictionary name can contain only letters, numbers, ' +
+                       'underscore, dash and space`')
+
+        val_res, val_item = validate_dict(
+            value, (str, int,),
+            (dict, list, tuple, set, str, int, float, bool,))
+        if not val_res:
+            raise TypeError(('dictionary contains illegal item: '
+                             '`{}` of type `{}`').format(val_item,
+                                                         type(val_item)))
+
+        self.name = re.sub(' +', ' ', str(name))
         self.value = value
-        self.namespace = namespace
+        self.namespace = str(namespace)
 
         super(Map, self).__init__(self.cat)
 
@@ -54,5 +68,5 @@ class NestedMap(Map):
     cat = ('map', 'nested_map')
     name = 'dictionary'
 
-    def __init__(self, value: Any, namespace: str = AIM_NESTED_MAP_DEFAULT):
+    def __init__(self, value: dict, namespace: str = AIM_NESTED_MAP_DEFAULT):
         super(NestedMap, self).__init__(self.name, value, namespace)

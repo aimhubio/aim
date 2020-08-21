@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.7 Aug 21 2020
+- Validate Artifact values before storing (gorarakelyan)
+- Add sessions to SDK (gorarakelyan)
+
 ## 2.0.6 Aug 13 2020
 - Add ability to retrieve metrics and traces from repo (gorarakelyan)
 - Add SDK `select` method to select runs and artifacts (gorarakelyan)
