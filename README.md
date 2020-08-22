@@ -186,14 +186,8 @@ The stack of projects that enable AI Development Environment:
 ## Sneak peek at AI development environment
 Demo AimDE: [http://demo-1.aimstack.io/](http://demo-1.aimstack.io/)
 
-#### Search all you want!
-![AimDE Panel](https://media.giphy.com/media/LNkxKG54OmDzfA8jcr/giphy.gif)
+#### Aim search experience
+![AimDE Panel](https://user-images.githubusercontent.com/3179216/90963471-eaacb280-e4c8-11ea-9ee4-9e51ba22cb45.gif)
 
 #### All experiments at hand
-![AimDE Experiments](https://user-images.githubusercontent.com/3179216/87040316-95129400-c201-11ea-97e5-519ac6ffba94.gif)
-
-#### Easily start new experiments
-![AimDE Processes](https://user-images.githubusercontent.com/3179216/87042902-57176f00-c205-11ea-830e-e69168b9d269.gif)
-
-#### Tag the experiments / training runs for better search
-![AimDE Tags](https://user-images.githubusercontent.com/3179216/87041412-3fd78200-c203-11ea-8cca-27a26752df99.gif)
+![AimDE Experiments](https://user-images.githubusercontent.com/3179216/90963706-1a5cba00-e4cb-11ea-8fab-619bc73fbb9d.gif)
