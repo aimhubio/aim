@@ -15,8 +15,8 @@ $ pip3 install aim-cli
 ```py
 import aim
 ...
-aim.set_params(hyperparam_dict, name='param-names')
-aim.track(metric_value, name='metric-name', epoch=the_epoch)
+aim.set_params(hyperparam_dict, name='params_name')
+aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
 ```
 3. Run the training and start the AI Dev Environment
 ```shell
@@ -129,16 +129,29 @@ Use Python Library to instrument your training code to record the experiments.
 The instrumentation only takes 2 lines:
 ```py
 import aim
-aim.init()
 ```
-Afterwards, simply use the `aim.track` function to track either metrics or hyperparameters (any dict really).
+Afterwards, simply use the two following functions to track metrics and any params respectively.
+
 ```py
 ...
-aim.track(metric_value, name='my-meaningful-metric-name', epoch=current_epoch)
-aim.track(hyperparam_dict, namespace='hyperparams-name-that-makes-sense')
+aim.track(metric_value, name='metric_name', epoch=current_epoch)
+aim.set_params(dict, name='hyperparams-name-that-makes-sense')
 ...
 ```
-Use `track` function anywhere with any framework to track the metrics. Metrics with the same `name` or `namespace` will be collected and rendered together.
+Please note that in `aim.track` the `epoch=current_epoch` is optional
+
+### Metric context
+Add context to your metrics by adding additional key-value arguments to your `aim.track` function. Here is how it works:
+```py
+aim.track(loss_val, name='loss', epoch=epoch_val, phase='train', dataset='train_1')
+aim.track(loss_val, name='loss', epoch=epoch_val, phase='val', dataset='val_1')
+```
+Once tracked this way, the following search expressions will be enabled:
+```py
+loss if context.phase in (train, val) # Retrieve all losses in both train and val phase
+loss if context.phase == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
+```
+Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search. 
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
