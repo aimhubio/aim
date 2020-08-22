@@ -151,7 +151,7 @@ Once tracked this way, the following search expressions will be enabled:
 loss if context.phase in (train, val) # Retrieve all losses in both train and val phase
 loss if context.phase == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
 ```
-Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search. 
+Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
@@ -186,8 +186,8 @@ The stack of projects that enable AI Development Environment:
 ## Sneak peek at AI development environment
 Demo AimDE: [http://demo-1.aimstack.io/](http://demo-1.aimstack.io/)
 
-#### The search and compare panel
-![AimDE Panel](https://user-images.githubusercontent.com/3179216/87037877-fe90a380-c1fd-11ea-9242-05ea1798a176.gif)
+#### Search all you want!
+![AimDE Panel](http://www.giphy.com/gifs/LNkxKG54OmDzfA8jcr)
 
 #### All experiments at hand
 ![AimDE Experiments](https://user-images.githubusercontent.com/3179216/87040316-95129400-c201-11ea-97e5-519ac6ffba94.gif)
