@@ -46,6 +46,8 @@ class BinaryExpressionTree(Tree):
                 return left_eval < right_eval
             elif self.is_node_comparison_operator(tree, 'is'):
                 return left_eval is right_eval
+            elif self.is_node_comparison_operator(tree, 'is not'):
+                return left_eval is not right_eval
             elif self.is_node_comparison_operator(tree, 'in'):
                 return left_eval in right_eval
             elif self.is_node_comparison_operator(tree, 'not in'):
