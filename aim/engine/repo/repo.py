@@ -10,7 +10,7 @@ from typing import List, Optional, Union, Tuple
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import (
-    is_path_creatable, ls_dir, import_module,
+    ls_dir, import_module,
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
@@ -777,32 +777,28 @@ class AimRepo:
 
         for experiment_runs in runs.values():
             for run in experiment_runs:
-                # Run parameters (`NestedMap`)
-                params = run.params
-                # Default parameters - ones passed without namespace
-                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
                 # Dictionary representing all search fields
                 fields = {
-                    'params': params,
                     'experiment': run.experiment_name,
-                    'run': run.run_hash,
+                    'run': run.config,  # Run configs (date, name, archived etc)
+                    'params': run.params,  # Run parameters (`NestedMap`)
                 }
+                # Default parameters - ones passed without namespace
+                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
                     if metric_name in select_metrics:
+                        fields['metric'] = metric_name
                         for trace in metric.get_all_traces():
                             fields['context'] = trace.context
-                            # Enable shorthands
-                            # fields['context']['keys'] = trace.context.keys()
-                            # fields['context']['values'] =
-                            # trace.context.values()
                             # Pass fields in descending order by priority
                             if expression is None:
                                 res = True
                             else:
-                                res = match(True, expression, fields, params,
-                                            default_params)
+                                res = match(True,
+                                            expression, fields,
+                                            run.params, default_params)
                             if res is True:
                                 metric.append(trace)
                                 run.add(metric)

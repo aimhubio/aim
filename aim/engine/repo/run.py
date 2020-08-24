@@ -5,7 +5,7 @@ import json
 from aim.engine.configs import (
     AIM_OBJECTS_DIR_NAME,
     AIM_MAP_DIR_NAME,
-    AIM_COMMIT_META_FILE_NAME,
+    AIM_COMMIT_CONFIG_FILE_NAME,
 )
 from aim.engine.repo.utils import (
     get_run_objects_dir_path,
@@ -19,6 +19,7 @@ class Run(object):
         self.repo = repo
         self.experiment_name = experiment_name
         self.run_hash = run_hash
+        self._config = None
         self._params = None
         self._metrics: Optional[Dict[str, Metric]] = {}
         self._tmp_all_metrics: Optional[Dict[str, Metric]] = None
@@ -36,6 +37,12 @@ class Run(object):
         if self._params is None:
             self._params = self._load_params()
         return self._params
+
+    @property
+    def config(self) -> dict:
+        if self._config is None:
+            self._config = self._load_config()
+        return self._config
 
     @property
     def metrics(self) -> Dict[str, Metric]:
@@ -112,3 +119,15 @@ class Run(object):
         except:
             params = {}
         return params
+
+    def _load_config(self) -> dict:
+        config_file_path = os.path.join(self.repo.path,
+                                        self.experiment_name,
+                                        self.run_hash,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+        try:
+            with open(config_file_path, 'r+') as config_file_path:
+                config = json.loads(config_file_path.read().strip())
+        except:
+            config = {}
+        return config
