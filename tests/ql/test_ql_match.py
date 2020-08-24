@@ -26,6 +26,9 @@ class TestStatementMatch(unittest.TestCase):
 
             # NoneTypes
             'None is None': ({}, True),
+            'a is not None': ({}, True),
+            'b is not None': ({'b': None}, False),
+            'c is not None': ({'c': 10}, True),
             'a.a is None': ({}, True),
             'a is None': ({}, False),
             'b is None': ({'b': None}, True),
