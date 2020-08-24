@@ -1,5 +1,6 @@
 # Changelog
 
+- Enable search by run attributes (gorarakelyan)
 - Add `is not` keyword to AimQL (gorarakelyan)
 
 ## 2.0.7 Aug 21 2020
