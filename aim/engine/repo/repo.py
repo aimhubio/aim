@@ -643,6 +643,7 @@ class AimRepo:
                 'hash': self.active_commit,
                 'date': curr_timestamp,
                 'message': curr_timestamp,
+                'archived': False,
                 'process': {
                     'start': True,
                     'finish': False,
@@ -709,6 +710,53 @@ class AimRepo:
             meta_file_content = json.load(meta_file)
 
         return meta_file_content
+
+    def is_archived(self, experiment_name: str,
+                    run_hash: str) -> Optional[bool]:
+        run_dir_path = get_experiment_run_path(self.path, experiment_name,
+                                               run_hash)
+        config_file_path = os.path.join(run_dir_path,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+
+        if not os.path.exists(config_file_path):
+            return None
+
+        with open(config_file_path, 'r') as config_file:
+            try:
+                config = json.loads(config_file.read())
+            except:
+                return None
+
+        return config.get('archived')
+
+    def archive(self, experiment_name: str, run_hash: str) -> bool:
+        return self._toggle_archive_flag(experiment_name, run_hash, True)
+
+    def unarchive(self, experiment_name: str, run_hash: str) -> bool:
+        return self._toggle_archive_flag(experiment_name, run_hash, False)
+
+    def _toggle_archive_flag(self, experiment_name: str,
+                             run_hash: str, flag: bool) -> bool:
+        run_dir_path = get_experiment_run_path(self.path, experiment_name,
+                                               run_hash)
+        config_file_path = os.path.join(run_dir_path,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+
+        with open(config_file_path, 'r') as config_file:
+            try:
+                config = json.loads(config_file.read())
+            except:
+                return False
+
+        config['archived'] = flag
+
+        with open(config_file_path, 'w') as config_file:
+            try:
+                config_file.write(json.dumps(config))
+            except:
+                return False
+
+        return True
 
     def save_diff(self, diff):
         """
