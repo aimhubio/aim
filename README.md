@@ -80,8 +80,7 @@ Creates `.aim` directory to save the recorded experiments to.
 Running `aim init` in an existing repository will prompt the user for re-initialization.
 
   **_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
-
-  Also see how to initialize repo safely by Python Library.
+  **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
 ### version
 Display the version of the currently installed Aim CLI.
