@@ -178,7 +178,7 @@ Here are the ways you can search on Aim:
 - Display the train loss of experiments whose learning rate is greater than 0.0001:
   - `loss if context.subset == train and params.learning_rate > 0.0001`
 
-Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX19) deployment to play around with search.
+Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOnRydWUsInN0ZXAiOjI0LCJydW5IYXNoIjoiZGM3OGFjOGEtYzJkZC0xMWVhLWI2Y2ItMGExOTU0N2ViYjJlIiwibWV0cmljTmFtZSI6Imxvc3MiLCJ0cmFjZUNvbnRleHQiOiJiblZzYkEifX19LCJzZWFyY2giOnsicXVlcnkiOiJsb3NzIGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCIsInYiOjF9fQ==) deployment to play around with search.
 
 ## TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
