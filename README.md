@@ -18,10 +18,11 @@ import aim
 aim.set_params(hyperparam_dict, name='params_name')
 aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
 ```
-3. Run the training and start the AI Dev Environment
+3. Run the training like you are used to and start the AI Dev Environment
 ```shell
 $ aim up
 ```
+[Here](http://demo-1.aimstack.io/) is what to expect when you first open Aim.
 
 ## Contents
 
@@ -35,6 +36,7 @@ $ aim up
     - [experiment](#experiment)
     - [de](#de)
     - [up](#up)
+    - [down](#down)
   - [Python Library](#python-library)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
@@ -45,21 +47,20 @@ $ aim up
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
-1. Install Aim python packaage
+1. Install Aim python package
 ```shell
 $ pip3 install aim-cli
 ```
-Aim Development Environment requires Docker to be installed in the environment.
-Run the command to start the aim development environment.
+In order to start Aim Development Environment you need to have Docker installed.
 ```shell
 $ aim up
 ```
 
 ## Command Line Interface
 
-Aim CLI offers a simple interface to easily organize and record the experiments.
-Paired with the [PyThon Library](#python-library), Aim becomes a powerful utility to record, search and compare AI experiments.
-This is how the commands look like:
+Aim CLI offers a simple interface to easily organize and record your experiments.
+Paired with the [PyThon Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
+Here are the set of commands supported:
 
 
 | Command       | Description                                                          |
@@ -77,8 +78,9 @@ $ aim init
 ```
 Creates `.aim` directory to save the recorded experiments to.
 Running `aim init` in an existing repository will prompt the user for re-initialization.
-**_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
-Also see how to initialize repo safely by Python Library.
+
+  **_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
+  **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
 ### version
 Display the version of the currently installed Aim CLI.
@@ -124,6 +126,12 @@ An alias to `aim de up` :
 $ aim up
 ```
 
+### down
+An alias to `aim de down`:
+```shell
+$ aim down
+```
+
 ## Python Library
 Use Python Library to instrument your training code to record the experiments.
 The instrumentation only takes 2 lines:
@@ -151,10 +159,12 @@ Once tracked this way, the following search expressions will be enabled:
 loss if context.phase in (train, val) # Retrieve all losses in both train and val phase
 loss if context.phase == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
 ```
-Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search. 
+Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
+
+Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
 
 ## Searching Experiments
-[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
+[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
 
 - **Search by experiment name** - `experiment == {name}`
@@ -168,6 +178,8 @@ Here are the ways you can search on Aim:
 - Display the train loss of experiments whose learning rate is greater than 0.0001:
   - `loss if context.subset == train and params.learning_rate > 0.0001`
 
+Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOnRydWUsInN0ZXAiOjI0LCJydW5IYXNoIjoiZGM3OGFjOGEtYzJkZC0xMWVhLWI2Y2ItMGExOTU0N2ViYjJlIiwibWV0cmljTmFtZSI6Imxvc3MiLCJ0cmFjZUNvbnRleHQiOiJiblZzYkEifX19LCJzZWFyY2giOnsicXVlcnkiOiJsb3NzIGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCIsInYiOjF9fQ==) deployment to play around with search.
+
 ## TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
 ```
@@ -175,6 +187,8 @@ $ aim up --tf_logs path/to/logs
 ```
 This command will spin up Aim on the TensorFlow summary logs and load the logs recursively from the given path.
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
+
+Tensorboard search example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9fQ==)
 
 ## How it works
 The stack of projects that enable AI Development Environment:
@@ -186,14 +200,8 @@ The stack of projects that enable AI Development Environment:
 ## Sneak peek at AI development environment
 Demo AimDE: [http://demo-1.aimstack.io/](http://demo-1.aimstack.io/)
 
-#### The search and compare panel
-![AimDE Panel](https://user-images.githubusercontent.com/3179216/87037877-fe90a380-c1fd-11ea-9242-05ea1798a176.gif)
+#### Aim search experience
+![AimDE Panel](https://user-images.githubusercontent.com/3179216/90963471-eaacb280-e4c8-11ea-9ee4-9e51ba22cb45.gif)
 
 #### All experiments at hand
-![AimDE Experiments](https://user-images.githubusercontent.com/3179216/87040316-95129400-c201-11ea-97e5-519ac6ffba94.gif)
-
-#### Easily start new experiments
-![AimDE Processes](https://user-images.githubusercontent.com/3179216/87042902-57176f00-c205-11ea-830e-e69168b9d269.gif)
-
-#### Tag the experiments / training runs for better search
-![AimDE Tags](https://user-images.githubusercontent.com/3179216/87041412-3fd78200-c203-11ea-8cca-27a26752df99.gif)
+![AimDE Experiments](https://user-images.githubusercontent.com/3179216/90963706-1a5cba00-e4cb-11ea-8fab-619bc73fbb9d.gif)
