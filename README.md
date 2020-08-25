@@ -36,6 +36,7 @@ $ aim up
     - [experiment](#experiment)
     - [de](#de)
     - [up](#up)
+    - [down](#down)
   - [Python Library](#python-library)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
@@ -77,8 +78,10 @@ $ aim init
 ```
 Creates `.aim` directory to save the recorded experiments to.
 Running `aim init` in an existing repository will prompt the user for re-initialization.
-**_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
-Also see how to initialize repo safely by Python Library.
+
+  **_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
+
+  Also see how to initialize repo safely by Python Library.
 
 ### version
 Display the version of the currently installed Aim CLI.
@@ -124,6 +127,12 @@ An alias to `aim de up` :
 $ aim up
 ```
 
+### down
+An alias to `aim de down`:
+```shell
+$ aim down
+```
+
 ## Python Library
 Use Python Library to instrument your training code to record the experiments.
 The instrumentation only takes 2 lines:
@@ -152,6 +161,8 @@ loss if context.phase in (train, val) # Retrieve all losses in both train and va
 loss if context.phase == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
 ```
 Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
+
+Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
