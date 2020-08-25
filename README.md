@@ -18,10 +18,11 @@ import aim
 aim.set_params(hyperparam_dict, name='params_name')
 aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
 ```
-3. Run the training and start the AI Dev Environment
+3. Run the training like you are used to and start the AI Dev Environment
 ```shell
 $ aim up
 ```
+[Here](http://demo-1.aimstack.io/) is what to expect when you first open Aim.
 
 ## Contents
 
@@ -45,21 +46,20 @@ $ aim up
 
 ## Installation
 To install Aim, you need to have python3 and pip3 installed in your environment
-1. Install Aim python packaage
+1. Install Aim python package
 ```shell
 $ pip3 install aim-cli
 ```
-Aim Development Environment requires Docker to be installed in the environment.
-Run the command to start the aim development environment.
+In order to start Aim Development Environment you need to have Docker installed.
 ```shell
 $ aim up
 ```
 
 ## Command Line Interface
 
-Aim CLI offers a simple interface to easily organize and record the experiments.
-Paired with the [PyThon Library](#python-library), Aim becomes a powerful utility to record, search and compare AI experiments.
-This is how the commands look like:
+Aim CLI offers a simple interface to easily organize and record your experiments.
+Paired with the [PyThon Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
+Here are the set of commands supported:
 
 
 | Command       | Description                                                          |
@@ -168,6 +168,8 @@ Here are the ways you can search on Aim:
 - Display the train loss of experiments whose learning rate is greater than 0.0001:
   - `loss if context.subset == train and params.learning_rate > 0.0001`
 
+Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX19) deployment to play around with search.
+
 ## TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
 ```
@@ -175,6 +177,8 @@ $ aim up --tf_logs path/to/logs
 ```
 This command will spin up Aim on the TensorFlow summary logs and load the logs recursively from the given path.
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
+
+Tensorboard search example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9fQ==)
 
 ## How it works
 The stack of projects that enable AI Development Environment:
