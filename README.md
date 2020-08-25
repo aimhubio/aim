@@ -164,7 +164,7 @@ Please note that any key-value could be used to track this way and enhance the c
 Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
 
 ## Searching Experiments
-[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) enables rich search capabilities to search experiments.
+[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
 
 - **Search by experiment name** - `experiment == {name}`
