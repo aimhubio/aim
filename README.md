@@ -168,7 +168,7 @@ Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6e
 Here are the ways you can search on Aim:
 
 - **Search by experiment name** - `experiment == {name}`
-- **Search by run** - `run == "{run_hash}"` or `run in ("{run_hash_1}", "{run_hash_2}")`
+- **Search by run** - `run.hash == "{run_hash}"` or `run.hash in ("{run_hash_1}", "{run_hash_2}")` or `run.archived is True`
 - **Search by param** - `params.{key} == {value}`
 - **Search by context** - `context.{key} == {value}`
 
