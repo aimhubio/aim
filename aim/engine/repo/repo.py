@@ -22,7 +22,8 @@ from aim.engine.repo.utils import (
     get_run_objects_meta_file_path,
 )
 from aim.ql.grammar import Expression
-from aim.ql.utils import match
+from aim.ql.tree import BinaryExpressionTree
+from aim.ql.utils import build_bet
 
 
 class AimRepo:
@@ -475,7 +476,7 @@ class AimRepo:
         """
         Checkouts to specified branch
         """
-        branches = self.config.get('branches')
+        branches = self.config.get('branches') or []
         for b in branches:
             if branch == b.get('name'):
                 self.config['active_branch'] = branch
@@ -806,7 +807,15 @@ class AimRepo:
         return run
 
     def select_metrics(self, select_metrics: Union[str, List[str], Tuple[str]],
-                       expression: Optional[Expression] = None) -> List[Run]:
+                       expression: Optional[
+                           Union[str,
+                                 Expression,
+                                 BinaryExpressionTree]] = None,
+                       default_expression: Optional[
+                           Union[str,
+                                 Expression,
+                                 BinaryExpressionTree]] = None,
+                       ) -> List[Run]:
         """
         Searches repo and returns matching metrics
         """
@@ -823,6 +832,12 @@ class AimRepo:
 
         matched_runs: List[Run] = []
 
+        expression = build_bet(expression)
+        expression.strict = True
+        if default_expression:
+            default_expression = build_bet(default_expression)
+            expression.concat(default_expression)
+
         for experiment_runs in runs.values():
             for run in experiment_runs:
                 # Dictionary representing all search fields
@@ -836,22 +851,24 @@ class AimRepo:
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
-                    if metric_name in select_metrics:
-                        fields['metric'] = metric_name
-                        for trace in metric.get_all_traces():
-                            fields['context'] = trace.context
-                            # Pass fields in descending order by priority
-                            if expression is None:
-                                res = True
-                            else:
-                                res = match(True,
-                                            expression, fields,
-                                            run.params, default_params)
-                            if res is True:
-                                metric.append(trace)
-                                run.add(metric)
-                                if run not in matched_runs:
-                                    matched_runs.append(run)
+                    if metric_name not in select_metrics:
+                        continue
+
+                    fields['metric'] = metric_name
+                    for trace in metric.get_all_traces():
+                        fields['context'] = trace.context
+                        # Pass fields in descending order by priority
+                        if expression is None:
+                            res = True
+                        else:
+                            res = expression.match(fields,
+                                                   run.params,
+                                                   default_params)
+                        if res is True:
+                            metric.append(trace)
+                            run.add(metric)
+                            if run not in matched_runs:
+                                matched_runs.append(run)
 
         return matched_runs
 

@@ -69,23 +69,3 @@ class Tree(object):
                    or cls.check_node_type(node, Path)
         else:
             return cls.check_node_type(node, Identifier)
-
-    # @classmethod
-    # def is_node_string(cls, node) -> bool:
-    #     return cls.check_node_type(node, 'Token.Literal.String')
-    #
-    # @classmethod
-    # def is_node_int(cls, node) -> bool:
-    #     return cls.check_node_type(node, 'Token.Literal.Number.Integer')
-    #
-    # @classmethod
-    # def is_node_float(cls, node) -> bool:
-    #     return cls.check_node_type(node, 'Token.Literal.Number.Float')
-    #
-    # @classmethod
-    # def is_node_bool(cls, node, bval=None) -> bool:
-    #     type_check = cls.check_node_type(node, 'Token.Literal.Boolean')
-    #     if bval is None:
-    #         return type_check
-    #     else:
-    #         return type_check and node.token.value == bval

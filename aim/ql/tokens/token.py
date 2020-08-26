@@ -79,7 +79,7 @@ class Token(object):
         if self.type not in (Identifier, Path):
             return self.value
 
-        all_fields = [fields] + list(*add_fields)
+        all_fields = [fields] + list(add_fields)
         search_field_match = None
         found = False
         for fields in all_fields:

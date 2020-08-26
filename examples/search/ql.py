@@ -5,6 +5,7 @@ from aim.ql.grammar.expression import Expression
 
 parser = Expression()
 expr = parser.parse('(10 == 20 or 3 > 2) and a is not 10')
+print(expr)
 
 ast = AbstractSyntaxTree()
 ast.build_from_expression(expr)
