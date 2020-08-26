@@ -1,5 +1,6 @@
 # Changelog
 
+- Set SDK to select only unarchived runs by default (gorarakelyan)
 - Add ability to archive/unarchive runs (gorarakelyan)
 - Enable search by run attributes (gorarakelyan)
 - Add `is not` keyword to AimQL (gorarakelyan)
