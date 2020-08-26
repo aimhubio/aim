@@ -26,6 +26,9 @@ class TestStatementMatch(unittest.TestCase):
 
             # NoneTypes
             'None is None': ({}, True),
+            'a is not None': ({}, True),
+            'b is not None': ({'b': None}, False),
+            'c is not None': ({'c': 10}, True),
             'a.a is None': ({}, True),
             'a is None': ({}, False),
             'b is None': ({'b': None}, True),
@@ -96,4 +99,21 @@ class TestStatementMatch(unittest.TestCase):
         }
 
         for expr, fields in expressions.items():
-            assert match(True, expr, fields[0]) == fields[1]
+            assert match(True, expr, None, fields[0]) == fields[1]
+
+    def test_statement_match_with_default(self):
+        expressions = [
+            ('(10 == 10 and (10 == 3 or "1" in "1234"))', '1 == 1', {}, True),
+            ('(10 == 10 and (10 == 3 or "1" in "1234"))', '1 != 1', {}, False),
+            ('(a == 10 and (10 == 3 or "1" in "1234"))', 'b != 1', {
+                'a': 10,
+                'b': 2,
+            }, True),
+            ('(a == 10 and (10 == 3 or "1" in "1234")) or 1 == 10', 'b == 1', {
+                'a': 10,
+                'b': 2,
+            }, False),
+        ]
+
+        for expr in expressions:
+            assert match(True, expr[0], expr[1], expr[2]) == expr[3]

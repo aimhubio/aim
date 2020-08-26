@@ -4,12 +4,6 @@ from aim.engine.repo import AimRepo
 from aim.ql.grammar.statement import Statement
 
 
-def parse_search_statement(search_statement: str):
-    search_statement = search_statement.strip()
-    parser = Statement()
-    return parser.parse(search_statement)
-
-
 def select(search_statement: str, repo_path: Optional[str] = None):
     if repo_path is not None:
         repo = AimRepo(repo_full_path=repo_path)
@@ -24,4 +18,10 @@ def select(search_statement: str, repo_path: Optional[str] = None):
     statement_select = parsed_stmt.node['select']
     statement_expr = parsed_stmt.node['expression']
 
-    return repo.select_metrics(statement_select, statement_expr)
+    if 'run.archived' not in search_statement:
+        default_expression = 'run.archived is not True'
+    else:
+        default_expression = None
+
+    return repo.select_metrics(statement_select,
+                               statement_expr, default_expression)

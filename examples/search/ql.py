@@ -4,7 +4,8 @@ from aim.ql.grammar.expression import Expression
 
 
 parser = Expression()
-expr = parser.parse('(10 == 20 or 3 > 2) and a == 10')
+expr = parser.parse('(10 == 20 or 3 > 2) and a is not 10')
+print(expr)
 
 ast = AbstractSyntaxTree()
 ast.build_from_expression(expr)
@@ -20,6 +21,6 @@ print(bet)
 print('=' * 75)
 
 match_res = bet.match({
-    'a': 10,
+    'a': 11,
 })
 print('Match:', match_res)

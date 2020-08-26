@@ -61,6 +61,7 @@ class Expression(grammar.Grammar, Atom):
                 | "!="
                 | '<'
                 | '>'
+                | ["is" "not"]
                 | "is"
                 | "in"
                 | ["not" "in"]

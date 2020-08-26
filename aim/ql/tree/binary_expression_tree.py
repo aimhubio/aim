@@ -1,5 +1,6 @@
 from aim.ql.tree.base import Tree
 from aim.ql.tree.abstract_syntax_tree import AbstractSyntaxTree
+from aim.ql.tokens.token import Token
 
 
 class BinaryExpressionTree(Tree):
@@ -8,10 +9,23 @@ class BinaryExpressionTree(Tree):
         self.strict = True
 
     def build_from_ast(self, tree: AbstractSyntaxTree):
-        self.head = self._build_tree(tree.head)
+        if tree.head is not None:
+            self.head = self._build_tree(tree.head)
 
     def match(self, fields: dict = {}, *add_fields):
-        return bool(self._evaluate(self.head, fields, *add_fields))
+        if self.head is not None:
+            return bool(self._evaluate(self.head, fields, *add_fields))
+        return True
+
+    def concat(self, other_bet: 'BinaryExpressionTree'):
+        if self.head is not None:
+            and_token = Token('and', 'Operator')
+            curr_tree_head = self.head
+            self.head = self.NODE(and_token, 0, 0)
+            # FIXME: Increment levels of nodes of subtrees
+            self.head.children = [curr_tree_head, other_bet.head]
+        else:
+            self.head = other_bet.head
 
     def _evaluate(self, tree, fields: dict, *add_fields) -> bool:
         left_eval = right_eval = None
@@ -46,6 +60,8 @@ class BinaryExpressionTree(Tree):
                 return left_eval < right_eval
             elif self.is_node_comparison_operator(tree, 'is'):
                 return left_eval is right_eval
+            elif self.is_node_comparison_operator(tree, 'is not'):
+                return left_eval is not right_eval
             elif self.is_node_comparison_operator(tree, 'in'):
                 return left_eval in right_eval
             elif self.is_node_comparison_operator(tree, 'not in'):

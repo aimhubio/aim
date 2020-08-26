@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.8 Aug 26 2020
+- Set SDK to select only unarchived runs by default (gorarakelyan)
+- Add ability to archive/unarchive runs (gorarakelyan)
+- Enable search by run attributes (gorarakelyan)
+- Add `is not` keyword to AimQL (gorarakelyan)
+
 ## 2.0.7 Aug 21 2020
 - Validate Artifact values before storing (gorarakelyan)
 - Add sessions to SDK (gorarakelyan)

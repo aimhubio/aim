@@ -10,7 +10,7 @@ from typing import List, Optional, Union, Tuple
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import (
-    is_path_creatable, ls_dir, import_module,
+    ls_dir, import_module,
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
@@ -22,7 +22,8 @@ from aim.engine.repo.utils import (
     get_run_objects_meta_file_path,
 )
 from aim.ql.grammar import Expression
-from aim.ql.utils import match
+from aim.ql.tree import BinaryExpressionTree
+from aim.ql.utils import build_bet
 
 
 class AimRepo:
@@ -475,7 +476,7 @@ class AimRepo:
         """
         Checkouts to specified branch
         """
-        branches = self.config.get('branches')
+        branches = self.config.get('branches') or []
         for b in branches:
             if branch == b.get('name'):
                 self.config['active_branch'] = branch
@@ -643,6 +644,7 @@ class AimRepo:
                 'hash': self.active_commit,
                 'date': curr_timestamp,
                 'message': curr_timestamp,
+                'archived': False,
                 'process': {
                     'start': True,
                     'finish': False,
@@ -710,6 +712,53 @@ class AimRepo:
 
         return meta_file_content
 
+    def is_archived(self, experiment_name: str,
+                    run_hash: str) -> Optional[bool]:
+        run_dir_path = get_experiment_run_path(self.path, experiment_name,
+                                               run_hash)
+        config_file_path = os.path.join(run_dir_path,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+
+        if not os.path.exists(config_file_path):
+            return None
+
+        with open(config_file_path, 'r') as config_file:
+            try:
+                config = json.loads(config_file.read())
+            except:
+                return None
+
+        return config.get('archived')
+
+    def archive(self, experiment_name: str, run_hash: str) -> bool:
+        return self._toggle_archive_flag(experiment_name, run_hash, True)
+
+    def unarchive(self, experiment_name: str, run_hash: str) -> bool:
+        return self._toggle_archive_flag(experiment_name, run_hash, False)
+
+    def _toggle_archive_flag(self, experiment_name: str,
+                             run_hash: str, flag: bool) -> bool:
+        run_dir_path = get_experiment_run_path(self.path, experiment_name,
+                                               run_hash)
+        config_file_path = os.path.join(run_dir_path,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+
+        with open(config_file_path, 'r') as config_file:
+            try:
+                config = json.loads(config_file.read())
+            except:
+                return False
+
+        config['archived'] = flag
+
+        with open(config_file_path, 'w') as config_file:
+            try:
+                config_file.write(json.dumps(config))
+            except:
+                return False
+
+        return True
+
     def save_diff(self, diff):
         """
         Saves diff to the repo
@@ -758,7 +807,15 @@ class AimRepo:
         return run
 
     def select_metrics(self, select_metrics: Union[str, List[str], Tuple[str]],
-                       expression: Optional[Expression] = None) -> List[Run]:
+                       expression: Optional[
+                           Union[str,
+                                 Expression,
+                                 BinaryExpressionTree]] = None,
+                       default_expression: Optional[
+                           Union[str,
+                                 Expression,
+                                 BinaryExpressionTree]] = None,
+                       ) -> List[Run]:
         """
         Searches repo and returns matching metrics
         """
@@ -775,39 +832,43 @@ class AimRepo:
 
         matched_runs: List[Run] = []
 
+        expression = build_bet(expression)
+        expression.strict = True
+        if default_expression:
+            default_expression = build_bet(default_expression)
+            expression.concat(default_expression)
+
         for experiment_runs in runs.values():
             for run in experiment_runs:
-                # Run parameters (`NestedMap`)
-                params = run.params
-                # Default parameters - ones passed without namespace
-                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
                 # Dictionary representing all search fields
                 fields = {
-                    'params': params,
                     'experiment': run.experiment_name,
-                    'run': run.run_hash,
+                    'run': run.config,  # Run configs (date, name, archived etc)
+                    'params': run.params,  # Run parameters (`NestedMap`)
                 }
+                # Default parameters - ones passed without namespace
+                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
-                    if metric_name in select_metrics:
-                        for trace in metric.get_all_traces():
-                            fields['context'] = trace.context
-                            # Enable shorthands
-                            # fields['context']['keys'] = trace.context.keys()
-                            # fields['context']['values'] =
-                            # trace.context.values()
-                            # Pass fields in descending order by priority
-                            if expression is None:
-                                res = True
-                            else:
-                                res = match(True, expression, fields, params,
-                                            default_params)
-                            if res is True:
-                                metric.append(trace)
-                                run.add(metric)
-                                if run not in matched_runs:
-                                    matched_runs.append(run)
+                    if metric_name not in select_metrics:
+                        continue
+
+                    fields['metric'] = metric_name
+                    for trace in metric.get_all_traces():
+                        fields['context'] = trace.context
+                        # Pass fields in descending order by priority
+                        if expression is None:
+                            res = True
+                        else:
+                            res = expression.match(fields,
+                                                   run.params,
+                                                   default_params)
+                        if res is True:
+                            metric.append(trace)
+                            run.add(metric)
+                            if run not in matched_runs:
+                                matched_runs.append(run)
 
         return matched_runs
 
