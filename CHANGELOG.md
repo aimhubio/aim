@@ -1,5 +1,7 @@
 # Changelog
 
+- Add Aim adapter for keras (gorarakelyan)
+
 ## 2.0.8 Aug 26 2020
 - Set SDK to select only unarchived runs by default (gorarakelyan)
 - Add ability to archive/unarchive runs (gorarakelyan)
