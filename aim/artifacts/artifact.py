@@ -27,6 +27,10 @@ class Artifact(metaclass=ABCMeta):
             return False
         return True
 
+    @classmethod
+    def reset_counter(cls):
+        cls._step_counter = {}
+
     def __init__(self, cat: tuple):
         self.cat = cat
         self.step = 0

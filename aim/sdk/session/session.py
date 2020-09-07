@@ -1,6 +1,6 @@
 import os
 import atexit
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
@@ -15,32 +15,44 @@ from aim.engine.configs import (
 
 
 class Session:
-    sessions: Dict[str, 'Session'] = {}
+    sessions: Dict[str, List['Session']] = {}
 
-    def __init__(self, repo_path: Optional[str] = None):
-        self.repo = self.get_repo(repo_path)
-
-        if self.repo.path in Session.sessions:
-            self.repo.close_records_storage()
-            raise ValueError(('repo already opened '
-                              'at path `{}`').format(self.repo.path))
+    def __init__(self, repo_path: Optional[str] = None,
+                 experiment_name: Optional[str] = None):
+        self.repo = self.get_repo(repo_path, experiment_name)
 
         # TODO: Add support for multiple sessions
-        if len(Session.sessions.keys()) > 0:
+        if len(Session.sessions.keys()) > 0 \
+                and self.repo.path not in Session.sessions:
             raise ValueError('multiple sessions are not supported')
 
-        Session.sessions[self.repo.path] = self
+        if self.repo.path in Session.sessions:
+            Session.sessions[self.repo.path].append(self)
+        else:
+            Session.sessions[self.repo.path] = [self]
 
         # Start a new run
+        self.open = True
         self.repo.commit_init()
 
-        # Finalize run
-        atexit.register(self.repo.close_records_storage)
-        atexit.register(self.repo.commit_finish)
+        # Close session
+        atexit.register(self.close)
 
     def __del__(self):
-        if self.repo.path in Session.sessions:
-            del Session.sessions[self.repo.path]
+        self.close()
+
+    def close(self):
+        if self.open:
+            self.open = False
+
+            self.repo.close_records_storage()
+            self.repo.commit_finish()
+
+            if self.repo.path in Session.sessions \
+                    and self in Session.sessions[self.repo.path]:
+                Session.sessions[self.repo.path].remove(self)
+                if len(Session.sessions[self.repo.path]) == 0:
+                    del Session.sessions[self.repo.path]
 
     def track(self, *args, **kwargs):
         if self.repo is None:
@@ -83,15 +95,19 @@ class Session:
         return self.track(params, namespace=name)
 
     @staticmethod
-    def get_repo(path: Optional[str] = None, *args, **kwargs) -> AimRepo:
+    def get_repo(path: Optional[str] = None,
+                 experiment_name: Optional[str] = None) -> AimRepo:
         # Auto commit
         if not os.getenv(AIM_AUTOMATED_EXEC_ENV_VAR):
             init_commit_hash = AimRepo.generate_commit_hash()
             # FIXME: Get active experiment name from given repo
             #  if path is specified. Currently active experiment name of
             #  the highest repo in the hierarchy will be returned.
-            init_branch_name = AimRepo.get_active_branch_if_exists() \
-                               or AIM_DEFAULT_BRANCH_NAME
+            if experiment_name is not None:
+                init_branch_name = experiment_name
+            else:
+                init_branch_name = AimRepo.get_active_branch_if_exists() \
+                                   or AIM_DEFAULT_BRANCH_NAME
             set_automated_env_vars(init_commit_hash, init_branch_name)
 
         # Get Aim environment variables
