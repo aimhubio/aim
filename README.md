@@ -32,6 +32,7 @@ $ aim up
   - [Getting Started In Three Steps](#getting-started-in-three-steps)
   - [Installation](#installation)
   - [Concepts](#concepts)
+  - [Where is the Data Stored](#where-is-the-data-stored)
   - [Command Line Interface](#command-line-interface)
     - [init](#init)
     - [version](#version)
@@ -60,6 +61,14 @@ In order to start Aim Development Environment you need to have Docker installed.
 $ aim up
 ```
 
+## Concepts
+- **Run** - A single training run 
+- **Experiment** - a group of associated training runs (think of it as an **experiment branch**)
+
+## Where is the Data Stored 
+When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
+Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
+
 ## Command Line Interface
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
@@ -76,6 +85,7 @@ Here are the set of commands supported:
 | `up`          | An alias to `aim de up`.                                             |
 
 ### init
+__**This step is optional.**__
 Initialize the aim repo to record the experiments.
 ```shell
 $ aim init
