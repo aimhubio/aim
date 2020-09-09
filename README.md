@@ -4,7 +4,7 @@
 
 A super-easy way to record, search and compare AI experiments.
 
-<img src="https://user-images.githubusercontent.com/13848158/90840111-2bda8080-e36a-11ea-9d24-46b38f4284a3.png">
+<img src="https://user-images.githubusercontent.com/13848158/92605507-ddfacd80-f2c2-11ea-8547-0659ee2dcb37.png">
 
 ## Getting started in three steps
 1. Install Aim in your training environment and init in the project folder
@@ -196,12 +196,3 @@ The stack of projects that enable AI Development Environment:
 - [Aim](#aim) - Version Control for AI Experiments.
 - [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
 - [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
-
-## Sneak peek at AI development environment
-Demo AimDE: [http://demo-1.aimstack.io/](http://demo-1.aimstack.io/)
-
-#### Aim search experience
-![AimDE Panel](https://user-images.githubusercontent.com/3179216/90963471-eaacb280-e4c8-11ea-9ee4-9e51ba22cb45.gif)
-
-#### All experiments at hand
-![AimDE Experiments](https://user-images.githubusercontent.com/3179216/90963706-1a5cba00-e4cb-11ea-8fab-619bc73fbb9d.gif)
