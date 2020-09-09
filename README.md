@@ -88,8 +88,8 @@ aim.set_params(hyperparam_dict, name='dict_name')
 aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
 
 _Parameters_
-- **value** - the metric value of type `Float` to be track/log
-- **name** - the name of the metric of type `String` to track/log (preferred divider: `snake_case`)
+- **value** - the metric value of type `int`/`float` to be track/log
+- **name** - the name of the metric of type `str` to track/log (preferred divider: `snake_case`)
 - **epoch** - an optional value of the epoch being tracked
 - **context_args** - any set of other parameters passed would be considered as key-value context for metrics
 
