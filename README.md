@@ -88,7 +88,7 @@ aim.set_params(hyperparam_dict, name='dict_name')
 aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
 
 _Parameters_
-- **value** - the metric value of type `int`/`float` to be track/log
+- **value** - the metric value of type `int`/`float` to track/log
 - **name** - the name of the metric of type `str` to track/log (preferred divider: `snake_case`)
 - **epoch** - an optional value of the epoch being tracked
 - **context_args** - any set of other parameters passed would be considered as key-value context for metrics
@@ -100,8 +100,8 @@ aim.track(0.003, name='loss', epoch=43, subset='val', dataset='val_1')
 ```
 Once tracked this way, the following search expressions will be enabled:
 ```py
-loss if context.phase in (train, val) # Retrieve all losses in both train and val phase
-loss if context.phase == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
+loss if context.subset in (train, val) # Retrieve all losses in both train and val phase
+loss if context.subset == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
 ```
 Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
 
@@ -116,7 +116,10 @@ _Parameters_
 
 _Examples_
 ```py
-hyperparam_dict = {learning_rate: 0.0001, batch_siz: 32} # really any dictionary can go here
+ # really any dictionary can go here
+hyperparam_dict = {
+  learning_rate: 0.0001,
+  batch_siz: 32}
 aim.set_params(hyperparam_dict, name='params')
 ```
 The following params can be used later to perform the following search experssions
