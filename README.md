@@ -79,13 +79,13 @@ Afterwards, simply use the two following functions to track metrics and any para
 
 ```py
 ...
-aim.track(0.01, name='loss', epoch=32)
-aim.set_params(hyperparam_dict, name='hparams')
+aim.track(metric_val, name='metric_name', epoch=current_epoch)
+aim.set_params(hyperparam_dict, name='dict_name')
 ...
 ```
 
 ### track
-aim.**track**_(value, name='metric_name'[, epoch=epoch][, **context_args])<sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
+aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source] (https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
 
 _Parameters_
 - **value** - the metric value of type `Float` to be track/log
