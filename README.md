@@ -79,20 +79,19 @@ Afterwards, simply use the two following functions to track metrics and any para
 
 ```py
 ...
-aim.track(metric_value, name='metric_name', epoch=current_epoch)
-aim.set_params(dict, name='hyperparams-name-that-makes-sense')
+aim.track(0.01, name='loss', epoch=32)
+aim.set_params(hyperparam_dict, name='hparams')
 ...
 ```
-Please note that in `aim.track` the `epoch=current_epoch` is optional
 
 ### track
-aim.**track**_(value, name='metric_name', [epoch=epoch], [context_key=context_val])<sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
+aim.**track**_(value, name='metric_name', [epoch=epoch], [**context_args])<sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
 
 _Parameters_
 - **value** - the metric value of type `Float` to be track/log
-- **name** - the name of the metric of type `String` to track/log (preferred divider would be `_`)
+- **name** - the name of the metric of type `String` to track/log (preferred divider: `snake_case`)
 - **epoch** - an optional value of the epoch being tracked
-- **context** - any set of other parameters passed would be considered as the metric context.
+- **context_args** - any set of other parameters passed would be considered as key-value context for metrics
 
 _Examples_
 ```py
