@@ -17,11 +17,11 @@ from aim.engine.configs import (
 class Session:
     sessions: Dict[str, List['Session']] = {}
 
-    def __init__(self, experiment_name: Optional[str] = None,
-                 repo_path: Optional[str] = None):
+    def __init__(self, repo: Optional[str] = None,
+                 experiment: Optional[str] = None):
         self.active = False
 
-        self.repo = self.get_repo(repo_path, experiment_name)
+        self.repo = self.get_repo(repo, experiment)
 
         Session.sessions.setdefault(self.repo.path, [])
         Session.sessions[self.repo.path].append(self)
