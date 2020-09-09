@@ -1,6 +1,6 @@
 from abc import ABCMeta
 import re
-from typing import Union
+from typing import Union, Optional
 
 from aim.artifacts import Record
 from aim.artifacts.artifact import Artifact
@@ -14,6 +14,7 @@ class Metric(Artifact):
                  value: Union[int, float],
                  epoch: int = None,
                  step: int = None,
+                 aim_session_id: Optional[int] = None,
                  **kwargs):
         if not self.validate_name(str(name)):
             raise ValueError('Metric name can contain only letters, numbers, ' +
@@ -33,7 +34,8 @@ class Metric(Artifact):
             step_meta = tuple(sorted(self.context.items()))
         else:
             step_meta = None
-        self.initialize_step_counter(step, self.name, step_meta)
+        self.initialize_step_counter(step, self.name, step_meta,
+                                     session_id=aim_session_id)
 
     def __str__(self):
         return '{name}: {value}'.format(name=self.name,
