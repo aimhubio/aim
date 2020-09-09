@@ -49,7 +49,8 @@ class Artifact(metaclass=ABCMeta):
         ...
 
     def initialize_step_counter(self, step: int, name: str,
-                                meta: Optional[Tuple] = None):
+                                meta: Optional[Tuple] = None,
+                                session_id: Optional[int] = None):
         """
         Initializes the step counter if step number is not given
         """
@@ -59,10 +60,15 @@ class Artifact(metaclass=ABCMeta):
             key = name
             if meta is not None:
                 key = (key,) + meta
-            self._step_counter.setdefault(self.cat, {})
-            self._step_counter[self.cat].setdefault(key, 0)
-            self.step = self._step_counter[self.cat][key]
-            self._step_counter[self.cat][key] += 1
+
+            if session_id is None:
+                session_id = 0
+
+            self._step_counter.setdefault(session_id, {})
+            self._step_counter[session_id].setdefault(self.cat, {})
+            self._step_counter[session_id][self.cat].setdefault(key, 0)
+            self.step = self._step_counter[session_id][self.cat][key]
+            self._step_counter[session_id][self.cat][key] += 1
 
     def serialize_pb_object(self, artifact, step: int = None,
                             epoch: int = None) -> bytes:

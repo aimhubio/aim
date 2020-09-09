@@ -11,7 +11,9 @@ from aim.engine.configs import AIM_NESTED_MAP_DEFAULT
 class Map(Artifact):
     cat = ('map',)
 
-    def __init__(self, name: str, value: dict, namespace: Optional[str] = None):
+    def __init__(self, name: str, value: dict,
+                 namespace: Optional[str] = None,
+                 aim_session_id: Optional[int] = None):
         if not self.validate_name(str(name)):
             ValueError('Dictionary name can contain only letters, numbers, ' +
                        'underscore, dash and space`')
@@ -53,14 +55,14 @@ class Map(Artifact):
 class Dataset(Map):
     name = 'dataset'
 
-    def __init__(self, value: Any):
+    def __init__(self, value: Any, aim_session_id: Optional[int] = None):
         super(Dataset, self).__init__(self.name, value)
 
 
 class HyperParameters(Map):
     name = 'hyperparameters'
 
-    def __init__(self, value: Any):
+    def __init__(self, value: Any, aim_session_id: Optional[int] = None):
         super(HyperParameters, self).__init__(self.name, value)
 
 
@@ -68,5 +70,7 @@ class NestedMap(Map):
     cat = ('map', 'nested_map')
     name = 'dictionary'
 
-    def __init__(self, value: dict, namespace: str = AIM_NESTED_MAP_DEFAULT):
+    def __init__(self, value: dict,
+                 namespace: str = AIM_NESTED_MAP_DEFAULT,
+                 aim_session_id: Optional[int] = None):
         super(NestedMap, self).__init__(self.name, value, namespace)

@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to start multiple sessions (gorarakelyan)
 - Add Aim adapter for keras (gorarakelyan)
 
 ## 2.0.8 Aug 26 2020
