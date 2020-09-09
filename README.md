@@ -17,6 +17,7 @@ import aim
 ...
 aim.set_params(hyperparam_dict, name='params_name')
 aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
+...
 ```
 3. Run the training like you are used to and start the AI Dev Environment
 ```shell
@@ -30,6 +31,7 @@ $ aim up
   - [Contents](#contents)
   - [Getting Started In Three Steps](#getting-started-in-three-steps)
   - [Installation](#installation)
+  - [Concepts](#concepts)
   - [Command Line Interface](#command-line-interface)
     - [init](#init)
     - [version](#version)
@@ -38,6 +40,8 @@ $ aim up
     - [up](#up)
     - [down](#down)
   - [Python Library](#python-library)
+    - [aim.track()](track)
+    - [aim.set_params()](set_params)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [TensorBoard Experiments](#tensorboard-experiments)
@@ -148,8 +152,16 @@ aim.set_params(dict, name='hyperparams-name-that-makes-sense')
 ```
 Please note that in `aim.track` the `epoch=current_epoch` is optional
 
-### Metric context
-Add context to your metrics by adding additional key-value arguments to your `aim.track` function. Here is how it works:
+### track
+aim.**track**_(value, name='metric_name', [epoch=epoch, context_key=context_val])<sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
+
+_Parameters_
+- **value** - the metric value to be track/log
+- **name** - the name of the metric to track/log
+- **epoch** - an optional value of the epoch within which metric is being tracked
+- **context** - any set of other parameters passed would be considered as the metric context.
+
+_Examples_
 ```py
 aim.track(loss_val, name='loss', epoch=epoch_val, phase='train', dataset='train_1')
 aim.track(loss_val, name='loss', epoch=epoch_val, phase='val', dataset='val_1')
@@ -162,6 +174,23 @@ loss if context.phase == train and context.dataset in (train_1) # Retrieve all l
 Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
 
 Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
+
+### set_params
+aim.**set_params**_(dict_value, name) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L11)</sub>_
+
+_Parameters_
+- **dict_value** - A dictionary relevant to the training
+- **name** - A name for dictionaries
+
+_Examples_
+```py
+aim.set_params({learning_rate: 0.0001, batch_siz: 32}, name='params')
+```
+The following params can be used later to perform the following search experssions
+```py
+loss if params.learning_rate < 0.01 # All the runs where learning rate is less than 0.01
+loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the runs where learning rate is 0.0001 and batch_size is 32
+```
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
