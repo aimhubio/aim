@@ -85,7 +85,7 @@ aim.set_params(hyperparam_dict, name='hparams')
 ```
 
 ### track
-aim.**track**_(value, name='metric_name', [epoch=epoch], [**context_args])<sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
+aim.**track**_(value, name='metric_name'[, epoch=epoch][, **context_args])<sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
 
 _Parameters_
 - **value** - the metric value of type `Float` to be track/log
