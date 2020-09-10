@@ -130,7 +130,7 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 ```
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
-### <sub>class</sub> Session
+### Session
 aim.**Session**(repo: Optional[str], experiment: Optional[str])
 
 _Parameters_
@@ -138,13 +138,13 @@ _Parameters_
 - **experiment** - A name of experiment
 
 <sub>method</sub> `track()`
-Track metrics
+Tracks metrics
 
 <sub>method</sub> `set_params()`
-Set session params
+Sets session params
 
 <sub>method</sub> `close()`
-Close the session
+Closes the session
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
