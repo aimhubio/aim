@@ -37,6 +37,8 @@ $ aim up
     - [aim.track()](#track)
     - [aim.set_params()](#set_params)
     - [aim.Session()](#session)
+  - [Automatic Tracking](#automatic-tracking)
+    - [TensorFlow and Keras](#tensorflow-and-keras)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [Command Line Interface](#command-line-interface)
@@ -154,6 +156,19 @@ _Methods_
 _Examples_
 
 - [Here](https://github.com/aimhubio/aim/tree/develop/examples/sessions) are a few examples of how to use the `aim.Session` in code
+
+## Automatic Tracking
+
+Automatic tracking allows you to track metrics without the need for explicit track statements.
+
+### TensorFlow and Keras
+
+Pass an instance of `AimTracker.metrics([session])` to keras callbacks.
+
+_Parameters_
+- **session** - Aim Session instance(optional)
+
+- [Here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67) is an example
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
