@@ -1,3 +1,5 @@
+import subprocess
+
 from aim.engine.configs import *
 from aim.engine.utils import get_module
 
@@ -82,14 +84,15 @@ class AimContainer:
                 c.kill()
             c.remove(force=True)
 
-    def pull(self, version=AIM_CONTAINER_IMAGE_DEFAULT_TAG):
+    def pull(self, version=AIM_CONTAINER_IMAGE_DEFAULT_TAG) -> int:
         """
-        Pulls latest image from docker hub and returns status
+        Pulls image from docker hub and returns status
         """
-        docker = get_module('docker')
         try:
-            self.client.images.pull(self.get_image_name(version))
-        except docker.errors.APIError:
+            image_name = self.get_image_name(version)
+            command = 'docker pull {}'.format(image_name)
+            subprocess.call(command.split(' '))
+        except:
             return False
         return True
 
