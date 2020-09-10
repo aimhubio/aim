@@ -63,7 +63,7 @@ $ aim up
 
 ## Concepts
 - **Run** - A single training run 
-- **Experiment** - a group of associated training runs (think of it as an **experiment branch**)
+- **Experiment** - a group of associated training runs
 
 ## Where is the Data Stored 
 When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
@@ -130,7 +130,7 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
 ### Session
-Use Session to specify custom `.aim` directory or the experiment branch from the code.
+Use Session to specify custom `.aim` directory or the experiment from the code.
 
 _Class_ aim.**Session**_([repo,] [experiment])<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
 
@@ -138,19 +138,18 @@ Create session to specify the repo location and/or the experiment.
 
 _Parameters_
 - **repo** - Location of `.aim` repository (provide full path of directory to contain the `.aim`)
-- **experiment** - A name of the experiment branch. See [contepts](#concepts)
+- **experiment** - A name of the experiment. See [concepts](#concepts)
 
 _Returns_
 - Session object to attribute recorded training run to.
 
-<sub>method</sub> [`track()`](#track)
-Tracks metrics within the session
+_Methods_
 
-<sub>method</sub> [`set_params()`](#set_params)
-Sets session params
+- [`track()`](#track) - Tracks metrics within the session
 
-<sub>method</sub> `close()`
-Closes the session. If not invoked, the session will be automatically closed when the training is done.
+- [`set_params()`](#set_params) - Sets session params
+
+- `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
@@ -180,7 +179,7 @@ Here are the set of commands supported:
 | --------------| -------------------------------------------------------------------- |
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
-| `experiment`  | Creates a new experiment branch to group similar training runs into. |
+| `experiment`  | Creates a new experiment to group similar training runs into.        |
 | `de`          | Starts the AI Development Environment.                               |
 | `up`          | An alias to `aim de up`.                                             |
 
@@ -203,15 +202,15 @@ $ aim version
 ```
 
 ### experiment
-Create new experiment branches to organize the training runs related to the same experiment
+Create new experiments to organize the training runs related to the same experiment
 Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
 ```
 | Command    | Args                            | Description                                               |
 | -----------| ------------------------------- | --------------------------------------------------------- |
-| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment branch with a given name.              |
-| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
+| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment with a given name.                     |
+| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment with given name.         |
 | `ls`       |                                 | List all the experiments of the repo.                     |
 | `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
