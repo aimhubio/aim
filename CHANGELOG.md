@@ -1,5 +1,7 @@
 # Changelog
 
+- Add alias to keras adapter (gorarakelyan)
+
 ## 2.0.10 Sep 10 2020
 - Show progress bar when pulling AimDE image (gorarakelyan)
 
