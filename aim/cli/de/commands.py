@@ -10,7 +10,11 @@ from aim.engine.configs import (
 )
 from aim.engine.repo import AimRepo
 from aim.engine.container import AimContainer, AimContainerCommandManager
-from aim.cli.de.utils import repo_init_alert, docker_requirement_alert
+from aim.cli.de.utils import (
+    repo_init_alert,
+    docker_requirement_alert,
+    docker_image_pull_fail_alert,
+)
 
 
 @click.group()
@@ -59,7 +63,7 @@ def up(repo, dev, port, version, tf_logs):
     if dev == 0 and not cont.image_exist(version):
         click.echo('Pulling AimDE image, please wait...')
         if not cont.pull(version):
-            click.echo('An error occurred. Try again.')
+            docker_image_pull_fail_alert()
             return
         else:
             click.echo('Successfully pulled AimDE image')
@@ -137,8 +141,7 @@ def upgrade(repo):
     if update:
         click.echo('Done')
     else:
-        click.echo('An error occurred')
-        click.echo('    (use "docker login" for authentication)')
+        docker_image_pull_fail_alert()
 
 
 @de_entry_point.command()
@@ -153,5 +156,4 @@ def pull(repo, version):
     if update:
         click.echo('Done')
     else:
-        click.echo('An error occurred')
-        click.echo('    (use "docker login" for authentication)')
+        docker_image_pull_fail_alert()
