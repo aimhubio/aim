@@ -48,7 +48,6 @@ $ aim up
     - [down](#down)
   - [TensorBoard Experiments](#tensorboard-experiments)
   - [How It Works](#how-it-works)
-  - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
@@ -131,20 +130,27 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
 ### Session
-aim.**Session**(repo: Optional[str], experiment: Optional[str])
+Use Session to specify custom `.aim` directory or the experiment branch from the code.
+
+_Class_ aim.**Session**_([repo,] [experiment])<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
+
+Create session to specify the repo location and/or the experiment.
 
 _Parameters_
-- **repo** - Location of .aim repository
-- **experiment** - A name of experiment
+- **repo** - Location of `.aim` repository (provide full path of directory to contain the `.aim`)
+- **experiment** - A name of the experiment branch. See [contepts](#concepts)
 
-<sub>method</sub> `track()`
-Tracks metrics
+_Returns_
+- Session object to attribute recorded training run to.
 
-<sub>method</sub> `set_params()`
+<sub>method</sub> [`track()`](#track)
+Tracks metrics within the session
+
+<sub>method</sub> [`set_params()`](#set_params)
 Sets session params
 
 <sub>method</sub> `close()`
-Closes the session
+Closes the session. If not invoked, the session will be automatically closed when the training is done.
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
