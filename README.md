@@ -36,6 +36,7 @@ $ aim up
   - [Python Library](#python-library)
     - [aim.track()](#track)
     - [aim.set_params()](#set_params)
+    - [aim.Session()](#session)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [Command Line Interface](#command-line-interface)
@@ -47,7 +48,6 @@ $ aim up
     - [down](#down)
   - [TensorBoard Experiments](#tensorboard-experiments)
   - [How It Works](#how-it-works)
-  - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
@@ -63,7 +63,7 @@ $ aim up
 
 ## Concepts
 - **Run** - A single training run 
-- **Experiment** - a group of associated training runs (think of it as an **experiment branch**)
+- **Experiment** - a group of associated training runs
 
 ## Where is the Data Stored 
 When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
@@ -129,6 +129,31 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 ```
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
+### Session
+Use Session to specify custom `.aim` directory or the experiment from the code.
+
+_Class_ aim.**Session**_([repo,] [experiment])<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
+
+Create session to specify the repo location and/or the experiment.
+
+_Parameters_
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory
+- **experiment** - A name of the experiment. See [concepts](#concepts)
+
+_Returns_
+- Session object to attribute recorded training run to.
+
+_Methods_
+
+- [`track()`](#track) - Tracks metrics within the session
+
+- [`set_params()`](#set_params) - Sets session params
+
+- `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
+
+_Examples_
+
+- [Here](https://github.com/aimhubio/aim/tree/develop/examples/sessions) are a few examples of how to use the `aim.Session` in code
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
@@ -158,7 +183,7 @@ Here are the set of commands supported:
 | --------------| -------------------------------------------------------------------- |
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
-| `experiment`  | Creates a new experiment branch to group similar training runs into. |
+| `experiment`  | Creates a new experiment to group similar training runs into.        |
 | `de`          | Starts the AI Development Environment.                               |
 | `up`          | An alias to `aim de up`.                                             |
 
@@ -181,15 +206,15 @@ $ aim version
 ```
 
 ### experiment
-Create new experiment branches to organize the training runs related to the same experiment
+Create new experiments to organize the training runs related to the same experiment
 Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
 ```
 | Command    | Args                            | Description                                               |
 | -----------| ------------------------------- | --------------------------------------------------------- |
-| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment branch with a given name.              |
-| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment branch with given name.  |
+| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment with a given name.                     |
+| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment with given name.         |
 | `ls`       |                                 | List all the experiments of the repo.                     |
 | `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
