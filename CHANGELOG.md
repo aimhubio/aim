@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.10 Sep 10 2020
+- Show progress bar when pulling AimDE image (gorarakelyan)
+
 ## 2.0.9 Sep 10 2020
 - Add ability to start multiple sessions (gorarakelyan)
 - Add Aim adapter for keras (gorarakelyan)
