@@ -1,6 +1,6 @@
 import os
 import atexit
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
@@ -15,32 +15,39 @@ from aim.engine.configs import (
 
 
 class Session:
-    sessions: Dict[str, 'Session'] = {}
+    sessions: Dict[str, List['Session']] = {}
 
-    def __init__(self, repo_path: Optional[str] = None):
-        self.repo = self.get_repo(repo_path)
+    def __init__(self, repo: Optional[str] = None,
+                 experiment: Optional[str] = None):
+        self.active = False
 
-        if self.repo.path in Session.sessions:
-            self.repo.close_records_storage()
-            raise ValueError(('repo already opened '
-                              'at path `{}`').format(self.repo.path))
+        self.repo = self.get_repo(repo, experiment)
 
-        # TODO: Add support for multiple sessions
-        if len(Session.sessions.keys()) > 0:
-            raise ValueError('multiple sessions are not supported')
-
-        Session.sessions[self.repo.path] = self
+        Session.sessions.setdefault(self.repo.path, [])
+        Session.sessions[self.repo.path].append(self)
 
         # Start a new run
         self.repo.commit_init()
 
+        self.active = True
+
         # Finalize run
-        atexit.register(self.repo.close_records_storage)
-        atexit.register(self.repo.commit_finish)
+        atexit.register(self.close)
 
     def __del__(self):
-        if self.repo.path in Session.sessions:
-            del Session.sessions[self.repo.path]
+        self.close()
+
+    def close(self):
+        if self.active:
+            self.active = False
+            self.repo.close_records_storage()
+            self.repo.commit_finish()
+
+            if self.repo.path in Session.sessions \
+                    and self in Session.sessions[self.repo.path]:
+                Session.sessions[self.repo.path].remove(self)
+                if len(Session.sessions[self.repo.path]) == 0:
+                    del Session.sessions[self.repo.path]
 
     def track(self, *args, **kwargs):
         if self.repo is None:
@@ -72,7 +79,7 @@ class Session:
         obj = globals()[artifact_name]
 
         # Create an instance
-        inst = obj(*args, **kwargs)
+        inst = obj(*args, **kwargs, aim_session_id=id(self))
 
         writer = ArtifactWriter()
         writer.save(self.repo, inst)
@@ -83,20 +90,23 @@ class Session:
         return self.track(params, namespace=name)
 
     @staticmethod
-    def get_repo(path: Optional[str] = None, *args, **kwargs) -> AimRepo:
+    def get_repo(path: Optional[str] = None,
+                 experiment_name: Optional[str] = None) -> AimRepo:
         # Auto commit
-        if not os.getenv(AIM_AUTOMATED_EXEC_ENV_VAR):
-            init_commit_hash = AimRepo.generate_commit_hash()
-            # FIXME: Get active experiment name from given repo
-            #  if path is specified. Currently active experiment name of
-            #  the highest repo in the hierarchy will be returned.
-            init_branch_name = AimRepo.get_active_branch_if_exists() \
-                               or AIM_DEFAULT_BRANCH_NAME
-            set_automated_env_vars(init_commit_hash, init_branch_name)
-
-        # Get Aim environment variables
-        branch_name = os.getenv(AIM_BRANCH_ENV_VAR)
-        commit_hash = os.getenv(AIM_COMMIT_ENV_VAR)
+        if os.getenv(AIM_AUTOMATED_EXEC_ENV_VAR):
+            # Get Aim environment variables
+            branch_name = os.getenv(AIM_BRANCH_ENV_VAR)
+            commit_hash = os.getenv(AIM_COMMIT_ENV_VAR)
+        else:
+            commit_hash = AimRepo.generate_commit_hash()
+            if experiment_name is not None:
+                branch_name = experiment_name
+            else:
+                # FIXME: Get active experiment name from given repo
+                #  if path is specified. Currently active experiment name of
+                #  the highest repo in the hierarchy will be returned.
+                branch_name = AimRepo.get_active_branch_if_exists() \
+                              or AIM_DEFAULT_BRANCH_NAME
 
         if path is not None:
             repo = AimRepo(path)

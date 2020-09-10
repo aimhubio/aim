@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.9 Sep 10 2020
+- Add ability to start multiple sessions (gorarakelyan)
+- Add Aim adapter for keras (gorarakelyan)
+
 ## 2.0.8 Aug 26 2020
 - Set SDK to select only unarchived runs by default (gorarakelyan)
 - Add ability to archive/unarchive runs (gorarakelyan)

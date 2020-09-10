@@ -4,7 +4,7 @@
 
 A super-easy way to record, search and compare AI experiments.
 
-<img src="https://user-images.githubusercontent.com/13848158/90840111-2bda8080-e36a-11ea-9d24-46b38f4284a3.png">
+<img src="https://user-images.githubusercontent.com/13848158/92605507-ddfacd80-f2c2-11ea-8547-0659ee2dcb37.png">
 
 ## Getting started in three steps
 1. Install Aim in your training environment and init in the project folder
@@ -17,6 +17,7 @@ import aim
 ...
 aim.set_params(hyperparam_dict, name='params_name')
 aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
+...
 ```
 3. Run the training like you are used to and start the AI Dev Environment
 ```shell
@@ -30,6 +31,13 @@ $ aim up
   - [Contents](#contents)
   - [Getting Started In Three Steps](#getting-started-in-three-steps)
   - [Installation](#installation)
+  - [Concepts](#concepts)
+  - [Where is the Data Stored](#where-is-the-data-stored)
+  - [Python Library](#python-library)
+    - [aim.track()](#track)
+    - [aim.set_params()](#set_params)
+  - [Searching Experiments](#searching-experiments)
+    - [Search Examples](#search-examples)
   - [Command Line Interface](#command-line-interface)
     - [init](#init)
     - [version](#version)
@@ -37,9 +45,6 @@ $ aim up
     - [de](#de)
     - [up](#up)
     - [down](#down)
-  - [Python Library](#python-library)
-  - [Searching Experiments](#searching-experiments)
-    - [Search Examples](#search-examples)
   - [TensorBoard Experiments](#tensorboard-experiments)
   - [How It Works](#how-it-works)
   - [Sneak Peek at AI Development Environment](#sneak-peek-at-ai-development-environment)
@@ -55,6 +60,92 @@ In order to start Aim Development Environment you need to have Docker installed.
 ```shell
 $ aim up
 ```
+
+## Concepts
+- **Run** - A single training run 
+- **Experiment** - a group of associated training runs (think of it as an **experiment branch**)
+
+## Where is the Data Stored 
+When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
+Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
+
+## Python Library
+Use Python Library to instrument your training code to record the experiments.
+The instrumentation only takes 2 lines:
+```py
+import aim
+```
+Afterwards, simply use the two following functions to track metrics and any params respectively.
+
+```py
+...
+aim.track(metric_val, name='metric_name', epoch=current_epoch)
+aim.set_params(hyperparam_dict, name='dict_name')
+...
+```
+
+### track
+aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
+
+_Parameters_
+- **value** - the metric value of type `int`/`float` to track/log
+- **name** - the name of the metric of type `str` to track/log (preferred divider: `snake_case`)
+- **epoch** - an optional value of the epoch being tracked
+- **context_args** - any set of other parameters passed would be considered as key-value context for metrics
+
+_Examples_
+```py
+aim.track(0.01, name='loss', epoch=43, subset='train', dataset='train_1')
+aim.track(0.003, name='loss', epoch=43, subset='val', dataset='val_1')
+```
+Once tracked this way, the following search expressions will be enabled:
+```py
+loss if context.subset in (train, val) # Retrieve all losses in both train and val phase
+loss if context.subset == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
+```
+Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
+
+Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
+
+### set_params
+aim.**set_params**_(dict_value, name) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L11)</sub>_
+
+_Parameters_
+- **dict_value** - Any dictionary relevant to the training
+- **name** - A name for dictionaries
+
+_Examples_
+```py
+ # really any dictionary can go here
+hyperparam_dict = {
+  learning_rate: 0.0001,
+  batch_siz: 32}
+aim.set_params(hyperparam_dict, name='params')
+```
+The following params can be used later to perform the following search experssions
+```py
+loss if params.learning_rate < 0.01 # All the runs where learning rate is less than 0.01
+loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the runs where learning rate is 0.0001 and batch_size is 32
+```
+**_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
+
+
+## Searching Experiments
+[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
+Here are the ways you can search on Aim:
+
+- **Search by experiment name** - `experiment == {name}`
+- **Search by run** - `run.hash == "{run_hash}"` or `run.hash in ("{run_hash_1}", "{run_hash_2}")` or `run.archived is True`
+- **Search by param** - `params.{key} == {value}`
+- **Search by context** - `context.{key} == {value}`
+
+### Search Examples
+- Display the losses and accuracy metrics of experiments whose learning rate is 0.001:
+  - `loss, accuracy if params.learning_rate == 0.001`
+- Display the train loss of experiments whose learning rate is greater than 0.0001:
+  - `loss if context.subset == train and params.learning_rate > 0.0001`
+
+Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOnRydWUsInN0ZXAiOjI0LCJydW5IYXNoIjoiZGM3OGFjOGEtYzJkZC0xMWVhLWI2Y2ItMGExOTU0N2ViYjJlIiwibWV0cmljTmFtZSI6Imxvc3MiLCJ0cmFjZUNvbnRleHQiOiJiblZzYkEifX19LCJzZWFyY2giOnsicXVlcnkiOiJsb3NzIGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCIsInYiOjF9fQ==) deployment to play around with search.
 
 ## Command Line Interface
 
@@ -72,6 +163,7 @@ Here are the set of commands supported:
 | `up`          | An alias to `aim de up`.                                             |
 
 ### init
+__**This step is optional.**__
 Initialize the aim repo to record the experiments.
 ```shell
 $ aim init
@@ -132,54 +224,6 @@ An alias to `aim de down`:
 $ aim down
 ```
 
-## Python Library
-Use Python Library to instrument your training code to record the experiments.
-The instrumentation only takes 2 lines:
-```py
-import aim
-```
-Afterwards, simply use the two following functions to track metrics and any params respectively.
-
-```py
-...
-aim.track(metric_value, name='metric_name', epoch=current_epoch)
-aim.set_params(dict, name='hyperparams-name-that-makes-sense')
-...
-```
-Please note that in `aim.track` the `epoch=current_epoch` is optional
-
-### Metric context
-Add context to your metrics by adding additional key-value arguments to your `aim.track` function. Here is how it works:
-```py
-aim.track(loss_val, name='loss', epoch=epoch_val, phase='train', dataset='train_1')
-aim.track(loss_val, name='loss', epoch=epoch_val, phase='val', dataset='val_1')
-```
-Once tracked this way, the following search expressions will be enabled:
-```py
-loss if context.phase in (train, val) # Retrieve all losses in both train and val phase
-loss if context.phase == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
-```
-Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
-
-Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
-
-## Searching Experiments
-[AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
-Here are the ways you can search on Aim:
-
-- **Search by experiment name** - `experiment == {name}`
-- **Search by run** - `run.hash == "{run_hash}"` or `run.hash in ("{run_hash_1}", "{run_hash_2}")` or `run.archived is True`
-- **Search by param** - `params.{key} == {value}`
-- **Search by context** - `context.{key} == {value}`
-
-### Search Examples
-- Display the losses and accuracy metrics of experiments whose learning rate is 0.001:
-  - `loss, accuracy if params.learning_rate == 0.001`
-- Display the train loss of experiments whose learning rate is greater than 0.0001:
-  - `loss if context.subset == train and params.learning_rate > 0.0001`
-
-Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOnRydWUsInN0ZXAiOjI0LCJydW5IYXNoIjoiZGM3OGFjOGEtYzJkZC0xMWVhLWI2Y2ItMGExOTU0N2ViYjJlIiwibWV0cmljTmFtZSI6Imxvc3MiLCJ0cmFjZUNvbnRleHQiOiJiblZzYkEifX19LCJzZWFyY2giOnsicXVlcnkiOiJsb3NzIGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCIsInYiOjF9fQ==) deployment to play around with search.
-
 ## TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
 ```
@@ -196,12 +240,3 @@ The stack of projects that enable AI Development Environment:
 - [Aim](#aim) - Version Control for AI Experiments.
 - [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
 - [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
-
-## Sneak peek at AI development environment
-Demo AimDE: [http://demo-1.aimstack.io/](http://demo-1.aimstack.io/)
-
-#### Aim search experience
-![AimDE Panel](https://user-images.githubusercontent.com/3179216/90963471-eaacb280-e4c8-11ea-9ee4-9e51ba22cb45.gif)
-
-#### All experiments at hand
-![AimDE Experiments](https://user-images.githubusercontent.com/3179216/90963706-1a5cba00-e4cb-11ea-8fab-619bc73fbb9d.gif)
