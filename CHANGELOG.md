@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.9 Sep 10 2020
 - Add ability to start multiple sessions (gorarakelyan)
 - Add Aim adapter for keras (gorarakelyan)
 
