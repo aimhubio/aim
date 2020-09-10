@@ -131,11 +131,11 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
 ### <sub>class</sub> Session
-aim.**Session**_(repo: Optional[str], experiment: Optional[str])
+aim.**Session**(repo: Optional[str], experiment: Optional[str])
 
 _Parameters_
-- **repo** - Fool path of .aim repository
-- **experiment** - A name for experiment
+- **repo** - Location of .aim repository
+- **experiment** - A name of experiment
 
 <sub>method</sub> `track()`
 Track metrics
