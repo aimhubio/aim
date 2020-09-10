@@ -137,7 +137,7 @@ _Class_ aim.**Session**_([repo,] [experiment])<sub>[source](https://github.com/a
 Create session to specify the repo location and/or the experiment.
 
 _Parameters_
-- **repo** - Location of `.aim` repository (provide full path of directory to contain the `.aim`)
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory
 - **experiment** - A name of the experiment. See [concepts](#concepts)
 
 _Returns_
