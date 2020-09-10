@@ -151,6 +151,10 @@ _Methods_
 
 - `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
 
+_Examples_
+
+- [Here](https://github.com/aimhubio/aim/tree/develop/examples/sessions) are a few examples of how to use the `aim.Session` in code
+
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
