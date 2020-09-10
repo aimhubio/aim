@@ -36,6 +36,7 @@ $ aim up
   - [Python Library](#python-library)
     - [aim.track()](#track)
     - [aim.set_params()](#set_params)
+    - [aim.Session()](#session)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [Command Line Interface](#command-line-interface)
@@ -129,6 +130,21 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 ```
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
+### <sub>class</sub> Session
+aim.**Session**_(repo: Optional[str], experiment: Optional[str])
+
+_Parameters_
+- **repo** - Fool path of .aim repository
+- **experiment** - A name for experiment
+
+<sub>method</sub> `track()`
+Track metrics
+
+<sub>method</sub> `set_params()`
+Set session params
+
+<sub>method</sub> `close()`
+Close the session
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
