@@ -5,7 +5,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
-from aim.sdk.adapters import AimTracker
+from aim.keras import AimTracker
 
 batch_size = 128
 num_classes = 10
