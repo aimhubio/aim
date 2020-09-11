@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.11 Sep 11 2020
 - Add alias to keras adapter (gorarakelyan)
 
 ## 2.0.10 Sep 10 2020
