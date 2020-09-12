@@ -4,7 +4,7 @@ from typing import Optional, Dict, List
 
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
-from aim.sdk.session.utils import set_automated_env_vars
+from aim.sdk.session.utils import exception_resistant
 from aim.artifacts import *
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
@@ -17,6 +17,7 @@ from aim.engine.configs import (
 class Session:
     sessions: Dict[str, List['Session']] = {}
 
+    @exception_resistant
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None):
         self.active = False
@@ -34,9 +35,11 @@ class Session:
         # Finalize run
         atexit.register(self.close)
 
+    @exception_resistant
     def __del__(self):
         self.close()
 
+    @exception_resistant
     def close(self):
         if self.active:
             self.active = False
@@ -49,6 +52,7 @@ class Session:
                 if len(Session.sessions[self.repo.path]) == 0:
                     del Session.sessions[self.repo.path]
 
+    @exception_resistant
     def track(self, *args, **kwargs):
         if self.repo is None:
             raise FileNotFoundError('Aim repository was not found')
@@ -56,7 +60,7 @@ class Session:
         artifact_name = None
 
         if not len(args):
-            print('Artifact is not specified')
+            raise TypeError('artifact name is not specified')
 
         if isinstance(args[0], str):
             artifact_name = args[0]
@@ -71,9 +75,11 @@ class Session:
             kwargs['value'] = args[0]
             args = []
 
-        if artifact_name is None or artifact_name not in globals():
-            print('Aim cannot track: \'{0}\''.format(artifact_name))
-            return
+        if artifact_name is None:
+            raise TypeError('artifact name is not specified')
+
+        if artifact_name not in globals():
+            raise TypeError('Aim cannot track: \'{}\''.format(artifact_name))
 
         # Get corresponding class
         obj = globals()[artifact_name]
@@ -86,10 +92,12 @@ class Session:
 
         return inst
 
+    @exception_resistant
     def set_params(self, params: dict, name: Optional[str] = None):
         return self.track(params, namespace=name)
 
     @staticmethod
+    @exception_resistant
     def get_repo(path: Optional[str] = None,
                  experiment_name: Optional[str] = None) -> AimRepo:
         # Auto commit

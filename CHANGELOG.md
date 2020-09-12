@@ -1,5 +1,7 @@
 # Changelog
 
+- Update Session to handle exceptions gracefully (gorarakelyan)
+
 ## 2.0.11 Sep 11 2020
 - Add alias to keras adapter (gorarakelyan)
 

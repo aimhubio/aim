@@ -17,11 +17,11 @@ class Metric(Artifact):
                  aim_session_id: Optional[int] = None,
                  **kwargs):
         if not self.validate_name(str(name)):
-            raise ValueError('Metric name can contain only letters, numbers, ' +
-                             'underscore, dash and space`')
+            raise ValueError('metric name can contain only letters, numbers, ' +
+                             'underscore, dash and space')
 
         if not isinstance(value, (int, float)):
-            raise TypeError('Metric value must be a type of int or float')
+            raise TypeError('metric value must be a type of int or float')
 
         self.name = re.sub(' +', ' ', str(name))
         self.value = value

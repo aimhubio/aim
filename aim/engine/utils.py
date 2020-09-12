@@ -161,7 +161,7 @@ def get_module(name, required=True):
         return import_module(name)
     except Exception:
         if required:
-            raise ValueError('No module named: \'{}\''.format(name))
+            raise ValueError('no module named: \'{}\''.format(name))
         return None
 
 
