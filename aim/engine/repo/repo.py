@@ -216,7 +216,7 @@ class AimRepo:
                 'active_branch': '',
             }))
 
-        self.create_logs()
+        # self.create_logs()
         self.create_branch(AIM_DEFAULT_BRANCH_NAME)
         self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
 
