@@ -19,6 +19,9 @@ class Tree(object):
             return 'Empty {}'.format(type(self).__name__)
         return str(RenderTree(self.head))
 
+    def __bool__(self):
+        return self.head is not None
+
     def empty(self) -> bool:
         return self.head is None
 
