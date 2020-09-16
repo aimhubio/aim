@@ -789,22 +789,60 @@ class AimRepo:
         commit_path = os.path.join(self.path, branch, commit)
         return ls_dir([commit_path])
 
-    def select_run_metrics(self, experiment_name: str, run_hash: str,
-                           select_metrics: Union[str, List[str], Tuple[str]]
-                           ) -> Optional[Run]:
-        if not self.run_exists(experiment_name, run_hash):
-            return None
+    def select_runs(self,
+                    expression: Optional[
+                           Union[str,
+                                 Expression,
+                                 BinaryExpressionTree]] = None,
+                    default_expression: Optional[
+                           Union[str,
+                                 Expression,
+                                 BinaryExpressionTree]] = None,
+                    ) -> List[Run]:
+        runs = {
+            exp_name: [
+                Run(self, exp_name, run_hash)
+                for run_hash in self.list_branch_commits(exp_name)
+            ]
+            for exp_name in self.list_branches()
+        }
 
-        if isinstance(select_metrics, str):
-            select_metrics = [select_metrics]
+        matched_runs: List[Run] = []
 
-        run = Run(self, experiment_name, run_hash)
-        for metric_name, metric in run.get_all_metrics().items():
-            if metric_name in select_metrics:
-                for trace in metric.get_all_traces():
-                    metric.append(trace)
-                    run.add(metric)
-        return run
+        # Build expression trees
+        if expression:
+            expression = build_bet(expression)
+            expression.strict = True
+
+        if default_expression:
+            default_expression = build_bet(default_expression)
+            default_expression.strict = True
+            if expression:
+                expression.concat(default_expression)
+            else:
+                expression = default_expression
+
+        for experiment_runs in runs.values():
+            for run in experiment_runs:
+                # Dictionary representing all search fields
+                fields = {
+                    'experiment': run.experiment_name,
+                    'run': run.config,  # Run configs (date, name, archived etc)
+                    'params': run.params,  # Run parameters (`NestedMap`)
+                }
+                # Default parameters - ones passed without namespace
+                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
+
+                if not expression:
+                    res = True
+                else:
+                    res = expression.match(fields,
+                                           run.params,
+                                           default_params)
+                if res is True:
+                    matched_runs.append(run)
+
+        return matched_runs
 
     def select_metrics(self, select_metrics: Union[str, List[str], Tuple[str]],
                        expression: Optional[
@@ -871,6 +909,23 @@ class AimRepo:
                                 matched_runs.append(run)
 
         return matched_runs
+
+    def select_run_metrics(self, experiment_name: str, run_hash: str,
+                           select_metrics: Union[str, List[str], Tuple[str]]
+                           ) -> Optional[Run]:
+        if not self.run_exists(experiment_name, run_hash):
+            return None
+
+        if isinstance(select_metrics, str):
+            select_metrics = [select_metrics]
+
+        run = Run(self, experiment_name, run_hash)
+        for metric_name, metric in run.get_all_metrics().items():
+            if metric_name in select_metrics:
+                for trace in metric.get_all_traces():
+                    metric.append(trace)
+                    run.add(metric)
+        return run
 
     def create_logs(self):
         """
