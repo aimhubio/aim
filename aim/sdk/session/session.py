@@ -11,6 +11,7 @@ from aim.engine.configs import (
     AIM_COMMIT_ENV_VAR,
     AIM_AUTOMATED_EXEC_ENV_VAR,
     AIM_DEFAULT_BRANCH_NAME,
+    AIM_MAP_METRICS_KEYWORD,
 )
 
 
@@ -29,6 +30,7 @@ class Session:
 
         # Start a new run
         self.repo.commit_init()
+        self.metrics = {}
 
         self.active = True
 
@@ -43,6 +45,9 @@ class Session:
     def close(self):
         if self.active:
             self.active = False
+            # Set metrics
+            self.set_params(self.metrics, name=AIM_MAP_METRICS_KEYWORD)
+
             self.repo.close_records_storage()
             self.repo.commit_finish()
 
@@ -86,6 +91,27 @@ class Session:
 
         # Create an instance
         inst = obj(*args, **kwargs, aim_session_id=id(self))
+
+        # Collect metrics values
+        if isinstance(inst, Metric):
+            self.metrics.setdefault(inst.name, [])
+            for metric_item in self.metrics[inst.name]:
+                if metric_item['context'] == inst.hashable_context:
+                    if inst.value < metric_item['values']['min']:
+                        metric_item['values']['min'] = inst.value
+                    if inst.value > metric_item['values']['max']:
+                        metric_item['values']['max'] = inst.value
+                    metric_item['values']['last'] = inst.value
+                    break
+            else:
+                self.metrics[inst.name].append({
+                    'context': inst.hashable_context,
+                    'values': {
+                        'min': inst.value,
+                        'max': inst.value,
+                        'last': inst.value,
+                    },
+                })
 
         writer = ArtifactWriter()
         writer.save(self.repo, inst)

@@ -887,6 +887,15 @@ class AimRepo:
                 # Default parameters - ones passed without namespace
                 default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
 
+                # Add metrics path modifier
+                if AIM_MAP_METRICS_KEYWORD in run.params.keys():
+                    expression.add_path_modifier(
+                        lambda t: str(t).startswith('metrics.'),
+                        lambda p: self.metrics_path_modifier(
+                            p,
+                            run.params[AIM_MAP_METRICS_KEYWORD])
+                    )
+
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
                     if metric_name not in select_metrics:
@@ -909,6 +918,20 @@ class AimRepo:
                                 matched_runs.append(run)
 
         return matched_runs
+
+    @staticmethod
+    def metrics_path_modifier(path, metrics):
+        if not '.' in path:
+            return None
+        identifiers = path.split('.')
+        metric = identifiers[1]
+        context_identifiers = identifiers[1:]
+        value
+
+
+        context_identifiers
+        print(path, metrics)
+        return 12
 
     def select_run_metrics(self, experiment_name: str, run_hash: str,
                            select_metrics: Union[str, List[str], Tuple[str]]

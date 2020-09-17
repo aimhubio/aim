@@ -6,5 +6,6 @@ if __name__ == '__main__':
         'loss if '
         '   experiment == test_indicator '
         '   and run.archived is True '
+        '   and metrics.loss.train.nmt >= 12 '
     ))
     print(metrics)

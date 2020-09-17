@@ -15,11 +15,11 @@ class Map(Artifact):
                  namespace: Optional[str] = None,
                  aim_session_id: Optional[int] = None):
         if not self.validate_name(str(name)):
-            ValueError('Dictionary name can contain only letters, numbers, ' +
+            ValueError('dictionary name can contain only letters, numbers, ' +
                        'underscore, dash and space`')
 
         val_res, val_item = validate_dict(
-            value, (str, int,),
+            value, (str, int, tuple),
             (dict, list, tuple, set, str, int, float, bool,))
         if not val_res:
             raise TypeError(('dictionary contains illegal item: '

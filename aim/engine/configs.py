@@ -17,6 +17,7 @@ AIM_PARAMS_DIR_NAME = 'hyperparameters'
 AIM_MAP_DIR_NAME = 'map'
 AIM_STATS_DIR_NAME = 'stats'
 AIM_TEXT_DIR_NAME = 'document_texts'
+AIM_MAP_METRICS_KEYWORD = '__METRICS__'
 
 # Branches
 AIM_DEFAULT_BRANCH_NAME = 'default'
