@@ -31,6 +31,9 @@ class BinaryExpressionTree(Tree):
         else:
             self.head = other_bet.head
 
+    def dump_path_modifiers(self):
+        self.path_modifiers = []
+
     def add_path_modifier(self,
                           path_pattern_checker: Callable[[Token], bool],
                           modifier: Callable[[Token], Any]):

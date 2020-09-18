@@ -824,6 +824,18 @@ class AimRepo:
 
         for experiment_runs in runs.values():
             for run in experiment_runs:
+                # Add metrics path modifier
+                expression.dump_path_modifiers()
+                if AIM_MAP_METRICS_KEYWORD in run.params.keys():
+                    expression.add_path_modifier(
+                        lambda path_token: self.metrics_path_checker(
+                            path_token,
+                            run.config.keys()),
+                        lambda path_token: self.metrics_path_modifier(
+                            path_token,
+                            run.params[AIM_MAP_METRICS_KEYWORD])
+                    )
+
                 # Dictionary representing all search fields
                 fields = {
                     'experiment': run.experiment_name,
@@ -878,6 +890,18 @@ class AimRepo:
 
         for experiment_runs in runs.values():
             for run in experiment_runs:
+                # Add metrics path modifier
+                expression.dump_path_modifiers()
+                if AIM_MAP_METRICS_KEYWORD in run.params.keys():
+                    expression.add_path_modifier(
+                        lambda path_token: self.metrics_path_checker(
+                            path_token,
+                            run.config.keys()),
+                        lambda path_token: self.metrics_path_modifier(
+                            path_token,
+                            run.params[AIM_MAP_METRICS_KEYWORD])
+                    )
+
                 # Dictionary representing all search fields
                 fields = {
                     'experiment': run.experiment_name,
@@ -886,15 +910,6 @@ class AimRepo:
                 }
                 # Default parameters - ones passed without namespace
                 default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
-
-                # Add metrics path modifier
-                if AIM_MAP_METRICS_KEYWORD in run.params.keys():
-                    expression.add_path_modifier(
-                        lambda t: str(t).startswith('metrics.'),
-                        lambda p: self.metrics_path_modifier(
-                            p,
-                            run.params[AIM_MAP_METRICS_KEYWORD])
-                    )
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
@@ -920,18 +935,47 @@ class AimRepo:
         return matched_runs
 
     @staticmethod
-    def metrics_path_modifier(path, metrics):
-        if not '.' in path:
+    def metrics_path_checker(path, run_fields: list) -> bool:
+        path = str(path)
+        if not path.startswith('run.'):
+            return False
+
+        identifiers = path.split('.')[1:]
+        if len(identifiers) == 0 or identifiers[0] in run_fields:
+            return False
+
+        return True
+
+    @staticmethod
+    def metrics_path_modifier(path, metrics) -> Optional[bool]:
+        path = str(path)
+
+        if '.' not in path:
             return None
+
         identifiers = path.split('.')
-        metric = identifiers[1]
-        context_identifiers = identifiers[1:]
-        value
+        if len(identifiers) < 2:
+            return None
 
+        metric_name = identifiers[1]
+        if len(identifiers) > 2 and identifiers[-1] in ('min', 'max', 'last'):
+            value_field = identifiers[-1]
+            identifiers = identifiers[:-1]
+        else:
+            value_field = 'last'
 
-        context_identifiers
-        print(path, metrics)
-        return 12
+        context_identifiers = identifiers[2:]
+
+        if metric_name not in metrics:
+            return None
+
+        metric_data = metrics[metric_name]
+        for trace in metric_data:
+            context_values = list(map(lambda c: c[1], trace['context']))
+            if all(c in context_values for c in context_identifiers):
+                return trace['values'][value_field]
+
+        return None
 
     def select_run_metrics(self, experiment_name: str, run_hash: str,
                            select_metrics: Union[str, List[str], Tuple[str]]
