@@ -26,8 +26,13 @@ class Metric(Artifact):
         self.name = re.sub(' +', ' ', str(name))
         self.value = value
         self.epoch = epoch
-        self.context = kwargs if len(kwargs.keys()) else None
-        self.hashable_context = tuple(sorted(self.context.items()))
+
+        if len(kwargs.keys()):
+            self.context = kwargs
+            self.hashable_context = tuple(sorted(kwargs.items()))
+        else:
+            self.context = None
+            self.hashable_context = None
 
         super(Metric, self).__init__(self.cat)
 
