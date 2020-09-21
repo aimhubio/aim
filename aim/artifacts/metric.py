@@ -5,6 +5,7 @@ from typing import Union, Optional
 from aim.artifacts import Record
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.proto.metric_pb2 import MetricRecord
+from aim.artifacts.utils import validate_dict
 
 
 class Metric(Artifact):
@@ -23,16 +24,20 @@ class Metric(Artifact):
         if not isinstance(value, (int, float)):
             raise TypeError('metric value must be a type of int or float')
 
+        val_res, val_item = validate_dict(
+            kwargs, (str, int, float,),
+            (str, int, float, bool,))
+        if not val_res:
+            raise TypeError(('Metric context contains illegal item: '
+                             '`{}` of type `{}`').format(val_item,
+                                                         type(val_item)))
+
         self.name = re.sub(' +', ' ', str(name))
         self.value = value
         self.epoch = epoch
 
-        if len(kwargs.keys()):
-            self.context = kwargs
-            self.hashable_context = tuple(sorted(kwargs.items()))
-        else:
-            self.context = None
-            self.hashable_context = None
+        self.context = kwargs if len(kwargs.keys()) else {}
+        self.hashable_context = tuple(sorted(kwargs.items()))
 
         super(Metric, self).__init__(self.cat)
 

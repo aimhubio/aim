@@ -120,6 +120,8 @@ class Session:
 
     @exception_resistant
     def set_params(self, params: dict, name: Optional[str] = None):
+        if name is None:
+            name = AIM_NESTED_MAP_DEFAULT
         return self.track(params, namespace=name)
 
     @staticmethod
