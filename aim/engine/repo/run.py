@@ -103,6 +103,7 @@ class Run(object):
             'metrics': metrics_list,
             'experiment_name': self.experiment_name,
             'run_hash': self.run_hash,
+            'date': self.config.get('date'),
             'params': self.params,
         }
 

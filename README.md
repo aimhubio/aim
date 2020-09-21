@@ -120,8 +120,8 @@ _Examples_
 ```py
  # really any dictionary can go here
 hyperparam_dict = {
-  learning_rate: 0.0001,
-  batch_siz: 32}
+  'learning_rate': 0.0001,
+  'batch_siz': 32}
 aim.set_params(hyperparam_dict, name='params')
 ```
 The following params can be used later to perform the following search experssions

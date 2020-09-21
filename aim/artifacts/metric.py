@@ -27,11 +27,12 @@ class Metric(Artifact):
         self.value = value
         self.epoch = epoch
         self.context = kwargs if len(kwargs.keys()) else None
+        self.hashable_context = tuple(sorted(self.context.items()))
 
         super(Metric, self).__init__(self.cat)
 
         if self.context is not None:
-            step_meta = tuple(sorted(self.context.items()))
+            step_meta = self.hashable_context
         else:
             step_meta = None
         self.initialize_step_counter(step, self.name, step_meta,

@@ -53,6 +53,14 @@ class Token(object):
     def __repr__(self):
         return '{}: {}'.format(self.type, self.value)
 
+    def __str__(self):
+        if self.type == List:
+            return '[{}]'.format(','.join([str(token) for token in self.value]))
+        elif self.type == Path:
+            return '.'.join([str(token) for token in self.value])
+        else:
+            return str(self.value)
+
     @property
     def value(self) -> Any:
         return self._value
