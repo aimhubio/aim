@@ -1,3 +1,5 @@
+from typing import Callable, List, Tuple, Any
+
 from aim.ql.tree.base import Tree
 from aim.ql.tree.abstract_syntax_tree import AbstractSyntaxTree
 from aim.ql.tokens.token import Token
@@ -7,6 +9,8 @@ class BinaryExpressionTree(Tree):
     def __init__(self):
         super(BinaryExpressionTree, self).__init__()
         self.strict = True
+        self.path_modifiers: List[Tuple[Callable[[Token], bool],
+                                        Callable[[Token], Any]]] = []
 
     def build_from_ast(self, tree: AbstractSyntaxTree):
         if tree.head is not None:
@@ -26,6 +30,14 @@ class BinaryExpressionTree(Tree):
             self.head.children = [curr_tree_head, other_bet.head]
         else:
             self.head = other_bet.head
+
+    def dump_path_modifiers(self):
+        self.path_modifiers = []
+
+    def add_path_modifier(self,
+                          path_pattern_checker: Callable[[Token], bool],
+                          modifier: Callable[[Token], Any]):
+        self.path_modifiers.append((path_pattern_checker, modifier))
 
     def _evaluate(self, tree, fields: dict, *add_fields) -> bool:
         left_eval = right_eval = None
@@ -69,7 +81,12 @@ class BinaryExpressionTree(Tree):
         except:
             return False
 
-        val = tree.token.get_cleaned_value(fields, *add_fields)
+        for path_pattern_checker, path_modifier in self.path_modifiers:
+            if path_pattern_checker(tree.token) is True:
+                val = path_modifier(tree.token)
+                break
+        else:
+            val = tree.token.get_cleaned_value(fields, *add_fields)
 
         return val
 

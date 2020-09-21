@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to query runs by metric value (gorarakelyan)
 - Add ability to query runs via SDK (gorarakelyan)
 
 ## 2.0.12 Sep 12 2020
