@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.14 Sep 21 2020
 - Set Metric hashable context to None if no kwarg is passed (gorarakelyan)
 
 ## 2.0.13 Sep 21 2020
