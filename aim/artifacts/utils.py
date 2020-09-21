@@ -22,23 +22,27 @@ def get_unique(a):
 
 
 def validate_dict(item, key_types: tuple, value_types: tuple,
-                  none_type: bool = True) -> Tuple[bool, Any]:
-    if not isinstance(item, value_types):
+                  none_type: bool = True, depth: int = 1) -> Tuple[bool, Any]:
+    if not isinstance(item, value_types) \
+            and not (isinstance(item, dict) and depth == 1):
         if item is None and none_type:
             return True, None
         return False, item
 
     if isinstance(item, (list, tuple, set)):
         for i in item:
-            res, res_i = validate_dict(i, key_types, value_types)
+            res, res_i = validate_dict(i, key_types, value_types,
+                                       none_type, depth)
             if not res:
                 return res, res_i
 
     if isinstance(item, dict):
+        depth += 1
         for k, v in item.items():
             if not isinstance(k, key_types):
                 return False, k
-            res, res_i = validate_dict(v, key_types, value_types)
+            res, res_i = validate_dict(v, key_types, value_types,
+                                       none_type, depth)
             if not res:
                 return res, res_i
 
