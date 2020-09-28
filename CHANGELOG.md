@@ -1,5 +1,7 @@
 # Changelog
 
+- Remove `de` prefix from development environment management commands (gorarakelyan)
+
 ## 2.0.15 Sep 21 2020
 - Set Map artifact default namespace (gorarakelyan)
 
