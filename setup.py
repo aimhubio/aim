@@ -97,7 +97,6 @@ setup(
     entry_points={
         'console_scripts': [
             'aim=aim.cli.cli:cli_entry_point',
-            'aimde=aim.cli.de.commands:de_entry_point',
         ],
     },
     cmdclass={
