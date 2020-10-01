@@ -5,16 +5,18 @@ from time import sleep
 
 from aim.engine.configs import (
     AIM_CONTAINER_DEFAULT_PORT,
-    AIM_CONTAINER_CMD_PORT,
     AIM_TF_LOGS_PATH,
 )
 from aim.engine.repo import AimRepo
-from aim.engine.container import AimContainer, AimContainerCommandManager
+from aim.engine.container import AimContainer
 from aim.cli.de.utils import (
     repo_init_alert,
     docker_requirement_alert,
     docker_image_pull_fail_alert,
 )
+
+# from aim.engine.configs import AIM_CONTAINER_CMD_PORT
+# from aim.engine.container import AimContainerCommandManager
 
 
 @click.group()
@@ -79,7 +81,7 @@ def up(repo, dev, port, version, tf_logs):
 
     # Run container
     if dev < 2:
-        cont.add_port(port + 1, AIM_CONTAINER_CMD_PORT)
+        # cont.add_port(port + 1, AIM_CONTAINER_CMD_PORT)
         if not cont.up(port, version):
             click.echo('Failed to run AimDE.')
             click.echo(('    Please check if port {c} is ' +
@@ -88,13 +90,13 @@ def up(repo, dev, port, version, tf_logs):
         else:
             sleep(4)
 
-    cont_cmd = AimContainerCommandManager((port + 1) if dev < 2
-                                          else AIM_CONTAINER_CMD_PORT)
-    cont_cmd.listen()
+    # cont_cmd = AimContainerCommandManager((port + 1) if dev < 2
+    #                                       else AIM_CONTAINER_CMD_PORT)
+    # cont_cmd.listen()
 
     # Kill container after keyboard interruption
     def graceful_shutdown():
-        cont_cmd.kill()
+        # cont_cmd.kill()
 
         click.echo('')
         click.echo('Shutting down...')
