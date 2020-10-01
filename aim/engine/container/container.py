@@ -12,11 +12,9 @@ class AimContainer:
 
     @staticmethod
     def is_docker_installed():
-        # Check if docker is installed
-        docker = get_module('docker')
-        client = docker.from_env()
-
         try:
+            docker = get_module('docker')
+            client = docker.from_env()
             client.ping()
             return True
         except Exception:
