@@ -6,6 +6,7 @@ from time import sleep
 from aim.engine.configs import (
     AIM_CONTAINER_DEFAULT_PORT,
     AIM_TF_LOGS_PATH,
+    AIM_CONTAINER_DEFAULT_HOST,
 )
 from aim.engine.repo import AimRepo
 from aim.engine.container import AimContainer
@@ -39,8 +40,9 @@ def de_entry_point(ctx):
 @click.option('-p', '--port', default=AIM_CONTAINER_DEFAULT_PORT, type=int)
 @click.option('-v', '--version', default='latest', type=str)
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
+@click.option('-h', '--host', default=AIM_CONTAINER_DEFAULT_HOST, type=str)
 @click.pass_obj
-def up(repo, dev, port, version, tf_logs):
+def up(repo, dev, port, version, tf_logs, host):
     if repo is None:
         repo_init_alert()
         return
@@ -81,11 +83,13 @@ def up(repo, dev, port, version, tf_logs):
 
     # Run container
     if dev < 2:
-        # cont.add_port(port + 1, AIM_CONTAINER_CMD_PORT)
-        if not cont.up(port, version):
+        # cont.bind(port + 1, AIM_CONTAINER_CMD_PORT)
+        try:
+            assert cont.up(port, host, version)
+        except:
             click.echo('Failed to run AimDE.')
-            click.echo(('    Please check if port {c} is ' +
-                        'accessible.').format(c=port))
+            click.echo(('    Please check if address {h}:{c} is ' +
+                        'accessible.').format(h=host, c=port))
             return
         else:
             sleep(4)
@@ -111,7 +115,7 @@ def up(repo, dev, port, version, tf_logs):
     # signal.signal(signal.SIGINT, graceful_shutdown)
     # signal.pause()
 
-    click.echo('Open http://127.0.0.1:{}'.format(port))
+    click.echo('Open http://{}:{}'.format(host, port))
     click.echo('Press Ctrl+C to exit')
 
     # Graceful shutdown
