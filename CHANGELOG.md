@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to specify host when running AimDE (gorarakelyan)
 - Disable `AimContainerCommandManager` (gorarakelyan)
 - Remove `aimde` command entry point (gorarakelyan)
 - Remove `de` prefix from development environment management commands (gorarakelyan)
