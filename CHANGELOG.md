@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.16 Oct 2 2020
 - Add ability to specify host when running AimDE (gorarakelyan)
 - Disable `AimContainerCommandManager` (gorarakelyan)
 - Remove `aimde` command entry point (gorarakelyan)
