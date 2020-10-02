@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.16 Oct 2 2020
+- Add ability to specify host when running AimDE (gorarakelyan)
+- Disable `AimContainerCommandManager` (gorarakelyan)
+- Remove `aimde` command entry point (gorarakelyan)
+- Remove `de` prefix from development environment management commands (gorarakelyan)
+
 ## 2.0.15 Sep 21 2020
 - Set Map artifact default namespace (gorarakelyan)
 

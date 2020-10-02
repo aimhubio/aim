@@ -12,11 +12,9 @@ class AimContainer:
 
     @staticmethod
     def is_docker_installed():
-        # Check if docker is installed
-        docker = get_module('docker')
-        client = docker.from_env()
-
         try:
+            docker = get_module('docker')
+            client = docker.from_env()
             client.ping()
             return True
         except Exception:
@@ -39,13 +37,13 @@ class AimContainer:
 
         self.dev = dev
 
-    def up(self, port, version):
+    def up(self, port, host, version):
         """
         Runs docker container in background mounted to aim repo.
         Returns `id` of the container or `None` if an error occurred.
         """
 
-        self.add_port(port)
+        self.bind(port, host)
         image_name = AIM_CONTAINER_IMAGE_DEV if self.dev \
             else self.get_image_name(version)
 
@@ -108,11 +106,12 @@ class AimContainer:
 
         return False
 
-    def add_port(self, port, to=None):
+    def bind(self, port, host, to=None):
+        host_interface = (host, port)
         if to is None:
-            self.ports['80/tcp'] = port
+            self.ports['80/tcp'] = host_interface
         else:
-            self.ports['{}/tcp'.format(to)] = port
+            self.ports['{}/tcp'.format(to)] = host_interface
 
     def mount_volume(self, path, mount_to):
         if path and mount_to and path not in self.volumes:

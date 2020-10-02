@@ -8,4 +8,7 @@ STATUS_NAME = 'status'
 CONFIG_NAME = 'config'
 
 # Shortcuts
-DE_UP_SHORTCUT = 'up'
+DE_UP_NAME = 'up'
+DE_DOWN_NAME = 'down'
+DE_UPGRADE_NAME = 'upgrade'
+DE_PULL_NAME = 'pull'
