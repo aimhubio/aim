@@ -2,7 +2,7 @@
 
 ![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A super-easy way to record, search and compare AI experiments.
+***A super-easy way to record, search and compare AI experiments.***
 
 Check out a [LIVE DEMO](http://demo-1.aimstack.io:43900/dashboard) and a quick [VIDEO](https://www.youtube.com/watch?v=TeAkyRIMxx4&ab_channel=Aim) on what you can achieve with Aim.
 <img src="https://user-images.githubusercontent.com/13848158/92605507-ddfacd80-f2c2-11ea-8547-0659ee2dcb37.png">
