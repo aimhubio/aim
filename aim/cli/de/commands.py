@@ -61,19 +61,19 @@ def up(repo, dev, port, version, tf_logs, host):
         cont.mount_volume(tf_logs, AIM_TF_LOGS_PATH)
 
     click.echo(
-        click.style('Running AimDE on repo `{}`'.format(repo), fg='yellow'))
+        click.style('Running Aim UI on repo `{}`'.format(repo), fg='yellow'))
 
     # Check if image exist
     if dev == 0 and not cont.image_exist(version):
-        click.echo('Pulling AimDE image, please wait...')
+        click.echo('Pulling Aim UI docker image, please wait...')
         if not cont.pull(version):
             docker_image_pull_fail_alert()
             return
         else:
-            click.echo('Successfully pulled AimDE image')
+            click.echo('Successfully pulled Aim UI image')
 
     if cont.get_container(running_only=True):
-        kill = click.confirm('AimDE is already running. ' +
+        kill = click.confirm('Aim UI is already running. ' +
                              'Do you want to restart it?')
         if not kill:
             return
@@ -87,7 +87,7 @@ def up(repo, dev, port, version, tf_logs, host):
         try:
             assert cont.up(port, host, version)
         except:
-            click.echo('Failed to run AimDE.')
+            click.echo('Failed to run Aim UI.')
             click.echo(('    Please check if address {h}:{c} is ' +
                         'accessible.').format(h=host, c=port))
             return
@@ -141,7 +141,7 @@ def down(repo):
 def upgrade(repo):
     cont = AimContainer(repo)
 
-    click.echo('Pulling latest AimDE release')
+    click.echo('Pulling latest Aim UI')
 
     update = cont.pull()
     if update:
@@ -156,7 +156,7 @@ def upgrade(repo):
 def pull(repo, version):
     cont = AimContainer(repo)
 
-    click.echo('Pulling AimDE v{}'.format(version))
+    click.echo('Pulling Aim UI v{}'.format(version))
 
     update = cont.pull(version)
     if update:
