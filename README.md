@@ -4,6 +4,7 @@
 
 A super-easy way to record, search and compare AI experiments.
 
+Here is a [LIVE DEMO](http://demo-1.aimstack.io:43900/dashboard) and a quick [VIDEO](https://www.youtube.com/watch?v=TeAkyRIMxx4&ab_channel=Aim) on what you can achieve with Aim.
 <img src="https://user-images.githubusercontent.com/13848158/92605507-ddfacd80-f2c2-11ea-8547-0659ee2dcb37.png">
 
 ## Getting started in three steps
