@@ -218,14 +218,13 @@ Running `aim init` in an existing repository will prompt the user for re-initial
   **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
 ### version
-Display the version of the currently installed Aim CLI.
+Display the Aim version installed.
 ```shell
 $ aim version
 ```
 
 ### experiment
-Create new experiments to organize the training runs related to the same experiment
-Here is how it works:
+Create new experiments to organize the training runs. Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
 ```
@@ -236,10 +235,10 @@ $ aim experiment COMMAND [ARGS]
 | `ls`       |                                 | List all the experiments of the repo.                     |
 | `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
-***Disclaimer:*** Removing the experiment also removes the recorded experiment data.
+***Disclaimer:*** Removing the experiment also removes the recorded experiment runs data.
 
 ### up
-Start ups the web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
+Start the Aim web UI locally. Aim UI is a Docker container that mounts the `.aim` folder and lets researchers manage, search and start new training runs.
 ```shell
 $ aim up [ARGS]
 ```
@@ -254,20 +253,22 @@ $ aim up [ARGS]
 ***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
 
+***Please make sure to run `aim up` in the directory where `.aim` is located.***
+
 ### down
-Turn off the UI manually:
+Turn off Aim UI manually:
 ```shell
 $ aim down
 ```
 
 ### upgrade
-Upgrade the UI to its latest version:
+Upgrade Aim UI to its latest version:
 ```shell
 $ aim upgrade
 ```
 
 ### pull
-Pulls the UI of the given version:
+Pulls Aim UI of the given version:
 ```shell
 $ aim pull -v <version>
 ```
