@@ -191,7 +191,7 @@ Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFy
 ## Command Line Interface
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
-Paired with the [PyThon Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
+Paired with the [Python Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
 Here are the set of commands supported:
 
 
