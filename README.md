@@ -2,7 +2,9 @@
 
 ![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A super-easy way to record, search and compare AI experiments.
+**A super-easy way to record, search and compare AI experiments.**
+
+> Check out a [LIVE DEMO](http://demo-1.aimstack.io:43900/dashboard) and a quick [VIDEO](https://www.youtube.com/watch?v=TeAkyRIMxx4&ab_channel=Aim) on what you can achieve with Aim.
 
 <img src="https://user-images.githubusercontent.com/13848158/92605507-ddfacd80-f2c2-11ea-8547-0659ee2dcb37.png">
 
@@ -23,7 +25,6 @@ aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
 ```shell
 $ aim up
 ```
-[Here](http://demo-1.aimstack.io/) is what to expect when you first open Aim.
 
 ## Contents
 
@@ -45,11 +46,11 @@ $ aim up
     - [init](#init)
     - [version](#version)
     - [experiment](#experiment)
-    - [de](#de)
     - [up](#up)
     - [down](#down)
+    - [upgrade](#upgrade)
+    - [pull](#pull)
   - [TensorBoard Experiments](#tensorboard-experiments)
-  - [How It Works](#how-it-works)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
@@ -199,8 +200,10 @@ Here are the set of commands supported:
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `experiment`  | Creates a new experiment to group similar training runs into.        |
-| `de`          | Starts the AI Development Environment.                               |
-| `up`          | An alias to `aim de up`.                                             |
+| `up`          | Runs Aim web UI for the given repo                                   |
+| `down`        | Turn off the UI                                                      |
+| `upgrade`     | Upgrade the UI to its latest version                                 |
+| `pull`        | Pull the UI of the given version                                     |
 
 ### init
 __**This step is optional.**__
@@ -215,14 +218,13 @@ Running `aim init` in an existing repository will prompt the user for re-initial
   **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
 ### version
-Display the version of the currently installed Aim CLI.
+Display the Aim version installed.
 ```shell
 $ aim version
 ```
 
 ### experiment
-Create new experiments to organize the training runs related to the same experiment
-Here is how it works:
+Create new experiments to organize the training runs. Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
 ```
@@ -233,35 +235,42 @@ $ aim experiment COMMAND [ARGS]
 | `ls`       |                                 | List all the experiments of the repo.                     |
 | `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
-***Disclaimer:*** Removing the experiment also removes the recorded experiment data.
-
-### de
-AI Development Environment is a web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
-
-Start up the AI Development Environment (ADE)
-```shell
-$ aim de [COMMAND]
-```
-***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
-Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
-
-| Command   | Args                            | Description                                               |
-| --------- | ------------------------------- | --------------------------------------------------------- |
-| `up`      | `-p <port>` &#124; `-v version` | Starts the AI Development Environment for the given repo  |
-| `down`    |                                 | Turn off the AI Development Environment                   |
-| `pull`    | `-v <version>`                  | Pull the ADE of the given version                         |
-| `upgrade` |                                 | Upgrade the ADE to its latest version                     |
+***Disclaimer:*** Removing the experiment also removes the recorded experiment runs data.
 
 ### up
-An alias to `aim de up` :
+Start the Aim web UI locally. Aim UI is a Docker container that mounts the `.aim` folder and lets researchers manage, search and start new training runs.
 ```shell
-$ aim up
+$ aim up [ARGS]
 ```
 
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
+| `-h` &#124; `--host <host>`       | Specify host address.                                     |
+| `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`.               |
+| `--tf_logs <logs_dir_path>`       | Use Aim to search cand compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments)|
+
+***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
+Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
+
+***Please make sure to run `aim up` in the directory where `.aim` is located.***
+
 ### down
-An alias to `aim de down`:
+Turn off Aim UI manually:
 ```shell
 $ aim down
+```
+
+### upgrade
+Upgrade Aim UI to its latest version:
+```shell
+$ aim upgrade
+```
+
+### pull
+Pulls Aim UI of the given version:
+```shell
+$ aim pull -v <version>
 ```
 
 ## TensorBoard Experiments
@@ -273,10 +282,3 @@ This command will spin up Aim on the TensorFlow summary logs and load the logs r
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
 
 Tensorboard search example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9fQ==)
-
-## How it works
-The stack of projects that enable AI Development Environment:
-<img src="https://user-images.githubusercontent.com/3179216/86802291-f0b81280-c085-11ea-8715-6fd650c4a45d.png">
-- [Aim](#aim) - Version Control for AI Experiments.
-- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
-- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
