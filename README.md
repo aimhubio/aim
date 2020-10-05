@@ -252,7 +252,7 @@ $ aim up [ARGS]
 | `--tf_logs <logs_dir_path>`       | TF                                                        |
 
 ***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
-Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with UI.
+Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
 
 ### down
 Turn off the UI manually:
