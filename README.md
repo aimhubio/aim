@@ -255,7 +255,7 @@ $ aim up [ARGS]
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with UI.
 
 ### down
-Turn off the UI:
+Turn off the UI manually:
 ```shell
 $ aim down
 ```
@@ -269,7 +269,7 @@ $ aim upgrade
 ### pull
 Pulls the UI of the given version:
 ```shell
-$ aim pull [-v|--version <version>]
+$ aim pull -v <version>
 ```
 
 ## TensorBoard Experiments
@@ -281,10 +281,3 @@ This command will spin up Aim on the TensorFlow summary logs and load the logs r
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
 
 Tensorboard search example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9fQ==)
-
-## How it works
-The stack of projects that enable AI Development Environment:
-<img src="https://user-images.githubusercontent.com/3179216/86802291-f0b81280-c085-11ea-8715-6fd650c4a45d.png">
-- [Aim](#aim) - Version Control for AI Experiments.
-- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
-- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
