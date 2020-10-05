@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.17 Oct 5 2020
 - Rename `AimDE` to `Aim UI` (gorarakelyan)
 
 ## 2.0.16 Oct 2 2020
