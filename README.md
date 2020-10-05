@@ -199,8 +199,10 @@ Here are the set of commands supported:
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `experiment`  | Creates a new experiment to group similar training runs into.        |
-| `de`          | Starts the AI Development Environment.                               |
-| `up`          | An alias to `aim de up`.                                             |
+| `up`          | Runs Aim web UI for the given repo                                   |
+| `down`        | Turn off the UI                                                      |
+| `upgrade`     | Upgrade the UI to its latest version                                 |
+| `pull`        | Pull the UI of the given version                                     |
 
 ### init
 __**This step is optional.**__
@@ -235,33 +237,31 @@ $ aim experiment COMMAND [ARGS]
 
 ***Disclaimer:*** Removing the experiment also removes the recorded experiment data.
 
-### de
-AI Development Environment is a web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
-
-Start up the AI Development Environment (ADE)
-```shell
-$ aim de [COMMAND]
-```
-***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
-Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
-
-| Command   | Args                            | Description                                               |
-| --------- | ------------------------------- | --------------------------------------------------------- |
-| `up`      | `-p <port>` &#124; `-v version` | Starts the AI Development Environment for the given repo  |
-| `down`    |                                 | Turn off the AI Development Environment                   |
-| `pull`    | `-v <version>`                  | Pull the ADE of the given version                         |
-| `upgrade` |                                 | Upgrade the ADE to its latest version                     |
-
 ### up
-An alias to `aim de up` :
-```shell
-$ aim up
+Start ups the web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
 ```
+aim up [-p|--port <port>] [-h|--host <host>] [-v|--version <version>]
+```
+
+***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
+Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with UI.
 
 ### down
-An alias to `aim de down`:
-```shell
-$ aim down
+Turn off the UI:
+```
+aim down
+```
+
+### upgrade
+Upgrade the UI to its latest version:
+```
+aim upgrade
+```
+
+### pull
+Pulls the UI of the given version:
+```
+aim pull [-v|--version <version>]
 ```
 
 ## TensorBoard Experiments
