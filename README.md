@@ -240,29 +240,36 @@ $ aim experiment COMMAND [ARGS]
 
 ### up
 Start ups the web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
+```shell
+$ aim up [ARGS]
 ```
-aim up [-p|--port <port>] [-h|--host <host>] [-v|--version <version>]
-```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `-p` &#124; `--port <port>`       | Specify port to listen to                                 |
+| `-h` &#124; `--host <host>`       | Specify host address                                      |
+| `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`                |
+| `--tf_logs <logs_dir_path>`       | TF                                                        |
 
 ***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with UI.
 
 ### down
 Turn off the UI:
-```
-aim down
+```shell
+$ aim down
 ```
 
 ### upgrade
 Upgrade the UI to its latest version:
-```
-aim upgrade
+```shell
+$ aim upgrade
 ```
 
 ### pull
 Pulls the UI of the given version:
-```
-aim pull [-v|--version <version>]
+```shell
+$ aim pull [-v|--version <version>]
 ```
 
 ## TensorBoard Experiments
