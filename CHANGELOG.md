@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.18 Oct 7 2020
 - Add ability to run Aim UI in detached mode (gorarakelyan)
 - Add ability to specify repo path when running Aim UI (gorarakelyan)
 
