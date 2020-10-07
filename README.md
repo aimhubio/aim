@@ -248,7 +248,7 @@ $ aim up [ARGS]
 | `-h` &#124; `--host <host>`       | Specify host address.                                     |
 | `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
 | `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`.               |
-| `--repo <repo_path>`              | Path to root directory of `.aim` repo. Current working directory by default. |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 | `-d` &#124; `--detach`            | Run Aim UI in detached mode.                             |
 | `--tf_logs <logs_dir_path>`       | Use Aim to search cand compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
 
@@ -265,7 +265,7 @@ $ aim down [ARGS]
 
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
-| `--repo <repo_path>`              | Path to root directory of `.aim` repo. Current working directory by default. |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
 ### upgrade
 Upgrade Aim UI to its latest version:
