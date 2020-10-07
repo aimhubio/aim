@@ -21,7 +21,7 @@ aim.set_params(hyperparam_dict, name='params_name')
 aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
 ...
 ```
-3. Run the training like you are used to and start the AI Dev Environment
+3. Run the training like you are used to and start Aim UI
 ```shell
 $ aim up
 ```
@@ -59,7 +59,7 @@ To install Aim, you need to have python3 and pip3 installed in your environment
 ```shell
 $ pip3 install aim-cli
 ```
-In order to start Aim Development Environment you need to have Docker installed.
+In order to start Aim UI you need to have Docker installed.
 ```shell
 $ aim up
 ```
@@ -186,7 +186,7 @@ Here are the ways you can search on Aim:
 - Display the train loss of experiments whose learning rate is greater than 0.0001:
   - `loss if context.subset == train and params.learning_rate > 0.0001`
 
-Check out this demo [dev-environment](http://demo-1.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==) deployment to play around with search.
+Check out this demo [project](http://demo-1.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==) deployment to play around with search.
 
 ## Command Line Interface
 
