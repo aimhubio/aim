@@ -177,3 +177,22 @@ def archive_dir(zip_path, dir_path):
 
     # Remove model directory
     shutil.rmtree(dir_path)
+
+
+def clean_repo_path(repo_path: str) -> str:
+    if not isinstance(repo_path, str) or not repo_path:
+        return ''
+
+    repo_path = repo_path.strip().rstrip('/')
+
+    if repo_path == '.':
+        return os.getcwd()
+    if repo_path == '~':
+        return os.path.expanduser('~')
+
+    if repo_path.endswith('.aim'):
+        repo_path = repo_path[:-4]
+    if repo_path.startswith('~'):
+        repo_path = os.path.expanduser('~') + repo_path[1:]
+
+    return os.path.abspath(repo_path)

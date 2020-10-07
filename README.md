@@ -245,10 +245,12 @@ $ aim up [ARGS]
 
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
-| `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
 | `-h` &#124; `--host <host>`       | Specify host address.                                     |
+| `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
 | `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`.               |
-| `--tf_logs <logs_dir_path>`       | Use Aim to search cand compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments)|
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+| `-d` &#124; `--detach`            | Run Aim UI in detached mode.                             |
+| `--tf_logs <logs_dir_path>`       | Use Aim to search cand compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
 
 ***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
@@ -258,8 +260,12 @@ Most of the environments nowadays have docker preinstalled or installed for othe
 ### down
 Turn off Aim UI manually:
 ```shell
-$ aim down
+$ aim down [ARGS]
 ```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
 ### upgrade
 Upgrade Aim UI to its latest version:
