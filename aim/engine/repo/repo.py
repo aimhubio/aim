@@ -10,7 +10,7 @@ from typing import List, Optional, Union, Tuple
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import (
-    ls_dir, import_module,
+    ls_dir, import_module, clean_repo_path,
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
@@ -82,12 +82,14 @@ class AimRepo:
                  repo_full_path=None,
                  mode=WRITING_MODE):
         self._config = {}
-        self.root_path = repo_full_path or path
+        path = clean_repo_path(path)
         self.path = repo_full_path or os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.hash = hashlib.md5(self.path.encode('utf-8')).hexdigest()
-        self.name = self.root_path.split(os.sep)[-1]
         self.active_commit = repo_commit or AIM_COMMIT_INDEX_DIR_NAME
+
+        self.root_path = repo_full_path or path
+        self.name = self.root_path.split(os.sep)[-1]
 
         self.branch_path = None
         self.index_path = None
