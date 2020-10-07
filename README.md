@@ -1,10 +1,12 @@
 # Aim
 
-![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+![GitHub Top Language](https://img.shields.io/github/languages/top/aimhubio/aim) [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/) [![License](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A super-easy way to record, search and compare AI experiments.
+**A super-easy way to record, search and compare AI experiments.**
 
-<img src="https://user-images.githubusercontent.com/13848158/92605507-ddfacd80-f2c2-11ea-8547-0659ee2dcb37.png">
+> Check out a [LIVE DEMO](http://demo-1.aimstack.io:43900/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsImludGVycG9sYXRlIjp0cnVlLCJ6b29tIjp7IjAiOnsieCI6WzIuNjg1MTczMTQ4MTA1MzM4NSwzOF0sInkiOlszLjQ1NDEwMDA0ODU0MjAyMywzLjY4MjMzOTM5NzAxNzAyOF19LCIxIjp7IngiOlsyLjUzNzIwNjUxMzA3NzU1NywzOF0sInkiOlsyNy42NzE5Nzg3NjM2MTk2ODQsMzIuNTgxOTk5Nzc4NzQ3NTZdfSwiMiI6eyJ4IjpbNi4xMzAwNzcxODU4MDYzMzIsMjddLCJ5IjpbMy40MzIxNTAwNTM5Nzc5NjYsMy42NDc3MDkzNTA2NzM4NjZdfSwiMyI6eyJ4IjpbMy40OTA5MDg3NzA3OTQyNDE0LDI3XSwieSI6WzI5LjE0MjQ0OTMzOTY5ODA4MiwzMy43NzI5OTk5NTQyMjM2MzZdfSwiNCI6eyJ4IjpbNC42OTMxNjM4MzkzNzM3MDgsMjhdLCJ5IjpbMjkuNDA5MjQ3MjgyOTAwMjY0LDMyLjEwMzk5OTcxMDA4MzAxXX0sIjUiOnsieCI6WzYuOTQxMTk3MDgwOTUyMjg1LDI3LjA0MTk0NTU0NjY2ODI2XSwieSI6WzMuNDgxNjAwMDgxOTIwNjI0LDMuNTgyNzgzODQ4MDA3ODUzOF19fX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfX0sImZvY3VzZWQiOnsiY2lyY2xlIjp7ImFjdGl2ZSI6ZmFsc2UsInJ1bkhhc2giOm51bGwsIm1ldHJpY05hbWUiOm51bGwsInRyYWNlQ29udGV4dCI6bnVsbCwic3RlcCI6bnVsbH19fSwic2VhcmNoIjp7InF1ZXJ5IjoiYmxldSBpZiBjb250ZXh0LnN1YnNldCA9PSB0ZXN0IGFuZCBocGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAwMDAxIiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiZ3JvdXBCeVN0eWxlIjpbXSwiZ3JvdXBCeUNvbG9yIjpbInBhcmFtcy5ocGFyYW1zLmFsaWduIiwicGFyYW1zLmhwYXJhbXMubWF4X2siLCJwYXJhbXMuZGF0YXNldC5wcmVwcm9jIl0sImFnZ3JlZ2F0ZWQiOnRydWUsImdyb3VwQnlDaGFydCI6WyJwYXJhbXMuaHBhcmFtcy5tYXhfayIsInBhcmFtcy5ocGFyYW1zLmFsaWduIl19fQ==) and a quick [VIDEO](https://www.youtube.com/watch?v=TeAkyRIMxx4&ab_channel=Aim) on what you can achieve with Aim.
+
+<img src="https://user-images.githubusercontent.com/13848158/95088468-0fd14980-0734-11eb-8137-698afa2f3a5d.png">
 
 ## Getting started in three steps
 1. Install Aim in your training environment and init in the project folder
@@ -19,11 +21,10 @@ aim.set_params(hyperparam_dict, name='params_name')
 aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
 ...
 ```
-3. Run the training like you are used to and start the AI Dev Environment
+3. Run the training like you are used to and start Aim UI
 ```shell
 $ aim up
 ```
-[Here](http://demo-1.aimstack.io/) is what to expect when you first open Aim.
 
 ## Contents
 
@@ -45,11 +46,11 @@ $ aim up
     - [init](#init)
     - [version](#version)
     - [experiment](#experiment)
-    - [de](#de)
     - [up](#up)
     - [down](#down)
+    - [upgrade](#upgrade)
+    - [pull](#pull)
   - [TensorBoard Experiments](#tensorboard-experiments)
-  - [How It Works](#how-it-works)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
@@ -58,7 +59,7 @@ To install Aim, you need to have python3 and pip3 installed in your environment
 ```shell
 $ pip3 install aim-cli
 ```
-In order to start Aim Development Environment you need to have Docker installed.
+In order to start Aim UI you need to have Docker installed.
 ```shell
 $ aim up
 ```
@@ -107,7 +108,7 @@ loss if context.subset == train and context.dataset in (train_1) # Retrieve all 
 ```
 Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
 
-Search by context example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX19):
+Search by context example [here](http://demo-1.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJkaXNwbGF5T3V0bGllcnMiOmZhbHNlLCJ6b29tIjpudWxsLCJpbnRlcnBvbGF0ZSI6ZmFsc2V9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==):
 
 ### set_params
 aim.**set_params**_(dict_value, name) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L11)</sub>_
@@ -185,12 +186,12 @@ Here are the ways you can search on Aim:
 - Display the train loss of experiments whose learning rate is greater than 0.0001:
   - `loss if context.subset == train and params.learning_rate > 0.0001`
 
-Check out this demo [dev-environment](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOnRydWUsInN0ZXAiOjI0LCJydW5IYXNoIjoiZGM3OGFjOGEtYzJkZC0xMWVhLWI2Y2ItMGExOTU0N2ViYjJlIiwibWV0cmljTmFtZSI6Imxvc3MiLCJ0cmFjZUNvbnRleHQiOiJiblZzYkEifX19LCJzZWFyY2giOnsicXVlcnkiOiJsb3NzIGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCIsInYiOjF9fQ==) deployment to play around with search.
+Check out this demo [project](http://demo-1.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==) deployment to play around with search.
 
 ## Command Line Interface
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
-Paired with the [PyThon Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
+Paired with the [Python Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
 Here are the set of commands supported:
 
 
@@ -199,8 +200,10 @@ Here are the set of commands supported:
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `experiment`  | Creates a new experiment to group similar training runs into.        |
-| `de`          | Starts the AI Development Environment.                               |
-| `up`          | An alias to `aim de up`.                                             |
+| `up`          | Runs Aim web UI for the given repo                                   |
+| `down`        | Turn off the UI                                                      |
+| `upgrade`     | Upgrade the UI to its latest version                                 |
+| `pull`        | Pull the UI of the given version                                     |
 
 ### init
 __**This step is optional.**__
@@ -215,14 +218,13 @@ Running `aim init` in an existing repository will prompt the user for re-initial
   **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
 ### version
-Display the version of the currently installed Aim CLI.
+Display the Aim version installed.
 ```shell
 $ aim version
 ```
 
 ### experiment
-Create new experiments to organize the training runs related to the same experiment
-Here is how it works:
+Create new experiments to organize the training runs. Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
 ```
@@ -233,35 +235,48 @@ $ aim experiment COMMAND [ARGS]
 | `ls`       |                                 | List all the experiments of the repo.                     |
 | `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
 
-***Disclaimer:*** Removing the experiment also removes the recorded experiment data.
-
-### de
-AI Development Environment is a web app that runs locally on researcher's training environment,  mounts the `.aim` folder and lets researchers manage, search and start new training runs.
-
-Start up the AI Development Environment (ADE)
-```shell
-$ aim de [COMMAND]
-```
-***Disclaimer:*** ADE uses docker containers to run and having docker installed in the training environment is mandatory for ADE to run.
-Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with ADE.
-
-| Command   | Args                            | Description                                               |
-| --------- | ------------------------------- | --------------------------------------------------------- |
-| `up`      | `-p <port>` &#124; `-v version` | Starts the AI Development Environment for the given repo  |
-| `down`    |                                 | Turn off the AI Development Environment                   |
-| `pull`    | `-v <version>`                  | Pull the ADE of the given version                         |
-| `upgrade` |                                 | Upgrade the ADE to its latest version                     |
+***Disclaimer:*** Removing the experiment also removes the recorded experiment runs data.
 
 ### up
-An alias to `aim de up` :
+Start the Aim web UI locally. Aim UI is a Docker container that mounts the `.aim` folder and lets researchers manage, search and start new training runs.
 ```shell
-$ aim up
+$ aim up [ARGS]
 ```
 
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `-h` &#124; `--host <host>`       | Specify host address.                                     |
+| `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
+| `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`.               |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+| `-d` &#124; `--detach`            | Run Aim UI in detached mode.                             |
+| `--tf_logs <logs_dir_path>`       | Use Aim to search cand compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
+
+***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
+Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
+
+***Please make sure to run `aim up` in the directory where `.aim` is located.***
+
 ### down
-An alias to `aim de down`:
+Turn off Aim UI manually:
 ```shell
-$ aim down
+$ aim down [ARGS]
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+### upgrade
+Upgrade Aim UI to its latest version:
+```shell
+$ aim upgrade
+```
+
+### pull
+Pulls Aim UI of the given version:
+```shell
+$ aim pull -v <version>
 ```
 
 ## TensorBoard Experiments
@@ -272,11 +287,4 @@ $ aim up --tf_logs path/to/logs
 This command will spin up Aim on the TensorFlow summary logs and load the logs recursively from the given path.
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
 
-Tensorboard search example [here](http://demo-1.aimstack.io/?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJ5U2NhbGUiOjAsImRpc3BsYXlPdXRsaWVycyI6ZmFsc2V9LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9fQ==)
-
-## How it works
-The stack of projects that enable AI Development Environment:
-<img src="https://user-images.githubusercontent.com/3179216/86802291-f0b81280-c085-11ea-8715-6fd650c4a45d.png">
-- [Aim](#aim) - Version Control for AI Experiments.
-- [Aim Records](https://github.com/aimhubio/aimrecords) - an effective storage to store recorded AI metadata.
-- [Aim DE](https://github.com/aimhubio/aimde) - AI Development Environment to record, search and compare the training runs.
+Tensorboard search example [here](http://demo-1.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsiZGlzcGxheU91dGxpZXJzIjpmYWxzZSwiem9vbSI6bnVsbCwiaW50ZXJwb2xhdGUiOmZhbHNlfSwiem9vbSI6bnVsbH0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbCwiZGlzcGxheU91dGxpZXJzIjpmYWxzZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7ImFnZ3JlZ2F0ZWQiOmZhbHNlLCJncm91cEJ5Q29sb3IiOltdLCJncm91cEJ5U3R5bGUiOltdLCJncm91cEJ5Q2hhcnQiOlsiZXhwZXJpbWVudCJdfX0=)
