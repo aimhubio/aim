@@ -169,7 +169,20 @@ Pass an instance of `AimTracker.metrics([session])` to keras callbacks.
 _Parameters_
 - **session** - Aim Session instance(optional)
 
-- [Here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67) is an example
+_Examples_
+
+```python
+model.fit(x_train, y_train,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_data=(x_test, y_test),
+          callbacks=[
+              AimTracker.metrics(),
+          ])
+```
+
+> Full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67)
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
