@@ -30,8 +30,6 @@
 
 </div>
 
----
-
 ## Getting started in three steps
 1. Install Aim in your training environment and init in the project folder
 ```shell
