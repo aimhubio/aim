@@ -22,13 +22,15 @@
 
 ---
 
-Integrate seamlessly with existing tools
+<h6 style="color: grey">Integrate seamlessly with existing tools</h6>
 
 <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="100" />
 
 </div>
+
+---
 
 ## Getting started in three steps
 1. Install Aim in your training environment and init in the project folder
