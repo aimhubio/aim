@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="https://user-images.githubusercontent.com/13848158/97080941-23bfeb00-1610-11eb-93b9-80c0b2b2be86.png" height="100" />
+<img src="https://user-images.githubusercontent.com/13848158/97080941-23bfeb00-1610-11eb-93b9-80c0b2b2be86.png" height="60" />
+
+&nbsp;
 
 **A super-easy way to record, search and compare AI experiments.**
 
