@@ -152,6 +152,17 @@ def is_numpy_array(inst):
     return inst_has_typename(inst, ['numpy', 'ndarray'])
 
 
+def is_numpy_number(inst):
+    """
+    Check whether `inst` is numpy number and convert to python native type
+    """
+    if inst_has_typename(inst, ['numpy']):
+        converted_val = inst.item()
+        if isinstance(converted_val, (int, float)):
+            return True, converted_val
+    return False, None
+
+
 def get_module(name, required=True):
     """
     Return specified module or None otherwise,

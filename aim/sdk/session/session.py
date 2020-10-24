@@ -33,6 +33,8 @@ class Session:
         self.metrics = {}
 
         self.active = True
+        self._run_hash = self.repo.active_commit
+        self._repo_path = self.repo.path
 
         # Finalize run
         atexit.register(self.close)
@@ -40,6 +42,14 @@ class Session:
     @exception_resistant
     def __del__(self):
         self.close()
+
+    @property
+    def run_hash(self):
+        return self._run_hash
+
+    @property
+    def repo_path(self):
+        return self._repo_path
 
     @exception_resistant
     def close(self):
