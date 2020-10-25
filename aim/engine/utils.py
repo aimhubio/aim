@@ -145,6 +145,13 @@ def is_pytorch_optim(inst):
     return inst_has_typename(inst, ['torch', 'optim'])
 
 
+def is_pytorch_tensor(inst):
+    """
+    Check whether `inst` is instance of pytorch tensor
+    """
+    return inst_has_typename(inst, ['torch', 'Tensor'])
+
+
 def is_numpy_array(inst):
     """
     Check whether `inst` is instance of numpy array
@@ -161,6 +168,23 @@ def is_numpy_number(inst):
         if isinstance(converted_val, (int, float)):
             return True, converted_val
     return False, None
+
+
+def convert_to_py_number(value):
+    """
+    Converts numpy objects or tensors to python number types
+    """
+    if isinstance(value, (int, float)):
+        return value
+
+    np_number, converted_val = is_numpy_number(value)
+    if np_number:
+        return converted_val
+
+    if is_pytorch_tensor(value):
+        return value.item()
+
+    return value
 
 
 def get_module(name, required=True):

@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from aim.sdk.track import track
 from aim.sdk.session.session import Session
-from aim.engine.utils import is_numpy_number
+from aim.engine.utils import convert_to_py_number
 
 
 class TrackerKerasCallbackMetricsEpochEndMixin(object):
@@ -27,28 +27,19 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         train_logs = {k: v for k, v in logs.items() if
                       not k.startswith('val_')}
         for name, value in train_logs.items():
-            track_func(self._clean_value(value), name=name, epoch=epoch,
+            track_func(convert_to_py_number(value), name=name, epoch=epoch,
                        subset='train')
 
         val_logs = {k: v for k, v in logs.items() if
                     k.startswith('val_')}
         for name, value in val_logs.items():
-            track_func(self._clean_value(value), name=name[4:], epoch=epoch,
+            track_func(convert_to_py_number(value), name=name[4:], epoch=epoch,
                        subset='val')
 
         lr = self._get_learning_rate()
         if lr is not None:
-            track_func(self._clean_value(lr), name='lr', epoch=epoch,
+            track_func(convert_to_py_number(lr), name='lr', epoch=epoch,
                        subset='train')
-
-    @staticmethod
-    def _clean_value(value):
-        if isinstance(value, (int, float)):
-            return value
-        np_number, converted_val = is_numpy_number(value)
-        if np_number:
-            return converted_val
-        return value
 
 
 def get_keras_tracker_callback(keras_callback_cls, mixins: List):
