@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.19 Oct 25 2020
 - Add PyTorch Lightning logger (gorarakelyan)
 - Add TensorFlow v1 and v2 keras callbacks support (gorarakelyan)
 
