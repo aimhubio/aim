@@ -39,13 +39,15 @@ class LitClassifier(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
-        self.log('valid_loss', loss)
+        self.log('val_loss', loss)
 
     def test_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
         self.log('test_loss', loss)
+        # Track metrics manually
+        self.logger.experiment.track(1, name='manually_tracked_metric')
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
@@ -89,7 +91,12 @@ def cli_main():
     # ------------
     # training
     # ------------
-    aim_logger = AimLogger(experiment='test_pt_light')
+    aim_logger = AimLogger(
+        experiment='pt_lightning_exp',
+        train_metric_prefix='train_',
+        test_metric_prefix='test_',
+        val_metric_prefix='val_',
+    )
     trainer = pl.Trainer(logger=aim_logger)
     trainer.fit(model, train_loader, val_loader)
 

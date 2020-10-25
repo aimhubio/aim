@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Union
 
 from aim.sdk.session.session import Session
+from aim.engine.utils import convert_to_py_number
 
 
 class AimLogger(object):
@@ -24,12 +25,22 @@ class AimLogger(object):
         from pytorch_lightning.utilities import rank_zero_only
 
         class _PytorchLightningLogger(LightningLoggerBase):
-            def __init__(self, repo: Optional[str] = None,
-                         experiment: Optional[str] = None):
+            def __init__(self,
+                         repo: Optional[str] = None,
+                         experiment: Optional[str] = None,
+                         train_metric_prefix: Optional[str] = 'train_',
+                         val_metric_prefix: Optional[str] = 'val_',
+                         test_metric_prefix: Optional[str] = 'test_',
+                         ):
                 super().__init__()
 
                 self._experiment_name = experiment
                 self._repo_path = repo
+
+                self._train_metric_prefix = train_metric_prefix
+                self._val_metric_prefix = val_metric_prefix
+                self._test_metric_prefix = test_metric_prefix
+
                 self._aim_session = None
 
             @property
@@ -56,16 +67,21 @@ class AimLogger(object):
                 for k, v in metrics.items():
                     name = k
                     context = {}
-                    if name.startswith('test_'):
-                        name = name[5:]
-                        context['subset'] = 'test'
-                    elif name.startswith('valid_'):
-                        name = name[6:]
-                        context['subset'] = 'val'
-                    elif name.startswith('train_'):
-                        name = name[6:]
+                    if self._train_metric_prefix \
+                            and name.startswith(self._train_metric_prefix):
+                        name = name[len(self._train_metric_prefix):]
                         context['subset'] = 'train'
-                    self.experiment.track(v, name=name, **context)
+                    elif self._test_metric_prefix \
+                            and name.startswith(self._test_metric_prefix):
+                        name = name[len(self._test_metric_prefix):]
+                        context['subset'] = 'test'
+                    elif self._val_metric_prefix \
+                            and name.startswith(self._val_metric_prefix):
+                        name = name[len(self._val_metric_prefix):]
+                        context['subset'] = 'val'
+                    self.experiment.track(convert_to_py_number(v),
+                                          name=name,
+                                          **context)
 
             @rank_zero_only
             def close(self) -> None:
@@ -87,6 +103,11 @@ class AimLogger(object):
         cls.__pl_logger_cls = _PytorchLightningLogger
         return cls.__pl_logger_cls
 
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None):
+    def __init__(self,
+                 repo: Optional[str] = None,
+                 experiment: Optional[str] = None,
+                 train_metric_prefix: Optional[str] = 'train_',
+                 val_metric_prefix: Optional[str] = 'val_',
+                 test_metric_prefix: Optional[str] = 'test_',
+                 ):
         pass
