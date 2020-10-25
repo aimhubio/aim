@@ -9,11 +9,11 @@ class AimLogger(object):
 
     @staticmethod
     def __new__(cls, *args, **kwargs):
-        pt_logger_inst = cls.get_logger_cls()
+        pt_logger_inst = cls.__get_logger_cls()
         return pt_logger_inst(*args, **kwargs)
 
     @classmethod
-    def get_logger_cls(cls):
+    def __get_logger_cls(cls):
         if cls.__pl_logger_cls is not None:
             return cls.__pl_logger_cls
 

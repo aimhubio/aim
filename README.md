@@ -189,7 +189,8 @@ Automatic tracking allows you to track metrics without the need for explicit tra
 
 ### TensorFlow and Keras
 
-Pass an instance of `AimTracker.metrics([session])` to keras callbacks.
+Pass an instance of `aim.tensorflow.AimCallback` to the trainer callbacks list.
+Note that logging for pure `keras` is handled by `aim.keras.AimCallback`.
 
 _Parameters_
 - **session** - Aim Session instance (optional)
@@ -197,17 +198,21 @@ _Parameters_
 _Examples_
 
 ```python
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_test, y_test),
-          callbacks=[
-              AimTracker.metrics(),
-          ])
+from aim import Session
+from aim.tensorflow import AimCallback 
+# Use `from aim.keras import AimCallback` in case of keras
+
+...
+aim_session = Session(experiment='experiment_name')
+model.fit(x_train, y_train, epochs=epochs, callbacks=[
+    AimCallback(aim_session)
+])
+...
 ```
 
-> Full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67)
+> TensorFlow v1 full example [here]()
+> TensorFlow v2 full example [here]()
+> Keras full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67)
 
 ### PyTorch Lightning
 
@@ -223,9 +228,13 @@ _Parameters_
 _Examples_
 
 ```python
+from aim.pytorch_lightning import AimLogger
+
+...
 aim_logger = AimLogger(experiment='pt_lightning_exp')
 trainer = pl.Trainer(logger=aim_logger)
 trainer.fit(model, train_loader, val_loader)
+...
 ```
 
 > Full example [here](https://github.com/aimhubio/aim/blob/develop/examples/pytorch_lightning_track.py)
