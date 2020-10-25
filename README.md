@@ -64,6 +64,7 @@ $ aim up
     - [aim.Session()](#session)
   - [Automatic Tracking](#automatic-tracking)
     - [TensorFlow and Keras](#tensorflow-and-keras)
+    - [PyTorch Lightning](#pytorch-lightning)
   - [Searching Experiments](#searching-experiments)
     - [Search Examples](#search-examples)
   - [Command Line Interface](#command-line-interface)
@@ -191,7 +192,7 @@ Automatic tracking allows you to track metrics without the need for explicit tra
 Pass an instance of `AimTracker.metrics([session])` to keras callbacks.
 
 _Parameters_
-- **session** - Aim Session instance(optional)
+- **session** - Aim Session instance (optional)
 
 _Examples_
 
@@ -207,6 +208,27 @@ model.fit(x_train, y_train,
 ```
 
 > Full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67)
+
+### PyTorch Lightning
+
+Pass `aim.pytorch_lightning.AimLogger` instance as logger to `Trainer` to log metrics and parameters automatically.
+
+_Parameters_
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
+- **experiment** - A name of the experiment (optional)
+- **train_metric_prefix** - The prefix of metrics names collected in the training loop. By default `train_` (optional)
+- **test_metric_prefix** - The prefix of metrics names collected in the test loop. By default `test_` (optional)
+- **val_metric_prefix** - The prefix of metrics names collected in the validation loop. By default `val_` (optional)
+
+_Examples_
+
+```python
+aim_logger = AimLogger(experiment='pt_lightning_exp')
+trainer = pl.Trainer(logger=aim_logger)
+trainer.fit(model, train_loader, val_loader)
+```
+
+> Full example [here](https://github.com/aimhubio/aim/blob/develop/examples/pytorch_lightning_track.py)
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
