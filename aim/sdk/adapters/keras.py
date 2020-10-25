@@ -7,11 +7,16 @@ from aim.sdk.adapters.keras_mixins import (
 )
 
 
-class AimTracker(object):
+class AimCallback(object):
     __keras_tracker_callback_cls = None
 
+    @staticmethod
+    def __new__(cls, *args, **kwargs):
+        keras_callback_cls = cls.__get_callback_cls()
+        return keras_callback_cls(*args, **kwargs)
+
     @classmethod
-    def metrics(cls, session: Optional[Session] = None):
+    def __get_callback_cls(cls):
         if cls.__keras_tracker_callback_cls is None:
             from keras.callbacks import Callback
 
@@ -19,5 +24,16 @@ class AimTracker(object):
                 Callback, [
                     TrackerKerasCallbackMetricsEpochEndMixin,
                 ])
+        return cls.__keras_tracker_callback_cls
 
-        return cls.__keras_tracker_callback_cls(session)
+    @classmethod
+    def metrics(cls, session: Optional[Session] = None):
+        # Keep `metrics` method for backward compatibility
+        return cls(session)
+
+    def __init__(self, session: Optional[Session] = None):
+        pass
+
+
+# Keep `AimTracker` for backward compatibility
+AimTracker = AimCallback

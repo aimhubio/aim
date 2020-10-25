@@ -1,4 +1,4 @@
-from aim.tensorflow import AimTracker
+from aim.tensorflow import AimCallback
 from aim import Session
 
 import tensorflow as tf
@@ -23,5 +23,5 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 model.fit(x_train, y_train, epochs=5, callbacks=[
-    AimTracker.metrics(Session(experiment='test_tf_1_keras_cb'))
+    AimCallback(session=Session(experiment='test_tf_1_keras_cb'))
 ])
