@@ -1,3 +1,6 @@
+from aim.keras import AimCallback
+from aim import Session
+
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -5,7 +8,6 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
-from aim.keras import AimTracker
 
 batch_size = 128
 num_classes = 10
@@ -64,7 +66,7 @@ model.fit(x_train, y_train,
           verbose=1,
           validation_data=(x_test, y_test),
           callbacks=[
-              AimTracker.metrics(),
+              AimCallback(session=Session(experiment='test_keras_cb')),
           ])
 
 # score = model.evaluate(x_test, y_test, verbose=0)
