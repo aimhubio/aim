@@ -190,7 +190,8 @@ Automatic tracking allows you to track metrics without the need for explicit tra
 ### TensorFlow and Keras
 
 Pass an instance of `aim.tensorflow.AimCallback` to the trainer callbacks list.
-Note that logging for pure `keras` is handled by `aim.keras.AimCallback`.
+
+**_Note:_** Logging for pure `keras` is handled by `aim.keras.AimCallback`
 
 _Parameters_
 - **session** - Aim Session instance (optional)
@@ -210,9 +211,9 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 ...
 ```
 
-> TensorFlow v1 full example [here]()
-> TensorFlow v2 full example [here]()
-> Keras full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L67)
+> TensorFlow v1 full example [here](https://github.com/aimhubio/aim/blob/develop/examples/tensorflow_1_keras_track.py#L26) <br />
+> TensorFlow v2 full example [here](https://github.com/aimhubio/aim/blob/develop/examples/tensorflow_keras_track.py#L26) <br />
+> Keras full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L69)
 
 ### PyTorch Lightning
 
