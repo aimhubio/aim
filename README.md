@@ -211,7 +211,7 @@ model.fit(x_train, y_train,
 
 ### PyTorch Lightning
 
-Pass `aim.pytorch_lightning.AimLogger` instance as logger to `Trainer` to log metrics and parameters automatically.
+Pass `aim.pytorch_lightning.AimLogger` instance as logger to `pl.Trainer` to log metrics and parameters automatically.
 
 _Parameters_
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
