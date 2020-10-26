@@ -33,12 +33,13 @@
 </div>
 
 ## Getting started in three steps
-1. Install Aim in your training environment
+
+> **1. Install Aim in your training environment**
 ```shell
 $ pip3 install aim-cli
 ```
 
-2. Integrate Aim with your code
+> **2. Integrate Aim with your code**
 
 <details open>
 <summary>
@@ -48,10 +49,10 @@ $ pip3 install aim-cli
 ```python
 import aim
 
-...
 # Save inputs, hparams or any other `key: value` pairs
-aim.set_params(hyperparam_dict, name='hparams') # Passing name is optional
+aim.set_params(hyperparam_dict, name='hparams') # Passing name argument is optional
 
+...
 for step in range(10):
     # Log metrics to visualize performance
     aim.track(metric_value, name='metric_name', epoch=epoch_number)
@@ -84,7 +85,7 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 import aim
 
 # Save inputs, hparams or any other `key: value` pairs
-aim.set_params(param_dict, name='params_name') # Passing name is optional
+aim.set_params(param_dict, name='params_name') # Passing name argument is optional
 
 ...
 model.fit(x_train, y_train, epochs=epochs, callbacks=[
@@ -98,7 +99,7 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 
 </details>
 
-3. Run the training like you are used to and start Aim UI
+> **3. Run the training like you are used to and start Aim UI**
 ```shell
 $ aim up
 ```
