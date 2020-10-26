@@ -36,7 +36,7 @@
 
 > **1. Install Aim in your training environment**
 ```shell
-$ pip3 install aim-cli
+$ pip install aim
 ```
 
 > **2. Integrate Aim with your code**
@@ -142,7 +142,7 @@ $ aim up
 To install Aim, you need to have python3 and pip3 installed in your environment
 1. Install Aim python package
 ```shell
-$ pip3 install aim-cli
+$ pip install aim
 ```
 In order to start Aim UI you need to have Docker installed.
 ```shell
