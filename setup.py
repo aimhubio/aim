@@ -10,7 +10,7 @@ from aim.__version__ import __version__
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
-NAME = os.getenv('PKG_NAME')
+NAME = os.getenv('AIM_PKG_NAME')
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.5.2'
@@ -64,7 +64,7 @@ class UploadCommand(Command):
 
             self.status('Building Source and Wheel (universal) distribution…')
             os.system(
-                'PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
+                'AIM_PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
                 .format(sys.executable, name))
 
             # self.status('Uploading the package to PyPI via Twine…')
