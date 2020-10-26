@@ -59,7 +59,7 @@ for step in range(10):
 ...
 ```
 
-_See documentation [here](https://github.com/aimhubio/aim#python-library)._
+_See documentation [here](#python-library)._
 
 </details>
 
@@ -76,7 +76,7 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 ...
 ```
 
-_See documentation [here](https://github.com/aimhubio/aim#pytorch-lightning)._
+_See documentation [here](#pytorch-lightning)._
 
 </details>
 
@@ -101,7 +101,7 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 ...
 ```
 
-_See documentation [here](https://github.com/aimhubio/aim#tensorflow-and-keras)._
+_See documentation [here](#tensorflow-and-keras)._
 
 </details>
 
