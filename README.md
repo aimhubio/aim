@@ -77,13 +77,13 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 
 <details>
 <summary>
-  TensorFlow & Keras Integration
+  Keras & tf.keras Integration
 </summary>
 
 ```python
 import aim
 
-# Save inputs, hparams or any other {key: value} pairs
+# Save inputs, hparams or any other `key: value` pairs
 aim.set_params(param_dict, name='params_name') # Passing name is optional
 
 ...
