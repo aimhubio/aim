@@ -63,7 +63,7 @@ for step in range(10):
 
 <details>
 <summary>
-  PyTorch Lightning Integration
+  PyTorch Lightning integration
 </summary>
 
 ```python
@@ -78,7 +78,7 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 
 <details>
 <summary>
-  Keras & tf.keras Integration
+  Keras & tf.keras integrations
 </summary>
 
 ```python
