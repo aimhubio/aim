@@ -10,8 +10,8 @@ from aim.__version__ import __version__
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
-NAME = 'aim-cli'
-DESCRIPTION = 'Version control for AI'
+NAME = os.getenv('AIM_PKG_NAME')
+DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.5.2'
 
@@ -55,19 +55,20 @@ class UploadCommand(Command):
         pass
 
     def run(self):
-        try:
-            self.status('Removing previous builds…')
-            rmtree(os.path.join(here, 'dist'))
-        except OSError:
-            pass
+        for name in ['aim', 'aim-cli']:
+            try:
+                self.status('Removing previous builds…')
+                rmtree(os.path.join(here, 'dist'))
+            except OSError:
+                pass
 
-        self.status('Building Source and Wheel (universal) distribution…')
-        os.system(
-            '{0} setup.py sdist bdist_wheel --universal'
-            .format(sys.executable, NAME))
+            self.status('Building Source and Wheel (universal) distribution…')
+            os.system(
+                'AIM_PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
+                .format(sys.executable, name))
 
-        # self.status('Uploading the package to PyPI via Twine…')
-        os.system('twine upload dist/*')
+            # self.status('Uploading the package to PyPI via Twine…')
+            os.system('twine upload dist/*')
 
         if not self.rc:
             self.status('Pushing git tags…')
@@ -91,7 +92,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
     entry_points={

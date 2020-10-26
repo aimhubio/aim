@@ -33,19 +33,79 @@
 </div>
 
 ## Getting started in three steps
-1. Install Aim in your training environment and init in the project folder
+
+> **1. Install Aim in your training environment**
 ```shell
-$ pip3 install aim-cli
+$ pip install aim
 ```
-2. Import Aim in your training code
-```py
+
+> **2. Integrate Aim with your code**
+
+<details open>
+<summary>
+  Flexible integration for any Python script
+</summary>
+
+```python
 import aim
+
+# Save inputs, hparams or any other `key: value` pairs
+aim.set_params(hyperparam_dict, name='hparams') # Passing name argument is optional
+
 ...
-aim.set_params(hyperparam_dict, name='params_name')
-aim.track(metric_value, name='metric_name', epoch=the_epoch_value)
+for step in range(10):
+    # Log metrics to visualize performance
+    aim.track(metric_value, name='metric_name', epoch=epoch_number)
 ...
 ```
-3. Run the training like you are used to and start Aim UI
+
+_See documentation [here](#python-library)._
+
+</details>
+
+<details>
+<summary>
+  PyTorch Lightning integration
+</summary>
+
+```python
+from aim.pytorch_lightning import AimLogger
+
+...
+trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
+...
+```
+
+_See documentation [here](#pytorch-lightning)._
+
+</details>
+
+<details>
+<summary>
+  Keras & tf.keras integrations
+</summary>
+
+```python
+import aim
+
+# Save inputs, hparams or any other `key: value` pairs
+aim.set_params(param_dict, name='params_name') # Passing name argument is optional
+
+...
+model.fit(x_train, y_train, epochs=epochs, callbacks=[
+    aim.keras.AimCallback(aim.Session(experiment='experiment_name'))
+    
+    # Use aim.tensorflow.AimCallback in case of tf.keras
+    aim.tensorflow.AimCallback(aim.Session(experiment='experiment_name'))
+])
+...
+```
+
+_See documentation [here](#tensorflow-and-keras)._
+
+</details>
+
+> **3. Run the training like you are used to and start Aim UI**
 ```shell
 $ aim up
 ```
@@ -82,7 +142,7 @@ $ aim up
 To install Aim, you need to have python3 and pip3 installed in your environment
 1. Install Aim python package
 ```shell
-$ pip3 install aim-cli
+$ pip install aim
 ```
 In order to start Aim UI you need to have Docker installed.
 ```shell
