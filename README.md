@@ -23,7 +23,7 @@
 
 ---
 
-<h6 style="color: grey">Integrate seamlessly with existing tools</h6>
+<h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
 <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="100" />
