@@ -9,6 +9,10 @@
 [![Downloads](https://img.shields.io/docker/pulls/aimhubio/aim-board)](https://hub.docker.com/r/aimhubio/aim-board)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
 
+<a href="https://join.slack.com/t/aimstack/shared_invite/zt-ik4s4zb7-jGg4WIMu4s3NL3YAkOHVXA">
+  <img src="https://user-images.githubusercontent.com/13848158/97265954-fad26c80-1840-11eb-8198-f7b310058679.png" height="35" />
+</a>
+
 ---
 
 <h6 style="color: grey">
