@@ -16,7 +16,7 @@ from aim.engine.configs import (
 
 
 class Session:
-    sessions: Dict[str, List['Session']] = {}
+    sessions = {}  # type: Dict[str, List['Session']] = {}
 
     @exception_resistant
     def __init__(self, repo: Optional[str] = None,

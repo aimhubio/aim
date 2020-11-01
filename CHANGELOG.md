@@ -1,5 +1,7 @@
 # Changelog
 
+- Resolve compatibility issues with python 3.5 (gorarakelyan)
+
 ## 2.0.20 Oct 26 2020
 - Enable pypi aim package name (gorarakelyan)
 
