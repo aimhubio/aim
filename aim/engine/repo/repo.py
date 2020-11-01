@@ -809,7 +809,7 @@ class AimRepo:
             for exp_name in self.list_branches()
         }
 
-        matched_runs: List[Run] = []
+        matched_runs = []  # type: List[Run]
 
         # Build expression trees
         if expression:
@@ -882,7 +882,7 @@ class AimRepo:
             for exp_name in self.list_branches()
         }
 
-        matched_runs: List[Run] = []
+        matched_runs = []  # type: List[Run]
 
         expression = build_bet(expression)
         expression.strict = True

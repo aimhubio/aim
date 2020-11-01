@@ -9,8 +9,9 @@ class BinaryExpressionTree(Tree):
     def __init__(self):
         super(BinaryExpressionTree, self).__init__()
         self.strict = True
-        self.path_modifiers: List[Tuple[Callable[[Token], bool],
-                                        Callable[[Token], Any]]] = []
+
+        # type: List[Tuple[Callable[[Token], bool], Callable[[Token], Any]]]
+        self.path_modifiers = []
 
     def build_from_ast(self, tree: AbstractSyntaxTree):
         if tree.head is not None:

@@ -10,10 +10,10 @@ from aim.__version__ import __version__
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
-NAME = os.getenv('AIM_PKG_NAME')
+NAME = os.getenv('AIM_PKG_NAME') or 'aim'
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
-REQUIRES_PYTHON = '>=3.5.2'
+REQUIRES_PYTHON = '>=3.5.0'
 
 # Get packages
 packages = find_packages(exclude=('tests',))
@@ -30,7 +30,7 @@ REQUIRED = [
     'requests>=2.0.0',
     'psutil>=5.6.7',
     'docker>=4.1.0',
-    'aimrecords==0.0.4',
+    'aimrecords==0.0.5',
     'protobuf>=3.11.0',
 ]
 
