@@ -2,8 +2,6 @@ import aim
 
 
 if __name__ == '__main__':
-    aim.init()
-
     aim.track({
         'num_epochs': 5,
         'lr': 10,
