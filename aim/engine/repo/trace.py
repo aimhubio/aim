@@ -8,9 +8,9 @@ class Trace(object):
         self.name = name
         self.data = []
         self._num_records = None
-        self.context = None
+        self.context = None  # type: Optional[Dict[str, Union[str, Any]]]
         if context is not None and len(context):
-            self.context: Dict[str, Union[str, Any]] = {
+            self.context = {
                 k: v for (k, v) in context
             }
 

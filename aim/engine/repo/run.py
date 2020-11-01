@@ -21,8 +21,8 @@ class Run(object):
         self.run_hash = run_hash
         self._config = None
         self._params = None
-        self._metrics: Optional[Dict[str, Metric]] = {}
-        self._tmp_all_metrics: Optional[Dict[str, Metric]] = None
+        self._metrics = {}  # type: Optional[Dict[str, Metric]]
+        self._tmp_all_metrics = None  # type: Optional[Dict[str, Metric]]
         self._storage = None
 
     def __repr__(self):

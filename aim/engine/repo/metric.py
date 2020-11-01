@@ -9,7 +9,7 @@ class Metric(object):
         self.run = run
         self.name = name
         self.context = context
-        self._traces: List[Trace] = []
+        self._traces = []  # type: List[Trace]
         self._artifact_storage_opened = False
 
     def __repr__(self):
