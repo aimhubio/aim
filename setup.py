@@ -13,7 +13,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 NAME = os.getenv('AIM_PKG_NAME')
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
-REQUIRES_PYTHON = '>=3.5.2'
+REQUIRES_PYTHON = '>=3.5.0'
 
 # Get packages
 packages = find_packages(exclude=('tests',))
