@@ -10,7 +10,7 @@ from aim.__version__ import __version__
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
-NAME = os.getenv('AIM_PKG_NAME')
+NAME = os.getenv('AIM_PKG_NAME') or 'aim'
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.5.0'
