@@ -4,6 +4,7 @@ from typing import Union, Optional
 
 from aim.artifacts import Record
 from aim.artifacts.artifact import Artifact
+from aim.artifacts.proto.base_pb2 import BaseRecord
 from aim.artifacts.proto.metric_pb2 import MetricRecord
 from aim.artifacts.utils import validate_dict
 
@@ -65,6 +66,16 @@ class Metric(Artifact):
             context=self.context,
             binary_type=self.PROTOBUF,
         )
+
+    @staticmethod
+    def deserialize_pb(data):
+        base_pb = BaseRecord()
+        base_pb.ParseFromString(data)
+
+        metric_pb = MetricRecord()
+        metric_pb.ParseFromString(base_pb.artifact)
+
+        return base_pb, metric_pb
 
     def save_blobs(self, name: str, abs_path: str = None):
         pass

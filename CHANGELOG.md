@@ -1,5 +1,7 @@
 # Changelog
 
+- Add SDK `close` method to close dangling experiments (gorarakelyan)
+
 ## 2.0.21 Nov 1 2020
 - Resolve compatibility issues with python 3.5.0 (gorarakelyan)
 
