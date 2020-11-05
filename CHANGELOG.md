@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.23 Nov 5 2020
+- Make experiment name argument required in SDK close command (gorarakelyan)
+
 ## 2.0.22 Nov 5 2020
 - Add SDK `close` method to close dangling experiments (gorarakelyan)
 

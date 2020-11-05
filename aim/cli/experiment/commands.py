@@ -93,7 +93,7 @@ def rm(repo, name):
 
 
 @exp_entry_point.command()
-@click.option('-n', '--name', default='', type=str)
+@click.option('-n', '--name', required=True, type=str)
 @click.option('-r', '--run', type=str, multiple=True)
 @click.pass_obj
 def close(repo, name, run):
