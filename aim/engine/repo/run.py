@@ -12,6 +12,7 @@ from aim.engine.repo.utils import (
     get_run_objects_meta_file_path,
 )
 from aim.engine.repo.metric import Metric
+from aim.artifacts.metric import Metric as MetricArtifact
 
 
 class Run(object):
@@ -106,6 +107,34 @@ class Run(object):
             'date': self.config.get('date'),
             'params': self.params,
         }
+
+    def get_aggregated_metrics_values(self):
+        aggregated_items = {}
+        self.open_storage()
+        for metric_name, metric in self.metrics.items():
+            aggregated_items.setdefault(metric_name, [])
+            metric.open_artifact()
+            for trace in metric.traces:
+                min_val = max_val = last_val = None
+                for r in trace.read_records(slice(0, None, 1)):
+                    _, metric_record = MetricArtifact.deserialize_pb(r)
+                    value = metric_record.value
+                    if min_val is None or value < min_val:
+                        min_val = value
+                    if max_val is None or value > max_val:
+                        max_val = value
+                    last_val = value
+                aggregated_items[metric_name].append({
+                    'context': trace.hashable_context,
+                    'values': {
+                        'min': min_val,
+                        'max': max_val,
+                        'last': last_val,
+                    },
+                })
+            metric.close_artifact()
+        self.close_storage()
+        return aggregated_items
 
     def _load_params(self) -> dict:
         params_file_path = os.path.join(self.repo.path,

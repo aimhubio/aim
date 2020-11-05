@@ -242,12 +242,16 @@ class AimRepo:
         """
         return ls_dir([self.path])
 
-    def load_meta_file(self):
+    def load_meta_file(self, create_if_not_exist=True):
         if self.meta_file_content is None:
             if os.path.isfile(self.meta_file_path):
                 with open(self.meta_file_path, 'r+') as meta_file:
                     self.meta_file_content = json.loads(meta_file.read())
             else:
+                if not create_if_not_exist:
+                    self.meta_file_content = {}
+                    return
+
                 os.makedirs(os.path.dirname(self.meta_file_path), exist_ok=True)
                 self.meta_file_content = {}
                 with open(self.meta_file_path, 'w+') as meta_file:
@@ -662,16 +666,32 @@ class AimRepo:
 
         return True
 
-    def commit_finish(self):
-        index_dir = self.index_path
-        config_file_path = os.path.join(index_dir,
+    def get_run_config(self):
+        config_file_path = os.path.join(self.index_path,
                                         AIM_COMMIT_CONFIG_FILE_NAME)
+
+        if not os.path.isfile(config_file_path):
+            return None
 
         with open(config_file_path, 'r+') as config_file:
             try:
                 configs = json.loads(config_file.read())
             except:
-                configs = {}
+                configs = None
+
+        return configs
+
+    def is_run_finished(self) -> Optional[bool]:
+        run_config = self.get_run_config()
+        process = run_config.get('process') or {}
+        return process.get('finish')
+
+    def commit_finish(self):
+        index_dir = self.index_path
+        config_file_path = os.path.join(index_dir,
+                                        AIM_COMMIT_CONFIG_FILE_NAME)
+
+        configs = self.get_run_config() or {}
 
         curr_timestamp = int(time.time())
         configs['date'] = curr_timestamp
@@ -980,17 +1000,19 @@ class AimRepo:
         return None
 
     def select_run_metrics(self, experiment_name: str, run_hash: str,
-                           select_metrics: Union[str, List[str], Tuple[str]]
+                           select_metrics: Optional[
+                               Union[str, List[str], Tuple[str]]
+                           ] = None
                            ) -> Optional[Run]:
         if not self.run_exists(experiment_name, run_hash):
             return None
 
-        if isinstance(select_metrics, str):
+        if select_metrics is not None and isinstance(select_metrics, str):
             select_metrics = [select_metrics]
 
         run = Run(self, experiment_name, run_hash)
         for metric_name, metric in run.get_all_metrics().items():
-            if metric_name in select_metrics:
+            if select_metrics is None or metric_name in select_metrics:
                 for trace in metric.get_all_traces():
                     metric.append(trace)
                     run.add(metric)

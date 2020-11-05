@@ -9,10 +9,12 @@ class Trace(object):
         self.data = []
         self._num_records = None
         self.context = None  # type: Optional[Dict[str, Union[str, Any]]]
-        if context is not None and len(context):
+        self.hashable_context = None
+        if context is not None:
             self.context = {
                 k: v for (k, v) in context
             }
+            self.hashable_context = tuple(sorted(self.context.items()))
 
     def __repr__(self):
         return str(self.context)
