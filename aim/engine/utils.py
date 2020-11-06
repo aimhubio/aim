@@ -1,4 +1,5 @@
 import os
+import json
 from copy import deepcopy
 from functools import reduce
 from random import choice
@@ -24,6 +25,11 @@ def deep_merge(*dicts, update=False):
         return reduce(merge_into, dicts[1:], dicts[0])
     else:
         return reduce(merge_into, dicts, {})
+
+
+def deep_compare(a, b, order_matter=True):
+    return json.dumps(a) == json.dumps(b)
+    # TODO: Implement deep comparison not taking into account ordering
 
 
 def is_path_creatable(path):

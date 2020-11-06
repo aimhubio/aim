@@ -1,5 +1,7 @@
 # Changelog
 
+- Update run metadata file only on artifacts update (gorarakelyan)
+
 ## 2.0.23 Nov 5 2020
 - Make experiment name argument required in SDK close command (gorarakelyan)
 

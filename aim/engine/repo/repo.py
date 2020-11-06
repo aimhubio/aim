@@ -10,7 +10,10 @@ from typing import List, Optional, Union, Tuple
 from aim.__version__ import __version__ as aim_version
 from aim.engine.configs import *
 from aim.engine.utils import (
-    ls_dir, import_module, clean_repo_path,
+    ls_dir,
+    deep_compare,
+    import_module,
+    clean_repo_path,
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
@@ -257,11 +260,30 @@ class AimRepo:
                 with open(self.meta_file_path, 'w+') as meta_file:
                     meta_file.write(json.dumps(self.meta_file_content))
 
-    def update_meta_file(self, item_key, item_content, flush=True):
+    def update_meta_file(self, item_key, item_content, flush=1):
+        """
+        :param item_key: item key to insert or update
+        :param item_content: item value
+        :param flush: 0 not flush, 1 always flush, 2 flush on data update
+        """
         self.load_meta_file()
-        self.meta_file_content[item_key] = item_content
-        if flush:
+        if flush == 0:
+            self.meta_file_content[item_key] = item_content
+        elif flush == 1:
+            self.meta_file_content[item_key] = item_content
             self.flush_meta_file()
+        elif flush == 2:
+            updated = True
+            if item_key not in self.meta_file_content.keys():
+                # Item is not added to meta file yet
+                self.meta_file_content[item_key] = item_content
+            elif deep_compare(self.meta_file_content[item_key], item_content):
+                # Item is outdated
+                self.meta_file_content[item_key] = item_content
+            else:
+                updated = False
+            if updated:
+                self.flush_meta_file()
 
     def flush_meta_file(self):
         with open(self.meta_file_path, 'w+') as meta_file:
@@ -317,7 +339,7 @@ class AimRepo:
             'type': self.get_artifact_cat(cat),
             'data': data,
             'data_path': cat_path,
-        })
+        }, 2)
 
         return {
             'path': os.path.join(cat_path, file_name),
@@ -331,24 +353,31 @@ class AimRepo:
         """
         self.load_meta_file()
 
-        self.meta_file_content.setdefault(name, {
-            'name': name,
-            'type': self.get_artifact_cat(cat),
-            'data': data,
-            'data_path': '__AIMRECORDS__',
-            'format': {
-                'artifact_format': artifact_format,
-                'record_format': binary_format,
-            },
-            'context': [],
-        })
-        if context is not None:
-            context_item = tuple(context.items())
-            if context_item not in self.meta_file_content[name]['context']:
-                self.meta_file_content[name]['context'].append(context_item)
+        flush = 0
 
-        # TODO: FLush effectively
-        self.flush_meta_file()
+        if name in self.meta_file_content.keys():
+            artifact_value = self.meta_file_content[name]
+        else:
+            flush = 1
+            artifact_value = {
+                'name': name,
+                'type': self.get_artifact_cat(cat),
+                'data': data,
+                'data_path': '__AIMRECORDS__',
+                'format': {
+                    'artifact_format': artifact_format,
+                    'record_format': binary_format,
+                },
+                'context': [],
+            }
+
+        if context is not None:
+            context_item = tuple(sorted(context.items()))
+            if context_item not in artifact_value['context']:
+                artifact_value['context'].append(context_item)
+                flush = 1
+
+        self.update_meta_file(name, artifact_value, flush)
 
         return {
             'name': name,
