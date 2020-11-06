@@ -5,6 +5,7 @@ from typing import Optional, Dict, List, Tuple
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
 from aim.sdk.session.utils import exception_resistant
+from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 from aim.artifacts import *
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
@@ -21,7 +22,7 @@ class Session:
     @exception_resistant
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 flush_frequency=64):
+                 flush_frequency: int = DEFAULT_FLUSH_FREQUENCY):
         self.active = False
 
         self.repo = self.get_repo(repo, experiment)

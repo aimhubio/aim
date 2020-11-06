@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional, Union
 
 from aim.sdk.session.session import Session
 from aim.engine.utils import convert_to_py_number
+from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 
 
 class AimLogger(object):
@@ -31,6 +32,7 @@ class AimLogger(object):
                          train_metric_prefix: Optional[str] = 'train_',
                          val_metric_prefix: Optional[str] = 'val_',
                          test_metric_prefix: Optional[str] = 'test_',
+                         flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                          ):
                 super().__init__()
 
@@ -40,6 +42,7 @@ class AimLogger(object):
                 self._train_metric_prefix = train_metric_prefix
                 self._val_metric_prefix = val_metric_prefix
                 self._test_metric_prefix = test_metric_prefix
+                self._flush_frequency = flush_frequency
 
                 self._aim_session = None
 
@@ -49,7 +52,8 @@ class AimLogger(object):
                 if self._aim_session is None:
                     self._aim_session = Session(
                         repo=self._repo_path,
-                        experiment=self._experiment_name
+                        experiment=self._experiment_name,
+                        flush_frequency=self._flush_frequency,
                     )
                 return self._aim_session
 
@@ -109,5 +113,6 @@ class AimLogger(object):
                  train_metric_prefix: Optional[str] = 'train_',
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
+                 flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                  ):
         pass
