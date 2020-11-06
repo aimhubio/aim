@@ -1,6 +1,6 @@
 import os
 import atexit
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
@@ -20,7 +20,8 @@ class Session:
 
     @exception_resistant
     def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None):
+                 experiment: Optional[str] = None,
+                 flush_frequency=64):
         self.active = False
 
         self.repo = self.get_repo(repo, experiment)
@@ -30,7 +31,10 @@ class Session:
 
         # Start a new run
         self.repo.commit_init()
-        self.metrics = {}
+
+        self.metrics = {}  # type: Dict[str, List[Dict]]
+        self.flush_frequency = flush_frequency
+        self._metrics_flush = {}  # type: Dict[str, List[int, int]]
 
         self.active = True
         self._run_hash = self.repo.active_commit
@@ -55,8 +59,9 @@ class Session:
     def close(self):
         if self.active:
             self.active = False
-            # Set metrics
-            self.set_params(self.metrics, name=AIM_MAP_METRICS_KEYWORD)
+
+            # Write aggregated metrics
+            self._flush_metrics(force=True)
 
             self.repo.close_records_storage()
             self.repo.commit_finish()
@@ -104,24 +109,8 @@ class Session:
 
         # Collect metrics values
         if isinstance(inst, Metric):
-            self.metrics.setdefault(inst.name, [])
-            for metric_item in self.metrics[inst.name]:
-                if metric_item['context'] == inst.hashable_context:
-                    if inst.value < metric_item['values']['min']:
-                        metric_item['values']['min'] = inst.value
-                    if inst.value > metric_item['values']['max']:
-                        metric_item['values']['max'] = inst.value
-                    metric_item['values']['last'] = inst.value
-                    break
-            else:
-                self.metrics[inst.name].append({
-                    'context': inst.hashable_context,
-                    'values': {
-                        'min': inst.value,
-                        'max': inst.value,
-                        'last': inst.value,
-                    },
-                })
+            self._aggregate_metrics(inst)
+            self._flush_metrics(force=False)
 
         writer = ArtifactWriter()
         writer.save(self.repo, inst)
@@ -133,6 +122,54 @@ class Session:
         if name is None:
             name = AIM_NESTED_MAP_DEFAULT
         return self.track(params, namespace=name)
+
+    @exception_resistant
+    def flush(self):
+        self._flush_metrics(force=True)
+
+    @exception_resistant
+    def _aggregate_metrics(self, metric_inst):
+        value = metric_inst.value
+        self.metrics.setdefault(metric_inst.name, [])
+        self._metrics_flush.setdefault(metric_inst.name, [0, 0])
+        self._metrics_flush[metric_inst.name][0] = metric_inst.step
+        for metric_item in self.metrics[metric_inst.name]:
+            if metric_item['context'] == metric_inst.hashable_context:
+                if value < metric_item['values']['min']:
+                    metric_item['values']['min'] = value
+                if value > metric_item['values']['max']:
+                    metric_item['values']['max'] = value
+                metric_item['values']['last'] = value
+                break
+        else:
+            self.metrics[metric_inst.name].append({
+                'context': metric_inst.hashable_context,
+                'values': {
+                    'min': value,
+                    'max': value,
+                    'last': value,
+                },
+            })
+
+    @exception_resistant
+    def _flush_metrics(self, force=False):
+        if force:
+            should_flush = True
+        elif self.flush_frequency == 0:
+            should_flush = False
+        else:
+            should_flush = False
+            for metric_name, metric_flush_info in self._metrics_flush.items():
+                metric_step = metric_flush_info[0]
+                metric_last_flush = metric_flush_info[1]
+                if metric_last_flush + self.flush_frequency <= metric_step:
+                    should_flush = True
+                    break
+
+        if should_flush:
+            for _, metric_flush_info in self._metrics_flush.items():
+                metric_flush_info[1] = metric_flush_info[0]
+            self.set_params(self.metrics, name=AIM_MAP_METRICS_KEYWORD)
 
     @staticmethod
     @exception_resistant

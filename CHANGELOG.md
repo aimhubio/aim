@@ -1,5 +1,7 @@
 # Changelog
 
+- Add SDK session flush method (gorarakelyan)
+- Flush aggregated metrics at a given frequency (gorarakelyan)
 - Update run metadata file only on artifacts update (gorarakelyan)
 
 ## 2.0.23 Nov 5 2020
