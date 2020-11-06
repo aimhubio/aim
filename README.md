@@ -243,7 +243,7 @@ _Methods_
 
 - [`set_params()`](#set_params) - Sets session params
 
-- `flush()` - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
+- [`flush()`](#flush) - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
 
 - `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
 
