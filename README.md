@@ -219,16 +219,20 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 ```
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
+### flush
+aim.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/flush.py#L4)</sub>_
+
+Aim calculates intermediate values of metrics for aggregation during tracking. This method is called at a given frequency(see [Session](#session)) and at the end of the run automatically. Use this command to flush those values to disk manually.
+ 
 ### Session
 Use Session to specify custom `.aim` directory or the experiment from the code.
 
-_Class_ aim.**Session**_([repo,] [experiment])<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
-
-Create session to specify the repo location and/or the experiment.
+_Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
 
 _Parameters_
-- **repo** - Full path to parent directory of Aim repo - the `.aim` directory
-- **experiment** - A name of the experiment. See [concepts](#concepts)
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory. (optional)
+- **experiment** - A name of the experiment. See [concepts](#concepts) (optional)
+- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step. (optional)
 
 _Returns_
 - Session object to attribute recorded training run to.
@@ -238,6 +242,8 @@ _Methods_
 - [`track()`](#track) - Tracks metrics within the session
 
 - [`set_params()`](#set_params) - Sets session params
+
+- `flush()` - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
 
 - `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
 
@@ -287,6 +293,7 @@ _Parameters_
 - **train_metric_prefix** - The prefix of metrics names collected in the training loop. By default `train_` (optional)
 - **test_metric_prefix** - The prefix of metrics names collected in the test loop. By default `test_` (optional)
 - **val_metric_prefix** - The prefix of metrics names collected in the validation loop. By default `val_` (optional)
+- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step. (optional)
 
 _Examples_
 
