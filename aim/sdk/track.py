@@ -11,3 +11,8 @@ def track(*args, **kwargs):
 def set_params(params: dict, name: Optional[str] = None):
     sess = get_default_session()
     return sess.set_params(params, name)
+
+
+def flush():
+    sess = get_default_session()
+    return sess.flush()
