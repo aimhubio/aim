@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.24 Nov 8 2020
 - Add SIGTERM signal handler (gorarakelyan)
 - Run `track` function in a parallel thread (gorarakelyan)
 - Add SDK session flush method (gorarakelyan)
