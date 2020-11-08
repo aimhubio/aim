@@ -25,6 +25,12 @@ class Metric(Artifact):
         if not isinstance(value, (int, float)):
             raise TypeError('metric value must be a type of int or float')
 
+        # Clean kwargs of metric context
+        for item in ['__aim_session_id']:
+            if item in kwargs:
+                del kwargs[item]
+
+        # Validate context
         val_res, val_item = validate_dict(
             kwargs, (str, int, float,),
             (str, int, float, bool,))

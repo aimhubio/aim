@@ -256,7 +256,7 @@ class Session:
         if len(args):
             if args[0] == 15:
                 signal.signal(signal.SIGTERM, cls._original_sigterm_handler)
-                os.kill(os.getpid(), 2)
+                os.kill(os.getpid(), 15)
             # elif args[0] == 2:
             #     signal.signal(signal.SIGINT, cls._original_sigint_handler)
             #     os.kill(os.getpid(), 2)
