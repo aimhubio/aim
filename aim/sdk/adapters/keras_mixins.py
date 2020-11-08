@@ -1,12 +1,14 @@
 from typing import Optional, List
 
 from aim.sdk.track import track
+from aim.sdk.flush import flush
 from aim.sdk.session.session import Session
 from aim.engine.utils import convert_to_py_number
 
 
 class TrackerKerasCallbackMetricsEpochEndMixin(object):
     def on_epoch_end(self, epoch, logs=None):
+        # Log metrics
         self._log_epoch_metrics(epoch, logs)
 
     def _get_learning_rate(self):
@@ -40,6 +42,11 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         if lr is not None:
             track_func(convert_to_py_number(lr), name='lr', epoch=epoch,
                        subset='train')
+
+        flush_func = self.session.flush \
+            if self.session is not None \
+            else flush
+        flush_func()
 
 
 def get_keras_tracker_callback(keras_callback_cls, mixins: List):

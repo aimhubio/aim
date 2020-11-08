@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.24 Nov 8 2020
+- Add SIGTERM signal handler (gorarakelyan)
+- Run `track` function in a parallel thread (gorarakelyan)
+- Add SDK session flush method (gorarakelyan)
+- Flush aggregated metrics at a given frequency (gorarakelyan)
+- Update run metadata file only on artifacts update (gorarakelyan)
+
 ## 2.0.23 Nov 5 2020
 - Make experiment name argument required in SDK close command (gorarakelyan)
 

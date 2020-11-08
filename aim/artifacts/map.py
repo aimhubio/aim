@@ -13,7 +13,7 @@ class Map(Artifact):
 
     def __init__(self, name: str, value: dict,
                  namespace: Optional[str] = None,
-                 aim_session_id: Optional[int] = None):
+                 **kwargs):
         if not self.validate_name(str(name)):
             ValueError('dictionary name can contain only letters, numbers, ' +
                        'underscore, dash and space`')
@@ -55,14 +55,14 @@ class Map(Artifact):
 class Dataset(Map):
     name = 'dataset'
 
-    def __init__(self, value: Any, aim_session_id: Optional[int] = None):
+    def __init__(self, value: Any, **kwargs):
         super(Dataset, self).__init__(self.name, value)
 
 
 class HyperParameters(Map):
     name = 'hyperparameters'
 
-    def __init__(self, value: Any, aim_session_id: Optional[int] = None):
+    def __init__(self, value: Any, **kwargs):
         super(HyperParameters, self).__init__(self.name, value)
 
 
@@ -72,5 +72,5 @@ class NestedMap(Map):
 
     def __init__(self, value: dict,
                  namespace: str = AIM_NESTED_MAP_DEFAULT,
-                 aim_session_id: Optional[int] = None):
+                 **kwargs):
         super(NestedMap, self).__init__(self.name, value, namespace)
