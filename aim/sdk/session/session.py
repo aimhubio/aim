@@ -71,6 +71,8 @@ class Session:
 
     @exception_resistant
     def track(self, *args, **kwargs):
+        if not self.active:
+            raise Exception('session is closed')
         th = threading.Thread(target=self._track, args=args, kwargs=kwargs)
         th.daemon = True
         self._queue.put(th)
@@ -81,12 +83,16 @@ class Session:
 
     @exception_resistant
     def flush(self):
+        if not self.active:
+            raise Exception('session is closed')
         th = threading.Thread(target=self._flush)
         th.daemon = True
         self._queue.put(th)
 
     @exception_resistant
     def close(self):
+        if not self.active:
+            raise Exception('session is closed')
         self._close()
 
     @exception_resistant
