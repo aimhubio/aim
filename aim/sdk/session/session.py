@@ -265,7 +265,7 @@ class Session:
     def _set_exit_handlers(cls):
         if not cls._are_exit_listeners_set:
             cls._are_exit_listeners_set = True
-            cls._original_sigint_handler = signal.getsignal(signal.SIGINT)
+            # cls._original_sigint_handler = signal.getsignal(signal.SIGINT)
             cls._original_sigterm_handler = signal.getsignal(signal.SIGTERM)
 
             atexit.register(cls._close_sessions)
