@@ -16,7 +16,7 @@ class Metric(Artifact):
                  value: Union[int, float],
                  epoch: int = None,
                  step: int = None,
-                 aim_session_id: Optional[int] = None,
+                 __aim_session_id: Optional[int] = None,
                  **kwargs):
         if not self.validate_name(str(name)):
             raise ValueError('metric name can contain only letters, numbers, ' +
@@ -25,6 +25,12 @@ class Metric(Artifact):
         if not isinstance(value, (int, float)):
             raise TypeError('metric value must be a type of int or float')
 
+        # Clean kwargs of metric context
+        for item in ['__aim_session_id']:
+            if item in kwargs:
+                del kwargs[item]
+
+        # Validate context
         val_res, val_item = validate_dict(
             kwargs, (str, int, float,),
             (str, int, float, bool,))
@@ -47,7 +53,7 @@ class Metric(Artifact):
         else:
             step_meta = None
         self.initialize_step_counter(step, self.name, step_meta,
-                                     session_id=aim_session_id)
+                                     session_id=__aim_session_id)
 
     def __str__(self):
         return '{name}: {value}'.format(name=self.name,

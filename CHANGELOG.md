@@ -1,5 +1,7 @@
 # Changelog
 
+- Add SIGTERM signal handler (gorarakelyan)
+- Run `track` function in a parallel thread (gorarakelyan)
 - Add SDK session flush method (gorarakelyan)
 - Flush aggregated metrics at a given frequency (gorarakelyan)
 - Update run metadata file only on artifacts update (gorarakelyan)

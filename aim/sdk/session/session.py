@@ -1,10 +1,15 @@
 import os
 import atexit
+import signal
+import threading
 from typing import Optional, Dict, List, Tuple
+from queue import Queue, Empty
 
 from aim.engine.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
-from aim.sdk.session.utils import exception_resistant
+from aim.sdk.session.utils import (
+    exception_resistant,
+)
 from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 from aim.artifacts import *
 from aim.engine.configs import (
@@ -19,11 +24,17 @@ from aim.engine.configs import (
 class Session:
     sessions = {}  # type: Dict[str, List['Session']] = {}
 
+    _are_exit_listeners_set = False
+    _original_sigint_handler = None
+    _original_sigterm_handler = None
+
     @exception_resistant
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY):
         self.active = False
+        self._lock = threading.Lock()
+        self._close_lock = threading.Lock()
 
         self.repo = self.get_repo(repo, experiment)
 
@@ -33,20 +44,22 @@ class Session:
         # Start a new run
         self.repo.commit_init()
 
-        self.metrics = {}  # type: Dict[str, List[Dict]]
         self.flush_frequency = flush_frequency
+        self.metrics = {}  # type: Dict[str, List[Dict]]
         self._metrics_flush = {}  # type: Dict[str, List[int, int]]
 
         self.active = True
         self._run_hash = self.repo.active_commit
         self._repo_path = self.repo.path
 
-        # Finalize run
-        atexit.register(self.close)
+        # Run queue worker
+        self._queue = Queue()
+        self._queue_worker_th = threading.Thread(target=self._queue_worker)
+        self._queue_worker_th.daemon = True
+        self._queue_worker_th.start()
 
-    @exception_resistant
-    def __del__(self):
-        self.close()
+        # Bind signal listeners
+        self._set_exit_handlers()
 
     @property
     def run_hash(self):
@@ -57,24 +70,49 @@ class Session:
         return self._repo_path
 
     @exception_resistant
-    def close(self):
-        if self.active:
-            self.active = False
-
-            # Write aggregated metrics
-            self._flush_metrics(force=True)
-
-            self.repo.close_records_storage()
-            self.repo.commit_finish()
-
-            if self.repo.path in Session.sessions \
-                    and self in Session.sessions[self.repo.path]:
-                Session.sessions[self.repo.path].remove(self)
-                if len(Session.sessions[self.repo.path]) == 0:
-                    del Session.sessions[self.repo.path]
+    def track(self, *args, **kwargs):
+        if not self.active:
+            raise Exception('session is closed')
+        th = threading.Thread(target=self._track, args=args, kwargs=kwargs)
+        th.daemon = True
+        self._queue.put(th)
 
     @exception_resistant
-    def track(self, *args, **kwargs):
+    def set_params(self, params: dict, name: Optional[str] = None):
+        return self.track(params, namespace=(name or AIM_NESTED_MAP_DEFAULT))
+
+    @exception_resistant
+    def flush(self):
+        if not self.active:
+            raise Exception('session is closed')
+        th = threading.Thread(target=self._flush)
+        th.daemon = True
+        self._queue.put(th)
+
+    @exception_resistant
+    def close(self):
+        if not self.active:
+            raise Exception('session is closed')
+        self._close()
+
+    @exception_resistant
+    def _track(self, *args, **kwargs):
+        should_lock = kwargs.get('__aim_acquire_lock') is not False
+        should_check_sess_status = \
+            kwargs.get('__aim_check_session_status') is not False
+
+        if should_lock:
+            with self._lock:
+                if should_check_sess_status and not self.active:
+                    return
+                return self._track_body(*args, **kwargs)
+        else:
+            if should_check_sess_status and not self.active:
+                return
+            return self._track_body(*args, **kwargs)
+
+    @exception_resistant
+    def _track_body(self, *args, **kwargs):
         if self.repo is None:
             raise FileNotFoundError('Aim repository was not found')
 
@@ -100,18 +138,18 @@ class Session:
             raise TypeError('artifact name is not specified')
 
         if artifact_name not in globals():
-            raise TypeError('Aim cannot track: \'{}\''.format(artifact_name))
+            raise TypeError('Aim cannot track:\'{}\''.format(artifact_name))
 
         # Get corresponding class
         obj = globals()[artifact_name]
 
         # Create an instance
-        inst = obj(*args, **kwargs, aim_session_id=id(self))
+        inst = obj(*args, **kwargs, __aim_session_id=id(self))
 
         # Collect metrics values
         if isinstance(inst, Metric):
             self._aggregate_metrics(inst)
-            self._flush_metrics(force=False)
+            self._flush_metrics(force=False, check_status=False)
 
         writer = ArtifactWriter()
         writer.save(self.repo, inst)
@@ -119,14 +157,45 @@ class Session:
         return inst
 
     @exception_resistant
-    def set_params(self, params: dict, name: Optional[str] = None):
-        if name is None:
-            name = AIM_NESTED_MAP_DEFAULT
-        return self.track(params, namespace=name)
+    def _flush(self):
+        with self._lock:
+            if not self.active:
+                return
+            self._flush_metrics(force=True, check_status=True)
 
     @exception_resistant
-    def flush(self):
-        self._flush_metrics(force=True)
+    def _close(self, remove_session=True):
+        with self._close_lock:
+            if self.active:
+                self.active = False
+
+                # Wait until all jobs are done
+                self._queue.join()
+
+                # Write aggregated metrics
+                self._flush_metrics(force=True, check_status=False)
+
+                self.repo.close_records_storage()
+                self.repo.commit_finish()
+
+                if remove_session:
+                    if self.repo.path in Session.sessions \
+                            and self in Session.sessions[self.repo.path]:
+                        Session.sessions[self.repo.path].remove(self)
+                        if len(Session.sessions[self.repo.path]) == 0:
+                            del Session.sessions[self.repo.path]
+
+    @exception_resistant
+    def _queue_worker(self):
+        while self.active or not self._queue.empty():
+            try:
+                job_th = self._queue.get(timeout=0.05)
+            except Empty:
+                pass
+            else:
+                job_th.start()
+                job_th.join()
+                self._queue.task_done()
 
     @exception_resistant
     def _aggregate_metrics(self, metric_inst):
@@ -153,7 +222,7 @@ class Session:
             })
 
     @exception_resistant
-    def _flush_metrics(self, force=False):
+    def _flush_metrics(self, force=False, check_status=False):
         if force:
             should_flush = True
         elif self.flush_frequency == 0:
@@ -170,7 +239,44 @@ class Session:
         if should_flush:
             for _, metric_flush_info in self._metrics_flush.items():
                 metric_flush_info[1] = metric_flush_info[0]
-            self.set_params(self.metrics, name=AIM_MAP_METRICS_KEYWORD)
+            self._track(self.metrics,
+                        namespace=AIM_MAP_METRICS_KEYWORD,
+                        __aim_acquire_lock=False,
+                        __aim_check_session_status=check_status)
+
+    @classmethod
+    def _close_sessions(cls, *args, **kwargs):
+        threads = []
+        for _, sessions in cls.sessions.items():
+            for session in sessions:
+                th = threading.Thread(target=session.close)
+                th.daemon = True
+                threads.append(th)
+
+        for th in threads:
+            th.start()
+
+        for th in threads:
+            th.join()
+
+        if len(args):
+            if args[0] == 15:
+                signal.signal(signal.SIGTERM, cls._original_sigterm_handler)
+                os.kill(os.getpid(), 15)
+            # elif args[0] == 2:
+            #     signal.signal(signal.SIGINT, cls._original_sigint_handler)
+            #     os.kill(os.getpid(), 2)
+
+    @classmethod
+    def _set_exit_handlers(cls):
+        if not cls._are_exit_listeners_set:
+            cls._are_exit_listeners_set = True
+            # cls._original_sigint_handler = signal.getsignal(signal.SIGINT)
+            cls._original_sigterm_handler = signal.getsignal(signal.SIGTERM)
+
+            atexit.register(cls._close_sessions)
+            # signal.signal(signal.SIGINT, cls._close_sessions)
+            signal.signal(signal.SIGTERM, cls._close_sessions)
 
     @staticmethod
     @exception_resistant

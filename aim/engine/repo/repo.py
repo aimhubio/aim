@@ -519,7 +519,7 @@ class AimRepo:
                 self.save_config()
                 return
 
-        raise AttributeError('branch {} does not exist'.format(branch))
+        raise AttributeError('Experiment {} does not exist'.format(branch))
 
     def remove_branch(self, branch):
         """
@@ -538,7 +538,7 @@ class AimRepo:
                 break
 
         if not branch_exists:
-            raise AttributeError('branch {} does not exist'.format(branch))
+            raise AttributeError('Experiment {} does not exist'.format(branch))
 
         # Remove branch
         self.config['branches'] = list(filter(lambda i: i.get('name') != branch,
