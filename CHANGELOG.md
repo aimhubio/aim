@@ -1,5 +1,7 @@
 # Changelog
 
+- Reconstruct run metadata file when running close command (gorarakelyan)
+
 ## 2.0.24 Nov 8 2020
 - Add SIGTERM signal handler (gorarakelyan)
 - Run `track` function in a parallel thread (gorarakelyan)
