@@ -21,7 +21,7 @@
   <a href="https://www.youtube.com/watch?v=TeAkyRIMxx4&ab_channel=Aim">INTRO VIDEO</a> 
 </h6>
 
-<img src="https://user-images.githubusercontent.com/13848158/98569869-3d2d8c00-22cc-11eb-9794-5769e3ee9833.png" />
+<img src="https://user-images.githubusercontent.com/13848158/98570796-3fdcb100-22cd-11eb-974b-1c094cfac359.png" />
 
 ---
 
