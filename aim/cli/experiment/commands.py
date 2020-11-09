@@ -1,4 +1,5 @@
 import click
+import os
 
 from aim.engine.repo.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
@@ -147,10 +148,18 @@ def close(repo, name, run):
 
             click.echo(click.style('   closing...'.format(run), fg='yellow'))
 
+            # Remove corrupted meta file
+            if os.path.isfile(repo_run.meta_file_path):
+                os.remove(repo_run.meta_file_path)
+
             # Finalize and close dangling artifacts
             if repo_run.records_storage is not None:
                 repo_run.records_storage.finalize_dangling_artifacts()
                 repo_run.records_storage.close()
+
+            # Reconstruct meta file
+            meta_content = repo_run.reconstruct_meta_file()
+            repo_run.flush_meta_file(meta_content)
 
             # Aggregate and update metrics
             run_model = repo_run.select_run_metrics(experiment_name, run)

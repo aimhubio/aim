@@ -245,6 +245,40 @@ class AimRepo:
         """
         return ls_dir([self.path])
 
+    def reconstruct_meta_file(self):
+        """
+        Reconstruct meta file(`Metric` and `NestedMap` artifacts)
+        from tracked artifacts data.
+        NOTE: Only can be needed in very specific cases.
+        """
+        meta_file_content = {}
+
+        # Check if `NestedMap` were saved
+        map_path = os.path.join(self.objects_dir_path, 'map', 'dictionary.log')
+        if os.path.isfile(map_path):
+            meta_file_content['dictionary.log'] = {
+                'name': 'dictionary',
+                'type': ['map', 'nested_map'],
+                'data': None,
+                'data_path': 'map',
+            }
+
+        # Collect metrics meta info
+        metrics_info = self.records_storage.get_artifacts_names()
+        for metric_name, context_items in metrics_info.items():
+            meta_file_content[metric_name] = {
+                'name': metric_name,
+                'type': 'metrics',
+                'data': None,
+                'data_path': '__AIMRECORDS__',
+                'format': {
+                    'artifact_format': 'aimrecords',
+                    'record_format': 'protobuf',
+                },
+                'context': [list(c.items()) for c in context_items],
+            }
+        return meta_file_content
+
     def load_meta_file(self, create_if_not_exist=True):
         if self.meta_file_content is None:
             if os.path.isfile(self.meta_file_path):
@@ -285,9 +319,9 @@ class AimRepo:
             if updated:
                 self.flush_meta_file()
 
-    def flush_meta_file(self):
+    def flush_meta_file(self, content=None):
         with open(self.meta_file_path, 'w+') as meta_file:
-            meta_file.write(json.dumps(self.meta_file_content))
+            meta_file.write(json.dumps(content or self.meta_file_content))
 
     def store_dir(self, name, cat, data={}):
         """
