@@ -1,5 +1,7 @@
 # Changelog
 
+- Convert infinity parameter to string in artifacts (gorarakelyan)
+
 ## 2.0.25 Nov 9 2020
 - Reconstruct run metadata file when running close command (gorarakelyan)
 
