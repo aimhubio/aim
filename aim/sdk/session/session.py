@@ -31,7 +31,8 @@ class Session:
     @exception_resistant
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 flush_frequency: int = DEFAULT_FLUSH_FREQUENCY):
+                 flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
+                 block_termination: bool = True):
         self.active = False
         self._lock = threading.Lock()
         self._close_lock = threading.Lock()
@@ -57,6 +58,7 @@ class Session:
         self._queue_worker_th = threading.Thread(target=self._queue_worker)
         self._queue_worker_th.daemon = True
         self._queue_worker_th.start()
+        self._block_termination = block_termination
 
         # Bind signal listeners
         self._set_exit_handlers()
@@ -103,11 +105,13 @@ class Session:
 
         if should_lock:
             with self._lock:
-                if should_check_sess_status and not self.active:
+                if should_check_sess_status \
+                        and not self.active and not self._block_termination:
                     return
                 return self._track_body(*args, **kwargs)
         else:
-            if should_check_sess_status and not self.active:
+            if should_check_sess_status \
+                    and not self.active and not self._block_termination:
                 return
             return self._track_body(*args, **kwargs)
 
@@ -159,7 +163,7 @@ class Session:
     @exception_resistant
     def _flush(self):
         with self._lock:
-            if not self.active:
+            if not self.active and not self._block_termination:
                 return
             self._flush_metrics(force=True, check_status=True)
 

@@ -1,5 +1,4 @@
 import aim
-import time
 import math
 
 
@@ -25,5 +24,3 @@ sess.set_params({
         'inf': math.inf,
     }),
 })
-
-time.sleep(2)
