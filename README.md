@@ -233,7 +233,7 @@ _Parameters_
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
 - **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
-- **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed. By default `True`.
+- **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
 
 _Returns_
 - Session object to attribute recorded training run to.
