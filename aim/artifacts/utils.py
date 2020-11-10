@@ -1,4 +1,8 @@
 from typing import Tuple, Any
+import math
+from collections.abc import Iterable, Mapping
+import json
+
 
 from aim.engine.utils import get_module
 
@@ -29,14 +33,9 @@ def validate_dict(item, key_types: tuple, value_types: tuple,
             return True, None
         return False, item
 
-    if isinstance(item, (list, tuple, set)):
-        for i in item:
-            res, res_i = validate_dict(i, key_types, value_types,
-                                       none_type, depth)
-            if not res:
-                return res, res_i
-
-    if isinstance(item, dict):
+    if isinstance(item, str):
+        pass
+    elif isinstance(item, Mapping):
         depth += 1
         for k, v in item.items():
             if not isinstance(k, key_types):
@@ -45,8 +44,42 @@ def validate_dict(item, key_types: tuple, value_types: tuple,
                                        none_type, depth)
             if not res:
                 return res, res_i
+    elif isinstance(item, Iterable):
+        for i in item:
+            res, res_i = validate_dict(i, key_types, value_types,
+                                       none_type, depth)
+            if not res:
+                return res, res_i
 
     return True, None
+
+
+def contains_inf(item):
+    # TODO: Check properly
+    return 'Infinity' in json.dumps(item)
+
+
+def format_inf(item):
+    if isinstance(item, float) and math.isinf(item):
+        return str(item)
+
+    if isinstance(item, str):
+        return item
+
+    if isinstance(item, Mapping):
+        item = dict(item)
+        for k, v in item.items():
+            item[k] = format_inf(v)
+        return item
+
+    if isinstance(item, Iterable):
+        # TODO: Update implementation to not convert Iterable type to list
+        item = list(item)
+        for i in range(len(item)):
+            item[i] = format_inf(item[i])
+        return item
+
+    return item
 
 
 class TfUtils:
