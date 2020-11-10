@@ -20,7 +20,7 @@ class Metric(Artifact):
                  **kwargs):
         if not self.validate_name(str(name)):
             raise ValueError('metric name can contain only letters, numbers, ' +
-                             'underscore, dash and space')
+                             'underscore and dash')
 
         if not isinstance(value, (int, float)):
             raise TypeError('metric value must be a type of int or float')
@@ -39,7 +39,7 @@ class Metric(Artifact):
                              '`{}` of type `{}`').format(val_item,
                                                          type(val_item)))
 
-        self.name = re.sub(' +', ' ', str(name))
+        self.name = str(name)
         self.value = value
         self.epoch = epoch
 
