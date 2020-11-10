@@ -23,7 +23,7 @@ class Artifact(metaclass=ABCMeta):
 
     @staticmethod
     def validate_name(name: str) -> bool:
-        if re.search('^[A-z0-9_\-\s]+$', str(name)) is None:
+        if re.search('^[A-z0-9_\-]+$', str(name)) is None:
             return False
         return True
 
