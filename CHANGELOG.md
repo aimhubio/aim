@@ -1,5 +1,6 @@
 # Changelog
 
+- Add `block_termination` argument to aim.Session (gorarakelyan)
 - Convert infinity parameter to string in artifacts (gorarakelyan)
 
 ## 2.0.25 Nov 9 2020
