@@ -4,7 +4,11 @@ from typing import Any, Optional
 
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
-from aim.artifacts.utils import validate_dict
+from aim.artifacts.utils import (
+    validate_dict,
+    format_inf,
+    contains_inf,
+)
 from aim.engine.configs import AIM_NESTED_MAP_DEFAULT
 
 
@@ -14,20 +18,22 @@ class Map(Artifact):
     def __init__(self, name: str, value: dict,
                  namespace: Optional[str] = None,
                  **kwargs):
-        if not self.validate_name(str(name)):
-            ValueError('dictionary name can contain only letters, numbers, ' +
-                       'underscore, dash and space`')
+        if not self.validate_name(str(name)) \
+                or (namespace is not None
+                    and not self.validate_name(str(namespace))):
+            raise ValueError('dictionary name can contain only letters, ' +
+                             'numbers, underscore and dash')
 
         val_res, val_item = validate_dict(
-            value, (str, int, tuple),
+            value, (str, int, float, tuple),
             (dict, list, tuple, set, str, int, float, bool,))
         if not val_res:
             raise TypeError(('dictionary contains illegal item: '
                              '`{}` of type `{}`').format(val_item,
                                                          type(val_item)))
 
-        self.name = re.sub(' +', ' ', str(name))
-        self.value = value
+        self.name = str(name)
+        self.value = format_inf(value) if contains_inf(value) else value
         self.namespace = str(namespace)
 
         super(Map, self).__init__(self.cat)
