@@ -230,9 +230,10 @@ Use Session to specify custom `.aim` directory or the experiment from the code.
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
 
 _Parameters_
-- **repo** - Full path to parent directory of Aim repo - the `.aim` directory. (optional)
-- **experiment** - A name of the experiment. See [concepts](#concepts) (optional)
-- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step. (optional)
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
+- **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
+- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
+- **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed. By default `True`.
 
 _Returns_
 - Session object to attribute recorded training run to.
