@@ -33,6 +33,9 @@ class Run(object):
     def __hash__(self):
         return hash((self.repo.path, self.experiment_name, self.run_hash))
 
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
     @property
     def params(self) -> dict:
         if self._params is None:

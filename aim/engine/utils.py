@@ -62,6 +62,19 @@ def random_str(string_length=10):
     return ''.join(choice(ascii_letters) for _ in range(string_length))
 
 
+def compressed_dict(item):
+    stack = list(item.items())
+    ans = {}
+    while stack:
+        key, val = stack.pop()
+        if isinstance(val, dict):
+            for sub_key, sub_val in val.items():
+                stack.append(('{}.{}'.format(key, sub_key), sub_val))
+        else:
+            ans[key] = val
+    return ans
+
+
 def get_inst_type_str(inst):
     """
     Get instance type and class type full names
