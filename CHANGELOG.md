@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.0.27 Nov 13 2020
 - Fix issue with artifact step initializer (gorarakelyan)
 
 ## 2.0.26 Nov 10 2020
