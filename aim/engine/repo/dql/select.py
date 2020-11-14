@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Tuple
 import copy
 
 from aim.engine.repo.run import Run
@@ -50,10 +50,31 @@ class SelectResult(object):
         selected_params = list(set(self._fields) & set(all_params))
         return selected_params
 
-    def get_selected_metric_names(self):
+    def get_selected_metric_names(self) -> List[str]:
         selected_metrics = set()
         for run in self._runs:
             for metric_name in run.metrics.keys():
                 if metric_name in self._fields:
                     selected_metrics.add(metric_name)
         return list(selected_metrics)
+
+    def get_selected_metrics_context(self) -> dict:
+        selected_metrics = {}  # type: Dict[str, List[Tuple[Dict, Tuple]]]
+        for run in self._runs:
+            for metric_name, metric in run.metrics.items():
+                if metric_name in self._fields:
+                    selected_metrics.setdefault(metric_name, [])
+                    for trace in metric.traces:
+                        for added_context in selected_metrics[metric_name]:
+                            if trace.hashable_context == added_context[1]:
+                                break
+                        else:
+                            selected_metrics[metric_name].append((
+                                trace.context,
+                                trace.hashable_context,
+                            ))
+
+        for metric_contexts in selected_metrics.values():
+            for i, context in enumerate(metric_contexts):
+                metric_contexts[i] = context[0]
+        return selected_metrics
