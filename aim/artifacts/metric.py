@@ -25,14 +25,17 @@ class Metric(Artifact):
         if not isinstance(value, (int, float)):
             raise TypeError('metric value must be a type of int or float')
 
-        # Clean kwargs of metric context
-        for item in ['__aim_session_id']:
-            if item in kwargs:
-                del kwargs[item]
+        __aim_session_id = kwargs.get('__aim_session_id')
+
+        # Construct context kwargs
+        context_kwargs = {}
+        for k, v in kwargs.items():
+            if not k.startswith('__'):
+                context_kwargs[k] = v
 
         # Validate context
         val_res, val_item = validate_dict(
-            kwargs, (str, int, float,),
+            context_kwargs, (str, int, float,),
             (str, int, float, bool,))
         if not val_res:
             raise TypeError(('Metric context contains illegal item: '
@@ -43,8 +46,8 @@ class Metric(Artifact):
         self.value = value
         self.epoch = epoch
 
-        self.context = kwargs if len(kwargs.keys()) else {}
-        self.hashable_context = tuple(sorted(kwargs.items()))
+        self.context = context_kwargs if len(context_kwargs.keys()) else {}
+        self.hashable_context = tuple(sorted(context_kwargs.items()))
 
         super(Metric, self).__init__(self.cat)
 

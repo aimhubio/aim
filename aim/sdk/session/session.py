@@ -148,7 +148,7 @@ class Session:
         obj = globals()[artifact_name]
 
         # Create an instance
-        inst = obj(*args, **kwargs, __aim_session_id=id(self))
+        inst = obj(*args, **kwargs, __aim_session_id=self.run_hash)
 
         # Collect metrics values
         if isinstance(inst, Metric):
