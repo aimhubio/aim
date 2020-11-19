@@ -16,7 +16,6 @@ class Metric(Artifact):
                  value: Union[int, float],
                  epoch: int = None,
                  step: int = None,
-                 __aim_session_id: Optional[int] = None,
                  **kwargs):
         if not self.validate_name(str(name)):
             raise ValueError('metric name can contain only letters, numbers, ' +
