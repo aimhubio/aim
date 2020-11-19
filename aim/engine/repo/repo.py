@@ -17,6 +17,7 @@ from aim.engine.utils import (
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
+from aim.engine.repo.dql.select import SelectResult
 from aim.engine.repo.utils import (
     cat_to_dir,
     get_experiment_path,
@@ -600,7 +601,7 @@ class AimRepo:
 
     def list_branch_commits(self, branch):
         """
-        Returns list of specified branches commits
+        Returns list of specified branch commits
         """
         branch_path = os.path.join(self.path, branch.strip())
 
@@ -608,9 +609,7 @@ class AimRepo:
         for i in os.listdir(branch_path):
             if os.path.isdir(os.path.join(branch_path, i)) \
                     and i != AIM_COMMIT_INDEX_DIR_NAME:
-
                 commits.append(i)
-
         return commits
 
     def is_index_empty(self):
@@ -618,9 +617,7 @@ class AimRepo:
         Returns `True` if index directory is empty and
         `False` otherwise
         """
-        if len(ls_dir([self.index_path])):
-            return False
-        return True
+        return not len(ls_dir([self.index_path]))
 
     def get_latest_vc_branch(self):
         """
@@ -874,6 +871,70 @@ class AimRepo:
         commit_path = os.path.join(self.path, branch, commit)
         return ls_dir([commit_path])
 
+    def select(self,
+               select_fields: List[str] = [],
+               expression: Optional[
+                       Union[str,
+                             Expression,
+                             BinaryExpressionTree]] = None,
+               default_expression: Optional[
+                       Union[str,
+                             Expression,
+                             BinaryExpressionTree]] = None,
+               ):
+        select_result = SelectResult(select_fields)
+
+        runs = {
+            exp_name: [
+                Run(self, exp_name, run_hash)
+                for run_hash in self.list_branch_commits(exp_name)
+            ]
+            for exp_name in self.list_branches()
+        }
+
+        # Build expression tree
+        if expression:
+            expression = build_bet(expression)
+            expression.strict = True
+
+        if default_expression:
+            default_expression = build_bet(default_expression)
+            default_expression.strict = True
+            if expression:
+                expression.concat(default_expression)
+            else:
+                expression = default_expression
+
+        for experiment_runs in runs.values():
+            for run in experiment_runs:
+                # Dictionary representing all search fields
+                fields = {
+                    'experiment': run.experiment_name,
+                    'run': run.config,  # Run configs (date, name, archived etc)
+                    'params': run.params,  # Run parameters (`NestedMap`)
+                }
+                # Default parameters - ones passed without namespace
+                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
+
+                # Search metrics
+                for metric_name, metric in run.get_all_metrics().items():
+                    fields['metric'] = metric_name
+                    for trace in metric.get_all_traces():
+                        fields['context'] = trace.context
+                        # Pass fields in descending order by priority
+                        if expression is None:
+                            res = True
+                        else:
+                            res = expression.match(fields,
+                                                   run.params,
+                                                   default_params)
+                        if res is True:
+                            metric.append(trace)
+                            run.add(metric)
+                            select_result.append_run(run)
+
+        return select_result
+
     def select_runs(self,
                     expression: Optional[
                            Union[str,
@@ -894,7 +955,7 @@ class AimRepo:
 
         matched_runs = []  # type: List[Run]
 
-        # Build expression trees
+        # Build expression tree
         if expression:
             expression = build_bet(expression)
             expression.strict = True

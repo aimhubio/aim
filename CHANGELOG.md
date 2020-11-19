@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0 Nov 19 2020
+- Add AimRepo select method (gorarakelyan)
+- Implement SelectResult class (gorarakelyan)
+
 ## 2.0.27 Nov 13 2020
 - Fix issue with artifact step initializer (gorarakelyan)
 

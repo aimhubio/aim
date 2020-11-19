@@ -1,9 +1,10 @@
 from pyrser import grammar, meta
 
 from aim.ql.grammar.expression import Expression
+from aim.ql.grammar.atom import Atom
 
 
-class Statement(grammar.Grammar, Expression):
+class Statement(grammar.Grammar, Expression, Atom):
     entry = "input"
     grammar = """
         input = [ statement:s #set_stmt(_, s)  eof ]
@@ -19,6 +20,7 @@ class Statement(grammar.Grammar, Expression):
         selection =
         [
             [ id ":" id ]:>_
+            | path
             | id
             | string
         ]
