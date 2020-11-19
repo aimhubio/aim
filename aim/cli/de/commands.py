@@ -81,12 +81,9 @@ def up(repo_inst, dev, host, port, version, repo, tf_logs, detach):
 
     # if dev < 2
     # cont.bind(port + 1, AIM_CONTAINER_CMD_PORT)
-    try:
-        assert cont.up(port, host, version)
-    except:
-        click.echo('Failed to run Aim UI.')
-        click.echo(('    Please check if address {h}:{c} is ' +
-                    'accessible.').format(h=host, c=port))
+    cont_id = cont.up(port, host, version)
+    if not cont_id:
+        click.echo('Failed to run Aim UI. Please try again.')
         return
 
     # cont_cmd = AimContainerCommandManager((port + 1) if dev < 2
