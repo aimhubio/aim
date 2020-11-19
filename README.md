@@ -389,9 +389,9 @@ $ aim up [ARGS]
 | `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`.               |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 | `-d` &#124; `--detach`            | Run Aim UI in detached mode.                             |
-| `--tf_logs <logs_dir_path>`       | Use Aim to search cand compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
+| `--tf_logs <logs_dir_path>`       | Use Aim to search and compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
 
-***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for UI to run.
+***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for the UI to run.
 Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
 
 ***Please make sure to run `aim up` in the directory where `.aim` is located.***
