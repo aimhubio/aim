@@ -14,7 +14,6 @@ from aim.engine.utils import (
     deep_compare,
     import_module,
     clean_repo_path,
-    get_dict_item_by_path,
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
@@ -929,28 +928,11 @@ class AimRepo:
                             res = expression.match(fields,
                                                    run.params,
                                                    default_params)
-
-                        if res is not True:
-                            continue
-
-                        # Append trace data if metric is selected
-                        for select_field in select_fields:
-                            if select_field == metric_name:
+                        if res is True:
+                            if metric_name in select_fields:
                                 metric.append(trace)
                                 run.add(metric)
-                                break
-
-                        # Append run if either metric or param is selected
-                        for select_field in select_fields:
-                            if select_field == metric_name:
-                                select_result.append_run(run)
-                                break
-
-                            field_val = get_dict_item_by_path(run.params,
-                                                              select_field)
-                            if field_val is not None:
-                                select_result.append_run(run)
-                                break
+                            select_result.append_run(run)
 
         return select_result
 

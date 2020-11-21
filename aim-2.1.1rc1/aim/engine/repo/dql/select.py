@@ -78,13 +78,3 @@ class SelectResult(object):
             for i, context in enumerate(metric_contexts):
                 metric_contexts[i] = context[0]
         return selected_metrics
-
-    # def get_selected_metrics_values(self) -> dict:
-    #     all_params = []
-    #     for run in self._runs:
-    #         params = copy.deepcopy(run.params)
-    #         if AIM_MAP_METRICS_KEYWORD not in params:
-    #             continue
-    #         metrics = params[AIM_MAP_METRICS_KEYWORD]
-    #         all_params.append(params)
-    #     return all_params
