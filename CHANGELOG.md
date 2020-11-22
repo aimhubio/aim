@@ -1,5 +1,7 @@
 # Changelog
 
+- Return only selected params in SelectResult (gorarakelyan)
+
 ## 2.1.0 Nov 19 2020
 - Add AimRepo select method (gorarakelyan)
 - Implement SelectResult class (gorarakelyan)
