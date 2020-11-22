@@ -12,6 +12,7 @@ from aim.sdk.session.utils import (
 )
 from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 from aim.artifacts import *
+from aim.engine.utils import contexts_equal
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
     AIM_COMMIT_ENV_VAR,
@@ -208,7 +209,8 @@ class Session:
         self._metrics_flush.setdefault(metric_inst.name, [0, 0])
         self._metrics_flush[metric_inst.name][0] = metric_inst.step
         for metric_item in self.metrics[metric_inst.name]:
-            if metric_item['context'] == metric_inst.hashable_context:
+            if contexts_equal(metric_item['context'],
+                                metric_inst.hashable_context):
                 if value < metric_item['values']['min']:
                     metric_item['values']['min'] = value
                 if value > metric_item['values']['max']:
