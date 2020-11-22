@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.1.1 Nov 22 2020
 - Return only selected params in SelectResult (gorarakelyan)
 
 ## 2.1.0 Nov 19 2020
