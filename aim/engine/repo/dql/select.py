@@ -66,7 +66,7 @@ class SelectResult(object):
                     selected_metrics.setdefault(metric_name, [])
                     for trace in metric.traces:
                         for added_context in selected_metrics[metric_name]:
-                            if trace.hashable_context == added_context[1]:
+                            if trace.eq_context(added_context[1]):
                                 break
                         else:
                             selected_metrics[metric_name].append((
@@ -78,3 +78,13 @@ class SelectResult(object):
             for i, context in enumerate(metric_contexts):
                 metric_contexts[i] = context[0]
         return selected_metrics
+
+    # def get_selected_metrics_values(self) -> dict:
+    #     all_params = []
+    #     for run in self._runs:
+    #         params = copy.deepcopy(run.params)
+    #         if AIM_MAP_METRICS_KEYWORD not in params:
+    #             continue
+    #         metrics = params[AIM_MAP_METRICS_KEYWORD]
+    #         all_params.append(params)
+    #     return all_params

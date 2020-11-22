@@ -27,7 +27,7 @@ def deep_merge(*dicts, update=False):
         return reduce(merge_into, dicts, {})
 
 
-def deep_compare(a, b, order_matter=True):
+def deep_compare(a, b, order_matters=True):
     return json.dumps(a) == json.dumps(b)
     # TODO: Implement deep comparison not taking into account ordering
 
@@ -53,6 +53,37 @@ def ls_dir(paths):
         return ls_dir(ls_head + (paths[1:] if len(paths) > 1 else []))
     else:
         return [paths[0]] + (ls_dir(paths[1:]) if len(paths) > 1 else [])
+
+
+def get_dict_item_by_path(haystack, path):
+    sub_haystack = haystack
+    for token in path.split('.'):
+        if isinstance(sub_haystack, dict) and token in sub_haystack.keys():
+            sub_haystack = sub_haystack[token]
+        else:
+            break
+    else:
+        return sub_haystack
+    return None
+
+
+def contexts_equal(a, b):
+    if isinstance(a, dict):
+        a = tuple(sorted(a.items()))
+
+    if isinstance(b, dict):
+        b = tuple(sorted(b.items()))
+
+    if len(a) != len(b):
+        return False
+
+    for other_k, other_v in a:
+        for k, v in b:
+            if k == other_k and v == other_v:
+                break
+        else:
+            return False
+    return True
 
 
 def random_str(string_length=10):

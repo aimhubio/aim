@@ -14,6 +14,7 @@ from aim.engine.utils import (
     deep_compare,
     import_module,
     clean_repo_path,
+    get_dict_item_by_path,
 )
 from aim.engine.profile import AimProfile
 from aim.engine.repo.run import Run
@@ -913,8 +914,10 @@ class AimRepo:
                     'run': run.config,  # Run configs (date, name, archived etc)
                     'params': run.params,  # Run parameters (`NestedMap`)
                 }
-                # Default parameters - ones passed without namespace
-                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
+                # Default parameters - those passed without namespace
+                default_params = {
+                    'params': (run.params.get(AIM_NESTED_MAP_DEFAULT) or {}),
+                }
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
@@ -928,10 +931,28 @@ class AimRepo:
                             res = expression.match(fields,
                                                    run.params,
                                                    default_params)
-                        if res is True:
-                            metric.append(trace)
-                            run.add(metric)
-                            select_result.append_run(run)
+
+                        if res is not True:
+                            continue
+
+                        # Append trace data if metric is selected
+                        for select_field in select_fields:
+                            if select_field == metric_name:
+                                metric.append(trace)
+                                run.add(metric)
+                                break
+
+                        # Append run if either metric or param is selected
+                        for select_field in select_fields:
+                            if select_field == metric_name:
+                                select_result.append_run(run)
+                                break
+
+                            field_val = get_dict_item_by_path(run.params,
+                                                              select_field)
+                            if field_val is not None:
+                                select_result.append_run(run)
+                                break
 
         return select_result
 
