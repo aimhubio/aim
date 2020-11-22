@@ -29,12 +29,14 @@ exp2.set_params({
 for i in range(100, 200):
     # Experiment 1, run 1
     exp1_run1.track(i, name='metric_2')
-    exp1_run1.track(i*2, name='metric_2', subset='train', foo='baz')
+    exp1_run1.track(i*2, name='metric', subset='train', foo='baz')
     exp1_run1.track(i*3, name='metric_2', subset='test', bar='baz')
 
     # Experiment 1, run 2
     exp1_run2.track(i, name='metric_2')
-    exp1_run2.track(i*2, name='metric_2', subset='test')
+    exp1_run2.track(i*2, name='metric', subset='test', subtask='task_1')
+    exp1_run2.track(i*3, name='metric_2', subset='test')
+    exp1_run2.track(i*2, name='metric', subtask='task_1', subset='test')
 
     # Experiment 2
     exp2.track(i, name='metric_2')

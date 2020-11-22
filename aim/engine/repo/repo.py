@@ -914,8 +914,10 @@ class AimRepo:
                     'run': run.config,  # Run configs (date, name, archived etc)
                     'params': run.params,  # Run parameters (`NestedMap`)
                 }
-                # Default parameters - ones passed without namespace
-                default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
+                # Default parameters - those passed without namespace
+                default_params = {
+                    'params': (run.params.get(AIM_NESTED_MAP_DEFAULT) or {}),
+                }
 
                 # Search metrics
                 for metric_name, metric in run.get_all_metrics().items():
