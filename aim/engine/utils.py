@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Optional, Union, Dict, Tuple
 from copy import deepcopy
 from functools import reduce
 from random import choice
@@ -67,12 +68,21 @@ def get_dict_item_by_path(haystack, path):
     return None
 
 
-def contexts_equal(a, b):
+def contexts_equal(a: Optional[Union[Dict, Tuple]],
+                   b: Optional[Union[Dict, Tuple]]):
+    if a is None and b is None:
+        return True
+    if a is None or b is None:
+        return False
+
     if isinstance(a, dict):
         a = tuple(sorted(a.items()))
 
     if isinstance(b, dict):
         b = tuple(sorted(b.items()))
+
+    if not isinstance(a, (dict, tuple)) or not isinstance(b, (dict, tuple)):
+        raise TypeError()
 
     if len(a) != len(b):
         return False

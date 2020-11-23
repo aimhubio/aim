@@ -210,7 +210,7 @@ class Session:
         self._metrics_flush[metric_inst.name][0] = metric_inst.step
         for metric_item in self.metrics[metric_inst.name]:
             if contexts_equal(metric_item['context'],
-                                metric_inst.hashable_context):
+                              metric_inst.hashable_context):
                 if value < metric_item['values']['min']:
                     metric_item['values']['min'] = value
                 if value > metric_item['values']['max']:
