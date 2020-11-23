@@ -1,5 +1,7 @@
 # Changelog
 
+- Support comparison of list type contexts (gorarakelyan)
+
 ## 2.1.2 Nov 24 2020
 - Fix empty contexts comparison issue (gorarakelyan)
 
