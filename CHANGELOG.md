@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.2 Nov 24 2020
+- Fix empty contexts comparison issue (gorarakelyan)
+
 ## 2.1.1 Nov 22 2020
 - Return only selected params in SelectResult (gorarakelyan)
 
