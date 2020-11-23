@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.1.3 Nov 24 2020
 - Support comparison of list type contexts (gorarakelyan)
 
 ## 2.1.2 Nov 24 2020
