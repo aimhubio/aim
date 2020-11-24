@@ -25,7 +25,7 @@
 
 <img src="https://user-images.githubusercontent.com/13848158/100094828-0b432a80-2e73-11eb-808a-56cf4cdf32ef.png" />
 
----
+<br />
 
 <h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
