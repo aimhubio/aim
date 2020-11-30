@@ -67,7 +67,7 @@ def validate_mapping(item: Mapping,
                 and not isinstance(v, str) and isinstance(v, Iterable):
             iter_v_res, iter_v_res_item = iterable_validator(v)
             if iter_v_res > 0:
-                return 2, iter_v_res_item
+                return 1, iter_v_res_item
 
     return 0, None
 

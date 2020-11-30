@@ -27,12 +27,12 @@ class _MapValidationMixin:
                                                             type(None)))
         )
         if val_res == 1:
-            raise TypeError(('dictionary contains illegal item: '
+            raise TypeError(('dictionary contains illegal item: ' +
                              '`{}` of type `{}`').format(val_item,
                                                          type(val_item)))
         elif val_res == 2:
-            raise TypeError(('dictionary contains illegal item: '
-                             '`{}`').format(val_item))
+            raise TypeError(('dictionary item key must be a ' +
+                             'python identifier: `{}`').format(val_item))
 
 
 class Map(Artifact):

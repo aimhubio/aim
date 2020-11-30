@@ -18,7 +18,7 @@ class Metric(Artifact):
                  step: int = None,
                  **kwargs):
         if not self.validate_name(str(name)):
-            raise ValueError('metric name must be python identifier')
+            raise ValueError('metric name must be a python identifier')
         self.name = str(name)
 
         if not isinstance(value, (int, float)):
@@ -47,8 +47,8 @@ class Metric(Artifact):
                              '`{}` of type `{}`').format(val_item,
                                                          type(val_item)))
         elif val_res == 2:
-            raise TypeError(('metric context contains illegal item: ' +
-                             '`{}`').format(val_item))
+            raise TypeError(('metric context key must be a ' +
+                             'python identifier: `{}`').format(val_item))
         self.context = context_kwargs if len(context_kwargs.keys()) else {}
         self.hashable_context = tuple(sorted(context_kwargs.items()))
 
