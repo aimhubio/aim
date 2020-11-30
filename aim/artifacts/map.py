@@ -5,11 +5,34 @@ from typing import Any, Optional
 from aim.artifacts.artifact import Artifact
 from aim.artifacts.record import Record
 from aim.artifacts.utils import (
-    validate_dict,
+    validate_mapping,
+    validate_iterable,
     format_inf,
     contains_inf,
 )
 from aim.engine.configs import AIM_NESTED_MAP_DEFAULT
+
+
+class _MapValidationMixin:
+    def validate_value(self):
+        val_res, val_item = validate_mapping(
+            self.value,
+            (str,),
+            (str, int, float, list, tuple, dict, bool, type(None)),
+            key_str_validator=r'^[^\d\W]\w*\Z',
+            iterable_validator=lambda x: validate_iterable(x,
+                                                           (str, int, float,
+                                                            list, tuple,
+                                                            dict, bool,
+                                                            type(None)))
+        )
+        if val_res == 1:
+            raise TypeError(('dictionary contains illegal item: '
+                             '`{}` of type `{}`').format(val_item,
+                                                         type(val_item)))
+        elif val_res == 2:
+            raise TypeError(('dictionary contains illegal item: '
+                             '`{}`').format(val_item))
 
 
 class Map(Artifact):
@@ -21,20 +44,15 @@ class Map(Artifact):
         if not self.validate_name(str(name)) \
                 or (namespace is not None
                     and not self.validate_name(str(namespace))):
-            raise ValueError('dictionary name can contain only letters, ' +
-                             'numbers, underscore and dash')
-
-        val_res, val_item = validate_dict(
-            value, (str, int, float, tuple),
-            (dict, list, tuple, set, str, int, float, bool,))
-        if not val_res:
-            raise TypeError(('dictionary contains illegal item: '
-                             '`{}` of type `{}`').format(val_item,
-                                                         type(val_item)))
-
+            raise ValueError('dictionary name must be python identifier')
         self.name = str(name)
-        self.value = format_inf(value) if contains_inf(value) else value
         self.namespace = str(namespace)
+
+        self.value = value
+        self.validate_value()
+
+        if contains_inf(self.value):
+            self.value = format_inf(value)
 
         super(Map, self).__init__(self.cat)
 
@@ -57,22 +75,25 @@ class Map(Artifact):
     def save_blobs(self, name: str, abs_path: str = None):
         pass
 
+    def validate_value(self):
+        pass
 
-class Dataset(Map):
+
+class Dataset(_MapValidationMixin, Map):
     name = 'dataset'
 
     def __init__(self, value: Any, **kwargs):
         super(Dataset, self).__init__(self.name, value)
 
 
-class HyperParameters(Map):
+class HyperParameters(_MapValidationMixin, Map):
     name = 'hyperparameters'
 
     def __init__(self, value: Any, **kwargs):
         super(HyperParameters, self).__init__(self.name, value)
 
 
-class NestedMap(Map):
+class NestedMap(_MapValidationMixin, Map):
     cat = ('map', 'nested_map')
     name = 'dictionary'
 

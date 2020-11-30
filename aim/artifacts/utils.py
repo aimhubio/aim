@@ -1,8 +1,8 @@
-from typing import Tuple, Any
-import math
 from collections.abc import Iterable, Mapping
 import json
-
+import re
+from typing import Tuple, Any, Optional, Callable
+import math
 
 from aim.engine.utils import get_module
 
@@ -25,33 +25,75 @@ def get_unique(a):
     return np.array(unique)
 
 
-def validate_dict(item, key_types: tuple, value_types: tuple,
-                  none_type: bool = True, depth: int = 1) -> Tuple[bool, Any]:
-    if not isinstance(item, value_types) \
-            and not (isinstance(item, dict) and depth == 1):
-        if item is None and none_type:
-            return True, None
-        return False, item
+def validate_mapping(item: Mapping,
+                     key_types: tuple,
+                     value_types: tuple,
+                     key_str_validator: Optional[str] = None,
+                     iterable_validator: Optional[Callable] = None
+                     ) -> Tuple[int, Any]:
+    """
+    Validates mapping items
+    :returns: (int - status code;
+               Any - invalid item, None otherwise)
+    Status codes:
+    0 - success
+    1 - type error
+    2 - format error
+    """
+    if not isinstance(item, Mapping):
+        return 1, item
 
-    if isinstance(item, str):
-        pass
-    elif isinstance(item, Mapping):
-        depth += 1
-        for k, v in item.items():
-            if not isinstance(k, key_types):
-                return False, k
-            res, res_i = validate_dict(v, key_types, value_types,
-                                       none_type, depth)
-            if not res:
-                return res, res_i
-    elif isinstance(item, Iterable):
-        for i in item:
-            res, res_i = validate_dict(i, key_types, value_types,
-                                       none_type, depth)
-            if not res:
-                return res, res_i
+    for k, v in item.items():
+        if not isinstance(k, key_types):
+            return 1, k
 
-    return True, None
+        if key_str_validator is not None and isinstance(k, str):
+            if not re.match(key_str_validator, k):
+                return 2, k
+
+        if not isinstance(v, value_types):
+            return 1, v
+
+        if isinstance(v, Mapping):
+            mapping_v_res, mapping_v_res_item = validate_mapping(
+                v,
+                key_types,
+                value_types,
+                key_str_validator,
+                iterable_validator)
+            if mapping_v_res > 0:
+                return mapping_v_res, mapping_v_res_item
+        elif iterable_validator is not None \
+                and not isinstance(v, str) and isinstance(v, Iterable):
+            iter_v_res, iter_v_res_item = iterable_validator(v)
+            if iter_v_res > 0:
+                return 2, iter_v_res_item
+
+    return 0, None
+
+
+def validate_iterable(item: Iterable, types: tuple) -> Tuple[int, Any]:
+    """
+    Validates iterable items
+    :returns: (int - status code;
+               Any - invalid item, None otherwise)
+    Status codes:
+    0 - success
+    1 - type error
+    """
+    if not isinstance(item, Iterable):
+        return 1, item
+
+    for v in item:
+        if not isinstance(v, types):
+            return 1, v
+
+        if not isinstance(v, str) and isinstance(v, Iterable):
+            iter_v_res, iter_v_res_item = validate_iterable(v, types)
+            if iter_v_res > 0:
+                return iter_v_res, iter_v_res_item
+
+    return 0, None
 
 
 def contains_inf(item):
@@ -135,26 +177,3 @@ class TfUtils:
             num_of_layers = len(TfUtils.get_layers(t_vars))
             return [sess.run(t_var) for t_var in t_vars[num_of_layers:]]
         return [sess.run(t_var) for t_var in t_vars if "bias" in t_var.name]
-
-
-# TODO: Move to SDK
-# class CheckpointCallback(tf.keras.callbacks.Callback):
-#     """
-#     Custom callback for tracking checkpoints in Keras models.
-#     """
-#
-#     def __init__(self, name, checkpoint_name, meta):
-#         super(CheckpointCallback, self).__init__()
-#         self.name = name
-#         self.checkpoint_name = checkpoint_name
-#         self.meta = meta
-#
-#     def on_epoch_end(self, epoch, logs=None):
-#         """Tracks checkpoint at the end of each epoch"""
-#         if '{e}' in self.checkpoint_name:
-#             checkpoint_name = self.checkpoint_name.format(e=epoch)
-#         else:
-#             checkpoint_name = '{e}-{n}'.format(n=self.checkpoint_name,
-#                                                e=epoch)
-#         track(checkpoint, self.name, checkpoint_name,
-#               self.model, epoch, meta=self.meta)
