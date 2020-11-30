@@ -44,7 +44,7 @@ class Map(Artifact):
         if not self.validate_name(str(name)) \
                 or (namespace is not None
                     and not self.validate_name(str(namespace))):
-            raise ValueError('dictionary name must be python identifier')
+            raise ValueError('dictionary name must be a python identifier')
         self.name = str(name)
         self.namespace = str(namespace)
 
