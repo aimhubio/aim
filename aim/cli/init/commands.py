@@ -25,5 +25,5 @@ def init():
             click.echo(
                 'Re-initialized empty Aim repository in {}'.format(new_repo))
         else:
-            click.echo(('Initialized empty ' +
+            click.echo(('Initialized a new ' +
                         'Aim repository in {}').format(new_repo))
