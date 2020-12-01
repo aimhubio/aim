@@ -37,7 +37,9 @@ class AimRepo:
     READING_MODE = 'r'
 
     @staticmethod
-    def get_working_repo(*args, **kwargs):
+    def get_working_repo(*args,
+                         initialized_only=False,
+                         **kwargs):
         """
         Searches for .aim repository in working directory
         and returns AimRepo object if exists
@@ -51,7 +53,11 @@ class AimRepo:
             if len(working_dir) <= 1:
                 break
 
-            if os.path.exists(os.path.join(working_dir, AIM_REPO_NAME)):
+            repo_path = os.path.join(working_dir, AIM_REPO_NAME)
+            config_file_path = os.path.join(repo_path, AIM_CONFIG_FILE_NAME)
+
+            if (not initialized_only and os.path.exists(repo_path)) \
+                    or (initialized_only and os.path.isfile(config_file_path)):
                 repo_found = True
                 break
             else:
@@ -77,8 +83,8 @@ class AimRepo:
 
     @classmethod
     def get_active_branch_if_exists(cls):
-        repo = cls.get_working_repo()
-        if repo:
+        repo = cls.get_working_repo(initialized_only=True)
+        if repo is not None:
             return repo.branch
         return None
 
@@ -205,8 +211,8 @@ class AimRepo:
         """
         Initializes empty Aim repository
         """
-        # Return if repo exists
-        if os.path.exists(self.path):
+        # Return if repo exists and is initialized
+        if self.is_initialized():
             return True
 
         try:
@@ -237,9 +243,15 @@ class AimRepo:
 
     def exists(self):
         """
-        Checks whether Aim repository is initialized
+        Checks whether Aim repository is created
         """
         return os.path.exists(self.path)
+
+    def is_initialized(self):
+        """
+        Checks whether Aim repository is initialized
+        """
+        return os.path.exists(self.path) and os.path.isfile(self.config_path)
 
     def ls_files(self):
         """

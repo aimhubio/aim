@@ -304,20 +304,25 @@ class Session:
                 branch_name = AimRepo.get_active_branch_if_exists() \
                               or AIM_DEFAULT_BRANCH_NAME
 
+        init_err_msg = 'can not create repo `{}`'.format(path)
+
         if path is not None:
             repo = AimRepo(path)
-            if not repo.exists():
+            if not repo.exists() or not repo.is_initialized():
                 if not repo.init():
-                    raise ValueError('can not create repo `{}`'.format(path))
+                    raise ValueError(init_err_msg)
             repo = AimRepo(path, branch_name, commit_hash)
         else:
-            if AimRepo.get_working_repo() is None:
+            repo = AimRepo.get_working_repo()
+            if repo is None:
                 path = os.getcwd()
                 repo = AimRepo(path)
                 if not repo.init():
-                    raise ValueError('can not create repo `{}`'.format(path))
+                    raise ValueError(init_err_msg)
                 repo = AimRepo(path, branch_name, commit_hash)
             else:
+                if not repo.is_initialized() and not repo.init():
+                    raise ValueError(init_err_msg)
                 repo = AimRepo.get_working_repo(branch_name, commit_hash)
 
         return repo

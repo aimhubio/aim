@@ -1,5 +1,6 @@
 # Changelog
 
+- Initialize repo if it was empty when opening session (gorarakelyan)
 - Add validation of map artifact parameters (gorarakelyan)
 
 ## 2.1.3 Nov 24 2020
