@@ -306,18 +306,21 @@ class Session:
 
         if path is not None:
             repo = AimRepo(path)
-            if not repo.exists():
+            if not repo.exists() or not repo.is_initialized():
                 if not repo.init():
                     raise ValueError('can not create repo `{}`'.format(path))
             repo = AimRepo(path, branch_name, commit_hash)
         else:
-            if AimRepo.get_working_repo() is None:
+            repo = AimRepo.get_working_repo()
+            if repo is None:
                 path = os.getcwd()
                 repo = AimRepo(path)
                 if not repo.init():
                     raise ValueError('can not create repo `{}`'.format(path))
                 repo = AimRepo(path, branch_name, commit_hash)
             else:
+                if not repo.is_initialized() and not repo.init():
+                    raise ValueError('can not create repo `{}`'.format(path))
                 repo = AimRepo.get_working_repo(branch_name, commit_hash)
 
         return repo
