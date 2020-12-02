@@ -1,5 +1,6 @@
 # Changelog
 
+## 2.1.4 Dec 2 2020
 - Add ability to specify session run hash (gorarakelyan)
 - Initialize repo if it was empty when opening session (gorarakelyan)
 - Add validation of map artifact parameters (gorarakelyan)
