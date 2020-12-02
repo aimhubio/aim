@@ -23,7 +23,7 @@ def init():
     if new_repo.init():
         if re_init:
             click.echo(
-                'Re-initialized empty Aim repository in {}'.format(new_repo))
+                'Re-initialized empty Aim repository at {}'.format(new_repo))
         else:
-            click.echo(('Initialized empty ' +
-                        'Aim repository in {}').format(new_repo))
+            click.echo(('Initialized a new ' +
+                        'Aim repository at {}').format(new_repo))

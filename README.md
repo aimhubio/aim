@@ -9,8 +9,8 @@
 [![Downloads](https://img.shields.io/docker/pulls/aimhubio/aim-board)](https://hub.docker.com/r/aimhubio/aim-board)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
 
-<a href="https://join.slack.com/t/aimstack/shared_invite/zt-ik4s4zb7-jGg4WIMu4s3NL3YAkOHVXA">
-  <img src="https://user-images.githubusercontent.com/13848158/97266254-9532b000-1841-11eb-8b06-ed73e99c2e5f.png" height="35" />
+<a href="https://join.slack.com/t/aimstack/shared_invite/zt-jhlp5og5-jw5TnkWBfjVrrGXLsdMOBw">
+  <img src="https://user-images.githubusercontent.com/13848158/100350405-45dbcd00-3003-11eb-8fde-2f7b1822271b.png" height="35" />
 </a>
 
 ---
@@ -21,9 +21,11 @@
   <a href="https://www.youtube.com/watch?v=TeAkyRIMxx4&ab_channel=Aim">INTRO VIDEO</a> 
 </h6>
 
-<img src="https://user-images.githubusercontent.com/13848158/98570873-54b94480-22cd-11eb-84d8-c2c13651021d.png" />
+<br />
 
----
+<img src="https://user-images.githubusercontent.com/13848158/100094828-0b432a80-2e73-11eb-808a-56cf4cdf32ef.png" />
+
+<br />
 
 <h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
@@ -234,6 +236,7 @@ _Parameters_
 - **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
 - **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
+- **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
 
 _Returns_
 - Session object to attribute recorded training run to.

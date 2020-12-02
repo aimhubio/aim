@@ -5,7 +5,7 @@ from aim.engine.container import AimContainer
 
 def repo_init_alert():
     click.echo('Repository not found')
-    click.echo('    (use "aim init" to initialize empty repository)')
+    click.echo('    (use "aim init" to initialize a new repository)')
 
 
 def docker_requirement_alert():

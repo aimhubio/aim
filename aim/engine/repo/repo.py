@@ -37,7 +37,9 @@ class AimRepo:
     READING_MODE = 'r'
 
     @staticmethod
-    def get_working_repo(*args, **kwargs):
+    def get_working_repo(*args,
+                         initialized_only=False,
+                         **kwargs):
         """
         Searches for .aim repository in working directory
         and returns AimRepo object if exists
@@ -51,7 +53,11 @@ class AimRepo:
             if len(working_dir) <= 1:
                 break
 
-            if os.path.exists(os.path.join(working_dir, AIM_REPO_NAME)):
+            repo_path = os.path.join(working_dir, AIM_REPO_NAME)
+            config_file_path = os.path.join(repo_path, AIM_CONFIG_FILE_NAME)
+
+            if (not initialized_only and os.path.exists(repo_path)) \
+                    or (initialized_only and os.path.isfile(config_file_path)):
                 repo_found = True
                 break
             else:
@@ -77,8 +83,8 @@ class AimRepo:
 
     @classmethod
     def get_active_branch_if_exists(cls):
-        repo = cls.get_working_repo()
-        if repo:
+        repo = cls.get_working_repo(initialized_only=True)
+        if repo is not None:
             return repo.branch
         return None
 
@@ -91,7 +97,12 @@ class AimRepo:
         self.path = repo_full_path or os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.hash = hashlib.md5(self.path.encode('utf-8')).hexdigest()
+
         self.active_commit = repo_commit or AIM_COMMIT_INDEX_DIR_NAME
+        if re.match(r'^[A-Za-z0-9_\-]{2,}$', self.active_commit) is None:
+            raise ValueError('run name must be at least 2 characters ' +
+                             'and contain only latin letters, numbers, ' +
+                             'dash and underscore')
 
         self.root_path = repo_full_path or path
         self.name = self.root_path.split(os.sep)[-1]
@@ -103,11 +114,29 @@ class AimRepo:
         self.records_storage = None
         self.mode = mode
 
-        if not repo_branch:
-            if self.config:
-                self.branch = self.config.get('active_branch')
+        active_exp = self.config.get('active_branch')
+
+        if repo_branch is not None:
+            experiment = repo_branch
+        elif active_exp is not None:
+            experiment = active_exp
         else:
-            self.branch = repo_branch
+            experiment = None
+
+        if experiment is not None:
+            run_full_path = get_experiment_run_path(self.path,
+                                                    experiment,
+                                                    self.active_commit)
+        else:
+            run_full_path = None
+
+        if self.active_commit != AIM_COMMIT_INDEX_DIR_NAME and run_full_path \
+                and os.path.exists(run_full_path):
+            raise ValueError(('run `{}` already exists' +
+                              '').format(self.active_commit))
+
+        if experiment is not None:
+            self.branch = experiment
 
     def __str__(self):
         return self.path
@@ -166,10 +195,8 @@ class AimRepo:
                 self.mode)
 
     def get_records_storage(self, path, mode):
-        aimrecords = import_module('aimrecords')
-        storage = aimrecords.Storage
-        storage_inst = storage(path, mode)
-        return storage_inst
+        from aimrecords import Storage
+        return Storage(path, mode)
 
     def close_records_storage(self):
         """
@@ -205,8 +232,8 @@ class AimRepo:
         """
         Initializes empty Aim repository
         """
-        # Return if repo exists
-        if os.path.exists(self.path):
+        # Return if repo exists and is initialized
+        if self.is_initialized():
             return True
 
         try:
@@ -237,9 +264,15 @@ class AimRepo:
 
     def exists(self):
         """
-        Checks whether Aim repository is initialized
+        Checks whether Aim repository is created
         """
         return os.path.exists(self.path)
+
+    def is_initialized(self):
+        """
+        Checks whether Aim repository is initialized
+        """
+        return os.path.exists(self.path) and os.path.isfile(self.config_path)
 
     def ls_files(self):
         """
@@ -523,12 +556,12 @@ class AimRepo:
         dir_path = os.path.join(self.path, branch)
 
         if not re.match(r'^[A-Za-z0-9_\-]{2,}$', branch):
-            raise AttributeError('branch name must be at least 2 characters ' +
-                                 'and contain only latin letters, numbers, ' +
-                                 'dash and underscore')
+            raise AttributeError('experiment name must be at least ' +
+                                 '2 characters and contain only latin ' +
+                                 'letters, numbers, dash and underscore')
 
         # Save branch in repo config file
-        branches = self.config['branches']
+        branches = self.config.get('branches') or []
         for b in branches:
             if b.get('name') == branch:
                 raise AttributeError('branch {} already exists'.format(branch))
@@ -541,6 +574,7 @@ class AimRepo:
         branches.append({
             'name': branch,
         })
+        self.config['branches'] = branches
         self.save_config()
 
     def checkout_branch(self, branch):
