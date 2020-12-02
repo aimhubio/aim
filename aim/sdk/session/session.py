@@ -29,16 +29,16 @@ class Session:
     _original_sigint_handler = None
     _original_sigterm_handler = None
 
-    @exception_resistant
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
-                 block_termination: bool = True):
+                 block_termination: bool = True,
+                 run: Optional[str] = None):
         self.active = False
         self._lock = threading.Lock()
         self._close_lock = threading.Lock()
 
-        self.repo = self.get_repo(repo, experiment)
+        self.repo = self.get_repo(repo, experiment, run)
 
         Session.sessions.setdefault(self.repo.path, [])
         Session.sessions[self.repo.path].append(self)
@@ -80,7 +80,6 @@ class Session:
         th.daemon = True
         self._queue.put(th)
 
-    @exception_resistant
     def set_params(self, params: dict, name: Optional[str] = None):
         return self.track(params, namespace=(name or AIM_NESTED_MAP_DEFAULT))
 
@@ -285,16 +284,20 @@ class Session:
             signal.signal(signal.SIGTERM, cls._close_sessions)
 
     @staticmethod
-    @exception_resistant
     def get_repo(path: Optional[str] = None,
-                 experiment_name: Optional[str] = None) -> AimRepo:
+                 experiment_name: Optional[str] = None,
+                 run: Optional[str] = None) -> AimRepo:
         # Auto commit
         if os.getenv(AIM_AUTOMATED_EXEC_ENV_VAR):
             # Get Aim environment variables
             branch_name = os.getenv(AIM_BRANCH_ENV_VAR)
             commit_hash = os.getenv(AIM_COMMIT_ENV_VAR)
         else:
-            commit_hash = AimRepo.generate_commit_hash()
+            if run is not None:
+                commit_hash = run
+            else:
+                commit_hash = AimRepo.generate_commit_hash()
+
             if experiment_name is not None:
                 branch_name = experiment_name
             else:
