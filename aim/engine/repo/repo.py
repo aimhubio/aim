@@ -114,11 +114,29 @@ class AimRepo:
         self.records_storage = None
         self.mode = mode
 
-        if not repo_branch:
-            if self.config:
-                self.branch = self.config.get('active_branch')
+        active_exp = self.config.get('active_branch')
+
+        if repo_branch is not None:
+            experiment = repo_branch
+        elif active_exp is not None:
+            experiment = active_exp
         else:
-            self.branch = repo_branch
+            experiment = None
+
+        if experiment is not None:
+            run_full_path = get_experiment_run_path(self.path,
+                                                    experiment,
+                                                    self.active_commit)
+        else:
+            run_full_path = None
+
+        if self.active_commit != AIM_COMMIT_INDEX_DIR_NAME and run_full_path \
+                and os.path.exists(run_full_path):
+            raise ValueError(('run `{}` already exists' +
+                              '').format(self.active_commit))
+
+        if experiment is not None:
+            self.branch = experiment
 
     def __str__(self):
         return self.path
@@ -177,10 +195,8 @@ class AimRepo:
                 self.mode)
 
     def get_records_storage(self, path, mode):
-        aimrecords = import_module('aimrecords')
-        storage = aimrecords.Storage
-        storage_inst = storage(path, mode)
-        return storage_inst
+        from aimrecords import Storage
+        return Storage(path, mode)
 
     def close_records_storage(self):
         """
@@ -540,12 +556,12 @@ class AimRepo:
         dir_path = os.path.join(self.path, branch)
 
         if not re.match(r'^[A-Za-z0-9_\-]{2,}$', branch):
-            raise AttributeError('branch name must be at least 2 characters ' +
-                                 'and contain only latin letters, numbers, ' +
-                                 'dash and underscore')
+            raise AttributeError('experiment name must be at least ' +
+                                 '2 characters and contain only latin ' +
+                                 'letters, numbers, dash and underscore')
 
         # Save branch in repo config file
-        branches = self.config['branches']
+        branches = self.config.get('branches') or []
         for b in branches:
             if b.get('name') == branch:
                 raise AttributeError('branch {} already exists'.format(branch))
@@ -558,6 +574,7 @@ class AimRepo:
         branches.append({
             'name': branch,
         })
+        self.config['branches'] = branches
         self.save_config()
 
     def checkout_branch(self, branch):
