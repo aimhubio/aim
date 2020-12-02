@@ -3,10 +3,11 @@ import json
 import re
 
 from aim.engine.utils import random_str
-from aim.engine.configs import \
-    AIM_PROFILE_NAME, \
-    AIM_PROFILE_SSH_DIR_NAME,\
-    AIM_PROFILE_CONFIG_FILE_NAME
+from aim.engine.configs import (
+    AIM_PROFILE_NAME,
+    AIM_PROFILE_SSH_DIR_NAME,
+    AIM_PROFILE_CONFIG_FILE_NAME,
+)
 
 
 class AimProfile:

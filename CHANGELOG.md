@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to specify session run hash (gorarakelyan)
 - Initialize repo if it was empty when opening session (gorarakelyan)
 - Add validation of map artifact parameters (gorarakelyan)
 

@@ -97,7 +97,12 @@ class AimRepo:
         self.path = repo_full_path or os.path.join(path, AIM_REPO_NAME)
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.hash = hashlib.md5(self.path.encode('utf-8')).hexdigest()
+
         self.active_commit = repo_commit or AIM_COMMIT_INDEX_DIR_NAME
+        if re.match(r'^[A-Za-z0-9_\-]{2,}$', self.active_commit) is None:
+            raise ValueError('run name must be at least 2 characters ' +
+                             'and contain only latin letters, numbers, ' +
+                             'dash and underscore')
 
         self.root_path = repo_full_path or path
         self.name = self.root_path.split(os.sep)[-1]
