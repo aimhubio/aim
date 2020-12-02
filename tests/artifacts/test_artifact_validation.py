@@ -40,7 +40,7 @@ class TestArtifactValidation(unittest.TestCase):
                 (str,), (int, dict, float, tuple),
                 iterable_validator=lambda v: validate_iterable(v, (int, float))
             ),
-            (2, {1: 2})
+            (1, {1: 2})
         )
         self.assertEqual(
             validate_mapping(
