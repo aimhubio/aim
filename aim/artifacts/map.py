@@ -36,6 +36,9 @@ class _MapValidationMixin:
 
 
 class Map(Artifact):
+    """
+    Map class for managing dictionaries
+    """
     cat = ('map',)
 
     def __init__(self, name: str, value: dict,

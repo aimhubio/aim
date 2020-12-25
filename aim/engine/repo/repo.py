@@ -228,9 +228,14 @@ class AimRepo:
                 return i['url']
         return None
 
-    def init(self):
+    def init(self) -> bool:
         """
-        Initializes empty Aim repository
+        Initializes new repository at the given path.
+         - Creates .aim directory
+         - Adds .aim/config.json file with initial configuration
+
+        :returns: bool - True if repo was successfully initialized,
+                         False otherwise;
         """
         # Return if repo exists and is initialized
         if self.is_initialized():
@@ -258,19 +263,19 @@ class AimRepo:
 
     def rm(self):
         """
-        Removes Aim repository
+        Removes .aim directory recursively
         """
         shutil.rmtree(self.path)
 
     def exists(self):
         """
-        Checks whether Aim repository is created
+        Checks whether .aim repository is created
         """
         return os.path.exists(self.path)
 
     def is_initialized(self):
         """
-        Checks whether Aim repository is initialized
+        Checks whether .aim repository is initialized
         """
         return os.path.exists(self.path) and os.path.isfile(self.config_path)
 
@@ -331,6 +336,8 @@ class AimRepo:
 
     def update_meta_file(self, item_key, item_content, flush=1):
         """
+        Updates run meta file.
+
         :param item_key: item key to insert or update
         :param item_content: item value
         :param flush: 0 not flush, 1 always flush, 2 flush on data update
@@ -549,9 +556,12 @@ class AimRepo:
             'zip_path': zip_path,
         }
 
-    def create_branch(self, branch):
+    def create_branch(self, branch: str):
         """
-        Creates a new branch - a sub-directory in repo
+        Creates a new branch(aka experiment) - a sub-directory in .aim repo
+
+        :param branch: branch name
+        :type branch: str
         """
         dir_path = os.path.join(self.path, branch)
 
@@ -577,9 +587,13 @@ class AimRepo:
         self.config['branches'] = branches
         self.save_config()
 
-    def checkout_branch(self, branch):
+    def checkout_branch(self, branch: str):
         """
-        Checkouts to specified branch
+        Checkouts to the given branch.
+        Sets the given branch name as `active_branch` in .aim/configs.json file.
+
+        :raises:
+            AttributeError: if branch does not exist
         """
         branches = self.config.get('branches') or []
         for b in branches:
@@ -593,7 +607,13 @@ class AimRepo:
 
     def remove_branch(self, branch):
         """
-        Removes specified branch
+        Removes specified branch:
+         - recursively removes branch sub-directory from .aim repo
+         - removes branch name from .aim/config.json file
+
+        :raises:
+            AttributeError: when attempting to delete the default branch
+            AttributeError: if branch does not exist
         """
         if branch == AIM_DEFAULT_BRANCH_NAME:
             msg = '{} branch can not be deleted'.format(AIM_DEFAULT_BRANCH_NAME)
@@ -623,7 +643,7 @@ class AimRepo:
         if self.branch == branch:
             self.checkout_branch(AIM_DEFAULT_BRANCH_NAME)
 
-    def list_branches(self):
+    def list_branches(self) -> list:
         """
         Returns list of existing branches
         """
@@ -677,7 +697,7 @@ class AimRepo:
         return latest_commit.get('vc') if latest_commit else None
 
     def run_exists(self, experiment_name: str, run_hash: str) -> bool:
-        """Return true if run exists"""
+        """Returns True if run exists, False otherwise"""
         return os.path.isdir(os.path.join(self.path, experiment_name, run_hash))
 
     def commit(self, commit_hash, commit_msg, vc_branch=None, vc_hash=None):
@@ -777,6 +797,9 @@ class AimRepo:
         return configs
 
     def is_run_finished(self) -> Optional[bool]:
+        """
+        Returns True if run is finished, False otherwise
+        """
         run_config = self.get_run_config()
         process = run_config.get('process') or {}
         return process.get('finish')
@@ -831,6 +854,7 @@ class AimRepo:
 
     def is_archived(self, experiment_name: str,
                     run_hash: str) -> Optional[bool]:
+        """Checks if the given run is archived"""
         run_dir_path = get_experiment_run_path(self.path, experiment_name,
                                                run_hash)
         config_file_path = os.path.join(run_dir_path,
@@ -848,9 +872,11 @@ class AimRepo:
         return config.get('archived')
 
     def archive(self, experiment_name: str, run_hash: str) -> bool:
+        """Archives the given run"""
         return self._toggle_archive_flag(experiment_name, run_hash, True)
 
     def unarchive(self, experiment_name: str, run_hash: str) -> bool:
+        """Unarchives the given run"""
         return self._toggle_archive_flag(experiment_name, run_hash, False)
 
     def _toggle_archive_flag(self, experiment_name: str,
