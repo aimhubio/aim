@@ -10,6 +10,9 @@ from aim.artifacts.utils import validate_mapping, validate_iterable
 
 
 class Metric(Artifact):
+    """
+    Metric class for managing time series
+    """
     cat = ('metrics',)
 
     def __init__(self, name: str,

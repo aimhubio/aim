@@ -6,6 +6,11 @@ from aim.engine.repo import AimRepo
 
 @click.command()
 def init():
+    """
+    Initializes new repository in the current working directory:
+     - Creates .aim directory
+     - Adds .aim/config.json file with initial configuration
+    """
     repo = AimRepo(os.getcwd())
     re_init = False
 
