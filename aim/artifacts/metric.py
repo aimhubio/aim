@@ -1,6 +1,7 @@
 from abc import ABCMeta
 import re
 from typing import Union, Optional
+import math
 
 from aim.artifacts import Record
 from aim.artifacts.artifact import Artifact
@@ -10,6 +11,9 @@ from aim.artifacts.utils import validate_mapping, validate_iterable
 
 
 class Metric(Artifact):
+    """
+    Metric class for managing time series
+    """
     cat = ('metrics',)
 
     def __init__(self, name: str,
@@ -23,6 +27,11 @@ class Metric(Artifact):
 
         if not isinstance(value, (int, float)):
             raise TypeError('metric value must be a type of int or float')
+
+        if isinstance(value, float) \
+                and (math.isinf(value) or math.isnan(value)):
+            raise TypeError('can not track `NaN` or infinite floats')
+
         self.value = value
 
         # Construct context kwargs

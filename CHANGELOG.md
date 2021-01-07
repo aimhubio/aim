@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.5 Jan 7 2021
+- Handle NaN or infinite floats passed to artifacts (gorarakelyan)
+
 ## 2.1.4 Dec 2 2020
 - Add ability to specify session run hash (gorarakelyan)
 - Initialize repo if it was empty when opening session (gorarakelyan)
