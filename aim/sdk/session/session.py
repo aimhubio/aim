@@ -127,7 +127,7 @@ class Session:
 
         if isinstance(args[0], str):
             artifact_name = args[0]
-        elif isinstance(args[0], int) or isinstance(args[0], float):
+        elif isinstance(args[0], (int, float)):
             # Autodetect Metric artifact
             artifact_name = metric
             kwargs['value'] = args[0]
