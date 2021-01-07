@@ -96,13 +96,17 @@ def validate_iterable(item: Iterable, types: tuple) -> Tuple[int, Any]:
     return 0, None
 
 
-def contains_inf(item):
+def contains_inf_or_nan(item):
     # TODO: Check properly
-    return 'Infinity' in json.dumps(item)
+    encoded = json.dumps(item)
+    return 'Infinity' in encoded or 'NaN' in encoded
 
 
-def format_inf(item):
+def format_floats(item):
     if isinstance(item, float) and math.isinf(item):
+        return str(item)
+
+    if isinstance(item, float) and math.isnan(item):
         return str(item)
 
     if isinstance(item, str):
@@ -111,14 +115,14 @@ def format_inf(item):
     if isinstance(item, Mapping):
         item = dict(item)
         for k, v in item.items():
-            item[k] = format_inf(v)
+            item[k] = format_floats(v)
         return item
 
     if isinstance(item, Iterable):
         # TODO: Update implementation to not convert Iterable type to list
         item = list(item)
         for i in range(len(item)):
-            item[i] = format_inf(item[i])
+            item[i] = format_floats(item[i])
         return item
 
     return item

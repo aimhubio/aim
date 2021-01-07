@@ -7,8 +7,8 @@ from aim.artifacts.record import Record
 from aim.artifacts.utils import (
     validate_mapping,
     validate_iterable,
-    format_inf,
-    contains_inf,
+    format_floats,
+    contains_inf_or_nan,
 )
 from aim.engine.configs import AIM_NESTED_MAP_DEFAULT
 
@@ -54,8 +54,8 @@ class Map(Artifact):
         self.value = value
         self.validate_value()
 
-        if contains_inf(self.value):
-            self.value = format_inf(value)
+        if contains_inf_or_nan(self.value):
+            self.value = format_floats(value)
 
         super(Map, self).__init__(self.cat)
 

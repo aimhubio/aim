@@ -2,7 +2,7 @@ import aim
 import math
 
 
-sess = aim.Session(experiment='test_params')
+sess = aim.Session(experiment='test_floats')
 
 sess.set_params({
     'num_epochs': 10,
@@ -19,8 +19,16 @@ sess.set_params({
 })
 
 sess.set_params({
+    'nan_x': 'NaN',
+    'inf_x': 'Infinity',
+    'nan': float('nan'),
     'inf': float('inf'),
     'inf_in_nested_obj': (1, 2, 3, {
         'inf': math.inf,
     }),
+    'nan_in_nested_obj': (1, 2, 3, {
+        'nan': math.nan,
+    }),
 })
+
+sess.track(1, name='test')
