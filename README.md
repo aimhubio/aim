@@ -9,6 +9,7 @@
 [![Downloads](https://img.shields.io/docker/pulls/aimhubio/aim-board)](https://hub.docker.com/r/aimhubio/aim-board)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
 
+<<<<<<< HEAD
 <a href="https://slack.aimstack.io">
   <img src="https://user-images.githubusercontent.com/13848158/100350405-45dbcd00-3003-11eb-8fde-2f7b1822271b.png" height="35" />
 </a>
