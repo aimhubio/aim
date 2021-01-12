@@ -2,26 +2,30 @@
 
 <img src="https://user-images.githubusercontent.com/13848158/97081166-8f568800-1611-11eb-991c-e9bc1344074e.png" height="95" />
 
-**A super-easy way to record, search and compare AI experiments.**
+**A super-easy way to record, search and compare 1000s of ML training runs**
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim-cli)](https://pypi.org/project/aim-cli/)
 [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/)
 [![Downloads](https://img.shields.io/docker/pulls/aimhubio/aim-board)](https://hub.docker.com/r/aimhubio/aim-board)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
 
-<a href="https://slack.aimstack.io">
-  <img src="https://user-images.githubusercontent.com/13848158/100350405-45dbcd00-3003-11eb-8fde-2f7b1822271b.png" height="35" />
-</a>
+---
 
 <h3 align="center">
-:tada: 
-  Try out Aim at <a href="http://play.aimstack.io:43900/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsImludGVycG9sYXRlIjp0cnVlLCJ6b29tIjp7IjAiOnsieCI6WzIuNjg1MTczMTQ4MTA1MzM4NSwzOF0sInkiOlszLjQ1NDEwMDA0ODU0MjAyMywzLjY4MjMzOTM5NzAxNzAyOF19LCIxIjp7IngiOlsyLjUzNzIwNjUxMzA3NzU1NywzOF0sInkiOlsyNy42NzE5Nzg3NjM2MTk2ODQsMzIuNTgxOTk5Nzc4NzQ3NTZdfSwiMiI6eyJ4IjpbNi4xMzAwNzcxODU4MDYzMzIsMjddLCJ5IjpbMy40MzIxNTAwNTM5Nzc5NjYsMy42NDc3MDkzNTA2NzM4NjZdfSwiMyI6eyJ4IjpbMy40OTA5MDg3NzA3OTQyNDE0LDI3XSwieSI6WzI5LjE0MjQ0OTMzOTY5ODA4MiwzMy43NzI5OTk5NTQyMjM2MzZdfSwiNCI6eyJ4IjpbNC42OTMxNjM4MzkzNzM3MDgsMjhdLCJ5IjpbMjkuNDA5MjQ3MjgyOTAwMjY0LDMyLjEwMzk5OTcxMDA4MzAxXX0sIjUiOnsieCI6WzYuOTQxMTk3MDgwOTUyMjg1LDI3LjA0MTk0NTU0NjY2ODI2XSwieSI6WzMuNDgxNjAwMDgxOTIwNjI0LDMuNTgyNzgzODQ4MDA3ODUzOF19fX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsLCJkaXNwbGF5T3V0bGllcnMiOmZhbHNlLCJpbnRlcnBvbGF0ZSI6dHJ1ZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6ImJsZXUgaWYgY29udGV4dC5zdWJzZXQgPT0gdGVzdCBhbmQgaHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMDAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7Imdyb3VwQnlDb2xvciI6WyJwYXJhbXMuaHBhcmFtcy5hbGlnbiIsInBhcmFtcy5ocGFyYW1zLm1heF9rIiwicGFyYW1zLmRhdGFzZXQucHJlcHJvYyJdLCJncm91cEJ5Q2hhcnQiOlsicGFyYW1zLmhwYXJhbXMuYWxpZ24iXSwiZ3JvdXBCeVN0eWxlIjpbXSwiYWdncmVnYXRlZCI6dHJ1ZX19">play.aimstack.io</a>
 :tada:
+Try out Aim at <a href="http://play.aimstack.io:43900/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsImludGVycG9sYXRlIjp0cnVlLCJ6b29tIjp7IjAiOnsieCI6WzIuNjg1MTczMTQ4MTA1MzM4NSwzOF0sInkiOlszLjQ1NDEwMDA0ODU0MjAyMywzLjY4MjMzOTM5NzAxNzAyOF19LCIxIjp7IngiOlsyLjUzNzIwNjUxMzA3NzU1NywzOF0sInkiOlsyNy42NzE5Nzg3NjM2MTk2ODQsMzIuNTgxOTk5Nzc4NzQ3NTZdfSwiMiI6eyJ4IjpbNi4xMzAwNzcxODU4MDYzMzIsMjddLCJ5IjpbMy40MzIxNTAwNTM5Nzc5NjYsMy42NDc3MDkzNTA2NzM4NjZdfSwiMyI6eyJ4IjpbMy40OTA5MDg3NzA3OTQyNDE0LDI3XSwieSI6WzI5LjE0MjQ0OTMzOTY5ODA4MiwzMy43NzI5OTk5NTQyMjM2MzZdfSwiNCI6eyJ4IjpbNC42OTMxNjM4MzkzNzM3MDgsMjhdLCJ5IjpbMjkuNDA5MjQ3MjgyOTAwMjY0LDMyLjEwMzk5OTcxMDA4MzAxXX0sIjUiOnsieCI6WzYuOTQxMTk3MDgwOTUyMjg1LDI3LjA0MTk0NTU0NjY2ODI2XSwieSI6WzMuNDgxNjAwMDgxOTIwNjI0LDMuNTgyNzgzODQ4MDA3ODUzOF19fX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsLCJkaXNwbGF5T3V0bGllcnMiOmZhbHNlLCJpbnRlcnBvbGF0ZSI6dHJ1ZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6ImJsZXUgaWYgY29udGV4dC5zdWJzZXQgPT0gdGVzdCBhbmQgaHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMDAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7Imdyb3VwQnlDb2xvciI6WyJwYXJhbXMuaHBhcmFtcy5hbGlnbiIsInBhcmFtcy5ocGFyYW1zLm1heF9rIiwicGFyYW1zLmRhdGFzZXQucHJlcHJvYyJdLCJncm91cEJ5Q2hhcnQiOlsicGFyYW1zLmhwYXJhbXMuYWxpZ24iXSwiZ3JvdXBCeVN0eWxlIjpbXSwiYWdncmVnYXRlZCI6dHJ1ZX19">play.aimstack.io</a>
+:tada:
+<br />
+<br />
+Watch the tutorial <a href="https://youtu.be/s1dLlqik3j0">video</a>
+<br />
+<br />
+Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 </h3>
 
 <br />
 
-<img src="https://user-images.githubusercontent.com/13848158/103911638-b1937880-511f-11eb-81d5-ebddbabd0bc6.gif" />
+<img src="https://user-images.githubusercontent.com/13848158/104327872-addb6980-5504-11eb-8a5c-2d074a9ce735.gif" />
 
 <br />
 
@@ -152,8 +156,11 @@ $ aim up
 ```
 
 ## Concepts
-- **Run** - A single training run 
-- **Experiment** - a group of associated training runs
+Aim doesn't use too many concepts that needs explaining. Still, here are a few details to avoid confusion:
+- **Experiment**: it's a grouping mechanism for training runs. Experiments are a way to organize the training runs in a meaningful manner
+- **Run**: it's the single training run researchers start
+
+These two are separated just to 
 
 ## Where is the Data Stored 
 When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
