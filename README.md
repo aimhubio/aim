@@ -21,6 +21,7 @@ Watch tutorial <a href="https://youtu.be/s1dLlqik3j0">video</a>
 <br />
 <br />
 Join Aim community at <a href="https://slack.aimstack.io">Slack</a>
+<br />
 </h3>
 
 <img src="https://user-images.githubusercontent.com/13848158/104327872-addb6980-5504-11eb-8a5c-2d074a9ce735.gif" />
