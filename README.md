@@ -2,7 +2,7 @@
 
 <img src="https://user-images.githubusercontent.com/13848158/97081166-8f568800-1611-11eb-991c-e9bc1344074e.png" height="95" />
 
-**A super-easy way to record, search and compare AI experiments.**
+**A super-easy way to record, search and compare 1000s of ML training runs.**
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim-cli)](https://pypi.org/project/aim-cli/)
 [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/)
