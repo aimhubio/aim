@@ -311,6 +311,12 @@ from aim.pytorch_lightning import AimLogger
 
 ...
 aim_logger = AimLogger(experiment='pt_lightning_exp')
+
+# Log parameters
+aim_logger.log_hyperparams({
+  "max_epochs": 10,
+})
+
 trainer = pl.Trainer(logger=aim_logger)
 trainer.fit(model, train_loader, val_loader)
 ...
