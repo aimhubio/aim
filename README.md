@@ -160,7 +160,7 @@ Aim doesn't use too many concepts that needs explaining. Still, here are a few d
 - **Experiment**: it's a grouping mechanism for training runs. Experiments are a way to organize the training runs in a meaningful manner
 - **Run**: it's the single training run researchers start
 
-These two are separated just to 
+These two are separated just to enable effective organization of the research work.
 
 ## Where is the Data Stored 
 When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
