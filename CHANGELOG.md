@@ -1,5 +1,7 @@
 # Changelog
 
+- Remove experiment name from config file when calling repo.remove_branch method (gorarakelyan)
+
 ## 2.1.5 Jan 7 2021
 - Handle NaN or infinite floats passed to artifacts (gorarakelyan)
 

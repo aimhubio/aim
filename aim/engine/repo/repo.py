@@ -627,7 +627,9 @@ class AimRepo:
                 branch_exists = True
                 break
 
-        if not branch_exists:
+        branch_dir_path = os.path.join(self.path, branch)
+
+        if not branch_exists and not os.path.isdir(branch_dir_path):
             raise AttributeError('Experiment {} does not exist'.format(branch))
 
         # Remove branch
@@ -635,9 +637,9 @@ class AimRepo:
                                               self.config['branches']))
         self.save_config()
 
-        # Remove branch sub-directory
-        dir_path = os.path.join(self.path, branch)
-        shutil.rmtree(dir_path)
+        # Remove branch subdirectory
+        if os.path.isdir(branch_dir_path):
+            shutil.rmtree(branch_dir_path)
 
         # Set active branch to default if selected branch was active
         if self.branch == branch:
@@ -661,6 +663,10 @@ class AimRepo:
         branch_path = os.path.join(self.path, branch.strip())
 
         commits = []
+
+        if not os.path.isdir(branch_path):
+            return commits
+
         for i in os.listdir(branch_path):
             if os.path.isdir(os.path.join(branch_path, i)) \
                     and i != AIM_COMMIT_INDEX_DIR_NAME:
