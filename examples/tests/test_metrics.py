@@ -1,7 +1,6 @@
+import aim
 import random
 import os
-
-import aim
 
 
 exp1_run1 = aim.Session(experiment='test_metrics', flush_frequency=10)
