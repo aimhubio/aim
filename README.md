@@ -227,14 +227,14 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 **_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
 ### flush
-aim.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/flush.py#L4)</sub>_
+aim.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/flush.py#L4)</sub>_
 
 Aim calculates intermediate values of metrics for aggregation during tracking. This method is called at a given frequency(see [Session](#session)) and at the end of the run automatically. Use this command to flush those values to disk manually.
  
 ### Session
 Use Session to specify custom `.aim` directory or the experiment from the code.
 
-_Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/develop/aim/sdk/session/session.py)</sub>_
+_Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
 _Parameters_
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
@@ -258,7 +258,7 @@ _Methods_
 
 _Examples_
 
-- [Here](https://github.com/aimhubio/aim/tree/develop/examples/sessions) are a few examples of how to use the `aim.Session` in code
+- [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code
 
 ## Automatic Tracking
 
@@ -288,9 +288,9 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 ...
 ```
 
-> TensorFlow v1 full example [here](https://github.com/aimhubio/aim/blob/develop/examples/tensorflow_1_keras_track.py#L26) <br />
-> TensorFlow v2 full example [here](https://github.com/aimhubio/aim/blob/develop/examples/tensorflow_keras_track.py#L26) <br />
-> Keras full example [here](https://github.com/aimhubio/aim/blob/develop/examples/keras_track.py#L69)
+> TensorFlow v1 full example [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_1_keras_track.py#L26) <br />
+> TensorFlow v2 full example [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py#L26) <br />
+> Keras full example [here](https://github.com/aimhubio/aim/blob/main/examples/keras_track.py#L69)
 
 ### PyTorch Lightning
 
@@ -323,7 +323,7 @@ trainer.fit(model, train_loader, val_loader)
 ...
 ```
 
-> Full example [here](https://github.com/aimhubio/aim/blob/develop/examples/pytorch_lightning_track.py)
+> Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py)
 
 ## Searching Experiments
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
