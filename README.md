@@ -7,7 +7,11 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim-cli)](https://pypi.org/project/aim-cli/)
 [![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/)
 [![Downloads](https://img.shields.io/docker/pulls/aimhubio/aim-board)](https://hub.docker.com/r/aimhubio/aim-board)
+[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
+
+[![Follow on Twitter](https://img.shields.io/twitter/follow/aimstackio?style=social)](https://twitter.com/aimstackio)
+
 
 ---
 
