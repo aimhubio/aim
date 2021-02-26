@@ -65,7 +65,8 @@ def up(repo_inst, dev, host, port, version, repo, tf_logs, detach):
     else:
         cont.turn_telemetry_on()
         alert_msg = 'Aim UI collects anonymous usage analytics.'
-        opt_out_msg = 'Read how to opt-out here: --.'
+        opt_out_msg = 'Read how to opt-out here: '
+        opt_out_url = 'https://github.com/aimhubio/aim#anonymized-telemetry'
         line_width = max(len(opt_out_msg), len(alert_msg)) + 16
         click.echo('┌{}┐'.format('-' * (line_width - 2)))
         click.echo('{}{}{}'.format(' ' * ((line_width - len(alert_msg)) // 2),
@@ -74,6 +75,9 @@ def up(repo_inst, dev, host, port, version, repo, tf_logs, detach):
         click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_msg)) // 2),
                                    opt_out_msg,
                                    ' ' * ((line_width - len(opt_out_msg)) // 2)))
+        click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_url)) // 2),
+                                   opt_out_url,
+                                   ' ' * ((line_width - len(opt_out_url)) // 2)))
         click.echo('└{}┘'.format('-' * (line_width - 2)))
 
     click.echo(
