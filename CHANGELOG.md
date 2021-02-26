@@ -1,5 +1,6 @@
 # Changelog
 
+- Add ability to opt out telemetry (gorarakelyan)
 - Remove experiment name from config file when calling repo.remove_branch method (gorarakelyan)
 
 ## 2.1.5 Jan 7 2021

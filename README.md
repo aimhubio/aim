@@ -146,6 +146,7 @@ $ aim up
     - [upgrade](#upgrade)
     - [pull](#pull)
   - [TensorBoard Experiments](#tensorboard-experiments)
+  - [Anonymized Telemetry](#anonymized-telemetry)
   - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
 ## Installation
@@ -446,3 +447,15 @@ This command will spin up Aim on the TensorFlow summary logs and load the logs r
 Use `tf:` prefix to select and display metrics logged with tf.summary in the dashboard, for example `tf:accuracy`.
 
 Tensorboard search example [here](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsiZGlzcGxheU91dGxpZXJzIjpmYWxzZSwiem9vbSI6bnVsbCwiaW50ZXJwb2xhdGUiOmZhbHNlfSwiem9vbSI6bnVsbH0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbCwiZGlzcGxheU91dGxpZXJzIjpmYWxzZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7ImFnZ3JlZ2F0ZWQiOmZhbHNlLCJncm91cEJ5Q29sb3IiOltdLCJncm91cEJ5U3R5bGUiOltdLCJncm91cEJ5Q2hhcnQiOlsiZXhwZXJpbWVudCJdfX0=)
+
+## Anonymized Telemetry 
+We constantly seek to improve Aim for the communty. Telementry data helps us immensely by capturing anonymous usage analytics and statistics. You will be notified when you run `aim up`.
+The telemetry is collected only on the UI. The python package **does not** have any telemetry associated with it.
+
+### Motivation
+Aim UI uses segment's analytics toolkit to collect basic info about the usage:
+ - Anonymized stripped-down basic usage analytics;
+ - Anonymized number of experiments and run. We constantly improve the storage and UI for performance in case of many experiments. This type of usage analytics helps us to stay on top of the performance problem. <br /> _Note: **no** analytics is installed on the Aim Python package._
+
+### How to opt out
+You can turn telemetry off by setting the `AIM_UI_TELEMETRY_ENABLED` environment variable to `0`.

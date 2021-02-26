@@ -32,7 +32,7 @@ AIM_NESTED_MAP_DEFAULT = 'default'
 
 # Logger
 AIM_LOGGING_DIR_NAME = 'logs'
-AIM_CLI_ACTIVITIED_LOG = 'activities.log'
+AIM_CLI_ACTIVITIES_LOG = 'activities.log'
 AIM_SDK_ERROR_LOG = 'errors.log'
 
 # Aim Profile
@@ -45,6 +45,7 @@ AIM_CONTAINER_IMAGE_NAME = 'aimhubio/aim-board'
 AIM_CONTAINER_IMAGE_DEFAULT_TAG = 'latest'
 AIM_CONTAINER_IMAGE_DEV = 'aimhub-live'
 AIM_CONTAINER_PREFIX = 'aim_container'
+AIM_CONTAINER_TELEMETRY_FLAG = 'AIM_UI_TELEMETRY_ENABLED'
 
 # Aim Profiler
 AIM_PROFILER_ENABLED = 'AIM_PROFILER_ENABLED'

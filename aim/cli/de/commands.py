@@ -1,5 +1,6 @@
 import signal
 import sys
+import os
 import click
 from time import sleep
 
@@ -7,6 +8,7 @@ from aim.engine.configs import (
     AIM_CONTAINER_DEFAULT_PORT,
     AIM_TF_LOGS_PATH,
     AIM_CONTAINER_DEFAULT_HOST,
+    AIM_CONTAINER_TELEMETRY_FLAG,
 )
 from aim.engine.utils import clean_repo_path
 from aim.engine.repo import AimRepo
@@ -56,6 +58,27 @@ def up(repo_inst, dev, host, port, version, repo, tf_logs, detach):
 
     if tf_logs:
         cont.mount_volume(tf_logs, AIM_TF_LOGS_PATH)
+
+    if os.getenv(AIM_CONTAINER_TELEMETRY_FLAG) is not None \
+            and os.getenv(AIM_CONTAINER_TELEMETRY_FLAG) == '0':
+        cont.turn_telemetry_off()
+    else:
+        cont.turn_telemetry_on()
+        alert_msg = 'Aim UI collects anonymous usage analytics.'
+        opt_out_msg = 'Read how to opt-out here: '
+        opt_out_url = 'https://github.com/aimhubio/aim#anonymized-telemetry'
+        line_width = max(len(opt_out_msg), len(alert_msg)) + 16
+        click.echo('┌{}┐'.format('-' * (line_width - 2)))
+        click.echo('{}{}{}'.format(' ' * ((line_width - len(alert_msg)) // 2),
+                                   alert_msg,
+                                   ' ' * ((line_width - len(alert_msg)) // 2)))
+        click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_msg)) // 2),
+                                   opt_out_msg,
+                                   ' ' * ((line_width - len(opt_out_msg)) // 2)))
+        click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_url)) // 2),
+                                   opt_out_url,
+                                   ' ' * ((line_width - len(opt_out_url)) // 2)))
+        click.echo('└{}┘'.format('-' * (line_width - 2)))
 
     click.echo(
         click.style('Running Aim UI on repo `{}`'.format(repo_inst),
