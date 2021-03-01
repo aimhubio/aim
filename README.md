@@ -42,14 +42,66 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 
 </div>
 
-## Getting started in three steps
+## Contents
 
-> **1. Install Aim in your training environment**
+- [Aim](#aim)
+  - [Contents](#contents)
+  - [Getting Started In Three Steps](#getting-started-in-three-steps)
+  - [Installation](#installation)
+  - [Concepts](#concepts)
+  - [Where is the Data Stored](#where-is-the-data-stored)
+  - [Python Library](#python-library)
+    - [aim.track()](#track)
+    - [aim.set_params()](#set_params)
+    - [aim.Session()](#session)
+  - [Automatic Tracking](#automatic-tracking)
+    - [TensorFlow and Keras](#tensorflow-and-keras)
+    - [PyTorch Lightning](#pytorch-lightning)
+  - [Searching Experiments](#searching-experiments)
+    - [Search Examples](#search-examples)
+  - [Command Line Interface](#command-line-interface)
+    - [init](#init)
+    - [version](#version)
+    - [experiment](#experiment)
+    - [up](#up)
+    - [down](#down)
+    - [upgrade](#upgrade)
+    - [pull](#pull)
+  - [TensorBoard Experiments](#tensorboard-experiments)
+  - [Anonymized Telemetry](#anonymized-telemetry)
+  - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
+
+# Introduction
+
+We've written this document to help you navigate through Aim specs and give you a good foundational knowledge about the tool.
+
+## Glossary
+
+We tried to keep Aim as simple as possible. Still, here are a few details to avoid confusion:
+
+- **Experiment**: it's a grouping mechanism for training runs. Experiments are a way to organize the training runs in a meaningful manner
+- **Run**: it's the single training run researchers start
+
+These two are separated just to enable effective organization of the research work.
+
+## Data Storage 
+
+When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
+Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
+
+## Getting started
+
+Follow the steps below to get started with Aim.
+
+**1. Install Aim on your training environment**
+
+_Prerequisite: You need to have python3 and pip3 installed in your environment before installing Aim_
+
 ```shell
 $ pip install aim
 ```
 
-> **2. Integrate Aim with your code**
+**2. Integrate Aim with your code**
 
 <details open>
 <summary>
@@ -115,64 +167,18 @@ _See documentation [here](#tensorflow-and-keras)._
 
 </details>
 
-> **3. Run the training like you are used to and start Aim UI**
+**3. Run the training as usual and start Aim UI**
+
+_Prerequisite: In order to start Aim UI you need to have Docker installed._
+
 ```shell
 $ aim up
 ```
 
-## Contents
+# Python Library
 
-- [Aim](#aim)
-  - [Contents](#contents)
-  - [Getting Started In Three Steps](#getting-started-in-three-steps)
-  - [Installation](#installation)
-  - [Concepts](#concepts)
-  - [Where is the Data Stored](#where-is-the-data-stored)
-  - [Python Library](#python-library)
-    - [aim.track()](#track)
-    - [aim.set_params()](#set_params)
-    - [aim.Session()](#session)
-  - [Automatic Tracking](#automatic-tracking)
-    - [TensorFlow and Keras](#tensorflow-and-keras)
-    - [PyTorch Lightning](#pytorch-lightning)
-  - [Searching Experiments](#searching-experiments)
-    - [Search Examples](#search-examples)
-  - [Command Line Interface](#command-line-interface)
-    - [init](#init)
-    - [version](#version)
-    - [experiment](#experiment)
-    - [up](#up)
-    - [down](#down)
-    - [upgrade](#upgrade)
-    - [pull](#pull)
-  - [TensorBoard Experiments](#tensorboard-experiments)
-  - [Anonymized Telemetry](#anonymized-telemetry)
-  - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
-
-## Installation
-To install Aim, you need to have python3 and pip3 installed in your environment
-1. Install Aim python package
-```shell
-$ pip install aim
-```
-In order to start Aim UI you need to have Docker installed.
-```shell
-$ aim up
-```
-
-## Concepts
-Aim doesn't use too many concepts that needs explaining. Still, here are a few details to avoid confusion:
-- **Experiment**: it's a grouping mechanism for training runs. Experiments are a way to organize the training runs in a meaningful manner
-- **Run**: it's the single training run researchers start
-
-These two are separated just to enable effective organization of the research work.
-
-## Where is the Data Stored 
-When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
-Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
-
-## Python Library
 Use Python Library to instrument your training code to record the experiments.
+
 The instrumentation only takes 2 lines:
 ```py
 import aim
@@ -186,37 +192,45 @@ aim.set_params(hyperparam_dict, name='dict_name')
 ...
 ```
 
-### track
+## track
 aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
 
 _Parameters_
+
 - **value** - the metric value of type `int`/`float` to track/log
 - **name** - the name of the metric of type `str` to track/log (preferred divider: `snake_case`)
 - **epoch** - an optional value of the epoch being tracked
 - **context_args** - any set of other parameters passed would be considered as key-value context for metrics
 
-_Examples_
+_Example_
+
 ```py
 aim.track(0.01, name='loss', epoch=43, subset='train', dataset='train_1')
 aim.track(0.003, name='loss', epoch=43, subset='val', dataset='val_1')
 ```
-Once tracked this way, the following search expressions will be enabled:
+
+Once tracked this way, the following search expressions are enabled:
+
 ```py
 loss if context.subset in (train, val) # Retrieve all losses in both train and val phase
 loss if context.subset == train and context.dataset in (train_1) # Retrieve all losses in train phase with given datasets
 ```
+
 Please note that any key-value could be used to track this way and enhance the context of metrics and enable even more detailed search.
 
 Search by context example [here](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJkaXNwbGF5T3V0bGllcnMiOmZhbHNlLCJ6b29tIjpudWxsLCJpbnRlcnBvbGF0ZSI6ZmFsc2V9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPj0gMC4wMSBhbmQgY29udGV4dC5zdWJzZXQgaW4gKHZhbCwgdHJhaW4pIiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==):
 
-### set_params
+## set_params
+
 aim.**set_params**_(dict_value, name) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L11)</sub>_
 
 _Parameters_
+
 - **dict_value** - Any dictionary relevant to the training
 - **name** - A name for dictionaries
 
-_Examples_
+_Example_
+
 ```py
  # really any dictionary can go here
 hyperparam_dict = {
@@ -224,24 +238,30 @@ hyperparam_dict = {
   'batch_siz': 32}
 aim.set_params(hyperparam_dict, name='params')
 ```
-The following params can be used later to perform the following search experssions
+
+The following params can be used later to perform the following search experssions:
+
 ```py
 loss if params.learning_rate < 0.01 # All the runs where learning rate is less than 0.01
 loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the runs where learning rate is 0.0001 and batch_size is 32
 ```
-**_Note:_** if the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
 
-### flush
+**_Note:_** If the `set_params` is called several times with the same name all the dictionaries will add up in one place on the UI.
+
+## flush
+
 aim.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/flush.py#L4)</sub>_
 
 Aim calculates intermediate values of metrics for aggregation during tracking. This method is called at a given frequency(see [Session](#session)) and at the end of the run automatically. Use this command to flush those values to disk manually.
- 
-### Session
+
+# Session
+
 Use Session to specify custom `.aim` directory or the experiment from the code.
 
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
 _Parameters_
+
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
 - **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
@@ -249,6 +269,7 @@ _Parameters_
 - **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
 
 _Returns_
+
 - Session object to attribute recorded training run to.
 
 _Methods_
@@ -261,24 +282,25 @@ _Methods_
 
 - `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
 
-_Examples_
+_Example_
 
 - [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code
 
-## Automatic Tracking
+# Automatic Tracking
 
 Automatic tracking allows you to track metrics without the need for explicit track statements.
 
-### TensorFlow and Keras
+## TensorFlow and Keras
 
 Pass an instance of `aim.tensorflow.AimCallback` to the trainer callbacks list.
 
 **_Note:_** Logging for pure `keras` is handled by `aim.keras.AimCallback`
 
 _Parameters_
+
 - **session** - Aim Session instance (optional)
 
-_Examples_
+_Example_
 
 ```python
 from aim import Session
@@ -297,11 +319,12 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 > TensorFlow v2 full example [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py#L26) <br />
 > Keras full example [here](https://github.com/aimhubio/aim/blob/main/examples/keras_track.py#L69)
 
-### PyTorch Lightning
+## PyTorch Lightning
 
 Pass `aim.pytorch_lightning.AimLogger` instance as logger to `pl.Trainer` to log metrics and parameters automatically.
 
 _Parameters_
+
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
 - **experiment** - A name of the experiment (optional)
 - **train_metric_prefix** - The prefix of metrics names collected in the training loop. By default `train_` (optional)
@@ -309,7 +332,7 @@ _Parameters_
 - **val_metric_prefix** - The prefix of metrics names collected in the validation loop. By default `val_` (optional)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step. (optional)
 
-_Examples_
+_Example_
 
 ```python
 from aim.pytorch_lightning import AimLogger
@@ -330,7 +353,8 @@ trainer.fit(model, train_loader, val_loader)
 
 > Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py)
 
-## Searching Experiments
+# Searching Experiments
+
 [AimQL](https://github.com/aimhubio/aim/wiki/Aim-Query-Language) is a super simple, python-like search that enables rich search capabilities to search experiments.
 Here are the ways you can search on Aim:
 
@@ -339,7 +363,8 @@ Here are the ways you can search on Aim:
 - **Search by param** - `params.{key} == {value}`
 - **Search by context** - `context.{key} == {value}`
 
-### Search Examples
+## Search Examples
+
 - Display the losses and accuracy metrics of experiments whose learning rate is 0.001:
   - `loss, accuracy if params.learning_rate == 0.001`
 - Display the train loss of experiments whose learning rate is greater than 0.0001:
@@ -347,7 +372,7 @@ Here are the ways you can search on Aim:
 
 Check out this demo [project](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==) deployment to play around with search.
 
-## Command Line Interface
+# Command Line Interface
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
 Paired with the [Python Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
@@ -364,7 +389,7 @@ Here are the set of commands supported:
 | `upgrade`     | Upgrade the UI to its latest version                                 |
 | `pull`        | Pull the UI of the given version                                     |
 
-### init
+## init
 __**This step is optional.**__
 Initialize the aim repo to record the experiments.
 ```shell
@@ -376,13 +401,13 @@ Running `aim init` in an existing repository will prompt the user for re-initial
   **_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
   **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
-### version
+## version
 Display the Aim version installed.
 ```shell
 $ aim version
 ```
 
-### experiment
+## experiment
 Create new experiments to organize the training runs. Here is how it works:
 ```shell
 $ aim experiment COMMAND [ARGS]
@@ -396,7 +421,7 @@ $ aim experiment COMMAND [ARGS]
 
 ***Disclaimer:*** Removing the experiment also removes the recorded experiment runs data.
 
-### up
+## up
 Start the Aim web UI locally. Aim UI is a Docker container that mounts the `.aim` folder and lets researchers manage, search and start new training runs.
 ```shell
 $ aim up [ARGS]
@@ -416,7 +441,7 @@ Most of the environments nowadays have docker preinstalled or installed for othe
 
 ***Please make sure to run `aim up` in the directory where `.aim` is located.***
 
-### down
+## down
 Turn off Aim UI manually:
 ```shell
 $ aim down [ARGS]
@@ -426,19 +451,19 @@ $ aim down [ARGS]
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
-### upgrade
+## upgrade
 Upgrade Aim UI to its latest version:
 ```shell
 $ aim upgrade
 ```
 
-### pull
+## pull
 Pulls Aim UI of the given version:
 ```shell
 $ aim pull -v <version>
 ```
 
-## TensorBoard Experiments
+# TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
 ```
 $ aim up --tf_logs path/to/logs
@@ -448,14 +473,14 @@ Use `tf:` prefix to select and display metrics logged with tf.summary in the das
 
 Tensorboard search example [here](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsiZGlzcGxheU91dGxpZXJzIjpmYWxzZSwiem9vbSI6bnVsbCwiaW50ZXJwb2xhdGUiOmZhbHNlfSwiem9vbSI6bnVsbH0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbCwiZGlzcGxheU91dGxpZXJzIjpmYWxzZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7ImFnZ3JlZ2F0ZWQiOmZhbHNlLCJncm91cEJ5Q29sb3IiOltdLCJncm91cEJ5U3R5bGUiOltdLCJncm91cEJ5Q2hhcnQiOlsiZXhwZXJpbWVudCJdfX0=)
 
-## Anonymized Telemetry 
+# Anonymized Telemetry 
 We constantly seek to improve Aim for the communty. Telementry data helps us immensely by capturing anonymous usage analytics and statistics. You will be notified when you run `aim up`.
 The telemetry is collected only on the UI. The python package **does not** have any telemetry associated with it.
 
-### Motivation
+## Motivation
 Aim UI uses segment's analytics toolkit to collect basic info about the usage:
  - Anonymized stripped-down basic usage analytics;
  - Anonymized number of experiments and run. We constantly improve the storage and UI for performance in case of many experiments. This type of usage analytics helps us to stay on top of the performance problem. <br /> _Note: **no** analytics is installed on the Aim Python package._
 
-### How to opt out
+## How to opt out
 You can turn telemetry off by setting the `AIM_UI_TELEMETRY_ENABLED` environment variable to `0`.
