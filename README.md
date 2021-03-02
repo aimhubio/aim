@@ -42,7 +42,7 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 
 </div>
 
-Aim is designed to... @gevord please add the intro here.
+Aim is an open-source comparison tool for AI experiments. With more resources and complex models more experiments are ran than ever. Use Aim to deeply inspect thousands of hyperparameter-sensitive training runs at once.
 
 # Getting started
 
@@ -129,40 +129,11 @@ _Prerequisite: In order to start Aim UI you need to have Docker installed._
 ```shell
 $ aim up
 ```
+Jump to [[Overview](#overview)] [[Specifications](#specifications)] [[Use Cases](#use-cases)]
 
-## Contents
+# Overview
 
-- [Introduction](#introduction)
-  - [Glossary](#glossary)
-  - [Data Storage](#data storage)
-- [Specifications](#specifications)
-  - [Python Library](#python-library)
-    - [aim.track()](#track)
-    - [aim.set_params()](#set_params)
-    - [aim.Session()](#session)
-  - [Automatic Tracking](#automatic-tracking)
-    - [TensorFlow and Keras](#tensorflow-and-keras)
-    - [PyTorch Lightning](#pytorch-lightning)
-  - [Command Line Interface](#command-line-interface)
-    - [init](#init)
-    - [version](#version)
-    - [experiment](#experiment)
-    - [up](#up)
-    - [down](#down)
-    - [upgrade](#upgrade)
-    - [pull](#pull)
-- [Features](#features)
-  - [Searching Experiments](#searching-experiments)
-    - [Search Examples](#search-examples)
-  - [TensorBoard Experiments](#tensorboard-experiments)
-  - [Anonymized Telemetry](#anonymized-telemetry)
-  - [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
-
-# Introduction
-
-We've written this document to help you navigate through Aim specs and give you a good foundational knowledge about the tool.
-
-## Glossary
+Placeholder for the awesome description about the awesome tool. 
 
 We tried to keep Aim as simple as possible. Still, here are a few details to avoid confusion:
 
@@ -171,14 +142,12 @@ We tried to keep Aim as simple as possible. Still, here are a few details to avo
 
 These two are separated just to enable effective organization of the research work.
 
-## Data Storage 
-
 When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
 Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
 
-# Specifications
+Jump to [[Getting Started](#getting-started)] [[Specifications](#specifications)] [[Use Cases](#use-cases)]
 
-@gevorg @gor I would like to add also something here, to describe the high level situation, eg tool has 3 main components, they work together, you can use either one of them or all, etc. 
+# Specifications
 
 ## Python Library
 
@@ -289,7 +258,9 @@ _Methods_
 
 _Example_
 
-- [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code
+- [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code.
+
+Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
 ## Automatic Tracking
 
@@ -357,6 +328,8 @@ trainer.fit(model, train_loader, val_loader)
 ```
 
 > Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py)
+
+Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
 ## Command Line Interface
 
@@ -448,8 +421,9 @@ Pulls Aim UI of the given version:
 ```shell
 $ aim pull -v <version>
 ```
+Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
-# Features
+# Use Cases
 
 ## Searching Experiments
 
@@ -470,9 +444,9 @@ Here are the ways you can search on Aim:
 
 Check out this demo [project](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==) deployment to play around with search.
 
+Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Specifications](#specifications)]
 
-
-# TensorBoard Experiments
+## TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
 ```
 $ aim up --tf_logs path/to/logs
@@ -482,14 +456,20 @@ Use `tf:` prefix to select and display metrics logged with tf.summary in the das
 
 Tensorboard search example [here](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsiZGlzcGxheU91dGxpZXJzIjpmYWxzZSwiem9vbSI6bnVsbCwiaW50ZXJwb2xhdGUiOmZhbHNlfSwiem9vbSI6bnVsbH0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbCwiZGlzcGxheU91dGxpZXJzIjpmYWxzZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7ImFnZ3JlZ2F0ZWQiOmZhbHNlLCJncm91cEJ5Q29sb3IiOltdLCJncm91cEJ5U3R5bGUiOltdLCJncm91cEJ5Q2hhcnQiOlsiZXhwZXJpbWVudCJdfX0=)
 
-# Anonymized Telemetry 
+Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Specifications](#specifications)]
+
+## Anonymized Telemetry 
 We constantly seek to improve Aim for the communty. Telementry data helps us immensely by capturing anonymous usage analytics and statistics. You will be notified when you run `aim up`.
 The telemetry is collected only on the UI. The python package **does not** have any telemetry associated with it.
 
-## Motivation
+### Motivation
 Aim UI uses segment's analytics toolkit to collect basic info about the usage:
  - Anonymized stripped-down basic usage analytics;
  - Anonymized number of experiments and run. We constantly improve the storage and UI for performance in case of many experiments. This type of usage analytics helps us to stay on top of the performance problem. <br /> _Note: **no** analytics is installed on the Aim Python package._
 
-## How to opt out
+### How to opt out
 You can turn telemetry off by setting the `AIM_UI_TELEMETRY_ENABLED` environment variable to `0`.
+
+[Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
+
+Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Specifications](#specifications)]
