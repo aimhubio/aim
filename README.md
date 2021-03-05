@@ -44,7 +44,7 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 
 Aim is an open-source comparison tool for AI experiments. With more resources and complex models more experiments are ran than ever. Use Aim to deeply inspect thousands of hyperparameter-sensitive training runs at once.
 
-# Getting started
+# Getting Started in 3 Steps
 
 Follow the steps below to get started with Aim.
 
@@ -60,7 +60,7 @@ $ pip install aim
 
 <details open>
 <summary>
-  Flexible integration for any Python script
+  Integrate your Python script
 </summary>
 
 ```python
@@ -82,7 +82,7 @@ _See documentation [here](#python-library)._
 
 <details>
 <summary>
-  PyTorch Lightning integration
+  Integrate PyTorch Lightning
 </summary>
 
 ```python
@@ -99,7 +99,7 @@ _See documentation [here](#pytorch-lightning)._
 
 <details>
 <summary>
-  Keras & tf.keras integrations
+  Integrate Keras & tf.keras
 </summary>
 
 ```python
@@ -133,8 +133,6 @@ Jump to [[Overview](#overview)] [[Specifications](#specifications)] [[Use Cases]
 
 # Overview
 
-Placeholder for the awesome description about the awesome tool. 
-
 We tried to keep Aim as simple as possible. Still, here are a few details to avoid confusion:
 
 - **Experiment**: it's a grouping mechanism for training runs. Experiments are a way to organize the training runs in a meaningful manner
@@ -142,29 +140,52 @@ We tried to keep Aim as simple as possible. Still, here are a few details to avo
 
 These two are separated just to enable effective organization of the research work.
 
+Core component of Aim SDK is `Session` creation, which occurs every time when you use Aim. `Session` object handles the tracking of metrics and parameters, and stores the run in .aim repository as a directory.
+
 When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
 Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
 
+Additionally, Aim SDK also gives you flexibility to:
+
+- use multiple sessions in one training script to store multiple runs at once. When not initialized explicitly, Aim creates a default session.
+
+- use experiments to group related runs together. An experiment named `default` is created otherwise.
+
 Jump to [[Getting Started](#getting-started)] [[Specifications](#specifications)] [[Use Cases](#use-cases)]
 
-# Specifications
+# SDK Specifications
 
-## Python Library
+## Session
 
-Use Python Library to instrument your training code to record the experiments.
+Use Session to specify custom `.aim` directory or the experiment from the code.
 
-The instrumentation only takes 2 lines:
-```py
-import aim
-```
-Afterwards, simply use the two following functions to track metrics and any params respectively.
+_Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
-```py
-...
-aim.track(metric_val, name='metric_name', epoch=current_epoch)
-aim.set_params(hyperparam_dict, name='dict_name')
-...
-```
+_Parameters_
+
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
+- **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
+- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
+- **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
+- **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
+
+_Returns_
+
+- Session object to attribute recorded training run to.
+
+_Methods_
+
+- [`track()`](#track) - Tracks metrics within the session
+
+- [`set_params()`](#set_params) - Sets session params
+
+- [`flush()`](#flush) - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
+
+- `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
+
+_Example_
+
+- [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code.
 
 ### track
 aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
@@ -228,43 +249,28 @@ aim.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk
 
 Aim calculates intermediate values of metrics for aggregation during tracking. This method is called at a given frequency(see [Session](#session)) and at the end of the run automatically. Use this command to flush those values to disk manually.
 
-### Session
+### Instrumentation
 
-Use Session to specify custom `.aim` directory or the experiment from the code.
+Use Python Library to instrument your training code to record the experiments.
 
-_Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
+The instrumentation only takes 2 lines:
+```py
+import aim
+```
+Afterwards, simply use the two following functions to track metrics and any params respectively.
 
-_Parameters_
-
-- **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
-- **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
-- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
-- **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
-- **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
-
-_Returns_
-
-- Session object to attribute recorded training run to.
-
-_Methods_
-
-- [`track()`](#track) - Tracks metrics within the session
-
-- [`set_params()`](#set_params) - Sets session params
-
-- [`flush()`](#flush) - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
-
-- `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
-
-_Example_
-
-- [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code.
+```py
+...
+aim.track(metric_val, name='metric_name', epoch=current_epoch)
+aim.set_params(hyperparam_dict, name='dict_name')
+...
+```
 
 Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
-## Automatic Tracking
+## Integrations
 
-Automatic tracking allows you to track metrics without the need for explicit track statements.
+we have integrated Aim to Tensorflow, Keras and Pytorch Lightning to enable automatic tracking. It allows you to track metrics without the need for explicit track statements.
 
 ### TensorFlow and Keras
 
