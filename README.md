@@ -129,7 +129,7 @@ _Prerequisite: In order to start Aim UI you need to have Docker installed._
 ```shell
 $ aim up
 ```
-Jump to [[Overview](#overview)] [[Specifications](#specifications)] [[Use Cases](#use-cases)]
+Jump to [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)] [[Use Cases](#use-cases)]
 
 # Overview
 
@@ -151,7 +151,7 @@ Additionally, Aim SDK also gives you flexibility to:
 
 - use experiments to group related runs together. An experiment named `default` is created otherwise.
 
-Jump to [[Getting Started](#getting-started)] [[Specifications](#specifications)] [[Use Cases](#use-cases)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#sdk-specifications)] [[Use Cases](#use-cases)]
 
 # SDK Specifications
 
@@ -266,7 +266,7 @@ aim.set_params(hyperparam_dict, name='dict_name')
 ...
 ```
 
-Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
 ## Integrations
 
@@ -335,7 +335,7 @@ trainer.fit(model, train_loader, val_loader)
 
 > Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py)
 
-Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
 ## Command Line Interface
 
@@ -427,7 +427,7 @@ Pulls Aim UI of the given version:
 ```shell
 $ aim pull -v <version>
 ```
-Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Use Cases](#use-cases)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
 # Use Cases
 
@@ -450,7 +450,7 @@ Here are the ways you can search on Aim:
 
 Check out this demo [project](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbH19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MgaWYgcGFyYW1zLmxlYXJuaW5nX3JhdGUgPiAwLjAxIG9yIG5ldC5jb252MV9zaXplID09IDY0IiwidiI6MX0sImNvbnRleHRGaWx0ZXIiOnsiYWdncmVnYXRlZCI6ZmFsc2UsImdyb3VwQnlDb2xvciI6W10sImdyb3VwQnlTdHlsZSI6W10sImdyb3VwQnlDaGFydCI6W119fQ==) deployment to play around with search.
 
-Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Specifications](#specifications)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)]
 
 ## TensorBoard Experiments
 Easily run Aim on experiments visualized by TensorBoard. Here is how:
@@ -462,7 +462,7 @@ Use `tf:` prefix to select and display metrics logged with tf.summary in the das
 
 Tensorboard search example [here](http://play.aimstack.io/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsiZGlzcGxheU91dGxpZXJzIjpmYWxzZSwiem9vbSI6bnVsbCwiaW50ZXJwb2xhdGUiOmZhbHNlfSwiem9vbSI6bnVsbH0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsfSwiem9vbSI6bnVsbCwiZGlzcGxheU91dGxpZXJzIjpmYWxzZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6Imxvc3MsIHRmOmFjY3VyYWN5IGlmIHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMSBvciBuZXQuY29udjFfc2l6ZSA9PSA2NCBvciBwYXJhbXMudGZfbGVhcm5pbmdfcmF0ZSA9PSAwLjAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7ImFnZ3JlZ2F0ZWQiOmZhbHNlLCJncm91cEJ5Q29sb3IiOltdLCJncm91cEJ5U3R5bGUiOltdLCJncm91cEJ5Q2hhcnQiOlsiZXhwZXJpbWVudCJdfX0=)
 
-Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Specifications](#specifications)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Specifications](#specifications)]
 
 ## Anonymized Telemetry 
 We constantly seek to improve Aim for the communty. Telementry data helps us immensely by capturing anonymous usage analytics and statistics. You will be notified when you run `aim up`.
@@ -478,4 +478,4 @@ You can turn telemetry off by setting the `AIM_UI_TELEMETRY_ENABLED` environment
 
 [Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
 
-Jump to [[Getting Started](#getting-started)] [[Overview](#overview)] [[Specifications](#specifications)]
+Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)]
