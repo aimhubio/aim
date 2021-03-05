@@ -133,9 +133,11 @@ Jump to [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)] [[Us
 
 # Overview
 
-Core component of Aim SDK is `Session` creation, which occurs every time when you use Aim. `Session` object handles the tracking of metrics and parameters, and stores the run in .aim repository as a directory.
+Aim helps you to compare 1000s of training runs at once via versatile SDK and flexible UI.
 
-When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim creates a `.aim` directory in working directory, if no path is specified. 
+While using Aim SDK you create a Session object. It handles the tracking of metrics and parameters.
+
+When the training code is instrumented with Aim SDK's [Python Library](#python-library) and ran, Aim creates the `.aim` repository in your specified path and stores the data. Otherwise the data is created and stored in working directory.
 
 Additionally, Aim SDK also gives you flexibility to:
 
