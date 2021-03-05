@@ -133,23 +133,15 @@ Jump to [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)] [[Us
 
 # Overview
 
-We tried to keep Aim as simple as possible. Still, here are a few details to avoid confusion:
-
-- **Experiment**: it's a grouping mechanism for training runs. Experiments are a way to organize the training runs in a meaningful manner
-- **Run**: it's the single training run researchers start
-
-These two are separated just to enable effective organization of the research work.
-
 Core component of Aim SDK is `Session` creation, which occurs every time when you use Aim. `Session` object handles the tracking of metrics and parameters, and stores the run in .aim repository as a directory.
 
-When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim automatically creates a `.aim` directory where the project is located. All the metadata tracked during training via the Python Library is stored in `.aim`.
-Also see [`aim init`](#init) - an optional and alternative way to initialize aim repository.
+When the AI training code is instrumented with [Aim Python Library](#python-library) and ran, aim creates a `.aim` directory in working directory, if no path is specified. 
 
 Additionally, Aim SDK also gives you flexibility to:
 
 - use multiple sessions in one training script to store multiple runs at once. When not initialized explicitly, Aim creates a default session.
-
 - use experiments to group related runs together. An experiment named `default` is created otherwise.
+- use integrations to automate tracking
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#sdk-specifications)] [[Use Cases](#use-cases)]
 
