@@ -76,7 +76,7 @@ for step in range(10):
 ...
 ```
 
-_See documentation [here](#python-library)._
+_See documentation [here](#sdk-specifications)._
 
 </details>
 
@@ -334,7 +334,7 @@ Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)]
 ## Command Line Interface
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
-Paired with the [Python Library](#python-library), Aim is a powerful utility to record, search and compare AI experiments.
+Paired with the [Python Library](#sdk-specifications), Aim is a powerful utility to record, search and compare AI experiments.
 Here are the set of commands supported:
 
 
