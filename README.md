@@ -133,11 +133,11 @@ Jump to [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)] [[Us
 
 # Overview
 
-Aim helps you to compare 1000s of training runs at once through its framework-agnostic python SDK and performant UI
+Aim helps you to compare 1000s of training runs at once through its framework-agnostic python SDK and performant UI.
 
 While using Aim SDK you create a Session object. It handles the tracking of metrics and parameters.
 
-When the training code is instrumented with Aim SDK's [Python Library](#python-library) and ran, Aim creates the `.aim` repository in your specified path and stores the data. Otherwise the data is created and stored in working directory.
+When the training code is instrumented with Aim SDK's [Python Library](#sdk-specifications) and ran, Aim creates the `.aim` repository in your specified path and stores the data. Otherwise the data is created and stored in working directory.
 
 Additionally, Aim SDK also gives you flexibility to:
 
@@ -151,7 +151,7 @@ Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#
 
 ## Session
 
-Use Session to specify custom `.aim` directory or the experiment from the code.
+Use Session to specify custom `.aim` repository or the experiment from the code.
 
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
@@ -182,7 +182,7 @@ _Example_
 - [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code.
 
 ### track
-aim.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L6)</sub>_
+Session.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/cae6fa7062da9b12875a8cbf08a5b8907de8d279/aim/sdk/session/session.py#L76)</sub>_
 
 _Parameters_
 
@@ -211,7 +211,7 @@ Search by context example [here](http://play.aimstack.io/explore?search=eyJjaGFy
 
 ### set_params
 
-aim.**set_params**_(dict_value, name) <sub>[source](https://github.com/aimhubio/aim/blob/6ef09d8d77c517728978703764fc9ffe323f12b0/aim/sdk/track.py#L11)</sub>_
+Session.**set_params**_(dict_value, name) <sub>[source](https://github.com/aimhubio/aim/blob/cae6fa7062da9b12875a8cbf08a5b8907de8d279/aim/sdk/session/session.py#L83)</sub>_
 
 _Parameters_
 
@@ -239,7 +239,7 @@ loss if params.learning_rate == 0.0001 and params.batch_size == 32 # all the run
 
 ### flush
 
-aim.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/flush.py#L4)</sub>_
+Session.**flush**_() <sub>[source](https://github.com/aimhubio/aim/blob/cae6fa7062da9b12875a8cbf08a5b8907de8d279/aim/sdk/session/session.py#L87)</sub>_
 
 Aim calculates intermediate values of metrics for aggregation during tracking. This method is called at a given frequency(see [Session](#session)) and at the end of the run automatically. Use this command to flush those values to disk manually.
 
@@ -264,7 +264,7 @@ Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)]
 
 ## Integrations
 
-we have integrated Aim to Tensorflow, Keras and Pytorch Lightning to enable automatic tracking. It allows you to track metrics without the need for explicit track statements.
+We have integrated Aim to Tensorflow, Keras and Pytorch Lightning to enable automatic tracking. It allows you to track metrics without the need for explicit track statements.
 
 ### TensorFlow and Keras
 
