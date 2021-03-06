@@ -151,7 +151,7 @@ Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#
 
 ## Session
 
-Use Session to specify custom `.aim` repository or the experiment from the code.
+Session is the main object that tracks and stores the metadata (metrics and hyperparams). Use Session to specify custom `.aim` directory, the experiment from the code or other tracking-specific configs from the code
 
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
