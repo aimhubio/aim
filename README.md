@@ -133,7 +133,7 @@ Jump to [[Overview](#overview)] [[SDK Specifications](#sdk-specifications)] [[Us
 
 # Overview
 
-Aim helps you to compare 1000s of training runs at once via versatile SDK and flexible UI.
+Aim helps you to compare 1000s of training runs at once through its framework-agnostic python SDK and performant UI
 
 While using Aim SDK you create a Session object. It handles the tracking of metrics and parameters.
 
