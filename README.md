@@ -151,21 +151,28 @@ Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#
 
 ## Session
 
-Session is the main object that tracks and stores the metadata (metrics and hyperparams). Use Session to specify custom `.aim` directory, the experiment from the code or other tracking-specific configs from the code
+Session is the main object that tracks and stores the metadata (metrics and hyperparams). 
+
+Use Session arguments to define:
+
+- custom path for `.aim` directory
+- experiment name, for which you are running the session
+- run hash
+
+Use Session metrics to define:
+
+- list of metrics to track during the session
+- list of parameters for the session
 
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
-_Parameters_
+_Arguments_
 
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
 - **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
 - **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
 - **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
-
-_Returns_
-
-- Session object to attribute recorded training run to.
 
 _Methods_
 
@@ -176,6 +183,10 @@ _Methods_
 - [`flush()`](#flush) - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
 
 - `close()` - Closes the session. If not invoked, the session will be automatically closed when the training is done.
+
+_Returns_
+
+Session object to attribute recorded training run to.
 
 _Example_
 
