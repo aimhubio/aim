@@ -159,7 +159,7 @@ Use Session arguments to define:
 - experiment name, for which you are running the session
 - run hash
 
-Use Session metrics to define:
+Use Session methods to define:
 
 - list of metrics to track during the session
 - list of parameters for the session
