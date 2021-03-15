@@ -159,10 +159,10 @@ Use Session arguments to define:
 - experiment name, for which you are running the session
 - run hash
 
-Use Session methods to define:
+Use Session methods to specify:
 
-- list of metrics to track during the session
-- list of parameters for the session
+- the metrics you want to track during the session
+- the session parameters
 
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
