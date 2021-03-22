@@ -212,8 +212,10 @@ _Parameters_
 _Example_
 
 ```py
-aim.track(0.01, name='loss', epoch=43, subset='train', dataset='train_1')
-aim.track(0.003, name='loss', epoch=43, subset='val', dataset='val_1')
+session_inst = aim.Session()
+
+session_inst.track(0.01, name='loss', epoch=43, subset='train', dataset='train_1')
+session_inst.track(0.003, name='loss', epoch=43, subset='val', dataset='val_1')
 ```
 
 Once tracked this way, the following search expressions are enabled:
@@ -239,11 +241,14 @@ _Parameters_
 _Example_
 
 ```py
+session_inst = aim.Session()
+
  # really any dictionary can go here
 hyperparam_dict = {
   'learning_rate': 0.0001,
-  'batch_siz': 32}
-aim.set_params(hyperparam_dict, name='params')
+  'batch_siz': 32,
+}
+session_inst.set_params(hyperparam_dict, name='params')
 ```
 
 The following params can be used later to perform the following search experssions:
@@ -267,15 +272,20 @@ Use Python Library to instrument your training code to record the experiments.
 
 The instrumentation only takes 2 lines:
 ```py
+# Import aim
 import aim
+
+# Initialize a new session
+session_inst = Session()
 ```
+
 Afterwards, simply use the two following functions to track metrics and any params respectively.
 
 ```py
-...
-aim.track(metric_val, name='metric_name', epoch=current_epoch)
-aim.set_params(hyperparam_dict, name='dict_name')
-...
+session_inst.set_params(hyperparam_dict, name='dict_name')
+
+for iter, sample in enumerate(train_loader):
+  session_inst.track(metric_val, name='metric_name', epoch=current_epoch)
 ```
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
