@@ -151,18 +151,18 @@ Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#
 
 ## Session
 
-Session is the main object that tracks and stores the metadata (metrics and hyperparams). 
+Session is the main object that tracks and stores the ML training metadata (metrics and hyperparams). 
 
 Use Session arguments to define:
 
 - custom path for `.aim` directory
-- experiment name, for which you are running the session
-- run hash
+- experiment name: each session is associated with an experiment
+- run name/message
 
 Use Session methods to specify:
 
-- the metrics you want to track during the session
-- the session parameters
+- the metrics of your training run(s)
+- the hyperparameters of your training run(s) 
 
 _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/main/aim/sdk/session/session.py)</sub>_
 
@@ -171,14 +171,14 @@ _Arguments_
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
 - **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
-- **block_termination** - If set to `True` process will wait until all tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
+- **block_termination** - If set to `True` process will wait until all the tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
 - **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
 
 _Methods_
 
-- [`track()`](#track) - Tracks metrics within the session
+- [`track()`](#track) - Tracks the training run metrics associated with the Session
 
-- [`set_params()`](#set_params) - Sets session params
+- [`set_params()`](#set_params) - Sets the params of the training run associated with the Session
 
 - [`flush()`](#flush) - Flushes intermediate aggregated metrics to disk. This method is called at a given frequency and at the end of the run automatically.
 
@@ -191,6 +191,13 @@ Session object to attribute recorded training run to.
 _Example_
 
 - [Here](https://github.com/aimhubio/aim/tree/main/examples/sessions) are a few examples of how to use the `aim.Session` in code.
+
+_The Default Session_
+
+When no session is explicitely initialized, a default Session object is created by Aim.
+
+When `aim.track` or `aim.set_params` are invoked, underneath the default session object's `track` and `set_param` are called.
+
 
 ### track
 Session.**track**_(value, name='metric_name' [, epoch=epoch] [, **context_args]) <sub>[source](https://github.com/aimhubio/aim/blob/cae6fa7062da9b12875a8cbf08a5b8907de8d279/aim/sdk/session/session.py#L76)</sub>_
