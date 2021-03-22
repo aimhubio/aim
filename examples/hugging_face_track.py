@@ -184,6 +184,8 @@ def main():
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
+    training_args.report_to = []
+
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -432,7 +434,7 @@ def main():
         data_collator = None
 
     # Initialize our Trainer
-    aim_callback = AimCallback(experiment_name='test_aim_callback')
+    aim_callback = AimCallback(repo=training_args.logging_dir, experiment='huggingface_experiment')
     trainer = Trainer(
         model=model,
         args=training_args,

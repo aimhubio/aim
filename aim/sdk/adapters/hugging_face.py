@@ -2,7 +2,7 @@ from typing import Optional
 
 from aim.engine.utils import convert_to_py_number
 from aim.sdk.session.session import Session
-from aim.sdk.flush import flush
+
 
 class AimCallback(object):
     __hf_callback_cls = None
@@ -20,57 +20,69 @@ class AimCallback(object):
         from transformers.trainer_callback import TrainerCallback
 
         class _HuggingFaceCallback(TrainerCallback):
-            def __init__(self, experiment_name: Optional[str] = None):
-                self._experiment_name = experiment_name
+            def __init__(self,
+                         repo: Optional[str] = None,
+                         experiment: Optional[str] = None,
+                         ):
+                self._repo_path = repo
+                self._experiment_name = experiment
                 self._initialized = False
-                self._current_shfit = None
+                self._current_shift = None
+                self._aim_session = None
 
             def setup(self, args, state, model):
                 self._initialized = True
 
                 self._aim_session = Session(
-                                repo=args.logging_dir,
+                                repo=self._repo_path,
                                 experiment=self._experiment_name
                             )
 
                 combined_dict = {**args.to_sanitized_dict()}
-                if hasattr(model, "config") and model.config is not None:
-                    model_config = model.config.to_dict()
-                    combined_dict = {**model_config, **combined_dict}
                 self._aim_session.set_params(combined_dict, name='hparams')
 
-            def on_train_begin(self, args, state, control, model=None, **kwargs):
+                # Store model configs as well
+                # if hasattr(model, 'config') and model.config is not None:
+                #     model_config = model.config.to_dict()
+                #     self._aim_session.set_params(model_config, name='model')
+
+            def on_train_begin(self, args, state, control,
+                               model=None, **kwargs):
                 if not self._initialized:
                     self.setup(args, state, model)
-                self._current_shfit = 'train'
+                self._current_shift = 'train'
             
             def on_evaluate(self, args, state, control, **kwargs):
-                self._current_shfit = 'val'
+                self._current_shift = 'val'
             
             def on_prediction_step(self, args, state, control, **kwargs):
-                self._current_shfit = 'pred'
+                self._current_shift = 'pred'
 
-            def on_log(self, args, state, control, logs=None, **kwargs):
+            def on_log(self, args, state, control,
+                       model=None, logs=None, **kwargs):
                 if not self._initialized:
                     self.setup(args, state, model)
 
-                context = {}
-                for k, v in logs.items():
-                    context['subset'] = self._current_shfit
-                    self._aim_session.track(convert_to_py_number(v), name=k, **context)
+                context = {
+                    'subset': self._current_shift,
+                }
+                for log_name, log_value in logs.items():
+                    self._aim_session.track(convert_to_py_number(log_value),
+                                            name=log_name,
+                                            **context)
             
             def on_epoch_end(self, args, state, control, **kwargs):
-                flush_func = self._aim_session.flush \
-                    if self._aim_session is not None \
-                    else flush
-                flush_func()
+                self._aim_session.flush()
 
             def __del__(self):
-                if self._initialized:
+                if self._initialized and self._aim_session.active:
                     self._aim_session.close()
 
         cls.__hf_callback_cls = _HuggingFaceCallback
         return cls.__hf_callback_cls
 
-    def __init__(self, experiment: Optional[str] = None ):
+    def __init__(self,
+                 repo: Optional[str] = None,
+                 experiment: Optional[str] = None,
+                 ):
         pass
