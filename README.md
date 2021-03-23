@@ -39,6 +39,7 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="100" />
+<img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="100" />
 
 </div>
 
@@ -69,11 +70,11 @@ import aim
 # Save inputs, hparams or any other `key: value` pairs
 aim.set_params(hyperparam_dict, name='hparams') # Passing name argument is optional
 
-...
+# ...
 for step in range(10):
     # Log metrics to visualize performance
     aim.track(metric_value, name='metric_name', epoch=epoch_number)
-...
+# ...
 ```
 
 _See documentation [here](#sdk-specifications)._
@@ -88,12 +89,37 @@ _See documentation [here](#sdk-specifications)._
 ```python
 from aim.pytorch_lightning import AimLogger
 
-...
+# ...
 trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
-...
+# ...
 ```
 
 _See documentation [here](#pytorch-lightning)._
+
+</details>
+
+<details>
+<summary>
+  Integrate Hugging Face
+</summary>
+
+```python
+from aim.hugging_face import AimCallback
+
+# ...
+aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='mnli')
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset if training_args.do_train else None,
+    eval_dataset=eval_dataset if training_args.do_eval else None,
+    callbacks=[aim_callback],
+    # ...
+)
+# ...
+```
+
+_See documentation [here](#hugging-face)._
 
 </details>
 
@@ -108,14 +134,14 @@ import aim
 # Save inputs, hparams or any other `key: value` pairs
 aim.set_params(param_dict, name='params_name') # Passing name argument is optional
 
-...
+# ...
 model.fit(x_train, y_train, epochs=epochs, callbacks=[
     aim.keras.AimCallback(aim.Session(experiment='experiment_name'))
     
     # Use aim.tensorflow.AimCallback in case of tf.keras
     aim.tensorflow.AimCallback(aim.Session(experiment='experiment_name'))
 ])
-...
+# ...
 ```
 
 _See documentation [here](#tensorflow-and-keras)._
@@ -325,7 +351,7 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 
 ### PyTorch Lightning
 
-Pass `aim.pytorch_lightning.AimLogger` instance as logger to `pl.Trainer` to log metrics and parameters automatically.
+Pass `aim.pytorch_lightning.AimLogger` instance as a logger to the `pl.Trainer` to log metrics and parameters automatically.
 
 _Parameters_
 
@@ -356,6 +382,40 @@ trainer.fit(model, train_loader, val_loader)
 ```
 
 > Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py)
+
+### Hugging Face
+
+Pass `aim.hugging_face.AimCallback` instance as a callback to the `transformers.Trainer` to log metrics and parameters automatically.
+
+_Parameters_
+
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
+- **experiment** - A name of the experiment (optional)
+
+_Example_
+
+```python
+from aim.hugging_face import AimCallback
+
+# ...
+# Initialize Aim callback instance
+aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='mnli')
+
+# Initialize trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset if training_args.do_train else None,
+    eval_dataset=eval_dataset if training_args.do_eval else None,
+    compute_metrics=compute_metrics,
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    callbacks=[aim_callback]
+)
+# ...
+```
+
+> Full example [here](https://github.com/aimhubio/aim/blob/main/examples/hugging_face_track.py)
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
