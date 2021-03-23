@@ -147,6 +147,37 @@ Additionally, Aim SDK also gives you flexibility to:
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[SDK Specifications](#sdk-specifications)] [[Use Cases](#use-cases)]
 
+# Democratizing AI Dev tools
+
+## The mission...
+Aim's mission is to democratize AI dev tools. 
+We believe that the best AI tools need to be:
+- open-source, open-data-format, community-driven, extensible
+- have great UI/UX, CLI and other interfaces for automation
+- performant both on UI and data
+
+## Our motivation...
+Existing open-source tools have been inspiring. However we see lots of improvements to be made.
+Especially around issues like:
+- ability to handle 1000s of large-scale experiments
+- actionable, beautiful and performant visualization
+- extensibility - how easy are their apis for extension?
+
+
+These problems motivate us.
+We have been working on Aim for the past 6-7 months. 
+We deeply care about building beautiful, scalable AI dev tools with great APIs.
+That's what unites the Aim community. Join us!
+
+## Going forward...
+
+We have just shared all the issues we have accumulated through the Aim community.
+Down the line we are going to also share more about 
+- the Aim roadmap
+- Aim internal architecture / design 
+- The extension APIs
+
+
 # SDK Specifications
 
 ## Session
