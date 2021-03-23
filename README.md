@@ -165,18 +165,9 @@ Especially around issues like:
 
 
 These problems motivate us.
-We have been working on Aim for the past 6-7 months. 
+
 We deeply care about building beautiful, scalable AI dev tools with great APIs.
 That's what unites the Aim community. Join us!
-
-## Going forward...
-
-We have just shared all the issues we have accumulated through the Aim community.
-Down the line we are going to also share more about 
-- the Aim roadmap
-- Aim internal architecture / design 
-- The extension APIs
-
 
 # SDK Specifications
 
