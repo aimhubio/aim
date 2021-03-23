@@ -167,8 +167,9 @@ However we see lots of improvements to be made. Especially around issues like:
 These problems are a huge motivation.
 
 We are inspired to build beautiful, scalable AI dev tools with great APIs.
+That's what unites the Aim community. 
 
-That's what unites the Aim community. Join us!
+Join us, help us build the future of AI tooling!
 
 # SDK Specifications
 
