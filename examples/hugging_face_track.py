@@ -434,7 +434,7 @@ def main():
         data_collator = None
 
     # Initialize our Trainer
-    aim_callback = AimCallback(repo=training_args.logging_dir, experiment='huggingface_experiment')
+    aim_callback = AimCallback(experiment='huggingface_experiment')
     trainer = Trainer(
         model=model,
         args=training_args,
