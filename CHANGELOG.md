@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0 Mar 24 2021
+- Bump up Aim UI to v1.4.0 (gorarakelyan)
+- Add Hugging Face integration (Khazhak)
+- Reorganize documentation (Tatevv)
+
 ## 2.1.6 Feb 26 2021
 - Add ability to opt out telemetry (gorarakelyan)
 - Remove experiment name from config file when calling repo.remove_branch method (gorarakelyan)
