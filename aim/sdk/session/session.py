@@ -20,6 +20,7 @@ from aim.engine.configs import (
     AIM_DEFAULT_BRANCH_NAME,
     AIM_MAP_METRICS_KEYWORD,
 )
+from aim.resource.tracker import ResourceTracker
 
 
 class Session:
@@ -33,7 +34,8 @@ class Session:
                  experiment: Optional[str] = None,
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                  block_termination: bool = True,
-                 run: Optional[str] = None):
+                 run: Optional[str] = None,
+                 resource_tracking_interval: Optional[int] = 0):
         self.active = False
         self._lock = threading.Lock()
         self._close_lock = threading.Lock()
@@ -63,6 +65,19 @@ class Session:
 
         # Bind signal listeners
         self._set_exit_handlers()
+
+        # Collect resource usage stats
+        self._resource_usage_tracker = None
+        if resource_tracking_interval > 0:
+            try:
+                self._resource_usage_tracker = ResourceTracker(
+                    self.track, resource_tracking_interval
+                )
+            except ValueError:
+                # TODO: print error msg
+                pass
+            else:
+                self._resource_usage_tracker.start()
 
     @property
     def run_hash(self):
@@ -175,6 +190,10 @@ class Session:
 
                 # Wait until all jobs are done
                 self._queue.join()
+
+                # Stop resource usage tracker
+                if self._resource_usage_tracker is not None:
+                    self._resource_usage_tracker.stop()
 
                 # Write aggregated metrics
                 self._flush_metrics(force=True, check_status=False)

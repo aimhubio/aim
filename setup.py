@@ -29,6 +29,7 @@ REQUIRED = [
     'GitPython>=3.0.4',
     'requests>=2.0.0',
     'psutil>=5.6.7',
+    'py3nvml>=0.2.5',
     'docker>=4.1.0',
     'aimrecords==0.0.7',
     'protobuf>=3.11.0',
