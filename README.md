@@ -219,7 +219,7 @@ _Class_ aim.**Session**_()<sub>[source](https://github.com/aimhubio/aim/blob/mai
 _Arguments_
 
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory. By default current working directory.
-- **experiment** - A name of the experiment. By default `default`. See [concepts](#concepts)
+- **experiment** - A name of the experiment. By default `default`. Use experiments to group related runs together.
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
 - **block_termination** - If set to `True` process will wait until all the tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
 - **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
