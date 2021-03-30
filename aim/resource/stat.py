@@ -141,18 +141,18 @@ class Stat(object):
             # CPU utilization percent(can be over 100%)
             'cpu': round10e5(self._process.cpu_percent(0.0)),
 
-            # Get the portion of memory occupied by a process
-            'p_memory_rss': round10e5(self._process.memory_info().rss
-                                      / 1024 / 1024),
-            'p_memory_percent': round10e5(self._process.memory_percent()),
-
             # Whole system memory usage
-            'memory_used': round10e5(memory_usage.used / 1024 / 1024),
+            # 'memory_used': round10e5(memory_usage.used / 1024 / 1024),
             'memory_percent': round10e5(memory_usage.used * 100
                                         / memory_usage.total),
 
+            # Get the portion of memory occupied by a process
+            # 'p_memory_rss': round10e5(self._process.memory_info().rss
+            #                           / 1024 / 1024),
+            'p_memory_percent': round10e5(self._process.memory_percent()),
+
             # Disk usage
-            'disk_used': round10e5(disk_usage.used / 1024 / 1024),
+            # 'disk_used': round10e5(disk_usage.used / 1024 / 1024),
             'disk_percent': round10e5(disk_usage.percent),
         }
 
@@ -180,16 +180,16 @@ class Stat(object):
                     'gpu': round10e5(util.gpu),
 
                     # Device memory usage
-                    'memory_used': round10e5(memory.used / 1024 / 1024),
-                    'memory_percent': round10e5(memory.used * 100
+                    # 'memory_used': round10e5(memory.used / 1024 / 1024),
+                    'gpu_memory_percent': round10e5(memory.used * 100
                                                 / memory.total),
 
                     # Power usage in watts and percent
-                    'power_watts': round10e5(power_watts),
-                    'power_percent': round10e5(power_usage),
+                    'gpu_power_watts': round10e5(power_watts),
+                    # 'power_percent': round10e5(power_usage),
 
                     # Device temperature
-                    'temp': round10e5(temp),
+                    'gpu_temp': round10e5(temp),
                 })
         except Exception:
             pass

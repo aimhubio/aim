@@ -62,7 +62,7 @@ class ResourceTracker(object):
         for resource, usage in stat.system.items():
             self._track_func(
                 usage,
-                name='{}system_{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
+                name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
             )
 
         # Store GPU stats
@@ -70,8 +70,8 @@ class ResourceTracker(object):
             for resource, usage in gpu.items():
                 self._track_func(
                     usage,
-                    name='{}gpu_{}_{}'.format(AIM_RESOURCE_METRIC_PREFIX,
-                                              gpu_idx, resource),
+                    name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
+                    gpu=gpu_idx,
                 )
 
     def _stat_collector(self):

@@ -33,6 +33,7 @@ class AimLogger(object):
                          val_metric_prefix: Optional[str] = 'val_',
                          test_metric_prefix: Optional[str] = 'test_',
                          flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
+                         system_tracking_interval: Optional[int] = 0,
                          ):
                 super().__init__()
 
@@ -43,6 +44,7 @@ class AimLogger(object):
                 self._val_metric_prefix = val_metric_prefix
                 self._test_metric_prefix = test_metric_prefix
                 self._flush_frequency = flush_frequency
+                self._system_tracking_interval = system_tracking_interval
 
                 self._aim_session = None
 
@@ -54,6 +56,7 @@ class AimLogger(object):
                         repo=self._repo_path,
                         experiment=self._experiment_name,
                         flush_frequency=self._flush_frequency,
+                        system_tracking_interval=self._system_tracking_interval
                     )
                 return self._aim_session
 
@@ -114,5 +117,6 @@ class AimLogger(object):
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
+                 system_tracking_interval: Optional[int] = 0,
                  ):
         pass

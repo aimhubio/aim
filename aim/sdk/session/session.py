@@ -35,7 +35,7 @@ class Session:
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                  block_termination: bool = True,
                  run: Optional[str] = None,
-                 resource_tracking_interval: Optional[int] = 0):
+                 system_tracking_interval: Optional[int] = 0):
         self.active = False
         self._lock = threading.Lock()
         self._close_lock = threading.Lock()
@@ -68,10 +68,10 @@ class Session:
 
         # Collect resource usage stats
         self._resource_usage_tracker = None
-        if resource_tracking_interval > 0:
+        if system_tracking_interval > 0:
             try:
                 self._resource_usage_tracker = ResourceTracker(
-                    self.track, resource_tracking_interval
+                    self.track, system_tracking_interval
                 )
             except ValueError:
                 # TODO: print error msg
