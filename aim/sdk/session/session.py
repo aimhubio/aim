@@ -74,8 +74,9 @@ class Session:
                     self.track, system_tracking_interval
                 )
             except ValueError:
-                # TODO: print error msg
-                pass
+                print('To track system resource usage '
+                      'please set `system_tracking_interval` greater than 0 '
+                      'and less than 1 day')
             else:
                 self._resource_usage_tracker.start()
 
