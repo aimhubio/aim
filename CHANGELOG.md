@@ -1,5 +1,7 @@
 # Changelog
 
+- Add ability to track system metrics (gorarakelyan)
+
 ## 2.2.0 Mar 24 2021
 - Bump up Aim UI to v1.4.0 (gorarakelyan)
 - Add Hugging Face integration (Khazhak)

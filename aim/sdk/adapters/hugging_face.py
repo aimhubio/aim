@@ -23,9 +23,11 @@ class AimCallback(object):
             def __init__(self,
                          repo: Optional[str] = None,
                          experiment: Optional[str] = None,
+                         system_tracking_interval: Optional[int] = 0,
                          ):
                 self._repo_path = repo
                 self._experiment_name = experiment
+                self._system_tracking_interval = system_tracking_interval
                 self._initialized = False
                 self._current_shift = None
                 self._aim_session = None
@@ -34,9 +36,10 @@ class AimCallback(object):
                 self._initialized = True
 
                 self._aim_session = Session(
-                                repo=self._repo_path,
-                                experiment=self._experiment_name
-                            )
+                    repo=self._repo_path,
+                    experiment=self._experiment_name,
+                    system_tracking_interval=self._system_tracking_interval,
+                )
 
                 combined_dict = {**args.to_sanitized_dict()}
                 self._aim_session.set_params(combined_dict, name='hparams')
@@ -84,5 +87,6 @@ class AimCallback(object):
     def __init__(self,
                  repo: Optional[str] = None,
                  experiment: Optional[str] = None,
+                 system_tracking_interval: Optional[int] = 0,
                  ):
         pass
