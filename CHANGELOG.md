@@ -1,6 +1,11 @@
 # Changelog
 
+## Unreleased
+
 - Add ability to track system metrics (gorarakelyan)
+
+## 2.2.1 Mar 31 2021
+- Bump up Aim UI to v1.4.1 (gorarakelyan)
 
 ## 2.2.0 Mar 24 2021
 - Bump up Aim UI to v1.4.0 (gorarakelyan)
