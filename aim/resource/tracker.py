@@ -82,13 +82,13 @@ class ResourceTracker(object):
             if self._shutdown:
                 break
 
+            # Get system statistics
+            stat = Stat(self._process)
+            self._track(stat)
+
             time_counter = 0
             while time_counter < self.interval:
                 time.sleep(0.1)
                 time_counter += 0.1
                 if self._shutdown:
                     break
-
-            # Get system statistics
-            stat = Stat(self._process)
-            self._track(stat)
