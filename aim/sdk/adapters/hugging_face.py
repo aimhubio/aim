@@ -1,6 +1,7 @@
 from typing import Optional
 
 from aim.engine.utils import convert_to_py_number
+from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.session.session import Session
 
 
@@ -23,7 +24,8 @@ class AimCallback(object):
             def __init__(self,
                          repo: Optional[str] = None,
                          experiment: Optional[str] = None,
-                         system_tracking_interval: Optional[int] = 0,
+                         system_tracking_interval: Optional[int]
+                         = DEFAULT_SYSTEM_TRACKING_INT,
                          ):
                 self._repo_path = repo
                 self._experiment_name = experiment
@@ -87,6 +89,7 @@ class AimCallback(object):
     def __init__(self,
                  repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = 0,
+                 system_tracking_interval: Optional[int]
+                 = DEFAULT_SYSTEM_TRACKING_INT,
                  ):
         pass

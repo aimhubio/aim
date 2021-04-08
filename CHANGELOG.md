@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Set default interval of sys tracking to 10 seconds (gorarakelyan)
 - Add ability to track system metrics (gorarakelyan)
 
 ## 2.2.1 Mar 31 2021

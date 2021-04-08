@@ -19,6 +19,7 @@ from aim.engine.configs import (
     AIM_AUTOMATED_EXEC_ENV_VAR,
     AIM_DEFAULT_BRANCH_NAME,
     AIM_MAP_METRICS_KEYWORD,
+    DEFAULT_SYSTEM_TRACKING_INT,
 )
 from aim.resource.tracker import ResourceTracker
 
@@ -35,7 +36,8 @@ class Session:
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                  block_termination: bool = True,
                  run: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = 0):
+                 system_tracking_interval: Optional[int]
+                 = DEFAULT_SYSTEM_TRACKING_INT):
         self.active = False
         self._lock = threading.Lock()
         self._close_lock = threading.Lock()

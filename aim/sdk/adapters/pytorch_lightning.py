@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional, Union
 
 from aim.sdk.session.session import Session
 from aim.engine.utils import convert_to_py_number
+from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 
 
@@ -33,7 +34,8 @@ class AimLogger(object):
                          val_metric_prefix: Optional[str] = 'val_',
                          test_metric_prefix: Optional[str] = 'test_',
                          flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
-                         system_tracking_interval: Optional[int] = 0,
+                         system_tracking_interval: Optional[int]
+                         = DEFAULT_SYSTEM_TRACKING_INT,
                          ):
                 super().__init__()
 
@@ -117,6 +119,7 @@ class AimLogger(object):
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
                  flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
-                 system_tracking_interval: Optional[int] = 0,
+                 system_tracking_interval: Optional[int]
+                 = DEFAULT_SYSTEM_TRACKING_INT,
                  ):
         pass
