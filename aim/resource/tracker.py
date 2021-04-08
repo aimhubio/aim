@@ -1,4 +1,4 @@
-from psutil import Process
+from psutil import Process, cpu_percent
 from threading import Thread
 import time
 
@@ -10,6 +10,16 @@ class ResourceTracker(object):
     STAT_INTERVAL_MIN = 1
     STAT_INTERVAL_MAX = 3600 * 24
     STAT_INTERVAL_DEFAULT = 60
+
+    reset_cpu_cycle = False
+
+    @staticmethod
+    def reset_proc_interval():
+        """
+        Calls process `cpu_percent` which resets cpu utilization tracking cycle
+        Read more: https://psutil.readthedocs.io/en/latest/#psutil.cpu_percent
+        """
+        cpu_percent(0.0)
 
     def __init__(self, track, interval: int = STAT_INTERVAL_DEFAULT):
         self._track_func = track
@@ -24,6 +34,10 @@ class ResourceTracker(object):
         self._th_collector = Thread(target=self._stat_collector, daemon=True)
         self._shutdown = False
         self._started = False
+
+        if ResourceTracker.reset_cpu_cycle is False:
+            ResourceTracker.reset_cpu_cycle = True
+            self.reset_proc_interval()
 
     @property
     def interval(self):

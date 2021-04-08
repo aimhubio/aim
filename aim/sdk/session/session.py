@@ -70,7 +70,9 @@ class Session:
 
         # Collect resource usage stats
         self._resource_usage_tracker = None
-        if system_tracking_interval > 0:
+        if system_tracking_interval \
+                and isinstance(system_tracking_interval, int) \
+                and system_tracking_interval > 0:
             try:
                 self._resource_usage_tracker = ResourceTracker(
                     self.track, system_tracking_interval

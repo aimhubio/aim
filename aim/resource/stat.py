@@ -123,13 +123,6 @@ class Stat(object):
     def gpus(self):
         return self._stat.gpus
 
-    def reset_proc_interval(self):
-        """
-        Calls process `cpu_percent` which resets cpu utilization tracking cycle
-        Read more: https://psutil.readthedocs.io/en/latest/#psutil.cpu_percent
-        """
-        self._process.cpu_percent(0.0)
-
     def get_stats(self):
         """
         Get system statistics and assign to `self`
