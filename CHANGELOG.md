@@ -1,7 +1,7 @@
 # Changelog
 
-## Unreleased
-
+## 2.3.0 Apr 10 2021
+- Bump up Aim UI to v1.5.0 (gorarakelyan)
 - Set default interval of sys tracking to 10 seconds (gorarakelyan)
 - Add ability to track system metrics (gorarakelyan)
 
