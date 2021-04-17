@@ -1063,7 +1063,7 @@ class AimRepo:
                     expression.add_path_modifier(
                         lambda path_token: self.metrics_path_checker(
                             path_token,
-                            run.config.keys()),
+                            list(run.config.keys()) + ["duration"]),
                         lambda path_token: self.metrics_path_modifier(
                             path_token,
                             run.params[AIM_MAP_METRICS_KEYWORD])
@@ -1072,9 +1072,17 @@ class AimRepo:
                 # Dictionary representing all search fields
                 fields = {
                     'experiment': run.experiment_name,
-                    'run': run.config,  # Run configs (date, name, archived etc)
+                    'run': {
+                        **run.config,
+                        'duration': run.config['process']['finish_date']
+                            - run.config['process']['start_date']
+                    },  # Run configs (date, name, archived etc)
                     'params': run.params,  # Run parameters (`NestedMap`)
+                    'no_metrics': all([
+                        m.startswith('__system')
+                        for m in run.get_all_metrics()])
                 }
+
                 # Default parameters - ones passed without namespace
                 default_params = run.params.get(AIM_NESTED_MAP_DEFAULT) or {}
 
