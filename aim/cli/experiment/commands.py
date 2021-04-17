@@ -1,5 +1,7 @@
 import click
 import os
+import datetime
+import shutil
 
 from aim.engine.repo.repo import AimRepo
 from aim.artifacts.artifact_writer import ArtifactWriter
@@ -7,6 +9,9 @@ from aim.artifacts.map import NestedMap
 from aim.engine.configs import (
     AIM_MAP_METRICS_KEYWORD,
 )
+from aim.ql.grammar.statement import Statement
+from pyrser.error import Diagnostic
+from aim.engine.repo.utils import get_experiment_run_path
 
 
 @click.group()
@@ -77,20 +82,41 @@ def checkout(repo, name):
 
 
 @exp_entry_point.command()
-@click.option('-n', '--name', required=True, type=str)
+@click.option('-n', '--name', default=None, type=str)
+@click.option('-q', '--query', default=None, type=str)
+@click.option('-d', '--dry', is_flag=True)
 @click.pass_obj
-def rm(repo, name):
+def rm(repo, name, query, dry):
     if repo is None:
         return
-
-    # Remove branch
-    try:
-        repo.remove_branch(name)
-    except AttributeError as e:
-        click.echo(e)
+    if name is None and query is None:
+        click.echo('At least one of --name or --query is required')
         return
+    if dry:
+        click.echo('##### Running in DRY MODE, no files are removed #####')
 
-    click.echo('Experiment {} is removed'.format(name))
+    if query is None:
+        # Remove branch
+        try:
+            if not dry:
+                repo.remove_branch(name)
+        except AttributeError as e:
+            click.echo(e)
+            return
+        click.echo('Experiment {} is removed'.format(name))
+    else:
+        # Remove runs
+        if not name is None:
+            query = 'experiment == ' + name + ' and (' + query + ')'
+        queried_runs = repo.select_runs(query, None)
+
+        for run in queried_runs:
+            run_path = get_experiment_run_path(repo.path, run.experiment_name, run.run_hash)
+            if not dry:
+                shutil.rmtree(run_path)
+            click.echo('Run {} is removed'.format(
+              datetime.datetime.fromtimestamp(
+                run.config['date']).strftime('%c')))
 
 
 @exp_entry_point.command()
