@@ -1,7 +1,6 @@
 from typing import Any, Dict, Optional, Union
 
 from aim.sdk.session.session import Session
-from aim.engine.utils import convert_to_py_number
 from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 
@@ -88,9 +87,7 @@ class AimLogger(object):
                             and name.startswith(self._val_metric_prefix):
                         name = name[len(self._val_metric_prefix):]
                         context['subset'] = 'val'
-                    self.experiment.track(convert_to_py_number(v),
-                                          name=name,
-                                          **context)
+                    self.experiment.track(v, name=name, **context)
 
             @rank_zero_only
             def close(self) -> None:

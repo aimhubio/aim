@@ -222,13 +222,25 @@ def is_numpy_array(inst):
 
 def is_numpy_number(inst):
     """
-    Check whether `inst` is numpy number and convert to python native type
+    Check whether `inst` is numpy number
     """
-    if inst_has_typename(inst, ['numpy']):
-        converted_val = inst.item()
-        if isinstance(converted_val, (int, float)):
-            return True, converted_val
-    return False, None
+    return inst_has_typename(inst, ['numpy'])
+
+
+def is_number(value):
+    """
+    Checks if the given value is a number
+    """
+    if isinstance(value, (int, float)):
+        return True
+
+    if is_numpy_number(value):
+        return True
+
+    if is_pytorch_tensor(value):
+        return True
+
+    return False
 
 
 def convert_to_py_number(value):
@@ -238,9 +250,8 @@ def convert_to_py_number(value):
     if isinstance(value, (int, float)):
         return value
 
-    np_number, converted_val = is_numpy_number(value)
-    if np_number:
-        return converted_val
+    if is_numpy_number(value):
+        return value.item()
 
     if is_pytorch_tensor(value):
         return value.item()
