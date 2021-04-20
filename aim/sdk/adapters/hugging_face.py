@@ -1,6 +1,5 @@
 from typing import Optional
 
-from aim.engine.utils import convert_to_py_number
 from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.session.session import Session
 
@@ -72,7 +71,7 @@ class AimCallback(object):
                     'subset': self._current_shift,
                 }
                 for log_name, log_value in logs.items():
-                    self._aim_session.track(convert_to_py_number(log_value),
+                    self._aim_session.track(log_value,
                                             name=log_name,
                                             **context)
             

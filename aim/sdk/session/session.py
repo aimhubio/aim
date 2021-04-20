@@ -12,7 +12,11 @@ from aim.sdk.session.utils import (
 )
 from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
 from aim.artifacts import *
-from aim.engine.utils import contexts_equal
+from aim.engine.utils import (
+    contexts_equal,
+    convert_to_py_number,
+    is_number,
+)
 from aim.engine.configs import (
     AIM_BRANCH_ENV_VAR,
     AIM_COMMIT_ENV_VAR,
@@ -145,12 +149,14 @@ class Session:
         if not len(args):
             raise TypeError('artifact name is not specified')
 
+        number_ = convert_to_py_number(args[0])
+
         if isinstance(args[0], str):
             artifact_name = args[0]
-        elif isinstance(args[0], (int, float)):
+        elif is_number(args[0]):
             # Autodetect Metric artifact
             artifact_name = metric
-            kwargs['value'] = args[0]
+            kwargs['value'] = convert_to_py_number(args[0])
             args = []
         elif isinstance(args[0], dict):
             # Autodetect Dictionary(Map) artifact

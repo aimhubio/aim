@@ -3,7 +3,6 @@ from typing import Optional, List
 from aim.sdk.track import track
 from aim.sdk.flush import flush
 from aim.sdk.session.session import Session
-from aim.engine.utils import convert_to_py_number
 
 
 class TrackerKerasCallbackMetricsEpochEndMixin(object):
@@ -29,19 +28,16 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         train_logs = {k: v for k, v in logs.items() if
                       not k.startswith('val_')}
         for name, value in train_logs.items():
-            track_func(convert_to_py_number(value), name=name, epoch=epoch,
-                       subset='train')
+            track_func(value, name=name, epoch=epoch, subset='train')
 
         val_logs = {k: v for k, v in logs.items() if
                     k.startswith('val_')}
         for name, value in val_logs.items():
-            track_func(convert_to_py_number(value), name=name[4:], epoch=epoch,
-                       subset='val')
+            track_func(value, name=name[4:], epoch=epoch, subset='val')
 
         lr = self._get_learning_rate()
         if lr is not None:
-            track_func(convert_to_py_number(lr), name='lr', epoch=epoch,
-                       subset='train')
+            track_func(lr, name='lr', epoch=epoch, subset='train')
 
         flush_func = self.session.flush \
             if self.session is not None \
