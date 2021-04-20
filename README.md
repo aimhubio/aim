@@ -223,6 +223,7 @@ _Arguments_
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step.
 - **block_termination** - If set to `True` process will wait until all the tasks are completed, otherwise pending tasks will be killed at process exit. By default `True`.
 - **run** - A name of the run. If run name is not specified, universally unique identifier will be generated.
+- **system_tracking_interval** - System resource usage tracking interval in seconds. By default 10 seconds. In order to disable system tracking set `system_tracking_interval=0`. 
 
 _Methods_
 
@@ -385,6 +386,7 @@ _Parameters_
 - **test_metric_prefix** - The prefix of metrics names collected in the test loop. By default `test_` (optional)
 - **val_metric_prefix** - The prefix of metrics names collected in the validation loop. By default `val_` (optional)
 - **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step. (optional)
+- **system_tracking_interval** - System resource usage tracking interval in seconds. By default 10 seconds. In order to disable system tracking set `system_tracking_interval=0`. (optional)
 
 _Example_
 
@@ -415,6 +417,7 @@ _Parameters_
 
 - **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
 - **experiment** - A name of the experiment (optional)
+- **system_tracking_interval** - System resource usage tracking interval in seconds. By default 10 seconds. In order to disable system tracking set `system_tracking_interval=0`. (optional)
 
 _Example_
 
