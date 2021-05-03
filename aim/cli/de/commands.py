@@ -22,6 +22,61 @@ from aim.cli.de.utils import (
 # from aim.engine.configs import AIM_CONTAINER_CMD_PORT
 # from aim.engine.container import AimContainerCommandManager
 
+from aim.web.utils import exec_cmd
+from aim.web.utils import ShellCommandException
+
+
+@click.command()
+@click.option('--dev', default=0, type=int)
+@click.option('-h', '--host', default=AIM_CONTAINER_DEFAULT_HOST, type=str)
+@click.option('-p', '--port', default=AIM_CONTAINER_DEFAULT_PORT, type=int)
+@click.option('--repo', required=False, type=click.Path(exists=True,
+                                                        file_okay=False,
+                                                        dir_okay=True,
+                                                        writable=True))
+@click.option('--tf_logs', type=click.Path(exists=True, readable=True))
+@click.pass_obj
+def up(repo_inst, dev, host, port, repo, tf_logs):
+    def _build_db_upgrade_command():
+        from aim import web
+        python_exec = 'python{}.{}'.format(sys.version_info[0], sys.version_info[1])
+        web_dir = os.path.dirname(web.__file__)
+        manage_file = os.path.join(web_dir, 'manage.py')
+        migrations_dir = os.path.join(web_dir, 'migrations')
+        return [python_exec, manage_file, 'db', 'upgrade', '--directory', migrations_dir]
+
+    def _build_gunicorn_command(host, port, workers):
+        bind_address = "%s:%s" % (host, port)
+        return ["gunicorn", "-b", bind_address, "-w", "%s" % workers, "aim.web.run"]
+
+    repo_path = clean_repo_path(repo)
+    if repo_path:
+        repo_inst = AimRepo(repo_path)
+    if repo_inst is None or not repo_inst.exists():
+        repo_init_alert()
+        return
+
+    if dev:
+        os.environ['FLASK_ENV'] = 'dev'
+    if tf_logs:
+        os.environ['TF_LOGS_PATH'] = tf_logs
+
+    try:
+        db_cmd = _build_db_upgrade_command()
+        exec_cmd(db_cmd)
+    except ShellCommandException:
+        click.echo('Failed to initialize Aim DB. Please see the logs above for details.')
+        return
+
+    try:
+        server_cmd = _build_gunicorn_command(host, port, 1)
+        exec_cmd(server_cmd, stream_output=True)
+    except ShellCommandException:
+        click.echo('Failed to run Aim UI. Please see the logs above for details.')
+        return
+
+    click.echo('Press Ctrl+C to exit')
+
 
 @click.group()
 def de_entry_point():
@@ -40,7 +95,7 @@ def de_entry_point():
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('-d', '--detach', is_flag=True, default=False)
 @click.pass_obj
-def up(repo_inst, dev, host, port, version, repo, tf_logs, detach):
+def docker_up(repo_inst, dev, host, port, version, repo, tf_logs, detach):
     check_docker_dependency()
 
     repo_path = clean_repo_path(repo)

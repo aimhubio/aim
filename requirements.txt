@@ -8,3 +8,17 @@ py3nvml>=0.2.5
 docker>=4.1.0
 aimrecords==0.0.6
 protobuf>=3.11.0
+
+# requirements to add (to be tested yet if something is missing)
+# alembic
+# file-read-backwards
+# Flask
+# Flask-Cors
+# Flask-Migrate
+# Flask-RESTful
+# Flask-Script
+# Flask-SQLAlchemy
+# SQLAlchemy
+# pysqlite3
+# pytz
+# tensorboard
