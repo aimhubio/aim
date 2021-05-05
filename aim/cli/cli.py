@@ -39,6 +39,6 @@ cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 
 # Development environment management commands
 cli_entry_point.add_command(de_commands.up, DE_UP_NAME)
-cli_entry_point.add_command(de_commands.down, DE_DOWN_NAME)
-cli_entry_point.add_command(de_commands.upgrade, DE_UPGRADE_NAME)
-cli_entry_point.add_command(de_commands.pull, DE_PULL_NAME)
+# cli_entry_point.add_command(de_commands.down, DE_DOWN_NAME)
+# cli_entry_point.add_command(de_commands.upgrade, DE_UPGRADE_NAME)
+# cli_entry_point.add_command(de_commands.pull, DE_PULL_NAME)
