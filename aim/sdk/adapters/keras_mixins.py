@@ -47,9 +47,23 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
 
 def get_keras_tracker_callback(keras_callback_cls, mixins: List):
     class KerasTrackerCallback(keras_callback_cls, *mixins):
-        def __init__(self, session: Optional[Session] = None):
+        def __init__(self, session: Optional[Session] = None,
+                     repo: Optional[Session] = None,
+                     experiment: Optional[Session] = None):
             super(KerasTrackerCallback, self).__init__()
-            self._session = session
+
+            if session is None:
+                if repo is None and experiment is None:
+                    print('Neither session nor repo and experiment were passed' +
+                          ' to the AimCallback. Will use the default session.')
+                    self._session = Session()
+                else:
+                    self._session = Session(
+                            repo=repo,
+                            experiment=experiment
+                        )
+            else:
+                self._session = session
 
         @property
         def session(self) -> Session:
