@@ -22,16 +22,18 @@ class AimCallback(object):
 
         class _XgboostCallback(TrainingCallback):
             def __init__(self, repo: Optional[str] = None,
-                        experiment: Optional[str] = None,
-                        system_tracking_interval: Optional[int]
-                        = DEFAULT_SYSTEM_TRACKING_INT,
-                        flush_frequency: Optional[int] = DEFAULT_FLUSH_FREQUENCY):
+                         experiment: Optional[str] = None,
+                         system_tracking_interval: Optional[int]
+                         = DEFAULT_SYSTEM_TRACKING_INT,
+                         flush_frequency: Optional[int]
+                         = DEFAULT_FLUSH_FREQUENCY):
                 super().__init__()
                 self.repo = repo
                 self.experiment = experiment
                 self.flush_frequency = flush_frequency
                 self.system_tracking_interval = system_tracking_interval
                 self.initialized = False
+                self.aim_session = None
 
             def before_training(self, model):
                 self.aim_session = Session(
@@ -57,9 +59,13 @@ class AimCallback(object):
                         else:
                             score = log[-1]
 
-                        self.aim_session.track(score, name=metric_name, stdv=False)
+                        self.aim_session.track(score,
+                                               name=metric_name,
+                                               stdv=False)
                         if stdv is not None:
-                            self.aim_session.track(score, name=metric_name, stdv=True)
+                            self.aim_session.track(score,
+                                                   name=metric_name,
+                                                   stdv=True)
 
                 return False
 
@@ -67,8 +73,7 @@ class AimCallback(object):
                 if self.initialized and self.aim_session.active:
                     self.aim_session.close()
                 return model
-        
-        
+
         cls.__xgboost_callback_cls = _XgboostCallback
         return cls.__xgboost_callback_cls
     
@@ -79,4 +84,3 @@ class AimCallback(object):
                  = DEFAULT_SYSTEM_TRACKING_INT,
                  flush_frequency: Optional[int] = DEFAULT_FLUSH_FREQUENCY):
         pass
-

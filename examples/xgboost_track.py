@@ -6,7 +6,7 @@ from __future__ import division
 
 import numpy as np
 import xgboost as xgb
-from aim.sdk.adapters.xgboost import AimCallback
+from aim.xgboost import AimCallback
 
 # label need to be 0 to num_class -1
 data = np.loadtxt('./dermatology.data', delimiter=',',
@@ -45,7 +45,7 @@ print('Test error using softmax = {}'.format(error_rate))
 
 # do the same thing again, but output probabilities
 param['objective'] = 'multi:softprob'
-bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[AimCallback(repo='./aim_logs', experiment='xgboost_test')])
+bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[AimCallback(repo='.', experiment='xgboost_test')])
 # Note: this convention has been changed since xgboost-unity
 # get prediction, this is in 1D array, need reshape to (ndata, nclass)
 pred_prob = bst.predict(xg_test).reshape(test_Y.shape[0], 6)
