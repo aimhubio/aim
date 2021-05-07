@@ -46,9 +46,8 @@ class AimCallback(object):
                     system_tracking_interval=self._system_tracking_interval,
                     flush_frequency=self._flush_frequency
                 )
-
-                print(self.learn.gather_args())
-                self._aim_session.set_params(self.learn.gather_args(), name='hparams')
+                # hparam_dict = self.learn.gather_args()
+                # self._aim_session.set_params(hparam_dict, name='hparams')
 
             def after_batch(self):
                 if self.training:
@@ -61,9 +60,21 @@ class AimCallback(object):
 
                 self._aim_session.track(self.loss.item(), name='loss',
                                         **context)
-                # for metric in self.metrics:
-                #     self._aim_session.track(metric.value, name=metric.name,
-                #                             **context)
+                for metric in self.metrics:
+                    self._aim_session.track(metric.value, name=metric.name,
+                                            **context)
+
+            def after_epoch(self):
+                if self.training:
+                    subset = 'train'
+                else:
+                    subset = 'val'
+                context = {
+                    'subset': subset,
+                }
+                metric_dict = zip(self.recorder.metric_names, self.recorder.log)
+                for metric_name, val in metric_dict:
+                    self._aim_session.track(val, name=metric_name, **context)
 
             def __del__(self):
                 if self._initialized and self._aim_session.active:
