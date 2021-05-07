@@ -41,6 +41,10 @@ class Artifact(metaclass=ABCMeta):
         ...
 
     @abstractmethod
+    def deserialize(self):
+        ...
+
+    @abstractmethod
     def save_blobs(self, name: str, abs_path: str = None):
         """
         Saves additional binary objects (blobs) which cannot be processed
@@ -70,7 +74,8 @@ class Artifact(metaclass=ABCMeta):
             self.step = self._step_counter[session_id][self.cat][key]
             self._step_counter[session_id][self.cat][key] += 1
 
-    def serialize_pb_object(self, artifact, step: int = None,
+    @staticmethod
+    def serialize_pb_object(artifact, step: int = None,
                             epoch: int = None) -> bytes:
         base_pb = BaseRecord()
         base_pb.step = step
@@ -84,6 +89,12 @@ class Artifact(metaclass=ABCMeta):
         base_bytes = base_pb.SerializeToString()
 
         return base_bytes
+
+    @staticmethod
+    def deserialize_pb_object(data) -> BaseRecord:
+        base_pb = BaseRecord()
+        base_pb.ParseFromString(data)
+        return base_pb
 
     def get_inst_unique_name(self):
         """

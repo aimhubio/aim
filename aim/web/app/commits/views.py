@@ -8,13 +8,13 @@ from flask_restful import Api, Resource
 
 from pyrser.error import Diagnostic, Severity, Notification
 from aim.ql.grammar.statement import Statement, Expression
+from aim.artifacts.metric import Metric as MetricArtifact
 
 from aim.web.app import App
 from aim.web.app.projects.project import Project
 from aim.web.app.commits.models import Commit, TFSummaryLog, Tag
 from aim.web.app.db import db
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
-from aim.web.artifacts.artifact import Metric as MetricRecord
 from aim.web.app.utils import unsupported_float_type
 from aim.web.app.commits.utils import (
     select_tf_summary_scalars,
@@ -203,7 +203,7 @@ class CommitMetricSearchApi(Resource):
                                 step = (trace.num_records // steps_num) or 1
                                 trace_steps = slice(0, trace.num_records, step)
                                 for r in trace.read_records(trace_steps):
-                                    base, metric_record = MetricRecord.deserialize(r)
+                                    base, metric_record = MetricArtifact.deserialize_pb(r)
                                     if unsupported_float_type(metric_record.value):
                                         continue
                                     trace.append((
@@ -214,7 +214,7 @@ class CommitMetricSearchApi(Resource):
                                     ))
                                 if (trace.num_records - 1) % step != 0:
                                     for r in trace.read_records(trace.num_records-1):
-                                        base, metric_record = MetricRecord.deserialize(r)
+                                        base, metric_record = MetricArtifact.deserialize_pb(r)
                                         if unsupported_float_type(metric_record.value):
                                             continue
                                         trace.append((

@@ -17,6 +17,8 @@ from flask import (
 from flask_restful import Api, Resource
 from sqlalchemy import func
 
+from aim.artifacts.metric import Metric as MetricArtifact
+
 from aim.web.app.db import db
 from aim.web.app.utils import unsupported_float_type
 from aim.web.app.projects.utils import (
@@ -28,7 +30,6 @@ from aim.web.app.projects.utils import (
 )
 from aim.web.app.projects.project import Project
 from aim.web.app.commits.models import Commit
-from aim.web.artifacts.artifact import Metric as MetricRecord
 
 
 projects_bp = Blueprint('projects', __name__)
@@ -271,7 +272,7 @@ class ProjectExperimentApi(Resource):
                         num = trace.num_records
                         step = (num // steps) or 1
                         for r in trace.read_records(slice(0, num, step)):
-                            base, metric_record = MetricRecord.deserialize(r)
+                            base, metric_record = MetricArtifact.deserialize_pb(r)
                             if unsupported_float_type(metric_record.value):
                                 continue
                             trace.append((
@@ -280,7 +281,7 @@ class ProjectExperimentApi(Resource):
                             ))
                         if (num - 1) % steps != 0:
                             for r in trace.read_records(num-1):
-                                base, metric_record = MetricRecord.deserialize(r)
+                                base, metric_record = MetricArtifact.deserialize_pb(r)
                                 if unsupported_float_type(metric_record.value):
                                     continue
                                 trace.append((
