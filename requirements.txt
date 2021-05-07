@@ -11,7 +11,6 @@ protobuf>=3.11.0
 
 # requirements to add (to be tested yet if something is missing)
 # alembic
-# file-read-backwards
 # Flask
 # Flask-Cors
 # Flask-Migrate
