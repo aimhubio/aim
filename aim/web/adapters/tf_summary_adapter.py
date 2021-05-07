@@ -15,6 +15,8 @@ class TFSummaryAdapter:
 
     @classmethod
     def exists(cls, root_path=TF_LOGS_PATH):
+        if not root_path:
+            return False
         return os.path.isdir(root_path)
 
     @classmethod

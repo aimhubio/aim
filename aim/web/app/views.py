@@ -12,6 +12,7 @@ def serve_wrong_urls(e):
     static_dir = os.path.join(os.path.dirname(application.root_path), 'html')
     return send_from_directory(static_dir, 'index.html'), 200
 
+
 @general_api.resource('/')
 class ServeMainPage(Resource):
     def get(self, path=None):
