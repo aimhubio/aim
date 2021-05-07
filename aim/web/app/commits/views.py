@@ -12,7 +12,6 @@ from aim.ql.grammar.statement import Statement, Expression
 from aim.web.app import App
 from aim.web.app.projects.project import Project
 from aim.web.app.commits.models import Commit, TFSummaryLog, Tag
-from aim.web.services.executables.action import Action
 from aim.web.app.db import db
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.artifacts.artifact import Metric as MetricRecord
@@ -405,17 +404,6 @@ class CommitInfoApi(Resource):
                     process['time'] = time.time() - process['start_date']
                 else:
                     process['time'] = None
-
-                # Get PID
-                action = Action(Action.SELECT, {
-                    'experiment': experiment,
-                    'commit_hash': commit_hash,
-                })
-                processes_res = App.executables_manager.add(action, 30)
-                if processes_res is not None and 'processes' in processes_res:
-                    processes = json.loads(processes_res)['processes']
-                    if len(processes):
-                        process['pid'] = processes[0]['pid']
 
         return jsonify(info)
 
