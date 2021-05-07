@@ -1,8 +1,10 @@
 from typing import Optional, List
-
+import logging
 from aim.sdk.track import track
 from aim.sdk.flush import flush
 from aim.sdk.session.session import Session
+
+logger = logging.getLogger(__name__)
 
 
 class TrackerKerasCallbackMetricsEpochEndMixin(object):
@@ -47,15 +49,13 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
 
 def get_keras_tracker_callback(keras_callback_cls, mixins: List):
     class KerasTrackerCallback(keras_callback_cls, *mixins):
-        def __init__(self, session: Optional[Session] = None,
-                     repo: Optional[Session] = None,
-                     experiment: Optional[Session] = None):
+        def __init__(self, repo: Optional[Session] = None,
+                     experiment: Optional[Session] = None,
+                     session: Optional[Session] = None):
             super(KerasTrackerCallback, self).__init__()
 
             if session is None:
                 if repo is None and experiment is None:
-                    print('Neither session nor repo and experiment were passed' +
-                          ' to the AimCallback. Will use the default session.')
                     self._session = Session()
                 else:
                     self._session = Session(
@@ -63,6 +63,8 @@ def get_keras_tracker_callback(keras_callback_cls, mixins: List):
                             experiment=experiment
                         )
             else:
+                logger.warning("Passing session object to AimCallback will be deprecated "
+                + "soon, pass repo and experiment arguments explicitly instead")
                 self._session = session
 
         @property

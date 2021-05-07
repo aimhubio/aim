@@ -32,8 +32,9 @@ class AimCallback(object):
         # Keep `metrics` method for backward compatibility
         return cls(session, repo, experiment)
 
-    def __init__(self, session: Optional[Session] = None,
-                 repo: Optional[str] = None, experiment: Optional[str] = None):
+    def __init__(self, repo: Optional[str] = None,
+                 experiment: Optional[str] = None,
+                 session: Optional[Session] = None):
         pass
 
 
