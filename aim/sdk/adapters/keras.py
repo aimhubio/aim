@@ -27,10 +27,11 @@ class AimCallback(object):
         return cls.__keras_tracker_callback_cls
 
     @classmethod
-    def metrics(cls, session: Optional[Session] = None,
-                repo: Optional[str] = None, experiment: Optional[str] = None):
+    def metrics(cls, repo: Optional[str] = None,
+                experiment: Optional[str] = None,
+                session: Optional[Session] = None):
         # Keep `metrics` method for backward compatibility
-        return cls(session, repo, experiment)
+        return cls(repo, experiment, session)
 
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
