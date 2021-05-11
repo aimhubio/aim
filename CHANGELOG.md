@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Update keras adapter interface (gorarakelyan)
 - Convert tensors to python numbers (gorarakelyan)
 
 ## 2.3.0 Apr 10 2021

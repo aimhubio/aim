@@ -1,5 +1,4 @@
 from aim.keras import AimCallback
-from aim import Session
 
 import keras
 from keras.datasets import mnist
@@ -66,7 +65,7 @@ model.fit(x_train, y_train,
           verbose=1,
           validation_data=(x_test, y_test),
           callbacks=[
-              AimCallback(session=Session(experiment='test_keras_cb')),
+              AimCallback(experiment='test_keras_cb'),
           ])
 
 # score = model.evaluate(x_test, y_test, verbose=0)
