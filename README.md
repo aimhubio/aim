@@ -42,7 +42,7 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 
 <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/118171897-c91b9e80-b43c-11eb-80fd-99763849e61c.png" width="100" />
+<img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="100" />
 
 </div>
 
