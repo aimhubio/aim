@@ -1,7 +1,8 @@
 # Changelog
 
 ## Unreleased
-- Update keras adapter interface (gorarakelyan)
+- Add xgboost integration (khazhak)
+- Update keras adapter interface (khazhak)
 - Convert tensors to python numbers (gorarakelyan)
 
 ## 2.3.0 Apr 10 2021
