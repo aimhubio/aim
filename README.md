@@ -12,7 +12,6 @@
 
 [![Follow on Twitter](https://img.shields.io/twitter/follow/aimstackio?style=social)](https://twitter.com/aimstackio)
 
-
 ---
 
 <h3 align="center">
@@ -36,10 +35,14 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 <h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
 <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="100" />
+
+<br />
+
+<img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="100" />
+<img src="https://user-images.githubusercontent.com/13848158/118171897-c91b9e80-b43c-11eb-80fd-99763849e61c.png" width="100" />
 
 </div>
 
@@ -161,7 +164,6 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 
 _See documentation [here](#xgboost)._
 </details>
-
 
 **3. Run the training as usual and start Aim UI**
 
