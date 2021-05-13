@@ -131,15 +131,12 @@ _See documentation [here](#hugging-face)._
 ```python
 import aim
 
-# Save inputs, hparams or any other `key: value` pairs
-aim.set_params(param_dict, name='params_name') # Passing name argument is optional
-
 # ...
 model.fit(x_train, y_train, epochs=epochs, callbacks=[
-    aim.keras.AimCallback(aim.Session(experiment='experiment_name'))
+    aim.keras.AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
     
     # Use aim.tensorflow.AimCallback in case of tf.keras
-    aim.tensorflow.AimCallback(aim.Session(experiment='experiment_name'))
+    aim.tensorflow.AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
 ])
 # ...
 ```
@@ -147,6 +144,24 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 _See documentation [here](#tensorflow-and-keras)._
 
 </details>
+
+<details>
+<summary>
+  Integrate XGBoost
+</summary>
+
+```python
+from aim.xgboost import AimCallback
+
+# ...
+aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
+bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
+# ...
+```
+
+_See documentation [here](#xgboost)._
+</details>
+
 
 **3. Run the training as usual and start Aim UI**
 
@@ -353,21 +368,22 @@ Pass an instance of `aim.tensorflow.AimCallback` to the trainer callbacks list.
 
 _Parameters_
 
-- **session** - Aim Session instance (optional)
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
+- **experiment** - A name of the experiment (optional)
 
 _Example_
 
 ```python
-from aim import Session
-from aim.tensorflow import AimCallback 
-# Use `from aim.keras import AimCallback` in case of keras
+import aim
 
-...
-aim_session = Session(experiment='experiment_name')
+# ...
 model.fit(x_train, y_train, epochs=epochs, callbacks=[
-    AimCallback(aim_session)
+    aim.tensorflow.AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
+    
+    # Use aim.keras.AimCallback in case of pure keras
+    aim.keras.AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
 ])
-...
+# ...
 ```
 
 > TensorFlow v1 full example [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_1_keras_track.py#L26) <br />
@@ -443,6 +459,35 @@ trainer = Trainer(
 ```
 
 > Full example [here](https://github.com/aimhubio/aim/blob/main/examples/hugging_face_track.py)
+
+### XGBoost
+
+Pass `aim.xgboost.AimCallback` instance as a callback to the `xgboost.train` to log metrics automatically.
+
+_Parameters_
+
+- **repo** - Full path to parent directory of Aim repo - the `.aim` directory (optional)
+- **experiment** - A name of the experiment (optional)
+- **system_tracking_interval** - System resource usage tracking interval in seconds. By default 10 seconds. In order to disable system tracking set `system_tracking_interval=0`. (optional)
+- **flush_frequency** - The frequency per step to flush intermediate aggregated values of metrics to disk. By default per `128` step. (optional)
+
+_Example_
+
+```python
+from aim.xgboost import AimCallback
+
+# ...
+# Initialize Aim callback instance
+aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
+
+# Initialize trainer
+bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[
+  aim_callback,
+])
+# ...
+```
+
+> Full example [here](https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py)
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
