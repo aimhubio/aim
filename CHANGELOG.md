@@ -1,6 +1,7 @@
 # Changelog
 
-## Unreleased
+## 2.4.0 May 13 2021
+- Bump up Aim UI to v1.6.0 (gorarakelyan)
 - Add xgboost integration (khazhak)
 - Update keras adapter interface (khazhak)
 - Convert tensors to python numbers (gorarakelyan)
