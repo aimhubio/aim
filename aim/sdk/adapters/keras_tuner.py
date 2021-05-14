@@ -45,7 +45,10 @@ class AimCallback(object):
                 trial_dict = self.tuner.oracle.ongoing_trials
                 tuner_key = next(iter(trial_dict))
                 self._current_trial_id = trial_dict[tuner_key].trial_id
-                self._aim_session.flush()
+                trial = self.tuner.oracle.get_trial(self._current_trial_id)
+                hparams = trial.hyperparameters.values
+                self._aim_session.set_params(hparams, name='hparams')
+
 
             def on_batch_end(self, batch, logs=None):
                 if logs:
