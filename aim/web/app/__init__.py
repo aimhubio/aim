@@ -59,13 +59,11 @@ class App(metaclass=Singleton):
         from aim.web.app.views import general_bp, serve_wrong_urls
         from aim.web.app.projects.views import projects_bp
         from aim.web.app.commits.views import commits_bp
-        from aim.web.app.executables.views import executables_bp
         from aim.web.app.tags.views import tags_bp
 
         api.register_blueprint(general_bp)
         api.register_blueprint(projects_bp, url_prefix='/api/v1/projects')
         api.register_blueprint(commits_bp, url_prefix='/api/v1/commits')
-        api.register_blueprint(executables_bp, url_prefix='/api/v1/executables')
         api.register_blueprint(tags_bp, url_prefix='/api/v1/tags')
         api.register_error_handler(404, serve_wrong_urls)
 
