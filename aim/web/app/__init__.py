@@ -4,6 +4,7 @@ from urllib import parse
 from flask import Flask, redirect, request, make_response
 from flask_cors import CORS
 
+from aim.engine.configs import AIM_FLASK_ENV_KEY
 from aim.web.utils import Singleton
 from aim.web.app.config import config
 from aim.web.app.db import Db
@@ -44,7 +45,7 @@ class App(metaclass=Singleton):
              vary_header=True)
 
         # check environment variables to see which config to load
-        env = os.environ.get('__AIM_FLASK_ENV__', 'prod')
+        env = os.environ.get(AIM_FLASK_ENV_KEY, 'prod')
 
         # load config
         if test_config:

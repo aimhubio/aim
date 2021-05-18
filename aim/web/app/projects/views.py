@@ -18,7 +18,7 @@ from flask_restful import Api, Resource
 from sqlalchemy import func
 
 from aim.artifacts.metric import Metric as MetricArtifact
-
+from aim.engine.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.app.db import db
 from aim.web.app.utils import unsupported_float_type
 from aim.web.app.projects.utils import (
@@ -50,7 +50,7 @@ class ProjectApi(Resource):
             'tf_enabled': project.tf_enabled,
             'description': project.description,
             'branches': project.repo.list_branches(),
-            'telemetry_enabled': os.getenv('AIM_UI_TELEMETRY_ENABLED') or '1',
+            'telemetry_enabled': os.getenv(AIM_UI_TELEMETRY_KEY, '1'),
         })
 
 

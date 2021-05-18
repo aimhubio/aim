@@ -134,10 +134,10 @@ class AimContainer:
         self.env.append('{}={}'.format(key, value))
 
     def turn_telemetry_on(self):
-        self.set_environment_variable(AIM_CONTAINER_TELEMETRY_FLAG, 1)
+        self.set_environment_variable(AIM_UI_TELEMETRY_FLAG, 1)
 
     def turn_telemetry_off(self):
-        self.set_environment_variable(AIM_CONTAINER_TELEMETRY_FLAG, 0)
+        self.set_environment_variable(AIM_UI_TELEMETRY_FLAG, 0)
 
     def mount_volume(self, path, mount_to):
         if path and mount_to and path not in self.volumes:

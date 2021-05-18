@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import insert
 
 from file_read_backwards import FileReadBackwards
+from aim.engine.configs import AIM_FLASK_ENV_KEY
 from aim.web.app.db import db
 from aim.web.app.commits.models import Commit
 from aim.web.app.config import config
@@ -21,7 +22,7 @@ def upgrade_runs_table(project, modified_runs):
 
     runs_models = Commit.query.filter(Commit.hash.in_(runs_hashes)).all()
 
-    env = os.environ.get('__AIM_FLASK_ENV__', 'dev')
+    env = os.environ.get(AIM_FLASK_ENV_KEY, 'dev')
     session = sessionmaker(bind=engine_from_config({
         'db.echo': config[env].SQLALCHEMY_ECHO,
         'db.url': config[env].SQLALCHEMY_DATABASE_URI,
