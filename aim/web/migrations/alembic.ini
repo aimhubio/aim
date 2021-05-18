@@ -11,7 +11,7 @@
 
 # Logging configuration
 [loggers]
-keys = root,sqlalchemy,alembic
+keys = root,sqlalchemy,alembic,flask_migrate
 
 [handlers]
 keys = console
@@ -33,6 +33,11 @@ qualname = sqlalchemy.engine
 level = INFO
 handlers =
 qualname = alembic
+
+[logger_flask_migrate]
+level = INFO
+handlers =
+qualname = flask_migrate
 
 [handler_console]
 class = StreamHandler

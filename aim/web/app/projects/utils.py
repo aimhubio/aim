@@ -21,7 +21,7 @@ def upgrade_runs_table(project, modified_runs):
 
     runs_models = Commit.query.filter(Commit.hash.in_(runs_hashes)).all()
 
-    env = os.environ.get('FLASK_ENV', 'dev')
+    env = os.environ.get('__AIM_FLASK_ENV__', 'dev')
     session = sessionmaker(bind=engine_from_config({
         'db.echo': config[env].SQLALCHEMY_ECHO,
         'db.url': config[env].SQLALCHEMY_DATABASE_URI,

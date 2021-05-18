@@ -29,6 +29,7 @@ def package_files(directory):
 
 
 ui_files = package_files('aim/web/html')
+migration_files = package_files('aim/web/migrations')
 
 # TODO: Get long description from the README file
 LONG_DESCRIPTION = DESCRIPTION
@@ -103,7 +104,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     install_requires=REQUIRED,
     packages=packages,
-    package_data={'aim': ui_files},
+    package_data={'aim': ui_files + migration_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',

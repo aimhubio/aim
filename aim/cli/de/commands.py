@@ -27,7 +27,6 @@ from aim.web.utils import ShellCommandException
 
 
 @click.command()
-@click.option('--dev', default=0, type=int)
 @click.option('-h', '--host', default=AIM_CONTAINER_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_CONTAINER_DEFAULT_PORT, type=int)
 @click.option('--repo', required=False, type=click.Path(exists=True,
@@ -35,6 +34,7 @@ from aim.web.utils import ShellCommandException
                                                         dir_okay=True,
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
+@click.option('--dev', is_flag=True, default=False)
 @click.pass_obj
 def up(repo_inst, dev, host, port, repo, tf_logs):
     def _build_db_upgrade_command():
@@ -45,9 +45,15 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
         migrations_dir = os.path.join(web_dir, 'migrations')
         return [python_exec, manage_file, 'db', 'upgrade', '--directory', migrations_dir]
 
-    def _build_gunicorn_command(host, port, workers):
+    def _build_gunicorn_command(host, port, num_workers):
         bind_address = "%s:%s" % (host, port)
-        return ["gunicorn", "-b", bind_address, "-w", "%s" % workers, "aim.web.run"]
+        return ['gunicorn',
+                '-b', bind_address,
+                '-w', '%s' % num_workers,
+                # '--reload', 'true' if dev else 'false',
+                '--log-level', 'error',
+                'aim.web.run'
+                ]
 
     repo_path = clean_repo_path(repo)
     if repo_path:
@@ -57,7 +63,7 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
         return
 
     if dev:
-        os.environ['FLASK_ENV'] = 'dev'
+        os.environ['__AIM_FLASK_ENV__'] = 'dev'
     if tf_logs:
         os.environ['TF_LOGS_PATH'] = tf_logs
 

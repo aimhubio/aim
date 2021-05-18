@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 86cd004dcccb
+Revision ID: 11672b13f92c
 Revises: 
-Create Date: 2021-05-03 19:39:32.576976
+Create Date: 2021-05-18 15:06:30.858112
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '86cd004dcccb'
+revision = '11672b13f92c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,34 +28,6 @@ def upgrade():
     sa.Column('is_archived', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('uuid'),
     sa.UniqueConstraint('experiment_name', 'hash')
-    )
-    op.create_table('executables',
-    sa.Column('uuid', sa.Text(), nullable=False),
-    sa.Column('name', sa.Text(), nullable=True),
-    sa.Column('script_path', sa.Text(), nullable=True),
-    sa.Column('arguments', sa.Text(), nullable=True),
-    sa.Column('env_vars', sa.Text(), nullable=True),
-    sa.Column('interpreter_path', sa.Text(), nullable=True),
-    sa.Column('working_dir', sa.Text(), nullable=True),
-    sa.Column('aim_experiment', sa.Text(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('is_archived', sa.Boolean(), nullable=True),
-    sa.Column('is_hidden', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('uuid')
-    )
-    op.create_table('processes',
-    sa.Column('uuid', sa.Text(), nullable=False),
-    sa.Column('pid', sa.Text(), nullable=True),
-    sa.Column('script_path', sa.Text(), nullable=True),
-    sa.Column('arguments', sa.Text(), nullable=True),
-    sa.Column('env_vars', sa.Text(), nullable=True),
-    sa.Column('interpreter_path', sa.Text(), nullable=True),
-    sa.Column('working_dir', sa.Text(), nullable=True),
-    sa.Column('aim_experiment', sa.Text(), nullable=True),
-    sa.Column('executable_id', sa.Text(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('is_archived', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('uuid')
     )
     op.create_table('tags',
     sa.Column('uuid', sa.Text(), nullable=False),
@@ -88,7 +60,5 @@ def downgrade():
     op.drop_table('commit_tag')
     op.drop_table('tf_summary_logs')
     op.drop_table('tags')
-    op.drop_table('processes')
-    op.drop_table('executables')
     op.drop_table('commits')
     # ### end Alembic commands ###

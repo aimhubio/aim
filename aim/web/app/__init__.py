@@ -34,7 +34,6 @@ class App(metaclass=Singleton):
                 # Set default timezone to GMT
                 request.tz = 'gmt'
 
-
         CORS(api,
              origins='*',
              methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
@@ -45,7 +44,7 @@ class App(metaclass=Singleton):
              vary_header=True)
 
         # check environment variables to see which config to load
-        env = os.environ.get('FLASK_ENV', 'prod')
+        env = os.environ.get('__AIM_FLASK_ENV__', 'prod')
 
         # load config
         if test_config:
