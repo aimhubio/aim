@@ -2,6 +2,9 @@ from importlib import import_module
 import os
 import subprocess
 
+from aim.engine.configs import AIM_UI_MOUNTED_REPO_PATH
+from aim.engine.utils import clean_repo_path
+
 
 class ShellCommandException(Exception):
     pass
@@ -91,3 +94,7 @@ def ls_dir(path):
             ls.append(os.path.join(root, file_name))
 
     return ls
+
+
+def get_root_path():
+    return clean_repo_path(os.getenv(AIM_UI_MOUNTED_REPO_PATH, os.getcwd()))

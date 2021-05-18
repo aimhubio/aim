@@ -7,6 +7,7 @@ from aim.engine.configs import (
     AIM_TF_LOGS_PATH_KEY,
     AIM_UI_TELEMETRY_KEY,
     AIM_FLASK_ENV_KEY,
+    AIM_UI_MOUNTED_REPO_PATH,
 )
 from aim.engine.utils import clean_repo_path
 from aim.engine.repo import AimRepo
@@ -36,6 +37,8 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
     if repo_inst is None or not repo_inst.exists():
         repo_init_alert()
         return
+
+    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.root_path
 
     if dev:
         os.environ[AIM_FLASK_ENV_KEY] = 'dev'

@@ -1,11 +1,12 @@
 import os
 from base64 import b64encode
 
+from aim.engine.configs import AIM_TF_LOGS_PATH_KEY
 from aim.web.utils import get_module, ls_dir
 
 
 class TFSummaryAdapter:
-    TF_LOGS_PATH = os.getenv('TF_LOGS_PATH')
+    TF_LOGS_PATH = os.getenv(AIM_TF_LOGS_PATH_KEY)
 
     event_accumulator = None
 

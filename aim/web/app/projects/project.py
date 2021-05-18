@@ -5,20 +5,20 @@ import json
 from aim.engine.repo import AimRepo
 from aim.engine.configs import AIM_COMMIT_CONFIG_FILE_NAME
 
+from aim.web.utils import get_root_path
 from aim.web.app.commits.utils import TFSummaryAdapter
 
 
 class Project:
-    DEFAULT_PROJECT_NAME = 'Project'
-    DEFAULT_PROJECT_PATH = '/project'
-    REPO_PATH = '.aim'
-
     def __init__(self):
-        self.name = os.getenv('PROJECT_NAME') or self.DEFAULT_PROJECT_NAME
-        self.path = os.getenv('PROJECT_PATH') or self.DEFAULT_PROJECT_PATH
+        root_path = get_root_path()
+        repo_path = '{}/.aim'.format(root_path)
+
+        self.name = 'My awesome project'
+        self.path = root_path
         self.description = ''
         self.tf_enabled = TFSummaryAdapter.exists()
-        self.repo = AimRepo(repo_full_path=self.REPO_PATH,
+        self.repo = AimRepo(repo_full_path=repo_path,
                             mode=AimRepo.READING_MODE)
 
     def exists(self):
