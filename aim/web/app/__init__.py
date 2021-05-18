@@ -8,7 +8,6 @@ from aim.engine.configs import AIM_FLASK_ENV_KEY
 from aim.web.utils import Singleton
 from aim.web.app.config import config
 from aim.web.app.db import Db
-# from services.executables.manager import Executables as ExecutablesManager
 
 
 class App(metaclass=Singleton):
