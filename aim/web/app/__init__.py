@@ -5,7 +5,7 @@ from flask import Flask, redirect, request, make_response
 from flask_cors import CORS
 
 from aim.engine.configs import AIM_FLASK_ENV_KEY
-from aim.web.utils import Singleton
+from aim.engine.types import Singleton
 from aim.web.app.config import config
 from aim.web.app.db import Db
 
@@ -67,10 +67,3 @@ class App(metaclass=Singleton):
         api.register_error_handler(404, serve_wrong_urls)
 
         cls.api = api
-
-        # Disable executables module
-        # if cls.executables_manager is not None:
-        #     cls.executables_manager.stop()
-        # if cls.executables_manager is None:
-        #     cls.executables_manager = ExecutablesManager()
-        # cls.executables_manager.start()
