@@ -22,7 +22,6 @@ from aim.engine.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.app.db import db
 from aim.web.app.utils import unsupported_float_type
 from aim.web.app.projects.utils import (
-    read_artifact_log,
     get_branch_commits,
     deep_merge,
     dump_dict_values,
@@ -301,13 +300,14 @@ class ProjectExperimentApi(Resource):
                 })
             elif 'map' in obj['type'] or obj['type'] == 'map':
                 try:
-                    params_str = read_artifact_log(obj_data_file_path, 1)
-                    if params_str:
-                        map_objects.append({
-                            'name': obj['name'],
-                            'data': json.loads(params_str[0]),
-                            'nested': 'nested_map' in obj['type']
-                        })
+                    with open(obj_data_file_path, 'r+') as obj_data_file:
+                        params_str = obj_data_file.read().strip()
+                        if params_str:
+                            map_objects.append({
+                                'name': obj['name'],
+                                'data': json.loads(params_str),
+                                'nested': 'nested_map' in obj['type']
+                            })
                 except:
                     pass
 
@@ -331,34 +331,3 @@ class ProjectInsightApi(Resource):
     def get(self, insight_name):
         return make_response(jsonify({}), 404)
 
-
-@projects_api.resource('/<experiment_name>/<commit_id>/<file_path>')
-class ProjectExperimentFileApi(Resource):
-    def get(self, experiment_name,
-            commit_id, file_path):
-        project = Project()
-
-        if not project.exists():
-            return make_response(jsonify({}), 404)
-
-        objects_dir_path = os.path.join(os.getcwd(),
-                                        '.aim',
-                                        experiment_name,
-                                        commit_id,
-                                        'objects')
-
-        file_path = os.path.join(*file_path.split('+')) + '.log'
-        dist_abs_path = os.path.join(objects_dir_path,
-                                     file_path)
-
-        if not os.path.isfile(dist_abs_path):
-            return make_response(jsonify({}), 404)
-
-        # Read file specified by found path
-        try:
-            obj_data_content = read_artifact_log(dist_abs_path, 500)
-            comp_content = list(map(lambda x: json.loads(x),
-                                    obj_data_content))
-            return comp_content
-        except:
-            return []

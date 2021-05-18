@@ -8,7 +8,6 @@ from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import insert
 
-from file_read_backwards import FileReadBackwards
 from aim.engine.configs import AIM_FLASK_ENV_KEY
 from aim.web.app.db import db
 from aim.web.app.commits.models import Commit
@@ -95,26 +94,6 @@ def get_branch_commits(branch_path):
                 commit_config = {}
             commits[c] = commit_config
     return commits
-
-
-def read_artifact_log(file_path, limit=-1):
-    if not os.path.isfile(file_path):
-        return []
-
-    content = []
-    try:
-        with FileReadBackwards(file_path, encoding='utf-8') as file:
-            line_index = 0
-            for l in file:
-                if limit == -1 or line_index <= limit:
-                    content = [l] + content
-
-                if limit != -1:
-                    line_index += 1
-    except:
-        pass
-
-    return content
 
 
 def deep_merge(*dicts, update=False):
