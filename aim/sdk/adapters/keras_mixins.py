@@ -1,5 +1,4 @@
 from typing import Optional, List
-
 from aim.sdk.track import track
 from aim.sdk.flush import flush
 from aim.sdk.session.session import Session
@@ -47,9 +46,24 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
 
 def get_keras_tracker_callback(keras_callback_cls, mixins: List):
     class KerasTrackerCallback(keras_callback_cls, *mixins):
-        def __init__(self, session: Optional[Session] = None):
+        def __init__(self, repo: Optional[str] = None,
+                     experiment: Optional[str] = None,
+                     session: Optional[Session] = None):
             super(KerasTrackerCallback, self).__init__()
-            self._session = session
+
+            if session is None:
+                if repo is None and experiment is None:
+                    self._session = Session()
+                else:
+                    self._session = Session(
+                            repo=repo,
+                            experiment=experiment
+                        )
+            else:
+                print('Passing Session instance to AimCallback will be ' +
+                      'deprecated in future versions, ' +
+                      'pass the callback arguments explicitly')
+                self._session = session
 
         @property
         def session(self) -> Session:
