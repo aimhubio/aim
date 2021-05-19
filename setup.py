@@ -46,6 +46,18 @@ REQUIRED = [
     'docker>=4.1.0',
     'aimrecords==0.0.7',
     'protobuf>=3.11.0',
+    'alembic==1.6.0',
+    'Flask==1.1.2',
+    'Flask-Cors==3.0.10',
+    'Flask-Migrate==2.7.0',
+    'Flask-RESTful==0.3.8',
+    'Flask-Script==2.0.6',
+    'Flask-SQLAlchemy==2.5.1',
+    'SQLAlchemy==1.4.13',
+    'pysqlite3',
+    'pytz==2020.1',
+    'tensorboard==2.3.0',
+    'gunicorn==20.1.0',
 ]
 
 
