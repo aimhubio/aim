@@ -50,7 +50,7 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
 
     try:
         db_cmd = build_db_upgrade_command()
-        exec_cmd(db_cmd)
+        exec_cmd(db_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to initialize Aim DB. ' +
                    'Please see the logs above for details.')

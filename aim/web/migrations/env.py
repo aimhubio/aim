@@ -1,15 +1,22 @@
 from __future__ import with_statement
 
 import logging
+import os
 from logging.config import fileConfig
 
+from alembic import context
+from alembic.config import Config
 from flask import current_app
 
-from alembic import context
+from aim.engine.configs import AIM_FLASK_ENV_KEY
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+if os.getenv(AIM_FLASK_ENV_KEY) == 'dev':
+    here = os.path.abspath(os.path.dirname(__file__))
+    config = Config(os.path.join(here, 'alembic_dev.ini'))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
