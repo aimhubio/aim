@@ -1,0 +1,113 @@
+@import '../../../vars';
+
+@activeCheckSize: 10px;
+
+.Menu {
+  overflow: hidden;
+
+  &.outline {
+    border: var(--border);
+    border-radius: var(--border-radius);
+  }
+
+  &.bordered {
+    .MenuItem {
+      border-bottom: var(--border);
+    }
+
+    &:not(.lastChildBorder) {
+      .MenuItem:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &.interactive {
+    .MenuItem {
+      cursor: pointer;
+      transition: background-color 110ms ease;
+
+      &:hover {
+        background-color: var(--primary-bg);
+      }
+
+      &.active:hover {
+        background-color: #fff;
+        cursor: default;
+      }
+    }
+
+    .MenuItem__subMenu {
+      .MenuItem {
+        &.active:hover {
+          background-color: #fff;
+          cursor: default;
+        }
+      }
+    }
+  }
+}
+
+.Menu__header {
+  padding: var(--component-spacing-sm);
+  background-color: var(--grey-bg);
+  border-bottom: var(--border);
+  color: var(--grey-dark);
+  font-size: var(--text-sm);
+}
+
+.MenuItem {
+  display: flex;
+  align-items: center;
+  padding: var(--component-spacing-sm);
+  font-size: var(--text-sm);
+  color: var(--primary);
+
+  &.select {
+    user-select: none;
+  }
+
+  &.active {
+    font-weight: 700;
+    color: var(--grey-darker);
+    border-left: 3px solid var(--primary);
+  }
+
+  &.activeCheck {
+    font-weight: 700;
+    color: var(--grey-darker);
+
+    &:before {
+      content: '';
+      display: block;
+      flex-shrink: 0;
+      width: @activeCheckSize;
+      height: @activeCheckSize;
+      background-color: var(--primary);
+      margin-right: var(--component-spacing-xs);
+      border-radius: var(--border-radius);
+    }
+  }
+}
+
+&.MenuItem__subMenu {
+  display: none;
+
+  &.open {
+    display: block;
+  }
+
+  .MenuItem {
+    margin-left: var(--component-spacing-md);
+    border-left: var(--border);
+
+    &:last-child {
+      margin-bottom: var(--component-spacing-sm);
+    }
+
+    &.active {
+      border-left-width: 3px;
+      border-left-color: var(--primary-lighter);
+    }
+  }
+}

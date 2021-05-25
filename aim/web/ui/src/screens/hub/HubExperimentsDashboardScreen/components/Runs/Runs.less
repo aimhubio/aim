@@ -1,0 +1,120 @@
+@grid-content-cell-height: calc(
+  100vh - var(--component-spacing-sm) - var(--component-spacing-md) - 20px
+);
+
+.HubExperimentsDashboardScreen__runs {
+}
+
+.HubExperimentsDashboardScreen__runs__alert {
+  margin: var(--component-spacing-sm) 0;
+
+  &.HubExperimentsDashboardScreen__runs__alert--segment {
+    padding: var(--component-spacing-sm);
+    border: 1px solid var(--grey-lighter);
+    background-color: #fff;
+    border-radius: var(--border-radius);
+  }
+}
+
+.HubExperimentsDashboardScreen__runs__body {
+  height: calc(
+    100vh - var(--component-spacing-sm) - var(--component-spacing-md)
+  );
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(300px, 1fr) minmax(calc(100% - 300px), 3fr);
+
+  > *:nth-child(2n) {
+    padding-left: var(--component-spacing-sm);
+  }
+}
+
+.HubExperimentsDashboardScreen__runs__content {
+}
+
+.HubExperimentsDashboardScreen__runs__experiments {
+  .Menu {
+    max-height: @grid-content-cell-height;
+    overflow-y: auto;
+  }
+}
+
+.HubExperimentsDashboardScreen__runs__content__nav {
+  margin-bottom: var(--component-spacing-sm);
+}
+
+.HubExperimentsDashboardScreen__runs__table__wrapper {
+  height: calc(
+    @grid-content-cell-height - var(--component-spacing-sm) - 2.2rem
+  );
+  box-sizing: border-box;
+  overflow: auto;
+  width: auto;
+  white-space: nowrap;
+}
+
+.HubExperimentsDashboardScreen__runs__context__cell {
+  display: flex;
+  align-items: stretch;
+  font-weight: 400;
+}
+
+.HubExperimentsDashboardScreen__runs__context__item {
+  margin-right: var(--component-spacing-xs);
+  background-color: var(--grey-light-xx) !important;
+  color: var(--grey-dark) !important;
+  border: 1px solid var(--grey-light-x) !important;
+
+  &:last-child {
+    margin-right: 0 !important;
+  }
+}
+
+.HubExperimentsDashboardScreen__runs__context__icon {
+}
+
+.HubExperimentsDashboardScreen__runs__item {
+  cursor: default;
+}
+
+.HubExperimentsDashboardScreen__runs__item__cell {
+  &.active {
+    background-color: var(--primary-lighter) !important;
+  }
+}
+
+.HubExperimentsDashboardScreen__runs__item__name {
+  display: inline;
+}
+
+.HubExperimentsDashboardScreen__experiments__items {
+  .Menu {
+    background-color: #fff;
+    border: 1px solid var(--grey-lighter);
+  }
+}
+
+.HubExperimentsDashboardScreen__experiments__header {
+  padding: var(--component-spacing-sm);
+  background-color: var(--grey-bg);
+  border-bottom: var(--border);
+  color: var(--grey-dark);
+  font-size: var(--text-sm);
+}
+
+.HubExperimentsDashboardScreen__experiments__actions {
+}
+
+.HubExperimentsDashboardScreen__experiments__item {
+}
+
+.HubExperimentsDashboardScreen__runs__actions {
+  flex-wrap: nowrap;
+  padding: 2px 0;
+
+  .Button__content {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+  }
+}

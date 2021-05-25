@@ -1,0 +1,127 @@
+@import '../../vars';
+
+.Label {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: calc(var(--border-radius));
+  color: rgb(0, 0, 0);
+  text-shadow: rgb(255, 255, 255) 0px 0px 5px;
+
+  /*
+  &.primary {
+    background: var(--primary-bg);
+    border-color: var(--primary-lighter);
+    color: var(--primary-dark);
+  }
+
+  &.secondary {
+    background: var(--grey-bg);
+    border-color: var(--grey-lighter);
+    color: var(--grey-dark);
+  }
+
+  &.negative {
+    background: var(--negative-bg);
+    border-color: var(--negative-lighter);
+    color: var(--negative-dark);
+  }
+
+  &.positive {
+    background: var(--positive-bg);
+    border-color: var(--positive-lighter);
+    color: var(--positive-dark);
+  }
+   */
+
+  &.tiny {
+    font-size: var(--button-xs);
+  }
+
+  &.small {
+    font-size: var(--button-sm);
+  }
+
+  &.medium {
+    font-size: var(--button-md);
+  }
+
+  &.large {
+    font-size: var(--button-lg);
+    padding: 0.95em 2.2em;
+  }
+
+  &.rounded {
+    border-radius: 5em;
+
+    .Label__icon--left {
+      padding: 0 0.35em 0 0.6em;
+      border-radius: 5em 0 0 5em;
+    }
+
+    .Label__icon--right {
+      padding: 0 0.6em 0 0.35em;
+      border-radius: 0 5em 5em 0;
+    }
+  }
+
+  &.outline {
+    background-color: #fff;
+
+    .Label__content {
+      padding-left: 1em;
+      padding-right: 1.2em;
+    }
+  }
+}
+
+.Label__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0 solid;
+  border-color: inherit;
+  padding: 0 0.35em;
+
+  &.Label__icon--left {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    border-right-width: 1px;
+  }
+
+  &.Label__icon--right {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    border-left-width: 1px;
+  }
+
+  &.Label__icon--clickable {
+    cursor: pointer;
+    transition: background-color 110ms ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .Icon {
+      cursor: pointer !important;
+      user-select: none;
+    }
+  }
+
+  .Icon {
+    cursor: auto;
+  }
+}
+
+.Label__content {
+  display: flex;
+  padding: 0.35em 1em;
+  line-height: 1em;
+  align-items: center;
+  justify-content: center;
+}

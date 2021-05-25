@@ -1,0 +1,59 @@
+@import '../../../../../../../vars.less';
+
+.GroupConfigPopup {
+  background-color: #fff;
+  border: 1px solid var(--primary-lighter);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.GroupConfigPopup__header {
+  padding: var(--component-spacing-xs) var(--component-spacing-sm);
+  background-color: var(--primary-bg);
+  color: var(--primary-dark);
+  border-bottom: 1px solid var(--primary-lighter);
+}
+
+.GroupConfigPopup__body {
+  padding: var(--component-spacing-xs) var(--component-spacing-sm);
+  max-height: 200px;
+  overflow: auto;
+}
+
+.GroupConfigPopup__body__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .Text {
+    font-weight: normal;
+    margin-right: var(--space-sm);
+  }
+
+  .Text:last-child {
+    margin-right: 0;
+  }
+}
+
+.GroupConfigPopup__container-button {
+  display: flex;
+  background-color: transparent !important;
+  border-color: transparent !important;
+
+  &:hover {
+    background-color: var(--grey-lighter) !important;
+  }
+
+  &:active {
+    background-color: var(--grey-light-xx) !important;
+    color: var(--grey-darker) !important;
+  }
+
+  .Button__icon {
+    min-width: 1.5em;
+  }
+
+  .Button__content {
+    padding: 0.4em 0.6em;
+  }
+}

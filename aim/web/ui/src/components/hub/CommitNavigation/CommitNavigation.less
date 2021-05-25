@@ -1,0 +1,112 @@
+@import '../../../vars';
+
+.CommitNavigation {
+  position: relative;
+  padding: 0 0 var(--component-spacing-md);
+  width: 200px;
+  box-sizing: border-box;
+  overflow-y: hidden;
+  margin-top: 40px;
+
+  .Menu__header {
+    background: transparent !important;
+    border-bottom: none !important;
+  }
+}
+
+.CommitNavigation__current {
+  border-bottom: var(--border);
+
+  a {
+    color: var(--green);
+  }
+
+  &:hover {
+    background-color: var(--green-bg) !important;
+  }
+
+  &.active {
+    border-left: 3px solid var(--green);
+    font-weight: bold;
+    background-color: var(--white) !important;
+
+    a {
+      color: var(--green-darker);
+    }
+  }
+}
+
+.CommitNavigation__current__title {
+  display: flex;
+  align-items: center;
+  padding: var(--component-spacing-sm);
+
+  &:before {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    background-color: var(--green);
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 4px solid var(--green-lighter);
+  }
+}
+
+.CommitNavigation__item {
+  border-bottom-color: var(--grey-lighter) !important;
+  color: var(--primary);
+  padding: 0;
+
+  &.hidden {
+    display: none !important;
+  }
+
+  &:hover {
+    .CommitNavigation__item__short {
+      display: none;
+    }
+
+    .CommitNavigation__item__full {
+      display: block;
+    }
+  }
+
+  &.active {
+    color: var(--grey-darker);
+    background-color: #fff;
+
+    &:hover {
+      background-color: #fff !important;
+    }
+  }
+
+  a {
+    color: inherit;
+  }
+
+  .CommitNavigation__item__short,
+  .CommitNavigation__item__full {
+    padding: var(--component-spacing-sm);
+  }
+
+  .CommitNavigation__item__full {
+    display: none;
+  }
+}
+
+.CommitNavigation__item__indicator {
+  display: inline-block;
+  vertical-align: middle;
+
+  &:before {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: var(--green);
+    border: 4px solid var(--green-lighter);
+  }
+}

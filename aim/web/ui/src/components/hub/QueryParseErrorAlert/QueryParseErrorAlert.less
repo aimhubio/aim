@@ -1,0 +1,41 @@
+.QueryParseErrorAlert {
+  border: 1px solid var(--negative-lighter);
+  background-color: var(--negative-bg);
+  border-radius: var(--border-radius);
+}
+
+.QueryParseErrorAlert__title {
+  padding: var(--component-spacing-xs) var(--component-spacing-sm);
+  border-bottom: 1px solid var(--negative-lighter);
+}
+
+.QueryParseErrorAlert__box {
+  padding: var(--component-spacing-md);
+  font-family: monospace;
+  font-size: var(--text-sm);
+  background-color: #fff;
+  color: var(--grey-dark);
+}
+
+.QueryParseErrorAlert__arrow {
+  position: absolute;
+  display: inline-block;
+  padding-top: calc(var(--text-md) - 3px);
+  transform: translateX(-5px);
+  color: var(--negative);
+
+  .Icon {
+    display: block !important;
+  }
+}
+
+.QueryParseErrorAlert__footer {
+  padding: var(--component-spacing-xs) var(--component-spacing-sm);
+  border-top: 1px solid var(--grey-lighter);
+  background-color: var(--grey-bg);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  color: var(--grey-darker);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

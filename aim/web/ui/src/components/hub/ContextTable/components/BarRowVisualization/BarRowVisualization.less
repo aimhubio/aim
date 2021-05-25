@@ -1,0 +1,48 @@
+@import '../../vars';
+
+.BarRowVisualization {
+  min-width: 200px;
+  width: auto;
+  min-height: auto;
+}
+
+.BarRowVisualization__header {
+  padding: var(--component-spacing-xs) var(--component-spacing-sm);
+  background-color: var(--primary-bg);
+  color: var(--primary-dark);
+  border-bottom: 1px solid var(--primary-lighter);
+}
+
+.BarRowVisualization__body {
+  a:hover {
+    text-decoration: none !important;
+  }
+}
+
+.BarRowVisualization__item {
+  padding: var(--component-spacing-xs) var(--component-spacing-sm);
+  border-bottom: 1px solid var(--grey-lighter);
+  text-transform: capitalize;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+  transition: background-color 110ms ease;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--grey-bg);
+  }
+
+  &:active {
+    background-color: var(--primary-lighter);
+    color: var(--primary-darker);
+  }
+
+  & > .Text {
+    margin-right: var(--component-spacing-xs);
+  }
+}

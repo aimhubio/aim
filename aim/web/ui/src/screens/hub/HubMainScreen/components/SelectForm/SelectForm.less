@@ -1,0 +1,169 @@
+@import '../../../../../vars';
+
+@actions-size: 29px;
+@actions-spacing: (@controls-width - 2 * @actions-size) / 3;
+
+@row-box-height: 29px;
+@row-box-spacing: (@controls-width - 2 * @row-box-height) / 3;
+
+.SelectForm {
+  background: #fff;
+
+  &.focused {
+    position: relative;
+    z-index: 99999;
+  }
+}
+
+.SelectForm__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) @controls-width;
+}
+
+.SelectForm__form {
+  position: relative;
+  z-index: 1999;
+
+  /*
+  &:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: @controls-width * 0.15;
+    width: 1px;
+    background: var(--primary-lighter);
+    height: @controls-width * 0.7;
+  }
+   */
+}
+
+.SelectForm__form__row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  height: @row-box-height;
+  margin: @row-box-spacing 0;
+
+  > * {
+    height: @row-box-height !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.SelectForm__form__row__title {
+  flex: 0 0 75px;
+  display: flex;
+  margin-right: 1.5 * @row-box-spacing;
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--primary-dark);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+/*
+.SelectForm__form__row__control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-xs);
+  box-sizing: border-box;
+  background: var(--primary-bg);
+  border: 1px solid var(--primary-lighter);
+  color: var(--primary-dark);
+  font-size: var(--text-sm);
+  margin-right: @row-box-spacing;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: border-color 110ms ease;
+  user-select: none;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+}
+ */
+
+.SelectForm__form__row__input__wrapper,
+.SelectForm__form__row__input {
+  height: @row-box-height !important;
+  box-sizing: border-box !important;
+}
+
+.SelectForm__form__row__input {
+  padding: 0 0.5em !important;
+  background: var(--primary-bg);
+  font-size: var(--input-sm) !important;
+  border: 1px solid var(--primary-lighter) !important;
+
+  &:focus {
+    border-color: var(--primary-light) !important;
+  }
+}
+
+.SelectForm__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  height: @controls-width;
+  width: @controls-width;
+  box-sizing: border-box;
+
+  .SelectForm__action__wrapper:nth-child(1) .SelectForm__action {
+    top: @actions-spacing;
+    left: @actions-spacing;
+  }
+  .SelectForm__action__wrapper:nth-child(2) .SelectForm__action {
+    top: @actions-spacing;
+    right: @actions-spacing;
+  }
+  .SelectForm__action__wrapper:nth-child(3) .SelectForm__action {
+    bottom: @actions-spacing;
+    left: @actions-spacing;
+  }
+  .SelectForm__action__wrapper:nth-child(4) .SelectForm__action {
+    bottom: @actions-spacing;
+    right: @actions-spacing;
+  }
+}
+
+.SelectForm__action__wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.SelectForm__action {
+  position: absolute;
+  width: @actions-size;
+  height: @actions-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-bg);
+  color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary-lighter);
+  cursor: pointer;
+  transition: box-shadow 110ms ease, background-color 110ms ease;
+  user-select: none;
+
+  &:hover {
+    color: var(--primary-dark);
+    box-shadow: inset 0 0 0 1px var(--primary-light);
+  }
+
+  &:active,
+  &.active {
+    color: var(--primary-darker);
+    background-color: var(--primary-lighter);
+    box-shadow: inset 0 0 0 1px var(--primary);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}

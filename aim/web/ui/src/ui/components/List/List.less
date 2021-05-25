@@ -1,0 +1,55 @@
+@import '../../../vars';
+
+.List {
+  list-style: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+
+  .ListItem:last-child {
+    margin-bottom: 0;
+  }
+
+  &.margin {
+    margin-bottom: var(--component-spacing-sm);
+  }
+
+  &.dot .ListItem:before {
+    content: '\ea0f';
+  }
+  &.minus .ListItem:before {
+    content: '—';
+  }
+  &.check .ListItem:before {
+    content: '\ea0f';
+  }
+  &.none {
+    padding-inline-start: 0;
+
+    .ListItem:before {
+      display: none;
+    }
+  }
+
+  &.primary .ListItem:before {
+    color: var(--primary-light);
+  }
+}
+
+.ListItem {
+  padding: 0.6em 0em;
+
+  &:before {
+    content: '';
+    font-family: 'icon-fonts';
+    display: inline-block;
+    font-size: var(--text-md);
+    margin-left: -1.8em;
+    width: 1.8em;
+    vertical-align: middle;
+  }
+}
+
+.ListItem__desc {
+  color: var(--grey);
+  font-size: var(--text-sm);
+}

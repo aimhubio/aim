@@ -1,0 +1,26 @@
+.RunningExecutablesList__status {
+  margin-top: var(--component-spacing-md) !important;
+}
+
+.RunningExecutablesList__items {
+  .RunningExecutablesList__item:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.RunningExecutablesList__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: var(--component-spacing-sm) 0;
+
+  > * {
+    margin-right: var(--component-spacing-sm);
+    flex-shrink: 0;
+  }
+}
+
+.RunningExecutablesList__item__name {
+  display: block;
+  flex-shrink: 1 !important;
+}

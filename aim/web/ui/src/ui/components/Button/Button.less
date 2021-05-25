@@ -1,0 +1,317 @@
+/* --------------------------------
+|  Component: Buttons
+-------------------------------- */
+
+@import '../../vars';
+
+:root {
+  --button-size: 0.9em;
+
+  --button-xs: calc(var(--button-size) - 0.2em);
+  --button-sm: calc(var(--button-size) - 0.1em);
+  --button-md: calc(var(--button-size));
+  --button-lg: calc(var(--button-size) + 0.15em);
+
+  --primary-gradient: linear-gradient(
+    180deg,
+    var(--primary) 0%,
+    var(--primary-dark) 75%,
+    var(--primary-darker) 90%
+  );
+
+  --positive-gradient: linear-gradient(
+    180deg,
+    var(--positive) 0%,
+    var(--positive-dark) 45%,
+    var(--positive-darker) 90%
+  );
+
+  --negative-gradient: linear-gradient(
+    180deg,
+    var(--negative) 0%,
+    var(--negative-dark) 55%,
+    var(--negative-darker) 90%
+  );
+}
+
+.Button {
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  box-shadow: none;
+
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  cursor: pointer;
+
+  padding: 0;
+  line-height: 1em;
+  border: 1px solid transparent;
+  border-radius: calc(var(--border-radius));
+  letter-spacing: var(--text-letter-spacing);
+  transition: background 100ms linear, color 100ms linear, border 100ms linear;
+
+  /* Coloring */
+  &.primary {
+    color: var(--white);
+    border-color: var(--primary-dark);
+
+    &.no_gradient {
+      background: var(--primary);
+
+      &.no_gradient:hover {
+        background: var(--primary-dark);
+      }
+      &.no_gradient:active {
+        background: var(--primary-darker);
+      }
+    }
+
+    &.gradient {
+      background: var(--primary-gradient);
+    }
+  }
+
+  &.positive {
+    color: var(--white);
+    border-color: var(--positive-darker);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+
+    &.no_gradient {
+      background: var(--positive);
+
+      &.no_gradient:hover {
+        background: var(--positive-dark);
+      }
+      &.no_gradient:active {
+        background: var(--positive-darker);
+      }
+    }
+
+    &.gradient {
+      background: var(--positive-gradient);
+    }
+  }
+
+  &.negative {
+    color: var(--white);
+    border-color: var(--negative-darker);
+
+    &.no_gradient {
+      background: var(--negative);
+
+      &.no_gradient:hover {
+        background: var(--negative-dark);
+      }
+      &.no_gradient:active {
+        background: var(--negative-darker);
+      }
+    }
+
+    &.gradient {
+      background: var(--negative-gradient);
+    }
+  }
+
+  &.secondary {
+    text-shadow: unset;
+    background: var(--grey-lighter);
+    color: var(--grey-dark);
+    border-color: var(--grey-light-xx);
+
+    &:hover {
+      background: var(--grey-light-xx);
+    }
+
+    &:active {
+      background: var(--grey-light-x);
+      color: var(--grey-darker);
+    }
+  }
+
+  &.primary.gradient,
+  &.positive.gradient,
+  &.negative.gradient {
+    background-repeat: no-repeat;
+    background-size: 100% 300%;
+    background-position: 0 0;
+
+    &:hover {
+      background-position: 0 calc(100% / 3);
+    }
+    &:active {
+      background-position: 0 calc(100% / 3 * 2);
+    }
+  }
+
+  &.ghost.gradient,
+  &.ghost.no_gradient {
+    background: var(--white);
+    text-shadow: unset;
+
+    &.primary {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+
+      &:hover {
+        background: var(--primary);
+        border-color: transparent;
+        color: var(--white);
+      }
+
+      &:active {
+        background: var(--primary-dark);
+        border-color: transparent;
+        color: var(--white);
+      }
+    }
+
+    &.positive {
+      border-color: var(--positive);
+      color: var(--positive-dark);
+
+      &:hover {
+        background: var(--positive);
+        border-color: transparent;
+        color: var(--white);
+      }
+
+      &:active {
+        background: var(--positive-dark);
+        border-color: transparent;
+        color: var(--white);
+      }
+    }
+
+    &.negative {
+      border-color: var(--negative);
+      color: var(--negative-dark);
+
+      &:hover {
+        background: var(--negative);
+        border-color: transparent;
+        color: var(--white);
+      }
+
+      &:active {
+        background: var(--negative-dark);
+        border-color: transparent;
+        color: var(--white);
+      }
+    }
+
+    &.secondary {
+      border-color: var(--grey-light-x);
+      color: var(--grey);
+
+      &:hover {
+        background: var(--grey-lighter);
+        border-color: transparent;
+        color: var(--grey-dark);
+      }
+
+      &:active {
+        background: var(--grey-light-xx);
+        border-color: transparent;
+        color: var(--grey-darker);
+      }
+    }
+
+    &.tiny {
+      border-width: 1px;
+    }
+
+    &.small {
+      border-width: 1px;
+    }
+
+    &.medium {
+      border-width: 2px;
+    }
+
+    &.large {
+      border-width: 2.5px;
+    }
+  }
+
+  /* Size */
+  &.tiny {
+    font-size: var(--button-xs);
+  }
+
+  &.small {
+    font-size: var(--button-sm);
+  }
+
+  &.medium {
+    font-size: var(--button-md);
+  }
+
+  &.large {
+    font-size: var(--button-lg);
+
+    .Button__content {
+      padding: 0.95em 2.2em;
+    }
+    .Button__icon {
+      padding: 0.8em 0.7em;
+    }
+  }
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.65;
+    cursor: default;
+  }
+}
+
+.Button__content {
+  padding: 0.68em 1.15em;
+}
+
+.Button__icon {
+  display: flex;
+  align-items: center;
+  font-size: 1.3em;
+  background-color: rgba(0, 0, 0, 0.2);
+  min-width: 2em;
+  text-shadow: inherit;
+  position: relative;
+
+  &.left {
+    border-right: 1px solid rgba(0, 0, 0, 0.21);
+  }
+  &.right {
+    border-left: 1px solid rgba(0, 0, 0, 0.21);
+  }
+
+  .Icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.Buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  > * {
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

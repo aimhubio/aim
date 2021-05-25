@@ -1,0 +1,22 @@
+@import '../../../vars';
+
+.Radio {
+  display: none;
+}
+
+.Radio + label {
+  -webkit-appearance: none;
+  background-color: var(--primary-lighter);
+  border: 2px solid var(--primary-lighter);
+  border-radius: 8px;
+  width: 100%;
+  display: inline-block;
+  position: relative;
+  width: 8px;
+  height: 8px;
+  cursor: pointer;
+}
+
+.Radio:checked + label {
+  background: var(--primary);
+}

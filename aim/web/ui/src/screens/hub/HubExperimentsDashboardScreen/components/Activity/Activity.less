@@ -1,0 +1,97 @@
+@activity-item-height: 140px;
+
+.HubExperimentsDashboardScreen__activity {
+}
+
+.HubExperimentsDashboardScreen__activity__body {
+  display: flex;
+  flex-direction: row;
+}
+
+.HubExperimentsDashboardScreen__activity__stats {
+  flex: 1 1 auto;
+}
+
+.HubExperimentsDashboardScreen__activity__stats__items {
+  display: flex;
+  flex-direction: row;
+  height: @activity-item-height;
+}
+
+.HubExperimentsDashboardScreen__activity__stats__item {
+  position: relative;
+  flex: 1 0;
+  min-width: 200px;
+  max-width: 400px;
+  margin-right: var(--component-spacing-sm);
+  padding: var(--component-spacing-md);
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: var(--border-radius);
+  background-color: var(--color-purple);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+
+  &:nth-of-type(1) {
+    //background-image: radial-gradient( circle farthest-corner at 20% 40%, var(--color-green) 0%, var(--color-blue) 70.2% );
+    background-color: var(--color-green);
+
+    .HubExperimentsDashboardScreen__activity__stats__icon {
+      top: -40px;
+      right: -30px;
+    }
+  }
+
+  &:nth-of-type(2) {
+    //background-image: radial-gradient( circle farthest-corner at 20% 40%, var(--color-magenta) 0%, var(--color-tangerine) 65.5% );
+    background-color: var(--color-blue);
+
+    .HubExperimentsDashboardScreen__activity__stats__icon {
+      transform: rotateX(180deg);
+      top: -50px;
+      right: -20px;
+    }
+  }
+}
+
+.HubExperimentsDashboardScreen__activity__stats__figure {
+  color: #fff;
+}
+
+.HubExperimentsDashboardScreen__activity__stats__title {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.HubExperimentsDashboardScreen__activity__stats__icon {
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  font-size: 140px;
+  color: rgba(255, 255, 255, 0.2);
+
+  .Icon {
+    display: block !important;
+  }
+}
+
+.HubExperimentsDashboardScreen__activity__heatmap__box {
+  flex: 3 1 auto;
+  overflow-x: auto;
+}
+
+.HubExperimentsDashboardScreen__activity__heatmap {
+  height: @activity-item-height;
+  max-width: 660px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #fff;
+  border: 1px solid var(--grey-light-xx);
+  border-radius: var(--border-radius);
+  box-sizing: border-box;
+  overflow-y: hidden;
+
+  .CalendarHeatmap {
+    padding: 0 var(--component-spacing-sm);
+  }
+}

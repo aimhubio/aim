@@ -18,6 +18,19 @@ REQUIRES_PYTHON = '>=3.5.0'
 # Get packages
 packages = find_packages(exclude=('tests',))
 
+
+# Get a list of all files in the html directory to include in our module
+def package_files(directory):
+    paths = []
+    for (path, _, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+
+ui_files = package_files('aim/web/ui/build')
+migration_files = package_files('aim/web/migrations')
+
 # TODO: Get long description from the README file
 LONG_DESCRIPTION = DESCRIPTION
 
@@ -33,6 +46,18 @@ REQUIRED = [
     'docker>=4.1.0',
     'aimrecords==0.0.7',
     'protobuf>=3.11.0',
+    'alembic==1.6.0',
+    'Flask==1.1.2',
+    'Flask-Cors==3.0.10',
+    'Flask-Migrate==2.7.0',
+    'Flask-RESTful==0.3.8',
+    'Flask-Script==2.0.6',
+    'Flask-SQLAlchemy==2.5.1',
+    'SQLAlchemy==1.4.13',
+    'pysqlite3',
+    'pytz==2020.1',
+    'tensorboard==2.3.0',
+    'gunicorn==20.1.0',
 ]
 
 
@@ -63,6 +88,9 @@ class UploadCommand(Command):
             except OSError:
                 pass
 
+            self.status('Cleaning build directory')
+            os.system('{} setup.py clean --all'.format(sys.executable))
+
             self.status('Building Source and Wheel (universal) distribution…')
             os.system(
                 'AIM_PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
@@ -88,6 +116,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     install_requires=REQUIRED,
     packages=packages,
+    package_data={'aim': ui_files + migration_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',

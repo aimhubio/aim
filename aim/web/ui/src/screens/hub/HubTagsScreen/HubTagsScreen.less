@@ -1,0 +1,38 @@
+@import '../../../vars';
+
+.HubTagsScreen__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--border);
+  padding: 0 0 var(--component-spacing-xs);
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.HubTagsScreen__tags__item {
+  border-bottom: var(--border);
+  padding: 0 !important;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.HubTagsScreen__tags__item__body {
+  padding: var(--component-spacing-sm) 0;
+  transition: all 90ms ease;
+  cursor: pointer;
+
+  &:hover {
+    padding-left: var(--component-spacing-sm);
+    background-color: var(--grey-bg);
+  }
+}
+
+.HubTagsScreen__tags__item__commits {
+  margin-left: var(--component-spacing-sm);
+}

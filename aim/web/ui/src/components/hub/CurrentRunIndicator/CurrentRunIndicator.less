@@ -1,0 +1,55 @@
+@keyframes current-run-indicator-anim {
+  0% {
+    width: 0;
+    height: 0;
+    top: 10px;
+    left: 10px;
+    background-color: var(--green-light);
+  }
+  100% {
+    width: 30px;
+    height: 30px;
+    top: -5px;
+    left: -5px;
+    background-color: transparent;
+  }
+}
+
+.CurrentRunIndicator__current {
+  display: flex;
+  align-items: center;
+  color: var(--green) !important;
+}
+
+.CurrentRunIndicator__current__indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 7px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 7px;
+    height: 7px;
+    top: 6.5px;
+    left: 6.5px;
+    background-color: var(--green);
+    border-radius: 50%;
+    z-index: 2;
+  }
+}
+
+.CurrentRunIndicator__current__indicator__anim {
+  position: absolute;
+  display: block;
+  background-color: var(--green-lighter);
+  border-radius: 50%;
+  z-index: 1;
+  animation: current-run-indicator-anim 2s cubic-bezier(0.9, 0.37, 0.62, 1.01)
+    infinite;
+}

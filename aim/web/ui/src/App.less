@@ -1,0 +1,27 @@
+@import './vars';
+
+.App__expired {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.App__illustration {
+  svg {
+    max-height: 300px;
+    max-width: 300px;
+  }
+}
+
+.LoadingBar__wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  z-index: 999 !important;
+}
+
+.LoadingBar {
+  height: 3px;
+}

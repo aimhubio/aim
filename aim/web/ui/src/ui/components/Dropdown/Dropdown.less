@@ -1,0 +1,50 @@
+@import '../../../vars';
+
+.Dropdown__body {
+  &.right {
+    margin-left: auto;
+  }
+}
+
+.Dropdown__menu {
+  z-index: 3 !important;
+  box-shadow: var(--box-shadow) !important;
+  border: var(--border) !important;
+}
+
+.Dropdown__menu-notice {
+  font-size: var(--text-md) !important;
+  font-weight: normal !important;
+}
+
+.Dropdown__control {
+  background: #fff !important;
+  box-sizing: border-box;
+  border: 1px solid var(--grey-lighter) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: all 110ms ease;
+  font-size: var(--text-sm) !important;
+
+  &:hover {
+    border-color: var(--grey-light-xx) !important;
+  }
+
+  &.Dropdown__control--is-focused {
+    border: 1px solid var(--primary) !important;
+    box-shadow: inset 0 0 0 1px var(--primary) !important;
+    transition: all 110ms ease;
+  }
+}
+
+.Dropdown__option {
+  transition: all 110ms ease;
+}
+
+.Dropdown__multi-value__remove {
+  &:hover {
+    background-color: var(--grey-light-xx) !important;
+    color: var(--grey-darker) !important;
+    cursor: pointer;
+  }
+}

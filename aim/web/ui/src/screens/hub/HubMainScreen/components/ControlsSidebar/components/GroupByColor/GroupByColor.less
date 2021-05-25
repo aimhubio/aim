@@ -1,0 +1,44 @@
+@import '../../../../../../../vars';
+
+.ColorPalette {
+  display: flex;
+  align-items: center;
+  margin-top: var(--component-spacing-sm);
+  margin-left: var(--space-xxs);
+  cursor: pointer;
+
+  &:hover {
+    .ColorPalette__colors {
+      opacity: 0.7;
+    }
+  }
+}
+
+.ColorPalette__colors {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--border-radius);
+  margin-left: var(--component-spacing-sm);
+  border: 1px solid var(--primary);
+  overflow: hidden;
+  transition: opacity 110ms ease;
+}
+
+.ColorPalette__colors__title {
+  margin-left: var(--component-spacing-sm);
+  font-style: italic;
+}
+
+.ColorPalette__colors__item {
+  width: calc(150px / 8);
+  height: calc(150px / 8);
+}
+
+.ColorPalette__colors--1 .ColorPalette__colors__item {
+  width: calc(150px / 24);
+}
+
+.GroupByColor__title {
+  margin-bottom: var(--component-spacing-sm) !important;
+}

@@ -1,11 +1,8 @@
-from abc import ABCMeta
-import re
-from typing import Union, Optional
+from typing import Union
 import math
 
 from aim.artifacts import Record
 from aim.artifacts.artifact import Artifact
-from aim.artifacts.proto.base_pb2 import BaseRecord
 from aim.artifacts.proto.metric_pb2 import MetricRecord
 from aim.artifacts.utils import validate_mapping, validate_iterable
 
@@ -90,10 +87,9 @@ class Metric(Artifact):
             binary_type=self.PROTOBUF,
         )
 
-    @staticmethod
-    def deserialize_pb(data):
-        base_pb = BaseRecord()
-        base_pb.ParseFromString(data)
+    @classmethod
+    def deserialize_pb(cls, data):
+        base_pb = cls.deserialize_pb_object(data)
 
         metric_pb = MetricRecord()
         metric_pb.ParseFromString(base_pb.artifact)

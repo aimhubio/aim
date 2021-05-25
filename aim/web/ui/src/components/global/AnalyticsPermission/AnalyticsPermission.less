@@ -1,0 +1,29 @@
+@import '../../../vars';
+
+.AnalyticsPermission {
+  position: fixed;
+  bottom: var(--component-spacing-md);
+  right: var(--component-spacing-md);
+  width: 500px;
+  border: 1px solid var(--primary-lighter);
+  background-color: var(--primary-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  z-index: 99999;
+
+  @media @sm-max {
+    width: 100%;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+.AnalyticsPermission__body {
+  padding: var(--component-spacing-md);
+  color: var(--primary-dark);
+  font-size: var(--font-md);
+}
+
+.AnalyticsPermission__actions {
+  margin-top: var(--component-spacing-sm);
+}
