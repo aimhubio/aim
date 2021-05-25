@@ -1,0 +1,920 @@
+openapi: 3.0.0
+info:
+  description: Api documentation
+  version: 1.0.1
+  title: aim-container API
+tags:
+  - name: Project
+    description: Project module
+  - name: Commit
+    description: Commit module
+  - name: Executable
+    description: Executables module
+  - name: Tag
+    description: Tags module
+security:
+  - tokenAuth:
+paths:
+  "/tags/list":
+    get:
+      operationId: getTags
+      summary: Get all tags
+      tags:
+        - Tag
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/tags/new":
+    post:
+      operationId: postNewTag
+      summary: Create tag
+      tags:
+        - Tag
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/tags/update":
+    post:
+      operationId: updateTag
+      summary: Update tag's name or color.
+      tags:
+        - Tag
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/tags/runs/{tag_id}":
+    get:
+      operationId: getRelatedRuns
+      summary: get related runs for a given tag.
+      tags:
+        - Tag
+      parameters:
+        - name: tag_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/tags/{tag_id}":
+    get:
+      operationId: getTag
+      summary: Get the tag with tag_id
+      tags:
+        - Tag
+      parameters:
+        - name: tag_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/new":
+    post:
+      operationId: newExecutable
+      summary: Create new executable
+      tags:
+        - Executable
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                script_path:
+                  type: string
+                arguments:
+                  type: string
+                env_vars:
+                  type: string
+                interpreter_path:
+                  type: string
+                working_dir:
+                  type: string
+                aim_experiment:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/list":
+    get:
+      operationId: getExecutables
+      summary: Get executables
+      tags:
+        - Executable
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/running":
+    get:
+      operationId: getRunningExecutables
+      summary: Get running executables
+      tags:
+        - Executable
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/kill/{pid}":
+    get:
+      operationId: killRunningExecutable
+      summary: Kill running executables
+      tags:
+        - Executable
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/execute":
+    post:
+      operationId: executeExecutable
+      summary: Execute executable
+      tags:
+        - Executable
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                script_path:
+                  type: string
+                arguments:
+                  type: string
+                env_vars:
+                  type: string
+                interpreter_path:
+                  type: string
+                working_dir:
+                  type: string
+                aim_experiment:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/{executable_id}/hide":
+    post:
+      operationId: hideExecutable
+      summary: hide or un-hide an executable
+      tags:
+        - Executable
+      parameters:
+        - name: executable_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: boolean
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/{executable_id}/execute":
+    get:
+      operationId: executeExecutableTemplate
+      summary: Execute executable template
+      tags:
+        - Executable
+      parameters:
+        - name: executable_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: executeExecutableTemplateForm
+      summary: Execute executable from template
+      tags:
+        - Executable
+      parameters:
+        - name: executable_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                script_path:
+                  type: string
+                arguments:
+                  type: string
+                env_vars:
+                  type: string
+                interpreter_path:
+                  type: string
+                working_dir:
+                  type: string
+                aim_experiment:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/{executable_id}":
+    get:
+      operationId: getExecutable
+      summary: Get executable
+      tags:
+        - Executable
+      parameters:
+        - name: executable_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: saveExecutable
+      summary: Save executable
+      tags:
+        - Executable
+      parameters:
+        - name: executable_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                script_path:
+                  type: string
+                arguments:
+                  type: string
+                env_vars:
+                  type: string
+                interpreter_path:
+                  type: string
+                working_dir:
+                  type: string
+                aim_experiment:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/executables/process/{process_id}":
+    get:
+      operationId: getExecutableProcess
+      summary: Get executable process
+      tags:
+        - Executable
+      parameters:
+        - name: process_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/tags/{commit_id}":
+    get:
+      operationId: getCommitTags
+      summary: Get commit tags
+      tags:
+        - Commit
+      parameters:
+          - name: commit_id
+            in: path
+            required: true
+            schema:
+              type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/tags/update":
+    post:
+      operationId: updateCommitTag
+      summary: Update commit tag
+      tags:
+        - Commit
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                commit_hash:
+                  type: string
+                experiment_name:
+                  type: string
+                tag_id:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/{experiment}/{commit_id}/info":
+    get:
+      operationId: getCommitInfo
+      summary: Get commit info
+      tags:
+        - Commit
+      parameters:
+        - name: commit_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: experiment
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/{experiment}/{commit_id}/archivation/update":
+    post:
+      operationId: updateCommitArchivationFlag
+      summary: Update commit archivation
+      tags:
+        - Commit
+      parameters:
+        - name: commit_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: experiment
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/search/run?q={query}":
+    get:
+      operationId: getRunsByQuery
+      summary: Get runs
+      tags:
+        - Commit
+      parameters:
+          - name: query
+            in: path
+            required: false
+            schema:
+              type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/search/metric?p={num_points}&q={query}":
+    get:
+      operationId: getCommitsMetricsByQuery
+      summary: Get runs metrics
+      tags:
+        - Commit
+      parameters:
+          - name: query
+            in: path
+            required: false
+            schema:
+              type: string
+          - name: num_points
+            in: path
+            required: true
+            schema:
+              type: number
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/search/dictionary?q={query}":
+    get:
+      operationId: getCommitsDictionariesByQuery
+      summary: Get runs dictionaries
+      tags:
+        - Commit
+      parameters:
+          - name: query
+            in: path
+            required: false
+            schema:
+              type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/tf-summary/list":
+    get:
+      operationId: getTFSummaryList
+      summary: Get tf summary log paths
+      tags:
+        - Commit
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/tf-summary/params/list":
+    post:
+      operationId: getTFLogParams
+      summary: Get parameters of tf summary log
+      tags:
+        - Commit
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/commits/tf-summary/params/update":
+    post:
+      operationId: postTFLogParams
+      summary: Post parameters of tf summary log
+      tags:
+        - Commit
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                params:
+                  type: string
+                parsed_params:
+                  type: object
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/projects":
+    get:
+      operationId: getProject
+      summary: Get project
+      tags:
+        - Project
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectGet"
+  "/projects/info":
+    get:
+      operationId: getProjectData
+      summary: Get project
+      tags:
+        - Project
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/projects/activity":
+    get:
+      operationId: getProjectActivity
+      summary: Get project activity
+      tags:
+        - Project
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/projects/params":
+    get:
+      operationId: getProjectParams
+      summary: Get project params
+      tags:
+        - Project
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/projects/{experiment_name}/{commit_id}":
+    get:
+      operationId: getExperiment
+      summary: Get project experiment
+      tags:
+        - Project
+      parameters:
+        - name: experiment_name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: commit_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectExperiment"
+  "/projects/insight/{insight_name}":
+    get:
+      operationId: getProjectInsight
+      summary: Get project insight
+      tags:
+        - Project
+      parameters:
+        - name: insight_name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectInsight"
+  "/projects/{experiment_name}/{commit_id}/{path}":
+    get:
+      operationId: getExperimentComponent
+      summary: Get component content
+      tags:
+        - Project
+      parameters:
+        - name: experiment_name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: commit_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  "/projects/{experiment_name}/models/{model_name}":
+    get:
+      operationId: downloadModel
+      summary: Download experiment model
+      tags:
+        - Project
+      parameters:
+        - name: experiment_name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: model file
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+components:
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    Thread:
+      type: object
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        created_at:
+          type: string
+        title:
+          type: string
+        user_name:
+          type: string
+    ThreadComment:
+      type: object
+      properties:
+        id:
+          type: string
+        thread_id:
+          type: string
+        project_id:
+          type: string
+    User:
+      type: object
+      properties:
+        user_name:
+          type: string
+        full_name:
+          type: string
+        img:
+          type: string
+        used_storage:
+          type: number
+        max_storage:
+          type: number
+    UserSSHKey:
+      type: object
+      properties:
+        label:
+          type: string
+        uuid:
+          type: string
+    Project:
+      type: object
+      properties:
+        uuid:
+          type: integer
+        name:
+          type: string
+    ProjectGet:
+      type: object
+      properties:
+        id:
+          type: string
+        user_name:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    ProjectInsight:
+      type: object
+    ProjectExperiment:
+      type: object
+    ProjectDir:
+      type: object
+      properties:
+        name:
+          type: string
+        data:
+          type: object
+          properties:
+            layers:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: stirng
+                  weight:
+                    type: stirng
+                  bias:
+                    type: stirng
+    ProjectDistributionShortcut:
+      type: object
+      properties:
+        name:
+          type: string
+        mode:
+          type: string
+    ProjectDistribution:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+    ProjectCommit:
+      type: object
+      properties:
+        hash:
+          type: string
+        message:
+          type: string
+        date:
+          type: number
+    ProjectMetric:
+      type: object
+      properties:
+        name:
+          type: string
+        mode:
+          type: string
+        data:
+          type: array
+          items:
+            type: number
+    ProjectCorrelation:
+      type: object
+      properties:
+        name:
+          type: string
+        mode:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+    ProjectAnnotation:
+      type: object
+      properties:
+        name:
+          type: string
+        mode:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              object_path:
+                type: string
+              meta:
+                type: object
+                properties:
+                  label:
+                    type: string
+                  pred_label:
+                    type: string

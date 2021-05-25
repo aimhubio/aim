@@ -1,0 +1,66 @@
+@import '../../vars';
+
+.Container {
+  width: auto;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 var(--component-spacing-md);
+
+  &.fluid {
+    width: auto;
+  }
+
+  @media @xs-min {
+    width: auto;
+  }
+
+  @media @sm-min {
+    &.standard {
+      width: ~'calc(@{sm-breakpoint}px - @{header-width})';
+    }
+
+    &.small {
+      width: ~'calc(@{sm-breakpoint}px - @{header-width})';
+    }
+  }
+
+  @media @md-min {
+    &.standard {
+      width: ~'calc(@{md-breakpoint}px - @{header-width})';
+    }
+
+    &.small {
+      width: ~'calc(@{md-breakpoint}px - @{header-width})';
+    }
+  }
+
+  @media @lg-min {
+    &.standard {
+      width: ~'calc(@{lg-breakpoint}px - @{header-width})';
+    }
+
+    &.small {
+      width: ~'calc(0.75 * @{lg-breakpoint}px)';
+    }
+  }
+
+  @media @xl-min {
+    &.standard {
+      width: 1200px;
+    }
+
+    &.small {
+      width: 900px;
+    }
+  }
+
+  @media @xxl-min {
+    &.standard {
+      width: 1600px;
+    }
+
+    &.small {
+      width: 1150px;
+    }
+  }
+}

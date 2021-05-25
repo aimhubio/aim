@@ -1,0 +1,30 @@
+.ControlsSidebar__menu {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--grey-bg);
+  border-bottom: 1px solid var(--grey-lighter);
+  padding: 4px 0;
+}
+
+.ControlsSidebar__menu__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 20px;
+  background: var(--grey-lighter);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  color: var(--grey-dark);
+  transition: all 110ms ease;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover,
+  &.active {
+    background-color: var(--grey-light-xx);
+    color: var(--grey-darker);
+  }
+}

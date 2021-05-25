@@ -1,0 +1,123 @@
+@import '../../../vars';
+
+/* Header constants */
+@header-img-size: 35px;
+@loader-height: 3px;
+
+.Header {
+  background-color: var(--primary-dark);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: @header-width;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 21 !important;
+}
+
+.Header__cont {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: inherit;
+}
+
+.Header__items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &.bottom {
+    &:before {
+      content: '';
+      display: block;
+      margin: auto auto var(--component-spacing-xs);
+      width: 50%;
+      border-top: 1px solid var(--grey-light);
+    }
+  }
+}
+
+.Header__item__wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 3px 0;
+
+  &,
+  > a {
+    width: 100%;
+    text-decoration: none !important;
+  }
+
+  > a.active .Header__item {
+    color: #fff !important;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 0;
+      height: 60%;
+      width: 3px;
+      background-color: #fff;
+      border-radius: 0 10px 10px 0;
+      /*
+      top: 50%;
+      left: -5px;
+      width: 10px;
+      height: 10px;
+      margin-top: -8px;
+      background-color: var(--primary);
+      transform: rotateZ(-45deg);
+       */
+    }
+  }
+}
+
+.Header__item {
+  position: relative;
+  display: block !important;
+  margin: auto;
+  padding: var(--component-spacing-xs);
+  //position: relative;
+  //margin: 0 var(--space-xxxs);
+  //padding: var(--component-spacing-sm) var(--component-spacing-xs);
+  //min-height: calc(2 * var(--component-spacing-xs) + @img-size);
+  color: var(--grey-light-xx) !important;
+  text-align: center;
+  box-sizing: border-box;
+  transition: all 110ms ease;
+
+  &:hover {
+    color: var(--white) !important;
+
+    .Header__item__title {
+      transform: translateY(2px);
+    }
+  }
+}
+
+.Header__item__img {
+  margin: auto;
+  display: block;
+  width: @header-img-size;
+  height: @header-img-size;
+  background: url('../../../asset/logo-white.png') no-repeat center/contain;
+}
+
+.Header__item__icon {
+  font-size: var(--text-xl) !important;
+}
+
+.Header__item__icon__svg {
+  fill: #fff;
+  width: 20px;
+  margin: auto;
+}
+
+.Header__item__title {
+  font-size: 11px !important;
+  transition: all 110ms ease;
+}

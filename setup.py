@@ -28,7 +28,7 @@ def package_files(directory):
     return paths
 
 
-ui_files = package_files('aim/web/html')
+ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
 
 # TODO: Get long description from the README file

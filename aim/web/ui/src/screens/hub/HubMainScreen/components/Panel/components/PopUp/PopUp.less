@@ -1,0 +1,58 @@
+@import '../../../../../../../vars.less';
+
+@gap: 10px;
+
+.PopUp {
+  position: fixed;
+  box-sizing: border-box;
+  height: auto;
+
+  &.xGap {
+    padding: 0 @gap;
+  }
+}
+
+.ChartPopUp {
+  z-index: 9999;
+}
+.TagPopUp {
+  z-index: 9999;
+}
+.TooltipPopUp {
+  z-index: 9;
+}
+
+.PopUp__body {
+  position: relative;
+  padding: var(--component-spacing-xs);
+  box-sizing: border-box;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid var(--primary-lighter);
+  border-radius: var(--border-radius);
+  z-index: 90;
+  user-select: text;
+}
+
+.PopUp__body__arrow {
+  position: absolute;
+  top: 15px;
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border: 1px solid var(--primary-lighter);
+  transform: rotate(45deg);
+  z-index: 9;
+
+  &.left {
+    left: calc(@gap - 7px);
+  }
+
+  &.right {
+    right: calc(@gap - 7px);
+  }
+}
+
+.ChartPopUp__groupConfig__type {
+  margin-top: var(--component-spacing-xs);
+}

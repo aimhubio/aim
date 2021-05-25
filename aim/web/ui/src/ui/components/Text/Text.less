@@ -1,0 +1,117 @@
+/* --------------------------------
+|  Component: Text
+-------------------------------- */
+
+@import '../../vars';
+
+.Text {
+  /* Colors */
+  &.black {
+    color: var(--black);
+    &.divided {
+      border-bottom-color: var(--black);
+    }
+  }
+  &.white {
+    color: var(--white);
+    &.divided {
+      border-bottom-color: var(--white);
+    }
+  }
+  &.primary {
+    color: var(--primary);
+    &.divided {
+      border-bottom-color: var(--primary);
+    }
+  }
+  &.positive {
+    color: var(--positive);
+    &.divided {
+      border-bottom-color: var(--positive);
+    }
+  }
+  &.negative {
+    color: var(--negative);
+    &.divided {
+      border-bottom-color: var(--negative);
+    }
+  }
+  &.grey-dark {
+    color: var(--grey-dark);
+    &.divided {
+      border-bottom-color: var(--grey-dark);
+    }
+  }
+  &.grey-darker {
+    color: var(--grey-darker);
+    &.divided {
+      border-bottom-color: var(--grey-darker);
+    }
+  }
+  &.grey {
+    color: var(--grey);
+    &.divided {
+      border-bottom-color: var(--grey);
+    }
+  }
+  &.grey-light {
+    color: var(--grey-light);
+    &.divided {
+      border-bottom-color: var(--grey-light);
+    }
+  }
+  &.grey-light-x {
+    color: var(--grey-light-x);
+    &.divided {
+      border-bottom-color: var(--grey-light-x);
+    }
+  }
+  &.grey-light-xx {
+    color: var(--grey-light-xx);
+    &.divided {
+      border-bottom-color: var(--grey-light-xx);
+    }
+  }
+  &.grey-lighter {
+    color: var(--grey-lighter);
+    &.divided {
+      border-bottom-color: var(--grey-lighter);
+    }
+  }
+
+  /* Styles */
+  &.no_spacing {
+    margin-bottom: 0;
+  }
+
+  &.no_spacing_top {
+    margin-top: 0;
+  }
+
+  &.divided {
+    padding-bottom: var(--space-xxs);
+    border-bottom: var(--border);
+  }
+
+  &.left {
+    text-align: left;
+  }
+  &.center {
+    text-align: center;
+  }
+  &.right {
+    text-align: right;
+  }
+
+  &.inline {
+    display: inline;
+  }
+
+  &.bold {
+    font-weight: 700;
+  }
+
+  &.italic {
+    font-style: italic;
+  }
+}

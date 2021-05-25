@@ -1,0 +1,262 @@
+@import '../../../../../../../vars.less';
+
+.PanelChart {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  border: 1px solid var(--grey-lighter);
+}
+
+.PanelChart__svg {
+  user-select: none;
+}
+
+.PanelChart__body {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.PanelChart__msg__wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.PopUp__area {
+  position: absolute;
+}
+
+.PanelChart__popup__tags__wrapper {
+  width: 100%;
+  overflow-y: auto;
+}
+
+.PanelChart__popup__tags {
+  display: flex;
+  align-items: center;
+  width: auto;
+  white-space: nowrap;
+
+  > * {
+    margin-right: var(--component-spacing-sm);
+  }
+  > *:last-child {
+    margin-right: 0;
+  }
+}
+
+.CommitPopUp__process {
+  display: flex;
+  align-items: center;
+
+  .Button {
+    margin-left: var(--component-spacing-sm);
+  }
+}
+
+.TagPopUp__tags {
+}
+
+.TagPopUp__tags__title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--component-spacing-xs) !important;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.TagPopUp__tags__title {
+}
+
+.TagPopUp__tags__item {
+  margin: var(--component-spacing-sm) var(--component-spacing-sm) 0 0;
+  cursor: pointer;
+
+  &.active {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--primary);
+  }
+}
+
+.PanelChart__popup__tags__update {
+  cursor: pointer;
+  color: var(--primary);
+
+  &:hover {
+    color: var(--primary-dark);
+  }
+}
+
+.PanelChart__svg {
+  rect {
+    cursor: crosshair;
+  }
+
+  .brush {
+    rect {
+      cursor: zoom-in;
+    }
+  }
+
+  .ChartTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 var(--component-spacing-sm);
+  }
+
+  .ChartTitle--zoom {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #fff;
+    color: var(--grey-dark);
+    border-radius: var(--border-radius);
+
+    &:hover {
+      color: var(--primary);
+    }
+
+    .Icon {
+      font-size: 16px !important;
+    }
+  }
+
+  .ChartTitle__index {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--component-spacing-xs);
+    padding: 2px;
+    box-shadow: inset 0 0 0 1px var(--grey-light);
+    border-radius: var(--border-radius);
+    font-size: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .ChartTitle__text {
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--grey-dark);
+  }
+
+  .HoverCircle {
+    stroke: var(--primary);
+    stroke-width: 1 !important;
+    transition: all 200ms ease;
+    cursor: pointer;
+
+    &.inactive {
+      opacity: 0.5;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.active {
+      stroke: var(--primary-light);
+      stroke-width: 3 !important;
+      opacity: 1;
+    }
+
+    &:active {
+      stroke: var(--primary);
+      stroke-width: 1 !important;
+      opacity: 1;
+    }
+
+    &.focus {
+      stroke: var(--primary) !important;
+      stroke-width: 2 !important;
+      opacity: 1;
+    }
+  }
+
+  .Lines {
+    overflow: hidden;
+
+    &.highlight {
+      .PlotLine:not(.active):not(.current) {
+        stroke-width: 1;
+        opacity: 0.2;
+      }
+    }
+  }
+
+  .PlotLine {
+    stroke-width: 1;
+    opacity: 1;
+
+    &.active {
+      stroke-width: 2 !important;
+      opacity: 1;
+    }
+
+    &.current {
+      stroke-width: 3 !important;
+      opacity: 1;
+    }
+  }
+
+  .PlotArea {
+    opacity: 1;
+
+    &.inactive {
+      opacity: 0.2;
+    }
+
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  .HoverLine {
+    stroke: var(--grey-light);
+    z-index: -1;
+  }
+}
+
+.ChartMouseValue {
+  position: absolute;
+  box-sizing: border-box;
+  padding: var(--space-xxs) var(--space-xs);
+  background-color: var(--primary-bg);
+  border: 1px solid var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 10px;
+  font-weight: normal;
+  white-space: nowrap;
+
+  &.xAxis {
+    transform: translateX(-50%);
+    border-radius: 0 0 6px 6px;
+    border-top: none;
+  }
+
+  &.yAxis {
+    transform: translateY(-50%);
+    border-radius: 6px 0 0 6px;
+    border-right: none;
+    overflow: hidden;
+    box-shadow: inset -8px 0 5px -6px var(--primary);
+  }
+}

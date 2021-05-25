@@ -56,8 +56,8 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
                    'Please see the logs above for details.')
         return
 
-    if os.getenv(AIM_UI_TELEMETRY_KEY) is not None \
-            and os.getenv(AIM_UI_TELEMETRY_KEY) == '0':
+    if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None
+               and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
         os.environ[AIM_UI_TELEMETRY_KEY] = '0'
     else:
         os.environ[AIM_UI_TELEMETRY_KEY] = '1'

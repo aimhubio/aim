@@ -1,0 +1,31 @@
+.HubTagCreateScreen__FormGroup__wrapper {
+  a {
+    text-decoration: none;
+  }
+}
+
+.HubTagCreateScreen__FormGroup {
+  margin: var(--component-spacing-md) 0;
+
+  > * {
+    margin-bottom: var(--component-spacing-sm);
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.HubTagCreateScreen__colors {
+  //padding: var(--component-spacing-sm);
+}
+
+.HubTagCreateScreen__colors__item {
+  cursor: pointer;
+  margin: var(--component-spacing-sm) var(--component-spacing-sm) 0 0;
+  user-select: none;
+
+  &.active {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--primary);
+  }
+}

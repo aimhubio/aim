@@ -1,0 +1,56 @@
+.ExecutableViewForm__FormGroup {
+  margin: var(--component-spacing-md) 0;
+
+  > * {
+    margin-bottom: var(--component-spacing-sm);
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ExecutableViewForm__FormGroup__row {
+  display: flex;
+  margin: var(--component-spacing-sm) 0 var(--component-spacing-md) 0;
+
+  > * {
+    margin-right: var(--component-spacing-sm);
+  }
+  > *:last-child {
+    margin-right: 0;
+  }
+}
+
+.ExecutableViewForm__FormGroup__row.aim {
+  align-items: center;
+}
+
+.ExecutableViewForm__FormGroup__icon__wrapper {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  right: -9px;
+  top: -9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  background-color: #fff;
+  border-radius: 50%;
+  border: 1px solid var(--grey);
+  color: var(--grey-darker);
+  cursor: pointer;
+  transition: all 110ms ease;
+
+  &:hover {
+    color: #fff;
+    background-color: var(--grey-light);
+    border-color: var(--grey-light);
+  }
+}
+
+.ExecutableViewForm__FormGroup__icon {
+  font-size: inherit !important;
+  color: inherit !important;
+}

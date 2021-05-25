@@ -1,0 +1,49 @@
+@import '../../../vars';
+
+.RangeSlider__wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(44px + 20px);
+}
+
+.RangeSlider {
+  flex: 1;
+  margin-top: 5px !important;
+  border: 1px solid var(--grey-light-xx) !important;
+  box-shadow: none !important;
+  height: 8px !important;
+
+  .rangeslider__fill {
+    background-color: var(--primary) !important;
+  }
+
+  .rangeslider__handle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    user-select: none;
+    font-size: var(--text-xs);
+    box-shadow: none !important;
+    border: 1px solid var(--grey-light-xx) !important;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  .rangeslider__labels {
+    height: 32px;
+    margin: 0 !important;
+    padding: 0;
+    color: var(--primary);
+  }
+
+  .rangeslider__label-item {
+    font-size: var(--text-xs) !important;
+    white-space: nowrap;
+    user-select: none;
+  }
+}

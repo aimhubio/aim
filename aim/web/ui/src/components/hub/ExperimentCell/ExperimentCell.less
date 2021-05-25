@@ -1,0 +1,56 @@
+@import '../../../vars';
+
+.ExperimentCell {
+  float: left;
+  width: 50%;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: var(--component-spacing-xs);
+
+  @media @md-max {
+    width: 100%;
+  }
+
+  &.height_static .ExperimentCell__body {
+    height: 350px;
+  }
+
+  &.height_auto .ExperimentCell__body {
+    height: auto;
+  }
+
+  &.width_2 {
+    width: 100%;
+  }
+}
+
+.ExperimentCell__body {
+  overflow: auto;
+  border: 1px solid var(--primary-lighter);
+  border-bottom: none;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.ExperimentCell__footer {
+  background-color: var(--primary-bg);
+  padding: var(--component-spacing-sm);
+  border: 1px solid var(--primary-lighter);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.ExperimentCell__footer__title {
+  + .ExperimentCell__footer__labels {
+    margin-left: var(--component-spacing-sm);
+  }
+}
+
+.ExperimentCell__footer__labels {
+  display: inline-block;
+}
+
+.ExperimentCell__footer__label {
+  background-color: var(--primary-lighter) !important;
+  color: var(--primary-dark) !important;
+  border: 1px solid var(--primary-light);
+  margin-right: var(--component-spacing-sm);
+}

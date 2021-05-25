@@ -1,0 +1,27 @@
+@import '../../vars';
+
+.Line {
+  &.thin {
+    height: 1px;
+  }
+
+  &.thick {
+    height: 2px;
+  }
+
+  &.spacing {
+    margin: var(--component-spacing-sm) 0;
+  }
+
+  &.primary {
+    background: var(--primary-lighter);
+  }
+
+  &.secondary {
+    background: var(--grey-lighter);
+  }
+
+  &.negative {
+    background: var(--negative);
+  }
+}

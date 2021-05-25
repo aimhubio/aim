@@ -1,0 +1,38 @@
+@import '../../vars';
+
+.Segment {
+  border-radius: var(--border-radius);
+  background-color: #fff;
+
+  &.bordered {
+    border: var(--border); //box-shadow: 0 30px 100px -40px rgba(0, 0, 0, 0.3);
+
+    &.primary {
+      border-color: var(--primary-lighter);
+    }
+    &.positive {
+      border-color: var(--positive-lighter);
+    }
+    &.negative {
+      border-color: var(--negative-light);
+    }
+    &.secondary {
+      background-color: var(--grey-bg);
+      border-color: var(--grey-lighter);
+    }
+  }
+
+  &.spacing {
+    padding: var(--component-spacing-md);
+  }
+}
+
+.Segments__cont {
+  .Segment {
+    margin-bottom: var(--component-spacing-md);
+  }
+
+  .Segment:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,57 @@
+.BarViewModes {
+  display: flex;
+}
+
+.BarViewMode {
+  margin-right: 10px;
+
+  &:last-of-type {
+    margin-right: 0;
+  }
+
+  &.active {
+    .BarViewMode__icon {
+      --fill: var(--primary);
+    }
+  }
+}
+
+.BarViewMode__icon {
+  --fill: var(--grey-light);
+
+  position: relative;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--fill);
+  box-sizing: border-box;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: border-color 110ms ease;
+
+  &:hover {
+    --fill: var(--primary-light);
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--fill);
+    transition: background-color 110ms ease;
+  }
+
+  &.BarViewMode__icon--sm:after {
+    height: 25%;
+  }
+
+  &.BarViewMode__icon--md:after {
+    height: 50%;
+  }
+
+  &.BarViewMode__icon--lg:after {
+    height: 75%;
+  }
+}

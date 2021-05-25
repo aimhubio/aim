@@ -1,0 +1,42 @@
+@import '../../vars';
+
+.Tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--border);
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.Tabs__left {
+  display: flex;
+  justify-content: center;
+}
+
+.Tabs__right {
+  display: flex;
+  justify-content: center;
+}
+
+.Tab {
+  padding: var(--component-spacing-sm) var(--component-spacing-md);
+  font-size: var(--text-md);
+  color: var(--grey);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  user-select: none;
+
+  &:hover {
+    color: var(--primary-dark);
+    border-bottom-color: var(--grey-light);
+  }
+
+  &.active {
+    color: var(--primary-dark);
+    border-bottom-color: var(--primary);
+  }
+}

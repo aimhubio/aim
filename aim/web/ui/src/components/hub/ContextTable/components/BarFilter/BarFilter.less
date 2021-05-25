@@ -1,0 +1,159 @@
+@import '../../vars';
+
+@row-height: 24px;
+@placeholder-width: 18px;
+
+.BarFilter__content {
+  width: 100%;
+  max-height: inherit;
+  display: grid;
+  grid-template-rows: 1fr 40px;
+}
+
+.BarFilter__body {
+  overflow-y: auto;
+  z-index: 1;
+}
+
+.BarFilter__footer {
+  background-color: var(--grey-bg);
+  border-top: 2px solid var(--grey-lighter);
+  z-index: 2;
+}
+
+.BarFilter__parameters__box {
+  padding-bottom: var(--component-spacing-xs);
+}
+
+.BarFilter__group {
+  padding-bottom: var(--component-spacing-xs);
+}
+
+.BarFilter__group__item {
+  position: relative;
+  cursor: pointer;
+  background-color: #fff;
+  transition: background-color 110ms ease;
+  color: var(--grey);
+
+  &.on {
+    .BarFilter__group__item__radio__wrapper {
+      color: var(--positive);
+    }
+  }
+
+  &:hover {
+    background-color: var(--grey-lighter) !important;
+    color: var(--grey-darker);
+  }
+}
+
+.BarFilter__group__item__row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: @placeholder-width;
+  height: @row-height;
+  font-size: var(--text-sm);
+}
+
+.BarFilter__group__title {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.BarFilter__group__title__placeholder {
+  position: relative;
+  content: '';
+  left: -4px;
+  height: 4px;
+  width: calc(100% + 4px);
+  background-color: #fff;
+}
+
+.BarFilter__group__title__label {
+  height: @row-height - 4px;
+  padding: 0 var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  background-color: var(--grey-lighter);
+  color: var(--grey-dark);
+}
+
+.BarFilter__group__item__placeholder {
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: @placeholder-width;
+  display: block;
+  height: 100%;
+  border-right: 1px solid var(--grey-lighter);
+  box-sizing: border-box;
+}
+
+.BarFilter__group__item__radio__wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 2 * @placeholder-width;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--negative);
+  user-select: none;
+
+  &:before {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    content: '';
+    opacity: 0.1;
+    transition: background-color 110ms ease;
+  }
+}
+
+.BarFilter__group__item__name {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: @row-height;
+  line-height: @row-height;
+  padding-left: var(--space-sm);
+  color: var(--grey-dark);
+  border-bottom: 1px solid var(--grey-lighter);
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.BarFilter__form__wrapper {
+  margin: var(--component-spacing-sm) var(--component-spacing-sm)
+    calc(var(--component-spacing-sm) - 2px);
+}
+
+.BarFilter__input {
+}
+
+.BarFilter__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 74%;
+  margin: auto;
+}
+
+.BarFilter__action {
+  width: 42%;
+}

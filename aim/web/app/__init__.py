@@ -16,7 +16,7 @@ class App(metaclass=Singleton):
 
     @classmethod
     def __init__(cls, test_config=None):
-        api = Flask(__name__, static_folder='html')
+        api = Flask(__name__, static_folder=os.path.join('ui','build'))
         api.url_map.strict_slashes = False
 
         @api.before_request

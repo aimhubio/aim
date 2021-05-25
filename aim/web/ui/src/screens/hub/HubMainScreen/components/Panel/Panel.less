@@ -1,0 +1,45 @@
+@import '../../../../../vars.less';
+
+.Panel {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+  border-radius: var(--border-radius);
+  background-color: #fff;
+  border: 1px solid var(--grey-light-xx);
+}
+
+.Panel__chart-container {
+  height: auto;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.Panel__chart-wrapper {
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.Panel__msg__wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.Panel__resizing {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-bg);
+  user-select: none;
+}

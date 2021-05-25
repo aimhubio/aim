@@ -1,0 +1,80 @@
+@y-axis-width: 16px;
+@x-axis-height: 20px;
+
+.CalendarHeatmap {
+}
+
+.CalendarHeatmap__map {
+  display: grid;
+  grid-template-columns: @y-axis-width 1fr;
+  grid-template-rows: @x-axis-height 1fr;
+}
+
+.CalendarHeatmap__map__axis {
+  color: var(--grey-light);
+
+  &.CalendarHeatmap__map__axis--x {
+    font-size: 11px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  &.CalendarHeatmap__map__axis--y {
+    font-size: 9px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.CalendarHeatmap__map__grid {
+  display: grid;
+  grid-auto-flow: column;
+  user-select: none;
+}
+
+.CalendarHeatmap__cell__wrapper {
+  .Tooltip__container {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.CalendarHeatmap__cell {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  border-radius: 1px;
+  transition: box-shadow 50ms ease;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  }
+
+  &.CalendarHeatmap__cell--dummy {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    cursor: auto;
+  }
+
+  &.CalendarHeatmap__cell--scale-0 {
+    background-color: var(--grey-bg);
+  }
+  &.CalendarHeatmap__cell--scale-1 {
+    background-color: var(--primary-lighter);
+  }
+  &.CalendarHeatmap__cell--scale-2 {
+    background-color: var(--primary-light);
+  }
+  &.CalendarHeatmap__cell--scale-3 {
+    background-color: var(--primary);
+  }
+  &.CalendarHeatmap__cell--scale-4 {
+    background-color: var(--primary-dark);
+  }
+}
