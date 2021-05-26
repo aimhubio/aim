@@ -41,10 +41,6 @@ class Artifact(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def deserialize(self):
-        ...
-
-    @abstractmethod
     def save_blobs(self, name: str, abs_path: str = None):
         """
         Saves additional binary objects (blobs) which cannot be processed
