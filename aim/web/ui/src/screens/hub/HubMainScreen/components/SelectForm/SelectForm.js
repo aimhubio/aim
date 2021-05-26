@@ -29,8 +29,6 @@ function SelectForm(props) {
   }
 
   function search() {
-    analytics.trackEvent('[Explore] Search runs');
-
     const query = getFullQuery();
 
     setSearchState(
@@ -38,7 +36,20 @@ function SelectForm(props) {
         query,
       },
       () => {
-        props.searchByQuery();
+        props.searchByQuery().then(() => {
+          let selectedItemsLength = 0;
+          const runs = HubMainScreenModel.getState().runs?.data;
+          if (!!runs) {
+            runs.forEach((r) =>
+              r?.metrics?.forEach((m) =>
+                m?.traces?.forEach((_) => ++selectedItemsLength),
+              ),
+            );
+          }
+          analytics.trackEvent('[Explore] Search runs', {
+            selectedItemsLength,
+          });
+        });
       },
       true,
     );
