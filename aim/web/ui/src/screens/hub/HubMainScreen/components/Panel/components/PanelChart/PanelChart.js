@@ -1685,6 +1685,7 @@ function PanelChart(props) {
       });
       // This remove the grey brush area as soon as the selection has been done
       svg.current.select('.brush').call(brush.current.move, null);
+      analytics.trackEvent('[Explore] [LineChart] Line chart zoom in');
     }
   }
 
