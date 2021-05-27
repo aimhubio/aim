@@ -154,6 +154,8 @@ function ParallelCoordinatesChart(props) {
       window.requestAnimationFrame(renderData);
     }
     let runHash;
+    let param;
+    let contentType;
     traces.current.forEach((traceModel) =>
       traceModel.series.forEach((series, index) => {
         const params = series.getParamsFlatDict();
@@ -171,14 +173,12 @@ function ParallelCoordinatesChart(props) {
           val = series.getAggregatedMetricValue(dim.metricName, dim.context);
         }
         if (dim.scale(val) !== undefined) {
-          if (currValue === null) {
+          if (currValue === null || diffY > Math.abs(y - dim.scale(val))) {
             currValue = dim.scale(val);
             diffY = Math.abs(y - currValue);
             runHash = run.run_hash;
-          } else if (diffY > Math.abs(y - dim.scale(val))) {
-            currValue = dim.scale(val);
-            diffY = Math.abs(y - currValue);
-            runHash = run.run_hash;
+            param = dim.key;
+            contentType = dim.contentType;
           }
         }
       }),
@@ -193,6 +193,8 @@ function ParallelCoordinatesChart(props) {
           runHash: runHash,
           metricName: null,
           traceContext: null,
+          param,
+          contentType,
         },
       });
     }
@@ -849,7 +851,12 @@ function ParallelCoordinatesChart(props) {
                       null,
                       null,
                     )} ${
-                      focusedMetric.runHash === run.run_hash ? 'active' : ''
+                      focusedMetric.runHash === run.run_hash ? 'highlight' : ''
+                    } ${
+                      focusedMetric.runHash === run.run_hash &&
+                      (focusedMetric.param ?? param.key) === param.key
+                        ? 'active'
+                        : ''
                     } ${
                       focusedCircle.runHash === run.run_hash &&
                       (focusedCircle.param ?? param.key) === param.key

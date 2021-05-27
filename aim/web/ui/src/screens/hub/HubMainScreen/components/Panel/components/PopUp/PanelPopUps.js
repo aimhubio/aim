@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import * as moment from 'moment';
 
 import { HubMainScreenModel } from '../../../../models/HubMainScreenModel';
 import PopUp from './PopUp';
@@ -39,6 +40,7 @@ function PanelPopUps(props) {
     trace: null,
     point: null,
     groupConfig: null,
+    focused: false,
   });
   let [tagPopUp, setTagPopUp] = useState({
     display: false,
@@ -73,6 +75,7 @@ function PanelPopUps(props) {
     isTFSummaryScalar,
     getTraceData,
     isExploreParamsModeEnabled,
+    getClosestStepData,
   } = HubMainScreenModel.helpers;
 
   function positionPopUp(
@@ -118,7 +121,7 @@ function PanelPopUps(props) {
         left = x + margin;
       }
 
-      top = y + margin - Math.floor(popUpHeight / 2);
+      top = y; // + margin - Math.floor(popUpHeight / 2);
 
       if (topOverflow(top)) {
         top = height - popUpHeight;
@@ -296,17 +299,26 @@ function PanelPopUps(props) {
 
   function updatePopUpPosition() {
     const focusedCircle = chart.focused.circle;
-    if (focusedCircle.active) {
+    const focusedMetric = chart.focused.metric;
+    const focusedLineAttr = focusedCircle.active
+      ? focusedCircle
+      : {
+        ...focusedMetric,
+        step: chart.focused.step,
+      };
+    if (focusedLineAttr.runHash !== null) {
       const isParamMode = isExploreParamsModeEnabled();
       const line = getTraceData(
-        focusedCircle.runHash,
-        focusedCircle.metricName,
-        focusedCircle.traceContext,
+        focusedLineAttr.runHash,
+        focusedLineAttr.metricName,
+        focusedLineAttr.traceContext,
       );
       hideActionPopUps(true);
       if (isParamMode || (line !== null && line.data !== null)) {
         setTimeout(() => {
-          const activeCircle = document.querySelector('circle.focus');
+          const activeCircle = document.querySelector(
+            `circle.${focusedLineAttr.active ? 'focus' : 'active'}`,
+          );
           if (activeCircle) {
             const circleRect = activeCircle.getBoundingClientRect();
             const topContainer = activeCircle.closest('svg');
@@ -351,18 +363,30 @@ function PanelPopUps(props) {
 
   useEffect(() => {
     const focusedCircle = chart.focused.circle;
-    if (focusedCircle.active) {
+    const focusedMetric = chart.focused.metric;
+    const focusedLineAttr = focusedCircle.active
+      ? focusedCircle
+      : {
+        ...focusedMetric,
+        step: chart.focused.step,
+      };
+    if (focusedLineAttr.runHash !== null) {
       const isParamMode = isExploreParamsModeEnabled();
       const line = getTraceData(
-        focusedCircle.runHash,
-        focusedCircle.metricName,
-        focusedCircle.traceContext,
+        focusedLineAttr.runHash,
+        focusedLineAttr.metricName,
+        focusedLineAttr.traceContext,
       );
       hideActionPopUps(true);
       if (isParamMode || (line !== null && line.data !== null)) {
+        const { stepData } = getClosestStepData(
+          focusedLineAttr.step,
+          line?.data,
+          line?.axisValues,
+        );
         let point = isParamMode
-          ? [focusedCircle.contentType, focusedCircle.param]
-          : line?.data?.[line?.axisValues?.indexOf(focusedCircle.step)] ?? [];
+          ? [focusedLineAttr.contentType, focusedLineAttr.param]
+          : stepData ?? [];
 
         let groupConfig =
           HubMainScreenModel.getState().traceList?.traces.length > 1
@@ -373,9 +397,9 @@ function PanelPopUps(props) {
             if (
               groupConfig !== null &&
               traceModel.hasRun(
-                focusedCircle.runHash,
-                focusedCircle.metricName,
-                focusedCircle.traceContext,
+                focusedLineAttr.runHash,
+                focusedLineAttr.metricName,
+                focusedLineAttr.traceContext,
               )
             ) {
               groupConfig = {};
@@ -394,12 +418,12 @@ function PanelPopUps(props) {
             }
             if (isParamMode) {
               _.uniqBy(traceModel.series, 'run.run_hash').forEach((series) => {
-                if (series.run.run_hash !== focusedCircle.runHash) {
+                if (series.run.run_hash !== focusedLineAttr.runHash) {
                   return;
                 }
-                if (focusedCircle.contentType === 'metric') {
-                  if (focusedCircle.param) {
-                    const metric = focusedCircle.param.replace('metric-', '');
+                if (focusedLineAttr.contentType === 'metric') {
+                  if (focusedLineAttr.param) {
+                    const metric = focusedLineAttr.param.replace('metric-', '');
                     const dashIndex = metric.indexOf('-');
                     const metricKey = metric.slice(0, dashIndex);
                     const metricContext = JSON.parse(
@@ -410,24 +434,23 @@ function PanelPopUps(props) {
                     );
                   }
                 } else {
-                  point.push(
-                    getObjectValueByPath(
-                      series.run.params,
-                      focusedCircle.param,
-                    ),
-                  );
+                  if (focusedLineAttr.param) {
+                    point.push(
+                      getObjectValueByPath(
+                        series.run.params,
+                        focusedLineAttr.param,
+                      ),
+                    );
+                  }
                 }
               });
             }
           },
         );
-        setChartPopUp((cp) => ({
-          ...cp,
-          selectedTags: [],
-          selectedTagsLoading: true,
-        }));
         setTimeout(() => {
-          const activeCircle = document.querySelector('circle.focus');
+          const activeCircle = document.querySelector(
+            `circle.${focusedLineAttr.active ? 'focus' : 'active'}`,
+          );
           if (activeCircle) {
             const circleRect = activeCircle.getBoundingClientRect();
             const topContainer = activeCircle.closest('svg');
@@ -451,11 +474,17 @@ function PanelPopUps(props) {
               trace: line.trace,
               point: point,
               groupConfig: groupConfig,
+              focused: focusedLineAttr.active,
             }));
           }
         }, 100);
-        if (isAimRun(line.run ?? {})) {
-          getCommitTags(focusedCircle.runHash);
+        if (focusedLineAttr.active && isAimRun(line.run ?? {})) {
+          setChartPopUp((cp) => ({
+            ...cp,
+            selectedTags: [],
+            selectedTagsLoading: true,
+          }));
+          getCommitTags(focusedLineAttr.runHash);
         }
       } else {
         hideActionPopUps(false);
@@ -465,6 +494,8 @@ function PanelPopUps(props) {
     }
   }, [
     chart.focused.circle,
+    chart.focused.metric,
+    chart.focused.step,
     contextFilter.groupByColor,
     contextFilter.groupByStyle,
     contextFilter.groupByChart,
@@ -493,7 +524,10 @@ function PanelPopUps(props) {
     <div className='PanelChart__body'>
       {chartPopUp.display && (
         <PopUp
-          className='ChartPopUp'
+          className={classNames({
+            ChartPopUp: true,
+            tooltip: !chartPopUp.focused,
+          })}
           left={chartPopUp.left}
           top={chartPopUp.top}
           width={chartPopUp.width}
@@ -505,7 +539,7 @@ function PanelPopUps(props) {
               <>
                 {isExploreParamsModeEnabled() && chartPopUp.point[0] ? (
                   <div>
-                    <UI.Text type='grey-dark'>
+                    <UI.Text type='grey-darker' small>
                       <span>
                         Value:{' '}
                         {typeof chartPopUp.point[2] === 'number'
@@ -520,24 +554,37 @@ function PanelPopUps(props) {
                         chartPopUp.point[1],
                       )}
                     </UI.Text>
+                    <UI.Text type='grey' small>
+                      Experiment: {chartPopUp.run.experiment_name}
+                    </UI.Text>
+                    <UI.Text type='grey' small>
+                      Run Date:{' '}
+                      {moment
+                        .unix(chartPopUp.run.date)
+                        .format('HH:mm · D MMM, YY')}
+                    </UI.Text>
                   </div>
                 ) : (
                   <div>
-                    <UI.Text type='grey-dark'>
+                    <UI.Text type='grey-darker' small>
                       <span>
                         Value: {Math.round(chartPopUp.point[0] * 10e9) / 10e9}
                       </span>
                     </UI.Text>
-                    {chartPopUp.point[2] !== null && (
-                      <UI.Text type='grey' small>
-                        Epoch: {chartPopUp.point[2]}
-                      </UI.Text>
-                    )}
                     <UI.Text type='grey' small>
                       Step: {chartPopUp.point[1]}
                       {isTFSummaryScalar(chartPopUp.run) && (
                         <> (local step: {chartPopUp.point[4]}) </>
                       )}
+                    </UI.Text>
+                    <UI.Text type='grey' small>
+                      Experiment: {chartPopUp.run.experiment_name}
+                    </UI.Text>
+                    <UI.Text type='grey' small>
+                      Run Date:{' '}
+                      {moment
+                        .unix(chartPopUp.run.date)
+                        .format('HH:mm · D MMM, YY')}
                     </UI.Text>
                   </div>
                 )}
@@ -565,7 +612,7 @@ function PanelPopUps(props) {
                 ))}
               </div>
             )}
-            {isAimRun(chartPopUp.run ?? {}) && (
+            {chartPopUp.focused && isAimRun(chartPopUp.run ?? {}) && (
               <>
                 <UI.Line />
                 <Link
@@ -576,47 +623,45 @@ function PanelPopUps(props) {
                 >
                   <UI.Text type='primary'>Run Details</UI.Text>
                 </Link>
-                <UI.Text type='grey' small>
-                  Experiment: {chartPopUp.run.experiment_name}
-                </UI.Text>
-                <UI.Text type='grey' small>
-                  Hash: {chartPopUp.run.run_hash}
-                </UI.Text>
               </>
             )}
-            <UI.Line />
-            {!chartPopUp.selectedTagsLoading ? (
-              <div
-                className='PanelChart__popup__tags__wrapper'
-                ref={tagsWrapper}
-              >
-                <UI.Text overline type='grey-darker'>
-                  tag
-                </UI.Text>
-                <div className='PanelChart__popup__tags'>
-                  {chartPopUp.selectedTags.length ? (
-                    <>
-                      {chartPopUp.selectedTags.map((tagItem, i) => (
-                        <UI.Label key={i} color={tagItem.color}>
-                          {tagItem.name}
-                        </UI.Label>
-                      ))}
-                    </>
-                  ) : (
-                    <UI.Label>No attached tag</UI.Label>
-                  )}
+            {chartPopUp.focused && (
+              <>
+                <UI.Line />
+                {!chartPopUp.selectedTagsLoading ? (
                   <div
-                    className='PanelChart__popup__tags__update'
-                    onClick={handleAttachTagClick}
+                    className='PanelChart__popup__tags__wrapper'
+                    ref={tagsWrapper}
                   >
-                    <UI.Icon i='edit' />
+                    <UI.Text overline type='grey-darker'>
+                      tag
+                    </UI.Text>
+                    <div className='PanelChart__popup__tags'>
+                      {chartPopUp.selectedTags.length ? (
+                        <>
+                          {chartPopUp.selectedTags.map((tagItem, i) => (
+                            <UI.Label key={i} color={tagItem.color}>
+                              {tagItem.name}
+                            </UI.Label>
+                          ))}
+                        </>
+                      ) : (
+                        <UI.Label>No attached tag</UI.Label>
+                      )}
+                      <div
+                        className='PanelChart__popup__tags__update'
+                        onClick={handleAttachTagClick}
+                      >
+                        <UI.Icon i='edit' />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ) : (
-              <UI.Text type='grey' center spacingTop spacing>
-                Loading..
-              </UI.Text>
+                ) : (
+                  <UI.Text type='grey' center spacingTop spacing>
+                    Loading..
+                  </UI.Text>
+                )}
+              </>
             )}
             {isTFSummaryScalar(chartPopUp.run) && (
               <>
