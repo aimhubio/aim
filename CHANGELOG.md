@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.0 May 27 2021
+- Set gunicorn timeouts (mihran113)
+- Remove redundant deserialize method (gorarakelyan)
+- Move the Flask server to main repo to support 'docker'less UI (mihran113)
+
 ## 2.4.0 May 13 2021
 - Bump up Aim UI to v1.6.0 (gorarakelyan)
 - Add xgboost integration (khazhak)
