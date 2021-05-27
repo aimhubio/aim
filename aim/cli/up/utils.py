@@ -21,7 +21,8 @@ def build_db_upgrade_command():
 
 def build_gunicorn_command(host, port, num_workers):
     bind_address = "%s:%s" % (host, port)
-    cmd = ['gunicorn', '-b', bind_address, '-w', '%s' % num_workers]
+    cmd = ['gunicorn', '-b', bind_address, '-w', '%s' % num_workers,
+           '--timeout', '300', '--graceful-timeout', '300']
     if os.getenv(AIM_FLASK_ENV_KEY) == 'dev':
         cmd += ['--reload', '--log-level', 'info']
     else:
