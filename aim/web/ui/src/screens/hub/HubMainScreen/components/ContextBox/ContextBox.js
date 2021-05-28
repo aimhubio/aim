@@ -1673,15 +1673,19 @@ function ContextBox(props) {
       style={{
         width: `${props.width}px`,
       }}
-      onMouseLeave={(evt) =>
-        setChartFocusedState({
-          metric: {
-            runHash: null,
-            metricName: null,
-            traceContext: null,
-          },
-        })
-      }
+      onMouseLeave={(evt) => {
+        if (
+          HubMainScreenModel.getState().chart.focused.metric.runHash !== null
+        ) {
+          setChartFocusedState({
+            metric: {
+              runHash: null,
+              metricName: null,
+              traceContext: null,
+            },
+          });
+        }
+      }}
     >
       {runs.isLoading ? _renderContentLoader() : _renderContent()}
     </div>

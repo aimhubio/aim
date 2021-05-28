@@ -865,6 +865,9 @@ function PanelPopUps(props) {
                   setChartTooltipOptions({
                     fields: values,
                   });
+                  analytics.trackEvent(
+                    '[Explore] Change chart popover params content',
+                  );
                 }}
                 isOpen
                 multi
@@ -881,6 +884,11 @@ function PanelPopUps(props) {
                   setChartTooltipOptions({
                     display: !chart.tooltipOptions.display,
                   });
+                  analytics.trackEvent(
+                    `[Explore] ${
+                      chart.tooltipOptions.display ? 'Hide' : 'Show'
+                    } chart tooltip on hover`,
+                  );
                 }}
               >
                 <UI.Text
