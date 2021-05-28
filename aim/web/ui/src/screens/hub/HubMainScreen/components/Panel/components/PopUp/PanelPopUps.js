@@ -20,6 +20,7 @@ import {
   formatValue,
 } from '../../../../../../../utils';
 import * as analytics from '../../../../../../../services/analytics';
+import { getGroupingOptions } from '../../../ControlsSidebar/helpers';
 
 const popUpDefaultWidth = 250;
 const popUpDefaultHeight = 250;
@@ -50,6 +51,12 @@ function PanelPopUps(props) {
     bottom: null,
     tags: [],
   });
+  let [configPopUp, setConfigPopUp] = useState({
+    display: false,
+    left: 0,
+    top: 0,
+    bottom: null,
+  });
   let [commitPopUp, setCommitPopUp] = useState({
     display: false,
     isLoading: false,
@@ -63,11 +70,13 @@ function PanelPopUps(props) {
     },
   });
   let tagsWrapper = useRef();
+  let configIcon = useRef();
 
   const { chart, contextFilter } = HubMainScreenModel.useHubMainScreenState([
     HubMainScreenModel.events.SET_CHART_FOCUSED_STATE,
     HubMainScreenModel.events.SET_CHART_FOCUSED_ACTIVE_STATE,
     HubMainScreenModel.events.SET_CONTEXT_FILTER,
+    HubMainScreenModel.events.SET_CHART_TOOLTIP_OPTIONS,
   ]);
 
   let {
@@ -76,12 +85,16 @@ function PanelPopUps(props) {
     getTraceData,
     isExploreParamsModeEnabled,
     getClosestStepData,
+    getAllParamsPaths,
   } = HubMainScreenModel.helpers;
+
+  let { setChartTooltipOptions } = HubMainScreenModel.emitters;
 
   function positionPopUp(
     x,
     y,
     chained = null,
+    popupType,
     popUpWidth = popUpDefaultWidth,
     popUpHeight = popUpDefaultHeight,
   ) {
@@ -104,14 +117,20 @@ function PanelPopUps(props) {
         left = x;
         chainArrow = 'left';
       }
-      const tagsWrapperRect = tagsWrapper.current.getBoundingClientRect();
-      if (tagsWrapperRect.top > height - 100) {
-        const chartPopUpRect =
-          tagsWrapper.current.parentNode.parentNode.getBoundingClientRect();
-        top = null;
-        bottom = height - chartPopUpRect.bottom;
-      } else {
-        top = tagsWrapperRect.top;
+      if (popupType === 'tags') {
+        const tagsWrapperRect = tagsWrapper.current.getBoundingClientRect();
+        if (tagsWrapperRect.top > height - 100) {
+          const chartPopUpRect =
+            tagsWrapper.current.parentNode.parentNode.getBoundingClientRect();
+          top = null;
+          bottom = height - chartPopUpRect.bottom;
+        } else {
+          top = tagsWrapperRect.top;
+          bottom = null;
+        }
+      } else if (popupType === 'config') {
+        const configIconRect = configIcon.current.getBoundingClientRect();
+        top = configIconRect.top;
         bottom = null;
       }
     } else {
@@ -143,6 +162,10 @@ function PanelPopUps(props) {
   function hideActionPopUps(onlySecondary = false) {
     setTagPopUp((tp) => ({
       ...tp,
+      display: false,
+    }));
+    setConfigPopUp((cp) => ({
+      ...cp,
       display: false,
     }));
     setCommitPopUp((cp) => ({
@@ -203,6 +226,7 @@ function PanelPopUps(props) {
       chartPopUp.left + popUpDefaultWidth,
       chartPopUp.top,
       chartPopUp,
+      'tags',
     );
 
     setTagPopUp((tp) => ({
@@ -221,6 +245,31 @@ function PanelPopUps(props) {
         isLoading: false,
       }));
     });
+  }
+
+  function handleConfigIconClick() {
+    hideActionPopUps(true);
+    if (configPopUp.display) {
+      setConfigPopUp((cp) => ({
+        ...cp,
+        display: false,
+      }));
+    } else {
+      const pos = positionPopUp(
+        chartPopUp.left + popUpDefaultWidth,
+        chartPopUp.top,
+        chartPopUp,
+        'config',
+        300,
+        300,
+      );
+
+      setConfigPopUp((cp) => ({
+        ...cp,
+        ...pos,
+        display: true,
+      }));
+    }
   }
 
   function handleProcessKill(pid, runHash, experimentName) {
@@ -302,10 +351,12 @@ function PanelPopUps(props) {
     const focusedMetric = chart.focused.metric;
     const focusedLineAttr = focusedCircle.active
       ? focusedCircle
-      : {
-        ...focusedMetric,
-        step: chart.focused.step,
-      };
+      : chart.tooltipOptions.display
+        ? {
+          ...focusedMetric,
+          step: chart.focused.step,
+        }
+        : {};
     if (focusedLineAttr.runHash !== null) {
       const isParamMode = isExploreParamsModeEnabled();
       const line = getTraceData(
@@ -366,10 +417,12 @@ function PanelPopUps(props) {
     const focusedMetric = chart.focused.metric;
     const focusedLineAttr = focusedCircle.active
       ? focusedCircle
-      : {
-        ...focusedMetric,
-        step: chart.focused.step,
-      };
+      : chart.tooltipOptions.display
+        ? {
+          ...focusedMetric,
+          step: chart.focused.step,
+        }
+        : {};
     if (focusedLineAttr.runHash !== null) {
       const isParamMode = isExploreParamsModeEnabled();
       const line = getTraceData(
@@ -535,6 +588,18 @@ function PanelPopUps(props) {
           xGap={true}
         >
           <div>
+            {chartPopUp.focused && (
+              <div
+                className={classNames({
+                  ChartPopUp__config: true,
+                  active: configPopUp.display,
+                })}
+                onClick={handleConfigIconClick}
+                ref={configIcon}
+              >
+                <UI.Icon i='settings' />
+              </div>
+            )}
             {isAimRun(chartPopUp.run ?? {}) && (
               <>
                 {isExploreParamsModeEnabled() && chartPopUp.point[0] ? (
@@ -609,6 +674,18 @@ function PanelPopUps(props) {
                       </UI.Text>
                     ))}
                   </div>
+                ))}
+              </div>
+            )}
+            {chart.tooltipOptions.fields.length > 0 && (
+              <div className='ChartPopUp__groupConfig'>
+                <UI.Line />
+                <UI.Text type='black'>Params</UI.Text>
+                {chart.tooltipOptions.fields.map((field) => (
+                  <UI.Text key={field} type='grey' small>
+                    {field.startsWith('params.') ? field.slice(7) : field}:{' '}
+                    {formatValue(_.get(chartPopUp.run, field))}
+                  </UI.Text>
                 ))}
               </div>
             )}
@@ -741,6 +818,97 @@ function PanelPopUps(props) {
               </div>
             </div>
           )}
+        </PopUp>
+      )}
+      {configPopUp.display && (
+        <PopUp
+          className='ConfigPopUp'
+          width={configPopUp.width}
+          height={configPopUp.height}
+          left={configPopUp.left}
+          top={configPopUp.top}
+          bottom={configPopUp.bottom}
+          chainArrow={configPopUp.chainArrow}
+          xGap={true}
+        >
+          <div>
+            <div className='ConfigPopUp__params'>
+              <UI.Text overline bold type='primary' spacing>
+                Select fields to display in tooltip
+              </UI.Text>
+              <UI.Dropdown
+                className='ConfigPopUp__groupingDropdown'
+                options={getGroupingOptions(
+                  getAllParamsPaths(),
+                  [],
+                  false,
+                  false,
+                )}
+                inline={false}
+                formatGroupLabel={(data) => (
+                  <div>
+                    <span>{data.label}</span>
+                    <span>{data.options.length}</span>
+                  </div>
+                )}
+                defaultValue={chart.tooltipOptions.fields.map((field) => ({
+                  value: field,
+                  label: field.startsWith('params.')
+                    ? field.substring(7)
+                    : field,
+                }))}
+                onChange={(data) => {
+                  const selectedItems = !!data ? data : [];
+                  const values = selectedItems
+                    .filter((i) => !!i.value)
+                    .map((i) => i.value.trim());
+                  setChartTooltipOptions({
+                    fields: values,
+                  });
+                }}
+                isOpen
+                multi
+              />
+            </div>
+            <UI.Line />
+            <div className='ConfigPopUp__toggle'>
+              <UI.Text overline bold center type='primary'>
+                Toggle chart tooltip visibility
+              </UI.Text>
+              <div
+                className='ConfigPopUp__toggle__switch'
+                onClick={() => {
+                  setChartTooltipOptions({
+                    display: !chart.tooltipOptions.display,
+                  });
+                }}
+              >
+                <UI.Text
+                  type={!chart.tooltipOptions.display ? 'primary' : 'grey-dark'}
+                  small
+                >
+                  Hide
+                </UI.Text>
+                <span
+                  className={classNames({
+                    ConfigPopUp__toggle__switch__icon: true,
+                    on: chart.tooltipOptions.display,
+                  })}
+                >
+                  <UI.Icon
+                    i={`toggle_${chart.tooltipOptions.display ? 'on' : 'off'}`}
+                    scale={1.5}
+                  />
+                </span>
+                <UI.Text
+                  type={chart.tooltipOptions.display ? 'primary' : 'grey-dark'}
+                  small
+                >
+                  Show
+                </UI.Text>
+              </div>
+            </div>
+          </div>
         </PopUp>
       )}
       {commitPopUp.display && (

@@ -9,6 +9,7 @@ import {
   EXPLORE_PANEL_COLOR_PALETTE,
   EXPLORE_PANEL_HIDDEN_METRICS,
   EXPLORE_PANEL_SINGLE_ZOOM_MODE,
+  EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS,
 } from '../../../../config';
 import { getItem, removeItem, setItem } from '../../../../services/storage';
 import { flattenObject, sortOnKeys } from '../../../../utils';
@@ -28,6 +29,7 @@ const events = {
   SET_CHART_SETTINGS_STATE: 'SET_CHART_SETTINGS_STATE',
   SET_CHART_POINTS_COUNT: 'SET_CHART_POINTS_COUNT',
   SET_CHART_HIDDEN_METRICS: 'SET_CHART_HIDDEN_METRICS',
+  SET_CHART_TOOLTIP_OPTIONS: 'SET_CHART_TOOLTIP_OPTIONS',
   SET_CONTEXT_FILTER: 'SET_CONTEXT_FILTER',
   SET_SEARCH_STATE: 'SET_SEARCH_STATE',
   SET_SEARCH_INPUT_STATE: 'SET_SEARCH_INPUT_STATE',
@@ -79,6 +81,12 @@ const state = {
       },
     },
     hiddenMetrics: JSON.parse(getItem(EXPLORE_PANEL_HIDDEN_METRICS)) ?? [],
+    tooltipOptions: JSON.parse(
+      getItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS),
+    ) ?? {
+      display: true,
+      fields: [],
+    },
   },
 
   // Chart data - runs
@@ -529,6 +537,21 @@ function setHiddenMetrics(metricKey) {
   setTraceList();
 
   setItem(EXPLORE_PANEL_HIDDEN_METRICS, JSON.stringify(hiddenMetricsClone));
+}
+
+function setChartTooltipOptions(options) {
+  const tooltipOptions = {
+    ...getState().chart.tooltipOptions,
+    ...options,
+  };
+  emit(events.SET_CHART_TOOLTIP_OPTIONS, {
+    chart: {
+      ...getState().chart,
+      tooltipOptions,
+    },
+  });
+
+  setItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS, JSON.stringify(tooltipOptions));
 }
 
 function setChartFocusedState(
@@ -1113,6 +1136,7 @@ export const HubMainScreenModel = {
     setTraceList,
     setChartSettingsState,
     setHiddenMetrics,
+    setChartTooltipOptions,
     setChartPointsCount,
     setChartFocusedState,
     setChartFocusedActiveState,
