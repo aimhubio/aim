@@ -2,25 +2,28 @@ import json
 import os
 import time
 
-from flask import Blueprint, jsonify, request, \
-    abort, make_response, send_from_directory, Response
+from flask import (
+    Blueprint,
+    jsonify,
+    request,
+    make_response,
+    Response
+)
 from flask_restful import Api, Resource
 
 from pyrser.error import Diagnostic, Severity, Notification
 from aim.ql.grammar.statement import Statement, Expression
-from aim.artifacts.metric import Metric as MetricArtifact
 
 from aim.web.app import App
 from aim.web.app.projects.project import Project
 from aim.web.app.commits.models import Commit, TFSummaryLog, Tag
 from aim.web.app.db import db
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
-from aim.web.app.utils import unsupported_float_type
 from aim.web.app.commits.utils import (
     select_tf_summary_scalars,
-    scale_trace_steps,
     separate_select_statement,
     is_tf_run,
+    process_trace_record
 )
 
 commits_bp = Blueprint('commits', __name__)
@@ -83,6 +86,11 @@ class CommitMetricSearchApi(Resource):
         except:
             steps_num = 50
 
+        try:
+            x_axis = request.args.get('x_axis').strip()
+        except AttributeError:
+            x_axis = 'bleu'
+
         # Get project
         project = Project()
         if not project.exists():
@@ -117,6 +125,11 @@ class CommitMetricSearchApi(Resource):
 
         aim_select, tf_logs = separate_select_statement(statement_select)
 
+        if len(tf_logs) and x_axis:
+            # raise error if tf_run and x_axis are present together
+            # discuss error message needs
+            return make_response(jsonify({}), 403)
+
         if 'run.archived' not in search_statement:
             default_expression = 'run.archived is not True'
         else:
@@ -125,7 +138,6 @@ class CommitMetricSearchApi(Resource):
         aim_select_result = project.repo.select(aim_select,
                                                 statement_expr,
                                                 default_expression)
-
         (
             aim_selected_runs,
             aim_selected_params,
@@ -196,38 +208,51 @@ class CommitMetricSearchApi(Resource):
                             trace['data'] = trace_scaled_data
                 else:
                     run.open_storage()
+                    x_axis_metric = None
+                    if x_axis:
+                        try:
+                            x_axis_metric = run.get_all_metrics().get(x_axis)
+                            x_axis_metric.open_artifact()
+                        except:
+                            pass
                     for metric in run.metrics.values():
                         try:
                             metric.open_artifact()
                             for trace in metric.traces:
                                 step = (trace.num_records // steps_num) or 1
-                                trace_steps = slice(0, trace.num_records, step)
-                                for r in trace.read_records(trace_steps):
-                                    base, metric_record = MetricArtifact.deserialize_pb(r)
-                                    if unsupported_float_type(metric_record.value):
-                                        continue
-                                    trace.append((
-                                        metric_record.value,
-                                        base.step,
-                                        (base.epoch if base.has_epoch else None),
-                                        base.timestamp,
-                                    ))
+                                trace.slice = (0, trace.num_records, step)
+                                x_axis_trace = None
+                                if x_axis_metric is not None:
+                                    for x_trace in x_axis_metric.get_all_traces():
+                                        if x_trace.eq_context(trace.context):
+                                            x_axis_trace = x_trace
+                                            trace.alignment = {
+                                                'is_synced': True,
+                                                'is_asc': True,
+                                                'skipped_steps': 0,
+                                                'aligned_by': {
+                                                    'metric_name': x_axis_metric.name,
+                                                    'trace_context': x_axis_trace.context
+                                                }
+                                            }
+                                            break
+                                x_idx = 0
+                                for r in trace.read_records(slice(*trace.slice)):
+                                    process_trace_record(r, trace, x_axis_trace, x_idx)
+                                    x_idx += step
                                 if (trace.num_records - 1) % step != 0:
                                     for r in trace.read_records(trace.num_records-1):
-                                        base, metric_record = MetricArtifact.deserialize_pb(r)
-                                        if unsupported_float_type(metric_record.value):
-                                            continue
-                                        trace.append((
-                                            metric_record.value,
-                                            base.step,
-                                            (base.epoch if base.has_epoch else None),
-                                            base.timestamp,
-                                        ))
+                                        process_trace_record(r, trace, x_axis_trace, trace.num_records-1)
                         except:
                             pass
 
                         try:
                             metric.close_artifact()
+                        except:
+                            pass
+                    if x_axis:
+                        try:
+                            x_axis_metric.close_artifact()
                         except:
                             pass
                     run.close_storage()
@@ -243,6 +268,7 @@ class CommitMetricSearchApi(Resource):
                 }).encode() + '\n'.encode()
                 for run in runs:
                     if not is_tf_run(run):
+                        run_data = run.to_dict()
                         yield json.dumps({
                             'run': run.to_dict(include_only_selected_agg_metrics=True),
                         }).encode() + '\n'.encode()
