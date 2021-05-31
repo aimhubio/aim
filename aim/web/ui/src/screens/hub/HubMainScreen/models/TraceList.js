@@ -730,7 +730,6 @@ export default class TraceList {
             _.max(valuesByStep[step]),
             +step,
           ]);
-          // console.log(_.cloneDeep(traceModel.aggregation.max.trace.data));
         }
         if (aggregatedLine === 'avg') {
           traceModel.aggregation.avg.trace.data = stepTicks.map((step) => [

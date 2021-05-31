@@ -311,6 +311,7 @@ function HubMainScreen(props) {
               params: data.params,
               aggMetrics: data.agg_metrics,
               meta: data.meta,
+              ...(xAxis !== undefined && getAlignmentFields(data.runs)),
             },
             resolve,
           );
@@ -363,16 +364,11 @@ function HubMainScreen(props) {
       props
         .alignXAxisByMetric(reqBody)
         .then((data) => {
-          setRunsState(
-            {
-              isEmpty: !data.runs || data.runs.length === 0,
-              data: data.runs,
-              params: data.params,
-              aggMetrics: data.agg_metrics,
-              meta: data.meta,
-            },
-            resolve,
+          const currentRuns = mergeMetricAlignDataToRuns(
+            HubMainScreenModel.getState().runs?.data,
+            data.runs,
           );
+          setRunsState(currentRuns, resolve);
           setState((s) => ({
             ...s,
             searchError: null,
@@ -399,6 +395,77 @@ function HubMainScreen(props) {
           setRunsState({ isLoading: false });
         });
     });
+  }
+
+  function mergeMetricAlignDataToRuns(runs, alignedRuns) {
+    let isSynced = true;
+    let isAsc = true;
+    let isSkipped = false;
+    alignedRuns.forEach((run, runIndex) => {
+      run?.metrics.forEach((metric, metricIndex) => {
+        metric?.traces.forEach((trace, traceIndex) => {
+          if (trace.alignment) {
+            const { is_synced, is_asc, skipped_steps } = trace.alignment;
+            if (!is_synced) {
+              isSynced = false;
+            }
+            if (!is_asc) {
+              isAsc = false;
+            }
+            if (skipped_steps > 0) {
+              isSkipped = true;
+            }
+          } else {
+            isSynced = false;
+          }
+
+          const runTrace =
+            runs[runIndex]?.metrics?.[metricIndex]?.traces?.[traceIndex];
+          runTrace.alignment = trace.alignment;
+          runTrace.data[4] = trace.data;
+        });
+      });
+    });
+
+    return {
+      runs,
+      isSynced,
+      isAsc,
+      isSkipped,
+    };
+  }
+
+  function getAlignmentFields(runs) {
+    let isSynced = true;
+    let isAsc = true;
+    let isSkipped = false;
+
+    runs.forEach((run) => {
+      run?.metrics.forEach((metric) => {
+        metric?.traces.forEach((trace) => {
+          if (trace.alignment) {
+            const { is_synced, is_asc, skipped_steps } = trace.alignment;
+            if (!is_synced) {
+              isSynced = false;
+            }
+            if (!is_asc) {
+              isAsc = false;
+            }
+            if (skipped_steps > 0) {
+              isSkipped = true;
+            }
+          } else {
+            isSynced = false;
+          }
+        });
+      });
+    });
+
+    return {
+      isSynced,
+      isAsc,
+      isSkipped,
+    };
   }
 
   useEffect(() => {

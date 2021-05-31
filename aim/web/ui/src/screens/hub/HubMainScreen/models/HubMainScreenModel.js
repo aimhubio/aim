@@ -86,6 +86,9 @@ const state = {
   runs: {
     isLoading: false,
     isEmpty: true,
+    isSynced: true,
+    isAsc: true,
+    isSkipped: false,
     data: null,
     params: [],
     aggMetrics: {},
