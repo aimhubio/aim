@@ -205,12 +205,9 @@ function HubMainScreen(props) {
         setSearchState(
           state.search,
           () => {
-            searchByQuery(state.chart.settings.persistent.pointsCount).then(
-              () => {
-                setChartFocusedActiveState(state.chart.focused, null, true);
-                setChartSettingsState(state.chart.settings, setTraceList, true);
-              },
-            );
+            setChartFocusedActiveState(state.chart.focused, null, true);
+            setChartSettingsState(state.chart.settings, null, true);
+            searchByQuery().then(setTraceList);
           },
           false,
           true,
@@ -263,12 +260,8 @@ function HubMainScreen(props) {
     }
   }
 
-  function searchByQuery(
-    pointsCount = HubMainScreenModel.getState().chart.settings.persistent
-      .pointsCount || 50,
-  ) {
+  function searchByQuery(search = true) {
     return new Promise((resolve) => {
-      const query = HubMainScreenModel.getState().search?.query?.trim();
       setChartFocusedState(
         {
           step: null,
@@ -286,22 +279,89 @@ function HubMainScreen(props) {
           },
         },
         () => {
-          Promise.all([
-            getRunsByQuery(query, pointsCount),
-            // Get other properties
-          ]).then(() => {
-            resolve();
-          });
+          const xAxis =
+            HubMainScreenModel.getState().chart.settings.persistent.xAlignment;
+          const metricName = Array.isArray(xAxis) ? xAxis[0] : undefined;
+          if (search) {
+            const query = HubMainScreenModel.getState().search?.query?.trim();
+            const pointsCount =
+              HubMainScreenModel.getState().chart.settings.persistent
+                .pointsCount || 50;
+            getRunsByQuery(query, pointsCount, metricName).then(resolve);
+          } else {
+            if (metricName !== undefined) {
+              alignRunsByMetric(metricName).then(resolve);
+            }
+          }
         },
       );
     });
   }
 
-  function getRunsByQuery(query, numPoints) {
+  function getRunsByQuery(query, numPoints, xAxis) {
     return new Promise((resolve, reject) => {
       setRunsState({ isLoading: true });
       props
-        .getCommitsMetricsByQuery(query, numPoints)
+        .getCommitsMetricsByQuery(query, numPoints, xAxis)
+        .then((data) => {
+          setRunsState(
+            {
+              isEmpty: !data.runs || data.runs.length === 0,
+              data: data.runs,
+              params: data.params,
+              aggMetrics: data.agg_metrics,
+              meta: data.meta,
+            },
+            resolve,
+          );
+          setState((s) => ({
+            ...s,
+            searchError: null,
+          }));
+        })
+        .catch((err) => {
+          const errorBody = err?.response?.body;
+          setState((s) => ({
+            ...s,
+            searchError: errorBody?.type === 'parse_error' ? errorBody : null,
+          }));
+          setRunsState(
+            {
+              isEmpty: true,
+              data: null,
+              params: [],
+              aggMetrics: {},
+              meta: null,
+            },
+            resolve,
+          );
+        })
+        .finally(() => {
+          setRunsState({ isLoading: false });
+        });
+    });
+  }
+
+  function alignRunsByMetric(metricName) {
+    return new Promise((resolve, reject) => {
+      setRunsState({ isLoading: true });
+
+      const reqBody = {
+        align_by: metricName,
+        runs: HubMainScreenModel.getState().runs?.data.map((run) => ({
+          run_hash: run.run_hash,
+          metrics: run.metrics.map((metric) => ({
+            name: metric?.name,
+            traces: metric?.traces.map((trace) => ({
+              slice: trace?.slice,
+              context: trace?.context,
+            })),
+          })),
+        })),
+      };
+
+      props
+        .alignXAxisByMetric(reqBody)
         .then((data) => {
           setRunsState(
             {
@@ -365,6 +425,7 @@ function HubMainScreen(props) {
         HubMainScreenModel.events.SET_CHART_FOCUSED_ACTIVE_STATE,
         HubMainScreenModel.events.SET_CHART_SETTINGS_STATE,
         HubMainScreenModel.events.SET_CHART_POINTS_COUNT,
+        HubMainScreenModel.events.SET_CHART_X_AXIS_METRIC_ALIGNMENT,
         HubMainScreenModel.events.SET_CONTEXT_FILTER,
         HubMainScreenModel.events.SET_SEARCH_STATE,
         HubMainScreenModel.events.SET_SEED,
@@ -375,9 +436,12 @@ function HubMainScreen(props) {
 
     const pointsCountChangeSubscription = HubMainScreenModel.subscribe(
       HubMainScreenModel.events.SET_CHART_POINTS_COUNT,
-      (stateUpdate) => {
-        searchByQuery(stateUpdate.chart.settings.persistent.pointsCount);
-      },
+      searchByQuery,
+    );
+
+    const xAxisMetricAlignmentChangeSubscription = HubMainScreenModel.subscribe(
+      HubMainScreenModel.events.SET_CHART_X_AXIS_METRIC_ALIGNMENT,
+      () => searchByQuery(false),
     );
 
     // Analytics
@@ -386,6 +450,7 @@ function HubMainScreen(props) {
     return () => {
       subscription.unsubscribe();
       pointsCountChangeSubscription.unsubscribe();
+      xAxisMetricAlignmentChangeSubscription.unsubscribe();
       HubMainScreenModel.emit(null, {
         search: {
           ...HubMainScreenModel.getState().search,

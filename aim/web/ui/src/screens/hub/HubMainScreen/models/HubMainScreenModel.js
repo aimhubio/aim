@@ -27,6 +27,7 @@ const events = {
   SET_CHART_FOCUSED_ACTIVE_STATE: 'SET_CHART_FOCUSED_ACTIVE_STATE',
   SET_CHART_SETTINGS_STATE: 'SET_CHART_SETTINGS_STATE',
   SET_CHART_POINTS_COUNT: 'SET_CHART_POINTS_COUNT',
+  SET_CHART_X_AXIS_METRIC_ALIGNMENT: 'SET_CHART_X_AXIS_METRIC_ALIGNMENT',
   SET_CHART_HIDDEN_METRICS: 'SET_CHART_HIDDEN_METRICS',
   SET_CONTEXT_FILTER: 'SET_CONTEXT_FILTER',
   SET_SEARCH_STATE: 'SET_SEARCH_STATE',
@@ -475,6 +476,40 @@ function setChartPointsCount(count) {
       },
     },
   });
+}
+
+function setChartXAxisAlignment(type) {
+  if (Array.isArray(type)) {
+    emit(events.SET_CHART_X_AXIS_METRIC_ALIGNMENT, {
+      chart: {
+        ...getState().chart,
+        settings: {
+          ...getState().chart.settings,
+          zoomMode: false,
+          zoomHistory: [],
+          persistent: {
+            ...getState().chart.settings.persistent,
+            zoom: null,
+            xAlignment: type,
+          },
+        },
+      },
+    });
+  } else {
+    setChartSettingsState(
+      {
+        ...getState().chart.settings,
+        zoomMode: false,
+        zoomHistory: [],
+        persistent: {
+          ...getState().chart.settings.persistent,
+          zoom: null,
+          xAlignment: type,
+        },
+      },
+      setTraceList,
+    );
+  }
 }
 
 function setHiddenMetrics(metricKey) {
@@ -1114,6 +1149,7 @@ export const HubMainScreenModel = {
     setChartSettingsState,
     setHiddenMetrics,
     setChartPointsCount,
+    setChartXAxisAlignment,
     setChartFocusedState,
     setChartFocusedActiveState,
     setContextFilter,

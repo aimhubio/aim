@@ -244,6 +244,7 @@
   &.active {
     background-color: var(--primary-lighter);
     color: var(--primary-dark);
+    cursor: default;
   }
 
   &.text_normalized {
@@ -253,6 +254,22 @@
   &.disabled {
     pointer-events: none;
     opacity: 0.4;
+  }
+
+  &.select {
+    display: flex;
+    justify-content: space-between;
+
+    .ControlsSidebar__item__popup__list__item__select {
+      .Dropdown__menu {
+        box-shadow: none !important;
+        margin-bottom: 0 !important;
+      }
+  
+      .Dropdown__menu-list {
+        max-height: 100px !important;
+      }
+    }
   }
 
   & > .Text {

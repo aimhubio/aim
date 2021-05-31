@@ -813,7 +813,10 @@ function PanelChart(props) {
 
   function drawAxes() {
     const { traceList, chart } = HubMainScreenModel.getState();
-    const xAlignment = chart.settings.persistent.xAlignment;
+    let xAlignment = chart.settings.persistent.xAlignment;
+    if (Array.isArray(xAlignment)) {
+      xAlignment = xAlignment[0];
+    }
     const isXLogScale =
       scaleOptions[chart.settings.persistent.xScale] === 'log';
     let xTicks = [];
@@ -829,10 +832,7 @@ function PanelChart(props) {
 
     let xAxisTicks = d3.axisBottom(chartOptions.current.xScale);
 
-    if (xAlignment === 'step') {
-      const ticksCount = Math.floor(plotBox.current.width / 50);
-      xAxisTicks.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
-    } else if (xAlignment === 'epoch') {
+    if (xAlignment === 'epoch') {
       const ticksCount = Math.floor(plotBox.current.width / 50);
       const delta = Math.floor(xTicks.length / ticksCount);
       const ticks =
@@ -914,6 +914,9 @@ function PanelChart(props) {
           }),
         )
         .tickFormat((d, i) => moment.unix(d).format('HH:mm:ss D MMM, YY'));
+    } else {
+      const ticksCount = Math.floor(plotBox.current.width / 50);
+      xAxisTicks.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
     }
 
     const xAxis = axes.current
@@ -1716,7 +1719,7 @@ function PanelChart(props) {
       return;
     }
 
-    setChartFocusedState({
+    setChartFocusedActiveState({
       circle: {
         runHash: null,
         metricName: null,
@@ -1735,7 +1738,7 @@ function PanelChart(props) {
       return;
     }
 
-    setChartFocusedState({
+    setChartFocusedActiveState({
       circle: {
         active: false,
         runHash: null,
