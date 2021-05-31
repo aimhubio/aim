@@ -53,6 +53,13 @@ class Metric(object):
                 traces.append(trace)
         return traces
 
+    def get_trace(self, context) -> Trace or None:
+        for trace in self.get_all_traces():
+            if trace.eq_context(context):
+                return trace
+
+        return None
+
     def to_dict(self) -> dict:
         traces_list = []
         for trace in self._traces:
