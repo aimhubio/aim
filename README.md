@@ -167,8 +167,6 @@ _See documentation [here](#xgboost)._
 
 **3. Run the training as usual and start Aim UI**
 
-_Prerequisite: In order to start Aim UI you need to have Docker installed._
-
 ```shell
 $ aim up
 ```
@@ -506,9 +504,6 @@ Here are the set of commands supported:
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `experiment`  | Creates a new experiment to group similar training runs into.        |
 | `up`          | Runs Aim web UI for the given repo                                   |
-| `down`        | Turn off the UI                                                      |
-| `upgrade`     | Upgrade the UI to its latest version                                 |
-| `pull`        | Pull the UI of the given version                                     |
 
 ### init
 __**This step is optional.**__
@@ -543,7 +538,7 @@ $ aim experiment COMMAND [ARGS]
 ***Disclaimer:*** Removing the experiment also removes the recorded experiment runs data.
 
 ### up
-Start the Aim web UI locally. Aim UI is a Docker container that mounts the `.aim` folder and lets researchers manage, search and start new training runs.
+Start the Aim web UI locally.
 ```shell
 $ aim up [ARGS]
 ```
@@ -552,37 +547,12 @@ $ aim up [ARGS]
 | --------------------------------- | --------------------------------------------------------- |
 | `-h` &#124; `--host <host>`       | Specify host address.                                     |
 | `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
-| `-v` &#124; `--version <version>` | Version of Aim UI to run. Default `latest`.               |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
-| `-d` &#124; `--detach`            | Run Aim UI in detached mode.                             |
 | `--tf_logs <logs_dir_path>`       | Use Aim to search and compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
-
-***Disclaimer:*** UI uses docker container to run and having docker installed in the training environment is mandatory for the UI to run.
-Most of the environments nowadays have docker preinstalled or installed for other purposes so this should not be a huge obstacle to get started with Aim UI.
+| `--dev`                           | Run UI in development mode.                                   |
 
 ***Please make sure to run `aim up` in the directory where `.aim` is located.***
 
-### down
-Turn off Aim UI manually:
-```shell
-$ aim down [ARGS]
-```
-
-| Args                              | Description                                               |
-| --------------------------------- | --------------------------------------------------------- |
-| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
-
-### upgrade
-Upgrade Aim UI to its latest version:
-```shell
-$ aim upgrade
-```
-
-### pull
-Pulls Aim UI of the given version:
-```shell
-$ aim pull -v <version>
-```
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
 
 # Use Cases
