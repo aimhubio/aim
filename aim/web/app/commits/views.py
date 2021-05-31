@@ -78,6 +78,34 @@ class CommitSearchApi(Resource):
         })
 
 
+@commits_api.resource('/search/metric/align')
+class CommitMetricCustomAlignApi(Resource):
+    def post(self):
+        # Get project
+        project = Project()
+        if not project.exists():
+            return make_response(jsonify({}), 404)
+
+        request_data = json.loads(request.data)
+
+        x_axis_metric_name = request_data.get('align_by')
+        requested_runs = request_data.get('runs')
+        if not (x_axis_metric_name and requested_runs):
+            make_response(jsonify({}), 403)
+        processed_runs = []
+
+        for run_data in requested_runs:
+            processed_run = process_custom_aligned_run(project, run_data, x_axis_metric_name)
+            if processed_run:
+                processed_runs.append(processed_run)
+
+        response = {
+            'runs': [],
+        }
+
+        return Response(runs_resp_generator(response, processed_runs), mimetype='application/json')
+
+
 @commits_api.resource('/search/metric')
 class CommitMetricSearchApi(Resource):
     def get(self):
