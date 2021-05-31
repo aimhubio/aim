@@ -10,11 +10,9 @@ from flask import (
     Response
 )
 from flask_restful import Api, Resource
-
 from pyrser.error import Diagnostic, Severity, Notification
-from aim.ql.grammar.statement import Statement, Expression
 
-from aim.web.app import App
+from aim.ql.grammar.statement import Statement, Expression
 from aim.web.app.projects.project import Project
 from aim.web.app.commits.models import Commit, TFSummaryLog, Tag
 from aim.web.app.db import db
@@ -23,7 +21,9 @@ from aim.web.app.commits.utils import (
     select_tf_summary_scalars,
     separate_select_statement,
     is_tf_run,
-    process_trace_record
+    process_trace_record,
+    process_custom_aligned_run,
+    runs_resp_generator
 )
 
 commits_bp = Blueprint('commits', __name__)
@@ -89,7 +89,7 @@ class CommitMetricSearchApi(Resource):
         try:
             x_axis = request.args.get('x_axis').strip()
         except AttributeError:
-            x_axis = 'bleu'
+            x_axis = None
 
         # Get project
         project = Project()
@@ -261,23 +261,7 @@ class CommitMetricSearchApi(Resource):
             # TODO: Retrieve and return aggregated metrics
             pass
 
-        def runs_resp_generator():
-            with App.api.app_context():
-                yield json.dumps({
-                    'header': response,
-                }).encode() + '\n'.encode()
-                for run in runs:
-                    if not is_tf_run(run):
-                        run_data = run.to_dict()
-                        yield json.dumps({
-                            'run': run.to_dict(include_only_selected_agg_metrics=True),
-                        }).encode() + '\n'.encode()
-                    else:
-                        yield json.dumps({
-                            'run': run,
-                        }).encode() + '\n'.encode()
-
-        return Response(runs_resp_generator(), mimetype='application/json')
+        return Response(runs_resp_generator(response, runs), mimetype='application/json')
 
 
 @commits_api.resource('/search/dictionary')
