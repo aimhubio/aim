@@ -351,6 +351,7 @@ function HubMainScreen(props) {
         align_by: metricName,
         runs: HubMainScreenModel.getState().runs?.data.map((run) => ({
           run_hash: run.run_hash,
+          experiment_name: run.experiment_name,
           metrics: run.metrics.map((metric) => ({
             name: metric?.name,
             traces: metric?.traces.map((trace) => ({
@@ -401,9 +402,9 @@ function HubMainScreen(props) {
     let isSynced = true;
     let isAsc = true;
     let isSkipped = false;
-    alignedRuns.forEach((run, runIndex) => {
-      run?.metrics.forEach((metric, metricIndex) => {
-        metric?.traces.forEach((trace, traceIndex) => {
+    alignedRuns?.forEach((run, runIndex) => {
+      run?.metrics?.forEach((metric, metricIndex) => {
+        metric?.traces?.forEach((trace, traceIndex) => {
           if (trace.alignment) {
             const { is_synced, is_asc, skipped_steps } = trace.alignment;
             if (!is_synced) {
@@ -421,8 +422,12 @@ function HubMainScreen(props) {
 
           const runTrace =
             runs[runIndex]?.metrics?.[metricIndex]?.traces?.[traceIndex];
-          runTrace.alignment = trace.alignment;
-          runTrace.data[4] = trace.data;
+          if (runTrace) {
+            runTrace.alignment = trace.alignment;
+            runTrace.data = runTrace.data.map((point, i) => {
+              return point.slice(0, 4).concat([trace.data[i] ?? point[4]]);
+            });
+          }
         });
       });
     });
