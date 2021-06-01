@@ -86,6 +86,7 @@ const state = {
   runs: {
     isLoading: false,
     isEmpty: true,
+    isAligned: true,
     isSynced: true,
     isAsc: true,
     isSkipped: false,
@@ -419,23 +420,25 @@ function setTraceList() {
           const metricKey = `${run.run_hash}/${metric?.name}/${contextToHash(
             trace?.context,
           )}`;
-          const isHidden = hiddenMetrics.includes(metricKey);
-          traceList.addSeries(
-            run,
-            metric,
-            trace,
-            xAlignment,
-            aggregate,
-            scale,
-            persist,
-            seed,
-            colorPalette,
-            isHidden,
-            smoothingAlgorithm,
-            smoothFactor,
-            aggregatedLine,
-            aggregatedArea,
-          );
+          let isHidden = hiddenMetrics.includes(metricKey);
+          if (!Array.isArray(xAlignment) || trace.alignment !== undefined) {
+            traceList.addSeries(
+              run,
+              metric,
+              trace,
+              xAlignment,
+              aggregate,
+              scale,
+              persist,
+              seed,
+              colorPalette,
+              isHidden,
+              smoothingAlgorithm,
+              smoothFactor,
+              aggregatedLine,
+              aggregatedArea,
+            );
+          }
         });
       });
     }

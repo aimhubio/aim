@@ -70,6 +70,8 @@ function HubMainScreen(props) {
     setTraceList,
   } = HubMainScreenModel.emitters;
 
+  const { traceToHash } = HubMainScreenModel.helpers;
+
   const projectWrapperRef = useRef();
   const searchBarRef = useRef();
 
@@ -402,31 +404,57 @@ function HubMainScreen(props) {
     let isSynced = true;
     let isAsc = true;
     let isSkipped = false;
-    alignedRuns?.forEach((run, runIndex) => {
-      run?.metrics?.forEach((metric, metricIndex) => {
-        metric?.traces?.forEach((trace, traceIndex) => {
-          if (trace.alignment) {
-            const { is_synced, is_asc, skipped_steps } = trace.alignment;
-            if (!is_synced) {
-              isSynced = false;
-            }
-            if (!is_asc) {
-              isAsc = false;
-            }
-            if (skipped_steps > 0) {
-              isSkipped = true;
-            }
-          } else {
-            isSynced = false;
-          }
+    let isAligned = false;
+    runs.forEach((run) => {
+      run?.metrics?.forEach((metric) => {
+        metric?.traces?.forEach((trace) => {
+          const traceKey = traceToHash(
+            run?.run_hash,
+            metric?.name,
+            trace?.context,
+          );
+          let merged = false;
+          alignedRuns.forEach((alignedRun) => {
+            alignedRun?.metrics?.forEach((alignedMetric) => {
+              alignedMetric?.traces?.forEach((alignedTrace) => {
+                const alignedTraceKey = traceToHash(
+                  alignedRun?.run_hash,
+                  alignedMetric?.name,
+                  alignedTrace?.context,
+                );
+                if (traceKey !== alignedTraceKey) {
+                  return;
+                }
+                if (alignedTrace.alignment) {
+                  const { is_synced, is_asc, skipped_steps } =
+                    alignedTrace.alignment;
+                  if (!is_synced) {
+                    isSynced = false;
+                  }
+                  if (!is_asc) {
+                    isAsc = false;
+                  }
+                  if (skipped_steps > 0) {
+                    isSkipped = true;
+                  }
+                  isAligned = true;
+                  merged = true;
 
-          const runTrace =
-            runs[runIndex]?.metrics?.[metricIndex]?.traces?.[traceIndex];
-          if (runTrace) {
-            runTrace.alignment = trace.alignment;
-            runTrace.data = runTrace.data.map((point, i) => {
-              return point.slice(0, 4).concat([trace.data[i] ?? point[4]]);
+                  trace.alignment = alignedTrace.alignment;
+                  trace.data = trace.data.map((point, i) => {
+                    return point.slice(0, 4).concat([alignedTrace.data[i]]);
+                  });
+                } else {
+                  isSynced = false;
+                }
+              });
             });
+          });
+          if (!merged) {
+            trace.data = trace.data.map((point) =>
+              point.slice(0, 4).concat([null]),
+            );
+            trace.alignment = undefined;
           }
         });
       });
@@ -437,6 +465,7 @@ function HubMainScreen(props) {
       isSynced,
       isAsc,
       isSkipped,
+      isAligned,
     };
   }
 
@@ -444,6 +473,7 @@ function HubMainScreen(props) {
     let isSynced = true;
     let isAsc = true;
     let isSkipped = false;
+    let isAligned = false;
 
     runs.forEach((run) => {
       run?.metrics.forEach((metric) => {
@@ -459,6 +489,7 @@ function HubMainScreen(props) {
             if (skipped_steps > 0) {
               isSkipped = true;
             }
+            isAligned = true;
           } else {
             isSynced = false;
           }
@@ -470,6 +501,7 @@ function HubMainScreen(props) {
       isSynced,
       isAsc,
       isSkipped,
+      isAligned,
     };
   }
 
@@ -551,75 +583,89 @@ function HubMainScreen(props) {
           height: `${state.height - searchBarHeight}px`,
         }}
       >
-        <div className='HubMainScreen__grid__body__blocks'>
-          {state.viewMode !== 'context' && (
-            <div
-              className='HubMainScreen__grid__panel'
-              style={{
-                flex: state.viewMode === 'panel' ? 1 : state.panelFlex,
-              }}
-            >
-              <Panel
-                parentHeight={state.height}
-                parentWidth={state.width}
-                mode={state.viewMode}
-                indices={panelIndices}
-                resizing={state.resizing}
-              />
+        {!runs.isLoading &&
+        Array.isArray(
+          HubMainScreenModel.getState().chart.settings.persistent.xAlignment,
+        ) &&
+        !runs.isAligned ? (
+            <div className='HubMainScreen__grid__body__blocks'>
+              <Alert segment>
+                <UI.Text type='grey' center>
+                Unable to align runs by the given metric.
+                </UI.Text>
+              </Alert>
             </div>
-          )}
-          {state.viewMode === 'resizable' && (
-            <div
-              className='HubMainScreen__grid__resize__area'
-              onMouseDown={startResize}
-            >
+          ) : (
+            <div className='HubMainScreen__grid__body__blocks'>
+              {state.viewMode !== 'context' && (
+                <div
+                  className='HubMainScreen__grid__panel'
+                  style={{
+                    flex: state.viewMode === 'panel' ? 1 : state.panelFlex,
+                  }}
+                >
+                  <Panel
+                    parentHeight={state.height}
+                    parentWidth={state.width}
+                    mode={state.viewMode}
+                    indices={panelIndices}
+                    resizing={state.resizing}
+                  />
+                </div>
+              )}
+              {state.viewMode === 'resizable' && (
+                <div
+                  className='HubMainScreen__grid__resize__area'
+                  onMouseDown={startResize}
+                >
+                  <div
+                    className={classNames({
+                      HubMainScreen__grid__resize__handler: true,
+                      active: state.resizing,
+                    })}
+                  >
+                    <div className='HubMainScreen__grid__resize__icon' />
+                  </div>
+                </div>
+              )}
               <div
                 className={classNames({
-                  HubMainScreen__grid__resize__handler: true,
-                  active: state.resizing,
+                  HubMainScreen__grid__context: true,
+                  'HubMainScreen__grid__context--minimize':
+                  state.viewMode === 'panel',
                 })}
+                style={{
+                  flex:
+                  state.viewMode === 'context'
+                    ? 1
+                    : state.viewMode === 'panel'
+                      ? 0
+                      : 1 - state.panelFlex,
+                }}
               >
-                <div className='HubMainScreen__grid__resize__icon' />
+                {state.viewMode !== 'panel' ? (
+                  <ContextBox
+                    spacing={state.viewMode !== 'resizable'}
+                    width={state.width - headerWidth - controlsWidth - 5}
+                    resizing={state.resizing}
+                    viewMode={state.viewMode}
+                    setViewMode={(mode) =>
+                      setState((s) => ({ ...s, viewMode: mode }))
+                    }
+                  />
+                ) : (
+                  <div className='HubMainScreen__grid__context__bar'>
+                    <BarViewModes
+                      viewMode={state.viewMode}
+                      setViewMode={(mode) =>
+                        setState((s) => ({ ...s, viewMode: mode }))
+                      }
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
-          <div
-            className={classNames({
-              HubMainScreen__grid__context: true,
-              'HubMainScreen__grid__context--minimize':
-                state.viewMode === 'panel',
-            })}
-            style={{
-              flex:
-                state.viewMode === 'context'
-                  ? 1
-                  : state.viewMode === 'panel'
-                    ? 0
-                    : 1 - state.panelFlex,
-            }}
-          >
-            {state.viewMode !== 'panel' ? (
-              <ContextBox
-                spacing={state.viewMode !== 'resizable'}
-                width={state.width - headerWidth - controlsWidth - 5}
-                resizing={state.resizing}
-                viewMode={state.viewMode}
-                setViewMode={(mode) =>
-                  setState((s) => ({ ...s, viewMode: mode }))
-                }
-              />
-            ) : (
-              <div className='HubMainScreen__grid__context__bar'>
-                <BarViewModes
-                  viewMode={state.viewMode}
-                  setViewMode={(mode) =>
-                    setState((s) => ({ ...s, viewMode: mode }))
-                  }
-                />
-              </div>
-            )}
-          </div>
-        </div>
         <div className='HubMainScreen__grid__controls'>
           <ControlsSidebar />
         </div>
