@@ -155,14 +155,84 @@ function ContextBox(props) {
     ) {
       return;
     }
+    if (isExploreParamsModeEnabled()) {
+      const { runs, traceList } = HubMainScreenModel.getState();
+      let param;
+      let value;
+      let contentType;
+      for (let metricKey in runs?.aggMetrics) {
+        runs?.aggMetrics[metricKey].forEach((metricContext) => {
+          if (value !== undefined) {
+            return;
+          }
+          traceList?.traces.forEach((traceModel) => {
+            if (value !== undefined) {
+              return;
+            }
+            _.uniqBy(traceModel.series, 'run.run_hash').forEach((series) => {
+              if (series.run.run_hash !== runHash) {
+                return;
+              }
+              let metricValue = series.getAggregatedMetricValue(
+                metricKey,
+                metricContext,
+              );
+              if (metricValue !== undefined) {
+                value = metricValue;
+                param = `metric-${metricKey}-${JSON.stringify(metricContext)}`;
+                contentType = 'metric';
+                return;
+              }
+            });
+          });
+        });
+        if (value !== undefined) {
+          break;
+        }
+      }
+      if (value === undefined) {
+        runs.params.forEach((paramKey) => {
+          traceList?.traces.forEach((traceModel) => {
+            if (value !== undefined) {
+              return;
+            }
+            _.uniqBy(traceModel.series, 'run.run_hash').forEach((series) => {
+              if (series.run.run_hash !== runHash) {
+                return;
+              }
+              let paramValue = getObjectValueByPath(
+                series.run.params,
+                paramKey,
+              );
+              if (paramValue !== undefined) {
+                value = paramValue;
+                param = paramKey;
+                contentType = 'param';
+                return;
+              }
+            });
+          });
+        });
+      }
 
-    setChartFocusedState({
-      metric: {
-        runHash,
-        metricName,
-        traceContext,
-      },
-    });
+      setChartFocusedState({
+        metric: {
+          runHash,
+          metricName,
+          traceContext,
+          param,
+          contentType,
+        },
+      });
+    } else {
+      setChartFocusedState({
+        metric: {
+          runHash,
+          metricName,
+          traceContext,
+        },
+      });
+    }
   }
 
   function handleRowClick(runHash, metricName, traceContext) {
@@ -1603,15 +1673,19 @@ function ContextBox(props) {
       style={{
         width: `${props.width}px`,
       }}
-      onMouseLeave={(evt) =>
-        setChartFocusedState({
-          metric: {
-            runHash: null,
-            metricName: null,
-            traceContext: null,
-          },
-        })
-      }
+      onMouseLeave={(evt) => {
+        if (
+          HubMainScreenModel.getState().chart.focused.metric.runHash !== null
+        ) {
+          setChartFocusedState({
+            metric: {
+              runHash: null,
+              metricName: null,
+              traceContext: null,
+            },
+          });
+        }
+      }}
     >
       {runs.isLoading ? _renderContentLoader() : _renderContent()}
     </div>
