@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Add tooltip popover for the chart hover state (roubkar)
+
 ## 2.5.0 May 27 2021
 - Set gunicorn timeouts (mihran113)
 - Remove redundant deserialize method (gorarakelyan)

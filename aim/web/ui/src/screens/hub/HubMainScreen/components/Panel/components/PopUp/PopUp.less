@@ -6,6 +6,8 @@
   position: fixed;
   box-sizing: border-box;
   height: auto;
+  z-index: 9999;
+  transition: all 700ms cubic-bezier(0.19, 1, 0.22, 1);
 
   &.xGap {
     padding: 0 @gap;
@@ -13,13 +15,11 @@
 }
 
 .ChartPopUp {
-  z-index: 9999;
-}
-.TagPopUp {
-  z-index: 9999;
-}
-.TooltipPopUp {
-  z-index: 9;
+  transform: translateY(-50%);
+
+  &.tooltip {
+    pointer-events: none;
+  }
 }
 
 .PopUp__body {
@@ -55,4 +55,63 @@
 
 .ChartPopUp__groupConfig__type {
   margin-top: var(--component-spacing-xs);
+}
+
+.ChartPopUp__config {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  background-color: #fff;
+  color: var(--primary);
+  padding: 3px 3px 1px;
+  border-top: 1px solid var(--primary-lighter);
+  border-bottom: 1px solid var(--primary-lighter);
+  border-left: 1px solid var(--primary-lighter);
+  border-bottom-left-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 700ms cubic-bezier(0.19, 1, 0.22, 1),
+    color 700ms cubic-bezier(0.19, 1, 0.22, 1);
+  z-index: 1;
+
+  &:hover {
+    background-color: var(--primary-lighter);
+  }
+
+  &:active,
+  &.active {
+    background-color: var(--primary);
+    color: #fff;
+  }
+}
+
+.ConfigPopUp__groupingDropdown {
+  .Dropdown__menu {
+    position: relative !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  .Dropdown__menu-list {
+    max-height: 100px !important;
+  }
+}
+
+.ConfigPopUp__toggle {
+}
+
+.ConfigPopUp__toggle__switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--component-spacing-xs) 0 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ConfigPopUp__toggle__switch__icon {
+  display: flex;
+  align-items: center;
+  margin: 0 var(--component-spacing-xs);
+  cursor: pointer;
+  color: var(--primary);
 }
