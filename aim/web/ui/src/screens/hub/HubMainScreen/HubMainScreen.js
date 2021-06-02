@@ -368,7 +368,7 @@ function HubMainScreen(props) {
         .alignXAxisByMetric(reqBody)
         .then((data) => {
           const currentRuns = mergeMetricAlignDataToRuns(
-            HubMainScreenModel.getState().runs?.data,
+            _.cloneDeep(HubMainScreenModel.getState().runs?.data),
             data.runs,
           );
           setRunsState(currentRuns, resolve);
@@ -446,6 +446,7 @@ function HubMainScreen(props) {
                   });
                 } else {
                   isSynced = false;
+                  trace.alignment = undefined;
                 }
               });
             });
@@ -461,7 +462,7 @@ function HubMainScreen(props) {
     });
 
     return {
-      runs,
+      data: runs,
       isSynced,
       isAsc,
       isSkipped,
