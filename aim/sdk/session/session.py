@@ -2,6 +2,7 @@ import os
 import atexit
 import signal
 import threading
+from collections import namedtuple
 from typing import Optional, Dict, List, Tuple
 from queue import Queue, Empty
 
@@ -30,6 +31,8 @@ from aim.resource.tracker import ResourceTracker
 
 class Session:
     sessions = {}  # type: Dict[str, List['Session']] = {}
+
+    Job = namedtuple('Job', 'target, args, kwargs', defaults=[[], {}])
 
     _are_exit_listeners_set = False
     _original_sigint_handler = None
@@ -100,9 +103,8 @@ class Session:
     def track(self, *args, **kwargs):
         if not self.active:
             raise Exception('session is closed')
-        th = threading.Thread(target=self._track, args=args, kwargs=kwargs)
-        th.daemon = True
-        self._queue.put(th)
+        job = Session.Job(target=self._track, args=args, kwargs=kwargs)
+        self._queue.put(job)
 
     def set_params(self, params: dict, name: Optional[str] = None):
         return self.track(params, namespace=(name or AIM_NESTED_MAP_DEFAULT))
@@ -111,9 +113,8 @@ class Session:
     def flush(self):
         if not self.active:
             raise Exception('session is closed')
-        th = threading.Thread(target=self._flush)
-        th.daemon = True
-        self._queue.put(th)
+        job = Session.Job(target=self._flush)
+        self._queue.put(job)
 
     @exception_resistant
     def close(self):
@@ -197,8 +198,6 @@ class Session:
     def _close(self, remove_session=True):
         with self._close_lock:
             if self.active:
-                self.active = False
-
                 # Wait until all jobs are done
                 self._queue.join()
 
@@ -208,6 +207,9 @@ class Session:
 
                 # Write aggregated metrics
                 self._flush_metrics(force=True, check_status=False)
+
+                # Set session status to non-active
+                self.active = False
 
                 self.repo.close_records_storage()
                 self.repo.commit_finish()
@@ -223,12 +225,11 @@ class Session:
     def _queue_worker(self):
         while self.active or not self._queue.empty():
             try:
-                job_th = self._queue.get(timeout=0.05)
+                job = self._queue.get(timeout=0.05)
             except Empty:
                 pass
             else:
-                job_th.start()
-                job_th.join()
+                job.target(*job.args, **job.kwargs)
                 self._queue.task_done()
 
     @exception_resistant
