@@ -24,7 +24,15 @@ function ControlsSidebarAxesProperties(props) {
   } = HubMainScreenModel.emitters;
 
   const metrics =
-    props.project?.metrics?.filter((m) => !m.startsWith('__system__')) ?? [];
+    props.project?.metrics?.filter((m) => {
+      return (
+        !m.startsWith('__system__') &&
+        !HubMainScreenModel.getState()
+          .searchInput.selectInput.split(',')
+          .map((i) => i.trim())
+          .includes(m)
+      );
+    }) ?? [];
 
   function changeAxisScaleOption(axis, option) {
     setChartSettingsState(
@@ -242,10 +250,14 @@ function ControlsSidebarAxesProperties(props) {
                       value: val,
                       label: `${val}`,
                     }))}
-                    defaultValue={{
-                      value: Array.isArray(xAlignment) ? xAlignment[0] : '',
-                      label: Array.isArray(xAlignment) ? xAlignment[0] : '',
-                    }}
+                    defaultValue={
+                      Array.isArray(xAlignment)
+                        ? {
+                          value: xAlignment[0],
+                          label: xAlignment[0],
+                        }
+                        : undefined
+                    }
                     onChange={(data) => {
                       metricValue.current = data.value;
                       setChartXAxisAlignment([data.value]);

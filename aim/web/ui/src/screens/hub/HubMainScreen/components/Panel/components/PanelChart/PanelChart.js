@@ -626,7 +626,7 @@ function PanelChart(props) {
   }
 
   function drawArea() {
-    const { traceList, chart } = HubMainScreenModel.getState();
+    const { traceList, chart, runs } = HubMainScreenModel.getState();
     const parent = d3.select(parentRef.current);
     const visArea = d3.select(visRef.current);
     const parentRect = parent.node().getBoundingClientRect();
@@ -743,7 +743,7 @@ function PanelChart(props) {
               <span class='Icon zoom_out material-icons-outlined no_spacing_right'>
                 zoom_out
               </span>
-            </>`;
+            </div>`;
         })
         .on('click', zoomOut)
         .moveToFront();
@@ -1501,7 +1501,7 @@ function PanelChart(props) {
       );
       const closestPoint = trace.data[closestStepIndex] ?? trace.data[0];
       x = closestPoint?.x;
-      const closestStep = Math.round(chartOptions.current.xScale.invert(x));
+      const closestStep = chartOptions.current.xScale.invert(x);
       let y = closestPoint?.y;
       let val = chartOptions.current.yScale.invert(y);
 
