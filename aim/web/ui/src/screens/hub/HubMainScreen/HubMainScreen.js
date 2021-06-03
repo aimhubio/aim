@@ -612,6 +612,28 @@ function HubMainScreen(props) {
                     indices={panelIndices}
                     resizing={state.resizing}
                   />
+                  {Array.isArray(
+                    HubMainScreenModel.getState().chart.settings.persistent
+                      .xAlignment,
+                  ) &&
+                  (runs.isSkipped || !runs.isSynced || !runs.isAsc) && (
+                    <div className='HubMainScreen__grid__panel__alignmentWarning'>
+                      <UI.Tooltip
+                        tooltip={`${
+                          runs.isSkipped || !runs.isSynced
+                            ? 'There are traces which include skipped steps.'
+                            : ''
+                        } 
+                          ${
+                            !runs.isAsc
+                              ? 'Traces are sorted in ascending order'
+                              : ''
+                          }`}
+                      >
+                        <UI.Icon i='error_outline' />
+                      </UI.Tooltip>
+                    </div>
+                  )}
                 </div>
               )}
               {state.viewMode === 'resizable' && (
