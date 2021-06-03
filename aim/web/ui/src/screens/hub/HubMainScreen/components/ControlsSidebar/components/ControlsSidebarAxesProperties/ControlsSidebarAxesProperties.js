@@ -253,10 +253,10 @@ function ControlsSidebarAxesProperties(props) {
                       label: `${val}`,
                     }))}
                     defaultValue={
-                      Array.isArray(xAlignment)
+                      metricValue.current
                         ? {
-                          value: xAlignment[0],
-                          label: xAlignment[0],
+                          value: metricValue.current,
+                          label: metricValue.current,
                         }
                         : undefined
                     }
