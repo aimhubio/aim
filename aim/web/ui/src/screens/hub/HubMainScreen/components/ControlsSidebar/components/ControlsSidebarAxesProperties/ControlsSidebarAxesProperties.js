@@ -14,6 +14,7 @@ function ControlsSidebarAxesProperties(props) {
   const { xScale, yScale, xAlignment, pointsCount } = props.settings.persistent;
 
   let popupRef = useRef();
+  let dropdownRef = useRef();
   let metricValue = useRef(Array.isArray(xAlignment) ? xAlignment[0] : '');
 
   const {
@@ -232,18 +233,19 @@ function ControlsSidebarAxesProperties(props) {
                     return;
                   }
                   if (!metricValue.current) {
-                    metricValue.current = metrics[0];
+                    dropdownRef.current?.selectRef?.current?.focus();
+                  } else {
+                    setChartXAxisAlignment([metricValue.current]);
+                    analytics.trackEvent(
+                      '[Explore] [LineChart] Set X axis alignment to "custom metric"',
+                    );
                   }
-
-                  setChartXAxisAlignment([metricValue.current]);
-                  analytics.trackEvent(
-                    '[Explore] [LineChart] Set X axis alignment to "custom metric"',
-                  );
                 }}
               >
                 <UI.Text small>Metric: </UI.Text>
                 <div onClick={(evt) => evt.stopPropagation()}>
                   <UI.Dropdown
+                    ref={dropdownRef}
                     className='ControlsSidebar__item__popup__list__item__select'
                     width={170}
                     options={metrics.map((val) => ({
