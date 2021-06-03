@@ -54,9 +54,11 @@ class Trace(object):
         result = {
             'context': self.context,
             'num_steps': self.num_records,
-            'data': self.data,
-            'slice': self.slice,
+            'data': self.data
         }
+
+        if self.slice:
+            result['slice'] = self.slice
 
         if self.alignment:
             result['alignment'] = self.alignment

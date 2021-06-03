@@ -113,10 +113,9 @@ def process_trace_record(r, trace, x_axis_trace, x_idx):
                 _, x_axis_metric_record = MetricArtifact.deserialize_pb(x_r)
                 if not unsupported_float_type(x_axis_metric_record.value):
                     new_x_axis_value = x_axis_metric_record.value
-                    if new_x_axis_value:
-                        if x_axis_trace.current_x_axis_value and \
-                                new_x_axis_value < x_axis_trace.current_x_axis_value:
-                            trace.alignment['is_asc'] = False
+                    if x_axis_trace.current_x_axis_value and \
+                            new_x_axis_value < x_axis_trace.current_x_axis_value:
+                        trace.alignment['is_asc'] = False
                     x_axis_trace.current_x_axis_value = new_x_axis_value
                     x_axis_trace.tmp_data[x_idx] = x_axis_trace.current_x_axis_value
                 else:
@@ -185,6 +184,7 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
                         _, x_axis_metric_record = MetricArtifact.deserialize_pb(x_r)
                         if not unsupported_float_type(x_axis_metric_record.value):
                             new_x_axis_value = x_axis_metric_record.value
+                            x_axis_trace.tmp_data[x_idx] = new_x_axis_value
                         else:
                             selected_trace.alignment['skipped_steps'] += 1
                     except StopIteration:
@@ -195,17 +195,16 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
                             new_x_axis_value < x_axis_trace.current_x_axis_value:
                         selected_trace.alignment['is_asc'] = False
                     x_axis_trace.current_x_axis_value = new_x_axis_value
-                    x_axis_trace.tmp_data[x_idx] = x_axis_trace.current_x_axis_value
                 return new_x_axis_value
 
             # get values of x_axis_trace and store them in the data attribute of selected_trace as a plain list
             start, stop, step = trace.get('slice')
             for i in range(start, stop, step):
-                x_axis_value = process_single_x_axis_trace_record(i)
-                selected_trace.append(x_axis_value)
+                selected_trace.append(process_single_x_axis_trace_record(i))
             if (stop-1) % step != 0:
-                x_axis_value = process_single_x_axis_trace_record(stop-1)
-                selected_trace.append(x_axis_value)
+                selected_trace.append(process_single_x_axis_trace_record(stop-1))
+            # clear current_x_axis_value for x_axis_trace for the next possible iteration
+            x_axis_trace.current_x_axis_value = None
 
             selected_metric.append(selected_trace)
         selected_run.add(selected_metric)
@@ -220,7 +219,7 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
     return selected_run
 
 
-def runs_resp_generator(response, runs):
+def runs_resp_generator(response, runs, exclude_list=None):
     from aim.web.app import App
     with App.api.app_context():
         yield json.dumps({
@@ -229,7 +228,7 @@ def runs_resp_generator(response, runs):
         for run in runs:
             if not is_tf_run(run):
                 yield json.dumps({
-                    'run': run.to_dict(include_only_selected_agg_metrics=True),
+                    'run': run.to_dict(include_only_selected_agg_metrics=True, exclude_list=exclude_list),
                 }).encode() + '\n'.encode()
             else:
                 yield json.dumps({

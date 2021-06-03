@@ -103,7 +103,7 @@ class CommitMetricCustomAlignApi(Resource):
             'runs': [],
         }
 
-        return Response(runs_resp_generator(response, processed_runs), mimetype='application/json')
+        return Response(runs_resp_generator(response, processed_runs, ['params', 'date']), mimetype='application/json')
 
 
 @commits_api.resource('/search/metric')
@@ -251,19 +251,17 @@ class CommitMetricSearchApi(Resource):
                                 trace.slice = (0, trace.num_records, step)
                                 x_axis_trace = None
                                 if x_axis_metric is not None:
-                                    for x_trace in x_axis_metric.get_all_traces():
-                                        if x_trace.eq_context(trace.context):
-                                            x_axis_trace = x_trace
-                                            trace.alignment = {
-                                                'is_synced': True,
-                                                'is_asc': True,
-                                                'skipped_steps': 0,
-                                                'aligned_by': {
-                                                    'metric_name': x_axis_metric.name,
-                                                    'trace_context': x_axis_trace.context
-                                                }
+                                    x_axis_trace = x_axis_metric.get_trace(trace.context)
+                                    if x_axis_trace is not None:
+                                        trace.alignment = {
+                                            'is_synced': True,
+                                            'is_asc': True,
+                                            'skipped_steps': 0,
+                                            'aligned_by': {
+                                                'metric_name': x_axis_metric.name,
+                                                'trace_context': x_axis_trace.context
                                             }
-                                            break
+                                        }
                                 x_idx = 0
                                 for r in trace.read_records(slice(*trace.slice)):
                                     process_trace_record(r, trace, x_axis_trace, x_idx)
@@ -271,6 +269,9 @@ class CommitMetricSearchApi(Resource):
                                 if (trace.num_records - 1) % step != 0:
                                     for r in trace.read_records(trace.num_records-1):
                                         process_trace_record(r, trace, x_axis_trace, trace.num_records-1)
+                                if x_axis_trace is not None:
+                                    # clear current_x_axis_value for the x_axis_trace for the next possible iteration
+                                    x_axis_trace.current_x_axis_value = None
                         except:
                             pass
 

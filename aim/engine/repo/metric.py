@@ -10,6 +10,7 @@ class Metric(object):
         self.name = name
         self.context = context
         self._traces = []  # type: List[Trace]
+        self._tmp_all_traces = None  # type: Optional[List[Trace]]
         self._artifact_storage_opened = False
 
     def __repr__(self):
@@ -42,6 +43,8 @@ class Metric(object):
         self._traces.append(trace)
 
     def get_all_traces(self, ignore_empty_context=False) -> list:
+        if self._tmp_all_traces:
+            return self._tmp_all_traces
         traces = []
         if self.context is None:
             if not ignore_empty_context:
@@ -51,13 +54,13 @@ class Metric(object):
             for trace_context in self.context:
                 trace = Trace(self.repo, self, self.name, trace_context)
                 traces.append(trace)
+        self._tmp_all_traces = traces
         return traces
 
     def get_trace(self, context) -> Trace or None:
         for trace in self.get_all_traces():
             if trace.eq_context(context):
                 return trace
-
         return None
 
     def to_dict(self) -> dict:
