@@ -33,6 +33,7 @@ import BarViewModes from '../../../components/hub/BarViewModes/BarViewModes';
 import Alert from './components/Alert/Alert';
 import UI from '../../../ui';
 import QueryParseErrorAlert from '../../../components/hub/QueryParseErrorAlert/QueryParseErrorAlert';
+import AlignmentWarning from './components/AlignmentWarning/AlignmentWarning';
 
 const URLStateParams = [
   'chart.focused.circle',
@@ -239,10 +240,6 @@ function HubMainScreen(props) {
   }
 
   function updateURL({ replaceUrl }) {
-    if (!isURLStateOutdated(window.location.search)) {
-      return;
-    }
-
     const state = getCurrentState();
 
     const URL = stateToURL(state);
@@ -617,22 +614,11 @@ function HubMainScreen(props) {
                       .xAlignment,
                   ) &&
                   (runs.isSkipped || !runs.isSynced || !runs.isAsc) && (
-                    <div className='HubMainScreen__grid__panel__alignmentWarning'>
-                      <UI.Tooltip
-                        tooltip={`${
-                          runs.isSkipped || !runs.isSynced
-                            ? 'There are traces which include skipped steps.'
-                            : ''
-                        } 
-                          ${
-                            !runs.isAsc
-                              ? 'Traces are sorted in ascending order'
-                              : ''
-                          }`}
-                      >
-                        <UI.Icon i='error_outline' />
-                      </UI.Tooltip>
-                    </div>
+                    <AlignmentWarning
+                      isSkipped={runs.isSkipped}
+                      isSynced={runs.isSynced}
+                      isAsc={runs.isAsc}
+                    />
                   )}
                 </div>
               )}

@@ -1472,17 +1472,22 @@ function PanelChart(props) {
         const axisLeftEdge = visBox.current.margin.left - 1;
         const axisRightEdge =
           visBox.current.width - visBox.current.margin.right + 1;
-        const xAxisValueWidth = xAxisValue.current.node().offsetWidth;
-        xAxisValue.current.style(
-          'left',
-          `${
-            x - xAxisValueWidth / 2 < 0
-              ? axisLeftEdge + xAxisValueWidth / 2
-              : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
-                ? axisRightEdge - xAxisValueWidth / 2
-                : x + axisLeftEdge
-          }px`,
-        );
+        let xAxisValueWidth = xAxisValue.current.node().offsetWidth;
+        if (xAxisValueWidth > width) {
+          xAxisValueWidth = width;
+        }
+        xAxisValue.current
+          .style('width', `${xAxisValueWidth}px`)
+          .style(
+            'left',
+            `${
+              x - xAxisValueWidth / 2 < 0
+                ? axisLeftEdge + xAxisValueWidth / 2
+                : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
+                  ? axisRightEdge - xAxisValueWidth / 2
+                  : x + axisLeftEdge
+            }px`,
+          );
       }
     }
 
