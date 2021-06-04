@@ -6,7 +6,7 @@ import pytz
 from collections import namedtuple, OrderedDict
 
 
-def default_created_at():
+def datetime_now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
 
 
