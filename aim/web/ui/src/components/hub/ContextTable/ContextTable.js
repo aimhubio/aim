@@ -1,6 +1,6 @@
 import './ContextTable.less';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import UI from '../../../ui';
