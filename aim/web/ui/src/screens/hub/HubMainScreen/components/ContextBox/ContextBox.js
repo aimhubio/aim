@@ -37,14 +37,19 @@ function ContextBox(props) {
   });
   let tableResizeObserver = useRef();
   let tableContainerResizeObserver = useRef();
+  let columns = useRef();
 
-  let { runs, traceList, chart, contextFilter, sortFields } =
+  let { runs, traceList, chart, contextFilter, sortFields, table } =
     HubMainScreenModel.useHubMainScreenState([
       HubMainScreenModel.events.SET_RUNS_STATE,
       HubMainScreenModel.events.SET_TRACE_LIST,
       HubMainScreenModel.events.SET_CHART_FOCUSED_ACTIVE_STATE,
       HubMainScreenModel.events.SET_SORT_FIELDS,
       HubMainScreenModel.events.SET_CHART_HIDDEN_METRICS,
+      HubMainScreenModel.events.SET_TABLE_ROW_HEIGHT_MODE,
+      HubMainScreenModel.events.SET_TABLE_EXCLUDED_FIELDS,
+      HubMainScreenModel.events.SET_TABLE_COLUMNS_ORDER,
+      HubMainScreenModel.events.SET_TABLE_COLUMNS_WIDTHS,
     ]);
 
   let {
@@ -53,6 +58,10 @@ function ContextBox(props) {
     setContextFilter,
     setSortFields,
     setHiddenMetrics,
+    setRowHeightMode,
+    setExcludedFields,
+    setColumnsOrder,
+    setColumnsWidths,
   } = HubMainScreenModel.emitters;
 
   let {
@@ -474,7 +483,7 @@ function ContextBox(props) {
 
     paramKeys.current = sortOnKeys(paramKeys.current);
 
-    let columns = [
+    columns.current = [
       {
         key: 'experiment',
         content: (
@@ -507,7 +516,7 @@ function ContextBox(props) {
     ];
 
     if (isExploreMetricsModeEnabled()) {
-      columns = columns.concat([
+      columns.current = columns.current.concat([
         {
           key: 'metric',
           content: (
@@ -552,7 +561,7 @@ function ContextBox(props) {
 
     for (let metricKey in runs?.aggMetrics) {
       runs?.aggMetrics[metricKey].forEach((metricContext) => {
-        columns.push({
+        columns.current.push({
           key: `${metricKey}-${JSON.stringify(metricContext)}`,
           content: (
             <div className='ContextBox__table__agg-metrics__labels'>
@@ -592,7 +601,7 @@ function ContextBox(props) {
     Object.keys(paramKeys.current).forEach((paramKey) =>
       paramKeys.current[paramKey].sort().forEach((key) => {
         const param = `params.${paramKey}.${key}`;
-        columns.push({
+        columns.current.push({
           key: param,
           content: (
             <>
@@ -1313,7 +1322,7 @@ function ContextBox(props) {
           <ContextTable
             name='context'
             topHeader
-            columns={columns}
+            columns={columns.current}
             data={data}
             groups={traceList?.traces.length > 1}
             expanded={expanded}
@@ -1326,6 +1335,14 @@ function ContextBox(props) {
             setSortFields={setSortFields}
             setHiddenMetrics={setHiddenMetrics}
             hiddenMetrics={chart.hiddenMetrics}
+            rowHeightMode={table.rowHeightMode}
+            setRowHeightMode={setRowHeightMode}
+            excludedFields={table.excludedFields}
+            setExcludedFields={setExcludedFields}
+            columnsOrder={table.columnsOrder}
+            setColumnsOrder={setColumnsOrder}
+            columnsWidths={table.columnsWidths}
+            setColumnsWidths={setColumnsWidths}
             getParamsWithSameValue={getParamsWithSameValue}
             alwaysVisibleColumns={[
               'experiment',
@@ -1656,8 +1673,79 @@ function ContextBox(props) {
       },
     );
 
+    const runsStateUpdateSubscription = HubMainScreenModel.subscribe(
+      HubMainScreenModel.events.SET_TRACE_LIST,
+      () => {
+        const tableColumns = table.columnsOrder;
+        const order = {
+          left: [],
+          middle: [],
+          right: [],
+        };
+        columns.current.forEach((col) => {
+          if (!!tableColumns && tableColumns.left.includes(col.key)) {
+            order.left.push(col.key);
+          } else if (!!tableColumns && tableColumns.middle.includes(col.key)) {
+            order.middle.push(col.key);
+          } else if (!!tableColumns && tableColumns.right.includes(col.key)) {
+            order.right.push(col.key);
+          } else {
+            if (col.pin === 'left') {
+              order.left.push(col.key);
+            } else if (col.pin === 'right') {
+              order.right.push(col.key);
+            } else {
+              order.middle.push(col.key);
+            }
+          }
+        });
+        order.left.sort((a, b) => {
+          if (!!tableColumns) {
+            if (tableColumns.left.indexOf(b) === -1) {
+              return -1;
+            }
+            if (tableColumns.left.indexOf(a) === -1) {
+              return 1;
+            }
+            return tableColumns.left.indexOf(a) - tableColumns.left.indexOf(b);
+          }
+          return 0;
+        });
+        order.middle.sort((a, b) => {
+          if (!!tableColumns) {
+            if (tableColumns.middle.indexOf(b) === -1) {
+              return -1;
+            }
+            if (tableColumns.middle.indexOf(a) === -1) {
+              return 1;
+            }
+            return (
+              tableColumns.middle.indexOf(a) - tableColumns.middle.indexOf(b)
+            );
+          }
+          return 0;
+        });
+        order.right.sort((a, b) => {
+          if (!!tableColumns) {
+            if (tableColumns.right.indexOf(b) === -1) {
+              return -1;
+            }
+            if (tableColumns.right.indexOf(a) === -1) {
+              return 1;
+            }
+            return (
+              tableColumns.right.indexOf(a) - tableColumns.right.indexOf(b)
+            );
+          }
+          return 0;
+        });
+        setColumnsOrder(order);
+      },
+    );
+
     return () => {
       focusedStateChangeSubscription.unsubscribe();
+      runsStateUpdateSubscription.unsubscribe();
       tableElemRef.current?.removeEventListener('scroll', virtualizedUpdate);
       tableResizeObserver.current?.disconnect();
       tableContainerResizeObserver.current?.disconnect();
