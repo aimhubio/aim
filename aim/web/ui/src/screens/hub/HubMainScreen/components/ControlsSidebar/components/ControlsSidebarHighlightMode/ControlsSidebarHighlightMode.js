@@ -20,7 +20,9 @@ function ControlsSidebarHighlightMode(props) {
       ...props.settings,
       highlightMode: mode,
     });
-    setItem(EXPLORE_METRIC_HIGHLIGHT_MODE, mode);
+    if (HubMainScreenModel.getState().viewKey === null) {
+      setItem(EXPLORE_METRIC_HIGHLIGHT_MODE, mode);
+    }
     setOpened(false);
     analytics.trackEvent(
       `[Explore] [LineChart] Set highlight mode to "${mode}"`,

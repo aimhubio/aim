@@ -68,6 +68,8 @@ function HubMainScreen(props) {
     setChartFocusedActiveState,
     setChartSettingsState,
     setTraceList,
+    setScreenState,
+    setViewKey,
   } = HubMainScreenModel.emitters;
 
   const projectWrapperRef = useRef();
@@ -239,6 +241,8 @@ function HubMainScreen(props) {
     }
   }
 
+  function recoverStateFromAPI() {}
+
   function updateURL({ replaceUrl }) {
     if (!isURLStateOutdated(window.location.search)) {
       return;
@@ -247,7 +251,11 @@ function HubMainScreen(props) {
     const state = getCurrentState();
 
     const URL = stateToURL(state);
-    setItem(USER_LAST_EXPLORE_CONFIG, URL);
+
+    if (HubMainScreenModel.getState().viewKey === null) {
+      setItem(USER_LAST_EXPLORE_CONFIG, URL);
+    }
+
     if (window.location.pathname + window.location.search !== URL) {
       if (replaceUrl) {
         props.history.replace(URL);
@@ -257,7 +265,10 @@ function HubMainScreen(props) {
         console.log(`Update: URL(${URL})`);
       }
 
-      if (state.search?.query !== null) {
+      if (
+        HubMainScreenModel.getState().viewKey === null &&
+        state.search?.query !== null
+      ) {
         setItem(USER_LAST_SEARCH_QUERY, state.search?.query);
       }
     }
@@ -342,7 +353,14 @@ function HubMainScreen(props) {
   }
 
   useEffect(() => {
-    recoverStateFromURL(window.location.search);
+    const { bookmark_id } = props.match;
+    if (!!bookmark_id) {
+      setViewKey(bookmark_id);
+      recoverStateFromAPI();
+    } else {
+      setViewKey(null);
+      recoverStateFromURL(window.location.search);
+    }
   }, [props.location]);
 
   useEffect(() => {

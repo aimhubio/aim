@@ -114,7 +114,9 @@ function ControlsSidebarZoom(props) {
                     zoomMode: true,
                     singleZoomMode: true,
                   });
-                  setItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE, true);
+                  if (HubMainScreenModel.getState().viewKey === null) {
+                    setItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE, true);
+                  }
                   setOpenedZoomOptions(false);
                   analytics.trackEvent(
                     '[Explore] [LineChart] Set single zooming mode',
@@ -139,11 +141,13 @@ function ControlsSidebarZoom(props) {
                     zoomMode: true,
                     singleZoomMode: false,
                   });
-                  setItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE, false);
-                  setOpenedZoomOptions(false);
+                  if (HubMainScreenModel.getState().viewKey === null) {
+                    setItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE, false);
+                  }
                   analytics.trackEvent(
                     '[Explore] [LineChart] Set multiple zooming mode',
                   );
+                  setOpenedZoomOptions(false);
                 }}
               >
                 <UI.Text small>Multiple zooming</UI.Text>

@@ -82,10 +82,14 @@ class App extends React.Component {
         {/*}*/}
         <Switch>
           <Route exact path={screens.MAIN} component={RedirectFromMainScreen} />
-          <Route exact path={screens.EXPLORE} component={HubMainScreen} />
           <Route
             exact
-            path={screens.EXPLORE_SEARCH}
+            path={[
+              screens.EXPLORE,
+              screens.EXPLORE_BOOKMARK,
+              screens.EXPLORE_SEARCH,
+              screens.EXPLORE_BOOKMARK_SEARCH,
+            ]}
             component={HubMainScreen}
           />
           {/*<Route exact path={screens.HUB_PROJECT_EXECUTABLES} component={HubExecutablesScreen}/>*/}
