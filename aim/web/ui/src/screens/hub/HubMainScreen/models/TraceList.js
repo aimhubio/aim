@@ -619,7 +619,9 @@ export default class TraceList {
             const { trace } = series;
             if (trace !== undefined && trace !== null) {
               trace.axisValues = [];
-              trace.data = trace.data.filter((point) => point[4] !== null);
+              trace.data = trace.data
+                .filter((point) => point[4] !== null)
+                .sort((a, b) => a[4] - b[4]);
               trace.data.forEach((point) => {
                 const step = point[4];
                 if (!chartSteps[traceModel.chart].includes(step)) {
@@ -627,11 +629,12 @@ export default class TraceList {
                 }
                 trace.axisValues.push(step);
               });
-              trace.axisValues.sort((a, b) => a - b);
             }
           });
 
-          chartSteps[traceModel.chart].sort((a, b) => a - b);
+          chartSteps[traceModel.chart] = chartSteps[traceModel.chart].sort(
+            (a, b) => a - b,
+          );
         });
 
         this.chartSteps = chartSteps;
