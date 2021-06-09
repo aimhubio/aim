@@ -42,8 +42,10 @@ def unsupported_float_type(value) -> bool:
     return False
 
 
-ModelField = namedtuple('ModelField', 'required, null, blank, source, type',
-                        defaults=[False, True, True, None, None])
+Field = namedtuple('Field', 'type, source, required, null, blank',
+                   defaults=[None, None, False, True, True])
+ModelField = namedtuple('Field', 'type, source, required, null, blank',
+                        defaults=[None, None, False, True, True])
 
 
 class ValidationError(Exception):
@@ -53,7 +55,7 @@ class ValidationError(Exception):
 class SerializerMetaclass(type):
     """
     This metaclass sets a dictionary named `_declared_fields` on the class.
-    Any instances of `ModelField` included as attributes on either the class
+    Any instances of `Field` included as attributes on either the class
     or on any of its superclasses will be included in the
     `_declared_fields` dictionary.
     """
@@ -62,8 +64,7 @@ class SerializerMetaclass(type):
     def _get_declared_fields(cls, bases, attrs):
         fields = [(field_name, attrs.pop(field_name))
                   for field_name, obj in list(attrs.items())
-                  if isinstance(obj, ModelField)]
-        fields.sort(key=lambda x: x[1]._creation_counter)
+                  if isinstance(obj, (Field, ModelField))]
 
         # Ensures a base class field doesn't override cls attrs, and maintains
         # field precedence when inheriting multiple parents. e.g. if there is a
@@ -87,7 +88,7 @@ class SerializerMetaclass(type):
         return super().__new__(cls, name, bases, attrs)
 
 
-class BaseModelSerializer(metaclass=SerializerMetaclass):
+class BaseSerializer(metaclass=SerializerMetaclass):
     # TODO: write the docstring
     """
         Syntax for serializers, methods and that kind of stuff here
@@ -99,14 +100,10 @@ class BaseModelSerializer(metaclass=SerializerMetaclass):
     FIELD_BLANK_ERROR_MESSAGE = 'The value of this field can\t be blank.'
     FIELD_WRONG_VALUE_ERROR_MESSAGE_TEMPLATE = 'This field must be of type {}, {} given.'
 
-    def __init__(self, json_data=None, model_instance=None, model_class=None):
-        self._model_instance = model_instance
-        if not self._model_instance:
-            self._model_instance = model_class()
+    def __init__(self, json_data):
         self._json_data = json_data
         self._error_messages = None
         self._validated_data = {}
-        self._validated = False
 
     @property
     def validated_data(self):
@@ -114,10 +111,10 @@ class BaseModelSerializer(metaclass=SerializerMetaclass):
 
     @property
     def error_messages(self):
-        return json.dumps(self._error_messages) if self._error_messages else None
+        return self._error_messages
 
     def validate(self, raise_exception=True):
-        for field_name, field in self._declared_fields.items():  # derived from metaclass
+        for field_name, field in self._declared_fields.items():  # set by metaclass
             field_source = field.source if field.source else field_name
             try:
                 value = self._json_data[field_source]
@@ -159,13 +156,21 @@ class BaseModelSerializer(metaclass=SerializerMetaclass):
                             .FIELD_WRONG_VALUE_ERROR_MESSAGE_TEMPLATE\
                             .format(field.type, value.__class__.__name__)
                     else:
-                        if field.type in (dict, list):
+                        if set(field.type).intersection({dict, list}):
                             value = json.dumps(value)
                         self._validated_data[field_name] = value
 
-        if raise_exception and self._error_messages:
-            # raise the exception with json dumped version of error messages
-            raise ValidationError(self.error_messages)
+        # finalize validation
+        if self.error_messages:
+            self._validated_data = None
+            if raise_exception:
+                raise ValidationError(self._error_messages)
+
+
+class BaseModelSerializer(BaseSerializer):
+    def __init__(self, model_instance, json_data):
+        self._model_instance = model_instance
+        super().__init__(json_data=json_data)
 
     def save(self):
         for field, field_value in self._validated_data.items():
