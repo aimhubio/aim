@@ -1,3 +1,5 @@
+import uuid
+
 from aim.web.app.db import db
 from aim.web.app.utils import datetime_now
 
@@ -10,3 +12,8 @@ class Dashboard(db.Model):
     created_at = db.Column(db.DateTime, default=datetime_now)
     updated_at = db.Column(db.DateTime, default=datetime_now, onupdate=datetime_now)
     is_archived = db.Column(db.Boolean, default=False)
+
+    def __init__(self, name):
+        self.uuid = str(uuid.uuid1())
+        self.name = name
+        self.is_archived = False
