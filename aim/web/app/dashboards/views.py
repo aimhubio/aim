@@ -41,7 +41,7 @@ class DashboardsListCreateApi(Resource):
 
 
 @dashboards_api.resource('/<dashboard_id>')
-class DashboardsGetUpdateDeleteApi(Resource):
+class DashboardsGetPutDeleteApi(Resource):
     def get(self, dashboard_id):
         dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id).first()
         if not dashboard:

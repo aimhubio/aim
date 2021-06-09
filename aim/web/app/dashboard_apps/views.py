@@ -33,7 +33,7 @@ class DashboardAppsListCreateApi(Resource):
 
 
 @dashboard_apps_api.resource('/<app_id>')
-class DashboardAppsGetUpdateDeleteApi(Resource):
+class DashboardAppsGetPutDeleteApi(Resource):
     def get(self, app_id):
         explore_state = ExploreState.query.filter(ExploreState.uuid == app_id).first()
         if not explore_state:
@@ -41,7 +41,7 @@ class DashboardAppsGetUpdateDeleteApi(Resource):
 
         return make_response(jsonify(explore_state_response_serializer(explore_state)), 200)
 
-    def update(self, app_id):
+    def put(self, app_id):
         explore_state = ExploreState.query.filter(ExploreState.uuid == app_id).first()
         if not explore_state:
             return make_response(jsonify({}), 404)
