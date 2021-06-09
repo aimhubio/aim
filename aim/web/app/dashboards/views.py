@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, jsonify, request, make_response
 from flask_restful import Api, Resource
 
@@ -18,17 +20,17 @@ class DashboardsListCreateApi(Resource):
 
         for dashboard in dashboards_query:
             result.append(dashboard_response_serializer(dashboard))
-
-        return make_response(jsonify('success'), 200)
+        return make_response(jsonify(result), 200)
 
     def post(self):
         # create the dashboard object
-        dashboard_name = request.form.get('name')
+        request_data = json.loads(request.data)
+        dashboard_name = request_data.get('name')
         dashboard = Dashboard(dashboard_name)
         db.session.add(dashboard)
 
-        # update the app
-        app_id = request.form.get('app_id')
+        # update the app object's foreign key relation
+        app_id = request_data.get('app_id')
         app = ExploreState.query.filter(ExploreState.uuid == app_id).first()
         if app:
             app.dashboard_id = dashboard.uuid
@@ -36,8 +38,7 @@ class DashboardsListCreateApi(Resource):
         # commit db session
         db.session.commit()
 
-        response = dashboard_response_serializer(dashboard)
-        return make_response(jsonify(response), 201)
+        return make_response(jsonify(dashboard_response_serializer(dashboard)), 201)
 
 
 @dashboards_api.resource('/<dashboard_id>')
@@ -53,8 +54,8 @@ class DashboardsGetPutDeleteApi(Resource):
         dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id).first()
         if not dashboard:
             return make_response(jsonify({}), 404)
-
-        dashboard_name = request.form.get('name')
+        request_data = json.loads(request.data)
+        dashboard_name = request_data.get('name')
         dashboard.name = dashboard_name
         db.session.commit()
 

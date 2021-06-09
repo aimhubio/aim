@@ -4,7 +4,7 @@ import math
 import pytz
 
 from collections import namedtuple, OrderedDict
-
+from collections.abc import Iterable
 
 def datetime_now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -40,6 +40,10 @@ def unsupported_float_type(value) -> bool:
         return True
 
     return False
+
+
+def json_loads_or_none(obj):
+    return json.loads(obj) if obj else None
 
 
 Field = namedtuple('Field', 'type, source, required, null, blank',
@@ -102,7 +106,7 @@ class BaseSerializer(metaclass=SerializerMetaclass):
 
     def __init__(self, json_data):
         self._json_data = json_data
-        self._error_messages = None
+        self._error_messages = {}
         self._validated_data = {}
 
     @property
@@ -113,12 +117,12 @@ class BaseSerializer(metaclass=SerializerMetaclass):
     def error_messages(self):
         return self._error_messages
 
-    def validate(self, raise_exception=True):
+    def validate(self, raise_exception=False):
         for field_name, field in self._declared_fields.items():  # set by metaclass
             field_source = field.source if field.source else field_name
             try:
                 value = self._json_data[field_source]
-            except AttributeError:
+            except KeyError:
                 # requirement check
                 if field.required:
                     self._error_messages[field_source] = BaseModelSerializer.FIELD_REQUIRED_ERROR_MESSAGE
@@ -141,10 +145,10 @@ class BaseSerializer(metaclass=SerializerMetaclass):
                         continue
 
                 # type checks
-                if field.type.hasattr('validate'):
+                if hasattr(field.type, 'validate'):
                     # nested type validation
                     nested_serializer = field.type(json_data=value)
-                    nested_serializer.validate(raise_exception=False)
+                    nested_serializer.validate()
                     if nested_serializer.error_messages:
                         self._error_messages[field_source] = nested_serializer.error_messages
                     else:
@@ -154,15 +158,20 @@ class BaseSerializer(metaclass=SerializerMetaclass):
                     if not isinstance(value, field.type):
                         self._error_messages[field_source] = BaseModelSerializer\
                             .FIELD_WRONG_VALUE_ERROR_MESSAGE_TEMPLATE\
-                            .format(field.type, value.__class__.__name__)
+                            .format(field.type, type(value))
                     else:
-                        if set(field.type).intersection({dict, list}):
+                        # check if the value needs to be dumped into json string
+                        if isinstance(field.type, Iterable):
+                            needs_json_dump = set(field.type).intersection({list, dict})
+                        else:
+                            needs_json_dump = field.type in (list, dict)
+                        if needs_json_dump:
                             value = json.dumps(value)
                         self._validated_data[field_name] = value
 
         # finalize validation
-        if self.error_messages:
-            self._validated_data = None
+        if self._error_messages:
+            self._validated_data = {}
             if raise_exception:
                 raise ValidationError(self._error_messages)
 
@@ -174,5 +183,5 @@ class BaseModelSerializer(BaseSerializer):
 
     def save(self):
         for field, field_value in self._validated_data.items():
-            self._model_instance.setattribute(field, field_value)
+            setattr(self._model_instance, field, field_value)
         return self._model_instance

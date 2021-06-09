@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, jsonify, request, make_response
 from flask_restful import Api, Resource
 
@@ -21,14 +22,13 @@ class DashboardAppsListCreateApi(Resource):
 
     def post(self):
         explore_state = ExploreState()
-        serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=request.form)
-        try:
-            serializer.validate(raise_exception=True)
-        except ValidationError as e:
-            return make_response(jsonify(e), 403)
+        serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=json.loads(request.data))
+        serializer.validate()
+        if serializer.error_messages:
+            return make_response(jsonify(serializer.error_messages), 403)
         explore_state = serializer.save()
         db.session.add(explore_state)
-        db.session.commit(explore_state)
+        db.session.commit()
         return make_response(jsonify(explore_state_response_serializer(explore_state)), 201)
 
 
@@ -46,12 +46,14 @@ class DashboardAppsGetPutDeleteApi(Resource):
         if not explore_state:
             return make_response(jsonify({}), 404)
 
-        serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=request.form)
-        try:
-            serializer.validate()
-        except ValidationError as e:
-            return make_response(jsonify(e))
+        serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=json.loads(request.data))
+        serializer.validate()
+        if serializer.error_messages:
+            return make_response(jsonify(serializer.error_messages), 403)
+
         explore_state = serializer.save()
+        db.session.add(explore_state)
+
         db.session.commit()
 
         return make_response(jsonify(explore_state_response_serializer(explore_state)), 200)
