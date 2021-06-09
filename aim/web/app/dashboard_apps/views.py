@@ -35,14 +35,16 @@ class DashboardAppsListCreateApi(Resource):
 @dashboard_apps_api.resource('/<app_id>')
 class DashboardAppsGetPutDeleteApi(Resource):
     def get(self, app_id):
-        explore_state = ExploreState.query.filter(ExploreState.uuid == app_id).first()
+        explore_state = ExploreState.query.filter(ExploreState.uuid == app_id,
+                                                  ExploreState.is_archived == False).first()
         if not explore_state:
             return make_response(jsonify({}), 404)
 
         return make_response(jsonify(explore_state_response_serializer(explore_state)), 200)
 
     def put(self, app_id):
-        explore_state = ExploreState.query.filter(ExploreState.uuid == app_id).first()
+        explore_state = ExploreState.query.filter(ExploreState.uuid == app_id,
+                                                  ExploreState.is_archived == False).first()
         if not explore_state:
             return make_response(jsonify({}), 404)
 
@@ -59,7 +61,8 @@ class DashboardAppsGetPutDeleteApi(Resource):
         return make_response(jsonify(explore_state_response_serializer(explore_state)), 200)
 
     def delete(self, app_id):
-        explore_state = ExploreState.query.filter(ExploreState.uuid == app_id).first()
+        explore_state = ExploreState.query.filter(ExploreState.uuid == app_id,
+                                                  ExploreState.is_archived == False).first()
         if not explore_state:
             return make_response(jsonify({}), 404)
 

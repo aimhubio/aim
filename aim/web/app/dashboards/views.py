@@ -44,14 +44,14 @@ class DashboardsListCreateApi(Resource):
 @dashboards_api.resource('/<dashboard_id>')
 class DashboardsGetPutDeleteApi(Resource):
     def get(self, dashboard_id):
-        dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id).first()
+        dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id, Dashboard.is_archived == False).first()
         if not dashboard:
             return make_response(jsonify({}), 404)
 
         return make_response(jsonify(dashboard_response_serializer(dashboard)), 200)
 
     def put(self, dashboard_id):
-        dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id).first()
+        dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id, Dashboard.is_archived == False).first()
         if not dashboard:
             return make_response(jsonify({}), 404)
         request_data = json.loads(request.data)
@@ -62,7 +62,7 @@ class DashboardsGetPutDeleteApi(Resource):
         return make_response(jsonify(dashboard_response_serializer(dashboard)), 200)
 
     def delete(self, dashboard_id):
-        dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id).first()
+        dashboard = Dashboard.query.filter(Dashboard.uuid == dashboard_id, Dashboard.is_archived == False).first()
         if not dashboard:
             return make_response(jsonify({}), 404)
 

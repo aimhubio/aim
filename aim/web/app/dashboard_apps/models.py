@@ -15,11 +15,11 @@ class AppMixin(object):
     is_archived = db.Column(db.Boolean, default=False)
 
     @declared_attr
-    def target_id(cls):
+    def dashboard_id(cls):
         return db.Column('dashboard_id', db.ForeignKey('dashboards.uuid'))
 
     @declared_attr
-    def target(cls):
+    def dashboard(cls):
         return relationship("Dashboard")
 
 
