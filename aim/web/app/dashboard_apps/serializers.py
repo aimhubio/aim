@@ -34,7 +34,7 @@ class ExploreStateModelSerializer(BaseModelSerializer):
                 chart_settings_persistent_y_scale = ModelField(type=int, source='yScale')
                 chart_settings_persistent_points_count = ModelField(type=int, source='pointsCount')
                 chart_settings_persistent_smoothing_algorithm = ModelField(type=str, source='smoothingAlgorithm')
-                chart_settings_persistent_smooth_factor = ModelField(type=float, source='smoothFactor')
+                chart_settings_persistent_smooth_factor = ModelField(type=(int, float), source='smoothFactor')
                 chart_settings_persistent_aggregated = ModelField(type=bool, source='aggregated')
 
             chart_settings_zoom_mode = ModelField(type=bool, source='zoomMode')
@@ -86,7 +86,7 @@ class ExploreStateModelSerializer(BaseModelSerializer):
 
     class ScreenSerializer(BaseSerializer):
         screen_view_mode = ModelField(type=str, source='viewMode')
-        screen_panel_flex = ModelField(type=float, source='panelFlex')
+        screen_panel_flex = ModelField(type=(int, float), source='panelFlex')
 
     class TableSerializer(BaseSerializer):
         class ColumnsOrderSerializer(BaseSerializer):
