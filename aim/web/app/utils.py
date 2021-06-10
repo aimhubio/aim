@@ -6,6 +6,7 @@ import pytz
 from collections import namedtuple, OrderedDict
 from collections.abc import Iterable
 
+
 def datetime_now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
 
@@ -104,14 +105,19 @@ class BaseSerializer(metaclass=SerializerMetaclass):
     FIELD_BLANK_ERROR_MESSAGE = 'The value of this field can\t be blank.'
     FIELD_WRONG_VALUE_ERROR_MESSAGE_TEMPLATE = 'This field must be of type {}, {} given.'
 
-    def __init__(self, json_data):
-        self._json_data = json_data
+    def __init__(self, json_data=None):
+        self._json_data = json_data if json_data else {}
         self._error_messages = {}
         self._validated_data = {}
+        self._serialized_data = {}
 
     @property
     def validated_data(self):
         return self._validated_data
+
+    @property
+    def serialized_data(self):
+        return self._serialized_data
 
     @property
     def error_messages(self):
@@ -175,9 +181,26 @@ class BaseSerializer(metaclass=SerializerMetaclass):
             if raise_exception:
                 raise ValidationError(self._error_messages)
 
+    def serialize(self, model_instance):
+        for field_name, field in self._declared_fields.items():
+            field_source = field.source if field.source else field_name
+            if hasattr(field.type, 'serialized_data'):
+                nested_serializer = field.type(model_instance)
+                nested_serializer.serialize(model_instance)
+                self._serialized_data[field_source] = nested_serializer.serialized_data
+            else:
+                value = getattr(model_instance, field_name)
+                if isinstance(field.type, Iterable):
+                    needs_json_load = set(field.type).intersection({list, dict})
+                else:
+                    needs_json_load = field.type in (list, dict)
+                if needs_json_load:
+                    value = json_loads_or_none(value)
+                self._serialized_data[field_source] = value
+
 
 class BaseModelSerializer(BaseSerializer):
-    def __init__(self, model_instance, json_data):
+    def __init__(self, model_instance, json_data=None):
         self._model_instance = model_instance
         super().__init__(json_data=json_data)
 
@@ -185,3 +208,8 @@ class BaseModelSerializer(BaseSerializer):
         for field, field_value in self._validated_data.items():
             setattr(self._model_instance, field, field_value)
         return self._model_instance
+
+    def serialize(self, model_instance=None):
+        if not model_instance:
+            model_instance = self._model_instance
+        super().serialize(model_instance=model_instance)
