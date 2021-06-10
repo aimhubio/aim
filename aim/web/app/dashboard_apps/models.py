@@ -34,12 +34,16 @@ class ExploreState(AppMixin, db.Model):
     chart_focused_circle_run_hash = db.Column(db.Text)
     chart_focused_circle_metric_name = db.Column(db.Text)
     chart_focused_circle_step = db.Column(db.Integer)
+    chart_focused_circle_trace_context = db.Column(db.Text)
+    chart_focused_circle_param = db.Column(db.Text)
+    chart_focused_circle_content_type = db.Column(db.Text)
     chart_settings_zoom_mode = db.Column(db.Boolean)
     chart_settings_single_zoom_mode = db.Column(db.Boolean)
     chart_settings_zoom_history = db.Column(db.Text)  # list[tuple[str, dict[str, tuple[int, int]]]]
     chart_settings_highlight_mode = db.Column(db.Text)
     chart_settings_persistent_display_outliers = db.Column(db.Boolean)
     chart_settings_persistent_zoom = db.Column(db.Text)  # dict[str, dict[str, tuple[int, int]]]
+    chart_settings_persistent_interpolate = db.Column(db.Boolean)
     chart_settings_persistent_indicator = db.Column(db.Boolean)
     chart_settings_persistent_x_alignment = db.Column(db.Text)  # str | tuple[str]
     chart_settings_persistent_x_scale = db.Column(db.Integer)
@@ -49,9 +53,11 @@ class ExploreState(AppMixin, db.Model):
     chart_settings_persistent_smooth_factor = db.Column(db.Float)
     chart_settings_persistent_aggregated = db.Column(db.Boolean)
     chart_hidden_metrics = db.Column(db.Text)  # list[str]
+    chart_tooltip_options_display = db.Column(db.Boolean)
+    chart_tooltip_options_fields = db.Column(db.Text)  # list[str]
 
     search_query = db.Column(db.Text)
-    search_v = db.Column(db.Text)
+    search_v = db.Column(db.Integer)
 
     search_input_value = db.Column(db.Text)
     search_input_select_input = db.Column(db.Text)
@@ -74,19 +80,15 @@ class ExploreState(AppMixin, db.Model):
 
     sort_fields = db.Column(db.Text)  # list[tuple[str, str]]
 
-    row_height_mode = db.Column(db.Text)
+    table_row_height_mode = db.Column(db.Text)
+    table_columns_order_left = db.Column(db.Text)  # list[str]
+    table_columns_order_middle = db.Column(db.Text)  # list[str]
+    table_columns_order_right = db.Column(db.Text)  # list[str]
+    table_columns_widths = db.Column(db.Text)  # dict[str, int]
+    table_excluded_fields = db.Column(db.Text)  # list[str]
 
-    columns_order_left = db.Column(db.Text)   # list[str]
-    columns_order_middle = db.Column(db.Text)  # list[str]
-    columns_order_right = db.Column(db.Text)  # list[str]
-
-    columns_width = db.Column(db.Text)  # dict[str, int]
-
-    excluded_fields = db.Column(db.Text)  # list[str]
-
-    view_mode = db.Column(db.Text)
-
-    panel_flex = db.Column(db.Float)
+    screen_view_mode = db.Column(db.Text)
+    screen_panel_flex = db.Column(db.Float)
 
     def __init__(self):
         self.uuid = str(uuid.uuid1())

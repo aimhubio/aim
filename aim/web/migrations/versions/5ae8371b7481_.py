@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: aed1f0200435
+Revision ID: 5ae8371b7481
 Revises: 11672b13f92c
-Create Date: 2021-06-09 03:57:15.122513
+Create Date: 2021-06-10 14:13:40.552387
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'aed1f0200435'
+revision = '5ae8371b7481'
 down_revision = '11672b13f92c'
 branch_labels = None
 depends_on = None
@@ -39,12 +39,16 @@ def upgrade():
     sa.Column('chart_focused_circle_run_hash', sa.Text(), nullable=True),
     sa.Column('chart_focused_circle_metric_name', sa.Text(), nullable=True),
     sa.Column('chart_focused_circle_step', sa.Integer(), nullable=True),
+    sa.Column('chart_focused_circle_trace_context', sa.Text(), nullable=True),
+    sa.Column('chart_focused_circle_param', sa.Text(), nullable=True),
+    sa.Column('chart_focused_circle_content_type', sa.Text(), nullable=True),
     sa.Column('chart_settings_zoom_mode', sa.Boolean(), nullable=True),
     sa.Column('chart_settings_single_zoom_mode', sa.Boolean(), nullable=True),
     sa.Column('chart_settings_zoom_history', sa.Text(), nullable=True),
     sa.Column('chart_settings_highlight_mode', sa.Text(), nullable=True),
     sa.Column('chart_settings_persistent_display_outliers', sa.Boolean(), nullable=True),
     sa.Column('chart_settings_persistent_zoom', sa.Text(), nullable=True),
+    sa.Column('chart_settings_persistent_interpolate', sa.Boolean(), nullable=True),
     sa.Column('chart_settings_persistent_indicator', sa.Boolean(), nullable=True),
     sa.Column('chart_settings_persistent_x_alignment', sa.Text(), nullable=True),
     sa.Column('chart_settings_persistent_x_scale', sa.Integer(), nullable=True),
@@ -54,8 +58,10 @@ def upgrade():
     sa.Column('chart_settings_persistent_smooth_factor', sa.Float(), nullable=True),
     sa.Column('chart_settings_persistent_aggregated', sa.Boolean(), nullable=True),
     sa.Column('chart_hidden_metrics', sa.Text(), nullable=True),
+    sa.Column('chart_tooltip_options_display', sa.Boolean(), nullable=True),
+    sa.Column('chart_tooltip_options_fields', sa.Text(), nullable=True),
     sa.Column('search_query', sa.Text(), nullable=True),
-    sa.Column('search_v', sa.Text(), nullable=True),
+    sa.Column('search_v', sa.Integer(), nullable=True),
     sa.Column('search_input_value', sa.Text(), nullable=True),
     sa.Column('search_input_select_input', sa.Text(), nullable=True),
     sa.Column('search_input_select_condition_input', sa.Text(), nullable=True),
@@ -73,14 +79,14 @@ def upgrade():
     sa.Column('context_filter_persist_style', sa.Boolean(), nullable=True),
     sa.Column('color_palette', sa.Integer(), nullable=True),
     sa.Column('sort_fields', sa.Text(), nullable=True),
-    sa.Column('row_height_mode', sa.Text(), nullable=True),
-    sa.Column('columns_order_left', sa.Text(), nullable=True),
-    sa.Column('columns_order_middle', sa.Text(), nullable=True),
-    sa.Column('columns_order_right', sa.Text(), nullable=True),
-    sa.Column('columns_width', sa.Text(), nullable=True),
-    sa.Column('excluded_fields', sa.Text(), nullable=True),
-    sa.Column('view_mode', sa.Text(), nullable=True),
-    sa.Column('panel_flex', sa.Float(), nullable=True),
+    sa.Column('table_row_height_mode', sa.Text(), nullable=True),
+    sa.Column('table_columns_order_left', sa.Text(), nullable=True),
+    sa.Column('table_columns_order_middle', sa.Text(), nullable=True),
+    sa.Column('table_columns_order_right', sa.Text(), nullable=True),
+    sa.Column('table_columns_widths', sa.Text(), nullable=True),
+    sa.Column('table_excluded_fields', sa.Text(), nullable=True),
+    sa.Column('screen_view_mode', sa.Text(), nullable=True),
+    sa.Column('screen_panel_flex', sa.Float(), nullable=True),
     sa.Column('dashboard_id', sa.Text(), nullable=True),
     sa.ForeignKeyConstraint(['dashboard_id'], ['dashboards.uuid'], ),
     sa.PrimaryKeyConstraint('uuid')

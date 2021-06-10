@@ -23,29 +23,36 @@ def explore_state_response_serializer(es_object):
                         'active': es_object.chart_focused_circle_active,
                         'runHash': es_object.chart_focused_circle_run_hash,
                         'metricName': es_object.chart_focused_circle_metric_name,
-                        'traceContext': es_object.chart_focused_metric_trace_context,
+                        'traceContext': es_object.chart_focused_circle_trace_context,
                         'step': es_object.chart_focused_circle_step,
+                        'param': es_object.chart_focused_circle_param,
+                        'contentType': es_object.chart_focused_circle_content_type,
                     },
-                    'settings': {
-                        'zoomMode': es_object.chart_settings_zoom_mode,
-                        'singleZoomMode': es_object.chart_settings_single_zoom_mode,
-                        'zoomHistory': json_loads_or_none(es_object.chart_settings_zoom_history),
-                        'highlightMode': es_object.chart_settings_highlight_mode,
-                        'persistent': {
-                            'displayOutliers': es_object.chart_settings_persistent_display_outliers,
-                            'zoom': json_loads_or_none(es_object.chart_settings_persistent_zoom),
-                            'indicator': es_object.chart_settings_persistent_indicator,
-                            'xAlignment': json_loads_or_none(es_object.chart_settings_persistent_x_alignment),
-                            'xScale': es_object.chart_settings_persistent_x_scale,
-                            'yScale': es_object.chart_settings_persistent_y_scale,
-                            'pointsCount': es_object.chart_settings_persistent_points_count,
-                            'smoothingAlgorithm': es_object.chart_settings_persistent_smoothing_algorithm,
-                            'smoothFactor': es_object.chart_settings_persistent_smooth_factor,
-                            'aggregated': es_object.chart_settings_persistent_aggregated,
-                        },
-                    },
-                    'hiddenMetrics': json_loads_or_none(es_object.chart_hidden_metrics),
                 },
+                'settings': {
+                    'zoomMode': es_object.chart_settings_zoom_mode,
+                    'singleZoomMode': es_object.chart_settings_single_zoom_mode,
+                    'zoomHistory': json_loads_or_none(es_object.chart_settings_zoom_history),
+                    'highlightMode': es_object.chart_settings_highlight_mode,
+                    'persistent': {
+                        'displayOutliers': es_object.chart_settings_persistent_display_outliers,
+                        'zoom': json_loads_or_none(es_object.chart_settings_persistent_zoom),
+                        'interpolate': es_object.chart_settings_persistent_interpolate,
+                        'indicator': es_object.chart_settings_persistent_indicator,
+                        'xAlignment': json_loads_or_none(es_object.chart_settings_persistent_x_alignment),
+                        'xScale': es_object.chart_settings_persistent_x_scale,
+                        'yScale': es_object.chart_settings_persistent_y_scale,
+                        'pointsCount': es_object.chart_settings_persistent_points_count,
+                        'smoothingAlgorithm': es_object.chart_settings_persistent_smoothing_algorithm,
+                        'smoothFactor': es_object.chart_settings_persistent_smooth_factor,
+                        'aggregated': es_object.chart_settings_persistent_aggregated,
+                    },
+                },
+                'hiddenMetrics': json_loads_or_none(es_object.chart_hidden_metrics),
+                'tooltipOptions': {
+                    'display': es_object.chart_tooltip_options_display,
+                    'fields': json_loads_or_none(es_object.chart_tooltip_options_fields),
+                }
             },
             'search': {
                 'query': es_object.search_query,
@@ -73,21 +80,25 @@ def explore_state_response_serializer(es_object):
                 },
                 'persist': {
                     'color': es_object.context_filter_persist_color,
-                    'style': es_object.context_filter_seed_style,
+                    'style': es_object.context_filter_persist_style,
                 }
             },
             'colorPalette': es_object.color_palette,
             'sortFields': json_loads_or_none(es_object.sort_fields),
-            'rowHeightMode': es_object.row_height_mode,
-            'columnsOrder': {
-                'left': json_loads_or_none(es_object.columns_order_left),
-                'middle': json_loads_or_none(es_object.columns_order_middle),
-                'right': json_loads_or_none(es_object.columns_order_right),
+            'table': {
+                'rowHeightMode': es_object.table_row_height_mode,
+                'columnsOrder': {
+                    'left': json_loads_or_none(es_object.table_columns_order_left),
+                    'middle': json_loads_or_none(es_object.table_columns_order_middle),
+                    'right': json_loads_or_none(es_object.table_columns_order_right),
+                },
+                'columnsWidths': json_loads_or_none(es_object.table_columns_widths),
+                'excludedFields': json_loads_or_none(es_object.table_excluded_fields),
             },
-            'columnsWidth': json_loads_or_none(es_object.columns_width),
-            'excludedFields': json_loads_or_none(es_object.excluded_fields),
-            'viewMode': es_object.view_mode,
-            'panelFlex': es_object.panel_flex,
+            'screen': {
+                'viewMode': es_object.screen_view_mode,
+                'panelFlex': es_object.screen_panel_flex,
+            },
         }
     }
 
@@ -103,11 +114,13 @@ class ExploreStateModelSerializer(BaseModelSerializer):
                 chart_focused_metric_trace_context = ModelField(type=str, source='traceContext')
 
             class CircleSerializer(BaseSerializer):
-                chart_focused_circle_active = ModelField(type=bool)
+                chart_focused_circle_active = ModelField(type=bool, source='active')
                 chart_focused_circle_run_hash = ModelField(type=str, source='runHash')
                 chart_focused_circle_metric_name = ModelField(type=str, source='metricName')
                 chart_focused_circle_trace_context = ModelField(type=str, source='traceContext')
                 chart_focused_circle_step = ModelField(type=int, source='step')
+                chart_focused_circle_param = ModelField(type=str, source='param')
+                chart_focused_circle_content_type = ModelField(type=str, source='contentType')
 
             metric = Field(type=MetricSerializer)
             circle = Field(type=CircleSerializer)
@@ -117,6 +130,7 @@ class ExploreStateModelSerializer(BaseModelSerializer):
             class PersistentSerializer(BaseSerializer):
                 chart_settings_persistent_display_outliers = ModelField(type=bool, source='displayOutliers')
                 chart_settings_persistent_zoom = ModelField(type=dict, source='zoom')
+                chart_settings_persistent_interpolate = ModelField(type=bool, source='interpolate')
                 chart_settings_persistent_indicator = ModelField(type=bool, source='indicator')
                 chart_settings_persistent_x_alignment = ModelField(type=(str, list), source='xAlignment')
                 chart_settings_persistent_x_scale = ModelField(type=int, source='xScale')
@@ -128,18 +142,22 @@ class ExploreStateModelSerializer(BaseModelSerializer):
 
             chart_settings_zoom_mode = ModelField(type=bool, source='zoomMode')
             chart_settings_single_zoom_mode = ModelField(type=bool, source='singleZoomMode')
-            chart_settings_zoom_history = ModelField(type=bool,
-                                                     source='zoomHistory')  # list[tuple[str, dict[str, tuple[int, int]]]]
+            chart_settings_zoom_history = ModelField(type=list, source='zoomHistory')
             chart_settings_highlight_mode = ModelField(type=str, source='highlightMode')
             persistent = Field(type=PersistentSerializer)
 
+        class TooltipOptionsSerializer(BaseSerializer):
+            chart_tooltip_options_display = ModelField(type=bool, source='display')
+            chart_tooltip_options_fields = ModelField(type=list, source='fields')
+
         focused = Field(type=FocusedSerializer)
         settings = Field(type=SettingsSerializer)
+        tooltip_options = Field(type=TooltipOptionsSerializer, source='tooltipOptions')
         chart_hidden_metrics = ModelField(type=list, source='hiddenMetrics')
 
     class SearchSerializer(BaseSerializer):
         search_query = ModelField(type=str, source='query')
-        search_v = ModelField(type=str, source='v')
+        search_v = ModelField(type=int, source='v')
 
     class SearchInputSerializer(BaseSerializer):
         search_input_value = ModelField(type=str, source='value')
@@ -148,9 +166,9 @@ class ExploreStateModelSerializer(BaseModelSerializer):
 
     class ContextFilterSerializer(BaseSerializer):
         class GroupAgainstSerializer(BaseSerializer):
-            context_filter_group_against_color = ModelField(type=list, source='groupByColor')
-            context_filter_group_against_style = ModelField(type=list, source='groupByColor')
-            context_filter_group_against_chart = ModelField(type=list, source='groupByColor')
+            context_filter_group_against_color = ModelField(type=bool, source='color')
+            context_filter_group_against_style = ModelField(type=bool, source='style')
+            context_filter_group_against_chart = ModelField(type=bool, source='chart')
 
         class SeedSerializer(BaseSerializer):
             context_filter_seed_color = ModelField(type=int, source='color')
@@ -169,10 +187,20 @@ class ExploreStateModelSerializer(BaseModelSerializer):
         seed = Field(type=SeedSerializer)
         persist = Field(type=PersistSerializer)
 
-    class ColumnsOrderSerializer(BaseSerializer):
-        columns_order_left = ModelField(type=list, source='left')
-        columns_order_middle = ModelField(type=list, source='middle')
-        columns_order_right = ModelField(type=list, source='right')
+    class ScreenSerializer(BaseSerializer):
+        screen_view_mode = ModelField(type=str, source='viewMode')
+        screen_panel_flex = ModelField(type=float, source='panelFlex')
+
+    class TableSerializer(BaseSerializer):
+        class ColumnsOrderSerializer(BaseSerializer):
+            table_columns_order_left = ModelField(type=list, source='left')
+            table_columns_order_middle = ModelField(type=list, source='middle')
+            table_columns_order_right = ModelField(type=list, source='right')
+
+        columns_order = Field(type=ColumnsOrderSerializer, source='columnsOrder')
+        table_row_height_mode = ModelField(type=str, source='rowHeightMode')
+        table_columns_widths = ModelField(type=dict, source='columnsWidths')
+        table_excluded_fields = ModelField(type=list, source='excludedFields')
 
     chart = Field(type=ChartSerializer)
     search = Field(type=SearchSerializer)
@@ -180,9 +208,5 @@ class ExploreStateModelSerializer(BaseModelSerializer):
     context_filter = Field(type=ContextFilterSerializer, source='contextFilter')
     color_palette = ModelField(type=int, source='colorPalette')
     sort_fields = ModelField(type=list, source='sortFields')
-    row_height_mode = ModelField(type=str, source='rowHeightMode')
-    columns_order = Field(type=ColumnsOrderSerializer, source='columnsOrder')
-    columns_width = ModelField(type=dict, source='columnsWidth')
-    excluded_fields = ModelField(type=list, source='excludedFields')
-    view_mode = ModelField(type=str, source='viewMode')
-    panel_flex = ModelField(type=float, source='panelFlex')
+    screen = Field(type=ScreenSerializer)
+    table = Field(type=TableSerializer)
