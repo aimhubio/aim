@@ -1,6 +1,6 @@
 {
-  "name": "aimde",
-  "version": "0.1.2",
+  "name": "aimui",
+  "version": "",
   "private": true,
   "dependencies": {
     "color": "^3.1.2",

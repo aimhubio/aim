@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Add ability to align X-axis by a metric (mihran113, roubkar)
 - Add tooltip popover for the chart hover state (roubkar)
 
 ## 2.5.0 May 27 2021

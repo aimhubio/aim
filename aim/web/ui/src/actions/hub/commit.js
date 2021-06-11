@@ -17,7 +17,7 @@ export function getRunsByQuery(query) {
   };
 }
 
-export function getCommitsMetricsByQuery(query, numPoints) {
+export function getCommitsMetricsByQuery(query, numPoints, xAxis) {
   return (dispatch) => {
     // return new Promise((resolve, reject) => {
     //   callApi('Commit.getCommitsMetricsByQuery', {
@@ -38,76 +38,10 @@ export function getCommitsMetricsByQuery(query, numPoints) {
       fetch(
         `${SERVER_API_HOST}/commits/search/metric?p=${numPoints}&q=${encodeURI(
           query,
-        )}`,
+        )}&x_axis=${xAxis}`,
       )
         .then((response) => response.body)
-        .then((rb) => {
-          const reader = rb.getReader();
-
-          return new ReadableStream({
-            start(controller) {
-              function push() {
-                reader.read().then(({ done, value }) => {
-                  if (done) {
-                    controller.close();
-                    resolve(runsResult);
-                    return;
-                  }
-
-                  controller.enqueue(value);
-                  let lastPushIdx = 0;
-                  let cursor = 0;
-
-                  while (true) {
-                    if (cursor === value.length) {
-                      if (lastPushIdx < value.length - 1) {
-                        buffer = appendBuffer(
-                          buffer,
-                          value.slice(lastPushIdx, value.length),
-                        );
-                      }
-
-                      break;
-                    }
-
-                    if (value[cursor] === 10) {
-                      buffer = appendBuffer(
-                        buffer,
-                        value.slice(lastPushIdx, cursor),
-                      );
-
-                      try {
-                        const decodedText = new TextDecoder().decode(buffer);
-                        const decodedValue = JSON.parse(decodedText);
-                        if (decodedValue.hasOwnProperty('header')) {
-                          runsResult = decodedValue['header'];
-                        } else if (decodedValue.hasOwnProperty('run')) {
-                          runsResult?.['runs']?.push(decodedValue['run']);
-                        }
-                      } catch (e) {
-                        console.log(
-                          'metric parse error',
-                          lastPushIdx,
-                          cursor,
-                          e,
-                        );
-                      }
-
-                      lastPushIdx = cursor;
-                      buffer = new ArrayBuffer(0);
-                    }
-
-                    cursor += 1;
-                  }
-
-                  push();
-                });
-              }
-
-              push();
-            },
-          });
-        })
+        .then((rb) => handleStreamResponse(rb, resolve, runsResult, buffer))
         .then((stream) => {
           // Respond with our stream
           // return new Response(stream, { headers: { 'Content-Type': 'text/html' } }).text();
@@ -115,6 +49,87 @@ export function getCommitsMetricsByQuery(query, numPoints) {
         .then((result) => {});
     });
   };
+}
+
+export function alignXAxisByMetric(reqBody) {
+  return (dispatch) => {
+    return new Promise((resolve, reject) => {
+      let runsResult = {};
+      let buffer = new ArrayBuffer(0);
+
+      fetch(`${SERVER_API_HOST}/commits/search/metric/align`, {
+        method: 'POST',
+        body: JSON.stringify(reqBody),
+      })
+        .then((response) => response.body)
+        .then((rb) => handleStreamResponse(rb, resolve, runsResult, buffer))
+        .then((stream) => {
+          // Respond with our stream
+          // return new Response(stream, { headers: { 'Content-Type': 'text/html' } }).text();
+        })
+        .then((result) => {});
+    });
+  };
+}
+
+function handleStreamResponse(rb, resolve, runsResult, buffer) {
+  const reader = rb.getReader();
+
+  return new ReadableStream({
+    start(controller) {
+      function push() {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            controller.close();
+            resolve(runsResult);
+            return;
+          }
+
+          controller.enqueue(value);
+          let lastPushIdx = 0;
+          let cursor = 0;
+
+          while (true) {
+            if (cursor === value.length) {
+              if (lastPushIdx < value.length - 1) {
+                buffer = appendBuffer(
+                  buffer,
+                  value.slice(lastPushIdx, value.length),
+                );
+              }
+
+              break;
+            }
+
+            if (value[cursor] === 10) {
+              buffer = appendBuffer(buffer, value.slice(lastPushIdx, cursor));
+
+              try {
+                const decodedText = new TextDecoder().decode(buffer);
+                const decodedValue = JSON.parse(decodedText);
+                if (decodedValue.hasOwnProperty('header')) {
+                  runsResult = decodedValue['header'];
+                } else if (decodedValue.hasOwnProperty('run')) {
+                  runsResult?.['runs']?.push(decodedValue['run']);
+                }
+              } catch (e) {
+                console.log('metric parse error', lastPushIdx, cursor, e);
+              }
+
+              lastPushIdx = cursor;
+              buffer = new ArrayBuffer(0);
+            }
+
+            cursor += 1;
+          }
+
+          push();
+        });
+      }
+
+      push();
+    },
+  });
 }
 
 export function getCommitsDictionariesByQuery(query) {
