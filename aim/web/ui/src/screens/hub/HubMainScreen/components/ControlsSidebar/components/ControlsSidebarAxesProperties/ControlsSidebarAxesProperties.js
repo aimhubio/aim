@@ -24,16 +24,7 @@ function ControlsSidebarAxesProperties(props) {
     setTraceList,
   } = HubMainScreenModel.emitters;
 
-  const metrics =
-    props.project?.metrics?.filter((m) => {
-      return (
-        !m.startsWith('__system__') &&
-        !HubMainScreenModel.getState()
-          .searchInput.selectInput.split(',')
-          .map((i) => i.trim())
-          .includes(m)
-      );
-    }) ?? [];
+  const metrics = props.project?.metrics?.filter((m) => !m.startsWith('__system__')) ?? [];
 
   function changeAxisScaleOption(axis, option) {
     setChartSettingsState(
