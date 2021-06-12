@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.6.0 Jun 12 2021
 - Resolve namedtuple python 3.5 incompatibility (gorarakelyan)
 - Add ability to align X-axis by a metric (mihran113, roubkar)
 - Add tooltip popover for the chart hover state (roubkar)
