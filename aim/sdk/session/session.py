@@ -32,7 +32,7 @@ from aim.resource.tracker import ResourceTracker
 class Session:
     sessions = {}  # type: Dict[str, List['Session']] = {}
 
-    Job = namedtuple('Job', 'target, args, kwargs', defaults=[[], {}])
+    Job = namedtuple('Job', 'target, args, kwargs')
 
     _are_exit_listeners_set = False
     _original_sigint_handler = None
@@ -113,7 +113,7 @@ class Session:
     def flush(self):
         if not self.active:
             raise Exception('session is closed')
-        job = Session.Job(target=self._flush)
+        job = Session.Job(target=self._flush, args=[], kwargs={})
         self._queue.put(job)
 
     @exception_resistant
