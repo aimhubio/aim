@@ -151,7 +151,9 @@ class ProjectParamsApi(Resource):
 @projects_api.resource('/<exp_name>/<commit>/models/<model_name>')
 class ExperimentModelApi(Resource):
     def get(self, exp_name, commit, model_name):
-        dir_path = os.path.join(os.getcwd(), '.aim', exp_name, commit)
+        project = Project()
+
+        dir_path = os.path.join(project.repo_path, exp_name, commit)
         objects_dir_path = os.path.join(dir_path, 'objects')
         models_dir_path = os.path.join(objects_dir_path, 'models')
 
@@ -167,7 +169,7 @@ class ProjectExperimentApi(Resource):
         if not project.exists():
             return make_response(jsonify({}), 404)
 
-        dir_path = os.path.join(os.getcwd(), '.aim', experiment_name)
+        dir_path = os.path.join(project.repo_path, experiment_name)
 
         # Check if experiment exists
         if not os.path.isdir(dir_path):

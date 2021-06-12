@@ -422,7 +422,9 @@ class CommitTagUpdateApi(Resource):
 @commits_api.resource('/<experiment>/<commit_hash>/info')
 class CommitInfoApi(Resource):
     def get(self, experiment, commit_hash):
-        commit_path = os.path.join(os.getcwd(), '.aim', experiment, commit_hash)
+        project = Project()
+
+        commit_path = os.path.join(project.repo_path, experiment, commit_hash)
 
         if not os.path.isdir(commit_path):
             return make_response(jsonify({}), 404)
