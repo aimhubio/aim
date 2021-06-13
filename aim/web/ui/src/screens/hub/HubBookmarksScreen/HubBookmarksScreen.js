@@ -29,7 +29,6 @@ function HubBookmarksScreen(props) {
                 ...dashboard,
                 app_state: app.app_state,
               });
-              console.log(app.app_state);
             }
           });
         });

@@ -280,12 +280,12 @@ function HubMainScreen(props) {
                 setChartFocusedActiveState(
                   data.app_state.chart.focused,
                   null,
-                  true,
+                  false,
                 );
                 setChartSettingsState(
                   data.app_state.chart.settings,
                   setTraceList,
-                  true,
+                  false,
                 );
               }),
             );
