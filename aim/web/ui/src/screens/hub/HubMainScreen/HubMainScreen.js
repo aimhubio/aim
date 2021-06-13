@@ -34,6 +34,7 @@ import Alert from './components/Alert/Alert';
 import UI from '../../../ui';
 import QueryParseErrorAlert from '../../../components/hub/QueryParseErrorAlert/QueryParseErrorAlert';
 import SaveAsModal from './components/SaveAsModal/SaveAsModal';
+import AlignmentWarning from './components/AlignmentWarning/AlignmentWarning';
 
 const URLStateParams = [
   'chart.focused.circle',
@@ -84,6 +85,8 @@ function HubMainScreen(props) {
     setScreenState,
     setViewKey,
   } = HubMainScreenModel.emitters;
+
+  const { traceToHash } = HubMainScreenModel.helpers;
 
   const projectWrapperRef = useRef();
   const searchBarRef = useRef();
@@ -231,12 +234,9 @@ function HubMainScreen(props) {
         setSearchState(
           state.search,
           () => {
-            searchByQuery(state.chart.settings.persistent.pointsCount).then(
-              () => {
-                setChartFocusedActiveState(state.chart.focused, null, true);
-                setChartSettingsState(state.chart.settings, setTraceList, true);
-              },
-            );
+            setChartFocusedActiveState(state.chart.focused, null, true);
+            setChartSettingsState(state.chart.settings, null, true);
+            searchByQuery().then(setTraceList);
           },
           false,
           true,
@@ -299,10 +299,6 @@ function HubMainScreen(props) {
   }
 
   function updateURL({ replaceUrl }) {
-    if (!isURLStateOutdated(window.location.search)) {
-      return;
-    }
-
     const state = getCurrentState();
 
     const URL = stateToURL(state);
@@ -333,40 +329,49 @@ function HubMainScreen(props) {
     }
   }
 
-  function searchByQuery(
-    pointsCount = HubMainScreenModel.getState().chart.settings.persistent
-      .pointsCount || 50,
-  ) {
+  function searchByQuery(search = true) {
     return new Promise((resolve) => {
-      const query = HubMainScreenModel.getState().search?.query?.trim();
-      setChartFocusedState({
-        step: null,
-        metric: {
-          runHash: null,
-          metricName: null,
-          traceContext: null,
-        },
-        circle: {
-          active: false,
-          runHash: null,
-          metricName: null,
-          traceContext: null,
+      setChartFocusedState(
+        {
           step: null,
+          metric: {
+            runHash: null,
+            metricName: null,
+            traceContext: null,
+          },
+          circle: {
+            active: false,
+            runHash: null,
+            metricName: null,
+            traceContext: null,
+            step: null,
+          },
         },
-      });
-
-      Promise.all([
-        getRunsByQuery(query, pointsCount),
-        // Get other properties
-      ]).then(resolve);
+        () => {
+          const xAxis =
+            HubMainScreenModel.getState().chart.settings.persistent.xAlignment;
+          const metricName = Array.isArray(xAxis) ? xAxis[0] : undefined;
+          if (search) {
+            const query = HubMainScreenModel.getState().search?.query?.trim();
+            const pointsCount =
+              HubMainScreenModel.getState().chart.settings.persistent
+                .pointsCount || 50;
+            getRunsByQuery(query, pointsCount, metricName).then(resolve);
+          } else {
+            if (metricName !== undefined) {
+              alignRunsByMetric(metricName).then(resolve);
+            }
+          }
+        },
+      );
     });
   }
 
-  function getRunsByQuery(query, numPoints) {
+  function getRunsByQuery(query, numPoints, xAxis) {
     return new Promise((resolve, reject) => {
       setRunsState({ isLoading: true });
       props
-        .getCommitsMetricsByQuery(query, numPoints)
+        .getCommitsMetricsByQuery(query, numPoints, xAxis)
         .then((data) => {
           setRunsState(
             {
@@ -375,6 +380,7 @@ function HubMainScreen(props) {
               params: data.params,
               aggMetrics: data.agg_metrics,
               meta: data.meta,
+              ...(xAxis !== undefined && getAlignmentFields(data.runs)),
             },
             resolve,
           );
@@ -417,6 +423,167 @@ function HubMainScreen(props) {
     });
   }
 
+  function alignRunsByMetric(metricName) {
+    return new Promise((resolve, reject) => {
+      setRunsState({ isLoading: true });
+
+      const reqBody = {
+        align_by: metricName,
+        runs: HubMainScreenModel.getState().runs?.data.map((run) => ({
+          run_hash: run.run_hash,
+          experiment_name: run.experiment_name,
+          metrics: run.metrics.map((metric) => ({
+            name: metric?.name,
+            traces: metric?.traces.map((trace) => ({
+              slice: trace?.slice,
+              context: trace?.context,
+            })),
+          })),
+        })),
+      };
+
+      props
+        .alignXAxisByMetric(reqBody)
+        .then((data) => {
+          const currentRuns = mergeMetricAlignDataToRuns(
+            _.cloneDeep(HubMainScreenModel.getState().runs?.data),
+            data.runs,
+          );
+          setRunsState(currentRuns, resolve);
+          setState((s) => ({
+            ...s,
+            searchError: null,
+          }));
+        })
+        .catch((err) => {
+          const errorBody = err?.response?.body;
+          setState((s) => ({
+            ...s,
+            searchError: errorBody?.type === 'parse_error' ? errorBody : null,
+          }));
+          setRunsState(
+            {
+              isEmpty: true,
+              data: null,
+              params: [],
+              aggMetrics: {},
+              meta: null,
+            },
+            resolve,
+          );
+        })
+        .finally(() => {
+          setRunsState({ isLoading: false });
+        });
+    });
+  }
+
+  function mergeMetricAlignDataToRuns(runs, alignedRuns) {
+    let isSynced = true;
+    let isAsc = true;
+    let isSkipped = false;
+    let isAligned = false;
+    runs.forEach((run) => {
+      run?.metrics?.forEach((metric) => {
+        metric?.traces?.forEach((trace) => {
+          const traceKey = traceToHash(
+            run?.run_hash,
+            metric?.name,
+            trace?.context,
+          );
+          let merged = false;
+          alignedRuns.forEach((alignedRun) => {
+            alignedRun?.metrics?.forEach((alignedMetric) => {
+              alignedMetric?.traces?.forEach((alignedTrace) => {
+                const alignedTraceKey = traceToHash(
+                  alignedRun?.run_hash,
+                  alignedMetric?.name,
+                  alignedTrace?.context,
+                );
+                if (traceKey !== alignedTraceKey) {
+                  return;
+                }
+                if (alignedTrace.alignment) {
+                  const { is_synced, is_asc, skipped_steps } =
+                    alignedTrace.alignment;
+                  if (!is_synced) {
+                    isSynced = false;
+                  }
+                  if (!is_asc) {
+                    isAsc = false;
+                  }
+                  if (skipped_steps > 0) {
+                    isSkipped = true;
+                  }
+                  isAligned = true;
+                  merged = true;
+
+                  trace.alignment = alignedTrace.alignment;
+                  trace.data = trace.data.map((point, i) => {
+                    return point.slice(0, 4).concat([alignedTrace.data[i]]);
+                  });
+                } else {
+                  isSynced = false;
+                  trace.alignment = undefined;
+                }
+              });
+            });
+          });
+          if (!merged) {
+            trace.data = trace.data.map((point) =>
+              point.slice(0, 4).concat([null]),
+            );
+            trace.alignment = undefined;
+          }
+        });
+      });
+    });
+
+    return {
+      data: runs,
+      isSynced,
+      isAsc,
+      isSkipped,
+      isAligned,
+    };
+  }
+
+  function getAlignmentFields(runs) {
+    let isSynced = true;
+    let isAsc = true;
+    let isSkipped = false;
+    let isAligned = false;
+
+    runs.forEach((run) => {
+      run?.metrics.forEach((metric) => {
+        metric?.traces.forEach((trace) => {
+          if (trace.alignment) {
+            const { is_synced, is_asc, skipped_steps } = trace.alignment;
+            if (!is_synced) {
+              isSynced = false;
+            }
+            if (!is_asc) {
+              isAsc = false;
+            }
+            if (skipped_steps > 0) {
+              isSkipped = true;
+            }
+            isAligned = true;
+          } else {
+            isSynced = false;
+          }
+        });
+      });
+    });
+
+    return {
+      isSynced,
+      isAsc,
+      isSkipped,
+      isAligned,
+    };
+  }
+
   useEffect(() => {
     const { bookmark_id } = props.match.params;
     if (!!bookmark_id && firstEffect.current) {
@@ -453,6 +620,7 @@ function HubMainScreen(props) {
         HubMainScreenModel.events.SET_CHART_FOCUSED_ACTIVE_STATE,
         HubMainScreenModel.events.SET_CHART_SETTINGS_STATE,
         HubMainScreenModel.events.SET_CHART_POINTS_COUNT,
+        HubMainScreenModel.events.SET_CHART_X_AXIS_METRIC_ALIGNMENT,
         HubMainScreenModel.events.SET_CONTEXT_FILTER,
         HubMainScreenModel.events.SET_SEARCH_STATE,
         HubMainScreenModel.events.SET_SEED,
@@ -463,9 +631,12 @@ function HubMainScreen(props) {
 
     const pointsCountChangeSubscription = HubMainScreenModel.subscribe(
       HubMainScreenModel.events.SET_CHART_POINTS_COUNT,
-      (stateUpdate) => {
-        searchByQuery(stateUpdate.chart.settings.persistent.pointsCount);
-      },
+      searchByQuery,
+    );
+
+    const xAxisMetricAlignmentChangeSubscription = HubMainScreenModel.subscribe(
+      HubMainScreenModel.events.SET_CHART_X_AXIS_METRIC_ALIGNMENT,
+      () => searchByQuery(false),
     );
 
     const updateAppStateSubscription = HubMainScreenModel.subscribe(
@@ -480,6 +651,7 @@ function HubMainScreen(props) {
       subscription.unsubscribe();
       pointsCountChangeSubscription.unsubscribe();
       updateAppStateSubscription.unsubscribe();
+      xAxisMetricAlignmentChangeSubscription.unsubscribe();
       HubMainScreenModel.emit(null, {
         search: {
           ...HubMainScreenModel.getState().search,
@@ -508,75 +680,100 @@ function HubMainScreen(props) {
           height: `${state.height - searchBarHeight}px`,
         }}
       >
-        <div className='HubMainScreen__grid__body__blocks'>
-          {state.viewMode !== 'context' && (
-            <div
-              className='HubMainScreen__grid__panel'
-              style={{
-                flex: state.viewMode === 'panel' ? 1 : state.panelFlex,
-              }}
-            >
-              <Panel
-                parentHeight={state.height}
-                parentWidth={state.width}
-                mode={state.viewMode}
-                indices={panelIndices}
-                resizing={state.resizing}
-              />
+        {!runs.isLoading &&
+        Array.isArray(
+          HubMainScreenModel.getState().chart.settings.persistent.xAlignment,
+        ) &&
+        !runs.isAligned ? (
+            <div className='HubMainScreen__grid__body__blocks'>
+              <Alert segment>
+                <UI.Text type='grey' center>
+                Unable to align runs by the given metric.
+                </UI.Text>
+              </Alert>
             </div>
-          )}
-          {state.viewMode === 'resizable' && (
-            <div
-              className='HubMainScreen__grid__resize__area'
-              onMouseDown={startResize}
-            >
+          ) : (
+            <div className='HubMainScreen__grid__body__blocks'>
+              {state.viewMode !== 'context' && (
+                <div
+                  className='HubMainScreen__grid__panel'
+                  style={{
+                    flex: state.viewMode === 'panel' ? 1 : state.panelFlex,
+                  }}
+                >
+                  <Panel
+                    parentHeight={state.height}
+                    parentWidth={state.width}
+                    mode={state.viewMode}
+                    indices={panelIndices}
+                    resizing={state.resizing}
+                  />
+                  {Array.isArray(
+                    HubMainScreenModel.getState().chart.settings.persistent
+                      .xAlignment,
+                  ) &&
+                  (runs.isSkipped || !runs.isSynced || !runs.isAsc) && (
+                    <AlignmentWarning
+                      isSkipped={runs.isSkipped}
+                      isSynced={runs.isSynced}
+                      isAsc={runs.isAsc}
+                    />
+                  )}
+                </div>
+              )}
+              {state.viewMode === 'resizable' && (
+                <div
+                  className='HubMainScreen__grid__resize__area'
+                  onMouseDown={startResize}
+                >
+                  <div
+                    className={classNames({
+                      HubMainScreen__grid__resize__handler: true,
+                      active: state.resizing,
+                    })}
+                  >
+                    <div className='HubMainScreen__grid__resize__icon' />
+                  </div>
+                </div>
+              )}
               <div
                 className={classNames({
-                  HubMainScreen__grid__resize__handler: true,
-                  active: state.resizing,
+                  HubMainScreen__grid__context: true,
+                  'HubMainScreen__grid__context--minimize':
+                  state.viewMode === 'panel',
                 })}
+                style={{
+                  flex:
+                  state.viewMode === 'context'
+                    ? 1
+                    : state.viewMode === 'panel'
+                      ? 0
+                      : 1 - state.panelFlex,
+                }}
               >
-                <div className='HubMainScreen__grid__resize__icon' />
+                {state.viewMode !== 'panel' ? (
+                  <ContextBox
+                    spacing={state.viewMode !== 'resizable'}
+                    width={state.width - headerWidth - controlsWidth - 5}
+                    resizing={state.resizing}
+                    viewMode={state.viewMode}
+                    setViewMode={(mode) =>
+                      setState((s) => ({ ...s, viewMode: mode }))
+                    }
+                  />
+                ) : (
+                  <div className='HubMainScreen__grid__context__bar'>
+                    <BarViewModes
+                      viewMode={state.viewMode}
+                      setViewMode={(mode) =>
+                        setState((s) => ({ ...s, viewMode: mode }))
+                      }
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
-          <div
-            className={classNames({
-              HubMainScreen__grid__context: true,
-              'HubMainScreen__grid__context--minimize':
-                state.viewMode === 'panel',
-            })}
-            style={{
-              flex:
-                state.viewMode === 'context'
-                  ? 1
-                  : state.viewMode === 'panel'
-                    ? 0
-                    : 1 - state.panelFlex,
-            }}
-          >
-            {state.viewMode !== 'panel' ? (
-              <ContextBox
-                spacing={state.viewMode !== 'resizable'}
-                width={state.width - headerWidth - controlsWidth - 5}
-                resizing={state.resizing}
-                viewMode={state.viewMode}
-                setViewMode={(mode) =>
-                  setState((s) => ({ ...s, viewMode: mode }))
-                }
-              />
-            ) : (
-              <div className='HubMainScreen__grid__context__bar'>
-                <BarViewModes
-                  viewMode={state.viewMode}
-                  setViewMode={(mode) =>
-                    setState((s) => ({ ...s, viewMode: mode }))
-                  }
-                />
-              </div>
-            )}
-          </div>
-        </div>
         <div className='HubMainScreen__grid__controls'>
           <ControlsSidebar />
         </div>

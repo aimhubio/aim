@@ -80,6 +80,7 @@ export function getWithState(caseName, caseClass) {
     case classes.HUB_MAIN_SCREEN:
       Object.assign(mapDispatch2Props, {
         getCommitsMetricsByQuery: commitActions.getCommitsMetricsByQuery,
+        alignXAxisByMetric: commitActions.alignXAxisByMetric,
         getCommitsDictionariesByQuery:
           commitActions.getCommitsDictionariesByQuery,
         getRunningExecutables: executablesActions.getRunningExecutables,

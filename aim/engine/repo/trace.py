@@ -9,6 +9,10 @@ class Trace(object):
         self.metric = metric
         self.name = name
         self.data = []
+        self.tmp_data = {}  # used for storing temporary data for x_axis metric values
+        self.current_x_axis_value = None  # used for checking ordering of x_axis metric values
+        self.alignment = None  # used for storing alignment flags when x_axis is aligned by custom metric
+        self.slice = None
         self._num_records = None
         self.context = None  # type: Optional[Dict[str, Union[str, Any]]]
         self.hashable_context = None
@@ -47,11 +51,19 @@ class Trace(object):
         self.data.append(data_item)
 
     def to_dict(self):
-        return {
+        result = {
             'context': self.context,
             'num_steps': self.num_records,
-            'data': self.data,
+            'data': self.data
         }
+
+        if self.slice:
+            result['slice'] = self.slice
+
+        if self.alignment:
+            result['alignment'] = self.alignment
+
+        return result
 
     def eq_context(self, other):
         return contexts_equal(other, self.hashable_context)

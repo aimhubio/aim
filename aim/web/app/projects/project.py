@@ -16,6 +16,7 @@ class Project:
 
         self.name = 'My awesome project'
         self.path = root_path
+        self.repo_path = repo_path
         self.description = ''
         self.tf_enabled = TFSummaryAdapter.exists()
         self.repo = AimRepo(repo_full_path=repo_path,

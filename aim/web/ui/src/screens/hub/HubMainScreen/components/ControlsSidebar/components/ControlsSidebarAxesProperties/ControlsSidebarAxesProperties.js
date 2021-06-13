@@ -4,33 +4,28 @@ import PropTypes from 'prop-types';
 import * as analytics from '../../../../../../../services/analytics';
 import UI from '../../../../../../../ui';
 import { classNames } from '../../../../../../../utils';
+import * as storeUtils from '../../../../../../../storeUtils';
+import * as classes from '../../../../../../../constants/classes';
 import { HubMainScreenModel } from '../../../../models/HubMainScreenModel';
 
 function ControlsSidebarAxesProperties(props) {
   let [opened, setOpened] = useState(false);
 
-  let popupRef = useRef();
-
-  const { setChartSettingsState, setChartPointsCount, setTraceList } =
-    HubMainScreenModel.emitters;
   const { xScale, yScale, xAlignment, pointsCount } = props.settings.persistent;
 
-  function changeXAlignment(type) {
-    setChartSettingsState(
-      {
-        ...props.settings,
-        zoomMode: false,
-        zoomHistory: [],
-        persistent: {
-          ...props.settings.persistent,
-          zoom: null,
-          xAlignment: type,
-        },
-      },
-      setTraceList,
-    );
-    setOpened(false);
-  }
+  let popupRef = useRef();
+  let dropdownRef = useRef();
+  let metricValue = useRef(Array.isArray(xAlignment) ? xAlignment[0] : '');
+
+  const {
+    setChartSettingsState,
+    setChartPointsCount,
+    setChartXAxisAlignment,
+    setTraceList,
+  } = HubMainScreenModel.emitters;
+
+  const metrics =
+    props.project?.metrics?.filter((m) => !m.startsWith('__system__')) ?? [];
 
   function changeAxisScaleOption(axis, option) {
     setChartSettingsState(
@@ -42,33 +37,6 @@ function ControlsSidebarAxesProperties(props) {
           ...props.settings.persistent,
           zoom: null,
           [axis]: option,
-        },
-      },
-      setTraceList,
-    );
-  }
-
-  function changeSmoothingAlgorithm(algorithm) {
-    setChartSettingsState(
-      {
-        ...props.settings,
-        persistent: {
-          ...props.settings.persistent,
-          smoothingAlgorithm: algorithm,
-          smoothFactor: algorithm === 'ema' ? 0 : 1,
-        },
-      },
-      setTraceList,
-    );
-  }
-
-  function changeSmoothFactor(factor) {
-    setChartSettingsState(
-      {
-        ...props.settings,
-        persistent: {
-          ...props.settings.persistent,
-          smoothFactor: +factor,
         },
       },
       setTraceList,
@@ -233,7 +201,10 @@ function ControlsSidebarAxesProperties(props) {
                       active: (xAlignment || 'step') === type,
                     })}
                     onClick={() => {
-                      changeXAlignment(type);
+                      if ((xAlignment || 'step') === type) {
+                        return;
+                      }
+                      setChartXAxisAlignment(type);
                       analytics.trackEvent(
                         `[Explore] [LineChart] Set X axis alignment to "${type}"`,
                       );
@@ -243,6 +214,54 @@ function ControlsSidebarAxesProperties(props) {
                   </div>
                 ),
               )}
+              <div
+                className={classNames({
+                  ControlsSidebar__item__popup__list__item: true,
+                  active: Array.isArray(xAlignment),
+                  select: true,
+                })}
+                onClick={() => {
+                  if (Array.isArray(xAlignment)) {
+                    return;
+                  }
+                  if (!metricValue.current) {
+                    dropdownRef.current?.selectRef?.current?.focus();
+                  } else {
+                    setChartXAxisAlignment([metricValue.current]);
+                    analytics.trackEvent(
+                      '[Explore] [LineChart] Set X axis alignment to "custom metric"',
+                    );
+                  }
+                }}
+              >
+                <UI.Text small>Metric: </UI.Text>
+                <div onClick={(evt) => evt.stopPropagation()}>
+                  <UI.Dropdown
+                    ref={dropdownRef}
+                    className='ControlsSidebar__item__popup__list__item__select'
+                    width={170}
+                    options={metrics.map((val) => ({
+                      value: val,
+                      label: `${val}`,
+                    }))}
+                    defaultValue={
+                      metricValue.current
+                        ? {
+                          value: metricValue.current,
+                          label: metricValue.current,
+                        }
+                        : undefined
+                    }
+                    onChange={(data) => {
+                      metricValue.current = data.value;
+                      setChartXAxisAlignment([data.value]);
+                      analytics.trackEvent(
+                        '[Explore] [LineChart] Set X axis alignment to "custom metric"',
+                      );
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <UI.Line />
@@ -283,4 +302,7 @@ ControlsSidebarAxesProperties.propTypes = {
   disabled: PropTypes.bool,
 };
 
-export default ControlsSidebarAxesProperties;
+export default storeUtils.getWithState(
+  classes.EXPLORE_PARAMS_SELECT_INPUT,
+  ControlsSidebarAxesProperties,
+);

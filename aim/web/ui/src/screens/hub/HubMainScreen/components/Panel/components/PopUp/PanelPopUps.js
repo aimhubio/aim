@@ -445,6 +445,7 @@ function PanelPopUps(props) {
           HubMainScreenModel.getState().traceList?.traces.length > 1
             ? {}
             : null;
+        let groupFields = HubMainScreenModel.getState().traceList.grouping;
         HubMainScreenModel.getState().traceList?.traces.forEach(
           (traceModel) => {
             if (
@@ -456,8 +457,6 @@ function PanelPopUps(props) {
               )
             ) {
               groupConfig = {};
-              let groupFields =
-                HubMainScreenModel.getState().traceList.grouping;
               for (let key in groupFields) {
                 if (groupFields[key].length > 0) {
                   groupConfig[key] = groupFields[key].map((param) => ({
@@ -632,10 +631,21 @@ function PanelPopUps(props) {
                 ) : (
                   <div>
                     <UI.Text type='grey-darker' small>
-                      <span>
-                        Value: {Math.round(chartPopUp.point[0] * 10e9) / 10e9}
-                      </span>
+                      {chartPopUp.metric.name}:{' '}
+                      {Math.round(chartPopUp.point[0] * 10e9) / 10e9}
                     </UI.Text>
+                    {Array.isArray(
+                      HubMainScreenModel.getState().chart.settings.persistent
+                        .xAlignment,
+                    ) && (
+                      <UI.Text type='grey-darker' small>
+                        {
+                          HubMainScreenModel.getState().chart.settings
+                            .persistent.xAlignment[0]
+                        }
+                        : {Math.round(chartPopUp.point[4] * 10e9) / 10e9}
+                      </UI.Text>
+                    )}
                     <UI.Text type='grey' small>
                       Step: {chartPopUp.point[1]}
                       {isTFSummaryScalar(chartPopUp.run) && (
