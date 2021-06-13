@@ -10,6 +10,11 @@ import {
   EXPLORE_PANEL_HIDDEN_METRICS,
   EXPLORE_PANEL_SINGLE_ZOOM_MODE,
   EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS,
+  EXPLORE_PANEL_FLEX_STYLE,
+  EXPLORE_PANEL_VIEW_MODE,
+  CONTEXT_TABLE_CONFIG,
+  TABLE_COLUMNS,
+  TABLE_COLUMNS_WIDTHS,
 } from '../../../../config';
 import { getItem, removeItem, setItem } from '../../../../services/storage';
 import { flattenObject, sortOnKeys } from '../../../../utils';
@@ -44,6 +49,8 @@ const events = {
   SET_TABLE_COLUMNS_ORDER: 'SET_TABLE_COLUMNS_ORDER',
   SET_TABLE_COLUMNS_WIDTHS: 'SET_TABLE_COLUMNS_WIDTHS',
   SET_VIEW_KEY: 'SET_VIEW_KEY',
+  CREATE_APP: 'CREATE_APP',
+  UPDATE_APP: 'UPDATE_APP',
 };
 
 // State
@@ -67,7 +74,6 @@ const state = {
       },
     },
     settings: {
-      yScale: 0,
       zoomMode: false,
       singleZoomMode:
         (getItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE) || 'true') === 'true',
@@ -152,7 +158,7 @@ const state = {
 
   // Screen state
   screen: {
-    panelFlex: getItem(EXPLORE_PANEL_FLEX_STYLE),
+    panelFlex: +getItem(EXPLORE_PANEL_FLEX_STYLE) ?? null,
     viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
   },
 
@@ -266,7 +272,7 @@ function emit(event, data) {
 // event emitters
 
 function setRecoveredState(state, cb) {
-  emit(events.SET_RECOVERED_STATE, state);
+  emit(events.SET_RECOVERED_STATE, _.merge({}, getState(), state));
 
   if (typeof cb === 'function') {
     cb();
@@ -954,6 +960,14 @@ function setViewKey(key) {
   });
 }
 
+function createApp() {
+  emit(events.CREATE_APP, {});
+}
+
+function updateApp() {
+  emit(events.UPDATE_APP, {});
+}
+
 // helpers
 
 function isExploreMetricsModeEnabled() {
@@ -1301,6 +1315,8 @@ export const HubMainScreenModel = {
     setColumnsOrder,
     setColumnsWidths,
     setViewKey,
+    createApp,
+    updateApp,
   },
   helpers: {
     isExploreMetricsModeEnabled,

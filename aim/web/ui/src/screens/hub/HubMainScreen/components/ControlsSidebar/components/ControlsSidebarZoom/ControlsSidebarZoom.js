@@ -195,7 +195,7 @@ function ControlsSidebarZoom(props) {
             <UI.Icon i='zoom_out' scale={1.7} />
           </div>
         </UI.Tooltip>
-        {zoomHistory.length > 0 && (
+        {zoomHistory?.length > 0 && (
           <div
             className={classNames({
               ControlsSidebar__item__popup__opener: true,

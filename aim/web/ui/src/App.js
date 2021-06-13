@@ -23,6 +23,7 @@ import HubTFSummaryListScreen from './screens/hub/HubTFSummaryListScreen/HubTFSu
 import HubExperimentsDashboardScreen from './screens/hub/HubExperimentsDashboardScreen/HubExperimentsDashboardScreen';
 import { setCookie } from './services/cookie';
 import { TIMEZONE_COOKIE_NAME } from './config';
+import HubBookmarksScreen from './screens/hub/HubBookmarksScreen/HubBookmarksScreen';
 
 class App extends React.Component {
   constructor(props) {
@@ -156,6 +157,11 @@ class App extends React.Component {
             render={(props) => (
               <HubExperimentScreen {...props} tab='parameters' />
             )}
+          />
+          <Route
+            exact
+            path={screens.HUB_BOOKMARKS}
+            component={HubBookmarksScreen}
           />
           <Route component={SiteNotFoundScreen} />
         </Switch>

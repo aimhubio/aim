@@ -7,6 +7,8 @@ import * as controlPanelActions from './actions/hub/controlPanel';
 import * as executablesActions from './actions/hub/executables';
 import * as commitActions from './actions/hub/commit';
 import * as tagsActions from './actions/hub/tags';
+import * as dashboardActions from './actions/hub/dashboard';
+import * as appActions from './actions/hub/app';
 
 export function getWithState(caseName, caseClass) {
   let mapState2Props;
@@ -82,6 +84,16 @@ export function getWithState(caseName, caseClass) {
           commitActions.getCommitsDictionariesByQuery,
         getRunningExecutables: executablesActions.getRunningExecutables,
         killRunningExecutable: executablesActions.killRunningExecutable,
+        getAppState: appActions.getApp,
+        createApp: appActions.createApp,
+        updateApp: appActions.updateApp,
+        createDashboard: dashboardActions.createDashboard,
+      });
+      break;
+    case classes.HUB_BOOKMARKS_SCREEN:
+      Object.assign(mapDispatch2Props, {
+        getDashboardsList: dashboardActions.getDashboardsList,
+        getAppsList: appActions.getAppsList,
       });
       break;
     case classes.HUB_PROJECT_SCREEN:

@@ -51,6 +51,9 @@ class Header extends React.Component {
                 <NavLink
                   exact
                   to={getItem(USER_LAST_EXPLORE_CONFIG) ?? screens.EXPLORE}
+                  className={classNames({
+                    active: window.location.pathname.startsWith('/explore'),
+                  })}
                 >
                   <div className='Header__item'>
                     <UI.Icon i='timeline' className='Header__item__icon' />
@@ -68,6 +71,19 @@ class Header extends React.Component {
                   <div className='Header__item'>
                     <UI.Icon i='flag' className='Header__item__icon' />
                     <UI.Text className='Header__item__title'>Tags</UI.Text>
+                  </div>
+                </NavLink>
+              </div>
+              <div className='Header__item__wrapper'>
+                <NavLink
+                  to={screens.HUB_BOOKMARKS}
+                  className={classNames({
+                    active: window.location.pathname.startsWith('/bookmarks'),
+                  })}
+                >
+                  <div className='Header__item'>
+                    <UI.Icon i='bookmarks' className='Header__item__icon' />
+                    <UI.Text className='Header__item__title'>Bookmarks</UI.Text>
                   </div>
                 </NavLink>
               </div>
