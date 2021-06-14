@@ -225,8 +225,8 @@ function Table(props) {
                 togglePin={togglePin}
                 pinnedTo='left'
                 firstColumn={index === 0}
-                width={props.columnsWidth[col.key]}
-                updateColumnWidth={props.updateColumnsWidth}
+                width={props.columnsWidths[col.key]}
+                updateColumnWidth={props.updateColumnsWidths}
                 headerMeta={props.headerMeta}
                 isAlwaysVisible={props.alwaysVisibleColumns.includes(col.key)}
                 hideColumn={() =>
@@ -269,8 +269,8 @@ function Table(props) {
               togglePin={togglePin}
               pinnedTo={null}
               firstColumn={index === 0 && leftPane.length === 0}
-              width={props.columnsWidth[col.key]}
-              updateColumnWidth={props.updateColumnsWidth}
+              width={props.columnsWidths[col.key]}
+              updateColumnWidth={props.updateColumnsWidths}
               headerMeta={props.headerMeta}
               isAlwaysVisible={props.alwaysVisibleColumns.includes(col.key)}
               hideColumn={() =>
@@ -324,8 +324,8 @@ function Table(props) {
                   leftPane.length === 0 &&
                   middlePane.length === 0
                 }
-                width={props.columnsWidth[col.key]}
-                updateColumnWidth={props.updateColumnsWidth}
+                width={props.columnsWidths[col.key]}
+                updateColumnWidth={props.updateColumnsWidths}
                 headerMeta={props.headerMeta}
                 isAlwaysVisible={props.alwaysVisibleColumns.includes(col.key)}
                 hideColumn={() =>

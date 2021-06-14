@@ -1,6 +1,6 @@
 import './Runs.less';
 
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import _ from 'lodash';
 import Color from 'color';
@@ -8,7 +8,6 @@ import moment from 'moment';
 
 import * as storeUtils from '../../../../../storeUtils';
 import * as classes from '../../../../../constants/classes';
-import * as screens from '../../../../../constants/screens';
 import UI from '../../../../../ui';
 import SearchBar from '../../../../../components/hub/SearchBar/SearchBar';
 import {
@@ -19,6 +18,9 @@ import { getItem, setItem } from '../../../../../services/storage';
 import {
   USER_LAST_SEARCH_QUERY,
   DASHBOARD_SORT_FIELDS,
+  TABLE_COLUMNS_WIDTHS,
+  TABLE_COLUMNS,
+  CONTEXT_TABLE_CONFIG,
 } from '../../../../../config';
 import ContextTable from '../../../../../components/hub/ContextTable/ContextTable';
 import {
@@ -41,6 +43,7 @@ class Runs extends React.Component {
     this.state = {
       isLoading: true,
       redirectToPanel: false,
+      searchError: null,
       runs: [],
       experiments: [],
       selectedExperiments: [],
@@ -51,7 +54,18 @@ class Runs extends React.Component {
         params: {},
       },
       sortFields: JSON.parse(getItem(DASHBOARD_SORT_FIELDS)) ?? [],
-      searchError: null,
+      rowHeightMode:
+        JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'runs')))
+          ?.rowHeightMode ?? 'medium',
+      excludedFields:
+        JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'runs')))
+          ?.excludedFields ?? [],
+      columnsOrder: JSON.parse(getItem(TABLE_COLUMNS))?.runs ?? {
+        left: [],
+        middle: [],
+        right: [],
+      },
+      columnsWidths: JSON.parse(getItem(TABLE_COLUMNS_WIDTHS))?.runs ?? {},
     };
 
     this.paramKeys = {};
@@ -60,6 +74,7 @@ class Runs extends React.Component {
     this.defaultMetricName = 'loss';
 
     this.searchBarRef = React.createRef();
+    this.columns = React.createRef();
   }
 
   componentDidMount() {
@@ -93,6 +108,50 @@ class Runs extends React.Component {
       });
     }
   }
+
+  setRowHeightMode = (mode) => {
+    this.setState({
+      rowHeightMode: mode,
+    });
+
+    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'runs');
+    setItem(
+      storageKey,
+      JSON.stringify({
+        rowHeightMode: mode,
+        excludedFields: this.state.excludedFields,
+      }),
+    );
+  };
+
+  setExcludedFields = (fields) => {
+    this.setState({
+      excludedFields: fields,
+    });
+
+    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'runs');
+    setItem(
+      storageKey,
+      JSON.stringify({
+        rowHeightMode: this.state.rowHeightMode,
+        excludedFields: fields,
+      }),
+    );
+  };
+
+  setColumnsOrder = (columnsOrder) => {
+    this.setState({ columnsOrder });
+    const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
+    tableColumns.runs = columnsOrder;
+    setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
+  };
+
+  setColumnsWidths = (columnsWidths) => {
+    this.setState({ columnsWidths });
+    const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
+    tableColumnsWidths.runs = columnsWidths;
+    setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
+  };
 
   getRuns = (query, updateURL = true) => {
     analytics.trackEvent('[Dashboard] [Runs] Search runs');
@@ -205,12 +264,77 @@ class Runs extends React.Component {
             isLoading: false,
           },
           () => {
+            this.updateColumnsOrder();
             if (updateURL) {
               this.props.updateURL();
             }
           },
         );
       });
+  };
+
+  updateColumnsOrder = () => {
+    const tableColumns = this.state.columnsOrder;
+    const order = {
+      left: [],
+      middle: [],
+      right: [],
+    };
+    this.columns.current?.forEach((col) => {
+      if (!!tableColumns && tableColumns.left.includes(col.key)) {
+        order.left.push(col.key);
+      } else if (!!tableColumns && tableColumns.middle.includes(col.key)) {
+        order.middle.push(col.key);
+      } else if (!!tableColumns && tableColumns.right.includes(col.key)) {
+        order.right.push(col.key);
+      } else {
+        if (col.pin === 'left') {
+          order.left.push(col.key);
+        } else if (col.pin === 'right') {
+          order.right.push(col.key);
+        } else {
+          order.middle.push(col.key);
+        }
+      }
+    });
+    order.left.sort((a, b) => {
+      if (!!tableColumns) {
+        if (tableColumns.left.indexOf(b) === -1) {
+          return -1;
+        }
+        if (tableColumns.left.indexOf(a) === -1) {
+          return 1;
+        }
+        return tableColumns.left.indexOf(a) - tableColumns.left.indexOf(b);
+      }
+      return 0;
+    });
+    order.middle.sort((a, b) => {
+      if (!!tableColumns) {
+        if (tableColumns.middle.indexOf(b) === -1) {
+          return -1;
+        }
+        if (tableColumns.middle.indexOf(a) === -1) {
+          return 1;
+        }
+        return tableColumns.middle.indexOf(a) - tableColumns.middle.indexOf(b);
+      }
+      return 0;
+    });
+    order.right.sort((a, b) => {
+      if (!!tableColumns) {
+        if (tableColumns.right.indexOf(b) === -1) {
+          return -1;
+        }
+        if (tableColumns.right.indexOf(a) === -1) {
+          return 1;
+        }
+        return tableColumns.right.indexOf(a) - tableColumns.right.indexOf(b);
+      }
+      return 0;
+    });
+
+    this.setColumnsOrder(order);
   };
 
   handleSearchBarSubmit = (value) => {
@@ -617,7 +741,7 @@ class Runs extends React.Component {
       return null;
     }
 
-    let columns = [
+    this.columns.current = [
       {
         key: 'run',
         content: !!this.state.selectedRuns?.length ? (
@@ -647,7 +771,7 @@ class Runs extends React.Component {
 
     Object.keys(this.metricKeys).forEach((metricName, metricKey) =>
       this.metricKeys[metricName].forEach((metricContext, contextKey) => {
-        columns.push({
+        this.columns.current.push({
           key: `${metricName}-${JSON.stringify(metricContext)}`,
           content: (
             <>
@@ -769,7 +893,7 @@ class Runs extends React.Component {
 
     Object.keys(this.paramKeys).forEach((paramKey) =>
       this.paramKeys[paramKey].forEach((key, index) => {
-        columns.push({
+        this.columns.current.push({
           key: `params.${paramKey}.${key}`,
           content: (
             <>
@@ -894,12 +1018,20 @@ class Runs extends React.Component {
         <ContextTable
           name='runs'
           topHeader
-          columns={columns}
+          columns={this.columns.current}
           data={data}
           searchFields={this.state.searchFields}
           displaySort
           sortFields={this.state.sortFields}
           setSortFields={this.setSortFields}
+          rowHeightMode={this.state.rowHeightMode}
+          setRowHeightMode={this.setRowHeightMode}
+          excludedFields={this.state.excludedFields}
+          setExcludedFields={this.setExcludedFields}
+          columnsOrder={this.state.columnsOrder}
+          setColumnsOrder={this.setColumnsOrder}
+          columnsWidths={this.state.columnsWidths}
+          setColumnsWidths={this.setColumnsWidths}
           getParamsWithSameValue={this.getParamsWithSameValue}
           alwaysVisibleColumns={['run']}
         />

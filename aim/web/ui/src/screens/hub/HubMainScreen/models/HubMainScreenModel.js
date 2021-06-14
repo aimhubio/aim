@@ -10,8 +10,8 @@ import {
   EXPLORE_PANEL_HIDDEN_METRICS,
   EXPLORE_PANEL_SINGLE_ZOOM_MODE,
   EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS,
-  EXPLORE_PANEL_FLEX_STYLE,
   EXPLORE_PANEL_VIEW_MODE,
+  EXPLORE_PANEL_FLEX_STYLE,
   CONTEXT_TABLE_CONFIG,
   TABLE_COLUMNS,
   TABLE_COLUMNS_WIDTHS,
@@ -914,14 +914,12 @@ function setScreenState(screenOptions) {
     },
   });
 
-  if (getState().viewKey === null) {
-    if (screenOptions.hasOwnProperty('panelFlex')) {
-      setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
-    }
+  if (screenOptions.hasOwnProperty('panelFlex')) {
+    setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
+  }
 
-    if (screenOptions.hasOwnProperty('viewMode')) {
-      setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.viewMode);
-    }
+  if (screenOptions.hasOwnProperty('viewMode')) {
+    setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
   }
 }
 
@@ -933,16 +931,14 @@ function setRowHeightMode(mode) {
     },
   });
 
-  if (getState().viewKey === null) {
-    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
-    setItem(
-      storageKey,
-      JSON.stringify({
-        rowHeightMode: mode,
-        excludedFields: getState().table.excludedFields,
-      }),
-    );
-  }
+  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+  setItem(
+    storageKey,
+    JSON.stringify({
+      rowHeightMode: mode,
+      excludedFields: getState().table.excludedFields,
+    }),
+  );
 }
 
 function setExcludedFields(fields) {
@@ -953,16 +949,14 @@ function setExcludedFields(fields) {
     },
   });
 
-  if (getState().viewKey === null) {
-    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
-    setItem(
-      storageKey,
-      JSON.stringify({
-        rowHeightMode: getState().table.rowHeightMode,
-        excludedFields: fields,
-      }),
-    );
-  }
+  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+  setItem(
+    storageKey,
+    JSON.stringify({
+      rowHeightMode: getState().table.rowHeightMode,
+      excludedFields: fields,
+    }),
+  );
 }
 
 function setColumnsOrder(columnsOrder) {
@@ -972,12 +966,9 @@ function setColumnsOrder(columnsOrder) {
       columnsOrder,
     },
   });
-
-  if (getState().viewKey === null) {
-    const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
-    tableColumns.context = columnsOrder;
-    setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
-  }
+  const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
+  tableColumns.context = columnsOrder;
+  setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
 }
 
 function setColumnsWidths(columnsWidths) {
@@ -987,12 +978,9 @@ function setColumnsWidths(columnsWidths) {
       columnsWidths,
     },
   });
-
-  if (getState().viewKey === null) {
-    const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
-    tableColumnsWidths.context = columnsWidths;
-    setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
-  }
+  const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
+  tableColumnsWidths.context = columnsWidths;
+  setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
 }
 
 function setViewKey(key) {
