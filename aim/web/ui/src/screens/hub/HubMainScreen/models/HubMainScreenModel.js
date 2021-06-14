@@ -894,7 +894,7 @@ function setScreenState(screenOptions) {
   }
 
   if (screenOptions.hasOwnProperty('viewMode')) {
-    setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.viewMode);
+    setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
   }
 }
 
