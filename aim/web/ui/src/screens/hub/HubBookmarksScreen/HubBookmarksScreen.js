@@ -14,7 +14,7 @@ import { buildUrl } from '../../../utils';
 
 function HubBookmarksScreen(props) {
   const projectWrapperRef = useRef();
-  const [bookmarks, setBookmarks] = useState();
+  const [bookmarks, setBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -21,7 +21,6 @@ import { flattenObject, sortOnKeys } from '../../../../utils';
 import Color from 'color';
 import { COLORS } from '../../../../constants/colors';
 import TraceList from './TraceList';
-import { ContextTableModel } from '../../../../components/hub/ContextTable/models/ContextTableModel';
 import { getGroupingOptions } from '../components/ControlsSidebar/helpers';
 
 // Events
@@ -56,7 +55,7 @@ const events = {
 
 // State
 
-const state = {
+const initialState = {
   // Chart config
   chart: {
     focused: {
@@ -187,6 +186,8 @@ const state = {
   viewKey: null,
 };
 
+const state = _.cloneDeep(initialState);
+
 // initial controls
 
 const initialControls = {
@@ -235,6 +236,10 @@ function getState() {
 
 function setState(stateUpdate) {
   Object.assign(state, stateUpdate);
+}
+
+function resetState() {
+  setState(_.cloneDeep(initialState));
 }
 
 // Event emitter
@@ -914,12 +919,14 @@ function setScreenState(screenOptions) {
     },
   });
 
-  if (screenOptions.hasOwnProperty('panelFlex')) {
-    setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
-  }
+  if (getState().viewKey === null) {
+    if (screenOptions.hasOwnProperty('panelFlex')) {
+      setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
+    }
 
-  if (screenOptions.hasOwnProperty('viewMode')) {
-    setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
+    if (screenOptions.hasOwnProperty('viewMode')) {
+      setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
+    }
   }
 }
 
@@ -931,14 +938,16 @@ function setRowHeightMode(mode) {
     },
   });
 
-  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
-  setItem(
-    storageKey,
-    JSON.stringify({
-      rowHeightMode: mode,
-      excludedFields: getState().table.excludedFields,
-    }),
-  );
+  if (getState().viewKey === null) {
+    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+    setItem(
+      storageKey,
+      JSON.stringify({
+        rowHeightMode: mode,
+        excludedFields: getState().table.excludedFields,
+      }),
+    );
+  }
 }
 
 function setExcludedFields(fields) {
@@ -949,14 +958,16 @@ function setExcludedFields(fields) {
     },
   });
 
-  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
-  setItem(
-    storageKey,
-    JSON.stringify({
-      rowHeightMode: getState().table.rowHeightMode,
-      excludedFields: fields,
-    }),
-  );
+  if (getState().viewKey === null) {
+    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+    setItem(
+      storageKey,
+      JSON.stringify({
+        rowHeightMode: getState().table.rowHeightMode,
+        excludedFields: fields,
+      }),
+    );
+  }
 }
 
 function setColumnsOrder(columnsOrder) {
@@ -966,9 +977,12 @@ function setColumnsOrder(columnsOrder) {
       columnsOrder,
     },
   });
-  const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
-  tableColumns.context = columnsOrder;
-  setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
+
+  if (getState().viewKey === null) {
+    const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
+    tableColumns.context = columnsOrder;
+    setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
+  }
 }
 
 function setColumnsWidths(columnsWidths) {
@@ -978,9 +992,12 @@ function setColumnsWidths(columnsWidths) {
       columnsWidths,
     },
   });
-  const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
-  tableColumnsWidths.context = columnsWidths;
-  setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
+
+  if (getState().viewKey === null) {
+    const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
+    tableColumnsWidths.context = columnsWidths;
+    setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
+  }
 }
 
 function setViewKey(key) {
@@ -1317,6 +1334,7 @@ function useHubMainScreenState(events) {
 export const HubMainScreenModel = {
   events,
   getState,
+  resetState,
   subscribe,
   emit,
   useHubMainScreenState,

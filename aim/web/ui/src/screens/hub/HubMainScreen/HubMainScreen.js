@@ -638,12 +638,7 @@ function HubMainScreen(props) {
       pointsCountChangeSubscription.unsubscribe();
       updateAppStateSubscription.unsubscribe();
       xAxisMetricAlignmentChangeSubscription.unsubscribe();
-      HubMainScreenModel.emit(null, {
-        search: {
-          ...HubMainScreenModel.getState().search,
-          query: '',
-        },
-      });
+      HubMainScreenModel.resetState();
       window.removeEventListener('resize', updateWindowDimensions);
       document.removeEventListener('mouseup', endResize);
       document.removeEventListener('mousemove', resizeHandler);

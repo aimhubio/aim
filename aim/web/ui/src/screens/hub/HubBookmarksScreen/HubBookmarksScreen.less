@@ -1,15 +1,15 @@
 @import '../../../vars';
 
 .HubBookmarksScreen__wrapper {
-  height: 100vh;
+  height: calc(100vh - 2 * var(--component-spacing-sm));
   background-color: var(--grey-lighter);
+  padding: var(--component-spacing-sm);
 }
 
 .HubBookmarksScreen__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   column-gap: var(--component-spacing-sm);
-  padding: var(--component-spacing-sm);
 }
 
 .HubBookmarksScreen__grid__item {
