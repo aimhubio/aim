@@ -626,7 +626,7 @@ function PanelChart(props) {
   }
 
   function drawArea() {
-    const { traceList, chart } = HubMainScreenModel.getState();
+    const { traceList, chart, runs } = HubMainScreenModel.getState();
     const parent = d3.select(parentRef.current);
     const visArea = d3.select(visRef.current);
     const parentRect = parent.node().getBoundingClientRect();
@@ -743,7 +743,7 @@ function PanelChart(props) {
               <span class='Icon zoom_out material-icons-outlined no_spacing_right'>
                 zoom_out
               </span>
-            </>`;
+            </div>`;
         })
         .on('click', zoomOut)
         .moveToFront();
@@ -813,7 +813,10 @@ function PanelChart(props) {
 
   function drawAxes() {
     const { traceList, chart } = HubMainScreenModel.getState();
-    const xAlignment = chart.settings.persistent.xAlignment;
+    let xAlignment = chart.settings.persistent.xAlignment;
+    if (Array.isArray(xAlignment)) {
+      xAlignment = xAlignment[0];
+    }
     const isXLogScale =
       scaleOptions[chart.settings.persistent.xScale] === 'log';
     let xTicks = [];
@@ -829,10 +832,7 @@ function PanelChart(props) {
 
     let xAxisTicks = d3.axisBottom(chartOptions.current.xScale);
 
-    if (xAlignment === 'step') {
-      const ticksCount = Math.floor(plotBox.current.width / 50);
-      xAxisTicks.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
-    } else if (xAlignment === 'epoch') {
+    if (xAlignment === 'epoch') {
       const ticksCount = Math.floor(plotBox.current.width / 50);
       const delta = Math.floor(xTicks.length / ticksCount);
       const ticks =
@@ -914,6 +914,9 @@ function PanelChart(props) {
           }),
         )
         .tickFormat((d, i) => moment.unix(d).format('HH:mm:ss D MMM, YY'));
+    } else {
+      const ticksCount = Math.floor(plotBox.current.width / 50);
+      xAxisTicks.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
     }
 
     const xAxis = axes.current
@@ -1469,17 +1472,22 @@ function PanelChart(props) {
         const axisLeftEdge = visBox.current.margin.left - 1;
         const axisRightEdge =
           visBox.current.width - visBox.current.margin.right + 1;
-        const xAxisValueWidth = xAxisValue.current.node().offsetWidth;
-        xAxisValue.current.style(
-          'left',
-          `${
-            x - xAxisValueWidth / 2 < 0
-              ? axisLeftEdge + xAxisValueWidth / 2
-              : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
-                ? axisRightEdge - xAxisValueWidth / 2
-                : x + axisLeftEdge
-          }px`,
-        );
+        let xAxisValueWidth = xAxisValue.current.node().offsetWidth;
+        if (xAxisValueWidth > width) {
+          xAxisValueWidth = width;
+        }
+        xAxisValue.current
+          .style('width', `${xAxisValueWidth}px`)
+          .style(
+            'left',
+            `${
+              x - xAxisValueWidth / 2 < 0
+                ? axisLeftEdge + xAxisValueWidth / 2
+                : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
+                  ? axisRightEdge - xAxisValueWidth / 2
+                  : x + axisLeftEdge
+            }px`,
+          );
       }
     }
 
@@ -1498,7 +1506,7 @@ function PanelChart(props) {
       );
       const closestPoint = trace.data[closestStepIndex] ?? trace.data[0];
       x = closestPoint?.x;
-      const closestStep = Math.round(chartOptions.current.xScale.invert(x));
+      const closestStep = chartOptions.current.xScale.invert(x);
       let y = closestPoint?.y;
       let val = chartOptions.current.yScale.invert(y);
 
@@ -1716,7 +1724,7 @@ function PanelChart(props) {
       return;
     }
 
-    setChartFocusedState({
+    setChartFocusedActiveState({
       circle: {
         runHash: null,
         metricName: null,
@@ -1735,7 +1743,7 @@ function PanelChart(props) {
       return;
     }
 
-    setChartFocusedState({
+    setChartFocusedActiveState({
       circle: {
         active: false,
         runHash: null,

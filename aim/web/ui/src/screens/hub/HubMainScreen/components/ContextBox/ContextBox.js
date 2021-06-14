@@ -91,21 +91,21 @@ function ContextBox(props) {
     let windowHeight = elem.offsetHeight;
     let scrollTop = elem.scrollTop;
 
-    let valueColumn = elem.querySelectorAll('.Table__cell.valueColumn');
+    let runColumn = elem.querySelectorAll('.Table__cell.runColumn');
     let start = null;
     let end = null;
     let startIsSet = false;
     let endIsSet = false;
 
-    if (valueColumn.length === 0) {
+    if (runColumn.length === 0) {
       start = 0;
       end = 0;
       startIsSet = true;
       endIsSet = true;
     } else {
-      valueColumn.forEach((valueCell) => {
-        let cellTop = valueCell.offsetTop;
-        let rowIndex = +valueCell.className
+      runColumn.forEach((runCell) => {
+        let cellTop = runCell.offsetTop;
+        let rowIndex = +runCell.className
           .match(/rowIndex-\d*/)[0]
           .replace('rowIndex-', '');
         if (cellTop > scrollTop - 30 && !startIsSet) {
@@ -750,7 +750,7 @@ function ContextBox(props) {
                 {moment.unix(run.date).format('HH:mm · D MMM, YY')}
               </Link>
             ),
-            className: `metric ${cellClassName}`,
+            className: `metric runColumn ${cellClassName}`,
             props: run.metricIsHidden
               ? {}
               : {
@@ -818,7 +818,7 @@ function ContextBox(props) {
               stepData !== null && stepData[0] !== null
                 ? roundValue(stepData[0])
                 : '-',
-            className: `valueColumn value-${traceToHash(
+            className: `value-${traceToHash(
               run.run_hash,
               metric?.name,
               contextHash,

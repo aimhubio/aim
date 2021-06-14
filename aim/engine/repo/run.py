@@ -101,34 +101,43 @@ class Run(object):
 
         return metrics
 
-    def to_dict(self, include_only_selected_agg_metrics=False) -> dict:
-        metrics_list = []
-        for metric_name, metric in self._metrics.items():
-            metrics_list.append(metric.to_dict())
+    def to_dict(self, include_only_selected_agg_metrics=False, exclude_list=None) -> dict:
+        if not exclude_list:
+            exclude_list = []
 
-        params = self.params
-        if include_only_selected_agg_metrics is True \
-                and AIM_MAP_METRICS_KEYWORD in params.keys():
-            params = deepcopy(params)
-            selected_metrics_dict = {}
-            for metric_name, contexts in params[AIM_MAP_METRICS_KEYWORD].items():
-                if metric_name not in self.metrics.keys():
-                    continue
-                selected_metrics_dict.setdefault(metric_name, [])
-                for context in contexts:
-                    for selected_trace in self.metrics[metric_name].traces:
-                        if selected_trace.eq_context(context['context']):
-                            selected_metrics_dict[metric_name].append(context)
-                            break
-            params[AIM_MAP_METRICS_KEYWORD] = selected_metrics_dict
-
-        return {
-            'metrics': metrics_list,
+        result = {
             'experiment_name': self.experiment_name,
             'run_hash': self.run_hash,
-            'date': self.config.get('date'),
-            'params': params,
         }
+
+        if 'date' not in exclude_list:
+            result['date'] = self.config.get('date'),
+
+        if 'metrics' not in exclude_list:
+            metrics_list = []
+            for metric_name, metric in self._metrics.items():
+                metrics_list.append(metric.to_dict())
+            result['metrics'] = metrics_list
+
+        if 'params' not in exclude_list:
+            params = self.params
+            if include_only_selected_agg_metrics is True \
+                    and AIM_MAP_METRICS_KEYWORD in params.keys():
+                params = deepcopy(params)
+                selected_metrics_dict = {}
+                for metric_name, contexts in params[AIM_MAP_METRICS_KEYWORD].items():
+                    if metric_name not in self.metrics.keys():
+                        continue
+                    selected_metrics_dict.setdefault(metric_name, [])
+                    for context in contexts:
+                        for selected_trace in self.metrics[metric_name].traces:
+                            if selected_trace.eq_context(context['context']):
+                                selected_metrics_dict[metric_name].append(context)
+                                break
+                params[AIM_MAP_METRICS_KEYWORD] = selected_metrics_dict
+            result['params'] = params
+
+        return result
 
     def get_aggregated_metrics_values(self):
         aggregated_items = {}

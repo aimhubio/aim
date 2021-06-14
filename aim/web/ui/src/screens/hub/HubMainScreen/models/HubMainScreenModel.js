@@ -33,6 +33,7 @@ const events = {
   SET_CHART_FOCUSED_ACTIVE_STATE: 'SET_CHART_FOCUSED_ACTIVE_STATE',
   SET_CHART_SETTINGS_STATE: 'SET_CHART_SETTINGS_STATE',
   SET_CHART_POINTS_COUNT: 'SET_CHART_POINTS_COUNT',
+  SET_CHART_X_AXIS_METRIC_ALIGNMENT: 'SET_CHART_X_AXIS_METRIC_ALIGNMENT',
   SET_CHART_HIDDEN_METRICS: 'SET_CHART_HIDDEN_METRICS',
   SET_CHART_TOOLTIP_OPTIONS: 'SET_CHART_TOOLTIP_OPTIONS',
   SET_CONTEXT_FILTER: 'SET_CONTEXT_FILTER',
@@ -103,6 +104,10 @@ const state = {
   runs: {
     isLoading: false,
     isEmpty: true,
+    isAligned: true,
+    isSynced: true,
+    isAsc: true,
+    isSkipped: false,
     data: null,
     params: [],
     aggMetrics: {},
@@ -455,23 +460,25 @@ function setTraceList() {
           const metricKey = `${run.run_hash}/${metric?.name}/${contextToHash(
             trace?.context,
           )}`;
-          const isHidden = hiddenMetrics.includes(metricKey);
-          traceList.addSeries(
-            run,
-            metric,
-            trace,
-            xAlignment,
-            aggregate,
-            scale,
-            persist,
-            seed,
-            colorPalette,
-            isHidden,
-            smoothingAlgorithm,
-            smoothFactor,
-            aggregatedLine,
-            aggregatedArea,
-          );
+          let isHidden = hiddenMetrics.includes(metricKey);
+          if (!Array.isArray(xAlignment) || trace.alignment !== undefined) {
+            traceList.addSeries(
+              run,
+              metric,
+              trace,
+              xAlignment,
+              aggregate,
+              scale,
+              persist,
+              seed,
+              colorPalette,
+              isHidden,
+              smoothingAlgorithm,
+              smoothFactor,
+              aggregatedLine,
+              aggregatedArea,
+            );
+          }
         });
       });
     }
@@ -515,6 +522,40 @@ function setChartPointsCount(count) {
       },
     },
   });
+}
+
+function setChartXAxisAlignment(type) {
+  if (Array.isArray(type)) {
+    emit(events.SET_CHART_X_AXIS_METRIC_ALIGNMENT, {
+      chart: {
+        ...getState().chart,
+        settings: {
+          ...getState().chart.settings,
+          zoomMode: false,
+          zoomHistory: [],
+          persistent: {
+            ...getState().chart.settings.persistent,
+            zoom: null,
+            xAlignment: type,
+          },
+        },
+      },
+    });
+  } else {
+    setChartSettingsState(
+      {
+        ...getState().chart.settings,
+        zoomMode: false,
+        zoomHistory: [],
+        persistent: {
+          ...getState().chart.settings.persistent,
+          zoom: null,
+          xAlignment: type,
+        },
+      },
+      setTraceList,
+    );
+  }
 }
 
 function setHiddenMetrics(metricKey) {
@@ -690,23 +731,23 @@ function setContextFilter(
     };
   }
 
-  if (updateColumnsOrder) {
-    ContextTableModel.emit(ContextTableModel.events.SET_GROUPED_COLUMNS, {
-      name: 'context',
-      columns: _.difference(
-        _.concat(
-          contextFilterUpdate.groupByColor ?? [],
-          contextFilterUpdate.groupByStyle ?? [],
-          contextFilterUpdate.groupByChart ?? [],
-        ),
-        _.concat(
-          getState().contextFilter.groupByColor,
-          getState().contextFilter.groupByStyle,
-          getState().contextFilter.groupByChart,
-        ),
-      ),
-    });
-  }
+  // if (updateColumnsOrder) {
+  //   ContextTableModel.emit(ContextTableModel.events.SET_GROUPED_COLUMNS, {
+  //     name: 'context',
+  //     columns: _.difference(
+  //       _.concat(
+  //         contextFilterUpdate.groupByColor ?? [],
+  //         contextFilterUpdate.groupByStyle ?? [],
+  //         contextFilterUpdate.groupByChart ?? [],
+  //       ),
+  //       _.concat(
+  //         getState().contextFilter.groupByColor,
+  //         getState().contextFilter.groupByStyle,
+  //         getState().contextFilter.groupByChart,
+  //       ),
+  //     ),
+  //   });
+  // }
   emit(events.SET_CONTEXT_FILTER, stateUpdate);
 
   setTraceList();
@@ -1247,6 +1288,7 @@ export const HubMainScreenModel = {
     setHiddenMetrics,
     setChartTooltipOptions,
     setChartPointsCount,
+    setChartXAxisAlignment,
     setChartFocusedState,
     setChartFocusedActiveState,
     setContextFilter,

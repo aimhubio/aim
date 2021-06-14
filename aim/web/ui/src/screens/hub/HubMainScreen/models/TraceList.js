@@ -424,10 +424,6 @@ export default class TraceList {
         });
 
         this.chartSteps = chartSteps;
-
-        if (aggregate) {
-          this.aggregate(scale, aggregatedLine, aggregatedArea);
-        }
         break;
       case 'epoch':
         let epochSteps = {};
@@ -534,10 +530,6 @@ export default class TraceList {
             }
           });
         });
-
-        if (aggregate) {
-          this.aggregate(scale, aggregatedLine, aggregatedArea);
-        }
         break;
       case 'relative_time':
         chartSteps = {};
@@ -591,10 +583,6 @@ export default class TraceList {
         });
 
         this.chartSteps = chartSteps;
-
-        if (aggregate) {
-          this.aggregate(scale, aggregatedLine, aggregatedArea);
-        }
         break;
       case 'absolute_time':
         chartSteps = {};
@@ -620,11 +608,40 @@ export default class TraceList {
         });
 
         this.chartSteps = chartSteps;
-
-        if (aggregate) {
-          this.aggregate(scale, aggregatedLine, aggregatedArea);
-        }
         break;
+      default:
+        chartSteps = {};
+        this.traces.forEach((traceModel) => {
+          if (!chartSteps.hasOwnProperty(traceModel.chart)) {
+            chartSteps[traceModel.chart] = [];
+          }
+          traceModel.series.forEach((series) => {
+            const { trace } = series;
+            if (trace !== undefined && trace !== null) {
+              trace.axisValues = [];
+              trace.data = trace.data
+                .filter((point) => point[4] !== null)
+                .sort((a, b) => a[4] - b[4]);
+              trace.data.forEach((point) => {
+                const step = point[4];
+                if (!chartSteps[traceModel.chart].includes(step)) {
+                  chartSteps[traceModel.chart].push(step);
+                }
+                trace.axisValues.push(step);
+              });
+            }
+          });
+
+          chartSteps[traceModel.chart] = chartSteps[traceModel.chart].sort(
+            (a, b) => a - b,
+          );
+        });
+
+        this.chartSteps = chartSteps;
+    }
+
+    if (aggregate) {
+      this.aggregate(scale, aggregatedLine, aggregatedArea);
     }
   };
 
