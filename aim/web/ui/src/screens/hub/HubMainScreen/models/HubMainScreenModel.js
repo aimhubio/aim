@@ -10,6 +10,11 @@ import {
   EXPLORE_PANEL_HIDDEN_METRICS,
   EXPLORE_PANEL_SINGLE_ZOOM_MODE,
   EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS,
+  EXPLORE_PANEL_VIEW_MODE,
+  EXPLORE_PANEL_FLEX_STYLE,
+  CONTEXT_TABLE_CONFIG,
+  TABLE_COLUMNS,
+  TABLE_COLUMNS_WIDTHS,
 } from '../../../../config';
 import { getItem, removeItem, setItem } from '../../../../services/storage';
 import { flattenObject, sortOnKeys } from '../../../../utils';
@@ -38,6 +43,11 @@ const events = {
   SET_SEED: 'SET_SEED',
   TOGGLE_PERSISTENCE: 'TOGGLE_PERSISTENCE',
   SET_COLOR_PALETTE: 'SET_COLOR_PALETTE',
+  SET_SCREEN_STATE: 'SET_SCREEN_STATE',
+  SET_TABLE_ROW_HEIGHT_MODE: 'SET_TABLE_ROW_HEIGHT_MODE',
+  SET_TABLE_EXCLUDED_FIELDS: 'SET_TABLE_EXCLUDED_FIELDS',
+  SET_TABLE_COLUMNS_ORDER: 'SET_TABLE_COLUMNS_ORDER',
+  SET_TABLE_COLUMNS_WIDTHS: 'SET_TABLE_COLUMNS_WIDTHS',
 };
 
 // State
@@ -147,6 +157,28 @@ const state = {
   colorPalette: !!getItem(EXPLORE_PANEL_COLOR_PALETTE)
     ? +getItem(EXPLORE_PANEL_COLOR_PALETTE)
     : 0,
+
+  // Screen state
+  screen: {
+    panelFlex: getItem(EXPLORE_PANEL_FLEX_STYLE),
+    viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
+  },
+
+  // Context table state
+  table: {
+    rowHeightMode:
+      JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
+        ?.rowHeightMode ?? 'medium',
+    excludedFields:
+      JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
+        ?.excludedFields ?? [],
+    columnsOrder: JSON.parse(getItem(TABLE_COLUMNS))?.context ?? {
+      left: [],
+      middle: [],
+      right: [],
+    },
+    columnsWidths: JSON.parse(getItem(TABLE_COLUMNS_WIDTHS))?.context ?? {},
+  },
 };
 
 // initial controls
@@ -849,6 +881,83 @@ function setColorPalette(paletteIndex) {
   setItem(EXPLORE_PANEL_COLOR_PALETTE, paletteIndex);
 }
 
+function setScreenState(screenOptions) {
+  emit(events.SET_SCREEN_STATE, {
+    screen: {
+      ...getState().screen,
+      ...screenOptions,
+    },
+  });
+
+  if (screenOptions.hasOwnProperty('panelFlex')) {
+    setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
+  }
+
+  if (screenOptions.hasOwnProperty('viewMode')) {
+    setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
+  }
+}
+
+function setRowHeightMode(mode) {
+  emit(events.SET_TABLE_ROW_HEIGHT_MODE, {
+    table: {
+      ...getState().table,
+      rowHeightMode: mode,
+    },
+  });
+
+  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+  setItem(
+    storageKey,
+    JSON.stringify({
+      rowHeightMode: mode,
+      excludedFields: getState().table.excludedFields,
+    }),
+  );
+}
+
+function setExcludedFields(fields) {
+  emit(events.SET_TABLE_EXCLUDED_FIELDS, {
+    table: {
+      ...getState().table,
+      excludedFields: fields,
+    },
+  });
+
+  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+  setItem(
+    storageKey,
+    JSON.stringify({
+      rowHeightMode: getState().table.rowHeightMode,
+      excludedFields: fields,
+    }),
+  );
+}
+
+function setColumnsOrder(columnsOrder) {
+  emit(events.SET_TABLE_COLUMNS_ORDER, {
+    table: {
+      ...getState().table,
+      columnsOrder,
+    },
+  });
+  const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
+  tableColumns.context = columnsOrder;
+  setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
+}
+
+function setColumnsWidths(columnsWidths) {
+  emit(events.SET_TABLE_COLUMNS_WIDTHS, {
+    table: {
+      ...getState().table,
+      columnsWidths,
+    },
+  });
+  const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
+  tableColumnsWidths.context = columnsWidths;
+  setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
+}
+
 // helpers
 
 function isExploreMetricsModeEnabled() {
@@ -1190,6 +1299,11 @@ export const HubMainScreenModel = {
     setSeed,
     togglePersistence,
     setColorPalette,
+    setScreenState,
+    setRowHeightMode,
+    setExcludedFields,
+    setColumnsOrder,
+    setColumnsWidths,
   },
   helpers: {
     isExploreMetricsModeEnabled,

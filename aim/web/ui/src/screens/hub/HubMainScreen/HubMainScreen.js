@@ -13,8 +13,6 @@ import { setItem, getItem } from '../../../services/storage';
 import {
   USER_LAST_SEARCH_QUERY,
   AIM_QL_VERSION,
-  EXPLORE_PANEL_FLEX_STYLE,
-  EXPLORE_PANEL_VIEW_MODE,
   USER_LAST_EXPLORE_CONFIG,
 } from '../../../config';
 import Panel from './components/Panel/Panel';
@@ -50,15 +48,14 @@ function HubMainScreen(props) {
     height: 0,
     width: 0,
     resizing: false,
-    panelFlex: getItem(EXPLORE_PANEL_FLEX_STYLE),
-    viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
     searchError: null,
   });
 
-  let { runs, traceList, search, searchInput } =
+  let { runs, traceList, search, searchInput, screen } =
     HubMainScreenModel.useHubMainScreenState([
       HubMainScreenModel.events.SET_RUNS_STATE,
       HubMainScreenModel.events.SET_TRACE_LIST,
+      HubMainScreenModel.events.SET_SCREEN_STATE,
     ]);
 
   const {
@@ -69,6 +66,7 @@ function HubMainScreen(props) {
     setChartFocusedActiveState,
     setChartSettingsState,
     setTraceList,
+    setScreenState,
   } = HubMainScreenModel.emitters;
 
   const { traceToHash } = HubMainScreenModel.helpers;
@@ -120,10 +118,9 @@ function HubMainScreen(props) {
         projectWrapperRef.current.getHeaderHeight() -
         searchBarHeight;
       const flex = height / (state.height - searchBarHeight);
-      setState((s) => ({
-        ...s,
+      setScreenState({
         panelFlex: flex,
-      }));
+      });
     });
   }
 
@@ -508,16 +505,6 @@ function HubMainScreen(props) {
   }, [props.location]);
 
   useEffect(() => {
-    if (state.resizing === false) {
-      setItem(EXPLORE_PANEL_FLEX_STYLE, state.panelFlex);
-    }
-  }, [state.resizing]);
-
-  useEffect(() => {
-    setItem(EXPLORE_PANEL_VIEW_MODE, state.viewMode);
-  }, [state.viewMode]);
-
-  useEffect(() => {
     props.completeProgress();
     updateWindowDimensions();
     window.addEventListener('resize', updateWindowDimensions);
@@ -575,7 +562,7 @@ function HubMainScreen(props) {
       <div
         className={classNames({
           HubMainScreen__grid__body: true,
-          [`HubMainScreen__grid__body--${state.viewMode}`]: true,
+          [`HubMainScreen__grid__body--${screen.viewMode}`]: true,
         })}
         style={{
           height: `${state.height - searchBarHeight}px`,
@@ -595,17 +582,17 @@ function HubMainScreen(props) {
             </div>
           ) : (
             <div className='HubMainScreen__grid__body__blocks'>
-              {state.viewMode !== 'context' && (
+              {screen.viewMode !== 'context' && (
                 <div
                   className='HubMainScreen__grid__panel'
                   style={{
-                    flex: state.viewMode === 'panel' ? 1 : state.panelFlex,
+                    flex: screen.viewMode === 'panel' ? 1 : screen.panelFlex,
                   }}
                 >
                   <Panel
                     parentHeight={state.height}
                     parentWidth={state.width}
-                    mode={state.viewMode}
+                    mode={screen.viewMode}
                     indices={panelIndices}
                     resizing={state.resizing}
                   />
@@ -622,7 +609,7 @@ function HubMainScreen(props) {
                   )}
                 </div>
               )}
-              {state.viewMode === 'resizable' && (
+              {screen.viewMode === 'resizable' && (
                 <div
                   className='HubMainScreen__grid__resize__area'
                   onMouseDown={startResize}
@@ -641,34 +628,30 @@ function HubMainScreen(props) {
                 className={classNames({
                   HubMainScreen__grid__context: true,
                   'HubMainScreen__grid__context--minimize':
-                  state.viewMode === 'panel',
+                  screen.viewMode === 'panel',
                 })}
                 style={{
                   flex:
-                  state.viewMode === 'context'
+                  screen.viewMode === 'context'
                     ? 1
-                    : state.viewMode === 'panel'
+                    : screen.viewMode === 'panel'
                       ? 0
-                      : 1 - state.panelFlex,
+                      : 1 - screen.panelFlex,
                 }}
               >
-                {state.viewMode !== 'panel' ? (
+                {screen.viewMode !== 'panel' ? (
                   <ContextBox
-                    spacing={state.viewMode !== 'resizable'}
+                    spacing={screen.viewMode !== 'resizable'}
                     width={state.width - headerWidth - controlsWidth - 5}
                     resizing={state.resizing}
-                    viewMode={state.viewMode}
-                    setViewMode={(mode) =>
-                      setState((s) => ({ ...s, viewMode: mode }))
-                    }
+                    viewMode={screen.viewMode}
+                    setViewMode={(mode) => setScreenState({ viewMode: mode })}
                   />
                 ) : (
                   <div className='HubMainScreen__grid__context__bar'>
                     <BarViewModes
-                      viewMode={state.viewMode}
-                      setViewMode={(mode) =>
-                        setState((s) => ({ ...s, viewMode: mode }))
-                      }
+                      viewMode={screen.viewMode}
+                      setViewMode={(mode) => setScreenState({ viewMode: mode })}
                     />
                   </div>
                 )}
