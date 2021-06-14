@@ -8,6 +8,7 @@
 .HubBookmarksScreen__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  column-gap: var(--component-spacing-sm);
   padding: var(--component-spacing-sm);
 }
 
@@ -23,6 +24,7 @@
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
   text-decoration: none !important;
   overflow: hidden;
+  user-select: none;
 }
 
 .HubBookmarksScreen__grid__item__heading {
@@ -31,6 +33,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  user-select: none;
 }
 
 .HubBookmarksScreen__grid__item__title {
@@ -39,6 +42,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  user-select: none;
 }
 
 .HubBookmarksScreen__grid__item__icon {
@@ -47,6 +51,7 @@
   right: -20px;
   font-size: 140px;
   color: rgba(255, 255, 255, 0.2);
+  user-select: none;
 
   .Icon {
     display: block !important;
