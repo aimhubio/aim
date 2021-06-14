@@ -104,7 +104,7 @@
   },
   "scripts": {
     "start": "cross-env HOST=0.0.0.0 PORT=43801 HTTPS=false node scripts/start.js",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" ASSET_PATH=\"/static-files/\" node scripts/build.js && gzipper c --brotli ./build",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" ASSET_PATH=\"/static-files/\" node scripts/build.js && gzipper c ./build",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "eslint": "eslint . --ext .js",
     "eslint:fix": "eslint . --ext .js --fix",
