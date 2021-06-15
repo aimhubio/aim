@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('dashboards',
     sa.Column('uuid', sa.Text(), nullable=False),
     sa.Column('name', sa.Text(), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('is_archived', sa.Boolean(), nullable=True),

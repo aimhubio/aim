@@ -26,7 +26,8 @@ class DashboardsListCreateApi(Resource):
         # create the dashboard object
         request_data = json.loads(request.data)
         dashboard_name = request_data.get('name')
-        dashboard = Dashboard(dashboard_name)
+        dashboard_description = request_data.get('description')
+        dashboard = Dashboard(dashboard_name, dashboard_description)
         db.session.add(dashboard)
 
         # update the app object's foreign key relation
@@ -56,7 +57,11 @@ class DashboardsGetPutDeleteApi(Resource):
             return make_response(jsonify({}), 404)
         request_data = json.loads(request.data)
         dashboard_name = request_data.get('name')
-        dashboard.name = dashboard_name
+        if dashboard_name:
+            dashboard.name = dashboard_name
+        dashboard_description = request_data.get('description')
+        if dashboard_description:
+            dashboard.description = dashboard_description
         db.session.commit()
 
         return make_response(jsonify(dashboard_response_serializer(dashboard)), 200)
