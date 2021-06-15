@@ -520,7 +520,7 @@ function PanelPopUps(props) {
               bottom: pos.bottom,
               width: pos.width,
               height: pos.height,
-              display: true,
+              display: !chart.settings.zoomMode,
               run: line.run,
               metric: line.metric,
               trace: line.trace,
