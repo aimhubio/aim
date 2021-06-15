@@ -47,10 +47,17 @@ def json_loads_or_none(obj):
     return json.loads(obj) if obj else None
 
 
-Field = namedtuple('Field', 'type, source, required, null, blank',
-                   defaults=[None, None, False, True, True])
-ModelField = namedtuple('Field', 'type, source, required, null, blank',
-                        defaults=[None, None, False, True, True])
+class Field:
+    def __init__(self, type=None, source=None, required=False, null=True, blank=True):
+        self.type = type
+        self.source = source
+        self.required = required
+        self.null = null
+        self.blank = blank
+
+
+class ModelField(Field):
+    pass
 
 
 class ValidationError(Exception):
@@ -94,11 +101,6 @@ class SerializerMetaclass(type):
 
 
 class BaseSerializer(metaclass=SerializerMetaclass):
-    # TODO: write the docstring
-    """
-        Syntax for serializers, methods and that kind of stuff here
-    """
-
     # error messages and templates
     FIELD_REQUIRED_ERROR_MESSAGE = 'This field is required.'
     FIELD_NULL_ERROR_MESSAGE = 'The value of this field can\'t be null.'
