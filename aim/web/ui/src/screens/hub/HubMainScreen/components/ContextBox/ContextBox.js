@@ -403,6 +403,12 @@ function ContextBox(props) {
     );
   }
 
+  function barExportData() {
+    // TODO
+    debugger;
+    console.log('barExportData');
+  }
+
   function _renderContentLoader() {
     const cellHeight = 25,
       cellWidth = 35,
@@ -1343,6 +1349,7 @@ function ContextBox(props) {
             setColumnsOrder={setColumnsOrder}
             columnsWidths={table.columnsWidths}
             setColumnsWidths={setColumnsWidths}
+            barExportData={barExportData}
             getParamsWithSameValue={getParamsWithSameValue}
             alwaysVisibleColumns={[
               'experiment',
