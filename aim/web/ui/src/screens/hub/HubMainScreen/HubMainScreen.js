@@ -306,7 +306,7 @@ function HubMainScreen(props) {
       setItem(USER_LAST_EXPLORE_CONFIG, URL);
     }
 
-    if (window.location.pathname + window.location.search !== URL) {
+    if (props.location.pathname + props.location.search !== URL) {
       if (replaceUrl) {
         props.history.replace(URL);
         console.log(`Replace: URL(${URL})`);
@@ -589,7 +589,7 @@ function HubMainScreen(props) {
       if (!bookmark_id) {
         setViewKey(null);
       }
-      recoverStateFromURL(window.location.search);
+      recoverStateFromURL(props.location.search);
     }
     if (firstEffect.current) {
       firstEffect.current = false;

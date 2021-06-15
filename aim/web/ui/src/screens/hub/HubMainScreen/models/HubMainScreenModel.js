@@ -55,138 +55,140 @@ const events = {
 
 // State
 
-const initialState = {
-  // Chart config
-  chart: {
-    focused: {
-      step: null,
-      metric: {
-        runHash: null,
-        metricName: null,
-        traceContext: null,
-      },
-      circle: {
-        active: false,
-        runHash: null,
-        metricName: null,
-        traceContext: null,
+function getInitialState() {
+  return {
+    // Chart config
+    chart: {
+      focused: {
         step: null,
+        metric: {
+          runHash: null,
+          metricName: null,
+          traceContext: null,
+        },
+        circle: {
+          active: false,
+          runHash: null,
+          metricName: null,
+          traceContext: null,
+          step: null,
+        },
+      },
+      settings: {
+        zoomMode: false,
+        singleZoomMode:
+          (getItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE) || 'true') === 'true',
+        zoomHistory: [],
+        highlightMode: getItem(EXPLORE_METRIC_HIGHLIGHT_MODE) ?? 'run',
+        persistent: {
+          displayOutliers: false,
+          zoom: null,
+          interpolate: false,
+          indicator: true,
+          xAlignment: 'step',
+          xScale: 0,
+          yScale: 0,
+          pointsCount: 50,
+          smoothingAlgorithm: 'ema',
+          smoothFactor: 0,
+          aggregated: false,
+        },
+      },
+      hiddenMetrics: JSON.parse(getItem(EXPLORE_PANEL_HIDDEN_METRICS)) ?? [],
+      tooltipOptions: JSON.parse(
+        getItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS),
+      ) ?? {
+        display: true,
+        fields: [],
       },
     },
-    settings: {
-      zoomMode: false,
-      singleZoomMode:
-        (getItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE) || 'true') === 'true',
-      zoomHistory: [],
-      highlightMode: getItem(EXPLORE_METRIC_HIGHLIGHT_MODE) ?? 'run',
-      persistent: {
-        displayOutliers: false,
-        zoom: null,
-        interpolate: false,
-        indicator: true,
-        xAlignment: 'step',
-        xScale: 0,
-        yScale: 0,
-        pointsCount: 50,
-        smoothingAlgorithm: 'ema',
-        smoothFactor: 0,
-        aggregated: false,
+
+    // Chart data - runs
+    runs: {
+      isLoading: false,
+      isEmpty: true,
+      isAligned: true,
+      isSynced: true,
+      isAsc: true,
+      isSkipped: false,
+      data: null,
+      params: [],
+      aggMetrics: {},
+      meta: null,
+    },
+
+    // Search
+    search: {
+      query: undefined,
+      v: AIM_QL_VERSION,
+    },
+    searchInput: {
+      value: undefined,
+      selectInput: '',
+      selectConditionInput: '',
+    },
+
+    // Grouping filter
+    contextFilter: {
+      groupByColor: [],
+      groupByStyle: [],
+      groupByChart: [],
+      groupAgainst: {
+        color: false,
+        style: false,
+        chart: false,
+      },
+      aggregatedArea: 'min_max',
+      aggregatedLine: 'avg',
+      seed: {
+        color: 10,
+        style: 10,
+      },
+      persist: {
+        color: false,
+        style: false,
       },
     },
-    hiddenMetrics: JSON.parse(getItem(EXPLORE_PANEL_HIDDEN_METRICS)) ?? [],
-    tooltipOptions: JSON.parse(
-      getItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS),
-    ) ?? {
-      display: true,
-      fields: [],
+
+    // Sort fields
+    sortFields: JSON.parse(getItem(EXPLORE_PANEL_SORT_FIELDS)) ?? [],
+
+    // Trace list
+    traceList: null,
+
+    // Color palette
+    colorPalette: !!getItem(EXPLORE_PANEL_COLOR_PALETTE)
+      ? +getItem(EXPLORE_PANEL_COLOR_PALETTE)
+      : 0,
+
+    // Screen state
+    screen: {
+      panelFlex: +getItem(EXPLORE_PANEL_FLEX_STYLE) ?? null,
+      viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
     },
-  },
 
-  // Chart data - runs
-  runs: {
-    isLoading: false,
-    isEmpty: true,
-    isAligned: true,
-    isSynced: true,
-    isAsc: true,
-    isSkipped: false,
-    data: null,
-    params: [],
-    aggMetrics: {},
-    meta: null,
-  },
-
-  // Search
-  search: {
-    query: undefined,
-    v: AIM_QL_VERSION,
-  },
-  searchInput: {
-    value: undefined,
-    selectInput: '',
-    selectConditionInput: '',
-  },
-
-  // Grouping filter
-  contextFilter: {
-    groupByColor: [],
-    groupByStyle: [],
-    groupByChart: [],
-    groupAgainst: {
-      color: false,
-      style: false,
-      chart: false,
+    // Context table state
+    table: {
+      rowHeightMode:
+        JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
+          ?.rowHeightMode ?? 'medium',
+      excludedFields:
+        JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
+          ?.excludedFields ?? [],
+      columnsOrder: JSON.parse(getItem(TABLE_COLUMNS))?.context ?? {
+        left: [],
+        middle: [],
+        right: [],
+      },
+      columnsWidths: JSON.parse(getItem(TABLE_COLUMNS_WIDTHS))?.context ?? {},
     },
-    aggregatedArea: 'min_max',
-    aggregatedLine: 'avg',
-    seed: {
-      color: 10,
-      style: 10,
-    },
-    persist: {
-      color: false,
-      style: false,
-    },
-  },
 
-  // Sort fields
-  sortFields: JSON.parse(getItem(EXPLORE_PANEL_SORT_FIELDS)) ?? [],
+    // Explore view key
+    viewKey: null,
+  };
+}
 
-  // Trace list
-  traceList: null,
-
-  // Color palette
-  colorPalette: !!getItem(EXPLORE_PANEL_COLOR_PALETTE)
-    ? +getItem(EXPLORE_PANEL_COLOR_PALETTE)
-    : 0,
-
-  // Screen state
-  screen: {
-    panelFlex: +getItem(EXPLORE_PANEL_FLEX_STYLE) ?? null,
-    viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
-  },
-
-  // Context table state
-  table: {
-    rowHeightMode:
-      JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
-        ?.rowHeightMode ?? 'medium',
-    excludedFields:
-      JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
-        ?.excludedFields ?? [],
-    columnsOrder: JSON.parse(getItem(TABLE_COLUMNS))?.context ?? {
-      left: [],
-      middle: [],
-      right: [],
-    },
-    columnsWidths: JSON.parse(getItem(TABLE_COLUMNS_WIDTHS))?.context ?? {},
-  },
-
-  // Explore view key
-  viewKey: null,
-};
-
-const state = _.cloneDeep(initialState);
+const state = getInitialState();
 
 // initial controls
 
@@ -239,7 +241,7 @@ function setState(stateUpdate) {
 }
 
 function resetState() {
-  setState(_.cloneDeep(initialState));
+  setState(getInitialState());
 }
 
 // Event emitter
@@ -282,7 +284,7 @@ function emit(event, data) {
 // event emitters
 
 function setRecoveredState(state, cb) {
-  emit(events.SET_RECOVERED_STATE, _.merge({}, getState(), state));
+  emit(events.SET_RECOVERED_STATE, _.assign({}, getState(), state));
 
   if (typeof cb === 'function') {
     cb();

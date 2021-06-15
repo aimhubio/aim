@@ -32,7 +32,7 @@ function SidebarMenu(props) {
       </div>
       {opened && (
         <div
-          className='ControlsSidebar__item__popup list ControlsSidebar__item__popup-sidebar'
+          className='ControlsSidebar__item__popup list ControlsSidebar__item__popup-sidebar SidebarMenu'
           tabIndex={0}
           ref={popupRef}
           onBlur={(evt) => {
