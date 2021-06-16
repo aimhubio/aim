@@ -5,6 +5,7 @@
   "dependencies": {
     "color": "^3.1.2",
     "d3": "^5.16.0",
+    "file-saver": "^2.0.5",
     "highcharts": "^7.2.1",
     "highcharts-react-official": "^2.2.2",
     "humanize-duration": "^3.25.1",

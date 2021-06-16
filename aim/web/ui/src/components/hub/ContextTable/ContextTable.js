@@ -117,9 +117,7 @@ function ContextTable(props) {
             />
           </div>
           <div className='ContextTableBar__items ContextTableBar__items--right'>
-            {props.barExportData && (
-              <BarExport barExportData={props.barExportData} />
-            )}
+            {props.exportData && <BarExport exportData={props.exportData} />}
           </div>
         </div>
       )}
@@ -181,7 +179,7 @@ ContextTable.propTypes = {
   setColumnsWidths: PropTypes.func,
   getParamsWithSameValue: PropTypes.func,
   getTableContainerElement: PropTypes.func,
-  barExportData: PropTypes.func,
+  exportData: PropTypes.func,
 };
 
 export default ContextTable;

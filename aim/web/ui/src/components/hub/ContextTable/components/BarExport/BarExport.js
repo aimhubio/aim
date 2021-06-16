@@ -4,16 +4,13 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import UI from '../../../../../ui';
-import * as analytics from '../../../../../services/analytics';
 
 function BarExport(props) {
   const onBarExport = useCallback(() => {
-    if (typeof props.barExportData === 'function') {
-      props.barExportData();
-      //TODO
-      analytics.trackEvent('[Table] Export some data of table');
+    if (typeof props.exportData === 'function') {
+      props.exportData();
     }
-  }, [props.barExportData]);
+  }, [props.exportData]);
 
   return (
     <div className='ContextTableBar__item__wrapper'>
@@ -32,7 +29,7 @@ function BarExport(props) {
 }
 
 BarExport.propTypes = {
-  barExportData: PropTypes.func.isRequired,
+  exportData: PropTypes.func.isRequired,
 };
 
 export default React.memo(BarExport);
