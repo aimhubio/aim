@@ -11,6 +11,7 @@ import UI from '../../../ui';
 import { Link } from 'react-router-dom';
 import * as screens from '../../../constants/screens';
 import { buildUrl } from '../../../utils';
+import * as analytics from '../../../services/analytics';
 
 function HubBookmarksScreen(props) {
   const projectWrapperRef = useRef();
@@ -42,6 +43,9 @@ function HubBookmarksScreen(props) {
       .finally(() => {
         setIsLoading(false);
       });
+
+    // Analytics
+    analytics.pageView('Bookmarks');
   }, []);
 
   return (

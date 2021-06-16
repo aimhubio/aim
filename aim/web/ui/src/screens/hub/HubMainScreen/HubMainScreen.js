@@ -415,7 +415,13 @@ function HubMainScreen(props) {
         HubMainScreenModel.getState(),
         excludedPropsForAppSave,
       );
-      props.updateApp(app_id, appOptions).then(resolve).catch(reject);
+      props
+        .updateApp(app_id, appOptions)
+        .then(() => {
+          analytics.trackEvent('[Explore] update bookmark state');
+          resolve();
+        })
+        .catch(reject);
     });
   }
 

@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { classNames } from '../../../../../utils';
 import { HubMainScreenModel } from '../../models/HubMainScreenModel';
 import UI from '../../../../../ui';
+import * as analytics from '../../../../../services/analytics';
 
 function SaveAsModal(props) {
   let [opened, setOpened] = useState(false);
@@ -40,6 +41,7 @@ function SaveAsModal(props) {
               .then((data) => {
                 resolve(data);
                 closeModal();
+                analytics.trackEvent('[Explore] create bookmark');
               })
               .catch((err) => {})
               .finally(() => {
