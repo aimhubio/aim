@@ -66,6 +66,7 @@
     "eslint-plugin-react-hooks": "^1.5.0",
     "file-loader": "3.0.1",
     "fs-extra": "7.0.1",
+    "gzipper": "^4.5.0",
     "html-webpack-plugin": "4.0.0-beta.5",
     "husky": "^4.3.5",
     "identity-obj-proxy": "3.0.0",
@@ -103,7 +104,7 @@
   },
   "scripts": {
     "start": "cross-env HOST=0.0.0.0 PORT=43801 HTTPS=false node scripts/start.js",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" ASSET_PATH=\"/static-files/\" node scripts/build.js",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" ASSET_PATH=\"/static-files/\" node scripts/build.js && gzipper c -i js,css,html ./build",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "eslint": "eslint . --ext .js",
     "eslint:fix": "eslint . --ext .js --fix",
