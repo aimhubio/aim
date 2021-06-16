@@ -20,7 +20,9 @@ function ControlsSidebarHighlightMode(props) {
       ...props.settings,
       highlightMode: mode,
     });
-    setItem(EXPLORE_METRIC_HIGHLIGHT_MODE, mode);
+    if (HubMainScreenModel.getState().viewKey === null) {
+      setItem(EXPLORE_METRIC_HIGHLIGHT_MODE, mode);
+    }
     setOpened(false);
     analytics.trackEvent(
       `[Explore] [LineChart] Set highlight mode to "${mode}"`,
@@ -71,38 +73,32 @@ function ControlsSidebarHighlightMode(props) {
                 Highlight modes
               </UI.Text>
             </div>
-            <div className='ControlsSidebar__item__popup__list'>
-              <div
-                className={classNames({
-                  ControlsSidebar__item__popup__list__item: true,
-                  active: highlightMode === 'default',
-                })}
-                onClick={(evt) => selectHighlightMode('default')}
-              >
-                <UI.Text small>Highlight off</UI.Text>
-              </div>
+            <div
+              className={classNames({
+                ControlsSidebar__item__popup__list__item: true,
+                active: highlightMode === 'default',
+              })}
+              onClick={(evt) => selectHighlightMode('default')}
+            >
+              <UI.Text small>Highlight off</UI.Text>
             </div>
-            <div className='ControlsSidebar__item__popup__list'>
-              <div
-                className={classNames({
-                  ControlsSidebar__item__popup__list__item: true,
-                  active: highlightMode === 'metric',
-                })}
-                onClick={(evt) => selectHighlightMode('metric')}
-              >
-                <UI.Text small>Highlight metric on hover</UI.Text>
-              </div>
+            <div
+              className={classNames({
+                ControlsSidebar__item__popup__list__item: true,
+                active: highlightMode === 'metric',
+              })}
+              onClick={(evt) => selectHighlightMode('metric')}
+            >
+              <UI.Text small>Highlight metric on hover</UI.Text>
             </div>
-            <div className='ControlsSidebar__item__popup__list'>
-              <div
-                className={classNames({
-                  ControlsSidebar__item__popup__list__item: true,
-                  active: highlightMode === 'run',
-                })}
-                onClick={(evt) => selectHighlightMode('run')}
-              >
-                <UI.Text small>Highlight run on hover</UI.Text>
-              </div>
+            <div
+              className={classNames({
+                ControlsSidebar__item__popup__list__item: true,
+                active: highlightMode === 'run',
+              })}
+              onClick={(evt) => selectHighlightMode('run')}
+            >
+              <UI.Text small>Highlight run on hover</UI.Text>
             </div>
           </div>
         )}

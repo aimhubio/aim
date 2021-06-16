@@ -31,6 +31,7 @@ import BarViewModes from '../../../components/hub/BarViewModes/BarViewModes';
 import Alert from './components/Alert/Alert';
 import UI from '../../../ui';
 import QueryParseErrorAlert from '../../../components/hub/QueryParseErrorAlert/QueryParseErrorAlert';
+import SaveAsModal from './components/SaveAsModal/SaveAsModal';
 import AlignmentWarning from './components/AlignmentWarning/AlignmentWarning';
 
 const URLStateParams = [
@@ -38,6 +39,16 @@ const URLStateParams = [
   'chart.settings.persistent',
   'search',
   'contextFilter',
+];
+
+const excludedPropsForAppSave = [
+  'runs',
+  'traceList',
+  'viewKey',
+  'chart.focused.step',
+  'chart.focused.metric',
+  'chart.settings.zoomMode',
+  'chart.settings.zoomHistory',
 ];
 
 const defaultSearchQuery = 'loss';
@@ -55,10 +66,12 @@ function HubMainScreen(props) {
     HubMainScreenModel.useHubMainScreenState([
       HubMainScreenModel.events.SET_RUNS_STATE,
       HubMainScreenModel.events.SET_TRACE_LIST,
+      HubMainScreenModel.events.SET_RECOVERED_STATE,
       HubMainScreenModel.events.SET_SCREEN_STATE,
     ]);
 
   const {
+    setRecoveredState,
     setRunsState,
     setContextFilter,
     setSearchState,
@@ -67,12 +80,14 @@ function HubMainScreen(props) {
     setChartSettingsState,
     setTraceList,
     setScreenState,
+    setViewKey,
   } = HubMainScreenModel.emitters;
 
   const { traceToHash } = HubMainScreenModel.helpers;
 
   const projectWrapperRef = useRef();
   const searchBarRef = useRef();
+  const firstEffect = useRef(true);
 
   function updateWindowDimensions() {
     const wrapper = projectWrapperRef.current;
@@ -146,8 +161,18 @@ function HubMainScreen(props) {
 
   function stateToURL(state) {
     const encodedState = btoa(JSON.stringify(state));
-    const URL = buildUrl(screens.EXPLORE_SEARCH, {
+    let screenPath = '';
+    switch (props.match.path) {
+      case screens.EXPLORE_BOOKMARK:
+      case screens.EXPLORE_BOOKMARK_SEARCH:
+        screenPath = screens.EXPLORE_BOOKMARK_SEARCH;
+        break;
+      default:
+        screenPath = screens.EXPLORE_SEARCH;
+    }
+    const URL = buildUrl(screenPath, {
       search: encodedState,
+      bookmark_id: props.match.params.bookmark_id,
     });
     return URL;
   }
@@ -236,12 +261,52 @@ function HubMainScreen(props) {
     }
   }
 
+  function recoverStateFromAPI(app_id) {
+    return new Promise((resolve, reject) => {
+      setRunsState({ isLoading: true });
+      props
+        .getAppState(app_id)
+        .then((data) => {
+          if (_.isEmpty(data)) {
+            props.history.replace(screens.EXPLORE);
+            console.log(`Problems with fetching app: ${app_id}`);
+          } else {
+            setRecoveredState(data.app_state, () =>
+              searchByQuery().then(() => {
+                setChartFocusedActiveState(
+                  data.app_state.chart.focused,
+                  null,
+                  false,
+                );
+                setChartSettingsState(
+                  data.app_state.chart.settings,
+                  setTraceList,
+                  false,
+                );
+              }),
+            );
+          }
+        })
+        .catch((err) => {
+          props.history.replace(screens.EXPLORE);
+          console.log(`Problems with fetching app: ${app_id}`);
+        });
+    });
+  }
+
   function updateURL({ replaceUrl }) {
     const state = getCurrentState();
 
     const URL = stateToURL(state);
-    setItem(USER_LAST_EXPLORE_CONFIG, URL);
-    if (window.location.pathname + window.location.search !== URL) {
+
+    if (
+      props.match.path === screens.EXPLORE ||
+      props.match.path === screens.EXPLORE_SEARCH
+    ) {
+      setItem(USER_LAST_EXPLORE_CONFIG, URL);
+    }
+
+    if (props.location.pathname + props.location.search !== URL) {
       if (replaceUrl) {
         props.history.replace(URL);
         console.log(`Replace: URL(${URL})`);
@@ -250,7 +315,11 @@ function HubMainScreen(props) {
         console.log(`Update: URL(${URL})`);
       }
 
-      if (state.search?.query !== null) {
+      if (
+        (props.match.path === screens.EXPLORE ||
+          props.match.path === screens.EXPLORE_SEARCH) &&
+        state.search?.query !== null
+      ) {
         setItem(USER_LAST_SEARCH_QUERY, state.search?.query);
       }
     }
@@ -336,6 +405,23 @@ function HubMainScreen(props) {
         .finally(() => {
           setRunsState({ isLoading: false });
         });
+    });
+  }
+
+  function updateAppState() {
+    return new Promise((resolve, reject) => {
+      const app_id = HubMainScreenModel.getState().viewKey;
+      const appOptions = _.omit(
+        HubMainScreenModel.getState(),
+        excludedPropsForAppSave,
+      );
+      props
+        .updateApp(app_id, appOptions)
+        .then(() => {
+          analytics.trackEvent('[Explore] update bookmark state');
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
@@ -501,7 +587,19 @@ function HubMainScreen(props) {
   }
 
   useEffect(() => {
-    recoverStateFromURL(window.location.search);
+    const { bookmark_id } = props.match.params;
+    if (!!bookmark_id && firstEffect.current) {
+      setViewKey(bookmark_id);
+      recoverStateFromAPI(bookmark_id);
+    } else {
+      if (!bookmark_id) {
+        setViewKey(null);
+      }
+      recoverStateFromURL(props.location.search);
+    }
+    if (firstEffect.current) {
+      firstEffect.current = false;
+    }
   }, [props.location]);
 
   useEffect(() => {
@@ -533,19 +631,20 @@ function HubMainScreen(props) {
       () => searchByQuery(false),
     );
 
+    const updateAppStateSubscription = HubMainScreenModel.subscribe(
+      HubMainScreenModel.events.UPDATE_APP,
+      updateAppState,
+    );
+
     // Analytics
     analytics.pageView('Explore');
 
     return () => {
       subscription.unsubscribe();
       pointsCountChangeSubscription.unsubscribe();
+      updateAppStateSubscription.unsubscribe();
       xAxisMetricAlignmentChangeSubscription.unsubscribe();
-      HubMainScreenModel.emit(null, {
-        search: {
-          ...HubMainScreenModel.getState().search,
-          query: '',
-        },
-      });
+      HubMainScreenModel.resetState();
       window.removeEventListener('resize', updateWindowDimensions);
       document.removeEventListener('mouseup', endResize);
       document.removeEventListener('mousemove', resizeHandler);
@@ -768,6 +867,11 @@ function HubMainScreen(props) {
           </div>
         </div>
       </div>
+      <SaveAsModal
+        createApp={props.createApp}
+        createDashboard={props.createDashboard}
+        excludedPropsForAppSave={excludedPropsForAppSave}
+      />
     </ProjectWrapper>
   );
 }
