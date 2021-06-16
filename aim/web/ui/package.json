@@ -32,6 +32,7 @@
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
     "react-svg": "^10.0.22",
+    "react-toast-notifications": "^2.4.4",
     "react-top-loading-bar": "^1.1.1",
     "react-truncate": "^2.4.0",
     "redux": "^4.0.1",
