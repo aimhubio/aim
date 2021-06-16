@@ -21,12 +21,12 @@ import { flattenObject, sortOnKeys } from '../../../../utils';
 import Color from 'color';
 import { COLORS } from '../../../../constants/colors';
 import TraceList from './TraceList';
-import { ContextTableModel } from '../../../../components/hub/ContextTable/models/ContextTableModel';
 import { getGroupingOptions } from '../components/ControlsSidebar/helpers';
 
 // Events
 
 const events = {
+  SET_RECOVERED_STATE: 'SET_RECOVERED_STATE',
   SET_RUNS_STATE: 'SET_RUNS_STATE',
   SET_TRACE_LIST: 'SET_TRACE_LIST',
   SET_CHART_FOCUSED_STATE: 'SET_CHART_FOCUSED_STATE',
@@ -48,138 +48,147 @@ const events = {
   SET_TABLE_EXCLUDED_FIELDS: 'SET_TABLE_EXCLUDED_FIELDS',
   SET_TABLE_COLUMNS_ORDER: 'SET_TABLE_COLUMNS_ORDER',
   SET_TABLE_COLUMNS_WIDTHS: 'SET_TABLE_COLUMNS_WIDTHS',
+  SET_VIEW_KEY: 'SET_VIEW_KEY',
+  CREATE_APP: 'CREATE_APP',
+  UPDATE_APP: 'UPDATE_APP',
 };
 
 // State
 
-const state = {
-  // Chart config
-  chart: {
-    focused: {
-      step: null,
-      metric: {
-        runHash: null,
-        metricName: null,
-        traceContext: null,
-      },
-      circle: {
-        active: false,
-        runHash: null,
-        metricName: null,
-        traceContext: null,
+function getInitialState() {
+  return {
+    // Chart config
+    chart: {
+      focused: {
         step: null,
+        metric: {
+          runHash: null,
+          metricName: null,
+          traceContext: null,
+        },
+        circle: {
+          active: false,
+          runHash: null,
+          metricName: null,
+          traceContext: null,
+          step: null,
+        },
+      },
+      settings: {
+        zoomMode: false,
+        singleZoomMode:
+          (getItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE) || 'true') === 'true',
+        zoomHistory: [],
+        highlightMode: getItem(EXPLORE_METRIC_HIGHLIGHT_MODE) ?? 'run',
+        persistent: {
+          displayOutliers: false,
+          zoom: null,
+          interpolate: false,
+          indicator: true,
+          xAlignment: 'step',
+          xScale: 0,
+          yScale: 0,
+          pointsCount: 50,
+          smoothingAlgorithm: 'ema',
+          smoothFactor: 0,
+          aggregated: false,
+        },
+      },
+      hiddenMetrics: JSON.parse(getItem(EXPLORE_PANEL_HIDDEN_METRICS)) ?? [],
+      tooltipOptions: JSON.parse(
+        getItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS),
+      ) ?? {
+        display: true,
+        fields: [],
       },
     },
-    settings: {
-      yScale: 0,
-      zoomMode: false,
-      singleZoomMode:
-        (getItem(EXPLORE_PANEL_SINGLE_ZOOM_MODE) || 'true') === 'true',
-      zoomHistory: [],
-      highlightMode: getItem(EXPLORE_METRIC_HIGHLIGHT_MODE) ?? 'run',
-      persistent: {
-        displayOutliers: false,
-        zoom: null,
-        interpolate: false,
-        indicator: true,
-        xAlignment: 'step',
-        xScale: 0,
-        yScale: 0,
-        pointsCount: 50,
-        smoothingAlgorithm: 'ema',
-        smoothFactor: 0,
-        aggregated: false,
+
+    // Chart data - runs
+    runs: {
+      isLoading: false,
+      isEmpty: true,
+      isAligned: true,
+      isSynced: true,
+      isAsc: true,
+      isSkipped: false,
+      data: null,
+      params: [],
+      aggMetrics: {},
+      meta: null,
+    },
+
+    // Search
+    search: {
+      query: undefined,
+      v: AIM_QL_VERSION,
+    },
+    searchInput: {
+      value: undefined,
+      selectInput: '',
+      selectConditionInput: '',
+    },
+
+    // Grouping filter
+    contextFilter: {
+      groupByColor: [],
+      groupByStyle: [],
+      groupByChart: [],
+      groupAgainst: {
+        color: false,
+        style: false,
+        chart: false,
+      },
+      aggregatedArea: 'min_max',
+      aggregatedLine: 'avg',
+      seed: {
+        color: 10,
+        style: 10,
+      },
+      persist: {
+        color: false,
+        style: false,
       },
     },
-    hiddenMetrics: JSON.parse(getItem(EXPLORE_PANEL_HIDDEN_METRICS)) ?? [],
-    tooltipOptions: JSON.parse(
-      getItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS),
-    ) ?? {
-      display: true,
-      fields: [],
+
+    // Sort fields
+    sortFields: JSON.parse(getItem(EXPLORE_PANEL_SORT_FIELDS)) ?? [],
+
+    // Trace list
+    traceList: null,
+
+    // Color palette
+    colorPalette: !!getItem(EXPLORE_PANEL_COLOR_PALETTE)
+      ? +getItem(EXPLORE_PANEL_COLOR_PALETTE)
+      : 0,
+
+    // Screen state
+    screen: {
+      panelFlex: +getItem(EXPLORE_PANEL_FLEX_STYLE) ?? null,
+      viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
     },
-  },
 
-  // Chart data - runs
-  runs: {
-    isLoading: false,
-    isEmpty: true,
-    isAligned: true,
-    isSynced: true,
-    isAsc: true,
-    isSkipped: false,
-    data: null,
-    params: [],
-    aggMetrics: {},
-    meta: null,
-  },
-
-  // Search
-  search: {
-    query: undefined,
-    v: AIM_QL_VERSION,
-  },
-  searchInput: {
-    value: undefined,
-    selectInput: '',
-    selectConditionInput: '',
-  },
-
-  // Grouping filter
-  contextFilter: {
-    groupByColor: [],
-    groupByStyle: [],
-    groupByChart: [],
-    groupAgainst: {
-      color: false,
-      style: false,
-      chart: false,
+    // Context table state
+    table: {
+      rowHeightMode:
+        JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
+          ?.rowHeightMode ?? 'medium',
+      excludedFields:
+        JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
+          ?.excludedFields ?? [],
+      columnsOrder: JSON.parse(getItem(TABLE_COLUMNS))?.context ?? {
+        left: [],
+        middle: [],
+        right: [],
+      },
+      columnsWidths: JSON.parse(getItem(TABLE_COLUMNS_WIDTHS))?.context ?? {},
     },
-    aggregatedArea: 'min_max',
-    aggregatedLine: 'avg',
-    seed: {
-      color: 10,
-      style: 10,
-    },
-    persist: {
-      color: false,
-      style: false,
-    },
-  },
 
-  // Sort fields
-  sortFields: JSON.parse(getItem(EXPLORE_PANEL_SORT_FIELDS)) ?? [],
+    // Explore view key
+    viewKey: null,
+  };
+}
 
-  // Trace list
-  traceList: null,
-
-  // Color palette
-  colorPalette: !!getItem(EXPLORE_PANEL_COLOR_PALETTE)
-    ? +getItem(EXPLORE_PANEL_COLOR_PALETTE)
-    : 0,
-
-  // Screen state
-  screen: {
-    panelFlex: getItem(EXPLORE_PANEL_FLEX_STYLE),
-    viewMode: getItem(EXPLORE_PANEL_VIEW_MODE) ?? 'resizable',
-  },
-
-  // Context table state
-  table: {
-    rowHeightMode:
-      JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
-        ?.rowHeightMode ?? 'medium',
-    excludedFields:
-      JSON.parse(getItem(CONTEXT_TABLE_CONFIG.replace('{name}', 'context')))
-        ?.excludedFields ?? [],
-    columnsOrder: JSON.parse(getItem(TABLE_COLUMNS))?.context ?? {
-      left: [],
-      middle: [],
-      right: [],
-    },
-    columnsWidths: JSON.parse(getItem(TABLE_COLUMNS_WIDTHS))?.context ?? {},
-  },
-};
+const state = getInitialState();
 
 // initial controls
 
@@ -231,6 +240,10 @@ function setState(stateUpdate) {
   Object.assign(state, stateUpdate);
 }
 
+function resetState() {
+  setState(getInitialState());
+}
+
 // Event emitter
 
 const subscriptions = {};
@@ -269,6 +282,14 @@ function emit(event, data) {
 }
 
 // event emitters
+
+function setRecoveredState(state, cb) {
+  emit(events.SET_RECOVERED_STATE, _.assign({}, getState(), state));
+
+  if (typeof cb === 'function') {
+    cb();
+  }
+}
 
 function setRunsState(runsState, callback = null) {
   const chartTypeChanged =
@@ -609,7 +630,9 @@ function setHiddenMetrics(metricKey) {
 
   setTraceList();
 
-  setItem(EXPLORE_PANEL_HIDDEN_METRICS, JSON.stringify(hiddenMetricsClone));
+  if (getState().viewKey === null) {
+    setItem(EXPLORE_PANEL_HIDDEN_METRICS, JSON.stringify(hiddenMetricsClone));
+  }
 }
 
 function setChartTooltipOptions(options) {
@@ -624,7 +647,12 @@ function setChartTooltipOptions(options) {
     },
   });
 
-  setItem(EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS, JSON.stringify(tooltipOptions));
+  if (getState().viewKey === null) {
+    setItem(
+      EXPLORE_PANEL_CHART_TOOLTIP_OPTIONS,
+      JSON.stringify(tooltipOptions),
+    );
+  }
 }
 
 function setChartFocusedState(
@@ -840,7 +868,9 @@ function setSortFields(sortFields) {
 
   setTraceList();
 
-  setItem(EXPLORE_PANEL_SORT_FIELDS, JSON.stringify(sortFields));
+  if (getState().viewKey === null) {
+    setItem(EXPLORE_PANEL_SORT_FIELDS, JSON.stringify(sortFields));
+  }
 }
 
 function setSeed(seed, type) {
@@ -878,7 +908,9 @@ function setColorPalette(paletteIndex) {
 
   setTraceList();
 
-  setItem(EXPLORE_PANEL_COLOR_PALETTE, paletteIndex);
+  if (getState().viewKey === null) {
+    setItem(EXPLORE_PANEL_COLOR_PALETTE, paletteIndex);
+  }
 }
 
 function setScreenState(screenOptions) {
@@ -889,12 +921,14 @@ function setScreenState(screenOptions) {
     },
   });
 
-  if (screenOptions.hasOwnProperty('panelFlex')) {
-    setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
-  }
+  if (getState().viewKey === null) {
+    if (screenOptions.hasOwnProperty('panelFlex')) {
+      setItem(EXPLORE_PANEL_FLEX_STYLE, screenOptions.panelFlex);
+    }
 
-  if (screenOptions.hasOwnProperty('viewMode')) {
-    setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
+    if (screenOptions.hasOwnProperty('viewMode')) {
+      setItem(EXPLORE_PANEL_VIEW_MODE, screenOptions.viewMode);
+    }
   }
 }
 
@@ -906,14 +940,16 @@ function setRowHeightMode(mode) {
     },
   });
 
-  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
-  setItem(
-    storageKey,
-    JSON.stringify({
-      rowHeightMode: mode,
-      excludedFields: getState().table.excludedFields,
-    }),
-  );
+  if (getState().viewKey === null) {
+    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+    setItem(
+      storageKey,
+      JSON.stringify({
+        rowHeightMode: mode,
+        excludedFields: getState().table.excludedFields,
+      }),
+    );
+  }
 }
 
 function setExcludedFields(fields) {
@@ -924,14 +960,16 @@ function setExcludedFields(fields) {
     },
   });
 
-  const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
-  setItem(
-    storageKey,
-    JSON.stringify({
-      rowHeightMode: getState().table.rowHeightMode,
-      excludedFields: fields,
-    }),
-  );
+  if (getState().viewKey === null) {
+    const storageKey = CONTEXT_TABLE_CONFIG.replace('{name}', 'context');
+    setItem(
+      storageKey,
+      JSON.stringify({
+        rowHeightMode: getState().table.rowHeightMode,
+        excludedFields: fields,
+      }),
+    );
+  }
 }
 
 function setColumnsOrder(columnsOrder) {
@@ -941,9 +979,12 @@ function setColumnsOrder(columnsOrder) {
       columnsOrder,
     },
   });
-  const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
-  tableColumns.context = columnsOrder;
-  setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
+
+  if (getState().viewKey === null) {
+    const tableColumns = JSON.parse(getItem(TABLE_COLUMNS)) ?? {};
+    tableColumns.context = columnsOrder;
+    setItem(TABLE_COLUMNS, JSON.stringify(tableColumns));
+  }
 }
 
 function setColumnsWidths(columnsWidths) {
@@ -953,9 +994,26 @@ function setColumnsWidths(columnsWidths) {
       columnsWidths,
     },
   });
-  const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
-  tableColumnsWidths.context = columnsWidths;
-  setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
+
+  if (getState().viewKey === null) {
+    const tableColumnsWidths = JSON.parse(getItem(TABLE_COLUMNS_WIDTHS)) ?? {};
+    tableColumnsWidths.context = columnsWidths;
+    setItem(TABLE_COLUMNS_WIDTHS, JSON.stringify(tableColumnsWidths));
+  }
+}
+
+function setViewKey(key) {
+  emit(events.SET_VIEW_KEY, {
+    viewKey: key,
+  });
+}
+
+function createApp() {
+  emit(events.CREATE_APP, {});
+}
+
+function updateApp() {
+  emit(events.UPDATE_APP, {});
 }
 
 // helpers
@@ -1278,10 +1336,12 @@ function useHubMainScreenState(events) {
 export const HubMainScreenModel = {
   events,
   getState,
+  resetState,
   subscribe,
   emit,
   useHubMainScreenState,
   emitters: {
+    setRecoveredState,
     setRunsState,
     setTraceList,
     setChartSettingsState,
@@ -1304,6 +1364,9 @@ export const HubMainScreenModel = {
     setExcludedFields,
     setColumnsOrder,
     setColumnsWidths,
+    setViewKey,
+    createApp,
+    updateApp,
   },
   helpers: {
     isExploreMetricsModeEnabled,

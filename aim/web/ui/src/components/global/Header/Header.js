@@ -66,6 +66,19 @@ class Header extends React.Component {
                 </div>
               </NavLink>
             </div>
+            <div className='Header__item__wrapper'>
+              <NavLink
+                to={screens.HUB_BOOKMARKS}
+                className={classNames({
+                  active: window.location.pathname.startsWith('/bookmarks'),
+                })}
+              >
+                <div className='Header__item'>
+                  <UI.Icon i='bookmarks' className='Header__item__icon' />
+                  <UI.Text className='Header__item__title'>Bookmarks</UI.Text>
+                </div>
+              </NavLink>
+            </div>
             <div className='Header__item__wrapper hidden'>
               <NavLink
                 to={screens.HUB_PROJECT_EXECUTABLES}

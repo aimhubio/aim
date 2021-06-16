@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy.orm import relationship
 
 from aim.web.app.db import db
-from aim.web.app.utils import default_created_at
+from aim.web.app.utils import datetime_now
 
 
 CommitTagAssociation = db.Table('commit_tag',
@@ -20,7 +20,7 @@ class Commit(db.Model):
     tags = relationship('Tag', secondary=CommitTagAssociation, back_populates='commits')
     session_started_at = db.Column(db.Integer, default=0)
     session_closed_at = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=default_created_at)
+    created_at = db.Column(db.DateTime, default=datetime_now)
     is_archived = db.Column(db.Boolean, default=False)
 
     def __init__(self, hash, experiment_name):
@@ -40,7 +40,7 @@ class TFSummaryLog(db.Model):
     uuid = db.Column(db.Text, primary_key=True)
     log_path = db.Column(db.Text)
     params = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=default_created_at)
+    created_at = db.Column(db.DateTime, default=datetime_now)
     is_archived = db.Column(db.Boolean)
 
     def __init__(self, path):
@@ -56,7 +56,7 @@ class Tag(db.Model):
     name = db.Column(db.Text)
     color = db.Column(db.Text)
     commits = relationship('Commit', secondary=CommitTagAssociation, back_populates="tags")
-    created_at = db.Column(db.DateTime, default=default_created_at)
+    created_at = db.Column(db.DateTime, default=datetime_now)
     is_archived = db.Column(db.Boolean)
     is_hidden = db.Column(db.Boolean, default=False)
 

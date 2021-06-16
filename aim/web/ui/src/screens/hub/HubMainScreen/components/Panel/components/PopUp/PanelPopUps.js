@@ -520,7 +520,7 @@ function PanelPopUps(props) {
               bottom: pos.bottom,
               width: pos.width,
               height: pos.height,
-              display: true,
+              display: !chart.settings.zoomMode,
               run: line.run,
               metric: line.metric,
               trace: line.trace,
@@ -631,7 +631,7 @@ function PanelPopUps(props) {
                 ) : (
                   <div>
                     <UI.Text type='grey-darker' small>
-                      {chartPopUp.metric.name}:{' '}
+                      {chartPopUp.metric?.name}:{' '}
                       {Math.round(chartPopUp.point[0] * 10e9) / 10e9}
                     </UI.Text>
                     {Array.isArray(

@@ -49,6 +49,9 @@ const HubExecutableProcessDetailScreen = lazy(() =>
     './screens/hub/HubExecutableProcessDetailScreen/HubExecutableProcessDetailScreen'
   ),
 );
+const HubBookmarksScreen = lazy(() =>
+  import('./screens/hub/HubBookmarksScreen/HubBookmarksScreen'),
+);
 const SiteNotFoundScreen = lazy(() =>
   import('./screens/site/SiteNotFoundScreen/SiteNotFoundScreen'),
 );
@@ -116,10 +119,16 @@ class App extends React.Component {
               path={screens.MAIN}
               component={RedirectFromMainScreen}
             />
-            <Route exact path={screens.EXPLORE} component={HubMainScreen} />
             <Route
+              key={screens.EXPLORE}
               exact
-              path={screens.EXPLORE_SEARCH}
+              path={[screens.EXPLORE, screens.EXPLORE_SEARCH]}
+              component={HubMainScreen}
+            />
+            <Route
+              key={screens.EXPLORE_BOOKMARK}
+              exact
+              path={[screens.EXPLORE_BOOKMARK, screens.EXPLORE_BOOKMARK_SEARCH]}
               component={HubMainScreen}
             />
             {/*<Route exact path={screens.HUB_PROJECT_EXECUTABLES} component={HubExecutablesScreen}/>*/}
@@ -190,6 +199,11 @@ class App extends React.Component {
               render={(props) => (
                 <HubExperimentScreen {...props} tab='parameters' />
               )}
+            />
+            <Route
+              exact
+              path={screens.HUB_BOOKMARKS}
+              component={HubBookmarksScreen}
             />
             <Route component={SiteNotFoundScreen} />
           </Switch>
