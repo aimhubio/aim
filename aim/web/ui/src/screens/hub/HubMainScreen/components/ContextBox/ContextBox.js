@@ -489,7 +489,7 @@ function ContextBox(props) {
         objArray.push(filteredRow);
       });
 
-      if (traceList?.traces.length > 1) {
+      if (traceList?.traces.length - 1 !== traceModelIndex) {
         let emptyRow = {};
         filteredHeader.forEach((column) => {
           emptyRow[column] = '--';
@@ -501,12 +501,7 @@ function ContextBox(props) {
     const blob = new Blob([JSONToCSV(objArray)], {
       type: 'text/csv;charset=utf-8;',
     });
-    saveAs(
-      blob,
-      `explore-${moment
-        .unix(Date.now() / 1000)
-        .format('HH:mm · D MMM, YY')}.csv`,
-    );
+    saveAs(blob, `explore-${moment().format('HH:mm · D MMM, YY')}.csv`);
 
     analytics.trackEvent('[Table] Export to CSV');
   }
