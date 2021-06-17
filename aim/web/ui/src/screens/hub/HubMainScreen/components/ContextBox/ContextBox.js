@@ -503,9 +503,9 @@ function ContextBox(props) {
     const blob = new Blob([JSONToCSV(traceDataToExport)], {
       type: 'text/csv;charset=utf-8;',
     });
-    saveAs(blob, `explore-${moment().format('HH:mm · D MMM, YY')}.csv`);
+    saveAs(blob, `explore-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
 
-    analytics.trackEvent('[Table] Export to CSV');
+    analytics.trackEvent('[Explore] Export to CSV');
   }
 
   function _renderContentLoader() {

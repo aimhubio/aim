@@ -724,9 +724,9 @@ class Runs extends React.Component {
     const blob = new Blob([JSONToCSV(runsDataToExport)], {
       type: 'text/csv;charset=utf-8;',
     });
-    saveAs(blob, `dashboard-${moment().format('HH:mm · D MMM, YY')}.csv`);
+    saveAs(blob, `dashboard-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
 
-    analytics.trackEvent('[Table] Export to CSV');
+    analytics.trackEvent('[Dashboard] [Runs] Export to CSV');
   };
 
   _renderExperiments = () => {
