@@ -469,36 +469,38 @@ function ContextBox(props) {
       [],
     );
 
-    const objArray = [];
-
-    traceList?.traces.forEach((traceModel, traceModelIndex) => {
-      (isExploreParamsModeEnabled()
-        ? _.uniqBy(traceModel.series, 'run.run_hash')
-        : traceModel.series
-      ).forEach((series) => {
-        const row = getRowData({
-          series,
-          chart,
-          runs,
-          paramKeys: paramKeys.current,
+    const traceDataToExport = traceList?.traces.reduce(
+      (accArray, traceModel, traceModelIndex) => {
+        (isExploreParamsModeEnabled()
+          ? _.uniqBy(traceModel.series, 'run.run_hash')
+          : traceModel.series
+        ).forEach((series) => {
+          const row = getRowData({
+            series,
+            chart,
+            runs,
+            paramKeys: paramKeys.current,
+          });
+          const filteredRow = filteredHeader.reduce((acc, column) => {
+            acc[column] = row[column];
+            return acc;
+          }, {});
+          accArray.push(filteredRow);
         });
-        const filteredRow = filteredHeader.reduce((acc, column) => {
-          acc[column] = row[column];
-          return acc;
-        }, {});
-        objArray.push(filteredRow);
-      });
 
-      if (traceList?.traces.length - 1 !== traceModelIndex) {
-        let emptyRow = {};
-        filteredHeader.forEach((column) => {
-          emptyRow[column] = '--';
-        });
-        objArray.push(emptyRow);
-      }
-    });
+        if (traceList?.traces.length - 1 !== traceModelIndex) {
+          let emptyRow = {};
+          filteredHeader.forEach((column) => {
+            emptyRow[column] = '--';
+          });
+          accArray.push(emptyRow);
+        }
+        return accArray;
+      },
+      [],
+    );
 
-    const blob = new Blob([JSONToCSV(objArray)], {
+    const blob = new Blob([JSONToCSV(traceDataToExport)], {
       type: 'text/csv;charset=utf-8;',
     });
     saveAs(blob, `explore-${moment().format('HH:mm · D MMM, YY')}.csv`);

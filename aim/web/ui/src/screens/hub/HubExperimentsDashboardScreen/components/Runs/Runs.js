@@ -707,7 +707,7 @@ class Runs extends React.Component {
       [],
     );
 
-    const objArray = runs?.reduce((accObj, run) => {
+    const runsDataToExport = runs?.reduce((accArray, run) => {
       const row = this.getRowData({
         run,
         paramKeys: this.paramKeys,
@@ -717,11 +717,11 @@ class Runs extends React.Component {
         acc[column] = row[column];
         return acc;
       }, {});
-      accObj.push(filteredRow);
-      return accObj;
+      accArray.push(filteredRow);
+      return accArray;
     }, []);
 
-    const blob = new Blob([JSONToCSV(objArray)], {
+    const blob = new Blob([JSONToCSV(runsDataToExport)], {
       type: 'text/csv;charset=utf-8;',
     });
     saveAs(blob, `dashboard-${moment().format('HH:mm · D MMM, YY')}.csv`);
