@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Add ability to export table data as CSV (KaroMourad)
 - Add ability to bookmark explore screen state (roubkar)
 - Add dashboards and apps API (mihran113)
 
