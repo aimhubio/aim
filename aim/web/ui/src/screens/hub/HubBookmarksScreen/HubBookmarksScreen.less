@@ -1,0 +1,59 @@
+@import '../../../vars';
+
+.HubBookmarksScreen__wrapper {
+  height: calc(100vh - 2 * var(--component-spacing-sm));
+  background-color: var(--grey-lighter);
+  padding: var(--component-spacing-sm);
+}
+
+.HubBookmarksScreen__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 300px);
+  column-gap: var(--component-spacing-sm);
+}
+
+.HubBookmarksScreen__grid__item {
+  position: relative;
+  width: 300px;
+  height: 140px;
+  padding: var(--component-spacing-md);
+  margin-bottom: var(--component-spacing-md);
+  box-sizing: border-box;
+  background-color: var(--color-blue);
+  border-radius: var(--border-radius);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  text-decoration: none !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+.HubBookmarksScreen__grid__item__heading {
+  color: #fff;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.HubBookmarksScreen__grid__item__title {
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.HubBookmarksScreen__grid__item__icon {
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  font-size: 140px;
+  color: rgba(255, 255, 255, 0.2);
+  user-select: none;
+
+  .Icon {
+    display: block !important;
+  }
+}

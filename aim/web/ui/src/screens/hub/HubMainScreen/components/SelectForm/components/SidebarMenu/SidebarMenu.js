@@ -7,7 +7,7 @@ import { HubMainScreenModel } from '../../../../models/HubMainScreenModel';
 
 function SidebarMenu(props) {
   let { areControlsChanged } = HubMainScreenModel.helpers;
-  let { resetControls } = HubMainScreenModel.emitters;
+  let { resetControls, createApp, updateApp } = HubMainScreenModel.emitters;
 
   let [opened, setOpened] = useState(false);
 
@@ -32,7 +32,7 @@ function SidebarMenu(props) {
       </div>
       {opened && (
         <div
-          className='ControlsSidebar__item__popup list ControlsSidebar__item__popup-sidebar'
+          className='ControlsSidebar__item__popup list ControlsSidebar__item__popup-sidebar SidebarMenu'
           tabIndex={0}
           ref={popupRef}
           onBlur={(evt) => {
@@ -56,25 +56,51 @@ function SidebarMenu(props) {
               className={classNames({
                 ControlsSidebar__item__popup__list__item: true,
                 text_normalized: true,
-                disabled: !areControlsChanged(),
               })}
-              onClick={resetControls}
+              onClick={() => {
+                createApp();
+                setOpened(false);
+              }}
             >
-              <UI.Text small>Reset Controls to System Defaults</UI.Text>
+              <UI.Text small>Save as (Bookmark this state)</UI.Text>
             </div>
-            <a
-              href='https://github.com/aimhubio/aim#searching-experiments'
-              target='_blank'
-              rel='noopener noreferrer'
-            >
+            {HubMainScreenModel.getState().viewKey !== null && (
               <div
                 className={classNames({
                   ControlsSidebar__item__popup__list__item: true,
                   text_normalized: true,
                 })}
+                onClick={() => {
+                  updateApp();
+                  setOpened(false);
+                }}
               >
-                <UI.Text small>Searching Experiments (docs)</UI.Text>
+                <UI.Text small>Save (Update bookmark)</UI.Text>
               </div>
+            )}
+            <div
+              className={classNames({
+                ControlsSidebar__item__popup__list__item: true,
+                text_normalized: true,
+                disabled: !areControlsChanged(),
+              })}
+              onClick={() => {
+                resetControls();
+                setOpened(false);
+              }}
+            >
+              <UI.Text small>Reset Controls to System Defaults</UI.Text>
+            </div>
+            <a
+              className={classNames({
+                ControlsSidebar__item__popup__list__item: true,
+                text_normalized: true,
+              })}
+              href='https://github.com/aimhubio/aim#searching-experiments'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <UI.Text small>Searching Experiments (docs)</UI.Text>
             </a>
           </div>
         </div>

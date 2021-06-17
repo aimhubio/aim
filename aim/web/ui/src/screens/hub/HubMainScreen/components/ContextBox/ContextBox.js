@@ -1782,70 +1782,77 @@ function ContextBox(props) {
     const runsStateUpdateSubscription = HubMainScreenModel.subscribe(
       HubMainScreenModel.events.SET_TRACE_LIST,
       () => {
-        const tableColumns = table.columnsOrder;
-        const order = {
-          left: [],
-          middle: [],
-          right: [],
-        };
-        columns.current.forEach((col) => {
-          if (!!tableColumns && tableColumns.left.includes(col.key)) {
-            order.left.push(col.key);
-          } else if (!!tableColumns && tableColumns.middle.includes(col.key)) {
-            order.middle.push(col.key);
-          } else if (!!tableColumns && tableColumns.right.includes(col.key)) {
-            order.right.push(col.key);
-          } else {
-            if (col.pin === 'left') {
+        if (columns.current) {
+          const tableColumns = table.columnsOrder;
+          const order = {
+            left: [],
+            middle: [],
+            right: [],
+          };
+          columns.current.forEach((col) => {
+            if (!!tableColumns && tableColumns.left.includes(col.key)) {
               order.left.push(col.key);
-            } else if (col.pin === 'right') {
+            } else if (
+              !!tableColumns &&
+              tableColumns.middle.includes(col.key)
+            ) {
+              order.middle.push(col.key);
+            } else if (!!tableColumns && tableColumns.right.includes(col.key)) {
               order.right.push(col.key);
             } else {
-              order.middle.push(col.key);
+              if (col.pin === 'left') {
+                order.left.push(col.key);
+              } else if (col.pin === 'right') {
+                order.right.push(col.key);
+              } else {
+                order.middle.push(col.key);
+              }
             }
-          }
-        });
-        order.left.sort((a, b) => {
-          if (!!tableColumns) {
-            if (tableColumns.left.indexOf(b) === -1) {
-              return -1;
+          });
+          order.left.sort((a, b) => {
+            if (!!tableColumns) {
+              if (tableColumns.left.indexOf(b) === -1) {
+                return -1;
+              }
+              if (tableColumns.left.indexOf(a) === -1) {
+                return 1;
+              }
+              return (
+                tableColumns.left.indexOf(a) - tableColumns.left.indexOf(b)
+              );
             }
-            if (tableColumns.left.indexOf(a) === -1) {
-              return 1;
+            return 0;
+          });
+          order.middle.sort((a, b) => {
+            if (!!tableColumns) {
+              if (tableColumns.middle.indexOf(b) === -1) {
+                return -1;
+              }
+              if (tableColumns.middle.indexOf(a) === -1) {
+                return 1;
+              }
+              return (
+                tableColumns.middle.indexOf(a) - tableColumns.middle.indexOf(b)
+              );
             }
-            return tableColumns.left.indexOf(a) - tableColumns.left.indexOf(b);
-          }
-          return 0;
-        });
-        order.middle.sort((a, b) => {
-          if (!!tableColumns) {
-            if (tableColumns.middle.indexOf(b) === -1) {
-              return -1;
+            return 0;
+          });
+          order.right.sort((a, b) => {
+            if (!!tableColumns) {
+              if (tableColumns.right.indexOf(b) === -1) {
+                return -1;
+              }
+              if (tableColumns.right.indexOf(a) === -1) {
+                return 1;
+              }
+              return (
+                tableColumns.right.indexOf(a) - tableColumns.right.indexOf(b)
+              );
             }
-            if (tableColumns.middle.indexOf(a) === -1) {
-              return 1;
-            }
-            return (
-              tableColumns.middle.indexOf(a) - tableColumns.middle.indexOf(b)
-            );
-          }
-          return 0;
-        });
-        order.right.sort((a, b) => {
-          if (!!tableColumns) {
-            if (tableColumns.right.indexOf(b) === -1) {
-              return -1;
-            }
-            if (tableColumns.right.indexOf(a) === -1) {
-              return 1;
-            }
-            return (
-              tableColumns.right.indexOf(a) - tableColumns.right.indexOf(b)
-            );
-          }
-          return 0;
-        });
-        setColumnsOrder(order);
+            return 0;
+          });
+          setColumnsOrder(order);
+        }
       },
     );
 
