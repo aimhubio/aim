@@ -19,7 +19,7 @@ from sqlalchemy import func
 
 from aim.artifacts.metric import Metric as MetricArtifact
 from aim.engine.configs import AIM_UI_TELEMETRY_KEY
-from aim.web.app.db import db
+from aim.web.app.db import get_session
 from aim.web.app.utils import unsupported_float_type
 from aim.web.app.projects.utils import (
     get_branch_commits,
@@ -74,38 +74,39 @@ class ProjectActivityApi(Resource):
         if not project.exists():
             return make_response(jsonify({}), 404)
 
-        last_synced_run = db.session\
-            .query(func.max(Commit.session_started_at),
-                   func.max(Commit.session_closed_at))\
-            .first()
-        last_synced_run_time = max(last_synced_run[0] or 0,
-                                   last_synced_run[1] or 0)
+        with get_session() as session:
+            last_synced_run = session\
+                .query(func.max(Commit.session_started_at),
+                       func.max(Commit.session_closed_at))\
+                .first()
+            last_synced_run_time = max(last_synced_run[0] or 0,
+                                       last_synced_run[1] or 0)
 
-        modified_runs = project.get_modified_runs(last_synced_run_time)
-        upgrade_runs_table(project, modified_runs)
+            modified_runs = project.get_modified_runs(last_synced_run_time)
+            upgrade_runs_table(project, modified_runs)
 
-        all_runs = db.session\
-            .query(Commit.hash,
-                   Commit.experiment_name,
-                   Commit.session_started_at)\
-            .filter(Commit.session_started_at > 0)\
-            .all()
+            all_runs = session\
+                .query(Commit.hash,
+                       Commit.experiment_name,
+                       Commit.session_started_at)\
+                .filter(Commit.session_started_at > 0)\
+                .all()
 
-        experiments = {r.experiment_name for r in all_runs}
+            experiments = {r.experiment_name for r in all_runs}
 
-        try:
-            timezone = pytz.timezone(request.tz)
-        except:
-            timezone = None
-        if not timezone:
-            timezone = pytz.timezone('gmt')
+            try:
+                timezone = pytz.timezone(request.tz)
+            except:
+                timezone = None
+            if not timezone:
+                timezone = pytz.timezone('gmt')
 
-        activity_counter = Counter([
-            datetime.fromtimestamp(r.session_started_at, timezone)
-                    .strftime('%Y-%m-%d')
-            if r.session_started_at > 0 else 0
-            for r in all_runs
-        ])
+            activity_counter = Counter([
+                datetime.fromtimestamp(r.session_started_at, timezone)
+                        .strftime('%Y-%m-%d')
+                if r.session_started_at > 0 else 0
+                for r in all_runs
+            ])
 
         return jsonify({
             'num_experiments': len(experiments),
