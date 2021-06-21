@@ -1,7 +1,7 @@
 import React, { lazy } from 'react';
 
-const Runs = lazy(() => import('../pages/Runs/Runs'));
-const Metrics = lazy(() => import('../pages/Metrics/Metrics'));
+const Runs = lazy(() => import('../pages/runs/Runs'));
+const Metrics = lazy(() => import('../pages/metrics/Metrics'));
 
 const PATHS = {
   RUNS: '/runs',
