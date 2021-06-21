@@ -2,6 +2,7 @@ import './SaveAsModal.less';
 
 import React, { useState, useRef, useEffect } from 'react';
 import * as _ from 'lodash';
+import { useToasts } from 'react-toast-notifications';
 
 import { classNames } from '../../../../../utils';
 import { HubMainScreenModel } from '../../models/HubMainScreenModel';
@@ -13,6 +14,8 @@ function SaveAsModal(props) {
   let [name, setName] = useState('');
   let [desc, setDesc] = useState('');
   let [processing, setProcessing] = useState(false);
+
+  const { addToast } = useToasts();
 
   function closeModal() {
     setOpened(false);
@@ -41,14 +44,25 @@ function SaveAsModal(props) {
               .then((data) => {
                 resolve(data);
                 closeModal();
+                addToast('Bookmark successfully created', {
+                  appearance: 'success',
+                });
                 analytics.trackEvent('[Explore] create bookmark');
               })
-              .catch((err) => {})
+              .catch((err) => {
+                addToast('Unable to create a bookmark. Something went wrong.', {
+                  appearance: 'error',
+                });
+              })
               .finally(() => {
                 setProcessing(false);
               });
           })
-          .catch((err) => {})
+          .catch((err) => {
+            addToast('Unable to create a bookmark. Something went wrong.', {
+              appearance: 'error',
+            });
+          })
           .finally(() => {
             setProcessing(false);
           });
@@ -97,7 +111,6 @@ function SaveAsModal(props) {
                     name='name'
                     value={name}
                     placeholder={'Bookmark Name'}
-                    size='small'
                     autoFocus
                     autoComplete='off'
                   />
@@ -108,7 +121,6 @@ function SaveAsModal(props) {
                     name='desc'
                     value={desc}
                     placeholder={'Bookmark Description'}
-                    size='small'
                     autoComplete='off'
                   />
                 </div>
@@ -119,7 +131,6 @@ function SaveAsModal(props) {
                 <UI.Button
                   className='SaveAsModal__body__formFooter__button'
                   type='primary'
-                  size='tiny'
                   onClick={save}
                   disabled={processing || name === ''}
                 >
@@ -129,7 +140,6 @@ function SaveAsModal(props) {
               <UI.Button
                 className='SaveAsModal__body__formFooter__button'
                 type='secondary'
-                size='tiny'
                 onClick={closeModal}
               >
                 Cancel

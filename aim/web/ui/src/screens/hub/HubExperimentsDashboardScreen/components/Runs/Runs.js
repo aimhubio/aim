@@ -684,6 +684,7 @@ class Runs extends React.Component {
     Object.keys(metricKeys).forEach((metricName) =>
       metricKeys[metricName].forEach((metricContext) => {
         let metricValue = this.getMetricValue(run, metricName, metricContext);
+
         row[`${metricName}-${JSON.stringify(metricContext)}`] =
           formatValue(
             typeof metricValue === 'number'
