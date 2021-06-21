@@ -23,6 +23,8 @@ import {
   CONTEXT_TABLE_CONFIG,
 } from '../../../../../config';
 import ContextTable from '../../../../../components/hub/ContextTable/ContextTable';
+import { saveAs } from 'file-saver';
+
 import {
   buildUrl,
   deepEqual,
@@ -682,7 +684,6 @@ class Runs extends React.Component {
     Object.keys(metricKeys).forEach((metricName) =>
       metricKeys[metricName].forEach((metricContext) => {
         let metricValue = this.getMetricValue(run, metricName, metricContext);
-
         row[`${metricName}-${JSON.stringify(metricContext)}`] =
           formatValue(
             typeof metricValue === 'number'
@@ -695,16 +696,22 @@ class Runs extends React.Component {
     return row;
   };
 
-  exportData = () => {
+  exportData = (columns) => () => {
     const { columnsOrder, excludedFields, runs } = this.state;
-    const filteredHeader = Object.keys(columnsOrder).reduce(
-      (acc, orderKey) =>
-        acc.concat(
-          columnsOrder[orderKey].filter(
-            (column) => excludedFields.indexOf(column) === -1,
-          ),
-        ),
+
+    const filteredHeader = columns.reduce(
+      (acc, column) =>
+        acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
       [],
+    );
+
+    const flattenOrders = Object.keys(columnsOrder).reduce(
+      (acc, key) => acc.concat(columnsOrder[key]),
+      [],
+    );
+
+    filteredHeader.sort(
+      (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
     );
 
     const runsDataToExport = runs?.reduce((accArray, run) => {
@@ -714,7 +721,20 @@ class Runs extends React.Component {
         metricKeys: this.metricKeys,
       });
       const filteredRow = filteredHeader.reduce((acc, column) => {
-        acc[column] = row[column];
+        if (column.startsWith('params.')) {
+          acc[column.replace('params.', '')] = row[column];
+        } else {
+          const [metricName, metricContext] = column.split('-');
+          if (metricContext) {
+            const [metricContextKey, metricContextValue] = Object.entries(
+              JSON.parse(metricContext),
+            )[0];
+            acc[`${metricName} "${metricContextKey}"="${metricContextValue}"`] =
+              row[column];
+          } else {
+            acc[column] = row[column];
+          }
+        }
         return acc;
       }, {});
       accArray.push(filteredRow);
@@ -1097,7 +1117,7 @@ class Runs extends React.Component {
           setColumnsOrder={this.setColumnsOrder}
           columnsWidths={this.state.columnsWidths}
           setColumnsWidths={this.setColumnsWidths}
-          exportData={this.exportData}
+          exportData={this.exportData(this.columns.current)}
           getParamsWithSameValue={this.getParamsWithSameValue}
           alwaysVisibleColumns={['run']}
         />
