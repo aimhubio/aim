@@ -1,22 +1,23 @@
-import { API_HOST } from "../../config/config";
+import { API_HOST } from 'config/config';
 
 function createAPIRequestWrapper(url: string, options?: RequestInit) {
   const controller = new AbortController();
   const signal = controller.signal;
 
   return {
-    call: () => new Promise((resolve, reject) => {
-      fetch(`${API_HOST}/${url}`, { ...options, signal })
-        .then(response => response.json())
-        .then(data => resolve(data))
-        .catch(err => {
-          if (err.name === 'AbortError') {
-            // Fetch aborted
-          } else {
-            reject(err);
-          }
-        });
-    }),
+    call: () =>
+      new Promise((resolve, reject) => {
+        fetch(`${API_HOST}/${url}`, { ...options, signal })
+          .then((response) => response.json())
+          .then((data) => resolve(data))
+          .catch((err) => {
+            if (err.name === 'AbortError') {
+              // Fetch aborted
+            } else {
+              reject(err);
+            }
+          });
+      }),
     abort: () => controller.abort(),
   };
 }
