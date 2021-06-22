@@ -1,24 +1,24 @@
-import projectsService from "../../api/projects/projectsServie";
+import projectsService from '../../api/projects/projectsServie';
+import createModel from '../model';
 
-const initialState = {};
+const model = createModel({});
 
-const state = {};
+function getProjectsData() {
+  const { call, abort } = projectsService.getProjectsData();
 
-function initState() {
-  Object.assign(state, initState);
+  model.init();
+  call().then((data) => {
+    model.setState(data);
+  });
+
+  return {
+    abort,
+  };
 }
 
-function getState() {
-  return state;
-}
+const projectsModel = {
+  ...model,
+  getProjectsData,
+};
 
-function setState(stateUpdate: unknown) {
-  Object.assign(state, stateUpdate);
-}
-
-function getProjectData() {
-  const request = projectsService.getProjectsData();
-  request.call();
-}
-
-export {};
+export default projectsModel;

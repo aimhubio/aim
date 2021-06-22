@@ -5,6 +5,7 @@ import SideBar from 'components/SideBar/SideBar';
 import { routes } from 'routes/routes';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme, Grid } from '@material-ui/core';
+import projectsModel from './services/models/projects/projectsModel';
 
 const light = createMuiTheme({
   palette: {
@@ -26,6 +27,8 @@ const themes = {
   dark,
   light,
 };
+
+projectsModel.getProjectsData();
 
 function App(): React.FunctionComponentElement<unknown> {
   // const [theme, setTheme] = useState<string>('light');

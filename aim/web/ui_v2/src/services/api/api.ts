@@ -22,7 +22,7 @@ function createAPIRequestWrapper(url: string, options?: RequestInit) {
   };
 }
 
-function get(url: string, options?: {}) {
+function get(url: string, options?: RequestInit) {
   return createAPIRequestWrapper(url, {
     method: 'GET',
     ...options,
