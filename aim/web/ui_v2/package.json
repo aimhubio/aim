@@ -26,6 +26,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "homepage": "/static-files",
   "eslintConfig": {
     "extends": [
       "react-app",
