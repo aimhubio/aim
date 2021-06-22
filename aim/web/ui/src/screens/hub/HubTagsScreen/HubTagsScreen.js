@@ -71,7 +71,7 @@ class HubTagsScreen extends React.Component {
     return (
       <div className='HubTagsScreen'>
         <div className='HubTagsScreen__header'>
-          <UI.Text size={6}>Tags list</UI.Text>
+          <UI.Text size={6}>Tags List</UI.Text>
           <Link to={screens.HUB_PROJECT_CREATE_TAG}>
             <UI.Button type='positive'>New Tag</UI.Button>
           </Link>

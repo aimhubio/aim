@@ -10,7 +10,7 @@ import Alert from '../HubMainScreen/components/Alert/Alert';
 import UI from '../../../ui';
 import { Link } from 'react-router-dom';
 import * as screens from '../../../constants/screens';
-import { buildUrl } from '../../../utils';
+import { buildUrl, classNames } from '../../../utils';
 import * as analytics from '../../../services/analytics';
 
 function HubBookmarksScreen(props) {
@@ -49,49 +49,78 @@ function HubBookmarksScreen(props) {
   }, []);
 
   return (
-    <ProjectWrapper size='fluid' gap={false} ref={projectWrapperRef}>
-      <div className='HubBookmarksScreen__wrapper'>
+    <ProjectWrapper size='fluid' ref={projectWrapperRef}>
+      <div>
         {isLoading ? (
           <div />
-        ) : bookmarks.length === 0 ? (
-          <Alert segment>
-            <UI.Text type='grey' center>
-              You don't have any bookmarks.
-            </UI.Text>
-            <UI.Text type='grey' center>
-              Navigate to{' '}
-              <Link to={screens.EXPLORE}>explore metrics screen</Link> where you
-              can save current state as bookmark.
-            </UI.Text>
-          </Alert>
         ) : (
-          <div className='HubBookmarksScreen__grid'>
-            {bookmarks.map((bookmark) => (
-              <Link
-                className='HubBookmarksScreen__grid__item'
-                key={bookmark.app_id}
-                to={buildUrl(screens.EXPLORE_BOOKMARK, {
-                  bookmark_id: bookmark.app_id,
-                })}
-              >
-                <UI.Text className='HubBookmarksScreen__grid__item__heading'>
-                  {bookmark.name ?? 'None'}
-                </UI.Text>
-                <UI.Text className='HubBookmarksScreen__grid__item__title'>
-                  {bookmark.description ?? 'N/A'}
-                </UI.Text>
-                <UI.Text className='HubBookmarksScreen__grid__item__heading'>
-                  {bookmark.app_state?.searchInput?.selectInput}
-                </UI.Text>
-                <UI.Text className='HubBookmarksScreen__grid__item__title'>
-                  {bookmark.app_state?.searchInput?.selectConditionInput}
-                </UI.Text>
-                <div className='HubBookmarksScreen__grid__item__icon'>
-                  <UI.Icon i='bookmark' spacingRight={false} />
+          <UI.Container size='small'>
+            <div className='HubBookmarksScreen__header'>
+              <UI.Text size={6}>Bookmarks List</UI.Text>
+            </div>
+            <div>
+              {bookmarks.length === 0 ? (
+                <Alert segment>
+                  <UI.Text type='grey' center>
+                    You haven't created any bookmark yet.
+                  </UI.Text>
+                  <UI.Text type='grey' center>
+                    Go to the{' '}
+                    <Link to={screens.EXPLORE}> metrics explorer</Link> to
+                    create your first bookmark.
+                  </UI.Text>
+                </Alert>
+              ) : (
+                <div className='HubBookmarksScreen__grid'>
+                  {bookmarks.map((bookmark) => (
+                    <Link
+                      className='HubBookmarksScreen__grid__item'
+                      key={bookmark.app_id}
+                      to={buildUrl(screens.EXPLORE_BOOKMARK, {
+                        bookmark_id: bookmark.app_id,
+                      })}
+                    >
+                      <div className='HubBookmarksScreen__grid__item__header'>
+                        <div className='HubBookmarksScreen__grid__item__icon'>
+                          <UI.Icon i='bookmark' spacingRight={false} />
+                        </div>
+                        <UI.Text>{bookmark.name ?? 'None'}</UI.Text>
+                        {!!bookmark.description && (
+                          <UI.Text>{bookmark.description ?? 'N/A'}</UI.Text>
+                        )}
+                      </div>
+                      <div className='HubBookmarksScreen__grid__item__form'>
+                        <UI.Text>
+                          <UI.Text
+                            inline
+                            className='HubBookmarksScreen__grid__item__form__tag'
+                          >
+                            select
+                          </UI.Text>{' '}
+                          {bookmark.app_state?.searchInput?.selectInput}
+                        </UI.Text>
+                        {!!bookmark.app_state?.searchInput
+                          ?.selectConditionInput && (
+                          <UI.Text>
+                            <UI.Text
+                              inline
+                              className='HubBookmarksScreen__grid__item__form__tag'
+                            >
+                              if
+                            </UI.Text>{' '}
+                            {
+                              bookmark.app_state?.searchInput
+                                ?.selectConditionInput
+                            }
+                          </UI.Text>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              </Link>
-            ))}
-          </div>
+              )}
+            </div>
+          </UI.Container>
         )}
       </div>
     </ProjectWrapper>
