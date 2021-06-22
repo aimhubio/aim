@@ -28,7 +28,7 @@
     "eject": "react-scripts eject",
     "format:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
-  "homepage": "/static-files",
+  "homepage": ".",
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
