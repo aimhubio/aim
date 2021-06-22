@@ -10,7 +10,7 @@ import Alert from '../HubMainScreen/components/Alert/Alert';
 import UI from '../../../ui';
 import { Link } from 'react-router-dom';
 import * as screens from '../../../constants/screens';
-import { buildUrl } from '../../../utils';
+import { buildUrl, classNames } from '../../../utils';
 import * as analytics from '../../../services/analytics';
 
 function HubBookmarksScreen(props) {
@@ -50,7 +50,12 @@ function HubBookmarksScreen(props) {
 
   return (
     <ProjectWrapper size='fluid' gap={false} ref={projectWrapperRef}>
-      <div className='HubBookmarksScreen__wrapper'>
+      <div
+        className={classNames({
+          HubBookmarksScreen__wrapper: true,
+          dark: bookmarks.length === 0,
+        })}
+      >
         {isLoading ? (
           <div />
         ) : bookmarks.length === 0 ? (
@@ -65,33 +70,38 @@ function HubBookmarksScreen(props) {
             </UI.Text>
           </Alert>
         ) : (
-          <div className='HubBookmarksScreen__grid'>
-            {bookmarks.map((bookmark) => (
-              <Link
-                className='HubBookmarksScreen__grid__item'
-                key={bookmark.app_id}
-                to={buildUrl(screens.EXPLORE_BOOKMARK, {
-                  bookmark_id: bookmark.app_id,
-                })}
-              >
-                <UI.Text className='HubBookmarksScreen__grid__item__heading'>
-                  {bookmark.name ?? 'None'}
-                </UI.Text>
-                <UI.Text className='HubBookmarksScreen__grid__item__title'>
-                  {bookmark.description ?? 'N/A'}
-                </UI.Text>
-                <UI.Text className='HubBookmarksScreen__grid__item__heading'>
-                  {bookmark.app_state?.searchInput?.selectInput}
-                </UI.Text>
-                <UI.Text className='HubBookmarksScreen__grid__item__title'>
-                  {bookmark.app_state?.searchInput?.selectConditionInput}
-                </UI.Text>
-                <div className='HubBookmarksScreen__grid__item__icon'>
-                  <UI.Icon i='bookmark' spacingRight={false} />
-                </div>
-              </Link>
-            ))}
-          </div>
+          <UI.Container size='small'>
+            <div className='HubBookmarksScreen__header'>
+              <UI.Text size={6}>Bookmarks List</UI.Text>
+            </div>
+            <div className='HubBookmarksScreen__grid'>
+              {bookmarks.map((bookmark) => (
+                <Link
+                  className='HubBookmarksScreen__grid__item'
+                  key={bookmark.app_id}
+                  to={buildUrl(screens.EXPLORE_BOOKMARK, {
+                    bookmark_id: bookmark.app_id,
+                  })}
+                >
+                  <UI.Text className='HubBookmarksScreen__grid__item__heading'>
+                    {bookmark.name ?? 'None'}
+                  </UI.Text>
+                  <UI.Text className='HubBookmarksScreen__grid__item__title'>
+                    {bookmark.description ?? 'N/A'}
+                  </UI.Text>
+                  <UI.Text className='HubBookmarksScreen__grid__item__heading'>
+                    {bookmark.app_state?.searchInput?.selectInput}
+                  </UI.Text>
+                  <UI.Text className='HubBookmarksScreen__grid__item__title'>
+                    {bookmark.app_state?.searchInput?.selectConditionInput}
+                  </UI.Text>
+                  <div className='HubBookmarksScreen__grid__item__icon'>
+                    <UI.Icon i='bookmark' spacingRight={false} />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </UI.Container>
         )}
       </div>
     </ProjectWrapper>

@@ -2,14 +2,27 @@
 
 .HubBookmarksScreen__wrapper {
   height: calc(100vh - 2 * var(--component-spacing-sm));
-  background-color: var(--grey-lighter);
   padding: var(--component-spacing-sm);
+
+  &.dark {
+    background-color: var(--grey-lighter);
+  }
+}
+
+.HubBookmarksScreen__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--border);
+  padding: 0 0 var(--component-spacing-xs);
 }
 
 .HubBookmarksScreen__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, 300px);
   column-gap: var(--component-spacing-sm);
+  padding-top: var(--component-spacing-sm);
 }
 
 .HubBookmarksScreen__grid__item {
