@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Runs = React.lazy(() => import('../pages/runs/Runs'));
-const Metrics = React.lazy(() => import('../pages/metrics/Metrics'));
+const Runs = React.lazy(() => import('../pages/Runs/Runs'));
+const Metrics = React.lazy(() => import('../pages/Metrics/Metrics'));
 
 const PATHS = {
   RUNS: '/runs',
@@ -9,7 +9,7 @@ const PATHS = {
   CORRELATIONS: '/correlations',
   TAGS: '/tags',
   BOOKMARKS: '/bookmarks',
-}
+};
 
 const routes = {
   RUNS: {
@@ -22,7 +22,4 @@ const routes = {
   },
 };
 
-export {
-  PATHS,
-  routes,
-};
+export { PATHS, routes };

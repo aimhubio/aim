@@ -12,7 +12,7 @@ ReactDOM.render(
       <App />
     </ErrorBoundary>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 // TODO: pass a function to log performance measurement results

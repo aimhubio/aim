@@ -1,3 +1,3 @@
 import { RouteChildrenProps } from 'react-router-dom';
 
-export interface IRunsProps extends RouteChildrenProps {}
+export type IRunsProps = RouteChildrenProps;

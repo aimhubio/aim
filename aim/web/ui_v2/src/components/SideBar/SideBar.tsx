@@ -8,13 +8,10 @@ import Divider from '@material-ui/core/Divider';
 
 import { PATHS } from '../../routes/routes';
 
-function SideBar(): React.FunctionComponentElement<{}> {
+function SideBar(): React.FunctionComponentElement<unknown> {
   return (
     <div>
-      <Drawer
-        variant="permanent"
-        anchor="left"
-      >
+      <Drawer variant='permanent' anchor='left'>
         <Divider />
         <List>
           <NavLink to={PATHS.RUNS}>
