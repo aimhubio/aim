@@ -983,7 +983,20 @@ function PanelChart(props) {
     const ticksCount = Math.floor(plotBox.current.height / 20);
     yAxisTicks.ticks(ticksCount > 3 ? (ticksCount < 20 ? ticksCount : 20) : 3);
 
-    axes.current.append('g').attr('class', 'y axis').call(yAxisTicks);
+    axes.current
+      .append('g')
+      .attr('class', 'yAxis')
+      .each(function (d, i) {
+        d3.select(this)
+          .call(yAxisTicks)
+          .selectAll('.tick')
+          .append('foreignObject')
+          .attr('x', -50)
+          .attr('y', -6)
+          .attr('height', 12)
+          .attr('width', 40)
+          .html((d) => `<div class='yAxis__text' title='${d}'>${d}</div>`);
+      });
   }
 
   function drawLines() {

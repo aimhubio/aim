@@ -1,9 +1,12 @@
 import datetime
 import json
 import math
+import os
 import pytz
 
-from collections import namedtuple, OrderedDict
+from flask import send_from_directory
+
+from collections import OrderedDict
 from collections.abc import Iterable
 
 
@@ -42,6 +45,14 @@ def unsupported_float_type(value) -> bool:
 
     return False
 
+def send_from_directory_gzip_compressed(directory, filename, **options):
+    compressed_filename = '{}.gz'.format(filename)
+    if os.path.exists(os.path.join(directory, compressed_filename)):
+        rv = send_from_directory(directory, compressed_filename, **options)
+        rv.headers.add('Content-Encoding', 'gzip')
+        return rv
+
+    return send_from_directory(directory, filename, **options)
 
 def json_loads_or_none(obj):
     return json.loads(obj) if obj else None

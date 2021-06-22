@@ -32,6 +32,7 @@ import {
   roundValue,
   sortOnKeys,
   flattenObject,
+  JSONToCSV,
 } from '../../../../../utils';
 import QueryParseErrorAlert from '../../../../../components/hub/QueryParseErrorAlert/QueryParseErrorAlert';
 import * as analytics from '../../../../../services/analytics';
@@ -664,6 +665,70 @@ class Runs extends React.Component {
     );
   };
 
+  getRowData = ({ run, paramKeys, metricKeys }) => {
+    let row = {
+      run: `${run.experiment_name ?? '-'} | ${
+        run.date ? moment(run.date * 1000).format('HH:mm · D MMM, YY') : '-'
+      }`,
+    };
+
+    Object.keys(paramKeys).forEach((paramKey) =>
+      paramKeys[paramKey].forEach((key, index) => {
+        row[`params.${paramKey}.${key}`] =
+          formatValue(run.params?.[paramKey]?.[key]) ?? '-';
+      }),
+    );
+
+    Object.keys(metricKeys).forEach((metricName) =>
+      metricKeys[metricName].forEach((metricContext) => {
+        let metricValue = this.getMetricValue(run, metricName, metricContext);
+
+        row[`${metricName}-${JSON.stringify(metricContext)}`] =
+          formatValue(
+            typeof metricValue === 'number'
+              ? roundValue(metricValue)
+              : metricValue,
+          ) ?? '-';
+      }),
+    );
+
+    return row;
+  };
+
+  exportData = () => {
+    const { columnsOrder, excludedFields, runs } = this.state;
+    const filteredHeader = Object.keys(columnsOrder).reduce(
+      (acc, orderKey) =>
+        acc.concat(
+          columnsOrder[orderKey].filter(
+            (column) => excludedFields.indexOf(column) === -1,
+          ),
+        ),
+      [],
+    );
+
+    const runsDataToExport = runs?.reduce((accArray, run) => {
+      const row = this.getRowData({
+        run,
+        paramKeys: this.paramKeys,
+        metricKeys: this.metricKeys,
+      });
+      const filteredRow = filteredHeader.reduce((acc, column) => {
+        acc[column] = row[column];
+        return acc;
+      }, {});
+      accArray.push(filteredRow);
+      return accArray;
+    }, []);
+
+    const blob = new Blob([JSONToCSV(runsDataToExport)], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    saveAs(blob, `dashboard-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+
+    analytics.trackEvent('[Dashboard] [Runs] Export to CSV');
+  };
+
   _renderExperiments = () => {
     if (this.props.isLoading) {
       return (
@@ -1032,6 +1097,7 @@ class Runs extends React.Component {
           setColumnsOrder={this.setColumnsOrder}
           columnsWidths={this.state.columnsWidths}
           setColumnsWidths={this.setColumnsWidths}
+          exportData={this.exportData}
           getParamsWithSameValue={this.getParamsWithSameValue}
           alwaysVisibleColumns={['run']}
         />

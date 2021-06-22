@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import { withRouter } from 'react-router-dom';
 import * as _ from 'lodash';
+import { useToasts } from 'react-toast-notifications';
 
 import ProjectWrapper from '../../../wrappers/hub/ProjectWrapper/ProjectWrapper';
 import * as classes from '../../../constants/classes';
@@ -88,6 +89,8 @@ function HubMainScreen(props) {
   const projectWrapperRef = useRef();
   const searchBarRef = useRef();
   const firstEffect = useRef(true);
+
+  const { addToast } = useToasts();
 
   function updateWindowDimensions() {
     const wrapper = projectWrapperRef.current;
@@ -419,9 +422,17 @@ function HubMainScreen(props) {
         .updateApp(app_id, appOptions)
         .then(() => {
           analytics.trackEvent('[Explore] update bookmark state');
+          addToast('Bookmark successfully updated', {
+            appearance: 'success',
+          });
           resolve();
         })
-        .catch(reject);
+        .catch((err) => {
+          addToast('Unable to update the bookmark. Something went wrong.', {
+            appearance: 'error',
+          });
+          reject(err);
+        });
     });
   }
 
