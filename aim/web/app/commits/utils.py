@@ -7,7 +7,7 @@ from aim.ql.grammar import Expression
 from aim.ql.utils import match
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.app.commits.models import TFSummaryLog
-from aim.web.app.db import db
+from aim.web.app.db import get_session
 from aim.web.app.utils import normalize_type, unsupported_float_type
 
 
@@ -16,7 +16,7 @@ def select_tf_summary_scalars(tags, expression: Optional[Expression] = None):
     runs = []
 
     params = {}
-    scalars_models = db.session.query(TFSummaryLog).all()
+    scalars_models = next(get_session()).query(TFSummaryLog).all()
     for scalar in scalars_models:
         scalar_params = json.loads(scalar.params)
         for k, v in scalar_params.items():

@@ -15,7 +15,7 @@ from pyrser.error import Diagnostic, Severity, Notification
 from aim.ql.grammar.statement import Statement, Expression
 from aim.web.app.projects.project import Project
 from aim.web.app.commits.models import Commit, TFSummaryLog, Tag
-from aim.web.app.db import db
+from aim.web.app.db import get_session
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.app.commits.utils import (
     select_tf_summary_scalars,
@@ -322,17 +322,18 @@ class TFSummaryListApi(Resource):
 @commits_api.resource('/tf-summary/params/list')
 class TFSummaryParamsListApi(Resource):
     def post(self):
-        params_form = request.form
-        path = params_form.get('path')
+        with get_session() as session:
+            params_form = request.form
+            path = params_form.get('path')
 
-        if not path:
-            return jsonify({'params': ''})
+            if not path:
+                return jsonify({'params': ''})
 
-        tf_log = TFSummaryLog.query.filter((TFSummaryLog.log_path == path) &
-                                           (TFSummaryLog.is_archived.is_(False))
-                                           ).first()
-        if tf_log is None:
-            return jsonify({'params': ''})
+            tf_log = session.query(TFSummaryLog)\
+                .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
+                .first()
+            if tf_log is None:
+                return jsonify({'params': ''})
 
         return jsonify({
             'params': tf_log.params,
@@ -342,23 +343,23 @@ class TFSummaryParamsListApi(Resource):
 @commits_api.resource('/tf-summary/params/update')
 class TFSummaryParamsUpdateApi(Resource):
     def post(self):
-        params_form = request.form
-        path = params_form.get('path')
-        params = params_form.get('params')
-        parsed_params = params_form.get('parsed_params')
+        with get_session() as session:
+            params_form = request.form
+            path = params_form.get('path')
+            params = params_form.get('params')
 
-        if not path:
-            return make_response(jsonify({}), 403)
+            if not path:
+                return make_response(jsonify({}), 403)
 
-        tf_log = TFSummaryLog.query.filter((TFSummaryLog.log_path == path) &
-                                           (TFSummaryLog.is_archived.is_(False))
-                                           ).first()
-        if tf_log is None:
-            tf_log = TFSummaryLog(path)
-            db.session.add(tf_log)
+            tf_log = session.query(TFSummaryLog)\
+                .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
+                .first()
+            if tf_log is None:
+                tf_log = TFSummaryLog(path)
+                session.add(tf_log)
 
-        tf_log.params = params
-        db.session.commit()
+            tf_log.params = params
+            session.commit()
 
         return jsonify({
             'params': params,
@@ -368,18 +369,19 @@ class TFSummaryParamsUpdateApi(Resource):
 @commits_api.resource('/tags/<commit_hash>')
 class CommitTagApi(Resource):
     def get(self, commit_hash):
-        commit = Commit.query.filter(Commit.hash == commit_hash).first()
+        with get_session() as session:
+            commit = session.query(Commit).filter(Commit.hash == commit_hash).first()
 
-        if not commit:
-            return make_response(jsonify({}), 404)
+            if not commit:
+                return make_response(jsonify({}), 404)
 
-        commit_tags = []
-        for t in commit.tags:
-            commit_tags.append({
-                'id': t.uuid,
-                'name': t.name,
-                'color': t.color,
-            })
+            commit_tags = []
+            for t in commit.tags:
+                commit_tags.append({
+                    'id': t.uuid,
+                    'name': t.name,
+                    'color': t.color,
+                })
 
         return jsonify(commit_tags)
 
@@ -387,32 +389,33 @@ class CommitTagApi(Resource):
 @commits_api.resource('/tags/update')
 class CommitTagUpdateApi(Resource):
     def post(self):
-        form = request.form
+        with get_session() as session:
+            form = request.form
 
-        commit_hash = form.get('commit_hash')
-        experiment_name = form.get('experiment_name')
-        tag_id = form.get('tag_id')
+            commit_hash = form.get('commit_hash')
+            experiment_name = form.get('experiment_name')
+            tag_id = form.get('tag_id')
 
-        commit = Commit.query.filter((Commit.hash == commit_hash) &
-                                     (Commit.experiment_name == experiment_name)
-                                     ).first()
-        if not commit:
-            commit = Commit(commit_hash, experiment_name)
-            db.session.add(commit)
-            db.session.commit()
+            commit = session.query(Commit)\
+                .filter((Commit.hash == commit_hash) & (Commit.experiment_name == experiment_name))\
+                .first()
+            if not commit:
+                commit = Commit(commit_hash, experiment_name)
+                session.add(commit)
+                session.commit()
 
-        tag = Tag.query.filter(Tag.uuid == tag_id).first()
-        if not tag:
-            return make_response(jsonify({}), 404)
+            tag = session.query(Tag).filter(Tag.uuid == tag_id).first()
+            if not tag:
+                return make_response(jsonify({}), 404)
 
-        if tag in commit.tags:
-            commit.tags.remove(tag)
-        else:
-            for t in commit.tags:
-                commit.tags.remove(t)
-            commit.tags.append(tag)
+            if tag in commit.tags:
+                commit.tags.remove(tag)
+            else:
+                for t in commit.tags:
+                    commit.tags.remove(t)
+                commit.tags.append(tag)
 
-        db.session.commit()
+            session.commit()
 
         return {
             'tag': list(map(lambda t: t.uuid, commit.tags)),

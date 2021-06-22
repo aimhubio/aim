@@ -1,27 +1,29 @@
 import uuid
+import sqlalchemy as sa
+
 from sqlalchemy.orm import relationship
 
-from aim.web.app.db import db
 from aim.web.app.utils import datetime_now
+from aim.web.app.db import Base
+
+CommitTagAssociation = sa.Table('commit_tag',
+                                Base.metadata,
+                                sa.Column('commit_id', sa.Text, sa.ForeignKey('commits.uuid')),
+                                sa.Column('tag_id', sa.Text, sa.ForeignKey('tags.uuid')))
 
 
-CommitTagAssociation = db.Table('commit_tag',
-    db.Column('commit_id', db.Text, db.ForeignKey('commits.uuid')),
-    db.Column('tag_id', db.Text, db.ForeignKey('tags.uuid')))
-
-
-class Commit(db.Model):
+class Commit(Base):
     __tablename__ = 'commits'
-    __table_args__ = (db.UniqueConstraint('experiment_name', 'hash'),)
+    __table_args__ = (sa.UniqueConstraint('experiment_name', 'hash'),)
 
-    uuid = db.Column(db.Text, primary_key=True)
-    hash = db.Column(db.Text)
-    experiment_name = db.Column(db.Text, default='')
+    uuid = sa.Column(sa.Text, primary_key=True)
+    hash = sa.Column(sa.Text)
+    experiment_name = sa.Column(sa.Text, default='')
     tags = relationship('Tag', secondary=CommitTagAssociation, back_populates='commits')
-    session_started_at = db.Column(db.Integer, default=0)
-    session_closed_at = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime_now)
-    is_archived = db.Column(db.Boolean, default=False)
+    session_started_at = sa.Column(sa.Integer, default=0)
+    session_closed_at = sa.Column(sa.Integer, default=0)
+    created_at = sa.Column(sa.DateTime, default=datetime_now)
+    is_archived = sa.Column(sa.Boolean, default=False)
 
     def __init__(self, hash, experiment_name):
         self.uuid = self.generate_uuid()
@@ -34,14 +36,14 @@ class Commit(db.Model):
         return str(uuid.uuid1())
 
 
-class TFSummaryLog(db.Model):
+class TFSummaryLog(Base):
     __tablename__ = 'tf_summary_logs'
 
-    uuid = db.Column(db.Text, primary_key=True)
-    log_path = db.Column(db.Text)
-    params = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime_now)
-    is_archived = db.Column(db.Boolean)
+    uuid = sa.Column(sa.Text, primary_key=True)
+    log_path = sa.Column(sa.Text)
+    params = sa.Column(sa.Text)
+    created_at = sa.Column(sa.DateTime, default=datetime_now)
+    is_archived = sa.Column(sa.Boolean)
 
     def __init__(self, path):
         self.uuid = str(uuid.uuid1())
@@ -49,16 +51,16 @@ class TFSummaryLog(db.Model):
         self.is_archived = False
 
 
-class Tag(db.Model):
+class Tag(Base):
     __tablename__ = 'tags'
 
-    uuid = db.Column(db.Text, primary_key=True)
-    name = db.Column(db.Text)
-    color = db.Column(db.Text)
+    uuid = sa.Column(sa.Text, primary_key=True)
+    name = sa.Column(sa.Text)
+    color = sa.Column(sa.Text)
     commits = relationship('Commit', secondary=CommitTagAssociation, back_populates="tags")
-    created_at = db.Column(db.DateTime, default=datetime_now)
-    is_archived = db.Column(db.Boolean)
-    is_hidden = db.Column(db.Boolean, default=False)
+    created_at = sa.Column(sa.DateTime, default=datetime_now)
+    is_archived = sa.Column(sa.Boolean)
+    is_hidden = sa.Column(sa.Boolean, default=False)
 
     def __init__(self, name, color):
         self.uuid = str(uuid.uuid1())

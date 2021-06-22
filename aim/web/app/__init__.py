@@ -1,13 +1,12 @@
 import os
 from urllib import parse
 
-from flask import Flask, redirect, request, make_response
+from flask import Flask, redirect, request
 from flask_cors import CORS
 
 from aim.engine.configs import AIM_FLASK_ENV_KEY
 from aim.engine.types import Singleton
 from aim.web.app.config import config
-from aim.web.app.db import Db
 
 
 class App(metaclass=Singleton):
@@ -51,8 +50,6 @@ class App(metaclass=Singleton):
             api.config.from_mapping(**test_config)
         else:
             api.config.from_object(config[env])
-
-        Db(api)
 
         # import and register blueprints
         from aim.web.app.views import general_bp, serve_wrong_urls
