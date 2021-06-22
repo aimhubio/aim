@@ -423,9 +423,10 @@ function ContextBox(props) {
       run: run.date ? moment.unix(run.date).format('HH:mm · D MMM, YY') : '-',
       metric: metric?.name ?? '-',
       context: (() => {
-        const [key, value] = trace?.context
-          ? Object.entries(trace.context)[0]
-          : [];
+        const [key, value] =
+          trace?.context && Object.keys(trace.context).length
+            ? Object.entries(trace.context)[0]
+            : [];
         return trace?.context && key && value ? `"${key}"="${value}"` : '-';
       })(),
       value:
