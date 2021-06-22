@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import SideBar from './components/SideBar/SideBar';
-import { routes } from './routes/routes';
+import SideBar from 'components/SideBar/SideBar';
+import { routes } from 'routes/routes';
 import { ThemeProvider } from '@material-ui/styles';
-import { createMuiTheme } from '@material-ui/core';
+import { createMuiTheme, Grid } from '@material-ui/core';
 
 const light = createMuiTheme({
   palette: {
@@ -32,9 +32,11 @@ function App(): React.FunctionComponentElement<unknown> {
   return (
     <BrowserRouter>
       <ThemeProvider theme={themes.light}>
-        <div className='App'>
-          <SideBar />
-          <main>
+        <Grid container>
+          <Grid item xs={4}>
+            <SideBar />
+          </Grid>
+          <Grid item xs={8}>
             <React.Suspense fallback={null}>
               <Switch>
                 <Route path={routes.RUNS.path}>
@@ -45,8 +47,8 @@ function App(): React.FunctionComponentElement<unknown> {
                 </Route>
               </Switch>
             </React.Suspense>
-          </main>
-        </div>
+          </Grid>
+        </Grid>
       </ThemeProvider>
     </BrowserRouter>
   );

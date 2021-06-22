@@ -2,7 +2,7 @@ import React from 'react';
 import {
   IErrorBoundaryProps,
   IErrorBoundaryState,
-} from '../../types/components/ErrorBoundary/ErrorBoundary';
+} from 'types/components/ErrorBoundary/ErrorBoundary';
 
 class ErrorBoundary extends React.Component<
   IErrorBoundaryProps,

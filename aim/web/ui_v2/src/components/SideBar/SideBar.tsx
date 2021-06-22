@@ -6,27 +6,25 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 
-import { PATHS } from '../../routes/routes';
+import { PATHS } from 'routes/routes';
 
 function SideBar(): React.FunctionComponentElement<unknown> {
   return (
-    <div>
-      <Drawer variant='permanent' anchor='left'>
-        <Divider />
-        <List>
-          <NavLink to={PATHS.RUNS}>
-            <ListItem button>
-              <ListItemText primary='Runs' />
-            </ListItem>
-          </NavLink>
-          <NavLink to={PATHS.METRICS}>
-            <ListItem button>
-              <ListItemText primary='Metrics' />
-            </ListItem>
-          </NavLink>
-        </List>
-      </Drawer>
-    </div>
+    <Drawer variant='permanent' anchor='left'>
+      <Divider />
+      <List>
+        <NavLink to={PATHS.RUNS}>
+          <ListItem button>
+            <ListItemText primary='Runs' />
+          </ListItem>
+        </NavLink>
+        <NavLink to={PATHS.METRICS}>
+          <ListItem button>
+            <ListItemText primary='Metrics' />
+          </ListItem>
+        </NavLink>
+      </List>
+    </Drawer>
   );
 }
 
