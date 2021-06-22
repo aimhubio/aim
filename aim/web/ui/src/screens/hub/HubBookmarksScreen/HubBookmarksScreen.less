@@ -1,12 +1,7 @@
 @import '../../../vars';
 
 .HubBookmarksScreen__wrapper {
-  height: calc(100vh - 2 * var(--component-spacing-sm));
-  padding: var(--component-spacing-sm);
 
-  &.dark {
-    background-color: var(--grey-lighter);
-  }
 }
 
 .HubBookmarksScreen__header {
@@ -20,53 +15,84 @@
 
 .HubBookmarksScreen__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 300px);
+  grid-template-columns: 1fr 1fr 1fr;
   column-gap: var(--component-spacing-sm);
+  row-gap: var(--component-spacing-sm);
   padding-top: var(--component-spacing-sm);
+
+  @media @md-max {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media @sm-max {
+    grid-template-columns: 1fr;
+  }
 }
 
 .HubBookmarksScreen__grid__item {
-  position: relative;
-  width: 300px;
-  height: 140px;
-  padding: var(--component-spacing-md);
-  margin-bottom: var(--component-spacing-md);
+  display: flex;
+  flex-direction: column;
+  height: 160px;
   box-sizing: border-box;
-  background-color: var(--color-blue);
   border-radius: var(--border-radius);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--primary-lighter);
   text-decoration: none !important;
   overflow: hidden;
-  user-select: none;
+
+  p {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    border-color: #B5C7EE;
+
+    /*& .HubBookmarksScreen__grid__item__icon {
+      opacity: 0.2;
+    }*/
+  }
 }
 
-.HubBookmarksScreen__grid__item__heading {
-  color: #fff;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  user-select: none;
-}
-
-.HubBookmarksScreen__grid__item__title {
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  user-select: none;
+.HubBookmarksScreen__grid__item__header {
+  flex: 1;
+  position: relative;
+  padding: var(--component-spacing-sm);
+  background-color: var(--primary-bg);
+  
+  p {
+    position: relative;
+    z-index: 2;
+  }
 }
 
 .HubBookmarksScreen__grid__item__icon {
   position: absolute;
   top: -30px;
-  right: -20px;
-  font-size: 140px;
-  color: rgba(255, 255, 255, 0.2);
+  right: -5px;
+  font-size: 100px;
+  color: var(--primary);
+  opacity: 0.15;
   user-select: none;
+  z-index: 1;
 
   .Icon {
     display: block !important;
   }
+}
+
+.HubBookmarksScreen__grid__item__form {
+  padding: var(--component-spacing-sm);
+  border-top: 1px solid var(--primary-lighter);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.HubBookmarksScreen__grid__item__form__tag {
+  justify-content: flex-end;
+  color: var(--primary-dark);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
 }
