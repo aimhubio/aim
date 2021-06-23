@@ -5,67 +5,65 @@ from functools import reduce
 
 from sqlalchemy import exc
 
-from aim.web.app.db import get_session
 from aim.web.app.commits.models import Commit
 
 
-def upgrade_runs_table(project, modified_runs):
+def upgrade_runs_table(project, modified_runs, additions_session):
     runs_hashes = [run_hash
                    for runs in modified_runs.values()
                    for run_hash, _ in runs]
 
-    with get_session() as additions_session:
-        runs_models = additions_session.query(Commit).filter(Commit.hash.in_(runs_hashes)).all()
-        for experiment, runs in modified_runs.items():
-            for run_hash, run_modified_time in runs:
-                for run_model in runs_models:
-                    if run_model.hash == run_hash:
-                        break
-                else:
-                    run_model = None
+    runs_models = additions_session.query(Commit).filter(Commit.hash.in_(runs_hashes)).all()
+    for experiment, runs in modified_runs.items():
+        for run_hash, run_modified_time in runs:
+            for run_model in runs_models:
+                if run_model.hash == run_hash:
+                    break
+            else:
+                run_model = None
 
-                run_config = project.get_run_config(experiment, run_hash)
-                started_at = finished_at = None
-                if run_config is not None:
-                    process = run_config.get('process') or {}
-                    started_at, finished_at = (process.get('start_date'),
-                                               process.get('finish_date'))
+            run_config = project.get_run_config(experiment, run_hash)
+            started_at = finished_at = None
+            if run_config is not None:
+                process = run_config.get('process') or {}
+                started_at, finished_at = (process.get('start_date'),
+                                           process.get('finish_date'))
 
-                if run_model is not None:
-                    if started_at:
-                        run_model.session_started_at = started_at
-                    if finished_at:
-                        run_model.session_closed_at = finished_at
-                else:
-                    run_model = Commit(run_hash, experiment)
+            if run_model is not None:
+                if started_at:
+                    run_model.session_started_at = started_at
+                if finished_at:
+                    run_model.session_closed_at = finished_at
+            else:
+                run_model = Commit(run_hash, experiment)
 
-                    # values = {
-                    #     'uuid': Commit.generate_uuid(),
-                    #     'hash': run_hash,
-                    #     'experiment_name': experiment,
-                    # }
-                    # if started_at:
-                    #     values['session_started_at'] = started_at
-                    # if finished_at:
-                    #     values['session_closed_at'] = finished_at
-                    #
-                    # insert_stmt = insert(Commit)
-                    # insert_stmt.values([values])
+                # values = {
+                #     'uuid': Commit.generate_uuid(),
+                #     'hash': run_hash,
+                #     'experiment_name': experiment,
+                # }
+                # if started_at:
+                #     values['session_started_at'] = started_at
+                # if finished_at:
+                #     values['session_closed_at'] = finished_at
+                #
+                # insert_stmt = insert(Commit)
+                # insert_stmt.values([values])
 
-                    if started_at:
-                        run_model.session_started_at = started_at
-                    if finished_at:
-                        run_model.session_closed_at = finished_at
+                if started_at:
+                    run_model.session_started_at = started_at
+                if finished_at:
+                    run_model.session_closed_at = finished_at
 
-                    additions_session.begin_nested()
-                    try:
-                        # additions_session.execute(insert_stmt)
-                        additions_session.add(run_model)
-                        additions_session.commit()
-                    except exc.IntegrityError:
-                        additions_session.rollback()
+                additions_session.begin_nested()
+                try:
+                    # additions_session.execute(insert_stmt)
+                    additions_session.add(run_model)
+                    additions_session.commit()
+                except exc.IntegrityError:
+                    additions_session.rollback()
 
-        additions_session.commit()
+    additions_session.commit()
 
 
 def get_branch_commits(branch_path):

@@ -220,17 +220,15 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
 
 
 def runs_resp_generator(response, runs, exclude_list=None):
-    from aim.web.app import App
-    with App.api.app_context():
-        yield json.dumps({
-            'header': response,
-        }).encode() + '\n'.encode()
-        for run in runs:
-            if not is_tf_run(run):
-                yield json.dumps({
-                    'run': run.to_dict(include_only_selected_agg_metrics=True, exclude_list=exclude_list),
-                }).encode() + '\n'.encode()
-            else:
-                yield json.dumps({
-                    'run': run,
-                }).encode() + '\n'.encode()
+    yield json.dumps({
+        'header': response,
+    }).encode() + '\n'.encode()
+    for run in runs:
+        if not is_tf_run(run):
+            yield json.dumps({
+                'run': run.to_dict(include_only_selected_agg_metrics=True, exclude_list=exclude_list),
+            }).encode() + '\n'.encode()
+        else:
+            yield json.dumps({
+                'run': run,
+            }).encode() + '\n'.encode()
