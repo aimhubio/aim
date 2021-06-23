@@ -512,6 +512,8 @@ function ContextBox(props) {
                       acc[
                       `${metricName} "${metricContextKey}"="${metricContextValue}"`
                       ] = row[column];
+                    } else if (metricName) {
+                      acc[metricName] = row[column];
                     }
                   } else {
                     acc[column] = row[column];

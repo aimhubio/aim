@@ -727,11 +727,15 @@ class Runs extends React.Component {
         } else {
           const [metricName, metricContext] = column.split('-');
           if (metricContext) {
-            const [metricContextKey, metricContextValue] = Object.entries(
-              JSON.parse(metricContext),
-            )[0];
-            acc[`${metricName} "${metricContextKey}"="${metricContextValue}"`] =
-              row[column];
+            const entries = Object.entries(JSON.parse(metricContext) || {});
+            if (entries?.length) {
+              const [metricContextKey, metricContextValue] = entries[0];
+              acc[
+                `${metricName} "${metricContextKey}"="${metricContextValue}"`
+              ] = row[column];
+            } else if (metricName) {
+              acc[metricName] = row[column];
+            }
           } else {
             acc[column] = row[column];
           }
