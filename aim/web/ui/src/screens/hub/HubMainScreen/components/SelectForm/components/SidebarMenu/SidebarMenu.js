@@ -62,7 +62,7 @@ function SidebarMenu(props) {
                 setOpened(false);
               }}
             >
-              <UI.Text small>Save as (Bookmark this state)</UI.Text>
+              <UI.Text small>Bookmark</UI.Text>
             </div>
             {HubMainScreenModel.getState().viewKey !== null && (
               <div
@@ -75,7 +75,7 @@ function SidebarMenu(props) {
                   setOpened(false);
                 }}
               >
-                <UI.Text small>Save (Update bookmark)</UI.Text>
+                <UI.Text small>Update bookmark</UI.Text>
               </div>
             )}
             <div
