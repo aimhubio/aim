@@ -421,22 +421,30 @@ function ContextBox(props) {
     let row = {
       experiment: run.experiment_name ?? '-',
       run: run.date ? moment.unix(run.date).format('HH:mm · D MMM, YY') : '-',
-      metric: metric?.name ?? '-',
-      context: (() => {
-        const [key, value] = Object.entries(trace.context)[0];
-        return key && value ? `${key}=${value}` : '-';
-      })(),
-      value:
-        stepData !== null && stepData[0] !== null
-          ? roundValue(stepData[0])
-          : '-',
-      step: stepData !== null && stepData[1] !== null ? stepData[1] : '-',
-      epoch: stepData !== null && stepData[2] !== null ? stepData[2] : '-',
-      time:
-        stepData !== null && stepData[3] !== null
-          ? moment.unix(stepData[3]).format('HH:mm:ss · D MMM, YY')
-          : '-',
     };
+
+    if (isExploreMetricsModeEnabled()) {
+      Object.assign(row, {
+        metric: metric?.name ?? '-',
+        context: (() => {
+          const [key, value] =
+            trace?.context && Object.keys(trace.context).length
+              ? Object.entries(trace.context)[0]
+              : [];
+          return trace?.context && key && value ? `"${key}"="${value}"` : '-';
+        })(),
+        value:
+          stepData !== null && stepData[0] !== null
+            ? roundValue(stepData[0])
+            : '-',
+        step: stepData !== null && stepData[1] !== null ? stepData[1] : '-',
+        epoch: stepData !== null && stepData[2] !== null ? stepData[2] : '-',
+        time:
+          stepData !== null && stepData[3] !== null
+            ? moment.unix(stepData[3]).format('HH:mm:ss · D MMM, YY')
+            : '-',
+      });
+    }
 
     for (let metricKey in runs?.aggMetrics) {
       runs?.aggMetrics[metricKey].forEach((metricContext) => {
@@ -458,55 +466,83 @@ function ContextBox(props) {
     return row;
   }
 
-  function exportData() {
-    const filteredHeader = Object.keys(table.columnsOrder).reduce(
-      (acc, orderKey) =>
-        acc.concat(
-          table.columnsOrder[orderKey].filter(
-            (column) => table.excludedFields.indexOf(column) === -1,
-          ),
-        ),
-      [],
-    );
+  const exportData =
+    ({ columns, excludedFields, columnsOrder }) =>
+      () => {
+        const filteredHeader = columns.reduce(
+          (acc, column) =>
+            acc.concat(
+              excludedFields.indexOf(column.key) === -1 ? column.key : [],
+            ),
+          [],
+        );
 
-    const traceDataToExport = traceList?.traces.reduce(
-      (accArray, traceModel, traceModelIndex) => {
-        (isExploreParamsModeEnabled()
-          ? _.uniqBy(traceModel.series, 'run.run_hash')
-          : traceModel.series
-        ).forEach((series) => {
-          const row = getRowData({
-            series,
-            chart,
-            runs,
-            paramKeys: paramKeys.current,
-          });
-          const filteredRow = filteredHeader.reduce((acc, column) => {
-            acc[column] = row[column];
-            return acc;
-          }, {});
-          accArray.push(filteredRow);
+        const flattenOrders = Object.keys(columnsOrder).reduce(
+          (acc, key) => acc.concat(columnsOrder[key]),
+          [],
+        );
+
+        filteredHeader.sort(
+          (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
+        );
+
+        const traceDataToExport = traceList?.traces.reduce(
+          (accArray, traceModel, traceModelIndex) => {
+            (isExploreParamsModeEnabled()
+              ? _.uniqBy(traceModel.series, 'run.run_hash')
+              : traceModel.series
+            ).forEach((series) => {
+              const row = getRowData({
+                series,
+                chart,
+                runs,
+                paramKeys: paramKeys.current,
+              });
+              const filteredRow = filteredHeader.reduce((acc, column) => {
+                if (column.startsWith('params.')) {
+                  acc[column.replace('params.', '')] = row[column];
+                } else {
+                  const [metricName, metricContext] = column.split('-');
+                  if (metricContext) {
+                    const entries = Object.entries(
+                      JSON.parse(metricContext) || {},
+                    );
+                    if (entries?.length) {
+                      const [metricContextKey, metricContextValue] = entries[0];
+                      acc[
+                      `${metricName} "${metricContextKey}"="${metricContextValue}"`
+                      ] = row[column];
+                    } else if (metricName) {
+                      acc[metricName] = row[column];
+                    }
+                  } else {
+                    acc[column] = row[column];
+                  }
+                }
+                return acc;
+              }, {});
+              accArray.push(filteredRow);
+            });
+
+            if (traceList?.traces.length - 1 !== traceModelIndex) {
+              let emptyRow = {};
+              filteredHeader.forEach((column) => {
+                emptyRow[column] = '--';
+              });
+              accArray.push(emptyRow);
+            }
+            return accArray;
+          },
+          [],
+        );
+
+        const blob = new Blob([JSONToCSV(traceDataToExport)], {
+          type: 'text/csv;charset=utf-8;',
         });
 
-        if (traceList?.traces.length - 1 !== traceModelIndex) {
-          let emptyRow = {};
-          filteredHeader.forEach((column) => {
-            emptyRow[column] = '--';
-          });
-          accArray.push(emptyRow);
-        }
-        return accArray;
-      },
-      [],
-    );
-
-    const blob = new Blob([JSONToCSV(traceDataToExport)], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    saveAs(blob, `explore-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-
-    analytics.trackEvent('[Explore] Export to CSV');
-  }
+        saveAs(blob, `explore-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+        analytics.trackEvent('[Explore] Export to CSV');
+      };
 
   function _renderContentLoader() {
     const cellHeight = 25,
@@ -1448,7 +1484,11 @@ function ContextBox(props) {
             setColumnsOrder={setColumnsOrder}
             columnsWidths={table.columnsWidths}
             setColumnsWidths={setColumnsWidths}
-            exportData={exportData}
+            exportData={exportData({
+              columns: columns.current,
+              excludedFields: table.excludedFields,
+              columnsOrder: table.columnsOrder,
+            })}
             getParamsWithSameValue={getParamsWithSameValue}
             alwaysVisibleColumns={[
               'experiment',
