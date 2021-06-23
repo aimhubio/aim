@@ -1,31 +1,53 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
+import { ThemeContext } from 'components/Theme/Theme';
+import { IThemeContextValues } from 'types/components/Theme/Theme';
 
 import { PATHS } from 'routes/routes';
+import {
+  makeStyles,
+  ListItem,
+  List,
+  Drawer,
+  ListItemText,
+} from '@material-ui/core';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
+import Brightness7Icon from '@material-ui/icons/Brightness7';
 
-function SideBar(): React.FunctionComponentElement<unknown> {
+const useStyles = makeStyles((theme) => ({
+  listItem: {
+    padding: theme.spacing(0.5),
+    fontSize: '12px',
+  },
+}));
+
+function SideBar(): React.FunctionComponentElement<React.ReactNode> {
+  const classes = useStyles();
+  const { dark, handleTheme } = React.useContext(
+    ThemeContext,
+  ) as IThemeContextValues;
+
   return (
     <Drawer variant='permanent' anchor='left'>
-      <Divider />
       <List>
         <NavLink to={PATHS.RUNS}>
-          <ListItem button>
+          <ListItem className={classes.listItem} button>
             <ListItemText primary='Runs' />
           </ListItem>
         </NavLink>
         <NavLink to={PATHS.METRICS}>
-          <ListItem button>
+          <ListItem className={classes.listItem} button>
             <ListItemText primary='Metrics' />
           </ListItem>
         </NavLink>
+        <ListItem>
+          <div onClick={handleTheme}>
+            {dark ? <Brightness7Icon /> : <Brightness4Icon />}
+          </div>
+        </ListItem>
       </List>
     </Drawer>
   );
 }
 
-export default SideBar;
+export default React.memo(SideBar);
