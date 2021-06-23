@@ -72,7 +72,7 @@ async def commits_search_api(q: Optional[str] = ''):
     }
 
 
-@commits_router.post('/search/metric/align')
+@commits_router.post('/search/metric/align/')
 async def commits_metric_custom_align_api(request: Request):
     # Get project
     project = Project()
@@ -100,7 +100,7 @@ async def commits_metric_custom_align_api(request: Request):
                              media_type='application/json')
 
 
-@commits_router.get('/search/metric')
+@commits_router.get('/search/metric/')
 async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None):
     steps_num = p
 
@@ -350,7 +350,7 @@ async def tf_summary_params_update_api(request: Request):
     }
 
 
-@commits_router.get('/tags/{commit_hash}')
+@commits_router.get('/tags/{commit_hash}/')
 async def commit_tag_api(commit_hash: str):
     with get_session() as session:
         commit = session.query(Commit).filter(Commit.hash == commit_hash).first()

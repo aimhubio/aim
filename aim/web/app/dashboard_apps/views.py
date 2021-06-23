@@ -68,7 +68,7 @@ async def dashboard_apps_put_api(app_id: str, request: Request):
 
 
 @dashboard_apps_router.delete('/{app_id}/')
-async def dashboard_apps_delete_api(app_id:str):
+async def dashboard_apps_delete_api(app_id: str):
     with get_session() as session:
         explore_state = session.query(ExploreState) \
             .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \

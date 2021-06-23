@@ -26,7 +26,7 @@ async def tags_list_api():
     return result
 
 
-@tags_router.post('/new')
+@tags_router.post('/new/')
 async def tags_create_api(request: Request):
     with get_session() as session:
         command_form = await request.json()
