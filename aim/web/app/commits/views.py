@@ -3,8 +3,8 @@ import os
 import time
 
 from fastapi import HTTPException, Request
-from aim.web.app.utils import APIRouter
 from fastapi.responses import JSONResponse, StreamingResponse
+from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
 from pyrser.error import Diagnostic, Severity, Notification
 from typing import Optional
 

@@ -1,79 +1,80 @@
-import json
-from flask import Blueprint, jsonify, request, make_response
-from flask_restful import Api, Resource
+from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
+from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
 
 from aim.web.app.dashboard_apps.models import ExploreState
 from aim.web.app.dashboard_apps.serializers import ExploreStateModelSerializer, explore_state_response_serializer
 from aim.web.app.db import get_session
 
-dashboard_apps_bp = Blueprint('dashboard_apps', __name__)
-dashboard_apps_api = Api(dashboard_apps_bp)
+dashboard_apps_router = APIRouter()
 
 
-@dashboard_apps_api.resource('/')
-class DashboardAppsListCreateApi(Resource):
-    def get(self):
-        with get_session() as session:
-            explore_states = session.query(ExploreState).filter(ExploreState.is_archived == False)
-            result = []
-            for es in explore_states:
-                result.append(explore_state_response_serializer(es))
-        return make_response(jsonify(result), 200)
-
-    def post(self):
-        with get_session() as session:
-            explore_state = ExploreState()
-            serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=json.loads(request.data))
-            serializer.validate()
-            if serializer.error_messages:
-                return make_response(jsonify(serializer.error_messages), 403)
-            explore_state = serializer.save()
-            session.add(explore_state)
-            session.commit()
-        return make_response(jsonify(explore_state_response_serializer(explore_state)), 201)
+@dashboard_apps_router.get('/')
+async def dashboard_apps_list_api():
+    with get_session() as session:
+        explore_states = session.query(ExploreState).filter(ExploreState.is_archived == False)
+        result = []
+        for es in explore_states:
+            result.append(explore_state_response_serializer(es))
+    return result
 
 
-@dashboard_apps_api.resource('/<app_id>')
-class DashboardAppsGetPutDeleteApi(Resource):
-    def get(self, app_id):
-        with get_session() as session:
-            explore_state = session.query(ExploreState)\
-                .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False)\
-                .first()
-            if not explore_state:
-                return make_response(jsonify({}), 404)
+@dashboard_apps_router.post('/', status_code=201)
+async def dashboard_apps_create_api(request: Request):
+    with get_session() as session:
+        explore_state = ExploreState()
+        request_data = await request.json()
+        serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=request_data)
+        serializer.validate()
+        if serializer.error_messages:
+            return JSONResponse(content=serializer.error_messages, status_code=403)
+        explore_state = serializer.save()
+        session.add(explore_state)
+        session.commit()
 
-        return make_response(jsonify(explore_state_response_serializer(explore_state)), 200)
+    return explore_state_response_serializer(explore_state)
 
-    def put(self, app_id):
-        with get_session() as session:
-            explore_state = session(ExploreState).query\
-                .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False)\
-                .first()
-            if not explore_state:
-                return make_response(jsonify({}), 404)
 
-            serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=json.loads(request.data))
-            serializer.validate()
-            if serializer.error_messages:
-                return make_response(jsonify(serializer.error_messages), 403)
+@dashboard_apps_router.get('/{app_id}/')
+async def dashboard_apps_get_api(app_id: str):
+    with get_session() as session:
+        explore_state = session.query(ExploreState) \
+            .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
+            .first()  # noqa
+        if not explore_state:
+            raise HTTPException(status_code=404)
 
-            explore_state = serializer.save()
-            session.add(explore_state)
+    return explore_state_response_serializer(explore_state)
 
-            session.commit()
 
-        return make_response(jsonify(explore_state_response_serializer(explore_state)), 200)
+@dashboard_apps_router.put('/{app_id}/')
+async def dashboard_apps_put_api(app_id: str, request: Request):
+    with get_session() as session:
+        explore_state = session(ExploreState).query \
+            .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
+            .first()  # noqa
+        if not explore_state:
+            raise HTTPException(status_code=404)
+        request_data = await request.json()
+        serializer = ExploreStateModelSerializer(model_instance=explore_state, json_data=request_data)
+        serializer.validate()
+        if serializer.error_messages:
+            return JSONResponse(content=serializer.error_messages, status_code=403)
+        explore_state = serializer.save()
+        session.add(explore_state)
+        session.commit()
 
-    def delete(self, app_id):
-        with get_session() as session:
-            explore_state = session.query(ExploreState)\
-                .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False)\
-                .first()
-            if not explore_state:
-                return make_response(jsonify({}), 404)
+    return explore_state_response_serializer(explore_state)
 
-            explore_state.is_archived = True
-            session.commit()
 
-        return make_response(jsonify({}), 200)
+@dashboard_apps_router.delete('/{app_id}/')
+async def dashboard_apps_delete_api(app_id:str):
+    with get_session() as session:
+        explore_state = session.query(ExploreState) \
+            .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
+            .first()  # noqa
+        if not explore_state:
+            raise HTTPException(status_code=404)
+
+        explore_state.is_archived = True
+        session.commit()
