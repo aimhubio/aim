@@ -421,25 +421,30 @@ function ContextBox(props) {
     let row = {
       experiment: run.experiment_name ?? '-',
       run: run.date ? moment.unix(run.date).format('HH:mm · D MMM, YY') : '-',
-      metric: metric?.name ?? '-',
-      context: (() => {
-        const [key, value] =
-          trace?.context && Object.keys(trace.context).length
-            ? Object.entries(trace.context)[0]
-            : [];
-        return trace?.context && key && value ? `"${key}"="${value}"` : '-';
-      })(),
-      value:
-        stepData !== null && stepData[0] !== null
-          ? roundValue(stepData[0])
-          : '-',
-      step: stepData !== null && stepData[1] !== null ? stepData[1] : '-',
-      epoch: stepData !== null && stepData[2] !== null ? stepData[2] : '-',
-      time:
-        stepData !== null && stepData[3] !== null
-          ? moment.unix(stepData[3]).format('HH:mm:ss · D MMM, YY')
-          : '-',
     };
+
+    if (isExploreMetricsModeEnabled()) {
+      Object.assign(row, {
+        metric: metric?.name ?? '-',
+        context: (() => {
+          const [key, value] =
+            trace?.context && Object.keys(trace.context).length
+              ? Object.entries(trace.context)[0]
+              : [];
+          return trace?.context && key && value ? `"${key}"="${value}"` : '-';
+        })(),
+        value:
+          stepData !== null && stepData[0] !== null
+            ? roundValue(stepData[0])
+            : '-',
+        step: stepData !== null && stepData[1] !== null ? stepData[1] : '-',
+        epoch: stepData !== null && stepData[2] !== null ? stepData[2] : '-',
+        time:
+          stepData !== null && stepData[3] !== null
+            ? moment.unix(stepData[3]).format('HH:mm:ss · D MMM, YY')
+            : '-',
+      });
+    }
 
     for (let metricKey in runs?.aggMetrics) {
       runs?.aggMetrics[metricKey].forEach((metricContext) => {
@@ -499,12 +504,15 @@ function ContextBox(props) {
                 } else {
                   const [metricName, metricContext] = column.split('-');
                   if (metricContext) {
-                    const [metricContextKey, metricContextValue] = Object.entries(
-                      JSON.parse(metricContext),
-                    )[0];
-                    acc[
-                    `${metricName} "${metricContextKey}"="${metricContextValue}"`
-                    ] = row[column];
+                    const entries = Object.entries(
+                      JSON.parse(metricContext) || {},
+                    );
+                    if (entries?.length) {
+                      const [metricContextKey, metricContextValue] = entries[0];
+                      acc[
+                      `${metricName} "${metricContextKey}"="${metricContextValue}"`
+                      ] = row[column];
+                    }
                   } else {
                     acc[column] = row[column];
                   }
