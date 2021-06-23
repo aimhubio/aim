@@ -1,15 +1,18 @@
 import { API_HOST } from 'config/config';
 
-function createAPIRequestWrapper(url: string, options?: RequestInit) {
+function createAPIRequestWrapper<ResponseDataType>(
+  url: string,
+  options?: RequestInit,
+) {
   const controller = new AbortController();
   const signal = controller.signal;
 
   return {
     call: () =>
-      new Promise((resolve, reject) => {
+      new Promise((resolve: (data: ResponseDataType) => void, reject) => {
         fetch(`${API_HOST}/${url}`, { ...options, signal })
           .then((response) => response.json())
-          .then((data) => resolve(data))
+          .then((data: ResponseDataType) => resolve(data))
           .catch((err) => {
             if (err.name === 'AbortError') {
               // Fetch aborted
@@ -22,31 +25,35 @@ function createAPIRequestWrapper(url: string, options?: RequestInit) {
   };
 }
 
-function get(url: string, options?: RequestInit) {
-  return createAPIRequestWrapper(url, {
+function get<ResponseDataType>(url: string, options?: RequestInit) {
+  return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'GET',
     ...options,
   });
 }
 
-function post(url: string, data: Body, options?: RequestInit) {
-  return createAPIRequestWrapper(url, {
+function post<ResponseDataType>(
+  url: string,
+  data: Body,
+  options?: RequestInit,
+) {
+  return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'POST',
     ...options,
     body: JSON.stringify(data),
   });
 }
 
-function put(url: string, data: Body, options?: RequestInit) {
-  return createAPIRequestWrapper(url, {
+function put<ResponseDataType>(url: string, data: Body, options?: RequestInit) {
+  return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'PUT',
     ...options,
     body: JSON.stringify(data),
   });
 }
 
-function remove(url: string, data: Body, options?: RequestInit) {
-  return createAPIRequestWrapper(url, {
+function remove<ResponseDataType>(url: string, options?: RequestInit) {
+  return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'DELETE',
     ...options,
   });

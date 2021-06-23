@@ -1,6 +1,9 @@
-export interface IModel {
+export interface IModel<StateType> {
   init: () => void;
-  getState: () => unknown;
-  setState: (data: unknown) => void;
-  subscribe: (evt: 'INIT' | 'UPDATE', fn: (data: unknown) => void) => { unsubscribe: () => void };
+  getState: () => StateType | null;
+  setState: (data: StateType) => void;
+  subscribe: (
+    evt: 'INIT' | 'UPDATE',
+    fn: (data: StateType) => void,
+  ) => { unsubscribe: () => void };
 }
