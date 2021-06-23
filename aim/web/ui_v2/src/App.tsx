@@ -5,7 +5,7 @@ import SideBar from 'components/SideBar/SideBar';
 import { routes } from 'routes/routes';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme, Grid } from '@material-ui/core';
-import projectsModel from './services/models/projects/projectsModel';
+import ProjectWrapper from './components/ProjectWrapper/ProjectWrapper';
 
 const light = createMuiTheme({
   palette: {
@@ -28,12 +28,11 @@ const themes = {
   light,
 };
 
-projectsModel.getProjectsData();
-
 function App(): React.FunctionComponentElement<unknown> {
   // const [theme, setTheme] = useState<string>('light');
   return (
     <BrowserRouter>
+      <ProjectWrapper />
       <ThemeProvider theme={themes.light}>
         <Grid container>
           <Grid item xs={4}>

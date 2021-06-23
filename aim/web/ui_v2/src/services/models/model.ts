@@ -1,4 +1,6 @@
-function createModel(initialState: unknown) {
+import { IModel } from '../../types/services/models/model';
+
+function createModel(initialState: unknown): IModel {
   let state: unknown = null;
   const subscriptions: { [key: string]: { (data: unknown): void }[] } = {
     INIT: [],
@@ -14,7 +16,7 @@ function createModel(initialState: unknown) {
       Object.assign(state, stateUpdate);
       (subscriptions.UPDATE || []).forEach((fn) => fn(stateUpdate));
     },
-    subscribe: (evt: 'INIT' | 'UPDATE', fn: { (data: unknown): void }) => {
+    subscribe: (evt, fn) => {
       subscriptions[evt].push(fn);
 
       return {
