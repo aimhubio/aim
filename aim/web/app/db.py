@@ -1,6 +1,5 @@
 import os
 
-from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +17,6 @@ SessionLocal = sessionmaker(autocommit=False, bind=engine)
 Base = declarative_base()
 
 
-@contextmanager
 def get_session():
     session = SessionLocal()
     try:

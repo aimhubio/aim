@@ -11,12 +11,12 @@ from aim.web.app.db import get_session
 from aim.web.app.utils import normalize_type, unsupported_float_type
 
 
-def select_tf_summary_scalars(tags, expression: Optional[Expression] = None):
+def select_tf_summary_scalars(session, tags, expression: Optional[Expression] = None):
     # Search
     runs = []
 
     params = {}
-    scalars_models = next(get_session()).query(TFSummaryLog).all()
+    scalars_models = session.query(TFSummaryLog).all()
     for scalar in scalars_models:
         scalar_params = json.loads(scalar.params)
         for k, v in scalar_params.items():

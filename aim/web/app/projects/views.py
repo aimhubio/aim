@@ -1,16 +1,16 @@
+import copy
 import json
 import os
+import pytz
 import time
-import copy
+
 from collections import Counter
 from datetime import datetime
-import pytz
-
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
 from fastapi.responses import FileResponse
-
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 from aim.artifacts.metric import Metric as MetricArtifact
 from aim.engine.configs import AIM_UI_TELEMETRY_KEY
@@ -58,46 +58,45 @@ async def project_data_api():
 
 
 @projects_router.get('/activity/')
-async def project_activity_api():
+async def project_activity_api(session: Session = Depends(get_session)):
     project = Project()
 
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    with get_session() as session:
-        last_synced_run = session\
-            .query(func.max(Commit.session_started_at),
-                   func.max(Commit.session_closed_at))\
-            .first()
-        last_synced_run_time = max(last_synced_run[0] or 0,
-                                   last_synced_run[1] or 0)
+    last_synced_run = session\
+        .query(func.max(Commit.session_started_at),
+               func.max(Commit.session_closed_at))\
+        .first()
+    last_synced_run_time = max(last_synced_run[0] or 0,
+                               last_synced_run[1] or 0)
 
-        modified_runs = project.get_modified_runs(last_synced_run_time)
-        upgrade_runs_table(project, modified_runs, session)
+    modified_runs = project.get_modified_runs(last_synced_run_time)
+    upgrade_runs_table(project, modified_runs, session)
 
-        all_runs = session\
-            .query(Commit.hash,
-                   Commit.experiment_name,
-                   Commit.session_started_at)\
-            .filter(Commit.session_started_at > 0)\
-            .all()
+    all_runs = session\
+        .query(Commit.hash,
+               Commit.experiment_name,
+               Commit.session_started_at)\
+        .filter(Commit.session_started_at > 0)\
+        .all()
 
-        experiments = {r.experiment_name for r in all_runs}
+    experiments = {r.experiment_name for r in all_runs}
 
-        # todo: check this out
-        # try:
-        #     timezone = pytz.timezone(request.tz)
-        # except:
-        #     timezone = None
-        # if not timezone:
-        timezone = pytz.timezone('gmt')
+    # todo: check this out
+    # try:
+    #     timezone = pytz.timezone(request.tz)
+    # except:
+    #     timezone = None
+    # if not timezone:
+    timezone = pytz.timezone('gmt')
 
-        activity_counter = Counter([
-            datetime.fromtimestamp(r.session_started_at, timezone)
-                    .strftime('%Y-%m-%d')
-            if r.session_started_at > 0 else 0
-            for r in all_runs
-        ])
+    activity_counter = Counter([
+        datetime.fromtimestamp(r.session_started_at, timezone)
+                .strftime('%Y-%m-%d')
+        if r.session_started_at > 0 else 0
+        for r in all_runs
+    ])
 
     return {
         'num_experiments': len(experiments),

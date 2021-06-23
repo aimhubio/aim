@@ -2,10 +2,11 @@ import json
 import os
 import time
 
-from fastapi import HTTPException, Request
+from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
 from pyrser.error import Diagnostic, Severity, Notification
+from sqlalchemy.orm import Session
 from typing import Optional
 
 from aim.ql.grammar.statement import Statement, Expression
@@ -101,7 +102,8 @@ async def commits_metric_custom_align_api(request: Request):
 
 
 @commits_router.get('/search/metric/')
-async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None):
+async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None,
+                                   session: Session = Depends(get_session)):
     steps_num = p
 
     if x_axis:
@@ -202,7 +204,7 @@ async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] =
             pass
         else:
             try:
-                tf_runs = select_tf_summary_scalars(tf_logs, statement_expr)
+                tf_runs = select_tf_summary_scalars(session, tf_logs, statement_expr)
                 if tf_runs and len(tf_runs):
                     runs += tf_runs
             except:
@@ -306,19 +308,18 @@ async def tf_summary_list_api():
 
 
 @commits_router.post('/tf-summary/params/list/')
-async def tf_summary_params_list_api(request: Request):
-    with get_session() as session:
-        params_form = await request.json()
-        path = params_form.get('path')
+async def tf_summary_params_list_api(request: Request, session: Session = Depends(get_session)):
+    params_form = await request.json()
+    path = params_form.get('path')
 
-        if not path:
-            return {'params': ''}
+    if not path:
+        return {'params': ''}
 
-        tf_log = session.query(TFSummaryLog)\
-            .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
-            .first()
-        if tf_log is None:
-            return {'params': ''}
+    tf_log = session.query(TFSummaryLog)\
+        .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
+        .first()
+    if tf_log is None:
+        return {'params': ''}
 
     return {
         'params': tf_log.params,
@@ -326,24 +327,23 @@ async def tf_summary_params_list_api(request: Request):
 
 
 @commits_router.post('/tf-summary/params/update/')
-async def tf_summary_params_update_api(request: Request):
-    with get_session() as session:
-        params_form = await request.json()
-        path = params_form.get('path')
-        params = params_form.get('params')
+async def tf_summary_params_update_api(request: Request, session: Session = Depends(get_session)):
+    params_form = await request.json()
+    path = params_form.get('path')
+    params = params_form.get('params')
 
-        if not path:
-            raise HTTPException(status_code=403)
+    if not path:
+        raise HTTPException(status_code=403)
 
-        tf_log = session.query(TFSummaryLog)\
-            .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
-            .first()
-        if tf_log is None:
-            tf_log = TFSummaryLog(path)
-            session.add(tf_log)
+    tf_log = session.query(TFSummaryLog)\
+        .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
+        .first()
+    if tf_log is None:
+        tf_log = TFSummaryLog(path)
+        session.add(tf_log)
 
-        tf_log.params = params
-        session.commit()
+    tf_log.params = params
+    session.commit()
 
     return {
         'params': params,
@@ -351,53 +351,51 @@ async def tf_summary_params_update_api(request: Request):
 
 
 @commits_router.get('/tags/{commit_hash}/')
-async def commit_tag_api(commit_hash: str):
-    with get_session() as session:
-        commit = session.query(Commit).filter(Commit.hash == commit_hash).first()
+async def commit_tag_api(commit_hash: str, session: Session = Depends(get_session)):
+    commit = session.query(Commit).filter(Commit.hash == commit_hash).first()
 
-        if not commit:
-            raise HTTPException(status_code=404)
+    if not commit:
+        raise HTTPException(status_code=404)
 
-        commit_tags = []
-        for t in commit.tags:
-            commit_tags.append({
-                'id': t.uuid,
-                'name': t.name,
-                'color': t.color,
-            })
+    commit_tags = []
+    for t in commit.tags:
+        commit_tags.append({
+            'id': t.uuid,
+            'name': t.name,
+            'color': t.color,
+        })
 
     return commit_tags
 
 
 @commits_router.post('/tags/update/')
-async def commit_tag_update_api(request: Request):
-    with get_session() as session:
-        form = await request.json()
+async def commit_tag_update_api(request: Request, session: Session = Depends(get_session)):
+    form = await request.json()
 
-        commit_hash = form.get('commit_hash')
-        experiment_name = form.get('experiment_name')
-        tag_id = form.get('tag_id')
+    commit_hash = form.get('commit_hash')
+    experiment_name = form.get('experiment_name')
+    tag_id = form.get('tag_id')
 
-        commit = session.query(Commit)\
-            .filter((Commit.hash == commit_hash) & (Commit.experiment_name == experiment_name))\
-            .first()
-        if not commit:
-            commit = Commit(commit_hash, experiment_name)
-            session.add(commit)
-            session.commit()
-
-        tag = session.query(Tag).filter(Tag.uuid == tag_id).first()
-        if not tag:
-            raise HTTPException(status_code=404)
-
-        if tag in commit.tags:
-            commit.tags.remove(tag)
-        else:
-            for t in commit.tags:
-                commit.tags.remove(t)
-            commit.tags.append(tag)
-
+    commit = session.query(Commit)\
+        .filter((Commit.hash == commit_hash) & (Commit.experiment_name == experiment_name))\
+        .first()
+    if not commit:
+        commit = Commit(commit_hash, experiment_name)
+        session.add(commit)
         session.commit()
+
+    tag = session.query(Tag).filter(Tag.uuid == tag_id).first()
+    if not tag:
+        raise HTTPException(status_code=404)
+
+    if tag in commit.tags:
+        commit.tags.remove(tag)
+    else:
+        for t in commit.tags:
+            commit.tags.remove(t)
+        commit.tags.append(tag)
+
+    session.commit()
 
     return {
         'tag': list(map(lambda t: t.uuid, commit.tags)),
