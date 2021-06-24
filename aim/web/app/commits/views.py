@@ -309,7 +309,7 @@ async def tf_summary_list_api():
 
 @commits_router.post('/tf-summary/params/list/')
 async def tf_summary_params_list_api(request: Request, session: Session = Depends(get_session)):
-    params_form = await request.json()
+    params_form = await request.form()
     path = params_form.get('path')
 
     if not path:
@@ -328,7 +328,7 @@ async def tf_summary_params_list_api(request: Request, session: Session = Depend
 
 @commits_router.post('/tf-summary/params/update/')
 async def tf_summary_params_update_api(request: Request, session: Session = Depends(get_session)):
-    params_form = await request.json()
+    params_form = await request.form()
     path = params_form.get('path')
     params = params_form.get('params')
 
@@ -370,7 +370,7 @@ async def commit_tag_api(commit_hash: str, session: Session = Depends(get_sessio
 
 @commits_router.post('/tags/update/')
 async def commit_tag_update_api(request: Request, session: Session = Depends(get_session)):
-    form = await request.json()
+    form = await request.form()
 
     commit_hash = form.get('commit_hash')
     experiment_name = form.get('experiment_name')

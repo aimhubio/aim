@@ -27,7 +27,7 @@ async def tags_list_api(session: Session = Depends(get_session)):
 
 @tags_router.post('/new/')
 async def tags_create_api(request: Request, session: Session = Depends(get_session)):
-    command_form = await request.json()
+    command_form = await request.form()
 
     name = command_form.get('name') or ''
     name = name.strip()
@@ -49,7 +49,7 @@ async def tags_create_api(request: Request, session: Session = Depends(get_sessi
 
 @tags_router.post('/update/')
 async def tag_update_api(request: Request, session: Session = Depends(get_session)):
-    command_form = await request.json()
+    command_form = await request.form()
 
     uuid = command_form.get('id') or ''
     uuid = uuid.strip()

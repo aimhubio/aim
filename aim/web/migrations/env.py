@@ -9,6 +9,7 @@ from alembic.config import Config
 from flask import current_app
 
 from aim.engine.configs import AIM_FLASK_ENV_KEY
+from aim.web.app.db import Base, engine, config as sql_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,12 +26,7 @@ logger = logging.getLogger('alembic.env')
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-config.set_main_option(
-    'sqlalchemy.url',
-    str(current_app.extensions['migrate'].db.engine.url).replace('%', '%%'))
-target_metadata = current_app.extensions['migrate'].db.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -50,7 +46,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = sql_config.SQLALCHEMY_DATABASE_URI
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True
     )
@@ -77,14 +73,13 @@ def run_migrations_online():
                 directives[:] = []
                 logger.info('No changes in schema detected.')
 
-    connectable = current_app.extensions['migrate'].db.engine
+    connectable = engine
 
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
+            process_revision_directives=process_revision_directives
         )
 
         with context.begin_transaction():

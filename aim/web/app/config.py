@@ -22,7 +22,6 @@ class ProductionConfig(Config):
     """
     Production Configuration
     """
-    SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/.aim/aim_db'.format(get_root_path())
     DEBUG = False
 

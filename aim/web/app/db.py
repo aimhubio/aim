@@ -11,7 +11,7 @@ env = os.environ.get(AIM_FLASK_ENV_KEY, 'prod')
 config = config[env]
 
 engine = create_engine(
-    config.SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False}
+    config.SQLALCHEMY_DATABASE_URI, echo=config.SQLALCHEMY_ECHO, connect_args={"check_same_thread": False}
 )
 SessionLocal = sessionmaker(autocommit=False, bind=engine)
 Base = declarative_base()

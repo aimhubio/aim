@@ -13,16 +13,18 @@ def repo_init_alert():
 def build_db_upgrade_command():
     from aim import web
     web_dir = os.path.dirname(web.__file__)
-    manage_file = os.path.join(web_dir, 'manage.py')
     migrations_dir = os.path.join(web_dir, 'migrations')
-    return [sys.executable, manage_file,
-            'db', 'upgrade', '--directory', migrations_dir]
+    if os.getenv(AIM_FLASK_ENV_KEY) == 'dev':
+        ini_file = os.path.join(migrations_dir, 'alembic_dev.ini')
+    else:
+        ini_file = os.path.join(migrations_dir, 'alembic.ini')
+    return ['alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_gunicorn_command(host, port, num_workers):
+def build_hypercorn_command(host, port, num_workers):
     bind_address = "%s:%s" % (host, port)
-    cmd = ['gunicorn', '-b', bind_address, '-w', '%s' % num_workers,
-           '--timeout', '300', '--graceful-timeout', '300']
+    cmd = ['hypercorn', '-b', bind_address, '-w', '%s' % num_workers,
+           '--graceful-timeout', '300']
     if os.getenv(AIM_FLASK_ENV_KEY) == 'dev':
         cmd += ['--reload', '--log-level', 'info']
     else:
