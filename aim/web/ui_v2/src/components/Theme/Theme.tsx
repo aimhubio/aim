@@ -9,9 +9,13 @@ const light: Partial<unknown> = {
   palette: {
     type: 'light',
     primary: {
-      main: '#3b5896',
+      main: '#243969',
+    },
+    text: {
+      // secondary: '#fff',
     },
   },
+  spacing: (factor: number) => `${factor}em`,
 };
 
 const darkTheme: Partial<unknown> = {
@@ -20,8 +24,12 @@ const darkTheme: Partial<unknown> = {
     primary: {
       main: '#64b5f6',
     },
+    text: {
+      // secondary: '#000',
+    },
   },
 };
+
 function Theme(
   props: IThemeProps,
 ): React.FunctionComponentElement<React.ReactNode> {

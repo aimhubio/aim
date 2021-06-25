@@ -7,11 +7,13 @@ import { makeStyles } from '@material-ui/core';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 
-const useStyles = makeStyles({
+import 'App.css';
+
+const useStyles = makeStyles(({ spacing }) => ({
   main: {
-    paddingLeft: 70,
+    paddingLeft: spacing(8.75),
   },
-});
+}));
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
