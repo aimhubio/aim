@@ -4,6 +4,7 @@ import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
+import LineChart from '../../components/LineChart/LineChart';
 
 const useStyles = makeStyles(({ spacing }) => ({
   paper: {
@@ -52,7 +53,16 @@ function Metrics(): React.FunctionComponentElement<React.ReactNode> {
           <Grid container spacing={1}>
             <Grid item xs>
               <Paper square className={classes.paper}>
-                <div>Chart</div>
+                <LineChart
+                  data={[
+                    [50, 330],
+                    [75, 200],
+                    [280, 75],
+                    [300, 75],
+                    [475, 300],
+                    [600, 200],
+                  ]}
+                />
               </Paper>
             </Grid>
             <Grid item>
