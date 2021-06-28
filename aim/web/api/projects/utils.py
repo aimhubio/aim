@@ -5,7 +5,7 @@ from functools import reduce
 
 from sqlalchemy import exc
 
-from aim.web.app.commits.models import Commit
+from aim.web.api.commits.models import Commit
 
 
 def upgrade_runs_table(project, modified_runs, additions_session):

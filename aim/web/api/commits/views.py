@@ -4,17 +4,17 @@ import time
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
-from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from pyrser.error import Diagnostic, Severity, Notification
 from sqlalchemy.orm import Session
 from typing import Optional
 
 from aim.ql.grammar.statement import Statement, Expression
-from aim.web.app.projects.project import Project
-from aim.web.app.commits.models import Commit, TFSummaryLog, Tag
-from aim.web.app.db import get_session
+from aim.web.api.projects.project import Project
+from aim.web.api.commits.models import Commit, TFSummaryLog, Tag
+from aim.web.api.db import get_session
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
-from aim.web.app.commits.utils import (
+from aim.web.api.commits.utils import (
     select_tf_summary_scalars,
     separate_select_statement,
     is_tf_run,

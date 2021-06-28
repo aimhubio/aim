@@ -6,24 +6,25 @@ import time
 
 from collections import Counter
 from datetime import datetime
-from fastapi import Depends, HTTPException
-from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import Depends, HTTPException, Request
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from fastapi.responses import FileResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from urllib import parse
 
 from aim.artifacts.metric import Metric as MetricArtifact
 from aim.engine.configs import AIM_UI_TELEMETRY_KEY
-from aim.web.app.db import get_session
-from aim.web.app.utils import unsupported_float_type
-from aim.web.app.projects.utils import (
+from aim.web.api.db import get_session
+from aim.web.api.utils import unsupported_float_type
+from aim.web.api.projects.utils import (
     get_branch_commits,
     deep_merge,
     dump_dict_values,
     upgrade_runs_table,
 )
-from aim.web.app.projects.project import Project
-from aim.web.app.commits.models import Commit
+from aim.web.api.projects.project import Project
+from aim.web.api.commits.models import Commit
 
 projects_router = APIRouter()
 
@@ -58,7 +59,7 @@ async def project_data_api():
 
 
 @projects_router.get('/activity/')
-async def project_activity_api(session: Session = Depends(get_session)):
+async def project_activity_api(request: Request, session: Session = Depends(get_session)):
     project = Project()
 
     if not project.exists():
@@ -83,13 +84,15 @@ async def project_activity_api(session: Session = Depends(get_session)):
 
     experiments = {r.experiment_name for r in all_runs}
 
-    # todo: check this out
-    # try:
-    #     timezone = pytz.timezone(request.tz)
-    # except:
-    #     timezone = None
-    # if not timezone:
-    timezone = pytz.timezone('gmt')
+    try:
+        timezone = request.cookies.get('__AIMDE__:TIMEZONE')
+        if timezone:
+            timezone = pytz.timezone(parse.unquote(timezone))
+    except:
+        timezone = None
+
+    if not timezone:
+        timezone = pytz.timezone('gmt')
 
     activity_counter = Counter([
         datetime.fromtimestamp(r.session_started_at, timezone)

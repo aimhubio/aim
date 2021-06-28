@@ -13,7 +13,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 NAME = os.getenv('AIM_PKG_NAME') or 'aim'
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
-REQUIRES_PYTHON = '>=3.5.0'
+REQUIRES_PYTHON = '>=3.6.0'
 
 # Get packages
 packages = find_packages(exclude=('tests',))
@@ -36,28 +36,23 @@ LONG_DESCRIPTION = DESCRIPTION
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'click>=6.7',
-    'anytree>=2.8.0',
-    'pyrser>=0.2.0',
-    'GitPython>=3.0.4',
-    'requests>=2.0.0',
-    'psutil>=5.6.7',
-    'py3nvml>=0.2.5',
-    'docker>=4.1.0',
     'aimrecords==0.0.7',
+    'anytree>=2.8.0',
+    'click>=6.7',
+    'GitPython>=3.0.4',
     'protobuf>=3.11.0',
-    'alembic==1.6.0',
-    'Flask==1.1.2',
-    'Flask-Cors==3.0.10',
-    'Flask-Migrate==2.7.0',
-    'Flask-RESTful==0.3.8',
-    'Flask-Script==2.0.6',
-    'Flask-SQLAlchemy==2.5.1',
-    'SQLAlchemy==1.4.13',
-    'pysqlite3',
-    'pytz==2020.1',
-    'tensorboard==2.3.0',
-    'gunicorn==20.1.0',
+    'psutil>=5.6.7',
+    'pyrser>=0.2.0',
+    'py3nvml>=0.2.5',
+    'requests>=2.0.0',
+    'aiofiles>=0.5.0',
+    'alembic>=1.4.0',
+    'fastapi>=0.65.0',
+    'hypercorn>=0.10.0',
+    'python-multipart>=0.0.3',
+    'pytz>=2019.1',
+    'SQLAlchemy>=1.3.0',
+    'tensorboard>=2.0.0',
 ]
 
 

@@ -1,11 +1,11 @@
 from fastapi import Depends, HTTPException, Request
-from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from sqlalchemy.orm import Session
 
-from aim.web.app.dashboards.models import Dashboard
-from aim.web.app.dashboard_apps.models import ExploreState
-from aim.web.app.dashboards.serializers import dashboard_response_serializer
-from aim.web.app.db import get_session
+from aim.web.api.dashboards.models import Dashboard
+from aim.web.api.dashboard_apps.models import ExploreState
+from aim.web.api.dashboards.serializers import dashboard_response_serializer
+from aim.web.api.db import get_session
 
 dashboards_router = APIRouter()
 

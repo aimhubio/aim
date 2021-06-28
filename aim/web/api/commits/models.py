@@ -3,8 +3,8 @@ import sqlalchemy as sa
 
 from sqlalchemy.orm import relationship
 
-from aim.web.app.utils import datetime_now
-from aim.web.app.db import Base
+from aim.web.api.utils import datetime_now
+from aim.web.api.db import Base
 
 CommitTagAssociation = sa.Table('commit_tag',
                                 Base.metadata,

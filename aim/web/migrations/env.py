@@ -6,16 +6,15 @@ from logging.config import fileConfig
 
 from alembic import context
 from alembic.config import Config
-from flask import current_app
 
-from aim.engine.configs import AIM_FLASK_ENV_KEY
-from aim.web.app.db import Base, engine, config as sql_config
+from aim.engine.configs import AIM_WEB_ENV_KEY
+from aim.web.api.db import Base, engine, config as sql_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-if os.getenv(AIM_FLASK_ENV_KEY) == 'dev':
+if os.getenv(AIM_WEB_ENV_KEY) == 'dev':
     here = os.path.abspath(os.path.dirname(__file__))
     config = Config(os.path.join(here, 'alembic_dev.ini'))
 

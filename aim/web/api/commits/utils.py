@@ -6,9 +6,9 @@ from aim.engine.repo.run import Run
 from aim.ql.grammar import Expression
 from aim.ql.utils import match
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
-from aim.web.app.commits.models import TFSummaryLog
-from aim.web.app.db import get_session
-from aim.web.app.utils import normalize_type, unsupported_float_type
+from aim.web.api.commits.models import TFSummaryLog
+from aim.web.api.db import get_session
+from aim.web.api.utils import normalize_type, unsupported_float_type
 
 
 def select_tf_summary_scalars(session, tags, expression: Optional[Expression] = None):

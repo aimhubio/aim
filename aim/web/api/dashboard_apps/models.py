@@ -4,8 +4,8 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
-from aim.web.app.db import Base
-from aim.web.app.utils import datetime_now
+from aim.web.api.db import Base
+from aim.web.api.utils import datetime_now
 
 
 class AppMixin(object):

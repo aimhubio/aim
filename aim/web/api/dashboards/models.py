@@ -1,8 +1,8 @@
 import uuid
 import sqlalchemy as sa
 
-from aim.web.app.db import Base
-from aim.web.app.utils import datetime_now
+from aim.web.api.db import Base
+from aim.web.api.utils import datetime_now
 
 
 class Dashboard(Base):

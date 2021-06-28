@@ -1,9 +1,9 @@
 import os
 
-from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from fastapi.responses import FileResponse
 
-from aim.web.app.projects.project import Project
+from aim.web.api.projects.project import Project
 
 general_router = APIRouter()
 

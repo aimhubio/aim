@@ -1,9 +1,9 @@
 from fastapi import Depends,HTTPException, Request
-from aim.web.app.utils import APIRouter  # wrapper for fastapi.APIRouter
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from sqlalchemy.orm import joinedload, Session
 
-from aim.web.app.db import get_session
-from aim.web.app.commits.models import Tag
+from aim.web.api.db import get_session
+from aim.web.api.commits.models import Tag
 
 tags_router = APIRouter()
 

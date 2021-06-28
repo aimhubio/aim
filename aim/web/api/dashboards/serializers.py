@@ -1,5 +1,5 @@
-from aim.web.app.dashboards.models import Dashboard
-from aim.web.app.dashboard_apps.models import ExploreState
+from aim.web.api.dashboards.models import Dashboard
+from aim.web.api.dashboard_apps.models import ExploreState
 
 
 def dashboard_response_serializer(dashboard_object, session):

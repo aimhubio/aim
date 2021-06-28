@@ -6,7 +6,7 @@ from aim.engine.configs import (
     AIM_UI_DEFAULT_HOST,
     AIM_TF_LOGS_PATH_KEY,
     AIM_UI_TELEMETRY_KEY,
-    AIM_FLASK_ENV_KEY,
+    AIM_WEB_ENV_KEY,
     AIM_UI_MOUNTED_REPO_PATH,
 )
 from aim.engine.utils import clean_repo_path
@@ -41,9 +41,9 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.root_path
 
     if dev:
-        os.environ[AIM_FLASK_ENV_KEY] = 'dev'
+        os.environ[AIM_WEB_ENV_KEY] = 'dev'
     else:
-        os.environ[AIM_FLASK_ENV_KEY] = 'prod'
+        os.environ[AIM_WEB_ENV_KEY] = 'prod'
 
     if tf_logs:
         os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs

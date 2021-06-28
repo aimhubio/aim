@@ -6,7 +6,7 @@ from aim.engine.repo import AimRepo
 from aim.engine.configs import AIM_COMMIT_CONFIG_FILE_NAME
 
 from aim.web.utils import get_root_path
-from aim.web.app.commits.utils import TFSummaryAdapter
+from aim.web.api.commits.utils import TFSummaryAdapter
 
 
 class Project:

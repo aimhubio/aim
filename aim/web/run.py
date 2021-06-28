@@ -1,4 +1,3 @@
-from aim.web.app import App
+from aim.web.api import create_app
 
-
-app = App().api
+app = create_app()
