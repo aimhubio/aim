@@ -8,47 +8,61 @@ import Controls from './components/Controls/Controls';
 const useStyles = makeStyles(({ spacing }) => ({
   paper: {
     padding: spacing(1),
+    height: '100%',
+  },
+  section: {
     margin: spacing(0.5),
   },
 }));
 
 function Metrics(): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
+
   return (
-    <Box component='section'>
-      <Grid container direction='column' justify='center'>
-        <Grid item>
-          <BreadCrumbs />
+    <Box component='section' className={classes.section}>
+      <Grid
+        container
+        direction='column'
+        justify='center'
+        alignItems='stretch'
+        spacing={1}
+      >
+        <Grid item xs spacing={1}>
+          <Paper square className={classes.paper}>
+            <BreadCrumbs />
+          </Paper>
         </Grid>
-        <Grid xs={12} item>
-          <Grid container>
-            <Grid xs={10} item>
+        <Grid item xs>
+          <Grid container alignItems='stretch' spacing={1}>
+            <Grid xs item>
               <Paper className={classes.paper} square>
                 <SelectForm />
               </Paper>
             </Grid>
-            <Grid item xs={2}>
-              <Paper square className={classes.paper}>
-                <Grouping />
+            <Grid item>
+              <Paper className={classes.paper} square>
+                <Box height='100%' display='flex'>
+                  <Grouping />
+                </Box>
               </Paper>
             </Grid>
           </Grid>
         </Grid>
-        <Grid xs={12} item>
-          <Grid container>
-            <Grid item xs={11}>
+        <Grid item xs={12}>
+          <Grid container spacing={1}>
+            <Grid item xs>
               <Paper square className={classes.paper}>
                 <div>Chart</div>
               </Paper>
             </Grid>
-            <Grid xs={1}>
+            <Grid item>
               <Paper square className={classes.paper}>
                 <Controls />
               </Paper>
             </Grid>
           </Grid>
         </Grid>
-        <Grid xs={12} item>
+        <Grid item xs={12}>
           <Paper square className={classes.paper}>
             Table
           </Paper>
