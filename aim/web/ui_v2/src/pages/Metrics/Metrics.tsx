@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Grid, makeStyles, Paper } from '@material-ui/core';
-import BreadCrumbs from 'components/BreadCrumbs/BreadCrumbs';
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
+import AppBar from './components/AppBar/AppBar';
 
 const useStyles = makeStyles(({ spacing }) => ({
   paper: {
@@ -29,7 +29,7 @@ function Metrics(): React.FunctionComponentElement<React.ReactNode> {
       >
         <Grid item xs spacing={1}>
           <Paper square className={classes.paper}>
-            <BreadCrumbs />
+            <AppBar />
           </Paper>
         </Grid>
         <Grid item xs>

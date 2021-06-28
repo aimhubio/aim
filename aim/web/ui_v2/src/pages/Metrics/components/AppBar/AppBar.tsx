@@ -1,9 +1,9 @@
+import React from 'react';
 import { Breadcrumbs, Button, Grid, Link, Typography } from '@material-ui/core';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import React from 'react';
 
-function BreadCrumb(): React.FunctionComponentElement<React.ReactNode> {
+function AppBar(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Grid container justify='space-between'>
       <Grid item>
@@ -12,10 +12,10 @@ function BreadCrumb(): React.FunctionComponentElement<React.ReactNode> {
           aria-label='breadcrumb'
         >
           <Link color='inherit' href='/'>
-            AIM
+            Aim
           </Link>
           <Link color='inherit' href='/getting-started/installation/'>
-            Core
+            Apps
           </Link>
           <Typography color='textPrimary'>Metrics</Typography>
         </Breadcrumbs>
@@ -53,4 +53,4 @@ function BreadCrumb(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default React.memo(BreadCrumb);
+export default React.memo(AppBar);
