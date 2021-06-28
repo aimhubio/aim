@@ -2,7 +2,7 @@ import { API_HOST } from 'config/config';
 
 function createAPIRequestWrapper<ResponseDataType>(
   url: string,
-  options?: RequestInit,
+  options: RequestInit = {},
 ) {
   const controller = new AbortController();
   const signal = controller.signal;

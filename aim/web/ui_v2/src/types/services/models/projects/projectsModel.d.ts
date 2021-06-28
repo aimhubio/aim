@@ -4,7 +4,6 @@ export interface IProject {
   name?: string;
   path?: string;
   telemetry_enabled?: string | boolean;
-  tf_enabled?: boolean;
 }
 
 export interface IParams {
