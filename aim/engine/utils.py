@@ -8,6 +8,7 @@ from string import ascii_letters
 from importlib import import_module
 import shutil
 import zipfile
+import pathlib
 
 
 def deep_merge(*dicts, update=False):
@@ -287,11 +288,14 @@ def archive_dir(zip_path, dir_path):
 
 
 def clean_repo_path(repo_path: str) -> str:
+    
     if not isinstance(repo_path, str) or not repo_path:
         return ''
 
     repo_path = repo_path.strip().rstrip('/')
 
+    if isinstance(repo_path, pathlib.Path):
+        repo_path = str(repo_path)
     if repo_path == '.':
         return os.getcwd()
     if repo_path == '~':
