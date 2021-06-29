@@ -1,7 +1,9 @@
 import React from 'react';
 
-export interface IDrawLines {
+export interface IDrawLinesProps {
   linesRef: React.MutableRefObject<>;
   data: number[][];
-  strokeColor?: string;
+  strokeColor?: React.CSSProperties;
+  xScale: any;
+  yScale: any;
 }

@@ -2,6 +2,7 @@ import clearArea from './clearArea';
 import drawArea from './drawArea';
 import drawAxes from './drawAxes';
 import drawLines from './drawLines';
+import processData from './processData';
 
 enum CircleEnum {
   Radius = 3,
@@ -23,4 +24,12 @@ enum CurveEnum {
   BasisClosed = 'curveBasisClosed',
 }
 
-export { clearArea, drawArea, drawAxes, drawLines, CircleEnum, CurveEnum };
+export {
+  clearArea,
+  drawArea,
+  drawAxes,
+  drawLines,
+  processData,
+  CircleEnum,
+  CurveEnum,
+};

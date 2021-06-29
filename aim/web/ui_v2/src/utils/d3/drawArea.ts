@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 
-import { IDrawArea } from '../../types/utils/d3/drawArea';
+import { IDrawAreaProps } from '../../types/utils/d3/drawArea';
 import { CircleEnum } from './index';
 
-function drawArea(props: IDrawArea): void {
+function drawArea(props: IDrawAreaProps): void {
   const {
     index = 0,
     parentRef,
@@ -74,7 +74,10 @@ function drawArea(props: IDrawArea): void {
     .attr('width', width - margin.left - margin.right)
     .attr('height', height - margin.top - margin.bottom);
 
-  attributesRef.current = plotRef.current.append('g');
+  attributesRef.current = plotRef.current
+    .append('g')
+    .attr('class', 'Attributes');
+
   attributesRef.current
     .append('clipPath')
     .attr('id', 'circles-rect-clip-' + index)

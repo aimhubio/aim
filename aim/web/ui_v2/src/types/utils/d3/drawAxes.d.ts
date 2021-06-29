@@ -1,6 +1,10 @@
 import React from 'react';
+import { ILineChartProps } from '../../components/LineChart/LineChart';
 
-export interface IDrawAxes {
+export interface IDrawAxesProps {
+  xScaleType: ILineChartProps['xScaleType'];
+  yScaleType: ILineChartProps['yScaleType'];
+  xAlignment: ILineChartProps['xAlignment'];
   axesRef: React.MutableRefObject<>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
@@ -8,4 +12,9 @@ export interface IDrawAxes {
   xMax: number;
   yMin: number;
   yMax: number;
+}
+
+export interface IDrawAxes {
+  xScale: any;
+  yScale: any;
 }

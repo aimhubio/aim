@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface IDrawArea {
+export interface IDrawAreaProps {
   index?: number;
   parentRef: React.MutableRefObject<>;
   visRef: React.MutableRefObject<>;

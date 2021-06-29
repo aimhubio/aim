@@ -5,15 +5,23 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import _ from 'lodash';
 
 import useStyles from './style';
-import { ILineChart } from '../../types/components/LineChart/LineChart';
+import { ILineChartProps } from '../../types/components/LineChart/LineChart';
 import { useWindowResize } from '../../hooks/useWindowResize';
-import { useAnimationFrame } from '../../hooks/useAnimationFrame';
-import { drawArea, clearArea, drawAxes, drawLines } from '../../utils/d3';
+import { useAnimationFrame } from 'hooks/useAnimationFrame';
+import {
+  drawArea,
+  clearArea,
+  drawAxes,
+  drawLines,
+  processData,
+} from '../../utils/d3';
 
-function LineChart(props: ILineChart): FunctionComponentElement<ReactNode> {
+function LineChart(
+  props: ILineChartProps,
+): FunctionComponentElement<ReactNode> {
+  const { width, height } = props;
   const classes = useStyles();
 
   // Refs
@@ -41,34 +49,9 @@ function LineChart(props: ILineChart): FunctionComponentElement<ReactNode> {
   const linesRef = useRef(null);
   const attributesRef = useRef(null);
 
-  function processData(data: ILineChart['data']) {
-    // TODO some data process
-
-    const axisValues = data.map((point) => point[0]);
-    const traceValues = data.map((point) => point[1]);
-
-    let xSteps: number[] = [];
-    let yValues: number[] = [];
-
-    xSteps = _.uniq(xSteps.concat(axisValues).sort((a, b) => a - b));
-    yValues = _.uniq(yValues.concat(traceValues).sort((a, b) => a - b));
-
-    const xNum = xSteps.length;
-    const yNum = yValues.length;
-
-    console.log('xSteps', xSteps);
-    console.log('yValues', yValues);
-
-    return {
-      xMin: xSteps[0],
-      xMax: xSteps[xNum - 1],
-      yMin: yValues[0],
-      yMax: yValues[yNum - 1],
-    };
-  }
-
   function draw(): void {
-    const { index, data } = props;
+    const { index, data, xAlignment, xScaleType, yScaleType, strokeColor } =
+      props;
 
     drawArea({
       index,
@@ -84,9 +67,12 @@ function LineChart(props: ILineChart): FunctionComponentElement<ReactNode> {
       attributesRef,
     });
 
-    const { xMin, yMin, xMax, yMax } = processData(data);
+    const { xMin, yMin, xMax, yMax } = processData({ data });
 
-    drawAxes({
+    const { xScale, yScale } = drawAxes({
+      xAlignment,
+      xScaleType,
+      yScaleType,
       axesRef,
       plotBoxRef,
       visBoxRef,
@@ -96,7 +82,7 @@ function LineChart(props: ILineChart): FunctionComponentElement<ReactNode> {
       yMax,
     });
 
-    drawLines({ data, linesRef, strokeColor: 'red' });
+    drawLines({ data, linesRef, xScale, yScale, strokeColor });
   }
 
   const renderChart = useCallback(() => {
@@ -105,13 +91,11 @@ function LineChart(props: ILineChart): FunctionComponentElement<ReactNode> {
   }, []);
 
   useWindowResize(useMemo(() => renderChart, [renderChart]));
-  useAnimationFrame(
-    useMemo(() => renderChart, [renderChart, props.width, props.height]),
-  );
+  useAnimationFrame(useMemo(() => renderChart, [renderChart, width, height]));
 
   const styles = {
-    width: props.width,
-    height: props.height,
+    width,
+    height,
   } as React.CSSProperties;
 
   return (

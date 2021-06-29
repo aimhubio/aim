@@ -62,6 +62,9 @@ function Metrics(): React.FunctionComponentElement<React.ReactNode> {
                     [475, 300],
                     [600, 200],
                   ]}
+                  xAlignment='relative_time'
+                  xScaleType='linear'
+                  yScaleType='linear'
                 />
               </Paper>
             </Grid>

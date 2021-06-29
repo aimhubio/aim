@@ -1,24 +1,25 @@
 import * as d3 from 'd3';
 
 import { CurveEnum } from './';
-import { IDrawLines } from '../../types/utils/d3/drawLines';
+import { IDrawLinesProps } from '../../types/utils/d3/drawLines';
 
-function drawLines(props: IDrawLines): void {
-  const { linesRef, data, strokeColor = '#000' } = props;
+function drawLines(props: IDrawLinesProps): void {
+  const { linesRef, data, strokeColor = '#000', xScale, yScale } = props;
   if (!linesRef?.current) {
     return;
   }
 
-  const line = d3
+  const lineGenerator = d3
     .line()
-    .x((d) => d[0])
-    .y((d) => d[1])
+    .defined((d) => d !== null)
+    .x((d) => xScale(d[0]))
+    .y((d) => yScale(d[1]))
     .curve(d3[CurveEnum.Linear]);
 
   linesRef.current
     .append('path')
-    .datum(data)
-    .attr('d', line)
+    .data([data.sort((a, b) => a[0] - b[0])])
+    .attr('d', lineGenerator)
     .attr('class', 'PlotLine')
     .style('fill', 'none')
     .style('stroke', strokeColor);
