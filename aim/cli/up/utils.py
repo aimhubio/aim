@@ -1,4 +1,3 @@
-import sys
 import os
 import click
 
@@ -21,13 +20,12 @@ def build_db_upgrade_command():
     return ['alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_hypercorn_command(host, port, num_workers):
-    bind_address = "%s:%s" % (host, port)
-    cmd = ['hypercorn', '-b', bind_address, '-w', '%s' % num_workers,
-           '--graceful-timeout', '300']
+def build_uvicorn_command(host, port, num_workers):
+    cmd = ['uvicorn', '--host', host, '--port', '%s' % port, '--workers', '%s' % num_workers]
     if os.getenv(AIM_WEB_ENV_KEY) == 'dev':
-        cmd += ['--reload', '--log-level', 'info']
+        import aim
+        cmd += ['--reload', '--reload-dir', os.path.dirname(aim.__file__), '--log-level', 'debug']
     else:
         cmd += ['--log-level', 'error']
-    cmd += ['aim.web.run']
+    cmd += ['aim.web.run:app']
     return cmd

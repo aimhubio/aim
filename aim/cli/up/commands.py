@@ -14,7 +14,7 @@ from aim.engine.repo import AimRepo
 from aim.cli.up.utils import (
     repo_init_alert,
     build_db_upgrade_command,
-    build_hypercorn_command,
+    build_uvicorn_command,
 )
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
@@ -85,7 +85,7 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
     click.echo('Press Ctrl+C to exit')
 
     try:
-        server_cmd = build_hypercorn_command(host, port, 1)
+        server_cmd = build_uvicorn_command(host, port, 1)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. ' +

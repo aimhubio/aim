@@ -38,7 +38,7 @@ LONG_DESCRIPTION = DESCRIPTION
 REQUIRED = [
     'aimrecords==0.0.7',
     'anytree>=2.8.0',
-    'click>=6.7',
+    'click>=7.0',
     'GitPython>=3.0.4',
     'protobuf>=3.11.0',
     'psutil>=5.6.7',
@@ -48,7 +48,7 @@ REQUIRED = [
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
     'fastapi>=0.65.0',
-    'hypercorn>=0.10.0',
+    'uvicorn>=0.12.0',
     'python-multipart>=0.0.3',
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
