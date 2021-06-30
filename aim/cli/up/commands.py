@@ -6,7 +6,7 @@ from aim.engine.configs import (
     AIM_UI_DEFAULT_HOST,
     AIM_TF_LOGS_PATH_KEY,
     AIM_UI_TELEMETRY_KEY,
-    AIM_FLASK_ENV_KEY,
+    AIM_WEB_ENV_KEY,
     AIM_UI_MOUNTED_REPO_PATH,
 )
 from aim.engine.utils import clean_repo_path
@@ -14,7 +14,7 @@ from aim.engine.repo import AimRepo
 from aim.cli.up.utils import (
     repo_init_alert,
     build_db_upgrade_command,
-    build_gunicorn_command,
+    build_uvicorn_command,
 )
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
@@ -41,9 +41,9 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.root_path
 
     if dev:
-        os.environ[AIM_FLASK_ENV_KEY] = 'dev'
+        os.environ[AIM_WEB_ENV_KEY] = 'dev'
     else:
-        os.environ[AIM_FLASK_ENV_KEY] = 'prod'
+        os.environ[AIM_WEB_ENV_KEY] = 'prod'
 
     if tf_logs:
         os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs
@@ -85,7 +85,7 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
     click.echo('Press Ctrl+C to exit')
 
     try:
-        server_cmd = build_gunicorn_command(host, port, 1)
+        server_cmd = build_uvicorn_command(host, port, 1)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. ' +
