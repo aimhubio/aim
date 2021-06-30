@@ -1,9 +1,11 @@
 import React from 'react';
 import { Box, Grid, makeStyles, Paper } from '@material-ui/core';
+
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
+import Table from 'components/Table/Table';
 
 const useStyles = makeStyles(({ spacing }) => ({
   paper: {
@@ -64,7 +66,7 @@ function Metrics(): React.FunctionComponentElement<React.ReactNode> {
         </Grid>
         <Grid item xs={12}>
           <Paper square className={classes.paper}>
-            Table
+            <Table onSort={() => null} onExport={() => null} />
           </Paper>
         </Grid>
       </Grid>
