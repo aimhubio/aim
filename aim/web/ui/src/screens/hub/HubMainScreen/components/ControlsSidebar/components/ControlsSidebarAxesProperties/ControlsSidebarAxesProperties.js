@@ -204,6 +204,7 @@ function ControlsSidebarAxesProperties(props) {
                       if ((xAlignment || 'step') === type) {
                         return;
                       }
+                      metricValue.current = null;
                       setChartXAxisAlignment(type);
                       analytics.trackEvent(
                         `[Explore] [LineChart] Set X axis alignment to "${type}"`,
@@ -237,6 +238,7 @@ function ControlsSidebarAxesProperties(props) {
                 <UI.Text small>Metric: </UI.Text>
                 <div onClick={(evt) => evt.stopPropagation()}>
                   <UI.Dropdown
+                    key={`${metricValue.current}`}
                     ref={dropdownRef}
                     className='ControlsSidebar__item__popup__list__item__select'
                     width={170}
