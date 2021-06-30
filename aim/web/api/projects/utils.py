@@ -4,30 +4,16 @@ from copy import deepcopy
 from functools import reduce
 
 from sqlalchemy import exc
-from sqlalchemy import engine_from_config
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import insert
 
-from aim.engine.configs import AIM_FLASK_ENV_KEY
-from aim.web.app.db import db
-from aim.web.app.commits.models import Commit
-from aim.web.app.config import config
+from aim.web.api.commits.models import Commit
 
 
-def upgrade_runs_table(project, modified_runs):
+def upgrade_runs_table(project, modified_runs, additions_session):
     runs_hashes = [run_hash
                    for runs in modified_runs.values()
                    for run_hash, _ in runs]
 
-    runs_models = Commit.query.filter(Commit.hash.in_(runs_hashes)).all()
-
-    env = os.environ.get(AIM_FLASK_ENV_KEY, 'dev')
-    session = sessionmaker(bind=engine_from_config({
-        'db.echo': config[env].SQLALCHEMY_ECHO,
-        'db.url': config[env].SQLALCHEMY_DATABASE_URI,
-    }, prefix='db.'))
-    additions_session = session()
-
+    runs_models = additions_session.query(Commit).filter(Commit.hash.in_(runs_hashes)).all()
     for experiment, runs in modified_runs.items():
         for run_hash, run_modified_time in runs:
             for run_model in runs_models:
@@ -78,7 +64,6 @@ def upgrade_runs_table(project, modified_runs):
                     additions_session.rollback()
 
     additions_session.commit()
-    db.session.commit()
 
 
 def get_branch_commits(branch_path):
