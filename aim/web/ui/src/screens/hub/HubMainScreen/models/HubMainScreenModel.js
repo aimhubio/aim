@@ -119,7 +119,7 @@ function getInitialState() {
 
     // Search
     search: {
-      query: undefined,
+      query: '',
       v: AIM_QL_VERSION,
     },
     searchInput: {

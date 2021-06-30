@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Fix bookmark navigation issue (roubkar)
 - Empty metric select on X-axis alignment property change (roubkar)
 
 ## 2.7.0 Jun 23 2021
