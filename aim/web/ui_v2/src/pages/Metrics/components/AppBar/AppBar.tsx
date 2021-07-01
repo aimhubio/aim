@@ -5,7 +5,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 function AppBar(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Grid container justify='space-between'>
+    <Grid container justify='space-between' alignItems='center'>
       <Grid item>
         <Breadcrumbs
           separator={<NavigateNextIcon fontSize='small' />}

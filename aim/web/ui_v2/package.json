@@ -103,6 +103,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "jss-plugin-template": "^10.7.1",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0"
   }
