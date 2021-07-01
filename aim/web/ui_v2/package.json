@@ -92,14 +92,15 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.29.0",
-    "prettier": "2.3.1",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
+    "eslint": "^7.29.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "prettier-eslint": "^12.0.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0"
+    "jss-plugin-template": "^10.7.1",
+    "prettier": "2.3.1",
+    "prettier-eslint": "^12.0.0"
   }
 }
