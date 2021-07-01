@@ -50,8 +50,8 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} justify='space-between' alignItems='center'>
-        <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <Grid container spacing={1} justify='space-between' alignItems='center'>
           <Grid xs={2} item>
             <Paper variant='outlined'>Run</Paper>
           </Grid>
