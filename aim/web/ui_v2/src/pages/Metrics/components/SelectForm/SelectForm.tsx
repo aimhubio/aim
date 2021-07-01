@@ -1,10 +1,10 @@
 import React from 'react';
 import {
+  Box,
   Button,
   FormControl,
   Grid,
   InputLabel,
-  Paper,
   Select,
   TextField,
 } from '@material-ui/core';
@@ -16,7 +16,7 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
         <Grid container justify='space-between' alignItems='center' spacing={1}>
           <Grid item xs={2}>
             <FormControl fullWidth size='small' variant='outlined'>
-              <InputLabel htmlFor='outlined-age-native-simple'>
+              <InputLabel htmlFor='outlined-native-simple'>
                 Select Metric
               </InputLabel>
               <Select
@@ -25,7 +25,7 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
                 label='Select Metric'
                 inputProps={{
                   name: 'age',
-                  id: 'outlined-age-native-simple',
+                  id: 'outlined-native-simple',
                 }}
               >
                 <option aria-label='None' value='' />
@@ -53,7 +53,18 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
       <Grid item xs={12}>
         <Grid container spacing={1} justify='space-between' alignItems='center'>
           <Grid xs={2} item>
-            <Paper variant='outlined'>Run</Paper>
+            <Box
+              border={1}
+              borderRadius={4}
+              borderColor='grey.400'
+              display='flex'
+              height='100%'
+              justifyContent='flex-end'
+              alignItems='center'
+              padding={0.5}
+            >
+              Run
+            </Box>
           </Grid>
           <Grid xs={10} item>
             <TextField

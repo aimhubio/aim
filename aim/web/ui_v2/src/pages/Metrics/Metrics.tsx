@@ -6,6 +6,7 @@ import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
+import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
@@ -77,7 +78,9 @@ function Metrics(
             <MoreHorizIcon />
           </Box>
           <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableRef}>
-            <Paper className={classes.paper}>Table</Paper>
+            <Paper className={classes.paper}>
+              <Table onSort={() => null} onExport={() => null} />
+            </Paper>
           </Grid>
         </Grid>
       </Box>
