@@ -6,17 +6,17 @@ from aim.engine.repo.run import Run
 from aim.ql.grammar import Expression
 from aim.ql.utils import match
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
-from aim.web.app.commits.models import TFSummaryLog
-from aim.web.app.db import db
-from aim.web.app.utils import normalize_type, unsupported_float_type
+from aim.web.api.commits.models import TFSummaryLog
+from aim.web.api.db import get_session
+from aim.web.api.utils import normalize_type, unsupported_float_type
 
 
-def select_tf_summary_scalars(tags, expression: Optional[Expression] = None):
+def select_tf_summary_scalars(session, tags, expression: Optional[Expression] = None):
     # Search
     runs = []
 
     params = {}
-    scalars_models = db.session.query(TFSummaryLog).all()
+    scalars_models = session.query(TFSummaryLog).all()
     for scalar in scalars_models:
         scalar_params = json.loads(scalar.params)
         for k, v in scalar_params.items():
@@ -220,17 +220,15 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
 
 
 def runs_resp_generator(response, runs, exclude_list=None):
-    from aim.web.app import App
-    with App.api.app_context():
-        yield json.dumps({
-            'header': response,
-        }).encode() + '\n'.encode()
-        for run in runs:
-            if not is_tf_run(run):
-                yield json.dumps({
-                    'run': run.to_dict(include_only_selected_agg_metrics=True, exclude_list=exclude_list),
-                }).encode() + '\n'.encode()
-            else:
-                yield json.dumps({
-                    'run': run,
-                }).encode() + '\n'.encode()
+    yield json.dumps({
+        'header': response,
+    }).encode() + '\n'.encode()
+    for run in runs:
+        if not is_tf_run(run):
+            yield json.dumps({
+                'run': run.to_dict(include_only_selected_agg_metrics=True, exclude_list=exclude_list),
+            }).encode() + '\n'.encode()
+        else:
+            yield json.dumps({
+                'run': run,
+            }).encode() + '\n'.encode()

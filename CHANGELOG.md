@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.1 Jun 30 2021
+- Fix bookmark navigation issue (roubkar)
+- Empty metric select on X-axis alignment property change (roubkar)
+
 ## 2.7.0 Jun 23 2021
 - Add ability to export table data as CSV (KaroMourad)
 - Add ability to bookmark explore screen state (roubkar)
