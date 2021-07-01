@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { Box, makeStyles } from '@material-ui/core';
 
 import SideBar from 'components/SideBar/SideBar';
 import { routes } from 'routes/routes';
@@ -19,12 +18,11 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <>
-      <CssBaseline />
       <BrowserRouter>
         <ProjectWrapper />
         <Theme>
           <SideBar />
-          <main className={classes.main}>
+          <Box component='main' bgcolor='grey.200' className={classes.main}>
             <React.Suspense fallback={null}>
               <Switch>
                 <Route path={routes.RUNS.path}>
@@ -35,7 +33,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                 </Route>
               </Switch>
             </React.Suspense>
-          </main>
+          </Box>
         </Theme>
       </BrowserRouter>
     </>

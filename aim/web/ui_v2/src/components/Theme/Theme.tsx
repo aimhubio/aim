@@ -1,5 +1,6 @@
 import React from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
+
 import { IThemeProps } from 'types/components/Theme/Theme';
 
 export const ThemeContext = React.createContext({});
@@ -42,6 +43,7 @@ function Theme(
   const theme = createMuiTheme(dark ? darkTheme : light);
   return (
     <Provider value={{ dark, handleTheme }}>
+      <CssBaseline />
       <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
     </Provider>
   );
