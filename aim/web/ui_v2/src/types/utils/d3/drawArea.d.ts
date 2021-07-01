@@ -3,7 +3,7 @@ import React from 'react';
 export interface IDrawAreaProps {
   index?: number;
   parentRef: React.MutableRefObject<>;
-  visRef: React.MutableRefObject<>;
+  visAreaRef: React.MutableRefObject<>;
   svgRef: React.MutableRefObject<>;
   bgRectRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;

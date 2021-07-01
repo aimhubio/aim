@@ -2,29 +2,28 @@ import React, {
   FunctionComponentElement,
   ReactNode,
   useCallback,
-  useMemo,
+  useEffect,
   useRef,
 } from 'react';
 
 import useStyles from './style';
 import { ILineChartProps } from '../../types/components/LineChart/LineChart';
-import { useWindowResize } from '../../hooks/useWindowResize';
-import { useAnimationFrame } from 'hooks/useAnimationFrame';
 import {
   drawArea,
   clearArea,
   drawAxes,
   drawLines,
   processData,
+  getAxisScale,
 } from '../../utils/d3';
 
 function LineChart(
   props: ILineChartProps,
 ): FunctionComponentElement<ReactNode> {
-  const { width, height } = props;
+  const { index, data, axisScaleType = {} } = props;
   const classes = useStyles();
 
-  // Refs
+  // boxes
   const visBoxRef = useRef({
     margin: {
       top: 24,
@@ -40,8 +39,11 @@ function LineChart(
     width: null,
   });
 
-  const parentRef = useRef(null);
-  const visRef = useRef(null);
+  // containers
+  const parentRef = useRef<HTMLDivElement>(null);
+  const visAreaRef = useRef<HTMLDivElement>(null);
+
+  // d3 elements
   const svgRef = useRef(null);
   const bgRectRef = useRef(null);
   const plotRef = useRef(null);
@@ -50,58 +52,71 @@ function LineChart(
   const attributesRef = useRef(null);
 
   function draw(): void {
-    const { index, data, xAlignment, xScaleType, yScaleType, strokeColor } =
-      props;
-
     drawArea({
       index,
+      visBoxRef,
+      plotBoxRef,
       parentRef,
-      visRef,
+      visAreaRef,
       svgRef,
       bgRectRef,
-      visBoxRef,
       plotRef,
       axesRef,
-      plotBoxRef,
       linesRef,
       attributesRef,
     });
 
-    const { xMin, yMin, xMax, yMax } = processData({ data });
+    const { processedData, min, max } = processData({ data });
 
-    const { xScale, yScale } = drawAxes({
-      xAlignment,
-      xScaleType,
-      yScaleType,
-      axesRef,
-      plotBoxRef,
+    const { xScale, yScale } = getAxisScale({
       visBoxRef,
-      xMin,
-      xMax,
-      yMin,
-      yMax,
+      axisScaleType,
+      min,
+      max,
     });
 
-    drawLines({ data, linesRef, xScale, yScale, strokeColor });
+    drawAxes({
+      axesRef,
+      plotBoxRef,
+      xScale,
+      yScale,
+    });
+
+    drawLines({ data: processedData, linesRef, xScale, yScale });
   }
 
-  const renderChart = useCallback(() => {
-    clearArea({ visRef });
+  const renderChart = useCallback((): void => {
+    clearArea({ visAreaRef });
     draw();
   }, []);
 
-  useWindowResize(useMemo(() => renderChart, [renderChart]));
-  useAnimationFrame(useMemo(() => renderChart, [renderChart, width, height]));
+  const resizeObserverCallback: ResizeObserverCallback = useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      if (entries?.length) {
+        renderChart();
+      }
+    },
+    [renderChart],
+  );
 
-  const styles = {
-    width,
-    height,
-  } as React.CSSProperties;
+  useEffect(() => {
+    const observer: ResizeObserver = new ResizeObserver(resizeObserverCallback);
+
+    if (observer && parentRef.current) {
+      observer.observe(parentRef.current);
+    }
+
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [resizeObserverCallback]);
 
   return (
-    <div ref={parentRef} className={classes.lineChart} style={styles}>
+    <div ref={parentRef} className={classes.lineChart}>
       LineChart
-      <div ref={visRef} />
+      <div ref={visAreaRef} />
     </div>
   );
 }

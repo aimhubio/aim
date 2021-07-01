@@ -7,7 +7,7 @@ function drawArea(props: IDrawAreaProps): void {
   const {
     index = 0,
     parentRef,
-    visRef,
+    visAreaRef,
     svgRef,
     bgRectRef,
     visBoxRef,
@@ -18,23 +18,25 @@ function drawArea(props: IDrawAreaProps): void {
     attributesRef,
   } = props;
 
-  if (!parentRef?.current || !visRef?.current) {
+  if (!parentRef?.current || !visAreaRef?.current) {
     return;
   }
 
   const parent = d3.select(parentRef.current);
-  const visArea = d3.select(visRef.current);
+  const visArea = d3.select(visAreaRef.current);
 
   const parentRect = parent.node().getBoundingClientRect();
   const { width, height } = parentRect;
   const { margin } = visBoxRef.current;
 
+  // set visual box dimensions
   visBoxRef.current = {
     ...visBoxRef.current,
     width,
     height,
   };
 
+  // set plot box dimensions
   plotBoxRef.current = {
     ...plotBoxRef.current,
     width: width - margin.left - margin.right,

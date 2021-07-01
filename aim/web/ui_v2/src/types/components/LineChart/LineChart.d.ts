@@ -1,12 +1,23 @@
-import React from 'react';
+export type ScaleType = 'log' | 'linear';
+
+export interface ILine {
+  key: string;
+  data: {
+    xValues: number[];
+    yValues: number[];
+  };
+  color?: string;
+  dasharray?: string;
+  opacity?: string;
+  selector?: string;
+}
 
 export interface ILineChartProps {
   index?: number;
-  width?: React.CSSProperties;
-  height?: React.CSSProperties;
-  data: number[][];
-  xAlignment: 'absolute_time' | 'relative_time' | 'epoch';
-  xScaleType?: 'log' | 'linear';
-  yScaleType?: 'log' | 'linear';
-  strokeColor?: React.CSSProperties;
+  data: ILine[];
+  xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
+  axisScaleType?: {
+    x?: ScaleType;
+    y?: ScaleType;
+  };
 }

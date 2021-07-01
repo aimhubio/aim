@@ -4,5 +4,6 @@ export default makeStyles(() => ({
   lineChart: {
     backgroundColor: 'white',
     height: '100%',
+    width: '100%',
   },
 }));

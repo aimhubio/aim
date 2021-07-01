@@ -1,5 +1,5 @@
 import React from 'react';
 
 export interface IClearAreaProps {
-  visRef: React.MutableRefObject<>;
+  visAreaRef: React.MutableRefObject<>;
 }

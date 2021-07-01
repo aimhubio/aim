@@ -59,17 +59,42 @@ function Metrics(
               <Grid item xs>
                 <Paper className={classes.paper}>
                   <LineChart
+                    key='uniqueKey'
                     data={[
-                      [50, 330],
-                      [75, 200],
-                      [280, 75],
-                      [300, 75],
-                      [475, 300],
-                      [600, 200],
+                      {
+                        key: 'uniqueKey1',
+                        data: {
+                          xValues: [0, 10, 20, 30, 40, 50, 60],
+                          yValues: [15, 330, 200, 75, 75, 300, 500],
+                        },
+                        color: '#a10505',
+                        dasharray: '2,4',
+                        opacity: '1',
+                        selector: '',
+                      },
+                      {
+                        key: 'uniqueKey2',
+                        data: {
+                          xValues: [0, 10, 20, 30, 40, 50, 60],
+                          yValues: [20, 33, 40, 79, 75, 30, 140],
+                        },
+                        color: '#0543a1',
+                        dasharray: '0',
+                        opacity: '1',
+                        selector: '',
+                      },
+                      {
+                        key: 'uniqueKey3',
+                        data: {
+                          xValues: [0, 10, 20, 30, 40, 50, 60],
+                          yValues: [40, 68, 40, 120, 230, 99, 10],
+                        },
+                        color: '#165201',
+                        dasharray: '3,13,10',
+                        opacity: '1',
+                        selector: '',
+                      },
                     ]}
-                    xAlignment='relative_time'
-                    xScaleType='linear'
-                    yScaleType='linear'
                   />
                 </Paper>
               </Grid>

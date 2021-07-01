@@ -1,20 +1,9 @@
 import React from 'react';
-import { ILineChartProps } from '../../components/LineChart/LineChart';
+import * as d3 from 'd3';
 
 export interface IDrawAxesProps {
-  xScaleType: ILineChartProps['xScaleType'];
-  yScaleType: ILineChartProps['yScaleType'];
-  xAlignment: ILineChartProps['xAlignment'];
-  axesRef: React.MutableRefObject<>;
   plotBoxRef: React.MutableRefObject<>;
-  visBoxRef: React.MutableRefObject<>;
-  xMin: number;
-  xMax: number;
-  yMin: number;
-  yMax: number;
-}
-
-export interface IDrawAxes {
-  xScale: any;
-  yScale: any;
+  axesRef: React.MutableRefObject<>;
+  xScale: d3.ScaleLogarithmic | d3.ScaleLinear;
+  yScale: d3.ScaleLogarithmic | d3.ScaleLinear;
 }

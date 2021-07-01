@@ -1,9 +1,10 @@
 import React from 'react';
+import { IDrawAxesProps } from './drawAxes';
+import { IProcessData } from './processData';
 
 export interface IDrawLinesProps {
   linesRef: React.MutableRefObject<>;
-  data: number[][];
-  strokeColor?: React.CSSProperties;
-  xScale: any;
-  yScale: any;
+  data: IProcessData['processedData'];
+  xScale: IDrawAxesProps['xScale'];
+  yScale: IDrawAxesProps['yScale'];
 }

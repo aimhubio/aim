@@ -7,25 +7,63 @@ import {
 function processData(props: IProcessDataProps): IProcessData {
   const { data } = props;
 
-  // TODO some data process
-  // TODO filter data
-
-  const axisValues: number[] = data.map((point) => point[0]);
-  const traceValues: number[] = data.map((point) => point[1]);
+  // data: ILine[]
 
   let xSteps: number[] = [];
-  let yValues: number[] = [];
+  let ySteps: number[] = [];
 
-  xSteps = _.uniq(xSteps.concat(axisValues).sort((a, b) => a - b));
-  yValues = _.uniq(yValues.concat(traceValues).sort((a, b) => a - b));
+  const processedData = data.map((line) => {
+    const { xValues, yValues } = line.data;
+
+    const invalidXIndices: number[] = [];
+    const invalidYIndices: number[] = [];
+
+    xValues.forEach((v, i) => {
+      if (!isFinite(v) || isNaN(v) || v === null) {
+        invalidXIndices.push(i);
+      }
+    });
+
+    yValues.forEach((v, i) => {
+      if (!isFinite(v) || isNaN(v) || v === null) {
+        invalidYIndices.push(i);
+      }
+    });
+
+    const filteredXValues = xValues.filter(
+      (v, i) =>
+        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
+    );
+
+    const filteredYValues = yValues.filter(
+      (v, i) =>
+        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
+    );
+
+    xSteps = xSteps.concat(filteredXValues);
+    ySteps = ySteps.concat(filteredYValues);
+
+    return Object.assign({}, line, {
+      data: {
+        xValues: filteredXValues,
+        yValues: filteredYValues,
+      },
+    });
+  });
+
+  xSteps = _.uniq(xSteps);
+  ySteps = _.uniq(ySteps);
 
   return {
-    xMin: xSteps[0],
-    xMax: xSteps[xSteps.length - 1],
-    yMin: yValues[0],
-    yMax: yValues[yValues.length - 1],
-    xSteps,
-    yValues,
+    min: {
+      x: Math.min(...xSteps),
+      y: Math.min(...ySteps),
+    },
+    max: {
+      x: Math.max(...xSteps),
+      y: Math.max(...ySteps),
+    },
+    processedData,
   };
 }
 
