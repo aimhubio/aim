@@ -8,7 +8,6 @@ export interface ILine {
   };
   color?: string;
   dasharray?: string;
-  opacity?: string;
   selector?: string;
 }
 

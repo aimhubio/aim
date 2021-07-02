@@ -7,7 +7,7 @@ export default makeStyles(({ spacing }) => ({
     userSelect: 'none',
   },
   fullHeight: {
-    height: '100%',
+    height: '-webkit-fill-available',
   },
   section: {
     padding: spacing(0.5),

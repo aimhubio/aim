@@ -11,6 +11,7 @@ import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
+import { ScaleEnum } from '../../utils/d3';
 
 function Metrics(
   props: IMetricProps,
@@ -70,7 +71,7 @@ function Metrics(
                       {
                         key: 'uniqueKey1',
                         data: {
-                          xValues: [0, 10, 20, 30, 40, 50, 60],
+                          xValues: [1, 10, 20, 30, 40, 50, 60],
                           yValues: [15, 330, 200, 75, 75, 300, 500],
                         },
                         color: '#a10505',
@@ -80,7 +81,7 @@ function Metrics(
                       {
                         key: 'uniqueKey2',
                         data: {
-                          xValues: [0, 10, 20, 30, 40, 50, 60],
+                          xValues: [1, 10, 20, 30, 40, 50, 60],
                           yValues: [20, 33, 40, 79, 75, 30, 140],
                         },
                         color: '#0543a1',
@@ -90,7 +91,7 @@ function Metrics(
                       {
                         key: 'uniqueKey3',
                         data: {
-                          xValues: [0, 10, 20, 30, 40, 50, 60],
+                          xValues: [1, 10, 20, 30, 40, 50, 60],
                           yValues: [40, 68, 40, 120, 230, 99, 10],
                         },
                         color: '#165201',
@@ -98,6 +99,10 @@ function Metrics(
                         selector: '',
                       },
                     ]}
+                    axisScaleType={{
+                      x: ScaleEnum.Log,
+                      y: ScaleEnum.Linear,
+                    }}
                   />
                 </Paper>
               </Grid>

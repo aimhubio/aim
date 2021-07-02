@@ -67,6 +67,7 @@ function LineChart(
     });
 
     const { processedData, min, max } = processData({ data });
+
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,
@@ -113,8 +114,7 @@ function LineChart(
   }, [resizeObserverCallback]);
 
   return (
-    <div ref={parentRef} className={classes.lineChart}>
-      LineChart
+    <div ref={parentRef} className={classes.chart}>
       <div ref={visAreaRef} />
     </div>
   );

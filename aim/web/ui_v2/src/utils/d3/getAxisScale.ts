@@ -7,7 +7,7 @@ import {
   IGetAxisScaleProps,
 } from '../../types/utils/d3/getAxesScale';
 
-function getScaleBaseFor(scaleType: ScaleType) {
+function getScaleBaseFor(scaleType?: ScaleType) {
   switch (scaleType) {
     case ScaleEnum.Log:
       return d3.scaleLog();
@@ -22,11 +22,8 @@ function getAxisScale(props: IGetAxisScaleProps): IGetAxisScale {
   const { visBoxRef, axisScaleType, min, max } = props;
   const { width, height, margin } = visBoxRef.current;
 
-  const xScaleType = axisScaleType?.x || 'linear';
-  const yScaleType = axisScaleType?.y || 'linear';
-
-  const xScaleBase = getScaleBaseFor(xScaleType);
-  const yScaleBase = getScaleBaseFor(yScaleType);
+  const xScaleBase = getScaleBaseFor(axisScaleType?.x);
+  const yScaleBase = getScaleBaseFor(axisScaleType?.y);
 
   // X-Scale
   const xScale = xScaleBase

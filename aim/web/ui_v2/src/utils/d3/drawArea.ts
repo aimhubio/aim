@@ -43,12 +43,12 @@ function drawArea(props: IDrawAreaProps): void {
     height: height - margin.top - margin.bottom,
   };
 
-  visArea.style('width', `${width}px`).style('height', `${height}px`);
+  visArea.style('width', '100%').style('height', '100%');
 
   svgRef.current = visArea
     .append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('width', '100%')
+    .attr('height', '100%')
     .attr('xmlns', 'http://www.w3.org/2000/svg');
 
   bgRectRef.current = svgRef.current

@@ -1,18 +1,15 @@
 import _ from 'lodash';
+
 import {
   IProcessData,
   IProcessDataProps,
 } from '../../types/utils/d3/processData';
 
 function processData(props: IProcessDataProps): IProcessData {
-  const { data } = props;
-
-  // data: ILine[]
-
   let xSteps: number[] = [];
   let ySteps: number[] = [];
 
-  const processedData = data.map((line) => {
+  const processedData = props.data.map((line) => {
     const { xValues, yValues } = line.data;
 
     const invalidXIndices: number[] = [];
@@ -43,11 +40,13 @@ function processData(props: IProcessDataProps): IProcessData {
     xSteps = xSteps.concat(filteredXValues);
     ySteps = ySteps.concat(filteredYValues);
 
+    const d3FormatData: [number, number][] = filteredXValues.map((v, i) => [
+      v,
+      filteredYValues[i],
+    ]);
+
     return Object.assign({}, line, {
-      data: {
-        xValues: filteredXValues,
-        yValues: filteredYValues,
-      },
+      data: d3FormatData,
     });
   });
 
