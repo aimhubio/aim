@@ -54,7 +54,13 @@ function Metrics(
               </Grid>
             </Grid>
           </Grid>
-          <Grid style={{ flex: '0.5 1 0' }} item ref={props.chartRef}>
+          <Grid
+            ref={props.chartRef}
+            style={{
+              flex: '0.5 1 0',
+            }}
+            item
+          >
             <Grid container className={classes.fullHeight} spacing={1}>
               <Grid item xs>
                 <Paper className={classes.paper}>
@@ -69,7 +75,6 @@ function Metrics(
                         },
                         color: '#a10505',
                         dasharray: '2,4',
-                        opacity: '1',
                         selector: '',
                       },
                       {
@@ -80,7 +85,6 @@ function Metrics(
                         },
                         color: '#0543a1',
                         dasharray: '0',
-                        opacity: '1',
                         selector: '',
                       },
                       {
@@ -91,7 +95,6 @@ function Metrics(
                         },
                         color: '#165201',
                         dasharray: '3,13,10',
-                        opacity: '1',
                         selector: '',
                       },
                     ]}
@@ -109,7 +112,7 @@ function Metrics(
             justifyContent='center'
             display='flex'
             alignItems='center'
-            style={{ cursor: 'pointer' }}
+            className={classes.resize}
             height='6px'
             onMouseDown={props.handleResize}
           >

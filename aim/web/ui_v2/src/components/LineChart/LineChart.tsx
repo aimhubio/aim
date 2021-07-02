@@ -67,7 +67,6 @@ function LineChart(
     });
 
     const { processedData, min, max } = processData({ data });
-
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,
@@ -93,7 +92,7 @@ function LineChart(
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        renderChart();
+        requestAnimationFrame(renderChart);
       }
     },
     [renderChart],
