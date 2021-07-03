@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Paper, RootRef } from '@material-ui/core';
+import { Box, Grid, Paper } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -17,7 +17,7 @@ function Metrics(
   const classes = useStyles();
 
   return (
-    <RootRef rootRef={props.wrapperRef}>
+    <div ref={props.wrapperRef}>
       <Box
         bgcolor='grey.200'
         component='section'
@@ -84,7 +84,7 @@ function Metrics(
           </Grid>
         </Grid>
       </Box>
-    </RootRef>
+    </div>
   );
 }
 
