@@ -1,26 +1,15 @@
 import React from 'react';
 
-import useModel from 'hooks/model/useModel';
-import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
 import Metrics from './Metrics';
 
-const projectDataRequest = metricsCollectionModel.getMetricsData();
-
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const metricsCollectionData = useModel(metricsCollectionModel);
 
   const tableRef = React.useRef<HTMLDivElement>(null);
   const chartRef = React.useRef<HTMLDivElement>(null);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    console.log(metricsCollectionData);
-  }, [metricsCollectionData]);
-
-  React.useEffect(() => {
-    projectDataRequest.call();
     return () => {
-      projectDataRequest.abort();
       document.removeEventListener('mousemove', startResize);
       document.removeEventListener('mouseup', endResize);
     };
