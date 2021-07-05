@@ -1037,6 +1037,7 @@ function PanelChart(props) {
         focusedLineAttr.runHash === trace.runHash &&
         focusedLineAttr.metricName === trace.metricName &&
         focusedLineAttr.traceContext === trace.traceContext;
+
       lines.current
         .append('path')
         .attr(
