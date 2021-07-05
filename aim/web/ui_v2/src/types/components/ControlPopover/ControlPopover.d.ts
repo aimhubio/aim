@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default interface IPopupProps {
+export default interface IControlPopoverProps {
   anchor: (params: {
-    handleClick: (event: React.MouseEvent<HTMLElement>) => void;
-    open?: boolean;
+    onAnchorClick: (event: React.MouseEvent<HTMLElement>) => void;
+    opened?: boolean;
   }) => React.FunctionComponentElement<React.ReactNode> | HTMLElement | null;
   component: React.FunctionComponentElement<React.ReactNode>;
 }

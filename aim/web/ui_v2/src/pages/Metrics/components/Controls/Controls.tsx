@@ -1,30 +1,28 @@
 import React from 'react';
 import { Box, Grid, makeStyles } from '@material-ui/core';
-
-import Popup from 'components/Popup/Popup';
-import AggregationPopup from 'components/AggregationPopup/AggregationPopup';
-import SmootheningPopup from 'components/SmootheningPopup/SmootheningPopup';
-import StepsDensityPopup from 'components/StepsDensityPopup/StepsDensityPopup';
 import {
   BlurOn,
   CenterFocusWeak,
   GroupWorkOutlined,
   ImportExportOutlined,
+  KeyboardArrowLeft,
   MultilineChart,
   ScatterPlot,
   ShowChart,
   ZoomIn,
   ZoomOut,
 } from '@material-ui/icons';
-import ZoomInPopup from 'components/ZoomInPopup/ZoomInPopup';
-import ZoomOutPopup from 'components/ZoomOutPopup/ZoomOutPopup';
-import HighlightModePopup from 'components/HighlightModesPopup/HighlightModePopup';
 
-const useStyles = makeStyles(() => ({
-  anchorIcon: {
-    cursor: 'pointer',
-  },
-}));
+import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
+import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
+import StepsDensityPopup from 'components/StepsDensityPopover/StepsDensityPopover';
+import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
+import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
+import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
+import AimPopover from 'components/ControlPopover/ControlPopover';
+
+import useStyles from './controlsStyles';
+
 function Controls(): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
   return (
@@ -36,17 +34,17 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
       alignItems='center'
     >
       <Grid item>
-        <BlurOn className={classes.anchorIcon} />
+        <BlurOn className={classes.anchor} />
       </Grid>
       <Grid item>
-        <Box className={classes.anchorIcon}>
+        <Box className={classes.anchor}>
           <ShowChart />
         </Box>
       </Grid>
       <Grid item>
-        <Popup
-          anchor={({ handleClick }) => (
-            <Box onClick={handleClick} className={classes.anchorIcon}>
+        <AimPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
               <GroupWorkOutlined />
             </Box>
           )}
@@ -54,9 +52,9 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <Popup
-          anchor={({ handleClick }) => (
-            <Box onClick={handleClick} className={classes.anchorIcon}>
+        <AimPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
               <ScatterPlot />
             </Box>
           )}
@@ -64,9 +62,9 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <Popup
-          anchor={({ handleClick }) => (
-            <Box onClick={handleClick} className={classes.anchorIcon}>
+        <AimPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
               <MultilineChart />
             </Box>
           )}
@@ -74,9 +72,15 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <Popup
-          anchor={({ handleClick }) => (
-            <Box className={classes.anchorIcon} onClick={handleClick}>
+        <AimPopover
+          anchor={({ onAnchorClick, opened }) => (
+            <Box className={classes.anchor} position='relative'>
+              <span
+                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                onClick={onAnchorClick}
+              >
+                <KeyboardArrowLeft className='arrowLeft' />
+              </span>
               <ZoomIn />
             </Box>
           )}
@@ -84,9 +88,15 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <Popup
-          anchor={({ handleClick }) => (
-            <Box className={classes.anchorIcon} onClick={handleClick}>
+        <AimPopover
+          anchor={({ onAnchorClick, opened }) => (
+            <Box className={classes.anchor} position='relative'>
+              <span
+                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                onClick={onAnchorClick}
+              >
+                <KeyboardArrowLeft className='arrowLeft' />
+              </span>
               <ZoomOut />
             </Box>
           )}
@@ -94,9 +104,9 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <Popup
-          anchor={({ handleClick }) => (
-            <Box className={classes.anchorIcon} onClick={handleClick}>
+        <AimPopover
+          anchor={({ onAnchorClick }) => (
+            <Box className={classes.anchor} onClick={onAnchorClick}>
               <CenterFocusWeak />
             </Box>
           )}
@@ -104,7 +114,9 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <ImportExportOutlined />
+        <Box className={classes.anchor}>
+          <ImportExportOutlined />
+        </Box>
       </Grid>
     </Grid>
   );

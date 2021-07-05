@@ -1,13 +1,14 @@
-import { Box, Popover, Typography } from '@material-ui/core';
 import React from 'react';
-import IPopupProps from 'types/components/Popup/Popup';
+import { Box, Popover } from '@material-ui/core';
 
-function Popup(
-  props: IPopupProps,
+import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
+
+function ControlPopover(
+  props: IControlPopoverProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const handleClick = React.useCallback(
+  const onAnchorClick = React.useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget);
     },
@@ -20,7 +21,7 @@ function Popup(
 
   return (
     <Box>
-      {props.anchor({ handleClick })}
+      {props.anchor({ onAnchorClick, opened: !!anchorEl })}
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}
@@ -35,10 +36,10 @@ function Popup(
           horizontal: 'right',
         }}
       >
-        <Typography>{props.component}</Typography>
+        {props.component}
       </Popover>
     </Box>
   );
 }
 
-export default React.memo(Popup);
+export default React.memo(ControlPopover);
