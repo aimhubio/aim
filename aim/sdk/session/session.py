@@ -28,7 +28,11 @@ from aim.engine.configs import (
 )
 from aim.resource.tracker import ResourceTracker
 
-
+try:
+    from collections.abc import Iterable, Mapping
+except ImportError:
+    from collections import Iterable, Mapping 
+    
 class Session:
     sessions = {}  # type: Dict[str, List['Session']] = {}
 
