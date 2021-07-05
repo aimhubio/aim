@@ -6,10 +6,12 @@ import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
+import LineChart from '../../components/LineChart/LineChart';
 import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
+import { ScaleEnum } from '../../utils/d3';
 
 function Metrics(
   props: IMetricProps,
@@ -53,11 +55,55 @@ function Metrics(
               </Grid>
             </Grid>
           </Grid>
-          <Grid style={{ flex: '0.5 1 0' }} item ref={props.chartRef}>
+          <Grid
+            ref={props.chartRef}
+            style={{
+              flex: '0.5 1 0',
+            }}
+            item
+          >
             <Grid container className={classes.fullHeight} spacing={1}>
               <Grid item xs>
                 <Paper className={classes.paper}>
-                  <div>Chart</div>
+                  <LineChart
+                    key='uniqueKey'
+                    data={[
+                      {
+                        key: 'uniqueKey1',
+                        data: {
+                          xValues: [1, 10, 20, 30, 40, 50, 60],
+                          yValues: [15, 330, 200, 75, 75, 300, 500],
+                        },
+                        color: '#a10505',
+                        dasharray: '2,4',
+                        selector: '',
+                      },
+                      {
+                        key: 'uniqueKey2',
+                        data: {
+                          xValues: [1, 10, 20, 30, 40, 50, 60],
+                          yValues: [20, 33, 40, 79, 75, 30, 140],
+                        },
+                        color: '#0543a1',
+                        dasharray: '0',
+                        selector: '',
+                      },
+                      {
+                        key: 'uniqueKey3',
+                        data: {
+                          xValues: [1, 10, 20, 30, 40, 50, 60],
+                          yValues: [40, 68, 40, 120, 230, 99, 10],
+                        },
+                        color: '#165201',
+                        dasharray: '3,13,10',
+                        selector: '',
+                      },
+                    ]}
+                    axisScaleType={{
+                      x: ScaleEnum.Log,
+                      y: ScaleEnum.Linear,
+                    }}
+                  />
                 </Paper>
               </Grid>
               <Grid item>
@@ -71,7 +117,7 @@ function Metrics(
             justifyContent='center'
             display='flex'
             alignItems='center'
-            style={{ cursor: 'pointer' }}
+            className={classes.resize}
             height='6px'
             onMouseDown={props.handleResize}
           >
