@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import { IDrawAreaProps } from '../../types/utils/d3/drawArea';
+import { IDrawAreaProps } from 'types/utils/d3/drawArea';
 import { CircleEnum } from './index';
 
 function drawArea(props: IDrawAreaProps): void {

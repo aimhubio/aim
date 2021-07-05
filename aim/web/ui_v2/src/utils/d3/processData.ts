@@ -1,9 +1,6 @@
 import _ from 'lodash';
 
-import {
-  IProcessData,
-  IProcessDataProps,
-} from '../../types/utils/d3/processData';
+import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
 
 function processData(props: IProcessDataProps): IProcessData {
   let xSteps: number[] = [];

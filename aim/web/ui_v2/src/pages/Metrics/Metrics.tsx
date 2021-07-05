@@ -72,7 +72,7 @@ function Metrics(
                         key: 'uniqueKey1',
                         data: {
                           xValues: [1, 10, 20, 30, 40, 50, 60],
-                          yValues: [15, 330, 200, 75, 75, 300, 500],
+                          yValues: [15, 330, 200, 75, 75, 300, 99900],
                         },
                         color: '#a10505',
                         dasharray: '2,4',
@@ -100,7 +100,7 @@ function Metrics(
                       },
                     ]}
                     axisScaleType={{
-                      x: ScaleEnum.Log,
+                      x: ScaleEnum.Linear,
                       y: ScaleEnum.Linear,
                     }}
                   />
