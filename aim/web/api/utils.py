@@ -4,11 +4,14 @@ import math
 import pytz
 
 from collections import OrderedDict
-from collections.abc import Iterable
 from fastapi import APIRouter as FastAPIRouter
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable
 
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
 
 def datetime_now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)

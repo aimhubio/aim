@@ -1,4 +1,3 @@
-from collections.abc import Iterable, Mapping
 import json
 import re
 from typing import Tuple, Any, Optional, Callable
@@ -6,6 +5,11 @@ import math
 
 from aim.engine.utils import get_module
 
+
+try:
+    from collections.abc import Iterable, Mapping
+except ImportError:
+    from collections import Iterable, Mapping 
 
 def get_pt_tensor(t):
     if hasattr(t, 'is_cuda') and t.is_cuda:
