@@ -1,12 +1,17 @@
 import React from 'react';
-import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
+import {
+  createMuiTheme,
+  CssBaseline,
+  ThemeOptions,
+  ThemeProvider,
+} from '@material-ui/core';
 
 import { IThemeProps } from 'types/components/Theme/Theme';
 
 export const ThemeContext = React.createContext({});
 const { Provider } = ThemeContext;
 
-const light: Partial<unknown> = {
+const light: ThemeOptions = {
   palette: {
     type: 'light',
     primary: {
@@ -19,7 +24,7 @@ const light: Partial<unknown> = {
   spacing: (factor: number) => `${factor}em`,
 };
 
-const darkTheme: Partial<unknown> = {
+const darkTheme: ThemeOptions = {
   palette: {
     type: 'dark',
     primary: {

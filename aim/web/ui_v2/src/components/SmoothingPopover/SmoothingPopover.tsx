@@ -15,7 +15,7 @@ const marks = [
   { value: 0.75, label: '0.75' },
   { value: 0.99, label: '0.99' },
 ];
-function SmootheningPopup(): React.FunctionComponentElement<React.ReactNode> {
+function SmoothingPopover(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box>
       <Box p={1}>
@@ -54,4 +54,4 @@ function SmootheningPopup(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default React.memo(SmootheningPopup);
+export default React.memo(SmoothingPopover);

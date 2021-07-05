@@ -9,7 +9,7 @@ const marks = [
   { value: 400, label: '400' },
   { value: 500, label: '500' },
 ];
-function StepsDensityPopup(): React.FunctionComponentElement<React.ReactNode> {
+function StepsDensityPopover(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box width={300}>
       <Box p={0.5}>Number Of Steps:</Box>
@@ -27,4 +27,4 @@ function StepsDensityPopup(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default React.memo(StepsDensityPopup);
+export default React.memo(StepsDensityPopover);

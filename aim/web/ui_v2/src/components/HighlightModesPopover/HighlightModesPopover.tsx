@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Divider, MenuItem, MenuList } from '@material-ui/core';
 
-function HighlightModesPopup(): React.FunctionComponentElement<React.ReactNode> {
+function HighlightModesPopover(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box>
       <Box p={0.5}>Highlight Modes</Box>
@@ -15,4 +15,4 @@ function HighlightModesPopup(): React.FunctionComponentElement<React.ReactNode> 
   );
 }
 
-export default React.memo(HighlightModesPopup);
+export default React.memo(HighlightModesPopover);

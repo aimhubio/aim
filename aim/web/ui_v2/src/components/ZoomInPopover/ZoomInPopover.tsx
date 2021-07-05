@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Divider, MenuItem, MenuList } from '@material-ui/core';
 
-function ZoomOutPopup(): React.FunctionComponentElement<React.ReactNode> {
+function ZoomInPopover(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box>
       <Box p={0.5}>Select Zoom Mode</Box>
@@ -14,4 +14,4 @@ function ZoomOutPopup(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default React.memo(ZoomOutPopup);
+export default React.memo(ZoomInPopover);
