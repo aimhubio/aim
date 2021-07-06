@@ -52,7 +52,7 @@ function processData(props: IProcessDataProps): IProcessData {
   xSteps = _.uniq(xSteps);
   ySteps = _.uniq(ySteps);
 
-  if (props.displayOutliers) {
+  if (!props.displayOutliers) {
     ySteps = removeOutliers(ySteps, 4);
   }
 

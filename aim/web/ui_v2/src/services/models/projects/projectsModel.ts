@@ -11,13 +11,14 @@ function getProjectsData() {
   const { call, abort } = projectsService.getProjectsData();
 
   model.init();
-  call().then((data: IProject) => {
-    model.setState({
-      project: data,
-    });
-  });
 
   return {
+    call: () =>
+      call().then((data: IProject) => {
+        model.setState({
+          project: data,
+        });
+      }),
     abort,
   };
 }
