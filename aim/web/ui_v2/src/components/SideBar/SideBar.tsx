@@ -8,7 +8,7 @@ import { ListItem, List, Drawer, ListItemText } from '@material-ui/core';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import TimelineOutlinedIcon from '@material-ui/icons/TimelineOutlined';
-import useStyles from './style';
+import useStyles from './sidebarStyle';
 
 import logoImg from 'assets/logo-white.png';
 

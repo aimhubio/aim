@@ -1,8 +1,15 @@
 import React from 'react';
 
+import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
+import useModel from 'hooks/model/useModel';
 import Metrics from './Metrics';
 
+const metricsRequestRef = metricsCollectionModel.getMetricsData();
+
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
+  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
+  const metricsData = useModel<any>(metricsCollectionModel);
+
   const tableRef = React.useRef<HTMLDivElement>(null);
   const chartRef = React.useRef<HTMLDivElement>(null);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -18,9 +25,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         const containerHeight: number =
           tableRef.current.getBoundingClientRect()?.height +
           chartRef.current.getBoundingClientRect()?.height;
+
         const searchBarHeight: number =
           wrapperRef.current.getBoundingClientRect()?.height - containerHeight;
+
         const height: number = event.clientY - searchBarHeight;
+
         const flex: number = height / containerHeight;
         if (chartRef.current && tableRef.current) {
           chartRef.current.style.flex = `${flex} 1 0`;
@@ -34,8 +44,15 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     document.removeEventListener('mousemove', startResize);
   }, []);
 
+  const toggleDisplayOutliers = React.useCallback(() => {
+    setDisplayOutliers(!displayOutliers);
+  }, [displayOutliers]);
+
   React.useEffect(() => {
+    metricsCollectionModel.initialize();
+    metricsRequestRef.call();
     return () => {
+      metricsRequestRef.abort();
       document.removeEventListener('mousemove', startResize);
       document.removeEventListener('mouseup', endResize);
     };
@@ -43,10 +60,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Metrics
+      displayOutliers={displayOutliers}
+      toggleDisplayOutliers={toggleDisplayOutliers}
       handleResize={handleResize}
       tableRef={tableRef}
       chartRef={chartRef}
       wrapperRef={wrapperRef}
+      metricsCollection={metricsData?.collection}
     />
   );
 }
