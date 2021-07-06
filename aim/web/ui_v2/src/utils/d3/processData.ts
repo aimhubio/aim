@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
 import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
+import { removeOutliers } from './removeOutliers';
+import { minMaxOfArray } from 'utils/minMaxOfArray';
 
 function processData(props: IProcessDataProps): IProcessData {
   let xSteps: number[] = [];
@@ -50,14 +52,20 @@ function processData(props: IProcessDataProps): IProcessData {
   xSteps = _.uniq(xSteps);
   ySteps = _.uniq(ySteps);
 
+  if (props.displayOutliers) {
+    ySteps = removeOutliers(ySteps, 4);
+  }
+
+  const [yMin, yMax] = minMaxOfArray(ySteps);
+  const [xMin, xMax] = minMaxOfArray(xSteps);
   return {
     min: {
-      x: Math.min(...xSteps),
-      y: Math.min(...ySteps),
+      x: xMin,
+      y: yMin,
     },
     max: {
-      x: Math.max(...xSteps),
-      y: Math.max(...ySteps),
+      x: xMax,
+      y: yMax,
     },
     processedData,
   };

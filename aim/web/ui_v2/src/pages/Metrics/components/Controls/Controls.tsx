@@ -1,7 +1,11 @@
-import { Button, Grid } from '@material-ui/core';
 import React from 'react';
+import { Button, Grid } from '@material-ui/core';
 
-function Controls(): React.FunctionComponentElement<React.ReactNode> {
+import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+
+function Controls(
+  props: IControlProps,
+): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Grid
       container
@@ -11,7 +15,12 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
       alignItems='center'
     >
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
+        <Button
+          onClick={props.toggleDisplayOutliers}
+          color='primary'
+          size='small'
+          variant='outlined'
+        >
           Outliers
         </Button>
       </Grid>
