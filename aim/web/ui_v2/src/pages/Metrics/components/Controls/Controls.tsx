@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, makeStyles } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import {
   BlurOn,
   CenterFocusWeak,
@@ -19,7 +19,7 @@ import StepsDensityPopup from 'components/StepsDensityPopover/StepsDensityPopove
 import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
-import AimPopover from 'components/ControlPopover/ControlPopover';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import useStyles from './controlsStyles';
 
@@ -42,7 +42,7 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         </Box>
       </Grid>
       <Grid item>
-        <AimPopover
+        <ControlPopover
           anchor={({ onAnchorClick }) => (
             <Box onClick={onAnchorClick} className={classes.anchor}>
               <GroupWorkOutlined />
@@ -52,7 +52,7 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <AimPopover
+        <ControlPopover
           anchor={({ onAnchorClick }) => (
             <Box onClick={onAnchorClick} className={classes.anchor}>
               <ScatterPlot />
@@ -62,7 +62,7 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <AimPopover
+        <ControlPopover
           anchor={({ onAnchorClick }) => (
             <Box onClick={onAnchorClick} className={classes.anchor}>
               <MultilineChart />
@@ -72,7 +72,7 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <AimPopover
+        <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
             <Box className={classes.anchor} position='relative'>
               <span
@@ -88,7 +88,7 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <AimPopover
+        <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
             <Box className={classes.anchor} position='relative'>
               <span
@@ -104,7 +104,7 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
         />
       </Grid>
       <Grid item>
-        <AimPopover
+        <ControlPopover
           anchor={({ onAnchorClick }) => (
             <Box className={classes.anchor} onClick={onAnchorClick}>
               <CenterFocusWeak />
