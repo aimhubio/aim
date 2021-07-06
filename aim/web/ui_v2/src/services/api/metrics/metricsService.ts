@@ -1,5 +1,5 @@
 import API from '../api';
-import metricsMock from './metricsMock';
+import generateMetrics from './metricsMock';
 
 const endpoints = {
   GET_METRICS: '/metrics',
@@ -11,7 +11,8 @@ function getMetricsData() {
     call: () => ({
       then: (resolve: (data: unknown) => void, reject?: unknown) => {
         setTimeout(() => {
-          resolve(metricsMock);
+          const mock = generateMetrics(100, 8);
+          resolve(mock);
         }, 1000);
       },
     }),
