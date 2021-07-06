@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Paper, RootRef } from '@material-ui/core';
+import { Box, Grid, Paper } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -19,7 +19,7 @@ function Metrics(
   const classes = useStyles();
 
   return (
-    <RootRef rootRef={props.wrapperRef}>
+    <div ref={props.wrapperRef}>
       <Box
         bgcolor='grey.200'
         component='section'
@@ -65,45 +65,16 @@ function Metrics(
             <Grid container className={classes.fullHeight} spacing={1}>
               <Grid item xs>
                 <Paper className={classes.paper}>
-                  <LineChart
-                    key='uniqueKey'
-                    data={[
-                      {
-                        key: 'uniqueKey1',
-                        data: {
-                          xValues: [1, 10, 20, 30, 40, 50, 60],
-                          yValues: [15, 330, 200, 75, 75, 300, 500],
-                        },
-                        color: '#a10505',
-                        dasharray: '2,4',
-                        selector: '',
-                      },
-                      {
-                        key: 'uniqueKey2',
-                        data: {
-                          xValues: [1, 10, 20, 30, 40, 50, 60],
-                          yValues: [20, 33, 40, 79, 75, 30, 140],
-                        },
-                        color: '#0543a1',
-                        dasharray: '0',
-                        selector: '',
-                      },
-                      {
-                        key: 'uniqueKey3',
-                        data: {
-                          xValues: [1, 10, 20, 30, 40, 50, 60],
-                          yValues: [40, 68, 40, 120, 230, 99, 10],
-                        },
-                        color: '#165201',
-                        dasharray: '3,13,10',
-                        selector: '',
-                      },
-                    ]}
-                    axisScaleType={{
-                      x: ScaleEnum.Log,
-                      y: ScaleEnum.Linear,
-                    }}
-                  />
+                  {props.metricsCollection?.[0] && (
+                    <LineChart
+                      key='uniqueKey'
+                      data={props.metricsCollection[0] as any}
+                      axisScaleType={{
+                        x: ScaleEnum.Linear,
+                        y: ScaleEnum.Linear,
+                      }}
+                    />
+                  )}
                 </Paper>
               </Grid>
               <Grid item>
@@ -130,7 +101,7 @@ function Metrics(
           </Grid>
         </Grid>
       </Box>
-    </RootRef>
+    </div>
   );
 }
 
