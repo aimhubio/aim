@@ -21,7 +21,7 @@ import useStyles from './style';
 function LineChart(
   props: ILineChartProps,
 ): FunctionComponentElement<ReactNode> {
-  const { index, data, axisScaleType = {} } = props;
+  const { index, data, axisScaleType = {}, displayOutliers } = props;
   const classes = useStyles();
 
   // boxes
@@ -68,7 +68,7 @@ function LineChart(
     });
     const { processedData, min, max } = processData({
       data,
-      displayOutliers: props.displayOutliers,
+      displayOutliers,
     });
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
@@ -90,7 +90,7 @@ function LineChart(
   const renderChart = useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
-  }, [props.displayOutliers]);
+  }, [displayOutliers]);
 
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
     (entries: ResizeObserverEntry[]) => {

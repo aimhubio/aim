@@ -1,11 +1,35 @@
 import React from 'react';
-import { Button, Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
+import {
+  BlurCircular,
+  BlurOn,
+  CenterFocusWeak,
+  GroupWorkOutlined,
+  ImportExportOutlined,
+  KeyboardArrowLeft,
+  MultilineChart,
+  ScatterPlot,
+  ShowChart,
+  ZoomIn,
+  ZoomOut,
+} from '@material-ui/icons';
+
+import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
+import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
+import StepsDensityPopup from 'components/StepsDensityPopover/StepsDensityPopover';
+import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
+import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
+import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+
+import useStyles from './controlsStyles';
 
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const classes = useStyles();
   return (
     <Grid
       container
@@ -14,45 +38,94 @@ function Controls(
       spacing={1}
       alignItems='center'
     >
-      <Grid item>
-        <Button
-          onClick={props.toggleDisplayOutliers}
-          color='primary'
-          size='small'
-          variant='outlined'
-        >
-          Outliers
-        </Button>
+      <Grid onClick={props.toggleDisplayOutliers} item>
+        {props.displayOutliers ? (
+          <BlurOn className={classes.anchor} />
+        ) : (
+          <BlurCircular color='primary' className={classes.anchor} />
+        )}
       </Grid>
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
-          Interp
-        </Button>
+        <Box className={classes.anchor}>
+          <ShowChart />
+        </Box>
       </Grid>
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
-          Agg
-        </Button>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
+              <GroupWorkOutlined />
+            </Box>
+          )}
+          component={<AggregationPopup />}
+        />
       </Grid>
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
-          Num s.
-        </Button>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
+              <ScatterPlot />
+            </Box>
+          )}
+          component={<StepsDensityPopup />}
+        />
       </Grid>
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
-          Smooth
-        </Button>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
+              <MultilineChart />
+            </Box>
+          )}
+          component={<SmootheningPopup />}
+        />
       </Grid>
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
-          Zoom
-        </Button>
+        <ControlPopover
+          anchor={({ onAnchorClick, opened }) => (
+            <Box className={classes.anchor} position='relative'>
+              <span
+                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                onClick={onAnchorClick}
+              >
+                <KeyboardArrowLeft className='arrowLeft' />
+              </span>
+              <ZoomIn />
+            </Box>
+          )}
+          component={<ZoomInPopup />}
+        />
       </Grid>
       <Grid item>
-        <Button color='primary' size='small' variant='outlined'>
-          export
-        </Button>
+        <ControlPopover
+          anchor={({ onAnchorClick, opened }) => (
+            <Box className={classes.anchor} position='relative'>
+              <span
+                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                onClick={onAnchorClick}
+              >
+                <KeyboardArrowLeft className='arrowLeft' />
+              </span>
+              <ZoomOut />
+            </Box>
+          )}
+          component={<ZoomOutPopup />}
+        />
+      </Grid>
+      <Grid item>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box className={classes.anchor} onClick={onAnchorClick}>
+              <CenterFocusWeak />
+            </Box>
+          )}
+          component={<HighlightModePopup />}
+        />
+      </Grid>
+      <Grid item>
+        <Box className={classes.anchor}>
+          <ImportExportOutlined />
+        </Box>
       </Grid>
     </Grid>
   );

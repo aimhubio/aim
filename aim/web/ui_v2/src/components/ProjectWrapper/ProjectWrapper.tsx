@@ -5,6 +5,7 @@ import useModel from '../../hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 
 const projectDataRequestRef = projectsModel.getProjectsData();
+projectDataRequestRef.call();
 
 function ProjectWrapper() {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
