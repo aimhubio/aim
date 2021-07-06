@@ -1,8 +1,14 @@
 import React from 'react';
 
+import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
+import useModel from 'hooks/model/useModel';
 import Metrics from './Metrics';
 
+const metricsRequestRef = metricsCollectionModel.getMetricsData();
+
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
+  const metricsData = useModel<any>(metricsCollectionModel);
+
   const tableRef = React.useRef<HTMLDivElement>(null);
   const chartRef = React.useRef<HTMLDivElement>(null);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -35,7 +41,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   React.useEffect(() => {
+    metricsCollectionModel.initialize();
+    metricsRequestRef.call();
     return () => {
+      metricsRequestRef.abort();
       document.removeEventListener('mousemove', startResize);
       document.removeEventListener('mouseup', endResize);
     };
@@ -47,6 +56,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRef={tableRef}
       chartRef={chartRef}
       wrapperRef={wrapperRef}
+      metricsCollection={metricsData?.collection}
     />
   );
 }

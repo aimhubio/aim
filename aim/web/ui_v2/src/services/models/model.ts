@@ -11,6 +11,11 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
       state = Object.assign({}, initialState);
       (subscriptions.INIT || []).forEach((fn) => fn(initialState));
     },
+    destroy: () => {
+      subscriptions.INIT = [];
+      subscriptions.UPDATE = [];
+      state = null;
+    },
     getState: () => Object.assign({}, state),
     setState: (stateUpdate: StateType) => {
       Object.assign(state, stateUpdate);

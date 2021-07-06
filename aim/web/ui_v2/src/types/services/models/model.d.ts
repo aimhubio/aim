@@ -1,5 +1,6 @@
 export interface IModel<StateType> {
   init: () => void;
+  destroy: () => void;
   getState: () => StateType | null;
   setState: (data: StateType) => void;
   subscribe: (
