@@ -82,10 +82,12 @@ function Table(
         </Grid>
       </Box>
       <Box>
-        <Box p={0.5} borderBottom={1} borderTop={1} borderColor='grey.400'>
+        <Box p={0.5} borderTop={1} borderColor='grey.400'>
           Table Header
         </Box>
-        <Box p={0.5}>Table Body</Box>
+        <Box p={0.5} borderTop={1} borderColor='grey.400'>
+          Table Body
+        </Box>
       </Box>
     </Box>
   );
