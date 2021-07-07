@@ -8,5 +8,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<HTMLDivElement>;
   chartRef: React.RefObject<HTMLDivElement>;
   wrapperRef: React.RefObject<HTMLDivElement>;
+  displayOutliers: boolean;
+  toggleDisplayOutliers: () => void;
   handleResize: () => void;
 }

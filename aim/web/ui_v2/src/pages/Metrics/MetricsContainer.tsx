@@ -7,6 +7,7 @@ import Metrics from './Metrics';
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
+  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const metricsData = useModel<any>(metricsCollectionModel);
 
   const tableRef = React.useRef<HTMLDivElement>(null);
@@ -43,6 +44,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     document.removeEventListener('mousemove', startResize);
   }, []);
 
+  const toggleDisplayOutliers = React.useCallback(() => {
+    setDisplayOutliers(!displayOutliers);
+  }, [displayOutliers]);
+
   React.useEffect(() => {
     metricsCollectionModel.initialize();
     metricsRequestRef.call();
@@ -55,6 +60,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Metrics
+      displayOutliers={displayOutliers}
+      toggleDisplayOutliers={toggleDisplayOutliers}
       handleResize={handleResize}
       tableRef={tableRef}
       chartRef={chartRef}

@@ -17,11 +17,6 @@ function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
-  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
-
-  const toggleDisplayOutliers = () => {
-    setDisplayOutliers(!displayOutliers);
-  };
   return (
     <div ref={props.wrapperRef}>
       <Box
@@ -77,7 +72,7 @@ function Metrics(
                         x: ScaleEnum.Linear,
                         y: ScaleEnum.Linear,
                       }}
-                      displayOutliers={displayOutliers}
+                      displayOutliers={props.displayOutliers}
                     />
                   )}
                 </Paper>
@@ -85,8 +80,8 @@ function Metrics(
               <Grid item>
                 <Paper className={classes.paper}>
                   <Controls
-                    toggleDisplayOutliers={toggleDisplayOutliers}
-                    displayOutliers={displayOutliers}
+                    toggleDisplayOutliers={props.toggleDisplayOutliers}
+                    displayOutliers={props.displayOutliers}
                   />
                 </Paper>
               </Grid>
