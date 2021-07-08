@@ -15,7 +15,9 @@ import {
   drawLines,
   processData,
   getAxisScale,
+  drawHoverAttributes,
 } from '../../utils/d3';
+import useResizeObserver from '../../hooks/window/useResizeObserver';
 
 function LineChart(
   props: ILineChartProps,
@@ -83,12 +85,22 @@ function LineChart(
     });
 
     drawLines({ data: processedData, linesRef, xScale, yScale });
+
+    drawHoverAttributes({
+      data,
+      visAreaRef,
+      attributesRef,
+      plotBoxRef,
+      visBoxRef,
+      xScale,
+      yScale,
+    });
   }
 
   const renderChart = useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
-  }, []);
+  }, [draw]);
 
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -99,19 +111,11 @@ function LineChart(
     [renderChart],
   );
 
+  useResizeObserver(resizeObserverCallback, parentRef);
+
   useEffect(() => {
-    const observer: ResizeObserver = new ResizeObserver(resizeObserverCallback);
-
-    if (observer && parentRef.current) {
-      observer.observe(parentRef.current);
-    }
-
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, [resizeObserverCallback]);
+    requestAnimationFrame(renderChart);
+  }, [props.data, renderChart]);
 
   return (
     <div ref={parentRef} className={classes.chart}>

@@ -4,6 +4,7 @@ import drawAxes from './drawAxes';
 import drawLines from './drawLines';
 import processData from './processData';
 import getAxisScale from './getAxisScale';
+import drawHoverAttributes from './drawHoverAttributes';
 
 enum CircleEnum {
   Radius = 3,
@@ -31,13 +32,14 @@ enum ScaleEnum {
 }
 
 export {
+  CircleEnum,
+  CurveEnum,
+  ScaleEnum,
   clearArea,
   drawArea,
   drawAxes,
   drawLines,
   processData,
   getAxisScale,
-  CircleEnum,
-  CurveEnum,
-  ScaleEnum,
+  drawHoverAttributes,
 };

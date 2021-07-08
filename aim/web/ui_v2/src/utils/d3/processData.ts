@@ -5,64 +5,71 @@ import {
   IProcessDataProps,
 } from '../../types/utils/d3/processData';
 
+const isInvalidValue = (v: number): boolean =>
+  !isFinite(v) || isNaN(v) || v === null;
+
+const toTupleData = (x: number[], y: number[]): [number, number][] => {
+  return x.map((v: number, i: number) => [v, y[i]]);
+};
+
 function processData(props: IProcessDataProps): IProcessData {
-  let xSteps: number[] = [];
-  let ySteps: number[] = [];
+  const { data } = props;
 
-  const processedData = props.data.map((line) => {
-    const { xValues, yValues } = line.data;
+  let xValues: number[] = [];
+  let yValues: number[] = [];
 
-    const invalidXIndices: number[] = [];
-    const invalidYIndices: number[] = [];
+  const processedData = data.map((line) => {
+    const invalidXIndices = line.data.xValues.reduce(
+      (acc: number[], v: number, i: number) => {
+        if (isInvalidValue(v)) {
+          acc.concat([i]);
+        }
+        return acc;
+      },
+      [],
+    );
+    const invalidYIndices = line.data.yValues.reduce(
+      (acc: number[], v: number, i: number) => {
+        if (isInvalidValue(v)) {
+          acc.concat([i]);
+        }
+        return acc;
+      },
+      [],
+    );
 
-    xValues.forEach((v, i) => {
-      if (!isFinite(v) || isNaN(v) || v === null) {
-        invalidXIndices.push(i);
-      }
-    });
-
-    yValues.forEach((v, i) => {
-      if (!isFinite(v) || isNaN(v) || v === null) {
-        invalidYIndices.push(i);
-      }
-    });
-
-    const filteredXValues = xValues.filter(
+    const filteredXValues = line.data.xValues.filter(
+      (v, i) =>
+        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
+    );
+    const filteredYValues = line.data.yValues.filter(
       (v, i) =>
         invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
     );
 
-    const filteredYValues = yValues.filter(
-      (v, i) =>
-        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
-    );
-
-    xSteps = xSteps.concat(filteredXValues);
-    ySteps = ySteps.concat(filteredYValues);
-
-    const d3FormatData: [number, number][] = filteredXValues.map((v, i) => [
-      v,
-      filteredYValues[i],
-    ]);
+    xValues = xValues.concat(filteredXValues);
+    yValues = yValues.concat(filteredYValues);
 
     return Object.assign({}, line, {
-      data: d3FormatData,
+      data: toTupleData(filteredXValues, filteredYValues),
     });
   });
 
-  xSteps = _.uniq(xSteps);
-  ySteps = _.uniq(ySteps);
+  xValues = _.uniq(xValues);
+  yValues = _.uniq(yValues);
 
   return {
     min: {
-      x: Math.min(...xSteps),
-      y: Math.min(...ySteps),
+      x: Math.min(...xValues),
+      y: Math.min(...yValues),
     },
     max: {
-      x: Math.max(...xSteps),
-      y: Math.max(...ySteps),
+      x: Math.max(...xValues),
+      y: Math.max(...yValues),
     },
     processedData,
+    xValues,
+    yValues,
   };
 }
 
