@@ -24,9 +24,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         const containerHeight: number =
           tableRef.current.getBoundingClientRect()?.height +
           chartRef.current.getBoundingClientRect()?.height;
+
         const searchBarHeight: number =
           wrapperRef.current.getBoundingClientRect()?.height - containerHeight;
+
         const height: number = event.clientY - searchBarHeight;
+
         const flex: number = height / containerHeight;
         if (chartRef.current && tableRef.current) {
           chartRef.current.style.flex = `${flex} 1 0`;

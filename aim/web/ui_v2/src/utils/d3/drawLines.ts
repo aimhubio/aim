@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 import { CurveEnum } from './';
-import { IDrawLinesProps } from '../../types/utils/d3/drawLines';
+import { IDrawLinesProps } from 'types/utils/d3/drawLines';
 
 function drawLines(props: IDrawLinesProps): void {
   const { linesRef, data, xScale, yScale } = props;

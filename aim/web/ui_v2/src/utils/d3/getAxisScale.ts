@@ -1,11 +1,8 @@
 import * as d3 from 'd3';
 
 import { ScaleEnum } from './index';
-import { ScaleType } from '../../types/components/LineChart/LineChart';
-import {
-  IGetAxisScale,
-  IGetAxisScaleProps,
-} from '../../types/utils/d3/getAxesScale';
+import { ScaleType } from 'types/components/LineChart/LineChart';
+import { IGetAxisScale, IGetAxisScaleProps } from 'types/utils/d3/getAxesScale';
 
 function getScaleBaseFor(scaleType?: ScaleType) {
   switch (scaleType) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  createMuiTheme,
+  unstable_createMuiStrictModeTheme as createMuiTheme,
   CssBaseline,
   ThemeOptions,
   ThemeProvider,
