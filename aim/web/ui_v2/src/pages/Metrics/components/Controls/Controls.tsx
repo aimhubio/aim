@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import {
+  BlurCircular,
   BlurOn,
   CenterFocusWeak,
   GroupWorkOutlined,
@@ -37,11 +38,12 @@ function Controls(
       spacing={1}
       alignItems='center'
     >
-      <Grid item>
-        <BlurOn
-          onClick={props.toggleDisplayOutliers}
-          className={classes.anchor}
-        />
+      <Grid onClick={props.toggleDisplayOutliers} item>
+        {props.displayOutliers ? (
+          <BlurOn className={classes.anchor} />
+        ) : (
+          <BlurCircular color='primary' className={classes.anchor} />
+        )}
       </Grid>
       <Grid item>
         <Box className={classes.anchor}>
