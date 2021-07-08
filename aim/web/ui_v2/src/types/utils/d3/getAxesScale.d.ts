@@ -9,7 +9,9 @@ export interface IGetAxisScaleProps {
   max: { x: number; y: number };
 }
 
+export type IScale = d3.ScaleLogarithmic | d3.ScaleLinear;
+
 export interface IGetAxisScale {
-  xScale: d3.ScaleLogarithmic | d3.ScaleLinear;
-  yScale: d3.ScaleLogarithmic | d3.ScaleLinear;
+  xScale: IScale;
+  yScale: IScale;
 }
