@@ -1,6 +1,11 @@
 import * as d3 from 'd3';
 
-import { IDrawHoverAttributesProps } from '../../types/utils/d3/drawHoverAttributes';
+import {
+  IDrawHoverAttributesProps,
+  IGetCoordinates,
+  IGetCoordinatesProps,
+  IHoverAxisLine,
+} from '../../types/utils/d3/drawHoverAttributes';
 import classes from './styles.module.css';
 import { CircleEnum } from './index';
 import { ILine } from '../../types/components/LineChart/LineChart';
@@ -33,9 +38,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     // Closest xPoint for mouseX
     const xPoint = xScale.invert(mouseX);
 
-    let nearestCircles: { x: number; y: number }[] = [];
+    let nearestCircles: { x: number; y: number; key: string }[] = [];
 
     const closestCircle = {
+      key: '',
       r: Infinity,
       x: 0,
       y: 0,
@@ -46,8 +52,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .selectAll('circle')
       .data(data)
       .join('circle')
-      .attr('class', 'HoverCircle')
-      .attr('cx', (line: ILine, i: number) => {
+      .attr('class', `${classes.HoverCircle}`)
+      .attr('id', (line: ILine) => line.key)
+      .attr('cx', function (line: ILine, i: number) {
         const index = d3.bisectCenter(line.data.xValues, xPoint);
         const closestXPoint = line.data.xValues[index];
         const closestXPixel = xScale(closestXPoint);
@@ -55,12 +62,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         nearestCircles = nearestCircles.concat([
           Object.assign(nearestCircles[i] || {}, {
             x: closestXPixel,
+            key: line.key,
           }),
         ]);
 
         return closestXPixel;
       })
-      .attr('cy', (line: ILine, i: number) => {
+      .attr('cy', function (line: ILine, i: number) {
         const index = d3.bisectCenter(line.data.xValues, xPoint);
         const closestYPoint = line.data.yValues[index];
         const closestYPixel = yScale(closestYPoint);
@@ -68,6 +76,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         nearestCircles = nearestCircles.concat([
           Object.assign(nearestCircles[i] || {}, {
             y: closestYPixel,
+            key: line.key,
           }),
         ]);
 
@@ -75,7 +84,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       })
       .attr('r', CircleEnum.Radius)
       .style('fill', (line: ILine) => line.color)
-      .on('click', function () {
+      .on('click', function (this: SVGElement) {
         // handlePointClick(
         //   closestStep,
         //   trace.runHash,
@@ -83,13 +92,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         //   trace.traceContext,
         // );
 
-        console.log('click', closestCircle);
-        // analytics.trackEvent('[Explore] [LineChart] Line point click');
+        d3.select(this)
+          .classed(classes.active, false)
+          .classed(classes.focus, true);
       });
 
     // Find closest circle
-    // Better to find outside of the 'draw circle' cycle
-
     for (const circle of nearestCircles) {
       const rX = Math.abs(circle.x - mouseX);
       const rY = Math.abs(circle.y - mouseY);
@@ -99,36 +107,39 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           r,
           x: circle.x,
           y: circle.y,
+          key: circle.key,
         });
       }
     }
 
-    // Remove hover lines
-    attributesRef.current?.selectAll('line').remove();
+    // Set closest circle class
+    if (closestCircle.key) {
+      attributesRef.current
+        .select(`[id='${closestCircle.key}']`)
+        .classed(classes.focus, false)
+        .classed(classes.active, true)
+        .attr('r', CircleEnum.ActiveRadius);
+    }
 
-    // Draw vertical hover line
+    const hoverAxisData: IHoverAxisLine[] = [
+      { x1: closestCircle.x, y1: 0, x2: closestCircle.x, y2: height },
+      { x1: 0, y1: closestCircle.y, x2: width, y2: closestCircle.y },
+    ];
+
+    // Draw horizontal/vertical lines
     attributesRef.current
-      .append('line')
-      .attr('x1', closestCircle.x)
-      .attr('y1', 0)
-      .attr('x2', closestCircle.x)
-      .attr('y2', height)
-      .attr('class', classes.HoverLine)
+      .selectAll('line')
+      .data(hoverAxisData)
+      .join('line')
+      .attr('class', `${classes.HoverLine}`)
       .style('stroke-width', 1)
       .style('stroke-dasharray', '4 2')
-      .style('fill', 'none');
-
-    // Draw horizontal hover line
-    attributesRef.current
-      .append('line')
-      .attr('x1', 0)
-      .attr('y1', closestCircle.y)
-      .attr('x2', width)
-      .attr('y2', closestCircle.y)
-      .attr('class', classes.HoverLine)
-      .style('stroke-width', 1)
-      .style('stroke-dasharray', '4 2')
-      .style('fill', 'none');
+      .style('fill', 'none')
+      .lower()
+      .attr('x1', (axisLine: IHoverAxisLine) => axisLine.x1)
+      .attr('y1', (axisLine: IHoverAxisLine) => axisLine.y1)
+      .attr('x2', (axisLine: IHoverAxisLine) => axisLine.x2)
+      .attr('y2', (axisLine: IHoverAxisLine) => axisLine.y2);
   });
 
   svgArea?.on('mouseleave', (event) => {
@@ -141,15 +152,7 @@ function getCoordinates({
   margin,
   xScale,
   yScale,
-}: {
-  mouse: [number, number];
-  margin: { left: number; top: number };
-  xScale: IDrawHoverAttributesProps['xScale'];
-  yScale: IDrawHoverAttributesProps['yScale'];
-}): {
-  mouseX: number;
-  mouseY: number;
-} {
+}: IGetCoordinatesProps): IGetCoordinates {
   const xPixel = Math.floor(mouse[0]) - margin.left;
   const yPixel = Math.floor(mouse[1]) - margin.top;
   const [xMin, xMax] = xScale.range();
