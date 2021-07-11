@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import { IDrawAxesProps } from '../../types/utils/d3/drawAxes';
+import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
 
 function drawAxes(props: IDrawAxesProps): void {
   const { axesRef, plotBoxRef, xScale, yScale } = props;

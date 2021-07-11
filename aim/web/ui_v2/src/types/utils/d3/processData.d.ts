@@ -2,6 +2,7 @@ import { ILine, ILineChartProps } from '../../components/LineChart/LineChart';
 
 export interface IProcessDataProps {
   data: ILineChartProps['data'];
+  displayOutliers: boolean;
 }
 
 interface IProcessedData extends ILine {

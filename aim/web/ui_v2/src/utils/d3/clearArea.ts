@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import { IClearAreaProps } from '../../types/utils/d3/clearArea';
+import { IClearAreaProps } from 'types/utils/d3/clearArea';
 
 function clearArea(props: IClearAreaProps): void {
   if (!props.visAreaRef?.current) {

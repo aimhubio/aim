@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import {
+  BlurCircular,
   BlurOn,
   CenterFocusWeak,
   GroupWorkOutlined,
@@ -21,9 +22,13 @@ import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
+import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+
 import useStyles from './controlsStyles';
 
-function Controls(): React.FunctionComponentElement<React.ReactNode> {
+function Controls(
+  props: IControlProps,
+): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
   return (
     <Grid
@@ -33,8 +38,12 @@ function Controls(): React.FunctionComponentElement<React.ReactNode> {
       spacing={1}
       alignItems='center'
     >
-      <Grid item>
-        <BlurOn className={classes.anchor} />
+      <Grid onClick={props.toggleDisplayOutliers} item>
+        {props.displayOutliers ? (
+          <BlurOn className={classes.anchor} />
+        ) : (
+          <BlurCircular color='primary' className={classes.anchor} />
+        )}
       </Grid>
       <Grid item>
         <Box className={classes.anchor}>

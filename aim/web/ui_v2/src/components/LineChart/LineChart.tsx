@@ -6,8 +6,7 @@ import React, {
   useRef,
 } from 'react';
 
-import useStyles from './style';
-import { ILineChartProps } from '../../types/components/LineChart/LineChart';
+import { ILineChartProps } from 'types/components/LineChart/LineChart';
 import {
   drawArea,
   clearArea,
@@ -15,12 +14,14 @@ import {
   drawLines,
   processData,
   getAxisScale,
-} from '../../utils/d3';
+} from 'utils/d3';
+
+import useStyles from './style';
 
 function LineChart(
   props: ILineChartProps,
 ): FunctionComponentElement<ReactNode> {
-  const { index, data, axisScaleType = {} } = props;
+  const { index, data, axisScaleType = {}, displayOutliers } = props;
   const classes = useStyles();
 
   // boxes
@@ -65,9 +66,10 @@ function LineChart(
       linesRef,
       attributesRef,
     });
-
-    const { processedData, min, max } = processData({ data });
-
+    const { processedData, min, max } = processData({
+      data,
+      displayOutliers,
+    });
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,
@@ -88,7 +90,7 @@ function LineChart(
   const renderChart = useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
-  }, []);
+  }, [displayOutliers]);
 
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
     (entries: ResizeObserverEntry[]) => {
