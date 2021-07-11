@@ -2,15 +2,96 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
+import { Avatar, Box, Button, Chip, Grid } from '@material-ui/core';
+import BaseTable, { AutoResizer } from 'react-base-table';
 
 import ITableProps from 'types/components/Table/Table';
+import TableGrid from './TableGrid';
+
+import 'react-base-table/styles.css';
 
 function Table(
   props: ITableProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const [index, setIndex] = React.useState(0);
+  const columns = React.useMemo(() => {
+    console.log(index);
+    return [
+      {
+        dataKey: 'experiment',
+        frozen: 'left',
+        key: 'experiment',
+        title: 'Experiment',
+        dataGetter: ({ rowData }) => rowData.run.experiment_name,
+        width: 150,
+      },
+      {
+        dataKey: 'run',
+        key: 'run',
+        title: 'Run',
+        dataGetter: ({ rowData }) => rowData.run.name,
+        width: 150,
+      },
+      {
+        dataKey: 'metric',
+        key: 'metric',
+        title: 'Metric',
+        dataGetter: ({ rowData }) => rowData.metric_name,
+        width: 150,
+      },
+      {
+        dataKey: 'context',
+        key: 'context',
+        title: 'Context',
+        dataGetter: ({ rowData }) => Object.entries(rowData.context),
+        cellRenderer: ({ cellData }) =>
+          cellData.map((c, i) => (
+            <Chip
+              key={i}
+              variant='outlined'
+              color='primary'
+              label={c.join(':')}
+              size='small'
+              avatar={<Avatar>{c[1][0]}</Avatar>}
+            />
+          )),
+        width: 150,
+      },
+      {
+        dataKey: 'value',
+        key: 'value',
+        title: 'Value',
+        dataGetter: ({ rowData }) =>
+          rowData.data.values[
+            rowData.data.values.length > index
+              ? index
+              : rowData.data.values.length - 1
+          ],
+        width: 150,
+      },
+      {
+        dataKey: 'iteration',
+        key: 'iteration',
+        title: 'Iteration',
+        dataGetter: ({ rowData }) =>
+          rowData.data.iterations[
+            rowData.data.iterations.length > index
+              ? index
+              : rowData.data.iterations.length - 1
+          ],
+        width: 150,
+      },
+    ];
+  }, [index]);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      const newIndex = Math.floor(Math.random() * 50);
+      setIndex(newIndex === index ? index + 1 : newIndex);
+    }, (Math.random() * 10 + 1) * 100);
+  }, [index]);
   return (
-    <Box border={1} borderColor='grey.400' borderRadius={2}>
+    <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
       <Box component='nav' p={0.5}>
         <Grid container justify='space-between' alignItems='center'>
           <Grid xs item>
@@ -84,7 +165,40 @@ function Table(
           </Grid>
         </Grid>
       </Box>
-      <Box></Box>
+      <Box style={{ height: 'calc(100% - 44px)' }}>
+        <AutoResizer>
+          {({ width, height }) => (
+            <BaseTable
+              key={index}
+              columns={columns}
+              data={props.data}
+              frozenData={[]}
+              width={width}
+              height={height}
+              fixed
+              rowKey='key'
+              headerHeight={30}
+              rowHeight={30}
+              footerHeight={0}
+              defaultExpandedRowKeys={[]}
+              sortBy={{}}
+              useIsScrolling={false}
+              overscanRowCount={1}
+              onEndReachedThreshold={500}
+              getScrollbarSize={() => null}
+              ignoreFunctionInColumnCompare={true}
+              onScroll={() => null}
+              onRowsRendered={() => null}
+              onScrollbarPresenceChange={() => null}
+              onRowExpand={() => null}
+              onExpandedRowsChange={() => null}
+              onColumnSort={() => null}
+              onColumnResize={() => null}
+              onColumnResizeEnd={() => null}
+            />
+          )}
+        </AutoResizer>
+      </Box>
     </Box>
   );
 }

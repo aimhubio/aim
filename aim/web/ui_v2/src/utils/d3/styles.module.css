@@ -5,7 +5,6 @@
 .HoverCircle {
     stroke: #3b5896; /* var(--primary) */
     stroke-width: 1;
-    transition: stroke-width 200ms ease;
     cursor: pointer;
 }
 

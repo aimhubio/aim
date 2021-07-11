@@ -99,7 +99,13 @@ function Metrics(
           </Box>
           <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableRef}>
             <Paper className={classes.paper}>
-              <Table onSort={() => null} onExport={() => null} />
+              {props.metricsCollection?.[0] && (
+                <Table
+                  onSort={() => null}
+                  onExport={() => null}
+                  data={props.metricsCollection[0]}
+                />
+              )}
             </Paper>
           </Grid>
         </Grid>

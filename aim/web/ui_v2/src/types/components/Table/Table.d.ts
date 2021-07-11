@@ -4,6 +4,7 @@ export default interface ITableProps {
   onRowsChange?: () => void;
   onExport?: () => void;
   onRowHeightChange?: () => void;
+  data: any;
   navBarItems?: {
     name: string;
     callBack: () => void;
