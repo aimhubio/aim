@@ -63,6 +63,7 @@ function processData(props: IProcessDataProps): IProcessData {
 
   const [xMin, xMax] = minMaxOfArray(xValues);
   const [yMin, yMax] = minMaxOfArray(yValues);
+
   return {
     min: {
       x: xMin,
