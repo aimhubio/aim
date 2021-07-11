@@ -1,11 +1,4 @@
-import React, {
-  FunctionComponentElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
-
+import React from 'react';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
 import {
   drawArea,
@@ -14,43 +7,54 @@ import {
   drawLines,
   processData,
   getAxisScale,
+  drawBrush,
 } from 'utils/d3';
 
 import useStyles from './style';
 
 function LineChart(
   props: ILineChartProps,
-): FunctionComponentElement<ReactNode> {
-  const { index, data, axisScaleType = {}, displayOutliers } = props;
+): React.FunctionComponentElement<React.ReactNode> {
+  const { index, data, axisScaleType = {}, displayOutliers, zoomMode } = props;
   const classes = useStyles();
 
   // boxes
-  const visBoxRef = useRef({
+  const visBoxRef = React.useRef({
     margin: {
       top: 24,
       right: 20,
       bottom: 30,
       left: 60,
     },
-    height: null,
-    width: null,
+    height: 0,
+    width: 0,
   });
-  const plotBoxRef = useRef({
-    height: null,
-    width: null,
+  const plotBoxRef = React.useRef({
+    height: 0,
+    width: 0,
   });
 
   // containers
-  const parentRef = useRef<HTMLDivElement>(null);
-  const visAreaRef = useRef<HTMLDivElement>(null);
+  const parentRef = React.useRef<HTMLDivElement>(null);
+  const visAreaRef = React.useRef<HTMLDivElement>(null);
 
   // d3 elements
-  const svgRef = useRef(null);
-  const bgRectRef = useRef(null);
-  const plotRef = useRef(null);
-  const axesRef = useRef(null);
-  const linesRef = useRef(null);
-  const attributesRef = useRef(null);
+  const svgRef = React.useRef<any>(null);
+  const brushRef = React.useRef<any>({});
+  const bgRectRef = React.useRef(null);
+  const plotRef = React.useRef(null);
+  const axesRef = React.useRef<any>(null);
+  const linesRef = React.useRef<any>(null);
+  const attributesRef = React.useRef(null);
+
+  const { processedData, min, max } = React.useMemo(
+    () =>
+      processData({
+        data,
+        displayOutliers,
+      }),
+    [data, displayOutliers],
+  );
 
   function draw(): void {
     drawArea({
@@ -66,10 +70,7 @@ function LineChart(
       linesRef,
       attributesRef,
     });
-    const { processedData, min, max } = processData({
-      data,
-      displayOutliers,
-    });
+
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,
@@ -84,15 +85,84 @@ function LineChart(
       yScale,
     });
 
-    drawLines({ data: processedData, linesRef, xScale, yScale });
+    drawLines({
+      data: processedData,
+      linesRef,
+      xScale,
+      yScale,
+      index,
+    });
+
+    if (zoomMode) {
+      brushRef.current.xScale = xScale;
+      brushRef.current.yScale = yScale;
+      drawBrush({
+        brushRef,
+        plotBoxRef,
+        plotRef,
+        handleBrushChange,
+      });
+
+      svgRef.current.on('dblclick', zoomOut);
+    }
   }
 
-  const renderChart = useCallback((): void => {
+  const handleBrushChange = ({ xValues, yValues }: any): void => {
+    //
+    const { width, height, margin } = visBoxRef.current;
+
+    // updating Scales domain
+    brushRef.current.xScale
+      .domain(xValues)
+      .range([0, width - margin.left - margin.right]);
+    brushRef.current.yScale
+      .domain(yValues)
+      .range([height - margin.top - margin.bottom, 0]);
+
+    // updating axes with new Scales
+    axesRef.current.updateXAxis(brushRef.current.xScale);
+    axesRef.current.updateYAxis(brushRef.current.yScale);
+
+    linesRef.current
+      .selectAll('.PlotLine')
+      .transition()
+      .duration(1000)
+      .attr(
+        'd',
+        linesRef.current.lineGenerator(
+          brushRef.current.xScale,
+          brushRef.current.yScale,
+        ),
+      );
+  };
+
+  const renderChart = React.useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
-  }, [displayOutliers]);
+  }, [draw, displayOutliers]);
 
-  const resizeObserverCallback: ResizeObserverCallback = useCallback(
+  function zoomOut() {
+    const { xScale, yScale } = getAxisScale({
+      visBoxRef,
+      axisScaleType,
+      min,
+      max,
+    });
+
+    // setting axes to initial state
+    axesRef.current.updateXAxis(xScale);
+    axesRef.current.updateYAxis(yScale);
+
+    // setting scales and lines to initial state
+    brushRef.current.updateScales(xScale, yScale);
+    linesRef.current
+      .selectAll('.PlotLine')
+      .transition()
+      .duration(1000)
+      .attr('d', linesRef.current.lineGenerator(xScale, yScale));
+  }
+
+  const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
         requestAnimationFrame(renderChart);
@@ -101,7 +171,7 @@ function LineChart(
     [renderChart],
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     const observer: ResizeObserver = new ResizeObserver(resizeObserverCallback);
 
     if (observer && parentRef.current) {
@@ -116,7 +186,10 @@ function LineChart(
   }, [resizeObserverCallback]);
 
   return (
-    <div ref={parentRef} className={classes.chart}>
+    <div
+      ref={parentRef}
+      className={`${classes.chart} ${zoomMode ? 'zoomMode' : ''}`}
+    >
       <div ref={visAreaRef} />
     </div>
   );

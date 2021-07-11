@@ -66,6 +66,7 @@ function Metrics(
                 <Paper className={classes.paper}>
                   {props.metricsCollection?.[0] && (
                     <LineChart
+                      index={0}
                       key='uniqueKey'
                       data={props.metricsCollection[0] as any}
                       axisScaleType={{
@@ -73,6 +74,7 @@ function Metrics(
                         y: ScaleEnum.Linear,
                       }}
                       displayOutliers={props.displayOutliers}
+                      zoomMode={props.zoomMode}
                     />
                   )}
                 </Paper>
@@ -82,6 +84,8 @@ function Metrics(
                   <Controls
                     toggleDisplayOutliers={props.toggleDisplayOutliers}
                     displayOutliers={props.displayOutliers}
+                    zoomMode={props.zoomMode}
+                    toggleZoomMode={props.toggleZoomMode}
                   />
                 </Paper>
               </Grid>

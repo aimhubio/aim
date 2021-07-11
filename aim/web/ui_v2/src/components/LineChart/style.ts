@@ -5,5 +5,11 @@ export default makeStyles(() => ({
     backgroundColor: 'white',
     height: '100%',
     width: '100%',
+    '& .backgroundRect': {
+      cursor: 'crosshair',
+    },
+    '&.zoomMode rect': {
+      cursor: 'zoom-in',
+    },
   },
 }));

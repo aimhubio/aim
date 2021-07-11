@@ -8,6 +8,7 @@ const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
+  const [zoomMode, setZoomMode] = React.useState<boolean>(false);
   const metricsData = useModel<any>(metricsCollectionModel);
 
   const tableRef = React.useRef<HTMLDivElement>(null);
@@ -40,13 +41,17 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     });
   }, []);
 
-  const endResize = React.useCallback(() => {
+  const endResize = React.useCallback((): void => {
     document.removeEventListener('mousemove', startResize);
   }, []);
 
-  const toggleDisplayOutliers = React.useCallback(() => {
+  const toggleDisplayOutliers = React.useCallback((): void => {
     setDisplayOutliers(!displayOutliers);
   }, [displayOutliers]);
+
+  const toggleZoomMode = React.useCallback((): void => {
+    setZoomMode(!zoomMode);
+  }, [zoomMode]);
 
   React.useEffect(() => {
     metricsCollectionModel.initialize();
@@ -62,6 +67,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     <Metrics
       displayOutliers={displayOutliers}
       toggleDisplayOutliers={toggleDisplayOutliers}
+      zoomMode={zoomMode}
+      toggleZoomMode={toggleZoomMode}
       handleResize={handleResize}
       tableRef={tableRef}
       chartRef={chartRef}

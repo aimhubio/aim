@@ -47,6 +47,7 @@ function drawArea(props: IDrawAreaProps): void {
 
   svgRef.current = visArea
     .append('svg')
+    .attr('id', 'svg-area')
     .attr('width', '100%')
     .attr('height', '100%')
     .attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -54,6 +55,7 @@ function drawArea(props: IDrawAreaProps): void {
   bgRectRef.current = svgRef.current
     .append('rect')
     .attr('x', margin.left)
+    .attr('class', 'backgroundRect')
     .attr('y', margin.top)
     .attr('width', width - margin.left - margin.right)
     .attr('height', height - margin.top - margin.bottom)

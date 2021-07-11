@@ -7,4 +7,5 @@ export interface IDrawLinesProps {
   data: IProcessData['processedData'];
   xScale: IDrawAxesProps['xScale'];
   yScale: IDrawAxesProps['yScale'];
+  index: number | undefined;
 }
