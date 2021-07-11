@@ -9,6 +9,7 @@ const metricsRequestRef = metricsCollectionModel.getMetricsData();
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
+
   const metricsData = useModel<any>(metricsCollectionModel);
 
   const tableRef = React.useRef<HTMLDivElement>(null);

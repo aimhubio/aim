@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 import { CurveEnum } from './';
 import { IDrawLinesProps } from 'types/utils/d3/drawLines';
-import { IDrawAxesProps } from '../../types/utils/d3/drawAxes';
+import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
 
 function drawLines(props: IDrawLinesProps): void {
   const { linesRef, data, xScale, yScale, index } = props;
@@ -11,13 +11,13 @@ function drawLines(props: IDrawLinesProps): void {
   }
 
   linesRef.current.lineGenerator = function (
-    x: IDrawAxesProps | any = xScale,
-    y: IDrawAxesProps | any = yScale,
+    xValues: IDrawAxesProps | any = xScale,
+    yValues: IDrawAxesProps | any = yScale,
   ) {
     return d3
       .line()
-      .x((d) => x(d[0]))
-      .y((d) => y(d[1]))
+      .x((d) => xValues(d[0]))
+      .y((d) => yValues(d[1]))
       .curve(d3[CurveEnum.Linear]);
   };
 

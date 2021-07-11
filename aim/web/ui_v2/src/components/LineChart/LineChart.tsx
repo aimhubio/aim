@@ -70,7 +70,6 @@ function LineChart(
       linesRef,
       attributesRef,
     });
-
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,
