@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable react/prop-types */
 
 import React from 'react';
 
@@ -141,7 +142,9 @@ export function cloneArray(array) {
   return [].concat(array);
 }
 
-export function noop() {}
+export function noop() {
+  return null;
+}
 
 export function toString(value) {
   if (typeof value === 'string') return value;
@@ -210,18 +213,16 @@ export const debounce = (fn, ms = 0) => {
 // copied from https://www.30secondsofcode.org/js/s/throttle
 export const throttle = (fn, wait) => {
   let inThrottle, lastFn, lastTime;
-  return function () {
-    const context = this,
-      args = arguments;
+  return function (...args) {
     if (!inThrottle) {
-      fn.apply(context, args);
+      fn.apply(this, args);
       lastTime = Date.now();
       inThrottle = true;
     } else {
       clearTimeout(lastFn);
-      lastFn = setTimeout(function () {
+      lastFn = setTimeout(() => {
         if (Date.now() - lastTime >= wait) {
-          fn.apply(context, args);
+          fn.apply(this, args);
           lastTime = Date.now();
         }
       }, Math.max(wait - (Date.now() - lastTime), 0));
@@ -238,7 +239,7 @@ export function getScrollbarSize(recalculate) {
       window.document &&
       window.document.createElement
     ) {
-      let scrollDiv = document.createElement('div');
+      const scrollDiv = document.createElement('div');
 
       scrollDiv.style.position = 'absolute';
       scrollDiv.style.top = '-9999px';

@@ -118,7 +118,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         .select(`[id='${closestCircle.key}']`)
         .classed(classes.focus, false)
         .classed(classes.active, true)
-        .attr('r', CircleEnum.ActiveRadius);
+        .attr('r', CircleEnum.ActiveRadius)
+        .raise();
     }
 
     const hoverAxisData: IHoverAxisLine[] = [

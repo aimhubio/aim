@@ -7,6 +7,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
+import { traceToHash } from 'utils/toHash';
 
 const model = createModel({});
 
@@ -51,7 +52,7 @@ function processData(data: any) {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
-          key: `${run.run_hash}${metric.metric_name}`,
+          key: traceToHash(run.run_hash, metric.metric_name, metric.context),
           data: {
             ...metric.data,
             xValues: [...metric.data.iterations],

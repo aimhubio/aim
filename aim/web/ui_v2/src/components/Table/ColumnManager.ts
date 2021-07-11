@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable react/prop-types */
 
 import { FrozenDirection } from './Column';
 

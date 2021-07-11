@@ -11,7 +11,7 @@ export function contextToHash(context: { [key: string]: any }): string {
 export function traceToHash(
   runHash: string,
   metricName: string,
-  traceContext: { [key: string]: any } | string,
+  traceContext: { [key: string]: unknown } | string,
 ): string {
   if (typeof traceContext !== 'string') {
     traceContext = contextToHash(traceContext);

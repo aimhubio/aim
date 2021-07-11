@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable react/prop-types */
 
 import React from 'react';
 
@@ -110,6 +111,8 @@ class TableRow extends React.PureComponent {
         </Tag>
       );
     }
+
+    console.log(cells);
 
     return (
       <Tag {...rest} className={className} style={style} {...eventHandlers}>

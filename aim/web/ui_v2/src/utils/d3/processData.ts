@@ -58,11 +58,11 @@ function processData(props: IProcessDataProps): IProcessData {
   yValues = _.uniq(yValues);
 
   if (!props.displayOutliers) {
-    ySteps = removeOutliers(ySteps, 4);
+    yValues = removeOutliers(yValues, 4);
   }
 
-  const [yMin, yMax] = minMaxOfArray(ySteps);
-  const [xMin, xMax] = minMaxOfArray(xSteps);
+  const [xMin, xMax] = minMaxOfArray(xValues);
+  const [yMin, yMax] = minMaxOfArray(yValues);
   return {
     min: {
       x: xMin,

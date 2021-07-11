@@ -1,7 +1,9 @@
 // @ts-nocheck
+/* eslint-disable react/prop-types */
 
 import React from 'react';
 import memoize from 'memoize-one';
+import cn from 'classnames';
 
 import GridTable from './GridTable';
 import TableHeaderRow from './TableHeaderRow';

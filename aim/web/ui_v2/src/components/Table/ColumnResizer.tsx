@@ -1,8 +1,9 @@
 // @ts-nocheck
+/* eslint-disable react/prop-types */
 
 import React from 'react';
 
-import { noop, addClassName, removeClassName } from './utils';
+import { addClassName, removeClassName } from './utils';
 
 const INVALID_VALUE = null;
 
