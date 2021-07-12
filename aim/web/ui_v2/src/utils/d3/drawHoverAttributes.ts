@@ -90,6 +90,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
 
     closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
+    const closestCircle = closestCircles[0];
 
     // Draw Circles
     attributesRef.current
@@ -97,10 +98,20 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .data(nearestCircles)
       .join('circle')
       .attr('class', `${classes.HoverCircle}`)
-      .attr('id', (circle: INearestCircle) => circle.key)
+      .attr('id', function (this: SVGElement, circle: INearestCircle) {
+        // Set closest circle style
+        if (closestCircle.key === circle.key) {
+          d3.select(this).classed(classes.active, true).raise();
+        }
+        return circle.key;
+      })
       .attr('cx', (circle: INearestCircle) => circle.x)
       .attr('cy', (circle: INearestCircle) => circle.y)
-      .attr('r', CircleEnum.Radius)
+      .attr('r', (circle: INearestCircle) =>
+        closestCircle.key === circle.key
+          ? CircleEnum.ActiveRadius
+          : CircleEnum.Radius,
+      )
       .style('fill', (circle: INearestCircle) => circle.color)
       .on('click', function (this: SVGElement, circle: INearestCircle) {
         // TODO handle click
@@ -115,8 +126,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           .classed(classes.active, false)
           .classed(classes.focus, true);
       });
-
-    const closestCircle = closestCircles[0];
 
     // TODO highlight Line
     // linesRef.current.classed();
@@ -134,16 +143,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       yScale,
       xAlignment,
     });
-
-    // Set closest circle attributes
-    if (closestCircle.key) {
-      attributesRef.current
-        .select(`[id='${closestCircle.key}']`)
-        .classed(classes.focus, false)
-        .classed(classes.active, true)
-        .attr('r', CircleEnum.ActiveRadius)
-        .raise();
-    }
 
     const axisLineData: IAxisLineData[] = [
       { x1: closestCircle.x, y1: 0, x2: closestCircle.x, y2: height },
