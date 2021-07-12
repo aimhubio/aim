@@ -8,7 +8,7 @@ const toTupleData = (x: number[], y: number[]): [number, number][] => {
 };
 
 function drawLines(props: IDrawLinesProps): void {
-  const { linesRef, data, xScale, yScale } = props;
+  const { linesRef, data, xScale, yScale, index } = props;
   if (!linesRef?.current) {
     return;
   }
@@ -26,6 +26,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', lineGenerator)
       .attr('class', 'Line')
       .attr('id', `Line-${line.key}`)
+      .attr('clip-path', 'url(#lines-rect-clip-' + index + ')')
       .style('fill', 'none')
       .style('stroke', line.color)
       .style('stroke-dasharray', line.dasharray);

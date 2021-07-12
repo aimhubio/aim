@@ -80,7 +80,7 @@ function LineChart(
       yScale,
     });
 
-    drawLines({ data: processedData, linesRef, xScale, yScale });
+    drawLines({ data: processedData, linesRef, xScale, yScale, index });
 
     drawHoverAttributes({
       data: processedData,
@@ -93,6 +93,7 @@ function LineChart(
       xScale,
       yScale,
       xAlignment,
+      index,
     });
   }
 

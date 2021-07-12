@@ -14,6 +14,7 @@ export interface IDrawHoverAttributesProps {
   xScale: IGetAxisScale['xScale'];
   yScale: IGetAxisScale['yScale'];
   xAlignment: ILineChartProps['xAlignment'];
+  index: number;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };
