@@ -9,7 +9,7 @@ import {
   INearestCircle,
   ISetAxisLabelProps,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from './styles.module.css';
+import classes from '../../components/LineChart/styles.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
@@ -230,6 +230,8 @@ function setAxisLabel({
   const visArea = d3.select(visAreaRef.current);
 
   if (xAxisValueLabel) {
+    const formattedValue = Math.round(xAxisValueLabel * 10e9) / 10e9;
+
     xAxisValueRef.current = visArea
       .append('div')
       .attr(
@@ -237,7 +239,7 @@ function setAxisLabel({
         `${classes.ChartMouseValue} ${classes.ChartMouseValueXAxis}`,
       )
       .style('top', `${height - margin.bottom + 1}px`)
-      .text(xAxisValueLabel);
+      .text(formattedValue);
 
     const axisLeftEdge = margin.left - 1;
     const axisRightEdge = width - margin.right + 1;
