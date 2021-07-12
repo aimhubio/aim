@@ -11,7 +11,7 @@ function getMetricsData() {
     call: () => ({
       then: (resolve: (data: unknown) => void, reject?: unknown) => {
         setTimeout(() => {
-          const mock = generateMetrics(10, 8);
+          const mock = generateMetrics(10, 5);
           resolve(mock);
         }, 1000);
       },

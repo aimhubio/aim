@@ -6,6 +6,12 @@ import processData from './processData';
 import getAxisScale from './getAxisScale';
 import drawHoverAttributes from './drawHoverAttributes';
 
+enum XAlignmentEnum {
+  Epoch = 'epoch',
+  RelativeTime = 'relative_time',
+  AbsoluteTime = 'absolute_time',
+}
+
 enum CircleEnum {
   Radius = 3,
   ActiveRadius = 5,
@@ -35,6 +41,7 @@ export {
   CircleEnum,
   CurveEnum,
   ScaleEnum,
+  XAlignmentEnum,
   clearArea,
   drawArea,
   drawAxes,

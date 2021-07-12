@@ -4,7 +4,7 @@ export interface IMetric {
   run: IRun;
   key: string;
   metric_name: string;
-  params: { [key: string]: any };
+  context: { [key: string]: unknown };
   data: {
     values: Float64Array;
     steps: Uint32Array;

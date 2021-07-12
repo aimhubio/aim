@@ -8,10 +8,6 @@ import {
 const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;
 
-const toTupleData = (x: number[], y: number[]): [number, number][] => {
-  return x.map((v: number, i: number) => [v, y[i]]);
-};
-
 function processData(props: IProcessDataProps): IProcessData {
   const { data } = props;
 
@@ -50,9 +46,19 @@ function processData(props: IProcessDataProps): IProcessData {
     xValues = xValues.concat(filteredXValues);
     yValues = yValues.concat(filteredYValues);
 
-    return Object.assign({}, line, {
-      data: toTupleData(filteredXValues, filteredYValues),
-    });
+    return Object.assign(
+      {
+        color: '#000',
+        dasharray: '0',
+      },
+      line,
+      {
+        data: {
+          xValues: filteredXValues,
+          yValues: filteredYValues,
+        },
+      },
+    );
   });
 
   xValues = _.uniq(xValues);
@@ -68,8 +74,6 @@ function processData(props: IProcessDataProps): IProcessData {
       y: Math.max(...yValues),
     },
     processedData,
-    xValues,
-    yValues,
   };
 }
 

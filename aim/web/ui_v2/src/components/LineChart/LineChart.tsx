@@ -1,12 +1,6 @@
-import React, {
-  FunctionComponentElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
-import useStyles from './style';
+import useStyles from './lineChartStyle';
 import { ILineChartProps } from '../../types/components/LineChart/LineChart';
 import {
   drawArea,
@@ -21,8 +15,8 @@ import useResizeObserver from '../../hooks/window/useResizeObserver';
 
 function LineChart(
   props: ILineChartProps,
-): FunctionComponentElement<ReactNode> {
-  const { index, data, axisScaleType = {} } = props;
+): React.FunctionComponentElement<React.ReactNode> {
+  const { index, data, axisScaleType = {}, xAlignment } = props;
   const classes = useStyles();
 
   // boxes
@@ -52,6 +46,8 @@ function LineChart(
   const axesRef = useRef(null);
   const linesRef = useRef(null);
   const attributesRef = useRef(null);
+  const xAxisValueRef = useRef(null);
+  const yAxisValueRef = useRef(null);
 
   function draw(): void {
     drawArea({
@@ -87,13 +83,16 @@ function LineChart(
     drawLines({ data: processedData, linesRef, xScale, yScale });
 
     drawHoverAttributes({
-      data,
+      data: processedData,
       visAreaRef,
       attributesRef,
       plotBoxRef,
       visBoxRef,
+      xAxisValueRef,
+      yAxisValueRef,
       xScale,
       yScale,
+      xAlignment,
     });
   }
 
