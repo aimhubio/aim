@@ -8,9 +8,13 @@ import {
   IAxisLineData,
   INearestCircle,
   ISetAxisLabelProps,
+  IGetNearestCirclesProps,
+  IGetNearestCircles,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from './styles.module.css';
+import classes from '../../components/LineChart/styles.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
+import { IProcessedData } from '../../types/utils/d3/processData';
+import { IGetAxisScale } from '../../types/utils/d3/getAxesScale';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
@@ -40,56 +44,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       margin,
     });
 
-    // Closest xPoint for mouseX
-    const xPoint = xScale.invert(mouseX);
-
-    // Circle coordinates can be equal, to show only one circle
-    // on hover we need to keep array of closest circles
-    let closestCircles: IClosestCircle[] = [
-      {
-        key: '',
-        r: null,
-        x: 0,
-        y: 0,
-      },
-    ];
-
-    const nearestCircles: INearestCircle[] = [];
-
-    for (const line of data) {
-      const index = d3.bisectCenter(line.data.xValues, xPoint);
-
-      const closestXPixel = xScale(line.data.xValues[index]);
-      const closestYPixel = yScale(line.data.yValues[index]);
-
-      // Find closest circles
-      const rX = Math.abs(closestXPixel - mouseX);
-      const rY = Math.abs(closestYPixel - mouseY);
-      const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
-      if (closestCircles[0].r === null || r <= closestCircles[0].r) {
-        const circle = {
-          key: line.key,
-          r,
-          x: closestXPixel,
-          y: closestYPixel,
-        };
-        if (r === closestCircles[0].r) {
-          // Circle coordinates can be equal, to show only one circle on hover
-          // we need to keep array of closest circles
-          closestCircles.push(circle);
-        } else {
-          closestCircles = [circle];
-        }
-      }
-      nearestCircles.push({
-        x: closestXPixel,
-        y: closestYPixel,
-        key: line.key,
-        color: line.color,
-      });
-    }
-
-    closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
+    const { nearestCircles, closestCircle } = getNearestCircles({
+      data,
+      xScale,
+      yScale,
+      mouseX,
+      mouseY,
+    });
 
     // Draw Circles
     attributesNodeRef.current
@@ -97,10 +58,20 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .data(nearestCircles)
       .join('circle')
       .attr('class', `${classes.HoverCircle}`)
-      .attr('id', (circle: INearestCircle) => circle.key)
+      .attr('id', function (this: SVGElement, circle: INearestCircle) {
+        // Set closest circle style
+        if (closestCircle.key === circle.key) {
+          d3.select(this).classed(classes.active, true).raise();
+        }
+        return circle.key;
+      })
       .attr('cx', (circle: INearestCircle) => circle.x)
       .attr('cy', (circle: INearestCircle) => circle.y)
-      .attr('r', CircleEnum.Radius)
+      .attr('r', (circle: INearestCircle) =>
+        closestCircle.key === circle.key
+          ? CircleEnum.ActiveRadius
+          : CircleEnum.Radius,
+      )
       .style('fill', (circle: INearestCircle) => circle.color)
       .on('click', function (this: SVGElement, circle: INearestCircle) {
         // TODO handle click
@@ -115,8 +86,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           .classed(classes.active, false)
           .classed(classes.focus, true);
       });
-
-    const closestCircle = closestCircles[0];
 
     // TODO highlight Line
     // linesRef.current.classed();
@@ -134,16 +103,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       yScale,
       xAlignment,
     });
-
-    // Set closest circle attributes
-    if (closestCircle.key) {
-      attributesNodeRef.current
-        .select(`[id='${closestCircle.key}']`)
-        .classed(classes.focus, false)
-        .classed(classes.active, true)
-        .attr('r', CircleEnum.ActiveRadius)
-        .raise();
-    }
 
     const axisLineData: IAxisLineData[] = [
       { x1: closestCircle.x, y1: 0, x2: closestCircle.x, y2: height },
@@ -169,6 +128,64 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   svgArea?.on('mouseleave', (event) => {
     // TODO handle mouseLeave
   });
+}
+
+function getNearestCircles({
+  data,
+  xScale,
+  yScale,
+  mouseX,
+  mouseY,
+}: IGetNearestCirclesProps): IGetNearestCircles {
+  // Closest xPoint for mouseX
+  const xPoint = xScale.invert(mouseX);
+
+  let closestCircles: IClosestCircle[] = [
+    {
+      key: '',
+      r: null,
+      x: 0,
+      y: 0,
+    },
+  ];
+
+  const nearestCircles: INearestCircle[] = [];
+
+  for (const line of data) {
+    const index = d3.bisectCenter(line.data.xValues, xPoint);
+
+    const closestXPixel = xScale(line.data.xValues[index]);
+    const closestYPixel = yScale(line.data.yValues[index]);
+
+    // Find closest circles
+    const rX = Math.abs(closestXPixel - mouseX);
+    const rY = Math.abs(closestYPixel - mouseY);
+    const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
+    if (closestCircles[0].r === null || r <= closestCircles[0].r) {
+      const circle = {
+        key: line.key,
+        r,
+        x: closestXPixel,
+        y: closestYPixel,
+      };
+      if (r === closestCircles[0].r) {
+        // Circle coordinates can be equal, to show only one circle on hover
+        // we need to keep array of closest circles
+        closestCircles.push(circle);
+      } else {
+        closestCircles = [circle];
+      }
+    }
+    nearestCircles.push({
+      x: closestXPixel,
+      y: closestYPixel,
+      key: line.key,
+      color: line.color,
+    });
+  }
+  closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
+  const closestCircle = closestCircles[0];
+  return { nearestCircles, closestCircle };
 }
 
 function getCoordinates({
@@ -231,6 +248,8 @@ function setAxisLabel({
   const visArea = d3.select(visAreaRef.current);
 
   if (xAxisValueLabel) {
+    const formattedValue = Math.round(xAxisValueLabel * 10e9) / 10e9;
+
     xAxisLabelNodeRef.current = visArea
       .append('div')
       .attr(
@@ -238,7 +257,7 @@ function setAxisLabel({
         `${classes.ChartMouseValue} ${classes.ChartMouseValueXAxis}`,
       )
       .style('top', `${height - margin.bottom + 1}px`)
-      .text(xAxisValueLabel);
+      .text(formattedValue);
 
     const axisLeftEdge = margin.left - 1;
     const axisRightEdge = width - margin.right + 1;

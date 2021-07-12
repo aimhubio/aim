@@ -47,3 +47,16 @@ export interface IClosestCircle {
 export interface ISetAxisLabelProps extends Partial<IDrawHoverAttributesProps> {
   closestCircle: IClosestCircle;
 }
+
+export interface IGetNearestCirclesProps {
+  data: IProcessedData[];
+  xScale: IGetAxisScale['xScale'];
+  yScale: IGetAxisScale['yScale'];
+  mouseX: number;
+  mouseY: number;
+}
+
+export interface IGetNearestCircles {
+  nearestCircles: INearestCircle[];
+  closestCircle: IClosestCircle;
+}
