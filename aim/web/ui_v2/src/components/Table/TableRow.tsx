@@ -55,7 +55,6 @@ class TableRow extends React.PureComponent {
       rowRenderer,
       cellRenderer,
       expandIconRenderer,
-      tagName: Tag,
       // omit the following from rest
       rowKey,
       getIsResetting,
@@ -100,7 +99,7 @@ class TableRow extends React.PureComponent {
     if (estimatedRowHeight && rowIndex >= 0) {
       const { height, ...otherStyles } = style;
       return (
-        <Tag
+        <div
           {...rest}
           ref={this._setRef}
           className={className}
@@ -108,16 +107,14 @@ class TableRow extends React.PureComponent {
           {...(this.state.measured && eventHandlers)}
         >
           {cells}
-        </Tag>
+        </div>
       );
     }
 
-    console.log(cells);
-
     return (
-      <Tag {...rest} className={className} style={style} {...eventHandlers}>
+      <div {...rest} className={className} style={style} {...eventHandlers}>
         {cells}
-      </Tag>
+      </div>
     );
   }
 

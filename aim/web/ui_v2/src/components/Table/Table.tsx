@@ -3,19 +3,19 @@
 
 import React from 'react';
 import { Avatar, Box, Button, Chip, Grid } from '@material-ui/core';
-import BaseTable, { AutoResizer } from 'react-base-table';
 
 import ITableProps from 'types/components/Table/Table';
-import TableGrid from './TableGrid';
-
-import 'react-base-table/styles.css';
+import BaseTable from './BaseTable';
+import AutoResizer from './AutoResizer';
 
 function Table(
   props: ITableProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const [index, setIndex] = React.useState(0);
+
+  const tableRef = React.useRef();
+
   const columns = React.useMemo(() => {
-    console.log(index);
     return [
       {
         dataKey: 'experiment',
@@ -24,6 +24,7 @@ function Table(
         title: 'Experiment',
         dataGetter: ({ rowData }) => rowData.run.experiment_name,
         width: 150,
+        resizable: true,
       },
       {
         dataKey: 'run',
@@ -52,7 +53,11 @@ function Table(
               color='primary'
               label={c.join(':')}
               size='small'
-              avatar={<Avatar>{c[1][0]}</Avatar>}
+              avatar={
+                <Avatar>
+                  {c[0][0]}:{c[1][0]}
+                </Avatar>
+              }
             />
           )),
         width: 150,
@@ -86,10 +91,10 @@ function Table(
 
   React.useEffect(() => {
     setTimeout(() => {
-      const newIndex = Math.floor(Math.random() * 50);
-      setIndex(newIndex === index ? index + 1 : newIndex);
-    }, (Math.random() * 10 + 1) * 100);
-  }, [index]);
+      tableRef.current?.forceUpdateTable();
+    }, 100);
+  }, [columns]);
+
   return (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
       <Box component='nav' p={0.5}>
@@ -169,7 +174,8 @@ function Table(
         <AutoResizer>
           {({ width, height }) => (
             <BaseTable
-              key={index}
+              ref={tableRef}
+              classPrefix='BaseTable'
               columns={columns}
               data={props.data}
               frozenData={[]}
@@ -186,7 +192,7 @@ function Table(
               overscanRowCount={1}
               onEndReachedThreshold={500}
               getScrollbarSize={() => null}
-              ignoreFunctionInColumnCompare={true}
+              ignoreFunctionInColumnCompare={false}
               onScroll={() => null}
               onRowsRendered={() => null}
               onScrollbarPresenceChange={() => null}

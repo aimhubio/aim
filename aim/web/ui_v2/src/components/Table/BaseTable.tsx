@@ -33,6 +33,8 @@ import {
   noop,
 } from './utils';
 
+import './BaseTable.css';
+
 const getColumns = memoize(
   (columns, children) => columns || normalizeColumns(children),
 );

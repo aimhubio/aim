@@ -17,7 +17,6 @@ const TableHeaderRow = ({
   headerRenderer,
   expandColumnKey,
   expandIcon: ExpandIcon,
-  tagName: Tag,
   ...rest
 }) => {
   let cells = columns.map((column, columnIndex) =>
@@ -35,9 +34,9 @@ const TableHeaderRow = ({
   }
 
   return (
-    <Tag {...rest} className={className} style={style}>
+    <div {...rest} className={className} style={style}>
       {cells}
-    </Tag>
+    </div>
   );
 };
 

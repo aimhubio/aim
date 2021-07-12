@@ -10,7 +10,7 @@ function generateMetrics(count = 500, pointsCount = 50) {
         default: {},
         config: {},
       },
-      metrics: ['test', 'val'].map((context) => {
+      metrics: ['train', 'val'].map((context) => {
         return {
           metric_name: 'foo',
           context: {
