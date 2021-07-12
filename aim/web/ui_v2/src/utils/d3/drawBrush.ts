@@ -11,6 +11,7 @@ function drawBrush(props: IDrawBrushProps): void {
       [plotBoxRef.current.width, plotBoxRef.current.height],
     ])
     .on('end', handleZoomChange);
+
   plotRef.current.append('g').call(brush).attr('class', 'brush');
 
   brushRef.current.updateScales = function (
@@ -21,11 +22,19 @@ function drawBrush(props: IDrawBrushProps): void {
     brushRef.current.yScale = yScale;
   };
 
+  // This remove the grey brush area as soon as the selection has been done
+  function removeBrush() {
+    plotRef.current.select('.brush').call(brush.move, null);
+  }
+
+  // This event firing after brush selection ends
   function handleZoomChange(event: d3.D3BrushEvent<d3.BrushSelection>): void {
     const extent: d3.BrushSelection | any = event.selection;
 
     if (!extent) {
       return;
+    } else if (extent[1][0] - extent[0][0] < 5) {
+      removeBrush();
     } else {
       // inverting pixels to x,y values
       const left: number = brushRef.current.xScale.invert(extent[0][0]);
@@ -52,8 +61,7 @@ function drawBrush(props: IDrawBrushProps): void {
         yValues,
       });
     }
-    // This remove the grey brush area as soon as the selection has been done
-    plotRef.current.select('.brush').call(brush.move, null);
+    removeBrush();
   }
 }
 

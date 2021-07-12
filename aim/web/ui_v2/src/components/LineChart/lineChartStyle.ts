@@ -11,5 +11,8 @@ export default makeStyles(() => ({
     '&.zoomMode rect': {
       cursor: 'zoom-in',
     },
+    position: 'relative',
+    overflow: 'hidden',
+    userSelect: 'none',
   },
 }));

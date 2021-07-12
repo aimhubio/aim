@@ -12,7 +12,7 @@ function generateMetrics(count = 500, pointsCount = 50) {
       metrics: ['test', 'val'].map((context) => {
         return {
           metric_name: 'foo',
-          params: {
+          context: {
             subset: context,
           },
           data: {

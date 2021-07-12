@@ -1,5 +1,7 @@
 import React from 'react';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
+
+import useStyles from './lineChartStyle';
 import {
   drawArea,
   clearArea,
@@ -8,14 +10,21 @@ import {
   processData,
   getAxisScale,
   drawBrush,
+  drawHoverAttributes,
 } from 'utils/d3';
-
-import useStyles from './style';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 function LineChart(
   props: ILineChartProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { index, data, axisScaleType = {}, displayOutliers, zoomMode } = props;
+  const {
+    index,
+    data,
+    axisScaleType = {},
+    displayOutliers,
+    xAlignment,
+    zoomMode,
+  } = props;
   const classes = useStyles();
 
   // boxes
@@ -46,6 +55,8 @@ function LineChart(
   const axesRef = React.useRef<any>(null);
   const linesRef = React.useRef<any>(null);
   const attributesRef = React.useRef(null);
+  const xAxisValueRef = React.useRef(null);
+  const yAxisValueRef = React.useRef(null);
 
   const { processedData, min, max } = React.useMemo(
     () =>
@@ -56,7 +67,28 @@ function LineChart(
     [data, displayOutliers],
   );
 
-  function draw(): void {
+  const zoomOut = React.useCallback(() => {
+    const { xScale, yScale } = getAxisScale({
+      visBoxRef,
+      axisScaleType,
+      min,
+      max,
+    });
+
+    // setting axes to initial state
+    axesRef.current.updateXAxis(xScale);
+    axesRef.current.updateYAxis(yScale);
+
+    // setting scales and lines to initial state
+    brushRef.current.updateScales(xScale, yScale);
+    linesRef.current
+      .selectAll('.Line')
+      .transition()
+      .duration(1000)
+      .attr('d', linesRef.current.lineGenerator(xScale, yScale));
+  }, [axisScaleType, max, min]);
+
+  const draw = React.useCallback((): void => {
     drawArea({
       index,
       visBoxRef,
@@ -92,6 +124,19 @@ function LineChart(
       index,
     });
 
+    drawHoverAttributes({
+      data: processedData,
+      visAreaRef,
+      attributesRef,
+      plotBoxRef,
+      visBoxRef,
+      xAxisValueRef,
+      yAxisValueRef,
+      xScale,
+      yScale,
+      xAlignment,
+    });
+
     if (zoomMode) {
       brushRef.current.xScale = xScale;
       brushRef.current.yScale = yScale;
@@ -101,10 +146,18 @@ function LineChart(
         plotRef,
         handleBrushChange,
       });
-
       svgRef.current.on('dblclick', zoomOut);
     }
-  }
+  }, [
+    axisScaleType,
+    index,
+    max,
+    min,
+    processedData,
+    xAlignment,
+    zoomMode,
+    zoomOut,
+  ]);
 
   const handleBrushChange = ({ xValues, yValues }: any): void => {
     //
@@ -123,7 +176,7 @@ function LineChart(
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
     linesRef.current
-      .selectAll('.PlotLine')
+      .selectAll('.Line')
       .transition()
       .duration(1000)
       .attr(
@@ -138,28 +191,7 @@ function LineChart(
   const renderChart = React.useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
-  }, [draw, displayOutliers]);
-
-  function zoomOut() {
-    const { xScale, yScale } = getAxisScale({
-      visBoxRef,
-      axisScaleType,
-      min,
-      max,
-    });
-
-    // setting axes to initial state
-    axesRef.current.updateXAxis(xScale);
-    axesRef.current.updateYAxis(yScale);
-
-    // setting scales and lines to initial state
-    brushRef.current.updateScales(xScale, yScale);
-    linesRef.current
-      .selectAll('.PlotLine')
-      .transition()
-      .duration(1000)
-      .attr('d', linesRef.current.lineGenerator(xScale, yScale));
-  }
+  }, [draw]);
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -170,19 +202,11 @@ function LineChart(
     [renderChart],
   );
 
+  useResizeObserver(resizeObserverCallback, parentRef);
+
   React.useEffect(() => {
-    const observer: ResizeObserver = new ResizeObserver(resizeObserverCallback);
-
-    if (observer && parentRef.current) {
-      observer.observe(parentRef.current);
-    }
-
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, [resizeObserverCallback]);
+    requestAnimationFrame(renderChart);
+  }, [props.data, renderChart, zoomMode, displayOutliers]);
 
   return (
     <div

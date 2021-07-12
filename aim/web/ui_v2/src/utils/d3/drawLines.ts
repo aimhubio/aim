@@ -4,6 +4,10 @@ import { CurveEnum } from './';
 import { IDrawLinesProps } from 'types/utils/d3/drawLines';
 import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
 
+const toTupleData = (x: number[], y: number[]): [number, number][] => {
+  return x.map((v: number, i: number) => [v, y[i]]);
+};
+
 function drawLines(props: IDrawLinesProps): void {
   const { linesRef, data, xScale, yScale, index } = props;
   if (!linesRef?.current) {
@@ -22,17 +26,16 @@ function drawLines(props: IDrawLinesProps): void {
   };
 
   for (const line of data) {
-    const { color = '#000', dasharray = '0' } = line;
-
     linesRef.current
       .append('path')
-      .data([line.data])
+      .data([toTupleData(line.data.xValues, line.data.yValues)])
+      .attr('id', `Line-${line.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr('d', linesRef.current.lineGenerator())
-      .attr('class', 'PlotLine')
+      .attr('class', 'Line')
       .style('fill', 'none')
-      .style('stroke', color)
-      .style('stroke-dasharray', dasharray);
+      .style('stroke', line.color)
+      .style('stroke-dasharray', line.dasharray);
   }
 }
 

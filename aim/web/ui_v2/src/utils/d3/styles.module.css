@@ -1,0 +1,54 @@
+.HoverLine {
+    stroke: #94999f; /* var(--grey-light) */
+}
+
+.HoverCircle {
+    stroke: #3b5896; /* var(--primary) */
+    stroke-width: 1;
+    cursor: pointer;
+}
+
+.focus {
+    stroke: #3b5896; /* var(--primary) */
+    stroke-width: 2;
+    opacity: 1;
+}
+
+.active {
+    stroke: #7a94cc ;/* var(--primary-light); */
+    stroke-width: 3;
+    opacity: 1;
+}
+
+.ChartMouseValue {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 0.375em 0.5em; /*var(--space-xxs) var(--space-xs);*/
+    background-color: #f7faff;  /*var(--primary-bg);*/
+    border: 1px solid #7a94cc; /*var(--primary-light);*/
+    color: #243969; /*var(--primary-dark);*/
+    font-size: 10px;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.ChartMouseValueXAxis {
+    transform: translateX(-50%);
+    border-radius: 0 0 6px 6px;
+    border-top: none;
+    overflow: hidden;
+}
+
+.ChartMouseValueYAxis {
+    transform: translateY(-50%);
+    border-radius: 6px 0 0 6px;
+    border-right: none;
+    overflow: hidden;
+    box-shadow: inset -8px 0 5px -6px #3b5896; /* var(--primary);*/
+}
+
+.HighlightLine {
+    opacity: 1;
+    stroke-width: 3px;
+
+}
