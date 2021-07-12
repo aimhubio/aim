@@ -8,9 +8,13 @@ import {
   IAxisLineData,
   INearestCircle,
   ISetAxisLabelProps,
+  IGetNearestCirclesProps,
+  IGetNearestCircles,
 } from '../../types/utils/d3/drawHoverAttributes';
 import classes from '../../components/LineChart/styles.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
+import { IProcessedData } from '../../types/utils/d3/processData';
+import { IGetAxisScale } from '../../types/utils/d3/getAxesScale';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
@@ -40,57 +44,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       margin,
     });
 
-    // Closest xPoint for mouseX
-    const xPoint = xScale.invert(mouseX);
-
-    // Circle coordinates can be equal, to show only one circle
-    // on hover we need to keep array of closest circles
-    let closestCircles: IClosestCircle[] = [
-      {
-        key: '',
-        r: null,
-        x: 0,
-        y: 0,
-      },
-    ];
-
-    const nearestCircles: INearestCircle[] = [];
-
-    for (const line of data) {
-      const index = d3.bisectCenter(line.data.xValues, xPoint);
-
-      const closestXPixel = xScale(line.data.xValues[index]);
-      const closestYPixel = yScale(line.data.yValues[index]);
-
-      // Find closest circles
-      const rX = Math.abs(closestXPixel - mouseX);
-      const rY = Math.abs(closestYPixel - mouseY);
-      const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
-      if (closestCircles[0].r === null || r <= closestCircles[0].r) {
-        const circle = {
-          key: line.key,
-          r,
-          x: closestXPixel,
-          y: closestYPixel,
-        };
-        if (r === closestCircles[0].r) {
-          // Circle coordinates can be equal, to show only one circle on hover
-          // we need to keep array of closest circles
-          closestCircles.push(circle);
-        } else {
-          closestCircles = [circle];
-        }
-      }
-      nearestCircles.push({
-        x: closestXPixel,
-        y: closestYPixel,
-        key: line.key,
-        color: line.color,
-      });
-    }
-
-    closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
-    const closestCircle = closestCircles[0];
+    const { nearestCircles, closestCircle } = getNearestCircles({
+      data,
+      xScale,
+      yScale,
+      mouseX,
+      mouseY,
+    });
 
     // Draw Circles
     attributesRef.current
@@ -168,6 +128,64 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   svgArea?.on('mouseleave', (event) => {
     // TODO handle mouseLeave
   });
+}
+
+function getNearestCircles({
+  data,
+  xScale,
+  yScale,
+  mouseX,
+  mouseY,
+}: IGetNearestCirclesProps): IGetNearestCircles {
+  // Closest xPoint for mouseX
+  const xPoint = xScale.invert(mouseX);
+
+  let closestCircles: IClosestCircle[] = [
+    {
+      key: '',
+      r: null,
+      x: 0,
+      y: 0,
+    },
+  ];
+
+  const nearestCircles: INearestCircle[] = [];
+
+  for (const line of data) {
+    const index = d3.bisectCenter(line.data.xValues, xPoint);
+
+    const closestXPixel = xScale(line.data.xValues[index]);
+    const closestYPixel = yScale(line.data.yValues[index]);
+
+    // Find closest circles
+    const rX = Math.abs(closestXPixel - mouseX);
+    const rY = Math.abs(closestYPixel - mouseY);
+    const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
+    if (closestCircles[0].r === null || r <= closestCircles[0].r) {
+      const circle = {
+        key: line.key,
+        r,
+        x: closestXPixel,
+        y: closestYPixel,
+      };
+      if (r === closestCircles[0].r) {
+        // Circle coordinates can be equal, to show only one circle on hover
+        // we need to keep array of closest circles
+        closestCircles.push(circle);
+      } else {
+        closestCircles = [circle];
+      }
+    }
+    nearestCircles.push({
+      x: closestXPixel,
+      y: closestYPixel,
+      key: line.key,
+      color: line.color,
+    });
+  }
+  closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
+  const closestCircle = closestCircles[0];
+  return { nearestCircles, closestCircle };
 }
 
 function getCoordinates({
