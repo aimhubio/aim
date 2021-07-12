@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { IDrawBrushProps } from 'types/utils/d3/drawBrush';
 
 function drawBrush(props: IDrawBrushProps): void {
-  const { brushRef, plotBoxRef, plotRef, handleBrushChange } = props;
+  const { brushRef, plotBoxRef, plotNodeRef, handleBrushChange } = props;
 
   const brush = d3
     .brush()
@@ -12,7 +12,7 @@ function drawBrush(props: IDrawBrushProps): void {
     ])
     .on('end', handleZoomChange);
 
-  plotRef.current.append('g').call(brush).attr('class', 'brush');
+  plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
 
   brushRef.current.updateScales = function (
     xScale: d3.AxisScale<any>,
@@ -24,7 +24,7 @@ function drawBrush(props: IDrawBrushProps): void {
 
   // This remove the grey brush area as soon as the selection has been done
   function removeBrush() {
-    plotRef.current.select('.brush').call(brush.move, null);
+    plotNodeRef.current.select('.brush').call(brush.move, null);
   }
 
   // This event firing after brush selection ends

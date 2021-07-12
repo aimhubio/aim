@@ -9,8 +9,8 @@ const toTupleData = (x: number[], y: number[]): [number, number][] => {
 };
 
 function drawLines(props: IDrawLinesProps): void {
-  const { linesRef, data, xScale, yScale, index } = props;
-  if (!linesRef?.current) {
+  const { linesRef, linesNodeRef, data, xScale, yScale, index } = props;
+  if (!linesNodeRef?.current) {
     return;
   }
 
@@ -26,7 +26,7 @@ function drawLines(props: IDrawLinesProps): void {
   };
 
   for (const line of data) {
-    linesRef.current
+    linesNodeRef.current
       .append('path')
       .data([toTupleData(line.data.xValues, line.data.yValues)])
       .attr('id', `Line-${line.key}`)

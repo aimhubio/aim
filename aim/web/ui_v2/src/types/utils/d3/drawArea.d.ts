@@ -4,12 +4,12 @@ export interface IDrawAreaProps {
   index?: number;
   parentRef: React.MutableRefObject<>;
   visAreaRef: React.MutableRefObject<>;
-  svgRef: React.MutableRefObject<>;
-  bgRectRef: React.MutableRefObject<>;
+  svgNodeRef: React.MutableRefObject<>;
+  bgRectNodeRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
-  plotRef: React.MutableRefObject<>;
-  axesRef: React.MutableRefObject<>;
+  plotNodeRef: React.MutableRefObject<>;
+  axesNodeRef: React.MutableRefObject<>;
   plotBoxRef: React.MutableRefObject<>;
-  linesRef: React.MutableRefObject<>;
-  attributesRef: React.MutableRefObject<>;
+  linesNodeRef: React.MutableRefObject<>;
+  attributesNodeRef: React.MutableRefObject<>;
 }

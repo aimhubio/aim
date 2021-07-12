@@ -8,14 +8,14 @@ function drawArea(props: IDrawAreaProps): void {
     index = 0,
     parentRef,
     visAreaRef,
-    svgRef,
-    bgRectRef,
+    svgNodeRef,
+    bgRectNodeRef,
     visBoxRef,
-    plotRef,
-    axesRef,
+    plotNodeRef,
+    axesNodeRef,
     plotBoxRef,
-    linesRef,
-    attributesRef,
+    linesNodeRef,
+    attributesNodeRef,
   } = props;
 
   if (!parentRef?.current || !visAreaRef?.current) {
@@ -45,14 +45,14 @@ function drawArea(props: IDrawAreaProps): void {
 
   visArea.style('width', '100%').style('height', '100%');
 
-  svgRef.current = visArea
+  svgNodeRef.current = visArea
     .append('svg')
     .attr('id', 'svg-area')
     .attr('width', '100%')
     .attr('height', '100%')
     .attr('xmlns', 'http://www.w3.org/2000/svg');
 
-  bgRectRef.current = svgRef.current
+  bgRectNodeRef.current = svgNodeRef.current
     .append('rect')
     .attr('x', margin.left)
     .attr('class', 'backgroundRect')
@@ -61,15 +61,15 @@ function drawArea(props: IDrawAreaProps): void {
     .attr('height', height - margin.top - margin.bottom)
     .style('fill', 'transparent');
 
-  plotRef.current = svgRef.current
+  plotNodeRef.current = svgNodeRef.current
     .append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-  axesRef.current = plotRef.current.append('g').attr('class', 'Axes');
+  axesNodeRef.current = plotNodeRef.current.append('g').attr('class', 'Axes');
 
-  linesRef.current = plotRef.current.append('g').attr('class', 'Lines');
+  linesNodeRef.current = plotNodeRef.current.append('g').attr('class', 'Lines');
 
-  linesRef.current
+  linesNodeRef.current
     .append('clipPath')
     .attr('id', 'lines-rect-clip-' + index)
     .append('rect')
@@ -78,11 +78,11 @@ function drawArea(props: IDrawAreaProps): void {
     .attr('width', width - margin.left - margin.right)
     .attr('height', height - margin.top - margin.bottom);
 
-  attributesRef.current = plotRef.current
+  attributesNodeRef.current = plotNodeRef.current
     .append('g')
     .attr('class', 'Attributes');
 
-  attributesRef.current
+  attributesNodeRef.current
     .append('clipPath')
     .attr('id', 'circles-rect-clip-' + index)
     .append('rect')

@@ -6,11 +6,11 @@ import { IProcessedData } from './processData';
 export interface IDrawHoverAttributesProps {
   data: IProcessedData[];
   visAreaRef: React.MutableRefObject<>;
-  attributesRef: React.MutableRefObject<>;
+  attributesNodeRef: React.MutableRefObject<>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
-  xAxisValueRef: React.MutableRefObject<>;
-  yAxisValueRef: React.MutableRefObject<>;
+  xAxisLabelNodeRef: React.MutableRefObject<>;
+  yAxisLabelNodeRef: React.MutableRefObject<>;
   xScale: IGetAxisScale['xScale'];
   yScale: IGetAxisScale['yScale'];
   xAlignment: ILineChartProps['xAlignment'];

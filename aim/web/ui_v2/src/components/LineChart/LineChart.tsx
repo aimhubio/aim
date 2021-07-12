@@ -47,16 +47,20 @@ function LineChart(
   const parentRef = React.useRef<HTMLDivElement>(null);
   const visAreaRef = React.useRef<HTMLDivElement>(null);
 
-  // d3 elements
-  const svgRef = React.useRef<any>(null);
+  // d3 node elements
+  const svgNodeRef = React.useRef<any>(null);
+  const bgRectNodeRef = React.useRef(null);
+  const plotNodeRef = React.useRef(null);
+  const axesNodeRef = React.useRef<any>(null);
+  const linesNodeRef = React.useRef<any>(null);
+  const attributesNodeRef = React.useRef(null);
+  const xAxisLabelNodeRef = React.useRef(null);
+  const yAxisLabelNodeRef = React.useRef(null);
+
+  // methods and values refs
+  const axesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
-  const bgRectRef = React.useRef(null);
-  const plotRef = React.useRef(null);
-  const axesRef = React.useRef<any>(null);
-  const linesRef = React.useRef<any>(null);
-  const attributesRef = React.useRef(null);
-  const xAxisValueRef = React.useRef(null);
-  const yAxisValueRef = React.useRef(null);
+  const linesRef = React.useRef<any>({});
 
   const { processedData, min, max } = React.useMemo(
     () =>
@@ -81,7 +85,7 @@ function LineChart(
 
     // setting scales and lines to initial state
     brushRef.current.updateScales(xScale, yScale);
-    linesRef.current
+    linesNodeRef.current
       .selectAll('.Line')
       .transition()
       .duration(1000)
@@ -95,12 +99,12 @@ function LineChart(
       plotBoxRef,
       parentRef,
       visAreaRef,
-      svgRef,
-      bgRectRef,
-      plotRef,
-      axesRef,
-      linesRef,
-      attributesRef,
+      svgNodeRef,
+      bgRectNodeRef,
+      plotNodeRef,
+      axesNodeRef,
+      linesNodeRef,
+      attributesNodeRef,
     });
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
@@ -110,6 +114,7 @@ function LineChart(
     });
 
     drawAxes({
+      axesNodeRef,
       axesRef,
       plotBoxRef,
       xScale,
@@ -118,6 +123,7 @@ function LineChart(
 
     drawLines({
       data: processedData,
+      linesNodeRef,
       linesRef,
       xScale,
       yScale,
@@ -127,11 +133,11 @@ function LineChart(
     drawHoverAttributes({
       data: processedData,
       visAreaRef,
-      attributesRef,
+      attributesNodeRef,
       plotBoxRef,
       visBoxRef,
-      xAxisValueRef,
-      yAxisValueRef,
+      xAxisLabelNodeRef,
+      yAxisLabelNodeRef,
       xScale,
       yScale,
       xAlignment,
@@ -143,10 +149,10 @@ function LineChart(
       drawBrush({
         brushRef,
         plotBoxRef,
-        plotRef,
+        plotNodeRef,
         handleBrushChange,
       });
-      svgRef.current.on('dblclick', zoomOut);
+      svgNodeRef.current.on('dblclick', zoomOut);
     }
   }, [
     axisScaleType,
@@ -175,7 +181,7 @@ function LineChart(
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    linesRef.current
+    linesNodeRef.current
       .selectAll('.Line')
       .transition()
       .duration(1000)

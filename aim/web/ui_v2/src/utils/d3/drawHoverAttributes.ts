@@ -15,12 +15,12 @@ import { CircleEnum, XAlignmentEnum } from './index';
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     data,
-    attributesRef,
+    attributesNodeRef,
     plotBoxRef,
     visAreaRef,
     visBoxRef,
-    xAxisValueRef,
-    yAxisValueRef,
+    xAxisLabelNodeRef,
+    yAxisLabelNodeRef,
     xScale,
     yScale,
     xAlignment,
@@ -92,7 +92,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
 
     // Draw Circles
-    attributesRef.current
+    attributesNodeRef.current
       .selectAll('circle')
       .data(nearestCircles)
       .join('circle')
@@ -128,8 +128,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       visAreaRef,
       visBoxRef,
       plotBoxRef,
-      xAxisValueRef,
-      yAxisValueRef,
+      xAxisLabelNodeRef,
+      yAxisLabelNodeRef,
       xScale,
       yScale,
       xAlignment,
@@ -137,7 +137,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
     // Set closest circle attributes
     if (closestCircle.key) {
-      attributesRef.current
+      attributesNodeRef.current
         .select(`[id='${closestCircle.key}']`)
         .classed(classes.focus, false)
         .classed(classes.active, true)
@@ -151,7 +151,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     ];
 
     // Draw horizontal/vertical lines
-    attributesRef.current
+    attributesNodeRef.current
       .selectAll('line')
       .data(axisLineData)
       .join('line')
@@ -193,19 +193,19 @@ function setAxisLabel({
   visAreaRef,
   visBoxRef,
   plotBoxRef,
-  xAxisValueRef,
-  yAxisValueRef,
+  xAxisLabelNodeRef,
+  yAxisLabelNodeRef,
   xAlignment,
   xScale,
   yScale,
 }: ISetAxisLabelProps) {
-  if (xAxisValueRef.current) {
-    xAxisValueRef.current.remove();
-    xAxisValueRef.current = null;
+  if (xAxisLabelNodeRef.current) {
+    xAxisLabelNodeRef.current.remove();
+    xAxisLabelNodeRef.current = null;
   }
-  if (yAxisValueRef.current) {
-    yAxisValueRef.current.remove();
-    yAxisValueRef.current = null;
+  if (yAxisLabelNodeRef.current) {
+    yAxisLabelNodeRef.current.remove();
+    yAxisLabelNodeRef.current = null;
   }
 
   const xAxisTickValue = xScale.invert(closestCircle.x);
@@ -231,7 +231,7 @@ function setAxisLabel({
   const visArea = d3.select(visAreaRef.current);
 
   if (xAxisValueLabel) {
-    xAxisValueRef.current = visArea
+    xAxisLabelNodeRef.current = visArea
       .append('div')
       .attr(
         'class',
@@ -242,12 +242,12 @@ function setAxisLabel({
 
     const axisLeftEdge = margin.left - 1;
     const axisRightEdge = width - margin.right + 1;
-    let xAxisValueWidth = xAxisValueRef.current.node().offsetWidth;
+    let xAxisValueWidth = xAxisLabelNodeRef.current.node().offsetWidth;
     if (xAxisValueWidth > plotBoxRef.current.width) {
       xAxisValueWidth = plotBoxRef.current.width;
     }
 
-    xAxisValueRef.current
+    xAxisLabelNodeRef.current
       .style('width', `${xAxisValueWidth}px`)
       .style(
         'left',
@@ -264,7 +264,7 @@ function setAxisLabel({
 
   if (yAxisValueLabel) {
     const formattedValue = Math.round(yAxisTickValue * 10e9) / 10e9;
-    yAxisValueRef.current = visArea
+    yAxisLabelNodeRef.current = visArea
       .append('div')
       .attr(
         'class',
@@ -277,8 +277,8 @@ function setAxisLabel({
 
     const axisTopEdge = margin.top - 1;
     const axisBottomEdge = height - margin.top;
-    const yAxisValueHeight = yAxisValueRef.current.node().offsetHeight;
-    yAxisValueRef.current.style(
+    const yAxisValueHeight = yAxisLabelNodeRef.current.node().offsetHeight;
+    yAxisLabelNodeRef.current.style(
       'top',
       `${
         closestCircle.y - yAxisValueHeight / 2 < 0
