@@ -1,10 +1,5 @@
 import { ILine, ILineChartProps } from '../../components/LineChart/LineChart';
 
-export interface IProcessDataProps {
-  data: ILineChartProps['data'];
-  displayOutliers: boolean;
-}
-
 export interface IProcessedData extends ILine {
   color: string;
   dasharray: string;
@@ -18,4 +13,5 @@ export interface IProcessData {
 
 export interface IProcessDataProps {
   data: ILineChartProps['data'];
+  displayOutliers: boolean;
 }

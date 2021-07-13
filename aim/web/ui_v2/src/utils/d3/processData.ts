@@ -8,7 +8,7 @@ const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;
 
 function processData(props: IProcessDataProps): IProcessData {
-  const { data } = props;
+  const { data, displayOutliers } = props;
 
   let xValues: number[] = [];
   let yValues: number[] = [];
@@ -17,7 +17,7 @@ function processData(props: IProcessDataProps): IProcessData {
     const invalidXIndices = line.data.xValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
-          acc.concat([i]);
+          acc = acc.concat([i]);
         }
         return acc;
       },
@@ -26,7 +26,7 @@ function processData(props: IProcessDataProps): IProcessData {
     const invalidYIndices = line.data.yValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
-          acc.concat([i]);
+          acc = acc.concat([i]);
         }
         return acc;
       },
@@ -63,7 +63,7 @@ function processData(props: IProcessDataProps): IProcessData {
   xValues = _.uniq(xValues);
   yValues = _.uniq(yValues);
 
-  if (!props.displayOutliers) {
+  if (!displayOutliers) {
     yValues = removeOutliers(yValues, 4);
   }
 

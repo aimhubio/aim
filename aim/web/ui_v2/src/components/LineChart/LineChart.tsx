@@ -1,6 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
+
 import {
   drawArea,
   clearArea,
@@ -94,7 +95,7 @@ function LineChart(
       linesNodeRef.current
         .selectAll('.Line')
         .transition()
-        .duration(1000)
+        .duration(500)
         .attr('d', linesRef.current.lineGenerator(xScale, yScale));
     },
     [axisScaleType, max, min],
@@ -152,6 +153,7 @@ function LineChart(
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
       xAlignment,
+      index,
     });
 
     if (zoomMode) {
@@ -201,7 +203,7 @@ function LineChart(
     linesNodeRef.current
       .selectAll('.Line')
       .transition()
-      .duration(1000)
+      .duration(500)
       .attr(
         'd',
         linesRef.current.lineGenerator(

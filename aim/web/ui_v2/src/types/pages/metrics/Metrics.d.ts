@@ -5,12 +5,12 @@ import { IMetric } from 'types/services/models/metrics/metricModel';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   metricsCollection: [IMetric[]];
-  tableRef: React.RefObject<HTMLDivElement>;
-  chartRef: React.RefObject<HTMLDivElement>;
-  wrapperRef: React.RefObject<HTMLDivElement>;
+  tableElemRef: React.MutableRefObject<>;
+  chartElemRef: React.MutableRefObject<>;
+  wrapperElemRef: React.MutableRefObject<>;
+  resizeElemRef: React.MutableRefObject<>;
   displayOutliers: boolean;
-  toggleDisplayOutliers: () => void;
   zoomMode: boolean;
+  toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
-  handleResize: () => void;
 }
