@@ -8,8 +8,10 @@ import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { traceToHash } from 'utils/toHash';
+import { IMetricCollectionModel } from 'types/services/models/metrics/metricsCollectionModel';
+import { ILine } from 'types/components/LineChart/LineChart';
 
-const model = createModel({});
+const model = createModel<Partial<IMetricCollectionModel>>({});
 
 function getConfig() {
   return {
@@ -32,7 +34,7 @@ function getMetricsData() {
   const { call, abort } = metricsService.getMetricsData();
   return {
     call: () =>
-      call().then((data: any) => {
+      call().then((data: IRun[]) => {
         model.setState({
           rawData: data,
           collection: processData(data),
@@ -42,7 +44,7 @@ function getMetricsData() {
   };
 }
 
-function processData(data: any) {
+function processData(data: IRun[]): IMetric[][] {
   let metrics: IMetric[] = [];
   let index = -1;
   data.forEach((run: any) => {
@@ -53,11 +55,6 @@ function processData(data: any) {
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
           key: traceToHash(run.run_hash, metric.metric_name, metric.context),
-          data: {
-            ...metric.data,
-            xValues: [...metric.data.iterations],
-            yValues: [...metric.data.values],
-          },
           dasharray: '0',
           color: COLORS[index % COLORS.length],
         } as IMetric);
@@ -67,10 +64,29 @@ function processData(data: any) {
   return [metrics];
 }
 
+function getDataAsLines(): ILine[][] {
+  const metricsCollection = model.getState()?.collection;
+  if (!metricsCollection) {
+    return [];
+  }
+
+  return metricsCollection.map((metrics: IMetric[]) =>
+    metrics.map((metric: IMetric) => ({
+      ...metric,
+      data: {
+        ...metric.data,
+        xValues: [...metric.data.iterations],
+        yValues: [...metric.data.values],
+      },
+    })),
+  );
+}
+
 const metricsCollectionModel = {
   ...model,
   initialize,
   getMetricsData,
+  getDataAsLines,
 };
 
 export default metricsCollectionModel;
