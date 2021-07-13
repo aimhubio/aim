@@ -2,9 +2,9 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Avatar, Box, Button, Chip, Grid } from '@material-ui/core';
+import { Box, Button, Grid } from '@material-ui/core';
 
-import ITableProps from 'types/components/Table/Table';
+import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
 
@@ -12,89 +12,21 @@ const Table = React.forwardRef(function Table(
   props: ITableProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const [index, setIndex] = React.useState(0);
-
   const tableRef = React.useRef();
+  const [data, setData] = React.useState(props.data);
+  const [columns, setColumns] = React.useState(props.columns);
 
   React.useImperativeHandle(ref, () => ({
-    updateData: () => {
-      tableRef.current?.forceUpdateTable();
+    updateData: ({ newData, newColumns }) => {
+      if (!!newData) {
+        setData(newData);
+      }
+      if (!!newColumns) {
+        setColumns(newColumns);
+      }
+      // tableRef.current?.forceUpdateTable();
     },
   }));
-
-  const columns = React.useMemo(() => {
-    return [
-      {
-        dataKey: 'experiment',
-        frozen: 'left',
-        key: 'experiment',
-        title: 'Experiment',
-        dataGetter: ({ rowData }) => rowData.run.experiment_name,
-        width: 150,
-        resizable: true,
-      },
-      {
-        dataKey: 'run',
-        key: 'run',
-        title: 'Run',
-        dataGetter: ({ rowData }) => rowData.run.name,
-        width: 150,
-      },
-      {
-        dataKey: 'metric',
-        key: 'metric',
-        title: 'Metric',
-        dataGetter: ({ rowData }) => rowData.metric_name,
-        width: 150,
-      },
-      {
-        dataKey: 'context',
-        key: 'context',
-        title: 'Context',
-        dataGetter: ({ rowData }) => Object.entries(rowData.context),
-        cellRenderer: ({ cellData }) =>
-          cellData.map((c, i) => (
-            <Chip
-              key={i}
-              variant='outlined'
-              color='primary'
-              label={c.join(':')}
-              size='small'
-              avatar={
-                <Avatar>
-                  {c[0][0]}:{c[1][0]}
-                </Avatar>
-              }
-            />
-          )),
-        width: 150,
-      },
-      {
-        dataKey: 'value',
-        key: 'value',
-        title: 'Value',
-        dataGetter: ({ rowData }) =>
-          rowData.data.values[
-            rowData.data.values.length > index
-              ? index
-              : rowData.data.values.length - 1
-          ],
-        width: 150,
-      },
-      {
-        dataKey: 'iteration',
-        key: 'iteration',
-        title: 'Iteration',
-        dataGetter: ({ rowData }) =>
-          rowData.data.iterations[
-            rowData.data.iterations.length > index
-              ? index
-              : rowData.data.iterations.length - 1
-          ],
-        width: 150,
-      },
-    ];
-  }, [index]);
 
   return (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
@@ -178,7 +110,7 @@ const Table = React.forwardRef(function Table(
               ref={tableRef}
               classPrefix='BaseTable'
               columns={columns}
-              data={props.data}
+              data={data}
               frozenData={[]}
               width={width}
               height={height}

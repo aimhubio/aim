@@ -8,8 +8,12 @@ import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { traceToHash } from 'utils/toHash';
-import { IMetricCollectionModel } from 'types/services/models/metrics/metricsCollectionModel';
+import {
+  IMetricCollectionModel,
+  IMetricTableRowData,
+} from 'types/services/models/metrics/metricsCollectionModel';
 import { ILine } from 'types/components/LineChart/LineChart';
+import getClosestValue from 'utils/getClosestValue';
 
 const model = createModel<Partial<IMetricCollectionModel>>({});
 
@@ -81,13 +85,37 @@ function getDataAsLines(): ILine[][] {
   );
 }
 
-function getDataAsTableColumns() {
+function getDataAsTableRows(
+  xValue: number | null = null,
+): IMetricTableRowData[][] {
   const metricsCollection = model.getState()?.collection;
   if (!metricsCollection) {
     return [];
   }
 
-  return metricsCollection;
+  return metricsCollection.map((metrics: IMetric[]) =>
+    metrics.map((metric: IMetric) => {
+      const closestIndex =
+        xValue === null
+          ? null
+          : getClosestValue(metric.data.iterations as any, xValue).index;
+      return {
+        key: metric.key,
+        dasharray: metric.dasharray,
+        color: metric.color,
+        experiment: metric.run.experiment_name,
+        run: metric.run.name,
+        metric: metric.metric_name,
+        context: Object.entries(metric.context).map((entry) => entry.join(':')),
+        value: `${
+          closestIndex === null ? '-' : metric.data.values[closestIndex]
+        }`,
+        iteration: `${
+          closestIndex === null ? '-' : metric.data.iterations[closestIndex]
+        }`,
+      };
+    }),
+  );
 }
 
 const metricsCollectionModel = {
@@ -95,7 +123,7 @@ const metricsCollectionModel = {
   initialize,
   getMetricsData,
   getDataAsLines,
-  getDataAsTableColumns,
+  getDataAsTableRows,
 };
 
 export default metricsCollectionModel;

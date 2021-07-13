@@ -12,7 +12,6 @@ import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
 import { ScaleEnum } from 'utils/d3';
-import { ILine } from 'types/components/LineChart/LineChart';
 
 function Metrics(
   props: IMetricProps,
@@ -106,6 +105,7 @@ function Metrics(
                   onSort={() => null}
                   onExport={() => null}
                   data={props.tableData[0]}
+                  columns={props.tableColumns}
                 />
               )}
             </Paper>

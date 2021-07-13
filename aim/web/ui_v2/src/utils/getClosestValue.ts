@@ -1,14 +1,20 @@
-function getClosestValue(array: number[], num: number): number {
+function getClosestValue(
+  array: number[],
+  num: number,
+): { value: number; index: number } {
   let minDiff = Infinity;
-  let value: number = array[0];
+  let index = 0;
   for (let i = 0; i < array.length; i++) {
     let diff = Math.abs(num - array[i]);
     if (diff < minDiff) {
       minDiff = diff;
-      value = array[i];
+      index = i;
     }
   }
-  return value;
+  return {
+    value: array[index],
+    index,
+  };
 }
 
 export default getClosestValue;

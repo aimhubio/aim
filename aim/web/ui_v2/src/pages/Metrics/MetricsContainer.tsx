@@ -3,6 +3,8 @@ import React from 'react';
 import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
 import useModel from 'hooks/model/useModel';
 import Metrics from './Metrics';
+import getTableColumns from './components/TableColumns/TableColumns';
+import { ITableRef } from 'types/components/Table/Table';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -10,7 +12,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const metricsData = useModel<any>(metricsCollectionModel);
 
-  const tableRef = React.useRef(null);
+  const tableRef = React.useRef<ITableRef>(null);
 
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -58,6 +60,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     metricsCollectionModel.initialize();
     metricsRequestRef.call();
+
+    // tableRef.current?.updateData({
+    //   newData: metricsCollectionModel.getDataAsTableRows(xValue)[0],
+    // });
     return () => {
       metricsRequestRef.abort();
       document.removeEventListener('mousemove', startResize);
@@ -76,7 +82,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       metricsCollection={metricsData?.collection}
       lineChartData={metricsCollectionModel.getDataAsLines()}
-      tableData={metricsCollectionModel.getDataAsTableColumns()}
+      tableData={metricsCollectionModel.getDataAsTableRows()}
+      tableColumns={getTableColumns()}
     />
   );
 }

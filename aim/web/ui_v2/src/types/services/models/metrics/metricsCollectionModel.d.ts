@@ -14,3 +14,15 @@ interface IMetricCollectionConfig {
     chart: string[];
   };
 }
+
+export interface IMetricTableRowData {
+  key: string;
+  dasharray: metric.dasharray;
+  color: metric.color;
+  experiment: metric.run.experiment_name;
+  run: metric.run.name;
+  metric: metric.metric_name;
+  context: string[];
+  value: string;
+  iteration: string;
+}
