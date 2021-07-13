@@ -8,12 +8,19 @@ import ITableProps from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
 
-function Table(
+const Table = React.forwardRef(function Table(
   props: ITableProps,
+  ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const [index, setIndex] = React.useState(0);
 
   const tableRef = React.useRef();
+
+  React.useImperativeHandle(ref, () => ({
+    updateRows: () => {
+      tableRef.current?.forceUpdateTable();
+    },
+  }));
 
   const columns = React.useMemo(() => {
     return [
@@ -88,12 +95,6 @@ function Table(
       },
     ];
   }, [index]);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      tableRef.current?.forceUpdateTable();
-    }, 100);
-  }, [columns]);
 
   return (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
@@ -207,71 +208,6 @@ function Table(
       </Box>
     </Box>
   );
-}
+});
 
 export default React.memo(Table);
-
-{
-  /* <BaseTable
-  columns={[
-    {
-      dataKey: 'column_0',
-      frozen: 'left',
-      key: 'column-0',
-      title: 'Column 0',
-      width: 150,
-    },
-    {
-      dataKey: 'column_1',
-      key: 'column-1',
-      title: 'Column 1',
-      width: 150,
-    },
-    {
-      dataKey: 'column_2',
-      key: 'column-2',
-      title: 'Column 2',
-      width: 150,
-    },
-    {
-      dataKey: 'column_3',
-      frozen: 'right',
-      key: 'column-3',
-      title: 'Column 3',
-      width: 150,
-    },
-  ]}
-  data={[
-    {
-      id: 'row_0',
-      column_0: 'Foo',
-      column_1: 12863127,
-      column_2: 345983497,
-      column_3: new Date().toLocaleDateString(),
-    },
-  ]}
-  frozenData={[]}
-  width={700}
-  height={400}
-  fixed
-  rowKey='id'
-  headerHeight={30}
-  rowHeight={30}
-  footerHeight={0}
-  defaultExpandedRowKeys={[]}
-  sortBy={{}}
-  useIsScrolling={false}
-  overscanRowCount={1}
-  onEndReachedThreshold={500}
-  getScrollbarSize={() => null}
-  ignoreFunctionInColumnCompare={true}
-  onScroll={() => null}
-  onRowsRendered={() => null}
-  onScrollbarPresenceChange={() => null}
-  onRowExpand={() => null}
-  onExpandedRowsChange={() => null}
-  onColumnSort={() => null}
-  onColumnResize={() => null}
-  onColumnResizeEnd={() => null}
-/>; */
-}

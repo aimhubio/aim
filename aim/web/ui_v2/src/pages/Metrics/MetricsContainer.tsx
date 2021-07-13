@@ -10,9 +10,11 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const metricsData = useModel<any>(metricsCollectionModel);
 
-  const tableRef = React.useRef<HTMLDivElement>(null);
-  const chartRef = React.useRef<HTMLDivElement>(null);
-  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const tableRef = React.useRef(null);
+
+  const tableElemRef = React.useRef<HTMLDivElement>(null);
+  const chartElemRef = React.useRef<HTMLDivElement>(null);
+  const wrapperElemRef = React.useRef<HTMLDivElement>(null);
 
   const handleResize = React.useCallback(() => {
     document.addEventListener('mousemove', startResize);
@@ -21,20 +23,25 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   const startResize = React.useCallback((event: MouseEvent): void => {
     requestAnimationFrame(() => {
-      if (tableRef.current && chartRef.current && wrapperRef.current) {
+      if (
+        tableElemRef.current &&
+        chartElemRef.current &&
+        wrapperElemRef.current
+      ) {
         const containerHeight: number =
-          tableRef.current.getBoundingClientRect()?.height +
-          chartRef.current.getBoundingClientRect()?.height;
+          tableElemRef.current.getBoundingClientRect()?.height +
+          chartElemRef.current.getBoundingClientRect()?.height;
 
         const searchBarHeight: number =
-          wrapperRef.current.getBoundingClientRect()?.height - containerHeight;
+          wrapperElemRef.current.getBoundingClientRect()?.height -
+          containerHeight;
 
         const height: number = event.clientY - searchBarHeight;
 
         const flex: number = height / containerHeight;
-        if (chartRef.current && tableRef.current) {
-          chartRef.current.style.flex = `${flex} 1 0`;
-          tableRef.current.style.flex = `${1 - flex} 1 0`;
+        if (chartElemRef.current && tableElemRef.current) {
+          chartElemRef.current.style.flex = `${flex} 1 0`;
+          tableElemRef.current.style.flex = `${1 - flex} 1 0`;
         }
       }
     });
@@ -60,13 +67,15 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Metrics
+      tableRef={tableRef}
       displayOutliers={displayOutliers}
       toggleDisplayOutliers={toggleDisplayOutliers}
       handleResize={handleResize}
-      tableRef={tableRef}
-      chartRef={chartRef}
-      wrapperRef={wrapperRef}
+      tableElemRef={tableElemRef}
+      chartElemRef={chartElemRef}
+      wrapperElemRef={wrapperElemRef}
       metricsCollection={metricsData?.collection}
+      lineChartData={metricsCollectionModel.getDataAsLines()}
     />
   );
 }

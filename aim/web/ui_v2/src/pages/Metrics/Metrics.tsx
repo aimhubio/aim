@@ -12,13 +12,14 @@ import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
 import { ScaleEnum } from 'utils/d3';
+import { ILine } from 'types/components/LineChart/LineChart';
 
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
   return (
-    <div ref={props.wrapperRef}>
+    <div ref={props.wrapperElemRef}>
       <Box
         bgcolor='grey.200'
         component='section'
@@ -55,7 +56,7 @@ function Metrics(
             </Grid>
           </Grid>
           <Grid
-            ref={props.chartRef}
+            ref={props.chartElemRef}
             style={{
               flex: '0.5 1 0',
             }}
@@ -67,7 +68,7 @@ function Metrics(
                   {props.metricsCollection?.[0] && (
                     <LineChart
                       key='uniqueKey'
-                      data={props.metricsCollection[0] as any}
+                      data={props.lineChartData[0]}
                       axisScaleType={{
                         x: ScaleEnum.Linear,
                         y: ScaleEnum.Linear,
@@ -97,10 +98,11 @@ function Metrics(
           >
             <MoreHorizIcon />
           </Box>
-          <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableRef}>
+          <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableElemRef}>
             <Paper className={classes.paper}>
               {props.metricsCollection?.[0] && (
                 <Table
+                  ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
                   data={props.metricsCollection[0]}
