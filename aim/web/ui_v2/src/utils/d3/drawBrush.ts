@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import { IDrawBrushProps } from 'types/utils/d3/drawBrush';
+import { IGetAxisScale } from '../../types/utils/d3/getAxesScale';
 
 function drawBrush(props: IDrawBrushProps): void {
   const { brushRef, plotBoxRef, plotNodeRef, handleBrushChange } = props;
@@ -15,8 +16,8 @@ function drawBrush(props: IDrawBrushProps): void {
   plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
 
   brushRef.current.updateScales = function (
-    xScale: d3.AxisScale<any>,
-    yScale: d3.AxisScale<any>,
+    xScale: IGetAxisScale['xScale'],
+    yScale: IGetAxisScale['yScale'],
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;
@@ -30,7 +31,7 @@ function drawBrush(props: IDrawBrushProps): void {
   // This event firing after brush selection ends
   function handleZoomChange(event: d3.D3BrushEvent<d3.BrushSelection>): void {
     const extent: d3.BrushSelection | any = event.selection;
-
+    const mousePosition = d3.pointer(event);
     if (!extent) {
       return;
     } else if (extent[1][0] - extent[0][0] < 5) {
@@ -59,6 +60,7 @@ function drawBrush(props: IDrawBrushProps): void {
       handleBrushChange({
         xValues,
         yValues,
+        mousePosition,
       });
     }
     removeBrush();

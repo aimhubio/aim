@@ -11,43 +11,57 @@ import {
   IGetNearestCirclesProps,
   IGetNearestCircles,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from '../../components/LineChart/styles.module.css';
+import classes from 'components/LineChart/styles.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
-import { IProcessedData } from '../../types/utils/d3/processData';
-import { IGetAxisScale } from '../../types/utils/d3/getAxesScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     data,
     attributesNodeRef,
+    attributesRef,
     plotBoxRef,
     visAreaRef,
     visBoxRef,
     xAxisLabelNodeRef,
     yAxisLabelNodeRef,
-    xScale,
-    yScale,
     xAlignment,
   } = props;
+
+  attributesRef.current.updateScales = function (
+    xScale: IGetAxisScale['xScale'],
+    yScale: IGetAxisScale['yScale'],
+  ) {
+    attributesRef.current.xScale = xScale;
+    attributesRef.current.yScale = yScale;
+  };
 
   const { margin } = visBoxRef.current;
   const { height, width } = plotBoxRef.current;
 
   const svgArea = d3.select(visAreaRef.current).select('svg');
 
-  svgArea?.on('mousemove', (event) => {
-    const mouse: [number, number] = d3.pointer(event);
+  function handleMouseMove(
+    event: MouseEvent | undefined,
+    mousePosition?: number[] | any,
+  ) {
+    let mouse: [number, number];
+    if (event) {
+      mouse = d3.pointer(event);
+    } else {
+      mouse = mousePosition;
+    }
     const { mouseX, mouseY } = getCoordinates({
       mouse,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       margin,
     });
 
     const { nearestCircles, closestCircle } = getNearestCircles({
       data,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       mouseX,
       mouseY,
     });
@@ -99,8 +113,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       plotBoxRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       xAlignment,
     });
 
@@ -123,7 +137,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .attr('y1', (axisLine: IAxisLineData) => axisLine.y1)
       .attr('x2', (axisLine: IAxisLineData) => axisLine.x2)
       .attr('y2', (axisLine: IAxisLineData) => axisLine.y2);
-  });
+  }
+
+  attributesRef.current.updateHoverAttributes = handleMouseMove;
+  svgArea?.on('mousemove', handleMouseMove);
 
   svgArea?.on('mouseleave', (event) => {
     // TODO handle mouseLeave

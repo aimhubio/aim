@@ -1,7 +1,6 @@
 import React from 'react';
+import * as d3 from 'd3';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
-
-import useStyles from './lineChartStyle';
 import {
   drawArea,
   clearArea,
@@ -13,6 +12,9 @@ import {
   drawHoverAttributes,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
+import { IHandleBrushChange } from 'types/utils/d3/drawBrush';
+
+import useStyles from './lineChartStyle';
 
 function LineChart(
   props: ILineChartProps,
@@ -61,6 +63,7 @@ function LineChart(
   const axesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
+  const attributesRef = React.useRef<any>({});
 
   const { processedData, min, max } = React.useMemo(
     () =>
@@ -71,26 +74,31 @@ function LineChart(
     [data, displayOutliers],
   );
 
-  const zoomOut = React.useCallback(() => {
-    const { xScale, yScale } = getAxisScale({
-      visBoxRef,
-      axisScaleType,
-      min,
-      max,
-    });
+  const zoomOut = React.useCallback(
+    (event) => {
+      const { xScale, yScale } = getAxisScale({
+        visBoxRef,
+        axisScaleType,
+        min,
+        max,
+      });
 
-    // setting axes to initial state
-    axesRef.current.updateXAxis(xScale);
-    axesRef.current.updateYAxis(yScale);
+      // setting axes to initial state
+      axesRef.current.updateXAxis(xScale);
+      axesRef.current.updateYAxis(yScale);
 
-    // setting scales and lines to initial state
-    brushRef.current.updateScales(xScale, yScale);
-    linesNodeRef.current
-      .selectAll('.Line')
-      .transition()
-      .duration(1000)
-      .attr('d', linesRef.current.lineGenerator(xScale, yScale));
-  }, [axisScaleType, max, min]);
+      // setting scales and lines to initial state
+      brushRef.current.updateScales(xScale, yScale);
+      attributesRef.current.updateScales(xScale, yScale);
+      attributesRef.current.updateHoverAttributes(undefined, d3.pointer(event));
+      linesNodeRef.current
+        .selectAll('.Line')
+        .transition()
+        .duration(1000)
+        .attr('d', linesRef.current.lineGenerator(xScale, yScale));
+    },
+    [axisScaleType, max, min],
+  );
 
   const draw = React.useCallback((): void => {
     drawArea({
@@ -106,6 +114,7 @@ function LineChart(
       linesNodeRef,
       attributesNodeRef,
     });
+
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,
@@ -130,16 +139,18 @@ function LineChart(
       index,
     });
 
+    attributesRef.current.xScale = xScale;
+    attributesRef.current.yScale = yScale;
+
     drawHoverAttributes({
       data: processedData,
       visAreaRef,
+      attributesRef,
       attributesNodeRef,
       plotBoxRef,
       visBoxRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
-      xScale,
-      yScale,
       xAlignment,
     });
 
@@ -165,7 +176,11 @@ function LineChart(
     zoomOut,
   ]);
 
-  const handleBrushChange = ({ xValues, yValues }: any): void => {
+  const handleBrushChange = ({
+    xValues,
+    yValues,
+    mousePosition,
+  }: IHandleBrushChange): void => {
     //
     const { width, height, margin } = visBoxRef.current;
 
@@ -180,6 +195,8 @@ function LineChart(
     // updating axes with new Scales
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
+
+    attributesRef.current.updateHoverAttributes(undefined, mousePosition);
 
     linesNodeRef.current
       .selectAll('.Line')

@@ -7,12 +7,22 @@ export interface IDrawHoverAttributesProps {
   data: IProcessedData[];
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
+  attributesRef: React.MutableRefObject<{
+    xScale?: IGetAxisScale['xScale'];
+    yScale?: IGetAxisScale['yScale'];
+    updateScales?: (
+      xScale: IGetAxisScale['xScale'],
+      yScale: IGetAxisScale['yScale'],
+    ) => void;
+    updateHoverAttributes?: (
+      event?: MouseEvent,
+      mousePosition?: number[],
+    ) => void;
+  }>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
   xAxisLabelNodeRef: React.MutableRefObject<>;
   yAxisLabelNodeRef: React.MutableRefObject<>;
-  xScale: IGetAxisScale['xScale'];
-  yScale: IGetAxisScale['yScale'];
   xAlignment: ILineChartProps['xAlignment'];
 }
 
@@ -46,6 +56,8 @@ export interface IClosestCircle {
 
 export interface ISetAxisLabelProps extends Partial<IDrawHoverAttributesProps> {
   closestCircle: IClosestCircle;
+  xScale?: IGetAxisScale['xScale'];
+  yScale?: IGetAxisScale['yScale'];
 }
 
 export interface IGetNearestCirclesProps {
