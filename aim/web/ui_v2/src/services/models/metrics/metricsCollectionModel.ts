@@ -7,7 +7,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { traceToHash } from 'utils/toHash';
+import { encode } from 'utils/encoder/encoder';
 import {
   IMetricCollectionModelState,
   IMetricTableRowData,
@@ -51,6 +51,7 @@ function getMetricsData() {
 function processData(data: IRun[]): IMetric[][] {
   let metrics: IMetric[] = [];
   let index = -1;
+
   data.forEach((run: any) => {
     metrics = metrics.concat(
       run.metrics.map((metric: IMetric) => {
@@ -58,7 +59,16 @@ function processData(data: IRun[]): IMetric[][] {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
-          key: traceToHash(run.run_hash, metric.metric_name, metric.context),
+          key: encode({
+            runHash: run.run_hash,
+            metricName: metric.metric_name,
+            traceContext: metric.context,
+          }),
+          data: {
+            ...metric.data,
+            xValues: [...metric.data.iterations],
+            yValues: [...metric.data.values],
+          },
           dasharray: '0',
           color: COLORS[index % COLORS.length],
         } as IMetric);

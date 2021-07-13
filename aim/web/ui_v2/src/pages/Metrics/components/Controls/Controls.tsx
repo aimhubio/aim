@@ -90,7 +90,10 @@ function Controls(
               >
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
-              <ZoomIn />
+              <ZoomIn
+                color={props.zoomMode ? 'primary' : 'inherit'}
+                onClick={props.toggleZoomMode}
+              />
             </Box>
           )}
           component={<ZoomInPopup />}
@@ -106,7 +109,7 @@ function Controls(
               >
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
-              <ZoomOut />
+              <ZoomOut onClick={props.toggleZoomMode} />
             </Box>
           )}
           component={<ZoomOutPopup />}

@@ -12,10 +12,11 @@ export interface ILine {
 }
 
 export interface ILineChartProps {
-  index?: number;
+  index: number;
   data: ILine[];
   xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
+  zoomMode: boolean;
   axisScaleType?: {
     x?: ScaleType;
     y?: ScaleType;

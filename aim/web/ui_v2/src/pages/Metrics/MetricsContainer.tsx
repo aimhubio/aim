@@ -10,10 +10,11 @@ import useModel from 'hooks/model/useModel';
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const metricsData = useModel(metricsCollectionModel);
 
   const tableRef = React.useRef<ITableRef>(null);
+  const [zoomMode, setZoomMode] = React.useState<boolean>(false);
+  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
 
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -22,9 +23,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
-  const toggleDisplayOutliers = React.useCallback(() => {
+  const toggleDisplayOutliers = React.useCallback((): void => {
     setDisplayOutliers(!displayOutliers);
   }, [displayOutliers]);
+
+  const toggleZoomMode = React.useCallback((): void => {
+    setZoomMode(!zoomMode);
+  }, [zoomMode]);
 
   React.useEffect(() => {
     metricsCollectionModel.initialize();
@@ -51,6 +56,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       lineChartData={metricsCollectionModel.getDataAsLines()}
       tableData={metricsCollectionModel.getDataAsTableRows()}
       tableColumns={getTableColumns()}
+      zoomMode={zoomMode}
+      toggleZoomMode={toggleZoomMode}
     />
   );
 }

@@ -1,18 +1,14 @@
 import _ from 'lodash';
 
 import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
-import { removeOutliers } from './removeOutliers';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
+import { removeOutliers } from './removeOutliers';
 
 const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;
 
-const toTupleData = (x: number[], y: number[]): [number, number][] => {
-  return x.map((v: number, i: number) => [v, y[i]]);
-};
-
 function processData(props: IProcessDataProps): IProcessData {
-  const { data } = props;
+  const { data, displayOutliers } = props;
 
   let xValues: number[] = [];
   let yValues: number[] = [];
@@ -21,7 +17,7 @@ function processData(props: IProcessDataProps): IProcessData {
     const invalidXIndices = line.data.xValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
-          acc.concat([i]);
+          acc = acc.concat([i]);
         }
         return acc;
       },
@@ -30,7 +26,7 @@ function processData(props: IProcessDataProps): IProcessData {
     const invalidYIndices = line.data.yValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
-          acc.concat([i]);
+          acc = acc.concat([i]);
         }
         return acc;
       },
@@ -49,21 +45,30 @@ function processData(props: IProcessDataProps): IProcessData {
     xValues = xValues.concat(filteredXValues);
     yValues = yValues.concat(filteredYValues);
 
-    return Object.assign({}, line, {
-      data: toTupleData(filteredXValues, filteredYValues),
-    });
+    return Object.assign(
+      {
+        color: '#000',
+        dasharray: '0',
+      },
+      line,
+      {
+        data: {
+          xValues: filteredXValues,
+          yValues: filteredYValues,
+        },
+      },
+    );
   });
 
   xValues = _.uniq(xValues);
   yValues = _.uniq(yValues);
 
-  if (!props.displayOutliers) {
+  if (!displayOutliers) {
     yValues = removeOutliers(yValues, 4);
   }
 
-  const [xMin, xMax] = minMaxOfArray(xValues);
   const [yMin, yMax] = minMaxOfArray(yValues);
-
+  const [xMin, xMax] = minMaxOfArray(xValues);
   return {
     min: {
       x: xMin,
@@ -74,8 +79,6 @@ function processData(props: IProcessDataProps): IProcessData {
       y: yMax,
     },
     processedData,
-    xValues,
-    yValues,
   };
 }
 
