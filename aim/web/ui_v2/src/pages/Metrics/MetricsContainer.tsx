@@ -76,6 +76,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       metricsCollection={metricsData?.collection}
       lineChartData={metricsCollectionModel.getDataAsLines()}
+      tableData={metricsCollectionModel.getDataAsTableColumns()}
     />
   );
 }

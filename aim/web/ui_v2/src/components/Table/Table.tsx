@@ -17,7 +17,7 @@ const Table = React.forwardRef(function Table(
   const tableRef = React.useRef();
 
   React.useImperativeHandle(ref, () => ({
-    updateRows: () => {
+    updateData: () => {
       tableRef.current?.forceUpdateTable();
     },
   }));

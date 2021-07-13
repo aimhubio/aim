@@ -74,7 +74,6 @@ function getDataAsLines(): ILine[][] {
     metrics.map((metric: IMetric) => ({
       ...metric,
       data: {
-        ...metric.data,
         xValues: [...metric.data.iterations],
         yValues: [...metric.data.values],
       },
@@ -82,11 +81,21 @@ function getDataAsLines(): ILine[][] {
   );
 }
 
+function getDataAsTableColumns() {
+  const metricsCollection = model.getState()?.collection;
+  if (!metricsCollection) {
+    return [];
+  }
+
+  return metricsCollection;
+}
+
 const metricsCollectionModel = {
   ...model,
   initialize,
   getMetricsData,
   getDataAsLines,
+  getDataAsTableColumns,
 };
 
 export default metricsCollectionModel;

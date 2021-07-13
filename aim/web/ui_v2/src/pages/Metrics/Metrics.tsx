@@ -105,7 +105,7 @@ function Metrics(
                   ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
-                  data={props.metricsCollection[0]}
+                  data={props.tableData[0]}
                 />
               )}
             </Paper>
