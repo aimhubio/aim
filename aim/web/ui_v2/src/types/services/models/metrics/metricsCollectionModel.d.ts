@@ -1,7 +1,7 @@
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
 
-export interface IMetricCollectionModel {
+export interface IMetricCollectionModelState {
   rawData: IRun[];
   config: IMetricCollectionConfig;
   collection: IMetric[][];

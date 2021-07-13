@@ -9,13 +9,13 @@ import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { traceToHash } from 'utils/toHash';
 import {
-  IMetricCollectionModel,
+  IMetricCollectionModelState,
   IMetricTableRowData,
 } from 'types/services/models/metrics/metricsCollectionModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import getClosestValue from 'utils/getClosestValue';
 
-const model = createModel<Partial<IMetricCollectionModel>>({});
+const model = createModel<Partial<IMetricCollectionModelState>>({});
 
 function getConfig() {
   return {

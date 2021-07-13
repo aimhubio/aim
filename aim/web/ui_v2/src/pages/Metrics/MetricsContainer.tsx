@@ -11,7 +11,7 @@ const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
-  const metricsData = useModel<any>(metricsCollectionModel);
+  const metricsData = useModel(metricsCollectionModel);
 
   const tableRef = React.useRef<ITableRef>(null);
 
@@ -47,7 +47,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      metricsCollection={metricsData?.collection}
+      metricsCollection={metricsData?.collection ?? []}
       lineChartData={metricsCollectionModel.getDataAsLines()}
       tableData={metricsCollectionModel.getDataAsTableRows()}
       tableColumns={getTableColumns()}
