@@ -7,6 +7,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
+import { encode } from '../../../utils/encoder/encoder';
 
 const model = createModel({});
 
@@ -44,6 +45,7 @@ function getMetricsData() {
 function processData(data: any) {
   let metrics: IMetric[] = [];
   let index = -1;
+
   data.forEach((run: any) => {
     metrics = metrics.concat(
       run.metrics.map((metric: IMetric) => {
@@ -51,7 +53,11 @@ function processData(data: any) {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
-          key: `${run.run_hash}${metric.metric_name}`,
+          key: encode({
+            runHash: run.run_hash,
+            metricName: metric.metric_name,
+            traceContext: metric.context,
+          }),
           data: {
             ...metric.data,
             xValues: [...metric.data.iterations],

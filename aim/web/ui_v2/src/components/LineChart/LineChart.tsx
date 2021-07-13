@@ -1,12 +1,8 @@
-import React, {
-  FunctionComponentElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
+import useStyles from './lineChartStyle';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
+
 import {
   drawArea,
   clearArea,
@@ -14,14 +10,21 @@ import {
   drawLines,
   processData,
   getAxisScale,
-} from 'utils/d3';
-
-import useStyles from './style';
+  drawHoverAttributes,
+} from '../../utils/d3';
+import useResizeObserver from '../../hooks/window/useResizeObserver';
 
 function LineChart(
   props: ILineChartProps,
-): FunctionComponentElement<ReactNode> {
-  const { index, data, axisScaleType = {}, displayOutliers } = props;
+): React.FunctionComponentElement<React.ReactNode> {
+  const {
+    index,
+    data,
+    axisScaleType = {},
+    xAlignment,
+    displayOutliers,
+  } = props;
+
   const classes = useStyles();
 
   // boxes
@@ -51,6 +54,8 @@ function LineChart(
   const axesRef = useRef(null);
   const linesRef = useRef(null);
   const attributesRef = useRef(null);
+  const xAxisValueRef = useRef(null);
+  const yAxisValueRef = useRef(null);
 
   function draw(): void {
     drawArea({
@@ -84,13 +89,27 @@ function LineChart(
       yScale,
     });
 
-    drawLines({ data: processedData, linesRef, xScale, yScale });
+    drawLines({ data: processedData, linesRef, xScale, yScale, index });
+
+    drawHoverAttributes({
+      data: processedData,
+      visAreaRef,
+      attributesRef,
+      plotBoxRef,
+      visBoxRef,
+      xAxisValueRef,
+      yAxisValueRef,
+      xScale,
+      yScale,
+      xAlignment,
+      index,
+    });
   }
 
   const renderChart = useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
-  }, [displayOutliers]);
+  }, [draw]);
 
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -101,19 +120,11 @@ function LineChart(
     [renderChart],
   );
 
+  useResizeObserver(resizeObserverCallback, parentRef);
+
   useEffect(() => {
-    const observer: ResizeObserver = new ResizeObserver(resizeObserverCallback);
-
-    if (observer && parentRef.current) {
-      observer.observe(parentRef.current);
-    }
-
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, [resizeObserverCallback]);
+    requestAnimationFrame(renderChart);
+  }, [props.data, renderChart]);
 
   return (
     <div ref={parentRef} className={classes.chart}>

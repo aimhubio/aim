@@ -66,8 +66,43 @@ function Metrics(
                 <Paper className={classes.paper}>
                   {props.metricsCollection?.[0] && (
                     <LineChart
+                      index={0}
                       key='uniqueKey'
-                      data={props.metricsCollection[0] as any}
+                      data={
+                        props.metricsCollection[0] as any
+                        // [
+                        //   {
+                        //     key: 'uniqueKey1',
+                        //     data: {
+                        //       xValues: [1, 10, 20, 30, 40, 50, 60],
+                        //       yValues: [15, 330, 200, 75, 75, 300, 500],
+                        //     },
+                        //     color: '#a10505',
+                        //     dasharray: '2,4',
+                        //     selector: '',
+                        //   },
+                        //   {
+                        //     key: 'uniqueKey2',
+                        //     data: {
+                        //       xValues: [1, 10, 20, 30, 40, 50, 60],
+                        //       yValues: [20, 33, 40, 75, 175, 30, 140],
+                        //     },
+                        //     color: '#0543a1',
+                        //     dasharray: '0',
+                        //     selector: '',
+                        //   },
+                        //   {
+                        //     key: 'uniqueKey3',
+                        //     data: {
+                        //       xValues: [1, 10, 20, 30, 40, 50, 60],
+                        //       yValues: [40, 68, 40, 120, 230, 99, 10],
+                        //     },
+                        //     color: '#165201',
+                        //     dasharray: '3,13,10',
+                        //     selector: '',
+                        //   },
+                        // ]
+                      }
                       axisScaleType={{
                         x: ScaleEnum.Linear,
                         y: ScaleEnum.Linear,

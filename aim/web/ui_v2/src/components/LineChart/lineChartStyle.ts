@@ -5,5 +5,8 @@ export default makeStyles(() => ({
     backgroundColor: 'white',
     height: '100%',
     width: '100%',
+    position: 'relative',
+    overflow: 'hidden',
+    userSelect: 'none',
   },
 }));
