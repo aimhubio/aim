@@ -6,18 +6,17 @@ import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
-import LineChart from '../../components/LineChart/LineChart';
+import LineChart from 'components/LineChart/LineChart';
 import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
-import { ScaleEnum } from '../../utils/d3';
+import { ScaleEnum } from 'utils/d3';
 
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
-
   return (
     <div ref={props.wrapperRef}>
       <Box
@@ -108,13 +107,17 @@ function Metrics(
                         x: ScaleEnum.Linear,
                         y: ScaleEnum.Linear,
                       }}
+                      displayOutliers={props.displayOutliers}
                     />
                   )}
                 </Paper>
               </Grid>
               <Grid item>
                 <Paper className={classes.paper}>
-                  <Controls />
+                  <Controls
+                    toggleDisplayOutliers={props.toggleDisplayOutliers}
+                    displayOutliers={props.displayOutliers}
+                  />
                 </Paper>
               </Grid>
             </Grid>

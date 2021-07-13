@@ -13,4 +13,5 @@ export interface IProcessData {
 
 export interface IProcessDataProps {
   data: ILineChartProps['data'];
+  displayOutliers: boolean;
 }

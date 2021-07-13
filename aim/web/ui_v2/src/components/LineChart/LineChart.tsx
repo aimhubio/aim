@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import useStyles from './lineChartStyle';
-import { ILineChartProps } from '../../types/components/LineChart/LineChart';
+import { ILineChartProps } from 'types/components/LineChart/LineChart';
+
 import {
   drawArea,
   clearArea,
@@ -16,7 +17,14 @@ import useResizeObserver from '../../hooks/window/useResizeObserver';
 function LineChart(
   props: ILineChartProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { index, data, axisScaleType = {}, xAlignment } = props;
+  const {
+    index,
+    data,
+    axisScaleType = {},
+    xAlignment,
+    displayOutliers,
+  } = props;
+
   const classes = useStyles();
 
   // boxes
@@ -63,9 +71,10 @@ function LineChart(
       linesRef,
       attributesRef,
     });
-
-    const { processedData, min, max } = processData({ data });
-
+    const { processedData, min, max } = processData({
+      data,
+      displayOutliers,
+    });
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
       axisScaleType,

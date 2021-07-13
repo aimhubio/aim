@@ -1,15 +1,14 @@
 import _ from 'lodash';
 
-import {
-  IProcessData,
-  IProcessDataProps,
-} from '../../types/utils/d3/processData';
+import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
+import { removeOutliers } from './removeOutliers';
+import { minMaxOfArray } from 'utils/minMaxOfArray';
 
 const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;
 
 function processData(props: IProcessDataProps): IProcessData {
-  const { data } = props;
+  const { data, displayOutliers } = props;
 
   let xValues: number[] = [];
   let yValues: number[] = [];
@@ -64,14 +63,20 @@ function processData(props: IProcessDataProps): IProcessData {
   xValues = _.uniq(xValues);
   yValues = _.uniq(yValues);
 
+  if (!displayOutliers) {
+    yValues = removeOutliers(yValues, 4);
+  }
+
+  const [yMin, yMax] = minMaxOfArray(yValues);
+  const [xMin, xMax] = minMaxOfArray(xValues);
   return {
     min: {
-      x: Math.min(...xValues),
-      y: Math.min(...yValues),
+      x: xMin,
+      y: yMin,
     },
     max: {
-      x: Math.max(...xValues),
-      y: Math.max(...yValues),
+      x: xMax,
+      y: yMax,
     },
     processedData,
   };

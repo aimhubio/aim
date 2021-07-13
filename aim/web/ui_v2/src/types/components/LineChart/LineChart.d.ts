@@ -15,6 +15,7 @@ export interface ILineChartProps {
   index: number;
   data: ILine[];
   xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
+  displayOutliers: boolean;
   axisScaleType?: {
     x?: ScaleType;
     y?: ScaleType;

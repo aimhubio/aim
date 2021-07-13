@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 import { CurveEnum } from './';
-import { IDrawLinesProps } from '../../types/utils/d3/drawLines';
+import { IDrawLinesProps } from 'types/utils/d3/drawLines';
 
 const toTupleData = (x: number[], y: number[]): [number, number][] => {
   return x.map((v: number, i: number) => [v, y[i]]);
