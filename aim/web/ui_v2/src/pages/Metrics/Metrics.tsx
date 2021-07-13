@@ -18,7 +18,7 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
   return (
-    <div ref={props.wrapperRef}>
+    <div ref={props.wrapperElemRef}>
       <Box
         bgcolor='grey.200'
         component='section'
@@ -55,7 +55,7 @@ function Metrics(
             </Grid>
           </Grid>
           <Grid
-            ref={props.chartRef}
+            ref={props.chartElemRef}
             style={{
               flex: '0.5 1 0',
             }}
@@ -87,17 +87,18 @@ function Metrics(
               </Grid>
             </Grid>
           </Grid>
-          <Box
-            justifyContent='center'
-            display='flex'
-            alignItems='center'
-            className={classes.resize}
-            height='6px'
-            onMouseDown={props.handleResize}
-          >
-            <MoreHorizIcon />
-          </Box>
-          <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableRef}>
+          <div ref={props.resizeElemRef}>
+            <Box
+              justifyContent='center'
+              display='flex'
+              alignItems='center'
+              className={classes.resize}
+              height='6px'
+            >
+              <MoreHorizIcon />
+            </Box>
+          </div>
+          <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableElemRef}>
             <Paper className={classes.paper}>
               <Table onSort={() => null} onExport={() => null} />
             </Paper>
