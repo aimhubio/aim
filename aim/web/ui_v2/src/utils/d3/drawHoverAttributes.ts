@@ -11,7 +11,7 @@ import {
   IGetNearestCirclesProps,
   IGetNearestCircles,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from '../../components/LineChart/styles.module.css';
+import classes from '../../components/LineChart/LineChart.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {

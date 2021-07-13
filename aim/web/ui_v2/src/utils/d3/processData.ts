@@ -18,7 +18,7 @@ function processData(props: IProcessDataProps): IProcessData {
     const invalidXIndices = line.data.xValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
-          acc.concat([i]);
+          acc = acc.concat([i]);
         }
         return acc;
       },
@@ -27,7 +27,7 @@ function processData(props: IProcessDataProps): IProcessData {
     const invalidYIndices = line.data.yValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
-          acc.concat([i]);
+          acc = acc.concat([i]);
         }
         return acc;
       },
