@@ -1,5 +1,6 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
+import { ITableRef } from 'types/components/Table/Table';
 
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
@@ -10,11 +11,11 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
-  tableRef: React.RefObject<any>;
+  tableRef: React.RefObject<ITableRef>;
   tableElemRef: React.RefObject<HTMLDivElement>;
   chartElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
+  resizeElemRef: React.RefObject<HTMLDivElement>;
   displayOutliers: boolean;
   toggleDisplayOutliers: () => void;
-  handleResize: () => void;
 }

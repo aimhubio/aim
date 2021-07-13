@@ -1,10 +1,11 @@
 import React from 'react';
 
 import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
-import useModel from 'hooks/model/useModel';
 import Metrics from './Metrics';
 import getTableColumns from './components/TableColumns/TableColumns';
 import { ITableRef } from 'types/components/Table/Table';
+import usePanelResize from 'hooks/resize/usePanelResize';
+import useModel from 'hooks/model/useModel';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -17,41 +18,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
+  const resizeElemRef = React.useRef<HTMLDivElement>(null);
 
-  const handleResize = React.useCallback(() => {
-    document.addEventListener('mousemove', startResize);
-    document.addEventListener('mouseup', endResize);
-  }, []);
-
-  const startResize = React.useCallback((event: MouseEvent): void => {
-    requestAnimationFrame(() => {
-      if (
-        tableElemRef.current &&
-        chartElemRef.current &&
-        wrapperElemRef.current
-      ) {
-        const containerHeight: number =
-          tableElemRef.current.getBoundingClientRect()?.height +
-          chartElemRef.current.getBoundingClientRect()?.height;
-
-        const searchBarHeight: number =
-          wrapperElemRef.current.getBoundingClientRect()?.height -
-          containerHeight;
-
-        const height: number = event.clientY - searchBarHeight;
-
-        const flex: number = height / containerHeight;
-        if (chartElemRef.current && tableElemRef.current) {
-          chartElemRef.current.style.flex = `${flex} 1 0`;
-          tableElemRef.current.style.flex = `${1 - flex} 1 0`;
-        }
-      }
-    });
-  }, []);
-
-  const endResize = React.useCallback(() => {
-    document.removeEventListener('mousemove', startResize);
-  }, []);
+  usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
   const toggleDisplayOutliers = React.useCallback(() => {
     setDisplayOutliers(!displayOutliers);
@@ -66,8 +35,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     // });
     return () => {
       metricsRequestRef.abort();
-      document.removeEventListener('mousemove', startResize);
-      document.removeEventListener('mouseup', endResize);
     };
   }, []);
 
@@ -76,10 +43,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRef={tableRef}
       displayOutliers={displayOutliers}
       toggleDisplayOutliers={toggleDisplayOutliers}
-      handleResize={handleResize}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
+      resizeElemRef={resizeElemRef}
       metricsCollection={metricsData?.collection}
       lineChartData={metricsCollectionModel.getDataAsLines()}
       tableData={metricsCollectionModel.getDataAsTableRows()}

@@ -87,16 +87,17 @@ function Metrics(
               </Grid>
             </Grid>
           </Grid>
-          <Box
-            justifyContent='center'
-            display='flex'
-            alignItems='center'
-            className={classes.resize}
-            height='6px'
-            onMouseDown={props.handleResize}
-          >
-            <MoreHorizIcon />
-          </Box>
+          <div ref={props.resizeElemRef}>
+            <Box
+              justifyContent='center'
+              display='flex'
+              alignItems='center'
+              className={classes.resize}
+              height='6px'
+            >
+              <MoreHorizIcon />
+            </Box>
+          </div>
           <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableElemRef}>
             <Paper className={classes.paper}>
               {props.metricsCollection?.[0] && (
