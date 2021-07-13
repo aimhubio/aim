@@ -11,7 +11,7 @@ import {
   IGetNearestCirclesProps,
   IGetNearestCircles,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from 'components/LineChart/styles.module.css';
+import classes from 'components/LineChart/LineChart.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
 import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
 
@@ -26,6 +26,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     xAxisLabelNodeRef,
     yAxisLabelNodeRef,
     xAlignment,
+    index,
   } = props;
 
   attributesRef.current.updateScales = function (
@@ -72,6 +73,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .data(nearestCircles)
       .join('circle')
       .attr('class', `${classes.HoverCircle}`)
+      .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
       .attr('id', function (this: SVGElement, circle: INearestCircle) {
         // Set closest circle style
         if (closestCircle.key === circle.key) {
@@ -140,6 +142,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   attributesRef.current.updateHoverAttributes = handleMouseMove;
+
   svgArea?.on('mousemove', handleMouseMove);
 
   svgArea?.on('mouseleave', (event) => {
@@ -201,8 +204,7 @@ function getNearestCircles({
     });
   }
   closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
-  const closestCircle = closestCircles[0];
-  return { nearestCircles, closestCircle };
+  return { nearestCircles, closestCircle: closestCircles[0] };
 }
 
 function getCoordinates({

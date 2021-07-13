@@ -30,7 +30,7 @@ function drawLines(props: IDrawLinesProps): void {
       .append('path')
       .data([toTupleData(line.data.xValues, line.data.yValues)])
       .attr('id', `Line-${line.key}`)
-      .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('clip-path', 'url(#lines-rect-clip-' + index + ')')
       .attr('d', linesRef.current.lineGenerator())
       .attr('class', 'Line')
       .style('fill', 'none')

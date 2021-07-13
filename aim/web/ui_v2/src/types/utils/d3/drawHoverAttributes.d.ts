@@ -24,6 +24,7 @@ export interface IDrawHoverAttributesProps {
   xAxisLabelNodeRef: React.MutableRefObject<>;
   yAxisLabelNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
+  index: number;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };

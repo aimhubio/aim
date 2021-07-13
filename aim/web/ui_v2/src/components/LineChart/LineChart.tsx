@@ -1,6 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
+
 import {
   drawArea,
   clearArea,
@@ -152,6 +153,7 @@ function LineChart(
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
       xAlignment,
+      index,
     });
 
     if (zoomMode) {
