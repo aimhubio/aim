@@ -24,7 +24,7 @@ function drawAxes(props: IDrawAxesProps): void {
   ) {
     axesRef.current.xAxis
       .transition()
-      .duration(1000)
+      .duration(500)
       .call(d3.axisBottom(xScaleUpdate));
   };
 
@@ -33,7 +33,7 @@ function drawAxes(props: IDrawAxesProps): void {
   ) {
     axesRef.current.yAxis
       .transition()
-      .duration(1000)
+      .duration(500)
       .call(d3.axisLeft(yScaleUpdate));
   };
 }

@@ -95,7 +95,7 @@ function LineChart(
       linesNodeRef.current
         .selectAll('.Line')
         .transition()
-        .duration(1000)
+        .duration(500)
         .attr('d', linesRef.current.lineGenerator(xScale, yScale));
     },
     [axisScaleType, max, min],
@@ -203,7 +203,7 @@ function LineChart(
     linesNodeRef.current
       .selectAll('.Line')
       .transition()
-      .duration(1000)
+      .duration(500)
       .attr(
         'd',
         linesRef.current.lineGenerator(
