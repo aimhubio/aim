@@ -18,7 +18,7 @@ const useResizeObserver = (
         }
       };
     }
-  }, [resizeObserverCallback, target]);
+  }, []);
 };
 
 export default useResizeObserver;

@@ -10,5 +10,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.MutableRefObject<>;
   resizeElemRef: React.MutableRefObject<>;
   displayOutliers: boolean;
+  zoomMode: boolean;
   toggleDisplayOutliers: () => void;
+  toggleZoomMode: () => void;
 }

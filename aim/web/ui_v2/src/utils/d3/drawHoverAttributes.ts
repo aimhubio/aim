@@ -11,48 +11,64 @@ import {
   IGetNearestCirclesProps,
   IGetNearestCircles,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from '../../components/LineChart/LineChart.module.css';
+import classes from 'components/LineChart/LineChart.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
+import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     data,
+    attributesNodeRef,
     attributesRef,
     plotBoxRef,
     visAreaRef,
     visBoxRef,
-    xAxisValueRef,
-    yAxisValueRef,
-    xScale,
-    yScale,
+    xAxisLabelNodeRef,
+    yAxisLabelNodeRef,
     xAlignment,
     index,
   } = props;
+
+  attributesRef.current.updateScales = function (
+    xScale: IGetAxisScale['xScale'],
+    yScale: IGetAxisScale['yScale'],
+  ) {
+    attributesRef.current.xScale = xScale;
+    attributesRef.current.yScale = yScale;
+  };
 
   const { margin } = visBoxRef.current;
   const { height, width } = plotBoxRef.current;
 
   const svgArea = d3.select(visAreaRef.current).select('svg');
 
-  svgArea?.on('mousemove', (event) => {
-    const mouse: [number, number] = d3.pointer(event);
+  function handleMouseMove(
+    event: MouseEvent | undefined,
+    mousePosition?: number[] | any,
+  ) {
+    let mouse: [number, number];
+    if (event) {
+      mouse = d3.pointer(event);
+    } else {
+      mouse = mousePosition;
+    }
     const { mouseX, mouseY } = getCoordinates({
       mouse,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       margin,
     });
 
     const { nearestCircles, closestCircle } = getNearestCircles({
       data,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       mouseX,
       mouseY,
     });
 
     // Draw Circles
-    attributesRef.current
+    attributesNodeRef.current
       .selectAll('circle')
       .data(nearestCircles)
       .join('circle')
@@ -97,10 +113,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       visAreaRef,
       visBoxRef,
       plotBoxRef,
-      xAxisValueRef,
-      yAxisValueRef,
-      xScale,
-      yScale,
+      xAxisLabelNodeRef,
+      yAxisLabelNodeRef,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       xAlignment,
     });
 
@@ -110,7 +126,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     ];
 
     // Draw horizontal/vertical lines
-    attributesRef.current
+    attributesNodeRef.current
       .selectAll('line')
       .data(axisLineData)
       .join('line')
@@ -123,7 +139,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .attr('y1', (axisLine: IAxisLineData) => axisLine.y1)
       .attr('x2', (axisLine: IAxisLineData) => axisLine.x2)
       .attr('y2', (axisLine: IAxisLineData) => axisLine.y2);
-  });
+  }
+
+  attributesRef.current.updateHoverAttributes = handleMouseMove;
+
+  svgArea?.on('mousemove', handleMouseMove);
 
   svgArea?.on('mouseleave', (event) => {
     // TODO handle mouseLeave
@@ -209,19 +229,19 @@ function setAxisLabel({
   visAreaRef,
   visBoxRef,
   plotBoxRef,
-  xAxisValueRef,
-  yAxisValueRef,
+  xAxisLabelNodeRef,
+  yAxisLabelNodeRef,
   xAlignment,
   xScale,
   yScale,
 }: ISetAxisLabelProps) {
-  if (xAxisValueRef.current) {
-    xAxisValueRef.current.remove();
-    xAxisValueRef.current = null;
+  if (xAxisLabelNodeRef.current) {
+    xAxisLabelNodeRef.current.remove();
+    xAxisLabelNodeRef.current = null;
   }
-  if (yAxisValueRef.current) {
-    yAxisValueRef.current.remove();
-    yAxisValueRef.current = null;
+  if (yAxisLabelNodeRef.current) {
+    yAxisLabelNodeRef.current.remove();
+    yAxisLabelNodeRef.current = null;
   }
 
   const xAxisTickValue = xScale.invert(closestCircle.x);
@@ -249,7 +269,7 @@ function setAxisLabel({
   if (xAxisValueLabel) {
     const formattedValue = Math.round(xAxisValueLabel * 10e9) / 10e9;
 
-    xAxisValueRef.current = visArea
+    xAxisLabelNodeRef.current = visArea
       .append('div')
       .attr(
         'class',
@@ -260,12 +280,12 @@ function setAxisLabel({
 
     const axisLeftEdge = margin.left - 1;
     const axisRightEdge = width - margin.right + 1;
-    let xAxisValueWidth = xAxisValueRef.current.node().offsetWidth;
+    let xAxisValueWidth = xAxisLabelNodeRef.current.node().offsetWidth;
     if (xAxisValueWidth > plotBoxRef.current.width) {
       xAxisValueWidth = plotBoxRef.current.width;
     }
 
-    xAxisValueRef.current
+    xAxisLabelNodeRef.current
       .style('width', `${xAxisValueWidth}px`)
       .style(
         'left',
@@ -282,7 +302,7 @@ function setAxisLabel({
 
   if (yAxisValueLabel) {
     const formattedValue = Math.round(yAxisTickValue * 10e9) / 10e9;
-    yAxisValueRef.current = visArea
+    yAxisLabelNodeRef.current = visArea
       .append('div')
       .attr(
         'class',
@@ -295,8 +315,8 @@ function setAxisLabel({
 
     const axisTopEdge = margin.top - 1;
     const axisBottomEdge = height - margin.top;
-    const yAxisValueHeight = yAxisValueRef.current.node().offsetHeight;
-    yAxisValueRef.current.style(
+    const yAxisValueHeight = yAxisLabelNodeRef.current.node().offsetHeight;
+    yAxisLabelNodeRef.current.style(
       'top',
       `${
         closestCircle.y - yAxisValueHeight / 2 < 0

@@ -4,8 +4,9 @@ import { IProcessedData } from './processData';
 
 export interface IDrawLinesProps {
   linesRef: React.MutableRefObject<>;
+  linesNodeRef: React.MutableRefObject<>;
   data: IProcessedData[];
   xScale: IDrawAxesProps['xScale'];
   yScale: IDrawAxesProps['yScale'];
-  index: number;
+  index: number | undefined;
 }

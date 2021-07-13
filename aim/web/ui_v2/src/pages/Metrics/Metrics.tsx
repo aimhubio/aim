@@ -108,6 +108,7 @@ function Metrics(
                         y: ScaleEnum.Linear,
                       }}
                       displayOutliers={props.displayOutliers}
+                      zoomMode={props.zoomMode}
                     />
                   )}
                 </Paper>
@@ -117,6 +118,8 @@ function Metrics(
                   <Controls
                     toggleDisplayOutliers={props.toggleDisplayOutliers}
                     displayOutliers={props.displayOutliers}
+                    zoomMode={props.zoomMode}
+                    toggleZoomMode={props.toggleZoomMode}
                   />
                 </Paper>
               </Grid>

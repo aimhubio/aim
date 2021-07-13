@@ -7,7 +7,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { encode } from '../../../utils/encoder/encoder';
+import { encode } from 'utils/encoder/encoder';
 
 const model = createModel({});
 

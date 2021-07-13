@@ -8,5 +8,11 @@ export default makeStyles(() => ({
     position: 'relative',
     overflow: 'hidden',
     userSelect: 'none',
+    '& .backgroundRect': {
+      cursor: 'crosshair',
+    },
+    '&.zoomMode rect': {
+      cursor: 'zoom-in',
+    },
   },
 }));

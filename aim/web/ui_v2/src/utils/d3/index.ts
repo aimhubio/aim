@@ -4,6 +4,7 @@ import drawAxes from './drawAxes';
 import drawLines from './drawLines';
 import processData from './processData';
 import getAxisScale from './getAxisScale';
+import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
 
 enum XAlignmentEnum {
@@ -48,5 +49,6 @@ export {
   drawLines,
   processData,
   getAxisScale,
+  drawBrush,
   drawHoverAttributes,
 };
