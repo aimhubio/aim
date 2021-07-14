@@ -12,7 +12,7 @@ import {
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
 import { IHandleSmoothing } from 'types/pages/metrics/Metrics';
-import { CurveEnum } from '../../utils/d3';
+import { CurveEnum } from 'utils/d3';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -24,8 +24,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
-  const tableRef = React.useRef<ITableRef>(null);
 
+  const tableRef = React.useRef<ITableRef>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);

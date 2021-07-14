@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 export enum SmoothingAlgorithmEnum {
   EMA = 'EXPONENTIAL_MOVING_AREA',

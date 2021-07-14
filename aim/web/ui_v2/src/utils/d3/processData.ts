@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
