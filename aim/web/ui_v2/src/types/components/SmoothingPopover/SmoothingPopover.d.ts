@@ -1,5 +1,5 @@
-import { IHandleSmoothing } from 'types/pages/metrics/Metrics';
+import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 
 export interface ISmoothingPopoverProps {
-  handleSmoothing: (props: IHandleSmoothing) => void;
+  onSmoothingChange: (props: IOnSmoothingChange) => void;
 }

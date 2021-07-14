@@ -1,5 +1,4 @@
 import React from 'react';
-import * as d3 from 'd3';
 
 import {
   drawArea,
@@ -12,10 +11,10 @@ import {
   drawHoverAttributes,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
-import { IHandleBrushChange } from 'types/utils/d3/drawBrush';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
+
 function LineChart(
   props: ILineChartProps,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -73,29 +72,6 @@ function LineChart(
         displayOutliers,
       }),
     [data, displayOutliers],
-  );
-
-  const zoomOut = React.useCallback(
-    (event) => {
-      const { xScale, yScale } = getAxisScale({
-        visBoxRef,
-        axisScaleType,
-        min,
-        max,
-      });
-
-      // setting axes to initial state
-      axesRef.current.updateXAxis(xScale);
-      axesRef.current.updateYAxis(yScale);
-
-      // setting scales and lines to initial state
-      brushRef.current.updateScales(xScale, yScale);
-      linesRef.current.updateLines(xScale, yScale);
-
-      attributesRef.current.updateScales(xScale, yScale);
-      attributesRef.current.updateHoverAttributes(undefined, d3.pointer(event));
-    },
-    [axisScaleType, max, min],
   );
 
   const draw = React.useCallback((): void => {
@@ -161,9 +137,16 @@ function LineChart(
         brushRef,
         plotBoxRef,
         plotNodeRef,
-        handleBrushChange,
+        visBoxRef,
+        axesRef,
+        attributesRef,
+        linesRef,
+        linesNodeRef,
+        svgNodeRef,
+        axisScaleType,
+        min,
+        max,
       });
-      svgNodeRef.current.on('dblclick', zoomOut);
     }
   }, [
     axisScaleType,
@@ -174,43 +157,7 @@ function LineChart(
     processedData,
     xAlignment,
     zoomMode,
-    zoomOut,
   ]);
-
-  const handleBrushChange = ({
-    xValues,
-    yValues,
-    mousePosition,
-  }: IHandleBrushChange): void => {
-    //
-    const { width, height, margin } = visBoxRef.current;
-
-    // updating Scales domain
-    brushRef.current.xScale
-      .domain(xValues)
-      .range([0, width - margin.left - margin.right]);
-    brushRef.current.yScale
-      .domain(yValues)
-      .range([height - margin.top - margin.bottom, 0]);
-
-    // updating axes with new Scales
-    axesRef.current.updateXAxis(brushRef.current.xScale);
-    axesRef.current.updateYAxis(brushRef.current.yScale);
-
-    attributesRef.current.updateHoverAttributes(undefined, mousePosition);
-
-    linesNodeRef.current
-      .selectAll('.Line')
-      .transition()
-      .duration(500)
-      .attr(
-        'd',
-        linesRef.current.lineGenerator(
-          brushRef.current.xScale,
-          brushRef.current.yScale,
-        ),
-      );
-  };
 
   const renderChart = React.useCallback((): void => {
     clearArea({ visAreaRef });

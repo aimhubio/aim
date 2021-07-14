@@ -73,7 +73,7 @@ function SmoothingPopover(
   }
 
   function handleSmoothingData(): void {
-    props.handleSmoothing({
+    props.onSmoothingChange({
       algorithm: smoothingAlgorithm,
       factor,
       curveInterpolation,

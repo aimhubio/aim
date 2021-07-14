@@ -1,9 +1,9 @@
-import { IHandleSmoothing } from '../../Metrics';
+import { IOnSmoothingChange } from '../../Metrics';
 
 export interface IControlProps {
   toggleDisplayOutliers: () => void;
   displayOutliers: boolean;
   toggleZoomMode: () => void;
   zoomMode: boolean;
-  handleSmoothing: (props: IHandleSmoothing) => void;
+  onSmoothingChange: (props: IOnSmoothingChange) => void;
 }

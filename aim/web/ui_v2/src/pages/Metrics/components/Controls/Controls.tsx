@@ -78,7 +78,7 @@ function Controls(
             </Box>
           )}
           component={
-            <SmootheningPopup handleSmoothing={props.handleSmoothing} />
+            <SmootheningPopup onSmoothingChange={props.onSmoothingChange} />
           }
         />
       </Grid>

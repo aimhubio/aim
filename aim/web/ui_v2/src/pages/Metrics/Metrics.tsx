@@ -12,11 +12,13 @@ import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
 import { ScaleEnum } from 'utils/d3';
+import { ILine } from '../../types/components/LineChart/LineChart';
 
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
+
   return (
     <div ref={props.wrapperElemRef}>
       <Box
@@ -64,11 +66,11 @@ function Metrics(
             <Grid container className={classes.fullHeight} spacing={1}>
               <Grid item xs>
                 <Paper className={classes.paper}>
-                  {props.metricsCollection && (
+                  {props.lineChartData.length ? (
                     <LineChart
                       index={0}
                       key='uniqueKey'
-                      data={props.metricsCollection as any}
+                      data={props.lineChartData as any}
                       axisScaleType={{
                         x: ScaleEnum.Linear,
                         y: ScaleEnum.Linear,
@@ -77,7 +79,7 @@ function Metrics(
                       displayOutliers={props.displayOutliers}
                       zoomMode={props.zoomMode}
                     />
-                  )}
+                  ) : null}
                 </Paper>
               </Grid>
               <Grid item>
@@ -87,7 +89,7 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
-                    handleSmoothing={props.handleSmoothing}
+                    onSmoothingChange={props.onSmoothingChange}
                   />
                 </Paper>
               </Grid>
@@ -106,7 +108,7 @@ function Metrics(
           </div>
           <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableElemRef}>
             <Paper className={classes.paper}>
-              {props.metricsCollection?.[0] && (
+              {props.tableData.length ? (
                 <Table
                   ref={props.tableRef}
                   onSort={() => null}
@@ -114,7 +116,7 @@ function Metrics(
                   data={props.tableData[0]}
                   columns={props.tableColumns}
                 />
-              )}
+              ) : null}
             </Paper>
           </Grid>
         </Grid>
