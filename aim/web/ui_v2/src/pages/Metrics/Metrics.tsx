@@ -83,6 +83,7 @@ function Metrics(
                     toggleZoomMode={props.toggleZoomMode}
                   />
                 }
+                onActivePointChange={props.onActivePointChange}
               />
             )}
           </Grid>

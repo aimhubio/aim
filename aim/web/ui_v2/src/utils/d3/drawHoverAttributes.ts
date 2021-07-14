@@ -10,6 +10,7 @@ import {
   ISetAxisLabelProps,
   IGetNearestCirclesProps,
   IGetNearestCircles,
+  IActivePointData,
 } from '../../types/utils/d3/drawHoverAttributes';
 import classes from 'components/LineChart/LineChart.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
@@ -43,7 +44,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   const svgArea = d3.select(visAreaRef.current).select('svg');
 
-  function updateHoverAttributes(mousePosition: [number, number]) {
+  function updateHoverAttributes(
+    mousePosition: [number, number],
+  ): IActivePointData {
     const { mouseX, mouseY } = getCoordinates({
       mouse: mousePosition,
       xScale: attributesRef.current.xScale,
@@ -131,6 +134,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .attr('y1', (axisLine: IAxisLineData) => axisLine.y1)
       .attr('x2', (axisLine: IAxisLineData) => axisLine.x2)
       .attr('y2', (axisLine: IAxisLineData) => axisLine.y2);
+
+    return {
+      key: closestCircle.key,
+      xValue: attributesRef.current.xScale.invert(closestCircle.x),
+      yValue: attributesRef.current.yScale.invert(closestCircle.y),
+    };
   }
 
   function handleMouseMove(
@@ -144,10 +153,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       mouse = mousePosition;
     }
 
-    updateHoverAttributes(mouse);
+    const activePointData = updateHoverAttributes(mouse);
 
     if (typeof callback === 'function') {
-      callback(mouse);
+      callback(mouse, activePointData);
     }
   }
 

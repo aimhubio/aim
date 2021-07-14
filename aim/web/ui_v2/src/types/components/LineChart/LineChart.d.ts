@@ -1,3 +1,5 @@
+import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+
 export type ScaleType = 'log' | 'linear';
 
 export interface ILine {
@@ -21,5 +23,8 @@ export interface ILineChartProps {
     x?: ScaleType;
     y?: ScaleType;
   };
-  onMouseOver: (mousePosition: [number, number]) => void;
+  onMouseOver: (
+    mousePosition: [number, number],
+    activePointData: IActivePointData,
+  ) => void;
 }

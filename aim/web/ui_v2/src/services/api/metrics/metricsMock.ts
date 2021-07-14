@@ -19,7 +19,7 @@ function generateMetrics(count = 500, pointsCount = 50) {
           data: {
             values: new Float64Array(
               context === 'val'
-                ? [...Array(Math.ceil(pointsCount / 5))].map(
+                ? [...Array(Math.ceil(pointsCount / 3))].map(
                     (e, j) => Math.random() * 1.1 + Math.random() * (j + 1),
                   )
                 : [...Array(pointsCount)].map(
@@ -28,7 +28,7 @@ function generateMetrics(count = 500, pointsCount = 50) {
             ),
             steps: new Uint32Array(
               context === 'val'
-                ? [...Array(Math.ceil(pointsCount / 5))]
+                ? [...Array(Math.ceil(pointsCount / 3))]
                     .fill(0)
                     .map((e, i) => i * 10)
                 : [...Array(pointsCount)].fill(0).map((e, i) => i * 10),
@@ -38,7 +38,7 @@ function generateMetrics(count = 500, pointsCount = 50) {
             ),
             iterations: new Uint32Array(
               context === 'val'
-                ? [...Array(Math.ceil(pointsCount / 5))]
+                ? [...Array(Math.ceil(pointsCount / 3))]
                     .fill(0)
                     .map((e, i) => i * 10)
                 : [...Array(pointsCount)].fill(0).map((e, i) => i * 10),

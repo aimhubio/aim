@@ -200,7 +200,7 @@ const LineChart = React.forwardRef(function LineChart(
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateHoverAttributes(undefined, mousePosition);
+    attributesRef.current.updateHoverAttributes(mousePosition);
 
     linesNodeRef.current
       .selectAll('.Line')

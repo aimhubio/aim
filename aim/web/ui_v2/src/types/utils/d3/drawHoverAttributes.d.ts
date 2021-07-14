@@ -14,7 +14,9 @@ export interface IDrawHoverAttributesProps {
       xScale: IGetAxisScale['xScale'],
       yScale: IGetAxisScale['yScale'],
     ) => void;
-    updateHoverAttributes?: (mousePosition: [number, number]) => void;
+    updateHoverAttributes?: (
+      mousePosition: [number, number],
+    ) => IActivePointData;
   }>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
@@ -22,7 +24,10 @@ export interface IDrawHoverAttributesProps {
   yAxisLabelNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
   index: number;
-  callback: (mousePosition: [number, number]) => void;
+  callback: (
+    mousePosition: [number, number],
+    activePointData: IActivePointData,
+  ) => void;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };
@@ -70,4 +75,10 @@ export interface IGetNearestCirclesProps {
 export interface IGetNearestCircles {
   nearestCircles: INearestCircle[];
   closestCircle: IClosestCircle;
+}
+
+export interface IActivePointData {
+  key: string;
+  xValue: number;
+  yValue: number;
 }

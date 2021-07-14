@@ -6,6 +6,7 @@ import getTableColumns from './components/TableColumns/TableColumns';
 import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -31,13 +32,20 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     setZoomMode(!zoomMode);
   }, [zoomMode]);
 
+  const onActivePointChange = React.useCallback(
+    (activePointData: IActivePointData): void => {
+      tableRef.current?.updateData({
+        newData: metricsCollectionModel.getDataAsTableRows(
+          activePointData.xValue,
+        )[0],
+      });
+    },
+    [],
+  );
+
   React.useEffect(() => {
     metricsCollectionModel.initialize();
     metricsRequestRef.call();
-
-    // tableRef.current?.updateData({
-    //   newData: metricsCollectionModel.getDataAsTableRows(xValue)[0],
-    // });
     return () => {
       metricsRequestRef.abort();
     };
@@ -58,6 +66,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableColumns={getTableColumns()}
       zoomMode={zoomMode}
       toggleZoomMode={toggleZoomMode}
+      onActivePointChange={onActivePointChange}
     />
   );
 }

@@ -20,4 +20,5 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   zoomMode: boolean;
   toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
+  onActivePointChange: (activePointData: IActivePointData) => void;
 }

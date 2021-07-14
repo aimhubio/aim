@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Paper } from '@material-ui/core';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
+import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import LineChart from 'components/LineChart/LineChart';
 
 import useStyles from './chartPanelStyle';
@@ -18,6 +19,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   function syncHoverState(
     chartIndex: number,
     mousePosition: [number, number],
+    activePointData: IActivePointData,
   ): void {
     chartRefs.forEach((chartRef, index) => {
       if (index === chartIndex) {
@@ -25,6 +27,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       }
       chartRef.current.updateHoverAttributes(mousePosition);
     });
+    if (props.onActivePointChange) {
+      props.onActivePointChange(activePointData);
+    }
   }
 
   React.useEffect(() => {
@@ -45,7 +50,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   {...props.chartProps[0]}
                   index={index}
                   data={data}
-                  onMouseOver={(mouse) => syncHoverState(index, mouse)}
+                  onMouseOver={(mouse, activePointData) =>
+                    syncHoverState(index, mouse, activePointData)
+                  }
                 />
               </Grid>
             ))}
