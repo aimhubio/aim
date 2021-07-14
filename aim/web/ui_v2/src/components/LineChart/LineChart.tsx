@@ -17,8 +17,9 @@ import { IHandleBrushChange } from 'types/utils/d3/drawBrush';
 
 import useStyles from './lineChartStyle';
 
-function LineChart(
+const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
+  ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     index,
@@ -241,6 +242,6 @@ function LineChart(
       <div ref={visAreaRef} />
     </div>
   );
-}
+});
 
 export default React.memo(LineChart);

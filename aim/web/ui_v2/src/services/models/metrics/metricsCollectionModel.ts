@@ -69,7 +69,7 @@ function processData(data: any) {
       }),
     );
   });
-  return [metrics];
+  return [metrics, metrics, metrics, metrics, metrics];
 }
 
 const metricsCollectionModel = {
