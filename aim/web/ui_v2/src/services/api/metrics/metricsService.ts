@@ -1,3 +1,4 @@
+import { IRun } from 'types/services/models/metrics/runModel';
 import API from '../api';
 import generateMetrics from './metricsMock';
 
@@ -9,7 +10,7 @@ function getMetricsData() {
   // return API.get<unknown>(endpoints.SEARCH_METRICS);
   return {
     call: () => ({
-      then: (resolve: (data: unknown) => void, reject?: unknown) => {
+      then: (resolve: (data: IRun[]) => void, reject?: unknown) => {
         setTimeout(() => {
           const mock = generateMetrics(500, 200);
           resolve(mock);
