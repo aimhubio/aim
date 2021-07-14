@@ -16,7 +16,6 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.7",
-    "@types/react-virtualized": "^9.21.12",
     "@types/react-window": "^1.8.4",
     "bs58check": "^2.1.2",
     "classnames": "^2.3.1",
@@ -76,7 +75,8 @@
     "plugins": [
       "react",
       "prettier",
-      "react-hooks"
+      "react-hooks",
+      "@typescript-eslint"
     ]
   },
   "browserslist": {
