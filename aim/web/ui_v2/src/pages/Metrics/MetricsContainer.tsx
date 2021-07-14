@@ -4,14 +4,24 @@ import metricsCollectionModel from 'services/models/metrics/metricsCollectionMod
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import {
+  calculateCentralMovingAverage,
+  calculateExponentialMovingAverage,
+  SmoothingAlgorithmEnum,
+} from 'utils/smoothingData';
+import { IHandleSmoothing } from 'types/pages/metrics/Metrics';
+import { CurveEnum } from '../../utils/d3';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-
   const metricsData = useModel<any>(metricsCollectionModel);
+  const [data, setData] = React.useState<any>(null);
+  const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
+    CurveEnum.Linear,
+  );
 
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -35,6 +45,35 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (metricsData?.collection) {
+      setData(metricsData?.collection[0]);
+    }
+  }, [metricsData]);
+
+  function handleSmoothing({
+    algorithm,
+    factor,
+    curveInterpolation,
+  }: IHandleSmoothing) {
+    const newData = [...data];
+    for (let i = 0; i < data.length; i++) {
+      if (algorithm === SmoothingAlgorithmEnum.EMA) {
+        newData[i].data.yValues = calculateExponentialMovingAverage(
+          data[i].data.values,
+          factor,
+        );
+      } else {
+        newData[i].data.yValues = calculateCentralMovingAverage(
+          data[i].data.values,
+          factor,
+        );
+      }
+    }
+    setData(newData);
+    setCurveInterpolation(curveInterpolation);
+  }
+
   return (
     <Metrics
       displayOutliers={displayOutliers}
@@ -45,7 +84,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       resizeElemRef={resizeElemRef}
       zoomMode={zoomMode}
       toggleZoomMode={toggleZoomMode}
-      metricsCollection={metricsData?.collection}
+      metricsCollection={data}
+      handleSmoothing={handleSmoothing}
+      curveInterpolation={curveInterpolation}
     />
   );
 }

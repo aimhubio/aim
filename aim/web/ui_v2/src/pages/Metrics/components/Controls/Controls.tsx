@@ -77,7 +77,9 @@ function Controls(
               <MultilineChart />
             </Box>
           )}
-          component={<SmootheningPopup />}
+          component={
+            <SmootheningPopup handleSmoothing={props.handleSmoothing} />
+          }
         />
       </Grid>
       <Grid item>

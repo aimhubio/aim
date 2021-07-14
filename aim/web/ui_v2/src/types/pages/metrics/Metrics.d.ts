@@ -2,6 +2,7 @@ import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
 import { IMetric } from 'types/services/models/metrics/metricModel';
+import { CurveEnum } from 'utils/d3';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   metricsCollection: [IMetric[]];
@@ -13,4 +14,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   zoomMode: boolean;
   toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
+  handleSmoothing: (props: IHandleSmoothing) => void;
+  curveInterpolation: CurveEnum;
+}
+
+export interface IHandleSmoothing {
+  algorithm: string;
+  factor: number;
+  curveInterpolation: CurveEnum;
 }

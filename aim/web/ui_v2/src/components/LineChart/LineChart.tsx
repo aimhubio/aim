@@ -1,6 +1,5 @@
 import React from 'react';
 import * as d3 from 'd3';
-import { ILineChartProps } from 'types/components/LineChart/LineChart';
 
 import {
   drawArea,
@@ -14,19 +13,20 @@ import {
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHandleBrushChange } from 'types/utils/d3/drawBrush';
+import { ILineChartProps } from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
-
 function LineChart(
   props: ILineChartProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
-    index,
     data,
+    index,
+    zoomMode,
+    xAlignment,
     axisScaleType = {},
     displayOutliers,
-    xAlignment,
-    zoomMode,
+    curveInterpolation,
   } = props;
   const classes = useStyles();
 
@@ -90,13 +90,10 @@ function LineChart(
 
       // setting scales and lines to initial state
       brushRef.current.updateScales(xScale, yScale);
+      linesRef.current.updateLines(xScale, yScale);
+
       attributesRef.current.updateScales(xScale, yScale);
       attributesRef.current.updateHoverAttributes(undefined, d3.pointer(event));
-      linesNodeRef.current
-        .selectAll('.Line')
-        .transition()
-        .duration(500)
-        .attr('d', linesRef.current.lineGenerator(xScale, yScale));
     },
     [axisScaleType, max, min],
   );
@@ -135,6 +132,7 @@ function LineChart(
       data: processedData,
       linesNodeRef,
       linesRef,
+      curveInterpolation,
       xScale,
       yScale,
       index,
@@ -169,6 +167,7 @@ function LineChart(
     }
   }, [
     axisScaleType,
+    curveInterpolation,
     index,
     max,
     min,

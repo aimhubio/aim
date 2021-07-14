@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Divider,
@@ -7,6 +7,10 @@ import {
   Slider,
   Switch,
 } from '@material-ui/core';
+
+import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { CurveEnum } from 'utils/d3';
 
 const emaProps = {
   marks: [
@@ -29,50 +33,98 @@ const cmaProps = {
     { value: 75, label: '75' },
     { value: 99, label: '99' },
   ],
-  step: 1,
-  min: 2,
+  step: 2,
+  min: 1,
   max: 99,
 };
 
-function SmoothingPopover(): React.FunctionComponentElement<React.ReactNode> {
-  const [smoothingAlgorithm, setSmoothingAlgorithm] =
-    React.useState<string>('ema');
+function SmoothingPopover(
+  props: ISmoothingPopoverProps,
+): React.FunctionComponentElement<React.ReactNode> {
+  const mounted = React.useRef<boolean>(false);
+  const [smoothingAlgorithm, setSmoothingAlgorithm] = React.useState<string>(
+    SmoothingAlgorithmEnum.EMA,
+  );
+  const [factor, setFactor] = React.useState<number>(emaProps.min);
+  const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
+    CurveEnum.Linear,
+  );
 
-  const [factor, setFactor] = useState<number>(emaProps.min);
-
-  const handleAlgorithmChange = React.useCallback((event) => {
+  const handleAlgorithmChange = React.useCallback((event): void => {
+    const factorMin: number =
+      event.target.id === SmoothingAlgorithmEnum.EMA
+        ? emaProps.min
+        : cmaProps.min;
     setSmoothingAlgorithm(event.target.id);
-    const sliderProps = smoothingAlgorithm === 'ema' ? emaProps : cmaProps;
-    setFactor(sliderProps.min);
+    setFactor(factorMin);
   }, []);
 
-  const handleFactorChange = (event: any, val: any) => {
+  function handleFactorChange(
+    event: React.ChangeEvent<any>,
+    val: number | any,
+  ): void {
     if (val !== factor) {
       setFactor(val);
     }
-  };
-  const sliderProps = smoothingAlgorithm === 'ema' ? emaProps : cmaProps;
+  }
+
+  function handleInterpolation(ev: React.ChangeEvent, checked: boolean): void {
+    setCurveInterpolation(checked ? CurveEnum.MonotoneX : CurveEnum.Linear);
+  }
+
+  function handleSmoothingData(): void {
+    props.handleSmoothing({
+      algorithm: smoothingAlgorithm,
+      factor,
+      curveInterpolation,
+    });
+  }
+
+  const sliderProps = React.useMemo(() => {
+    return smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
+      ? emaProps
+      : cmaProps;
+  }, [smoothingAlgorithm]);
+
+  React.useEffect(() => {
+    if (mounted.current) {
+      handleSmoothingData();
+    } else {
+      mounted.current = true;
+    }
+  }, [curveInterpolation, smoothingAlgorithm]);
+
   return (
     <Box>
       <Box p={1}>
         <div>Chart Smoothening:</div>
         <Slider
           defaultValue={0}
+          valueLabelDisplay='auto'
           getAriaValueText={(val) => `${val}s`}
+          value={factor}
           onChange={handleFactorChange}
+          onChangeCommitted={handleSmoothingData}
           marks={sliderProps.marks}
           step={sliderProps.step}
           max={sliderProps.max}
           min={sliderProps.min}
-          valueLabelDisplay='auto'
         />
       </Box>
       <Divider />
       <MenuList>
-        <MenuItem id='ema' onClick={handleAlgorithmChange}>
+        <MenuItem
+          id={SmoothingAlgorithmEnum.EMA}
+          selected={smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
+          onClick={handleAlgorithmChange}
+        >
           Exponential Moving area
         </MenuItem>
-        <MenuItem id='cma' onClick={handleAlgorithmChange}>
+        <MenuItem
+          id={SmoothingAlgorithmEnum.CMA}
+          selected={smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
+          onClick={handleAlgorithmChange}
+        >
           Central Moving area
         </MenuItem>
       </MenuList>
@@ -84,9 +136,9 @@ function SmoothingPopover(): React.FunctionComponentElement<React.ReactNode> {
           Linear
         </Box>
         <Switch
-          defaultChecked
           color='primary'
           inputProps={{ 'aria-label': 'checkbox with default color' }}
+          onChange={handleInterpolation}
         />
         <Box component='span'>Cubic</Box>
       </Box>

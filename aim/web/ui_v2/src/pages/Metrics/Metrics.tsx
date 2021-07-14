@@ -64,49 +64,16 @@ function Metrics(
             <Grid container className={classes.fullHeight} spacing={1}>
               <Grid item xs>
                 <Paper className={classes.paper}>
-                  {props.metricsCollection?.[0] && (
+                  {props.metricsCollection && (
                     <LineChart
                       index={0}
                       key='uniqueKey'
-                      data={
-                        props.metricsCollection[0] as any
-                        // [
-                        //   {
-                        //     key: 'uniqueKey1',
-                        //     data: {
-                        //       xValues: [1, 10, 20, 30, 40, 50, 60],
-                        //       yValues: [15, 330, 200, 75, 75, 300, 500],
-                        //     },
-                        //     color: '#a10505',
-                        //     dasharray: '2,4',
-                        //     selector: '',
-                        //   },
-                        //   {
-                        //     key: 'uniqueKey2',
-                        //     data: {
-                        //       xValues: [1, 10, 20, 30, 40, 50, 60],
-                        //       yValues: [20, 33, 40, 75, 175, 30, 140],
-                        //     },
-                        //     color: '#0543a1',
-                        //     dasharray: '0',
-                        //     selector: '',
-                        //   },
-                        //   {
-                        //     key: 'uniqueKey3',
-                        //     data: {
-                        //       xValues: [1, 10, 20, 30, 40, 50, 60],
-                        //       yValues: [40, 68, 40, 120, 230, 99, 10],
-                        //     },
-                        //     color: '#165201',
-                        //     dasharray: '3,13,10',
-                        //     selector: '',
-                        //   },
-                        // ]
-                      }
+                      data={props.metricsCollection as any}
                       axisScaleType={{
                         x: ScaleEnum.Linear,
                         y: ScaleEnum.Linear,
                       }}
+                      curveInterpolation={props.curveInterpolation}
                       displayOutliers={props.displayOutliers}
                       zoomMode={props.zoomMode}
                     />
@@ -120,6 +87,7 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
+                    handleSmoothing={props.handleSmoothing}
                   />
                 </Paper>
               </Grid>

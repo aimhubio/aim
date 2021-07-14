@@ -1,3 +1,5 @@
+import { CurveEnum } from 'utils/d3';
+
 export type ScaleType = 'log' | 'linear';
 
 export interface ILine {
@@ -21,4 +23,5 @@ export interface ILineChartProps {
     x?: ScaleType;
     y?: ScaleType;
   };
+  curveInterpolation: CurveEnum;
 }
