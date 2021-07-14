@@ -17,6 +17,7 @@ function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
+
   return (
     <div ref={props.wrapperElemRef}>
       <Box
@@ -109,6 +110,7 @@ function Metrics(
                       }}
                       displayOutliers={props.displayOutliers}
                       zoomMode={props.zoomMode}
+                      highlightMode={props.highlightMode}
                     />
                   )}
                 </Paper>
@@ -120,6 +122,8 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
+                    highlightMode={props.highlightMode}
+                    handleChangeHighlightMode={props.handleChangeHighlightMode}
                   />
                 </Paper>
               </Grid>

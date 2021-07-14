@@ -10,6 +10,7 @@ const metricsRequestRef = metricsCollectionModel.getMetricsData();
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
+  const [highlightMode, setHighlightMode] = React.useState<number>(0);
 
   const metricsData = useModel<any>(metricsCollectionModel);
 
@@ -26,6 +27,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const toggleZoomMode = React.useCallback((): void => {
     setZoomMode(!zoomMode);
   }, [zoomMode]);
+
+  const handleChangeHighlightMode = React.useCallback(
+    (mode: number) => (): void => {
+      setHighlightMode(mode);
+    },
+    [],
+  );
 
   React.useEffect(() => {
     metricsCollectionModel.initialize();
@@ -46,6 +54,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       zoomMode={zoomMode}
       toggleZoomMode={toggleZoomMode}
       metricsCollection={metricsData?.collection}
+      highlightMode={highlightMode}
+      handleChangeHighlightMode={handleChangeHighlightMode}
     />
   );
 }

@@ -3,4 +3,6 @@ export interface IControlProps {
   displayOutliers: boolean;
   toggleZoomMode: () => void;
   zoomMode: boolean;
+  highlightMode: number;
+  handleChangeHighlightMode: (mode: number) => () => void;
 }

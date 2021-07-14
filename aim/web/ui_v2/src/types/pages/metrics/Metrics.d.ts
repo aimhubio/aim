@@ -13,4 +13,6 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   zoomMode: boolean;
   toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
+  highlightMode: number;
+  handleChangeHighlightMode: (mode: number) => () => void;
 }

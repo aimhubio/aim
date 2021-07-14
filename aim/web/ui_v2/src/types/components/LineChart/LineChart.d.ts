@@ -21,4 +21,5 @@ export interface ILineChartProps {
     x?: ScaleType;
     y?: ScaleType;
   };
+  highlightMode: number;
 }

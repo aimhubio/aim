@@ -122,7 +122,12 @@ function Controls(
               <CenterFocusWeak />
             </Box>
           )}
-          component={<HighlightModePopup />}
+          component={
+            <HighlightModePopup
+              mode={props.highlightMode}
+              onChange={props.handleChangeHighlightMode}
+            />
+          }
         />
       </Grid>
       <Grid item>
