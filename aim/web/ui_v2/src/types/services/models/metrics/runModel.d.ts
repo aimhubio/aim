@@ -1,4 +1,5 @@
 export interface IRun {
+  experiment_name: string;
   name: string;
   run_hash: string;
   params: {

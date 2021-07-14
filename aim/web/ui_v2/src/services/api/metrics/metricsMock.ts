@@ -2,14 +2,15 @@ function generateMetrics(count = 500, pointsCount = 50) {
   const runsContainer = [];
   for (let i = 0; i < count / 2; i++) {
     runsContainer.push({
-      name: `foo${i + 1}`,
+      experiment_name: `experiment${i + 1}`,
+      name: `runs${i + 1}`,
       run_hash: generateRunHash(`${i}`),
       params: {
         hparams: {},
         default: {},
         config: {},
       },
-      metrics: ['test', 'val'].map((context) => {
+      metrics: ['train', 'val'].map((context) => {
         return {
           metric_name: 'foo',
           context: {
