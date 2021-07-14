@@ -14,10 +14,7 @@ export interface IDrawHoverAttributesProps {
       xScale: IGetAxisScale['xScale'],
       yScale: IGetAxisScale['yScale'],
     ) => void;
-    updateHoverAttributes?: (
-      event?: MouseEvent,
-      mousePosition?: number[],
-    ) => void;
+    updateHoverAttributes?: (mousePosition: [number, number]) => void;
   }>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
@@ -25,6 +22,7 @@ export interface IDrawHoverAttributesProps {
   yAxisLabelNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
   index: number;
+  callback: (mousePosition: [number, number]) => void;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };

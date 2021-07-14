@@ -61,40 +61,30 @@ function Metrics(
             }}
             item
           >
-            <ChartPanel
-              chartType='LineChart'
-              data={props.metricsCollection as any}
-              chartProps={[
-                {
-                  axisScaleType: {
-                    x: ScaleEnum.Linear,
-                    y: ScaleEnum.Linear,
+            {props.metricsCollection?.[0] && (
+              <ChartPanel
+                chartType='LineChart'
+                data={props.metricsCollection as any}
+                chartProps={[
+                  {
+                    axisScaleType: {
+                      x: ScaleEnum.Linear,
+                      y: ScaleEnum.Linear,
+                    },
+                    displayOutliers: props.displayOutliers,
+                    zoomMode: props.zoomMode,
                   },
-                  displayOutliers: props.displayOutliers,
-                  zoomMode: props.zoomMode,
-                },
-                {
-                  axisScaleType: {
-                    x: ScaleEnum.Linear,
-                    y: ScaleEnum.Linear,
-                  },
-                  displayOutliers: props.displayOutliers,
-                  zoomMode: props.zoomMode,
-                },
-              ]}
-              controls={
-                <Controls
-                  toggleDisplayOutliers={props.toggleDisplayOutliers}
-                  displayOutliers={props.displayOutliers}
-                  zoomMode={props.zoomMode}
-                  toggleZoomMode={props.toggleZoomMode}
-                />
-              }
-              classNames={{
-                container: classes.fullHeight,
-                paper: classes.paper,
-              }}
-            />
+                ]}
+                controls={
+                  <Controls
+                    toggleDisplayOutliers={props.toggleDisplayOutliers}
+                    displayOutliers={props.displayOutliers}
+                    zoomMode={props.zoomMode}
+                    toggleZoomMode={props.toggleZoomMode}
+                  />
+                }
+              />
+            )}
           </Grid>
           <div ref={props.resizeElemRef}>
             <Box

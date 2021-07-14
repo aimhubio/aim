@@ -75,7 +75,7 @@ function processData(data: IRun[]): IMetric[][] {
       }),
     );
   });
-  return [metrics, metrics, metrics, metrics, metrics];
+  return [metrics, metrics];
 }
 
 function getDataAsLines(): ILine[][] {

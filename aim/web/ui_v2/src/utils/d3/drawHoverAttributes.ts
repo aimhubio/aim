@@ -27,6 +27,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     yAxisLabelNodeRef,
     xAlignment,
     index,
+    callback,
   } = props;
 
   attributesRef.current.updateScales = function (
@@ -42,18 +43,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   const svgArea = d3.select(visAreaRef.current).select('svg');
 
-  function handleMouseMove(
-    event: MouseEvent | undefined,
-    mousePosition?: number[] | any,
-  ) {
-    let mouse: [number, number];
-    if (event) {
-      mouse = d3.pointer(event);
-    } else {
-      mouse = mousePosition;
-    }
+  function updateHoverAttributes(mousePosition: [number, number]) {
     const { mouseX, mouseY } = getCoordinates({
-      mouse,
+      mouse: mousePosition,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       margin,
@@ -141,7 +133,25 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .attr('y2', (axisLine: IAxisLineData) => axisLine.y2);
   }
 
-  attributesRef.current.updateHoverAttributes = handleMouseMove;
+  function handleMouseMove(
+    event: MouseEvent | undefined,
+    mousePosition?: number[] | any,
+  ) {
+    let mouse: [number, number];
+    if (event) {
+      mouse = d3.pointer(event);
+    } else {
+      mouse = mousePosition;
+    }
+
+    updateHoverAttributes(mouse);
+
+    if (typeof callback === 'function') {
+      callback(mouse);
+    }
+  }
+
+  attributesRef.current.updateHoverAttributes = updateHoverAttributes;
 
   svgArea?.on('mousemove', handleMouseMove);
 

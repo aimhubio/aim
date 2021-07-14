@@ -92,7 +92,7 @@ const LineChart = React.forwardRef(function LineChart(
       // setting scales and lines to initial state
       brushRef.current.updateScales(xScale, yScale);
       attributesRef.current.updateScales(xScale, yScale);
-      attributesRef.current.updateHoverAttributes(undefined, d3.pointer(event));
+      attributesRef.current.updateHoverAttributes(d3.pointer(event));
       linesNodeRef.current
         .selectAll('.Line')
         .transition()
@@ -155,6 +155,7 @@ const LineChart = React.forwardRef(function LineChart(
       yAxisLabelNodeRef,
       xAlignment,
       index,
+      callback: props.onMouseOver,
     });
 
     if (zoomMode) {
@@ -233,6 +234,13 @@ const LineChart = React.forwardRef(function LineChart(
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
   }, [props.data, renderChart, zoomMode, displayOutliers]);
+
+  React.useImperativeHandle(ref, () => ({
+    ...axesRef.current,
+    ...brushRef.current,
+    ...linesRef.current,
+    ...attributesRef.current,
+  }));
 
   return (
     <div
