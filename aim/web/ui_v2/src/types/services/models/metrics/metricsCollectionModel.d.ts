@@ -26,3 +26,8 @@ export interface IMetricTableRowData {
   value: string;
   iteration: string;
 }
+
+export interface IGetDataAsLinesProps {
+  factor: number;
+  algorithm: string;
+}

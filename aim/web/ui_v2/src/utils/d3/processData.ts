@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
-import { removeOutliers } from './removeOutliers';
+import { removeOutliers } from '../removeOutliers';
 
 const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;

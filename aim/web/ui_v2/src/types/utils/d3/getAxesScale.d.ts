@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import React from 'react';
-import { ILineChartProps } from '../../components/LineChart/LineChart';
+import { ILineChartProps } from 'components/LineChart/LineChart';
 
 export interface IGetAxisScaleProps {
   visBoxRef: React.MutableRefObject<>;

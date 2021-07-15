@@ -10,10 +10,11 @@ import {
   ISetAxisLabelProps,
   IGetNearestCirclesProps,
   IGetNearestCircles,
-} from '../../types/utils/d3/drawHoverAttributes';
-import classes from 'components/LineChart/LineChart.module.css';
+} from 'types/utils/d3/drawHoverAttributes';
 import { CircleEnum, XAlignmentEnum } from './index';
 import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
+
+import classes from 'components/LineChart/LineChart.module.css';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
@@ -142,7 +143,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   attributesRef.current.updateHoverAttributes = handleMouseMove;
-
   svgArea?.on('mousemove', handleMouseMove);
 
   svgArea?.on('mouseleave', (event) => {

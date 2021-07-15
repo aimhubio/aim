@@ -1,11 +1,16 @@
 import React from 'react';
-import { IGetAxisScale } from './getAxesScale';
+import { IGetAxisScale, IGetAxisScaleProps } from './getAxesScale';
 
-export interface IDrawBrushProps {
+export interface IDrawBrushProps extends IGetAxisScaleProps {
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;
   brushRef: React.MutableRefObject<>;
-  handleBrushChange: (props: IHandleBrushChange) => void;
+  visBoxRef: React.MutableRefObject<>;
+  axesRef: React.MutableRefObject<>;
+  attributesRef: React.MutableRefObject<>;
+  linesRef: React.MutableRefObject<>;
+  linesNodeRef: React.MutableRefObject<>;
+  svgNodeRef: React.MutableRefObject<>;
 }
 
 export interface IHandleBrushChange {

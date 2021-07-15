@@ -1,13 +1,12 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
-import { ITableRef } from 'types/components/Table/Table';
 
-import { IMetric } from 'types/services/models/metrics/metricModel';
+import { CurveEnum } from 'utils/d3';
+import { ITableRef } from 'types/components/Table/Table';
 import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
-  metricsCollection: IMetric[][];
   lineChartData: ILine[][];
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
@@ -20,4 +19,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   zoomMode: boolean;
   toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
+  onSmoothingChange: (props: IOnSmoothingChange) => void;
+  curveInterpolation: CurveEnum;
+}
+
+export interface IOnSmoothingChange {
+  algorithm: string;
+  factor: number;
+  curveInterpolation: CurveEnum;
 }
