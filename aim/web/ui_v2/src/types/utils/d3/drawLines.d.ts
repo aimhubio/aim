@@ -1,6 +1,8 @@
 import React from 'react';
 import { IDrawAxesProps } from './drawAxes';
 import { IProcessedData } from './processData';
+import { CurveEnum } from 'utils/d3';
+import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
 
 export interface IDrawLinesProps {
   linesRef: React.MutableRefObject<>;
@@ -9,5 +11,6 @@ export interface IDrawLinesProps {
   xScale: IDrawAxesProps['xScale'];
   yScale: IDrawAxesProps['yScale'];
   index: number;
-  highlightMode: number;
+  highlightMode: HighlightEnum;
+  curveInterpolation: CurveEnum;
 }

@@ -11,9 +11,10 @@ import {
   ISetAxisLabelProps,
   IGetNearestCirclesProps,
   IGetNearestCircles,
-} from '../../types/utils/d3/drawHoverAttributes';
+} from 'types/utils/d3/drawHoverAttributes';
 import { CircleEnum, XAlignmentEnum } from './index';
 import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
+import HighlightEnum from '../../components/HighlightModesPopover/HighlightEnum';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
@@ -31,7 +32,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     linesNodeRef,
     highlightedNodeRef,
     highlightMode,
-    renderChartRef,
   } = props;
 
   attributesRef.current.updateScales = function (
@@ -66,7 +66,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     if (closestCircleRef.current !== closestCircle) {
       // hover Line Changed case
       if (closestCircle.key !== closestCircleRef.current?.key) {
-        linesNodeRef.current.classed('highlight', highlightMode !== 0);
+        linesNodeRef.current.classed(
+          'highlight',
+          highlightMode !== HighlightEnum.Off,
+        );
         // previous line
         if (closestCircleRef.current?.key) {
           linesNodeRef.current
@@ -96,8 +99,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         closestCircle.x !== closestCircleRef.current?.x ||
         closestCircle.y !== closestCircleRef.current?.y
       ) {
-        attributesNodeRef.current.classed('highlight', highlightMode !== 0);
+        attributesNodeRef.current.classed(
+          'highlight',
+          highlightMode !== HighlightEnum.Off,
+        );
 
+        // FIXME need to check  axisLineData coords min max size
         const axisLineData: IAxisLineData[] = [
           { x1: closestCircle.x, y1: 0, x2: closestCircle.x, y2: height },
           { x1: 0, y1: closestCircle.y, x2: width, y2: closestCircle.y },
@@ -108,7 +115,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           .selectAll('line')
           .data(axisLineData)
           .join('line')
-          .attr('class', 'HoverLine')
+          .attr(
+            'class',
+            (d: IAxisLineData, i: number) =>
+              `HoverLine HoverLine-${i === 0 ? 'x' : 'y'}`,
+          )
           .style('stroke-width', 1)
           .style('stroke-dasharray', '4 2')
           .style('fill', 'none')
@@ -164,7 +175,22 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     handleMouseMove(d3.pointer(event));
   });
 
-  svgArea?.on('mouseleave', renderChartRef.current);
+  svgArea?.on('mouseleave', () => {
+    if (closestCircleRef.current?.key) {
+      linesNodeRef.current
+        .select(`[id=Line-${closestCircleRef.current.key}]`)
+        .classed('active', false);
+
+      attributesNodeRef.current
+        .select(`[id=Circle-${closestCircleRef.current.key}]`)
+        .attr('r', CircleEnum.Radius)
+        .classed('active', false);
+
+      attributesNodeRef.current.select('.HoverLine-y').remove();
+
+      yAxisLabelNodeRef.current?.remove();
+    }
+  });
 }
 
 function getNearestCircles({

@@ -77,7 +77,9 @@ function Controls(
               <MultilineChart />
             </Box>
           )}
-          component={<SmootheningPopup />}
+          component={
+            <SmootheningPopup onSmoothingChange={props.onSmoothingChange} />
+          }
         />
       </Grid>
       <Grid item>
@@ -125,7 +127,7 @@ function Controls(
           component={
             <HighlightModePopup
               mode={props.highlightMode}
-              onChange={props.handleChangeHighlightMode}
+              onChange={props.onChangeHighlightMode}
             />
           }
         />

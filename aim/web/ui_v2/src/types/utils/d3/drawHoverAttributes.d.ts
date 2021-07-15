@@ -2,6 +2,7 @@ import React from 'react';
 import { IGetAxisScale } from './getAxesScale';
 import { ILineChartProps } from '../../components/LineChart/LineChart';
 import { IProcessedData } from './processData';
+import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
 
 export interface IDrawHoverAttributesProps {
   index: number;
@@ -25,8 +26,7 @@ export interface IDrawHoverAttributesProps {
   linesNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
   highlightedNodeRef: React.MutableRefObject<>;
-  highlightMode: number;
-  renderChartRef: React.MutableRefObject<any>;
+  highlightMode: HighlightEnum;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };

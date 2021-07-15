@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Divider, MenuItem, MenuList } from '@material-ui/core';
 import { IHighlightModesPopoverProps } from '../../types/components/HighlightModesPopover/HighlightModesPopover';
-import HighlightModesEnum from './HighlightModesEnum';
+import HighlightEnum from './HighlightEnum';
 
 function HighlightModesPopover(
   props: IHighlightModesPopoverProps,
@@ -12,20 +12,20 @@ function HighlightModesPopover(
       <Divider />
       <MenuList>
         <MenuItem
-          selected={props.mode === HighlightModesEnum.Off}
-          onClick={props.onChange(HighlightModesEnum.Off)}
+          selected={props.mode === HighlightEnum.Off}
+          onClick={props.onChange(HighlightEnum.Off)}
         >
           Highlight Off
         </MenuItem>
         <MenuItem
-          selected={props.mode === HighlightModesEnum.Run}
-          onClick={props.onChange(HighlightModesEnum.Run)}
+          selected={props.mode === HighlightEnum.Run}
+          onClick={props.onChange(HighlightEnum.Run)}
         >
           Highlight Metric on Hover
         </MenuItem>
         <MenuItem
-          selected={props.mode === HighlightModesEnum.Metric}
-          onClick={props.onChange(HighlightModesEnum.Metric)}
+          selected={props.mode === HighlightEnum.Metric}
+          onClick={props.onChange(HighlightEnum.Metric)}
         >
           Highlight Run On Hover
         </MenuItem>

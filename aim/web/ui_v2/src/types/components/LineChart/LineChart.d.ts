@@ -1,3 +1,6 @@
+import { CurveEnum } from 'utils/d3';
+import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
+
 export type ScaleType = 'log' | 'linear';
 
 export interface ILine {
@@ -21,5 +24,6 @@ export interface ILineChartProps {
     x?: ScaleType;
     y?: ScaleType;
   };
-  highlightMode: number;
+  highlightMode: HighlightEnum;
+  curveInterpolation: CurveEnum;
 }
