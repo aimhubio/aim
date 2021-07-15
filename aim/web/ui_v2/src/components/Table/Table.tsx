@@ -1,13 +1,35 @@
+// @ts-nocheck
+/* eslint-disable react/prop-types */
+
 import React from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
 
-import ITableProps from 'types/components/Table/Table';
+import { ITableProps } from 'types/components/Table/Table';
+import BaseTable from './BaseTable';
+import AutoResizer from './AutoResizer';
 
-function Table(
+const Table = React.forwardRef(function Table(
   props: ITableProps,
+  ref,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const tableRef = React.useRef();
+  const [data, setData] = React.useState(props.data);
+  const [columns, setColumns] = React.useState(props.columns);
+
+  React.useImperativeHandle(ref, () => ({
+    updateData: ({ newData, newColumns }) => {
+      if (!!newData) {
+        setData(newData);
+      }
+      if (!!newColumns) {
+        setColumns(newColumns);
+      }
+      // tableRef.current?.forceUpdateTable();
+    },
+  }));
+
   return (
-    <Box border={1} borderColor='grey.400' borderRadius={2}>
+    <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
       <Box component='nav' p={0.5}>
         <Grid container justify='space-between' alignItems='center'>
           <Grid xs item>
@@ -81,16 +103,43 @@ function Table(
           </Grid>
         </Grid>
       </Box>
-      <Box>
-        <Box p={0.5} borderTop={1} borderColor='grey.400'>
-          Table Header
-        </Box>
-        <Box p={0.5} borderTop={1} borderColor='grey.400'>
-          Table Body
-        </Box>
+      <Box style={{ height: 'calc(100% - 44px)' }}>
+        <AutoResizer>
+          {({ width, height }) => (
+            <BaseTable
+              ref={tableRef}
+              classPrefix='BaseTable'
+              columns={columns}
+              data={data}
+              frozenData={[]}
+              width={width}
+              height={height}
+              fixed
+              rowKey='key'
+              headerHeight={30}
+              rowHeight={30}
+              footerHeight={0}
+              defaultExpandedRowKeys={[]}
+              sortBy={{}}
+              useIsScrolling={false}
+              overscanRowCount={1}
+              onEndReachedThreshold={500}
+              getScrollbarSize={() => null}
+              ignoreFunctionInColumnCompare={false}
+              onScroll={() => null}
+              onRowsRendered={() => null}
+              onScrollbarPresenceChange={() => null}
+              onRowExpand={() => null}
+              onExpandedRowsChange={() => null}
+              onColumnSort={() => null}
+              onColumnResize={() => null}
+              onColumnResizeEnd={() => null}
+            />
+          )}
+        </AutoResizer>
       </Box>
     </Box>
   );
-}
+});
 
 export default React.memo(Table);
