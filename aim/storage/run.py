@@ -7,18 +7,18 @@ from time import time
 
 from collections import Counter
 
-from .containerview import ContainerView
-from .context import Context, Metric
-from .types import AimObject
-from .container import Container
-from .treeview import TreeView
-from .arrayview import ArrayView
-from .hashing import hash_auto
-from .trace import RunTraceCollection
+from aim.storage.containerview import ContainerView
+from aim.storage.context import Context, Metric
+from aim.storage.types import AimObject
+from aim.storage.container import Container
+from aim.storage.treeview import TreeView
+from aim.storage.arrayview import ArrayView
+from aim.storage.hashing import hash_auto
+from aim.storage.trace import RunTraceCollection
 
 if TYPE_CHECKING:
-    from .trace import Trace, TraceCollection
-    from .repo import Repo
+    from aim.storage.trace import Trace, TraceCollection
+    from aim.storage.repo import Repo
 
 
 
@@ -36,7 +36,7 @@ class Run:
         from_union: bool = False
     ):
         if repo is None:
-            from .repo import Repo
+            from aim.storage.repo import Repo
             repo = Repo.default_repo()
         self.repo = repo
         self.read_only = read_only

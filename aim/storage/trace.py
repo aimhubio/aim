@@ -5,18 +5,19 @@ import time
 import numpy as np
 import wrapt
 from tqdm import tqdm
-from .types import AimObject
-from .hashing import hash_auto
-from .arrayview import ArrayView
-from .context import Context
-from . import encoding as E
-from . import treeutils
+
+from aim.storage.types import AimObject
+from aim.storage.hashing import hash_auto
+from aim.storage.arrayview import ArrayView
+from aim.storage.context import Context
+from aim.storage import encoding as E
+from aim.storage import treeutils
 
 from typing import Any, Generic, Iterable, Iterator, NamedTuple, TYPE_CHECKING, Tuple, TypeVar, List
 
 if TYPE_CHECKING:
-    from .run import Run
-    from .repo import Repo
+    from aim.storage.run import Run
+    from aim.storage.repo import Repo
     from pandas import DataFrame
 
 import logging
@@ -128,7 +129,7 @@ class Trace(Generic[T]):
             'value': values,
             'time': timestamps
         }
-        
+
         if include_run:
             data['run'] = [self.run.name] * len(iters)
             for path, val in treeutils.unfold_tree(self.run[...], unfold_array=False):

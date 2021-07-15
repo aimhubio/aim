@@ -2,17 +2,17 @@
 from functools import lru_cache
 from glob import glob
 import os
-from .trace import QueryTraceCollection, TraceCollection
+from aim.storage.trace import QueryTraceCollection, TraceCollection
 from time import time
 
 from typing import Dict, Iterable, Iterator, List, NamedTuple, TYPE_CHECKING, Tuple
 from weakref import WeakValueDictionary
 
-from .container import Container
-from .singlecontainerview import SingleContainerView
-from .containerview import ContainerView
+from aim.storage.container import Container
+from aim.storage.singlecontainerview import SingleContainerView
+from aim.storage.containerview import ContainerView
 
-from .run import Run
+from aim.storage.run import Run
 
 
 class ContainerConfig(NamedTuple):

@@ -1,6 +1,6 @@
-from . import encoding as E
-from .types import AimObject
-from .utils import ArrayFlag, ObjectFlag
+from aim.storage import encoding as E
+from aim.storage.types import AimObject
+from aim.storage.utils import ArrayFlag, ObjectFlag
 
 from typing import Any, Iterator, List, Tuple, Union
 
