@@ -14,4 +14,5 @@ export interface IMetric {
   };
   color: string;
   dasharray: string;
+  selectors: string[];
 }

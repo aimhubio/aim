@@ -59,6 +59,19 @@ function processData(data: IRun[]): IMetric[][] {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
+          selectors: [
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            run.run_hash,
+          ],
           key: encode({
             runHash: run.run_hash,
             metricName: metric.metric_name,

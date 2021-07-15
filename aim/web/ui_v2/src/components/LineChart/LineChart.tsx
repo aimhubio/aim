@@ -27,6 +27,7 @@ function LineChart(
     displayOutliers,
     xAlignment,
     zoomMode,
+    highlightMode,
   } = props;
   const classes = useStyles();
 
@@ -59,12 +60,17 @@ function LineChart(
   const attributesNodeRef = React.useRef(null);
   const xAxisLabelNodeRef = React.useRef(null);
   const yAxisLabelNodeRef = React.useRef(null);
+  const highlightedNodeRef = React.useRef(null);
 
   // methods and values refs
   const axesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
   const attributesRef = React.useRef<any>({});
+  const renderChartRef = React.useRef<any>();
+
+  const closestCircleRef = React.useRef(null);
+  // TODO COMPONENT BECAME BIGGER
 
   const { processedData, min, max } = React.useMemo(
     () =>
@@ -85,13 +91,14 @@ function LineChart(
       });
 
       // setting axes to initial state
+      // TODO FIX TYPES
       axesRef.current.updateXAxis(xScale);
       axesRef.current.updateYAxis(yScale);
 
       // setting scales and lines to initial state
       brushRef.current.updateScales(xScale, yScale);
       attributesRef.current.updateScales(xScale, yScale);
-      attributesRef.current.updateHoverAttributes(undefined, d3.pointer(event));
+      attributesRef.current.updateHoverAttributes(d3.pointer(event));
       linesNodeRef.current
         .selectAll('.Line')
         .transition()
@@ -123,6 +130,9 @@ function LineChart(
       max,
     });
 
+    attributesRef.current.xScale = xScale;
+    attributesRef.current.yScale = yScale;
+
     drawAxes({
       axesNodeRef,
       axesRef,
@@ -138,22 +148,25 @@ function LineChart(
       xScale,
       yScale,
       index,
+      highlightMode,
     });
-
-    attributesRef.current.xScale = xScale;
-    attributesRef.current.yScale = yScale;
 
     drawHoverAttributes({
       data: processedData,
+      index,
+      xAlignment,
       visAreaRef,
       attributesRef,
-      attributesNodeRef,
       plotBoxRef,
       visBoxRef,
+      closestCircleRef,
+      attributesNodeRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
-      xAlignment,
-      index,
+      linesNodeRef,
+      highlightedNodeRef,
+      highlightMode,
+      renderChartRef,
     });
 
     if (zoomMode) {
@@ -168,10 +181,11 @@ function LineChart(
       svgNodeRef.current.on('dblclick', zoomOut);
     }
   }, [
-    axisScaleType,
     index,
-    max,
+    highlightMode,
+    axisScaleType,
     min,
+    max,
     processedData,
     xAlignment,
     zoomMode,
@@ -198,7 +212,7 @@ function LineChart(
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateHoverAttributes(undefined, mousePosition);
+    attributesRef.current.updateHoverAttributes(mousePosition);
 
     linesNodeRef.current
       .selectAll('.Line')
@@ -213,7 +227,7 @@ function LineChart(
       );
   };
 
-  const renderChart = React.useCallback((): void => {
+  renderChartRef.current = React.useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
   }, [draw]);
@@ -221,17 +235,17 @@ function LineChart(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        requestAnimationFrame(renderChart);
+        requestAnimationFrame(renderChartRef.current);
       }
     },
-    [renderChart],
+    [],
   );
 
   useResizeObserver(resizeObserverCallback, parentRef);
 
   React.useEffect(() => {
-    requestAnimationFrame(renderChart);
-  }, [props.data, renderChart, zoomMode, displayOutliers]);
+    requestAnimationFrame(renderChartRef.current);
+  }, [props.data, zoomMode, displayOutliers, highlightMode]);
 
   return (
     <div

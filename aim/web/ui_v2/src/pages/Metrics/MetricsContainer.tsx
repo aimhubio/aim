@@ -6,13 +6,16 @@ import getTableColumns from './components/TableColumns/TableColumns';
 import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import HighlightModesEnum from '../../components/HighlightModesPopover/HighlightModesEnum';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-  const [highlightMode, setHighlightMode] = React.useState<number>(0);
+  const [highlightMode, setHighlightMode] = React.useState<number>(
+    HighlightModesEnum.Off,
+  );
 
   const metricsData = useModel(metricsCollectionModel);
 

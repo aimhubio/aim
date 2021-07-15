@@ -26,7 +26,6 @@
     opacity: 0.5;
 }
 
-
 .ChartMouseValue {
     position: absolute;
     box-sizing: border-box;
@@ -58,12 +57,22 @@
     overflow: hidden;
 }
 
+.Line {
+    stroke-width: 1;
+    opacity: 1;
+}
+
 .Lines.highlight > .Line:not(.active):not(.highlighted) {
     stroke-width: 1;
     opacity: 0.2;
 }
 
 .Line.highlighted {
+    opacity: 1;
+    stroke-width: 2px;
+}
+
+.Line.active {
     opacity: 1;
     stroke-width: 3px;
 }

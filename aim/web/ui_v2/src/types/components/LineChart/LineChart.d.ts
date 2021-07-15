@@ -6,9 +6,9 @@ export interface ILine {
     xValues: number[];
     yValues: number[];
   };
-  color?: string;
-  dasharray?: string;
-  selector?: string;
+  color: string;
+  dasharray: string;
+  selectors: string[];
 }
 
 export interface ILineChartProps {

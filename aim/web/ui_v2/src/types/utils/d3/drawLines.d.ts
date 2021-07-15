@@ -8,5 +8,6 @@ export interface IDrawLinesProps {
   data: IProcessedData[];
   xScale: IDrawAxesProps['xScale'];
   yScale: IDrawAxesProps['yScale'];
-  index: number | undefined;
+  index: number;
+  highlightMode: number;
 }
