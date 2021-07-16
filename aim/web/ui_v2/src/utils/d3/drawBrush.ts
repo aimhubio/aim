@@ -15,7 +15,7 @@ function drawBrush(props: IDrawBrushProps): void {
     linesRef,
     linesNodeRef,
     svgNodeRef,
-    axisScaleType,
+    axesScaleType,
     min,
     max,
   } = props;
@@ -120,7 +120,7 @@ function drawBrush(props: IDrawBrushProps): void {
   function handleZoomOut(event: Event): void {
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
-      axisScaleType,
+      axesScaleType,
       min,
       max,
     });

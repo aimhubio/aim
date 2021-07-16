@@ -34,7 +34,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           to={PATHS.RUNS}
         >
           <ListItem className={classes.listItem} button>
-            <TimelineOutlinedIcon />
+            <TimelineOutlinedIcon className={classes.listItemIcon} />
             <ListItemText
               primaryTypographyProps={{ className: classes.listItemText }}
               primary='Runs'
@@ -47,7 +47,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           to={PATHS.METRICS}
         >
           <ListItem className={classes.listItem} button>
-            <TimelineOutlinedIcon />
+            <TimelineOutlinedIcon className={classes.listItemIcon} />
             <ListItemText
               primaryTypographyProps={{ className: classes.listItemText }}
               primary='Metrics'

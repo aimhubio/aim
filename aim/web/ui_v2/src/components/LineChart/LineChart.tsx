@@ -23,7 +23,7 @@ function LineChart(
     index,
     zoomMode,
     xAlignment,
-    axisScaleType = {},
+    axesScaleType,
     displayOutliers,
     curveInterpolation,
   } = props;
@@ -91,7 +91,7 @@ function LineChart(
 
     const { xScale, yScale } = getAxisScale({
       visBoxRef,
-      axisScaleType,
+      axesScaleType,
       min,
       max,
     });
@@ -143,13 +143,13 @@ function LineChart(
         linesRef,
         linesNodeRef,
         svgNodeRef,
-        axisScaleType,
+        axesScaleType,
         min,
         max,
       });
     }
   }, [
-    axisScaleType,
+    axesScaleType,
     curveInterpolation,
     index,
     max,

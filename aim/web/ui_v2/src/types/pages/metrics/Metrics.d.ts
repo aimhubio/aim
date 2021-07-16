@@ -5,6 +5,7 @@ import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
 import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
@@ -19,8 +20,10 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   zoomMode: boolean;
   toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
-  onSmoothingChange: (props: IOnSmoothingChange) => void;
+  onSmoothingChange: (params: IOnSmoothingChange) => void;
   curveInterpolation: CurveEnum;
+  onAxesScaleTypeChange: (params: IAxesScaleState) => void;
+  axesScaleType: IAxesScaleState;
 }
 
 export interface IOnSmoothingChange {

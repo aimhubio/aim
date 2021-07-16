@@ -7,7 +7,8 @@ import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -19,7 +20,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
-
+  const [axesScaleType, setAxesScaleType] = React.useState<IAxesScaleState>({
+    xAxis: ScaleEnum.Linear,
+    yAxis: ScaleEnum.Linear,
+  });
   const tableRef = React.useRef<ITableRef>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -54,18 +58,24 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [metricsData]);
 
-  function onSmoothingChange({
-    algorithm,
-    factor,
-    curveInterpolation,
-  }: IOnSmoothingChange) {
-    let newData = metricsCollectionModel.getDataAsLines({
-      algorithm,
-      factor,
-    })[0];
-    setLineChartData(newData);
-    setCurveInterpolation(curveInterpolation);
-  }
+  const onSmoothingChange = React.useCallback(
+    ({ algorithm, factor, curveInterpolation }: IOnSmoothingChange): void => {
+      let newData = metricsCollectionModel.getDataAsLines({
+        algorithm,
+        factor,
+      })[0];
+      setLineChartData(newData);
+      setCurveInterpolation(curveInterpolation);
+    },
+    [],
+  );
+
+  const onAxesScaleTypeChange = React.useCallback(
+    (params: IAxesScaleState): void => {
+      setAxesScaleType({ ...params });
+    },
+    [],
+  );
 
   return (
     <Metrics
@@ -82,6 +92,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       zoomMode={zoomMode}
       toggleZoomMode={toggleZoomMode}
       onSmoothingChange={onSmoothingChange}
+      onAxesScaleTypeChange={onAxesScaleTypeChange}
+      axesScaleType={axesScaleType}
       curveInterpolation={curveInterpolation}
     />
   );

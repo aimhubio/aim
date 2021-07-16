@@ -1,3 +1,4 @@
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IOnSmoothingChange } from '../../Metrics';
 
 export interface IControlProps {
@@ -6,4 +7,6 @@ export interface IControlProps {
   toggleZoomMode: () => void;
   zoomMode: boolean;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
+  onAxesScaleTypeChange: (params: IAxesScaleState) => void;
+  axesScaleType: IAxesScaleState;
 }

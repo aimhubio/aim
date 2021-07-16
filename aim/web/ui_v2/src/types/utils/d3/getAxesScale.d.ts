@@ -4,7 +4,7 @@ import { ILineChartProps } from 'components/LineChart/LineChart';
 
 export interface IGetAxisScaleProps {
   visBoxRef: React.MutableRefObject<>;
-  axisScaleType: ILineChartProps['axisScaleType'];
+  axesScaleType: ILineChartProps['axesScaleType'];
   min: { x: number; y: number };
   max: { x: number; y: number };
 }

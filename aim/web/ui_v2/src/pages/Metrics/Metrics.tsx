@@ -11,8 +11,6 @@ import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
-import { ScaleEnum } from 'utils/d3';
-import { ILine } from '../../types/components/LineChart/LineChart';
 
 function Metrics(
   props: IMetricProps,
@@ -71,9 +69,9 @@ function Metrics(
                       index={0}
                       key='uniqueKey'
                       data={props.lineChartData as any}
-                      axisScaleType={{
-                        x: ScaleEnum.Linear,
-                        y: ScaleEnum.Linear,
+                      axesScaleType={{
+                        x: props.axesScaleType.xAxis,
+                        y: props.axesScaleType.yAxis,
                       }}
                       curveInterpolation={props.curveInterpolation}
                       displayOutliers={props.displayOutliers}
@@ -90,6 +88,8 @@ function Metrics(
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
                     onSmoothingChange={props.onSmoothingChange}
+                    onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+                    axesScaleType={props.axesScaleType}
                   />
                 </Paper>
               </Grid>

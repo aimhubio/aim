@@ -19,7 +19,7 @@ export interface ILineChartProps {
   xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
-  axisScaleType?: {
+  axesScaleType?: {
     x?: ScaleType;
     y?: ScaleType;
   };

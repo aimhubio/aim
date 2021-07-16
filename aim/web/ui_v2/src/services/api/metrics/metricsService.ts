@@ -12,7 +12,7 @@ function getMetricsData() {
     call: () => ({
       then: (resolve: (data: IRun[]) => void, reject?: unknown) => {
         setTimeout(() => {
-          const mock = generateMetrics(500, 200);
+          const mock = generateMetrics(20, 10);
           resolve(mock);
         }, 1000);
       },

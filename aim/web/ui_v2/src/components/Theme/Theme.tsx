@@ -17,6 +17,7 @@ const light: ThemeOptions = {
     primary: {
       main: '#243969',
     },
+
     text: {
       // secondary: '#fff',
     },
