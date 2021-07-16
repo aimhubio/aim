@@ -1,14 +1,19 @@
+import numpy as np
 import json
-from typing import Optional
+import struct
+
+from typing import Optional, Iterator, Tuple
 
 from aim.artifacts.metric import Metric as MetricArtifact
-from aim.engine.repo.run import Run
+from aim.engine.repo.run import Run as OldRun
 from aim.ql.grammar import Expression
 from aim.ql.utils import match
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.api.commits.models import TFSummaryLog
 from aim.web.api.db import get_session
 from aim.web.api.utils import normalize_type, unsupported_float_type
+from aim.storage.run import Run
+from aim.storage.trace import QueryTraceCollection
 
 
 def select_tf_summary_scalars(session, tags, expression: Optional[Expression] = None):
@@ -131,7 +136,7 @@ def process_trace_record(r, trace, x_axis_trace, x_idx):
     ))
 
 
-def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or None:
+def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> OldRun or None:
     # get run_hash and experiment_name from request data
     run_hash = run_data.get('run_hash')
     experiment_name = run_data.get('experiment_name')
@@ -139,7 +144,7 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
         return None
 
     # initialize Run object and try to get metric corresponding to x_axis_metric_name
-    selected_run = Run(project.repo, experiment_name, run_hash)
+    selected_run = OldRun(project.repo, experiment_name, run_hash)
     x_axis_metric = selected_run.get_all_metrics().get(x_axis_metric_name)
     if x_axis_metric is None:
         return None
@@ -232,3 +237,69 @@ def runs_resp_generator(response, runs, exclude_list=None):
             yield json.dumps({
                 'run': run,
             }).encode() + '\n'.encode()
+
+
+def nested_runs_dict_constructor(traces: QueryTraceCollection, steps_num: int, x_axis: str) -> dict:
+    # TODO: add x_axis alignment
+    query_runs_collection = {}
+    for trace in traces:
+        if query_runs_collection.get(trace.run.name):
+            query_runs_collection[trace.run.name].append(trace)
+        else:
+            query_runs_collection[trace.run.name] = [trace]
+
+    runs_list = []
+    for run_name in query_runs_collection.keys():
+        run = Run(run_name)
+        query_run_traces = query_runs_collection[run_name]
+        traces_list = []
+        for trace in query_run_traces:
+            num_records = len(trace)
+            step = (num_records // steps_num) or 1
+
+            traces_list.append(
+                {
+                    'metric_name': trace.name,
+                    'context': trace.context.to_dict(),
+                    'values': numpy_to_encodable(sliced_np_array(trace.values.numpy(), num_records, step)),
+                    'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.numpy(), num_records, step)),
+                    'iters': numpy_to_encodable(sliced_np_array(trace.iters.numpy(), num_records, step)),
+                    'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.numpy(), num_records, step)),
+                }
+            )
+
+        runs_list.append({
+            'name': run.name,
+            'hash': hash(run),
+            'params': run[...],
+            'traces': traces_list
+        })
+
+    return {
+        'runs': runs_list
+    }
+
+
+def sliced_np_array(array: np.ndarray, num_records: int, step: int) -> np.ndarray:
+    last_step_needed = (num_records - 1) % step != 0
+    if last_step_needed:
+        return np.append(array[0, num_records, step], array[-1])
+    else:
+        return array[0, num_records, step]
+
+
+def numpy_to_encodable(array: np.ndarray) -> dict:
+    return {
+        "_type": "numpy",
+        "shape": array.shape[0],
+        "dtype": str(array.dtype),
+        "blob": array.tobytes()
+    }
+
+
+async def metric_search_response_streamer(encoded_runs_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
+    for key, val in encoded_runs_tree:
+        yield struct.pack('I', len(key))
+        yield key
+        yield struct.pack('I', len(val))
+        yield val

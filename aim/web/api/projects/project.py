@@ -5,6 +5,7 @@ import json
 from aim.engine.repo import AimRepo
 from aim.engine.configs import AIM_COMMIT_CONFIG_FILE_NAME
 
+from aim.storage.repo import Repo
 from aim.web.utils import get_root_path
 from aim.web.api.commits.utils import TFSummaryAdapter
 
@@ -19,11 +20,15 @@ class Project:
         self.repo_path = repo_path
         self.description = ''
         self.tf_enabled = TFSummaryAdapter.exists()
-        self.repo = AimRepo(repo_full_path=repo_path,
-                            mode=AimRepo.READING_MODE)
+        # self.repo = AimRepo(repo_full_path=repo_path,
+        #                     mode=AimRepo.READING_MODE)
+        self.repo = Repo.from_path(self.repo_path)
 
     def exists(self):
-        return self.repo and self.repo.exists()
+        """
+        Checks whether .aim repository is created
+        """
+        return self.repo and os.path.exists(self.repo_path)
 
     def get_run_config(self, experiment_name, run_hash):
         config_file_path = os.path.join(self.repo.path,
