@@ -15,12 +15,12 @@ function getScaleBaseFor(scaleType?: ScaleType) {
   }
 }
 
-function getAxisScale(props: IGetAxisScaleProps): IGetAxisScale {
-  const { visBoxRef, axesScaleType, min, max } = props;
+function getAxisScale(params: IGetAxisScaleProps): IGetAxisScale {
+  const { visBoxRef, axesScaleType, min, max } = params;
   const { width, height, margin } = visBoxRef.current;
 
-  const xScaleBase = getScaleBaseFor(axesScaleType.x);
-  const yScaleBase = getScaleBaseFor(axesScaleType.y);
+  const xScaleBase = getScaleBaseFor(axesScaleType.xAxis);
+  const yScaleBase = getScaleBaseFor(axesScaleType.yAxis);
 
   // X-Scale
   const xScale = xScaleBase

@@ -1,3 +1,4 @@
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine, ILineChartProps } from '../../components/LineChart/LineChart';
 
 export interface IProcessedData extends ILine {
@@ -14,4 +15,5 @@ export interface IProcessData {
 export interface IProcessDataProps {
   data: ILineChartProps['data'];
   displayOutliers: boolean;
+  axesScaleType: IAxesScaleState;
 }

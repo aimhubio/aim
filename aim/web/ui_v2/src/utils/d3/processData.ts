@@ -1,20 +1,21 @@
 import _ from 'lodash';
 
 import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
+import getFilteredValues from 'utils/getFilteredValues';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { removeOutliers } from '../removeOutliers';
 
 const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;
 
-function processData(props: IProcessDataProps): IProcessData {
-  const { data, displayOutliers } = props;
+function processData(params: IProcessDataProps): IProcessData {
+  const { data, displayOutliers, axesScaleType } = params;
 
   let xValues: number[] = [];
   let yValues: number[] = [];
 
   const processedData = data.map((line) => {
-    const invalidXIndices = line.data.xValues.reduce(
+    const invalidXIndices: number[] = line.data.xValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
           acc = acc.concat([i]);
@@ -23,7 +24,7 @@ function processData(props: IProcessDataProps): IProcessData {
       },
       [],
     );
-    const invalidYIndices = line.data.yValues.reduce(
+    const invalidYIndices: number[] = line.data.yValues.reduce(
       (acc: number[], v: number, i: number) => {
         if (isInvalidValue(v)) {
           acc = acc.concat([i]);
@@ -33,13 +34,18 @@ function processData(props: IProcessDataProps): IProcessData {
       [],
     );
 
-    const filteredXValues = line.data.xValues.filter(
-      (v, i) =>
-        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
+    const filteredXValues: number[] = getFilteredValues(
+      line.data.xValues,
+      invalidXIndices,
+      invalidYIndices,
+      axesScaleType.xAxis,
     );
-    const filteredYValues = line.data.yValues.filter(
-      (v, i) =>
-        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
+
+    const filteredYValues: number[] = getFilteredValues(
+      line.data.yValues,
+      invalidXIndices,
+      invalidYIndices,
+      axesScaleType.yAxis,
     );
 
     xValues = xValues.concat(filteredXValues);

@@ -1,10 +1,10 @@
 import * as d3 from 'd3';
 import React from 'react';
-import { ILineChartProps } from 'components/LineChart/LineChart';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 export interface IGetAxisScaleProps {
   visBoxRef: React.MutableRefObject<>;
-  axesScaleType: ILineChartProps['axesScaleType'];
+  axesScaleType: IAxesScaleState;
   min: { x: number; y: number };
   max: { x: number; y: number };
 }

@@ -69,10 +69,7 @@ function Metrics(
                       index={0}
                       key='uniqueKey'
                       data={props.lineChartData as any}
-                      axesScaleType={{
-                        x: props.axesScaleType.xAxis,
-                        y: props.axesScaleType.yAxis,
-                      }}
+                      axesScaleType={props.axesScaleType}
                       curveInterpolation={props.curveInterpolation}
                       displayOutliers={props.displayOutliers}
                       zoomMode={props.zoomMode}

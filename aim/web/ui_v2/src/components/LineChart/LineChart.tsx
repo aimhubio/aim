@@ -70,8 +70,9 @@ function LineChart(
       processData({
         data,
         displayOutliers,
+        axesScaleType,
       }),
-    [data, displayOutliers],
+    [data, displayOutliers, axesScaleType],
   );
 
   const draw = React.useCallback((): void => {

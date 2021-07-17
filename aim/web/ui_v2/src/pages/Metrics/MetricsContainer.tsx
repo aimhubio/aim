@@ -72,7 +72,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   const onAxesScaleTypeChange = React.useCallback(
     (params: IAxesScaleState): void => {
-      setAxesScaleType({ ...params });
+      setAxesScaleType(params);
     },
     [],
   );
@@ -81,20 +81,20 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     <Metrics
       tableRef={tableRef}
       displayOutliers={displayOutliers}
-      toggleDisplayOutliers={toggleDisplayOutliers}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       lineChartData={lineChartData}
-      tableData={metricsCollectionModel.getDataAsTableRows()}
-      tableColumns={getTableColumns()}
       zoomMode={zoomMode}
+      axesScaleType={axesScaleType}
+      curveInterpolation={curveInterpolation}
+      tableData={metricsCollectionModel.getDataAsTableRows()}
+      toggleDisplayOutliers={toggleDisplayOutliers}
+      tableColumns={getTableColumns()}
       toggleZoomMode={toggleZoomMode}
       onSmoothingChange={onSmoothingChange}
       onAxesScaleTypeChange={onAxesScaleTypeChange}
-      axesScaleType={axesScaleType}
-      curveInterpolation={curveInterpolation}
     />
   );
 }
