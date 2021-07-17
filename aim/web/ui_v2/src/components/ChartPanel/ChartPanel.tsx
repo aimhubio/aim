@@ -6,6 +6,7 @@ import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import LineChart from 'components/LineChart/LineChart';
 
 import useStyles from './chartPanelStyle';
+import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
@@ -52,7 +53,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         <Paper className={classes.paper}>
           <Grid container spacing={1} className={classes.chartGrid}>
             {props.data.map((data, index) => (
-              <Grid item xs key={index}>
+              <Grid
+                item
+                xs={
+                  (props.data.length > 9
+                    ? 4
+                    : chartGridPattern[props.data.length][index]) as any
+                }
+                key={index}
+              >
                 <LineChart
                   ref={chartRefs[index]}
                   {...props.chartProps[0]}
