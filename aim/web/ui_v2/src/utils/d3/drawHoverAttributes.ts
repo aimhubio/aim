@@ -177,9 +177,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   svgArea?.on('mouseleave', () => {
     if (closestCircleRef.current?.key) {
+      linesNodeRef.current.classed('highlight', false);
+
       linesNodeRef.current
         .select(`[id=Line-${closestCircleRef.current.key}]`)
         .classed('active', false);
+
+      attributesNodeRef.current.classed('highlight', false);
 
       attributesNodeRef.current
         .select(`[id=Circle-${closestCircleRef.current.key}]`)
