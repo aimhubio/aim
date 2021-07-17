@@ -12,8 +12,6 @@ import { ScaleEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
-import { ScaleEnum } from 'utils/d3';
-import { ILine } from '../../types/components/LineChart/LineChart';
 
 function Metrics(
   props: IMetricProps,
@@ -64,7 +62,7 @@ function Metrics(
             }}
             item
           >
-            {props.metricsCollection?.[0] && (
+            {props.lineChartData && (
               <ChartPanel
                 chartType='LineChart'
                 data={props.lineChartData as any}
@@ -74,9 +72,9 @@ function Metrics(
                       x: ScaleEnum.Linear,
                       y: ScaleEnum.Linear,
                     },
-                    curveInterpolation={props.curveInterpolation}
-                    displayOutliers={props.displayOutliers}
-                    zoomMode={props.zoomMode}
+                    curveInterpolation: props.curveInterpolation,
+                    displayOutliers: props.displayOutliers,
+                    zoomMode: props.zoomMode,
                   },
                 ]}
                 controls={

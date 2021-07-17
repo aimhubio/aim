@@ -58,7 +58,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (metricsCollectionModel.getDataAsLines()[0]?.length) {
-      setLineChartData(metricsCollectionModel.getDataAsLines()[0]);
+      setLineChartData(metricsCollectionModel.getDataAsLines());
     }
   }, [metricsData]);
 
@@ -70,7 +70,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     let newData = metricsCollectionModel.getDataAsLines({
       algorithm,
       factor,
-    })[0];
+    });
     setLineChartData(newData);
     setCurveInterpolation(curveInterpolation);
   }
