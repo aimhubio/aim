@@ -10,6 +10,8 @@ export interface IDrawHoverAttributesProps {
   attributesRef: React.MutableRefObject<{
     xScale?: IGetAxisScale['xScale'];
     yScale?: IGetAxisScale['yScale'];
+    x: number;
+    y: number;
     updateScales?: (
       xScale: IGetAxisScale['xScale'],
       yScale: IGetAxisScale['yScale'],
@@ -17,6 +19,7 @@ export interface IDrawHoverAttributesProps {
     updateHoverAttributes?: (
       mousePosition: [number, number],
     ) => IActivePointData;
+    setActiveCircle: (circleKey: string) => void;
   }>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;

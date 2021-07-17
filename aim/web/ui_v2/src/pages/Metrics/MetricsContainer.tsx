@@ -9,6 +9,7 @@ import useModel from 'hooks/model/useModel';
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { CurveEnum } from 'utils/d3';
+import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -22,6 +23,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   );
 
   const tableRef = React.useRef<ITableRef>(null);
+  const chartPanelRef = React.useRef<IChartPanelRef>(null);
+
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
@@ -44,9 +47,27 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
           activePointData.xValue,
         )[0],
       });
+      tableRef.current?.setHoveredRow(activePointData.key);
     },
     [],
   );
+
+  function onTableRowHover(rowKey: string) {
+    chartPanelRef.current?.setActiveLine(rowKey);
+  }
+
+  function onSmoothingChange({
+    algorithm,
+    factor,
+    curveInterpolation,
+  }: IOnSmoothingChange) {
+    let newData = metricsCollectionModel.getDataAsLines({
+      smoothingAlgorithm: algorithm,
+      smoothingFactor: factor,
+    });
+    setLineChartData(newData);
+    setCurveInterpolation(curveInterpolation);
+  }
 
   React.useEffect(() => {
     metricsCollectionModel.initialize();
@@ -62,22 +83,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [metricsData]);
 
-  function onSmoothingChange({
-    algorithm,
-    factor,
-    curveInterpolation,
-  }: IOnSmoothingChange) {
-    let newData = metricsCollectionModel.getDataAsLines({
-      algorithm,
-      factor,
-    });
-    setLineChartData(newData);
-    setCurveInterpolation(curveInterpolation);
-  }
-
   return (
     <Metrics
       tableRef={tableRef}
+      chartPanelRef={chartPanelRef}
       displayOutliers={displayOutliers}
       toggleDisplayOutliers={toggleDisplayOutliers}
       tableElemRef={tableElemRef}
@@ -88,10 +97,11 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableData={metricsCollectionModel.getDataAsTableRows()}
       tableColumns={getTableColumns()}
       zoomMode={zoomMode}
+      curveInterpolation={curveInterpolation}
       toggleZoomMode={toggleZoomMode}
       onActivePointChange={onActivePointChange}
       onSmoothingChange={onSmoothingChange}
-      curveInterpolation={curveInterpolation}
+      onTableRowHover={onTableRowHover}
     />
   );
 }

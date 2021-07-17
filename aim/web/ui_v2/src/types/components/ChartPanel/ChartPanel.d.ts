@@ -10,3 +10,7 @@ export interface IChartPanelProps {
   controls: React.ReactNode;
   onActivePointChange?: (activePointData: IActivePointData) => void;
 }
+
+export interface IChartPanelRef {
+  setActiveLine: (rowKey: string) => void;
+}

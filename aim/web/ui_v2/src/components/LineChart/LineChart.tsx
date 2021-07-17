@@ -186,6 +186,9 @@ const LineChart = React.forwardRef(function LineChart(
     ...brushRef.current,
     ...linesRef.current,
     ...attributesRef.current,
+    setActiveLine: (lineKey: string) => {
+      attributesRef.current?.setActiveCircle(lineKey);
+    },
   }));
 
   return (

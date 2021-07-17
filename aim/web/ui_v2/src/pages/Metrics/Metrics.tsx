@@ -62,8 +62,9 @@ function Metrics(
             }}
             item
           >
-            {props.lineChartData && (
+            {!!props.lineChartData[0]?.length && (
               <ChartPanel
+                ref={props.chartPanelRef}
                 chartType='LineChart'
                 data={props.lineChartData as any}
                 chartProps={[
@@ -110,6 +111,7 @@ function Metrics(
                   onExport={() => null}
                   data={props.tableData[0]}
                   columns={props.tableColumns}
+                  onRowHover={props.onTableRowHover}
                 />
               ) : null}
             </Paper>

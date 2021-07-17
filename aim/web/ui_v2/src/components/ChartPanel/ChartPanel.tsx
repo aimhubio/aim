@@ -25,16 +25,24 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       if (index === chartIndex) {
         return;
       }
-      chartRef.current.updateHoverAttributes(mousePosition);
+      chartRef.current.updateHoverAttributes?.(mousePosition);
     });
     if (props.onActivePointChange) {
       props.onActivePointChange(activePointData);
     }
   }
 
+  React.useImperativeHandle(ref, () => ({
+    setActiveLine: (lineKey: string) => {
+      chartRefs.forEach((chartRef) => {
+        chartRef.current.setActiveLine?.(lineKey);
+      });
+    },
+  }));
+
   React.useEffect(() => {
     setTimeout(() => {
-      setChartsRefs((r) => [...r]);
+      setChartsRefs((refs) => [...refs]);
     });
   }, []);
 

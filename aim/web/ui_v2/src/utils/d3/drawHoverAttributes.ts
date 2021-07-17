@@ -45,6 +45,30 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   const svgArea = d3.select(visAreaRef.current).select('svg');
 
+  function setActiveCircle(circleKey: string) {
+    const { mouseX, mouseY } = getCoordinates({
+      mouse: [attributesRef.current.x, attributesRef.current.y],
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
+      margin,
+    });
+
+    const { nearestCircles } = getNearestCircles({
+      data,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
+      mouseX,
+      mouseY,
+    });
+
+    nearestCircles.forEach((circle: INearestCircle) => {
+      if (circle.key !== circleKey) {
+        return;
+      }
+      updateHoverAttributes([circle.x + margin.left, circle.y + margin.top]);
+    });
+  }
+
   function updateHoverAttributes(
     mousePosition: [number, number],
   ): IActivePointData {
@@ -136,6 +160,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .attr('x2', (axisLine: IAxisLineData) => axisLine.x2)
       .attr('y2', (axisLine: IAxisLineData) => axisLine.y2);
 
+    attributesRef.current.x = closestCircle.x + margin.left;
+    attributesRef.current.y = closestCircle.y + margin.top;
+
     return {
       key: closestCircle.key,
       xValue: attributesRef.current.xScale.invert(closestCircle.x),
@@ -162,6 +189,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   attributesRef.current.updateHoverAttributes = updateHoverAttributes;
+  attributesRef.current.setActiveCircle = setActiveCircle;
 
   svgArea?.on('mousemove', handleMouseMove);
 
