@@ -9,11 +9,17 @@ import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { encode } from 'utils/encoder/encoder';
 import {
+  IGetDataAsLinesProps,
   IMetricCollectionModelState,
   IMetricTableRowData,
 } from 'types/services/models/metrics/metricsCollectionModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import getClosestValue from 'utils/getClosestValue';
+import {
+  calculateCentralMovingAverage,
+  calculateExponentialMovingAverage,
+  SmoothingAlgorithmEnum,
+} from 'utils/smoothingData';
 
 const model = createModel<Partial<IMetricCollectionModelState>>({});
 
@@ -64,11 +70,6 @@ function processData(data: IRun[]): IMetric[][] {
             metricName: metric.metric_name,
             traceContext: metric.context,
           }),
-          data: {
-            ...metric.data,
-            xValues: [...metric.data.iterations],
-            yValues: [...metric.data.values],
-          },
           dasharray: '0',
           color: COLORS[index % COLORS.length],
         } as IMetric);
@@ -78,20 +79,37 @@ function processData(data: IRun[]): IMetric[][] {
   return [metrics, metrics];
 }
 
-function getDataAsLines(): ILine[][] {
+function getDataAsLines(props: IGetDataAsLinesProps | null = null): ILine[][] {
   const metricsCollection = model.getState()?.collection;
   if (!metricsCollection) {
     return [];
   }
 
   return metricsCollection.map((metrics: IMetric[]) =>
-    metrics.map((metric: IMetric) => ({
-      ...metric,
-      data: {
-        xValues: [...metric.data.iterations],
-        yValues: [...metric.data.values],
-      },
-    })),
+    metrics.map((metric: IMetric) => {
+      let yValues;
+      if (props) {
+        yValues =
+          props.algorithm === SmoothingAlgorithmEnum.EMA
+            ? calculateExponentialMovingAverage(
+                [...metric.data.values],
+                props.factor,
+              )
+            : calculateCentralMovingAverage(
+                [...metric.data.values],
+                props.factor,
+              );
+      } else {
+        yValues = [...metric.data.values];
+      }
+      return {
+        ...metric,
+        data: {
+          xValues: [...metric.data.iterations],
+          yValues,
+        },
+      };
+    }),
   );
 }
 

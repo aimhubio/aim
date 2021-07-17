@@ -1,4 +1,5 @@
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { CurveEnum } from 'utils/d3';
 
 export type ScaleType = 'log' | 'linear';
 
@@ -27,4 +28,5 @@ export interface ILineChartProps {
     mousePosition: [number, number],
     activePointData: IActivePointData,
   ) => void;
+  curveInterpolation: CurveEnum;
 }

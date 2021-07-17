@@ -12,9 +12,10 @@ import {
   IGetNearestCircles,
   IActivePointData,
 } from '../../types/utils/d3/drawHoverAttributes';
-import classes from 'components/LineChart/LineChart.module.css';
 import { CircleEnum, XAlignmentEnum } from './index';
 import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
+
+import classes from 'components/LineChart/LineChart.module.css';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {

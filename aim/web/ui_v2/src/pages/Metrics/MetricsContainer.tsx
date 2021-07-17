@@ -7,16 +7,21 @@ import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
+import { CurveEnum } from 'utils/d3';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
+  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
+  const [zoomMode, setZoomMode] = React.useState<boolean>(false);
   const metricsData = useModel(metricsCollectionModel);
+  const [lineChartData, setLineChartData] = React.useState<any>([]);
+  const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
+    CurveEnum.Linear,
+  );
 
   const tableRef = React.useRef<ITableRef>(null);
-  const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
-
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
@@ -51,6 +56,25 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (metricsCollectionModel.getDataAsLines()[0]?.length) {
+      setLineChartData(metricsCollectionModel.getDataAsLines()[0]);
+    }
+  }, [metricsData]);
+
+  function onSmoothingChange({
+    algorithm,
+    factor,
+    curveInterpolation,
+  }: IOnSmoothingChange) {
+    let newData = metricsCollectionModel.getDataAsLines({
+      algorithm,
+      factor,
+    })[0];
+    setLineChartData(newData);
+    setCurveInterpolation(curveInterpolation);
+  }
+
   return (
     <Metrics
       tableRef={tableRef}
@@ -60,13 +84,14 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      metricsCollection={metricsData?.collection ?? []}
-      lineChartData={metricsCollectionModel.getDataAsLines()}
+      lineChartData={lineChartData}
       tableData={metricsCollectionModel.getDataAsTableRows()}
       tableColumns={getTableColumns()}
       zoomMode={zoomMode}
       toggleZoomMode={toggleZoomMode}
       onActivePointChange={onActivePointChange}
+      onSmoothingChange={onSmoothingChange}
+      curveInterpolation={curveInterpolation}
     />
   );
 }
