@@ -14,7 +14,7 @@ import {
 } from 'types/utils/d3/drawHoverAttributes';
 import { CircleEnum, XAlignmentEnum } from './index';
 import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
-import HighlightEnum from '../../components/HighlightModesPopover/HighlightEnum';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {

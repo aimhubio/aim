@@ -1,8 +1,8 @@
 import React from 'react';
 import { IGetAxisScale } from './getAxesScale';
-import { ILineChartProps } from '../../components/LineChart/LineChart';
+import { ILineChartProps } from 'components/LineChart/LineChart';
 import { IProcessedData } from './processData';
-import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IDrawHoverAttributesProps {
   index: number;

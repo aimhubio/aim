@@ -1,5 +1,5 @@
 import { IOnSmoothingChange } from '../../Metrics';
-import HighlightEnum from '../../../../../components/HighlightModesPopover/HighlightEnum';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IControlProps {
   toggleDisplayOutliers: () => void;

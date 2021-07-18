@@ -6,7 +6,7 @@ import getTableColumns from './components/TableColumns/TableColumns';
 import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
-import HighlightEnum from '../../components/HighlightModesPopover/HighlightEnum';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { CurveEnum } from 'utils/d3';
 

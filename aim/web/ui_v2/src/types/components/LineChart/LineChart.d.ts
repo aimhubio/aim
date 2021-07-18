@@ -1,5 +1,5 @@
 import { CurveEnum } from 'utils/d3';
-import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export type ScaleType = 'log' | 'linear';
 
