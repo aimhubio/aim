@@ -1,8 +1,11 @@
 import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(({ spacing }) => ({
-  container: {
+  chartContainer: {
     height: '-webkit-fill-available',
+  },
+  chartPanel: {
+    height: '100%',
   },
   paper: {
     padding: spacing(1),

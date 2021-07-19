@@ -92,6 +92,11 @@ function processData(data: IRun[]): IMetric[][] {
   return [
     metrics.filter((_, i) => i % 3 === 0),
     metrics.filter((_, i) => i % 3 !== 0),
+    metrics.filter((_, i) => i % 3 === 0),
+    metrics.filter((_, i) => i % 3 !== 0),
+    metrics.filter((_, i) => i % 3 === 0),
+    metrics.filter((_, i) => i % 3 !== 0),
+    metrics.filter((_, i) => i % 3 !== 0),
   ];
 }
 

@@ -48,8 +48,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, []);
 
   return (
-    <Grid container spacing={1} className={classes.container}>
-      <Grid item xs>
+    <Grid container spacing={1} className={classes.chartContainer}>
+      <Grid item xs className={classes.chartPanel}>
         <Paper className={classes.paper}>
           <Grid container spacing={1} className={classes.chartGrid}>
             {props.data.map((data, index) => (

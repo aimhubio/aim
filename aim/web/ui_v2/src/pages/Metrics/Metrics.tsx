@@ -8,7 +8,7 @@ import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
 import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
-import { ScaleEnum } from 'utils/d3';
+import { ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
@@ -58,15 +58,13 @@ function Metrics(
           </Grid>
           <Grid
             ref={props.chartElemRef}
-            style={{
-              flex: '0.5 1 0',
-            }}
+            className={classes.chartContainer}
             item
           >
             {!!props.lineChartData[0]?.length && (
               <ChartPanel
                 ref={props.chartPanelRef}
-                chartType='LineChart'
+                chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData as any}
                 chartProps={[
                   {
@@ -106,7 +104,12 @@ function Metrics(
               <MoreHorizIcon />
             </Box>
           </div>
-          <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableElemRef}>
+          <Grid
+            item
+            xs
+            ref={props.tableElemRef}
+            className={classes.tableContainer}
+          >
             <Paper className={classes.paper}>
               {props.tableData.length ? (
                 <Table

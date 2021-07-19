@@ -2,9 +2,10 @@ import React from 'react';
 
 import { ILine, ILineChartProps } from '../LineChart/LineChart';
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { ChartTypeEnum } from 'utils/d3';
 
 export interface IChartPanelProps {
-  chartType: 'LineChart' | 'ParPlot' | 'ScatterPlot';
+  chartType: ChartTypeEnum;
   data: ILine[][];
   chartProps: Omit<ILineChartProps, 'data' | 'index' | 'onMouseOver'>[];
   controls: React.ReactNode;
