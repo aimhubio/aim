@@ -25,6 +25,10 @@ jobs:
           python-version: 3.9
           architecture: x64
 
+      - name: Install dev dependencies
+        run: |
+          python -m pip install -r requirements.dev.txt
+
       - name: Build bdist wheels
         run: |
          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
@@ -66,6 +70,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
+
+      - name: Install dev dependencies
+        run: |
+          python -m pip install -r requirements.dev.txt
 
       - name: Build bdist wheel
         run: |
