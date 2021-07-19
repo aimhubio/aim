@@ -12,11 +12,11 @@ from aim.storage.context import Context, Metric
 from aim.storage.types import AimObject
 from aim.storage.container import Container
 from aim.storage.treeview import TreeView
-from aim.storage.arrayview import ArrayView
 from aim.storage.hashing import hash_auto
 from aim.storage.trace import RunTraceCollection
 
 if TYPE_CHECKING:
+    from aim.storage.arrayview import ArrayView
     from aim.storage.trace import Trace, TraceCollection
     from aim.storage.repo import Repo
 

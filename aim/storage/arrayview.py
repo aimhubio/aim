@@ -9,21 +9,28 @@ T = TypeVar("T")
 
 
 class ArrayView(Generic[T]):
+    pass
+
+
+class ContainerArrayView(ArrayView):
     def __init__(
         self,
         tree: 'TreeView',
         dtype: Any = None,
-        slice: slice = None
+        _slice: slice = None
     ):
         self.tree = tree
         self.dtype = dtype
-        self.slice = slice
+        self._slice = _slice
 
     def allocate(self):
         self.tree.make_array()
         return self
 
     def __iter__(self) -> Iterator[T]:
+        if self._slice is not None:
+            raise NotImplementedError
+
         for k, v in self.tree.items():
             yield v
 
@@ -38,8 +45,8 @@ class ArrayView(Generic[T]):
         if isinstance(idx, int):
             return self.tree[idx]
         elif isinstance(idx, slice):
-            # TODO lazier
-            return self.tolist()[idx]
+            assert self._slice is None
+            return ArrayView(self.tree, dtype=self.dtype, _slice=idx)
         else:
             raise NotImplementedError
 
@@ -50,11 +57,18 @@ class ArrayView(Generic[T]):
         idx: int,
         val: Any
     ):
+        if self._slice is not None:
+            raise NotImplementedError
+
         assert isinstance(idx, int)
         self.tree[idx] = val
 
+
     def numpy(self) -> np.ndarray:
-        return self.tree.numpy(dtype=self.dtype)
+        # TODO URGENT implement using cython
+        val = self.tolist()
+        assert isinstance(val, list)
+        return np.array(val, dtype=self.dtype)
 
     def encode(self) -> bytes:
         # TODO from cython
@@ -62,5 +76,7 @@ class ArrayView(Generic[T]):
 
     def tolist(self) -> List[T]:
         arr = self.tree[...]
+        if self._slice is not None:
+            arr = arr[self._slice]
         assert isinstance(arr, list)
         return arr
