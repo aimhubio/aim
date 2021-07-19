@@ -1,4 +1,5 @@
 import React from 'react';
+import { values } from 'lodash-es';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { Box, makeStyles } from '@material-ui/core';
 
@@ -25,12 +26,14 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
           <Box component='main' bgcolor='grey.200' className={classes.main}>
             <React.Suspense fallback={null}>
               <Switch>
-                <Route path={routes.RUNS.path}>
-                  <routes.RUNS.component />
-                </Route>
-                <Route path={routes.METRICS.path}>
-                  <routes.METRICS.component />
-                </Route>
+                {values(routes).map((route, index) => {
+                  const { component: Component, path } = route;
+                  return (
+                    <Route path={path} key={index}>
+                      <Component />
+                    </Route>
+                  );
+                })}
               </Switch>
             </React.Suspense>
           </Box>
