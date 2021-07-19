@@ -73,6 +73,7 @@ function Metrics(
                       curveInterpolation={props.curveInterpolation}
                       displayOutliers={props.displayOutliers}
                       zoomMode={props.zoomMode}
+                      highlightMode={props.highlightMode}
                     />
                   ) : null}
                 </Paper>
@@ -84,6 +85,8 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
+                    highlightMode={props.highlightMode}
+                    onChangeHighlightMode={props.onChangeHighlightMode}
                     onSmoothingChange={props.onSmoothingChange}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     axesScaleType={props.axesScaleType}

@@ -6,6 +6,7 @@ import { ITableRef } from 'types/components/Table/Table';
 import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
@@ -20,6 +21,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   zoomMode: boolean;
   toggleDisplayOutliers: () => void;
   toggleZoomMode: () => void;
+  highlightMode: HighlightEnum;
+  onChangeHighlightMode: (mode: HighlightEnum) => () => void;
   onSmoothingChange: (params: IOnSmoothingChange) => void;
   curveInterpolation: CurveEnum;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;

@@ -1,5 +1,6 @@
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from '../AxesScalePopover/AxesScalePopover';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export type ScaleType = 'log' | 'linear';
 
@@ -9,9 +10,9 @@ export interface ILine {
     xValues: number[];
     yValues: number[];
   };
-  color?: string;
-  dasharray?: string;
-  selector?: string;
+  color: string;
+  dasharray: string;
+  selectors: string[];
 }
 
 export interface ILineChartProps {
@@ -21,5 +22,6 @@ export interface ILineChartProps {
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;
+  highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
 }

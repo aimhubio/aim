@@ -17,7 +17,9 @@ function drawLines(props: IDrawLinesProps): void {
     linesRef,
     linesNodeRef,
     curveInterpolation,
+    highlightMode,
   } = props;
+
   if (!linesNodeRef?.current) {
     return;
   }
@@ -42,6 +44,10 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr('d', linesRef.current.lineGenerator())
       .attr('class', 'Line')
+      .attr(
+        'data-selector',
+        `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
+      )
       .style('fill', 'none')
       .style('stroke', line.color)
       .style('stroke-dasharray', line.dasharray);
