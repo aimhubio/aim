@@ -6,6 +6,7 @@ import getTableColumns from './components/TableColumns/TableColumns';
 import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { CurveEnum } from 'utils/d3';
 
@@ -14,12 +15,15 @@ const metricsRequestRef = metricsCollectionModel.getMetricsData();
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-  const metricsData = useModel(metricsCollectionModel);
   const [lineChartData, setLineChartData] = React.useState<any>([]);
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
+  const [highlightMode, setHighlightMode] = React.useState<HighlightEnum>(
+    HighlightEnum.Off,
+  );
 
+  const metricsData = useModel(metricsCollectionModel);
   const tableRef = React.useRef<ITableRef>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -35,6 +39,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const toggleZoomMode = React.useCallback((): void => {
     setZoomMode(!zoomMode);
   }, [zoomMode]);
+
+  const onChangeHighlightMode = React.useCallback(
+    (mode: number) => (): void => {
+      setHighlightMode(mode);
+    },
+    [],
+  );
 
   React.useEffect(() => {
     metricsCollectionModel.initialize();
@@ -81,6 +92,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableColumns={getTableColumns()}
       zoomMode={zoomMode}
       toggleZoomMode={toggleZoomMode}
+      highlightMode={highlightMode}
+      onChangeHighlightMode={onChangeHighlightMode}
       onSmoothingChange={onSmoothingChange}
       curveInterpolation={curveInterpolation}
     />

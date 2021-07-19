@@ -21,10 +21,11 @@ function LineChart(
   const {
     data,
     index,
-    zoomMode,
-    xAlignment,
     axisScaleType = {},
     displayOutliers,
+    xAlignment,
+    zoomMode,
+    highlightMode,
     curveInterpolation,
   } = props;
   const classes = useStyles();
@@ -58,12 +59,15 @@ function LineChart(
   const attributesNodeRef = React.useRef(null);
   const xAxisLabelNodeRef = React.useRef(null);
   const yAxisLabelNodeRef = React.useRef(null);
+  const highlightedNodeRef = React.useRef(null);
 
   // methods and values refs
   const axesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
   const attributesRef = React.useRef<any>({});
+
+  const closestCircleRef = React.useRef(null);
 
   const { processedData, min, max } = React.useMemo(
     () =>
@@ -96,6 +100,9 @@ function LineChart(
       max,
     });
 
+    attributesRef.current.xScale = xScale;
+    attributesRef.current.yScale = yScale;
+
     drawAxes({
       axesNodeRef,
       axesRef,
@@ -112,22 +119,24 @@ function LineChart(
       xScale,
       yScale,
       index,
+      highlightMode,
     });
-
-    attributesRef.current.xScale = xScale;
-    attributesRef.current.yScale = yScale;
 
     drawHoverAttributes({
       data: processedData,
+      index,
+      xAlignment,
       visAreaRef,
       attributesRef,
-      attributesNodeRef,
       plotBoxRef,
       visBoxRef,
+      closestCircleRef,
+      attributesNodeRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
-      xAlignment,
-      index,
+      linesNodeRef,
+      highlightedNodeRef,
+      highlightMode,
     });
 
     if (zoomMode) {
@@ -152,8 +161,9 @@ function LineChart(
     axisScaleType,
     curveInterpolation,
     index,
-    max,
+    highlightMode,
     min,
+    max,
     processedData,
     xAlignment,
     zoomMode,
@@ -177,7 +187,7 @@ function LineChart(
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-  }, [props.data, renderChart, zoomMode, displayOutliers]);
+  }, [props.data, renderChart, zoomMode, displayOutliers, highlightMode]);
 
   return (
     <div

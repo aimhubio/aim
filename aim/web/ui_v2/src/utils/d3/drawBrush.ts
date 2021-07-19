@@ -102,7 +102,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateHoverAttributes(undefined, mousePosition);
+    attributesRef.current.updateHoverAttributes(mousePosition);
 
     linesNodeRef.current
       .selectAll('.Line')
@@ -134,7 +134,7 @@ function drawBrush(props: IDrawBrushProps): void {
     linesRef.current.updateLines(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
-    attributesRef.current.updateHoverAttributes(undefined, d3.pointer(event));
+    attributesRef.current.updateHoverAttributes(d3.pointer(event));
   }
 }
 

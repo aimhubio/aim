@@ -12,7 +12,6 @@ import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import useStyles from './metricsStyle';
 import { ScaleEnum } from 'utils/d3';
-import { ILine } from '../../types/components/LineChart/LineChart';
 
 function Metrics(
   props: IMetricProps,
@@ -78,6 +77,7 @@ function Metrics(
                       curveInterpolation={props.curveInterpolation}
                       displayOutliers={props.displayOutliers}
                       zoomMode={props.zoomMode}
+                      highlightMode={props.highlightMode}
                     />
                   ) : null}
                 </Paper>
@@ -89,6 +89,8 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
+                    highlightMode={props.highlightMode}
+                    onChangeHighlightMode={props.onChangeHighlightMode}
                     onSmoothingChange={props.onSmoothingChange}
                   />
                 </Paper>
