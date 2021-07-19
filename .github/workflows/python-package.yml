@@ -63,7 +63,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: pre_release_v3
+          ref: aim_packaging
 
       - name: Setup python
         uses: actions/setup-python@v2
