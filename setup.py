@@ -38,6 +38,10 @@ migration_files = package_files('aim/web/migrations')
 # TODO: Get long description from the README file
 LONG_DESCRIPTION = DESCRIPTION
 
+SETUP_REQUIRED = [
+    'Cython>=0.20.0',
+]
+
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
@@ -60,7 +64,6 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'tensorboard>=2.0.0',
-    'Cython>=0.20.0',
 ]
 
 
@@ -117,6 +120,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     python_requires=REQUIRES_PYTHON,
+    setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
     packages=packages,
     package_data={'aim': ui_files + migration_files},
