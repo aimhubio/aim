@@ -41,7 +41,8 @@ class Trace(Generic[T]):
         self,
         name: str,
         context: Context,  # TODO ?dict
-        run: 'Run'
+        run: 'Run',
+        _slice: slice = None
     ):
         self.name = name
         self.context = context
@@ -50,12 +51,23 @@ class Trace(Generic[T]):
         self.tree = run.trace_tree(name, context)
 
         self._hash: int = None
+        self._slice = _slice
 
     def __repr__(self) -> str:
         return f'<Trace#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
 
     def _calc_hash(self):
-        return hash_auto((self.name, hash(self.context), hash(self.run)))
+        if self._slice is not None:
+            slice_hash = hash_auto((self._slice.start, self._slice.stop, self._slice.step))
+        else:
+            slice_hash = None
+        return hash_auto(
+            (self.name,
+             hash(self.context),
+             hash(self.run),
+             slice_hash
+            )
+        )
 
     def __hash__(self) -> int:
         if self._hash is None:
@@ -64,23 +76,38 @@ class Trace(Generic[T]):
 
     @property
     def values(self) -> ArrayView[T]:
-        return self.tree.array('val')
+        array_view = self.tree.array('val')
+        if self._slice is not None:
+            array_view = array_view[self._slice]
+        return array_view
 
     @property
     def iters(self) -> ArrayView[int]:
-        return self.tree.array('iter')
+        array_view = self.tree.array('iter')
+        if self._slice is not None:
+            array_view = array_view[self._slice]
+        return array_view
 
     @property
     def steps(self) -> List[int]:
-        return [i for i, _ in enumerate(self.iters)]
+        array_view = [i for i, _ in enumerate(self.iters)]
+        if self._slice is not None:
+            array_view = array_view[self._slice]
+        return array_view
 
     @property
     def epochs(self) -> ArrayView[int]:
-        return self.tree.array('epoch')
+        array_view = self.tree.array('epoch')
+        if self._slice is not None:
+            array_view = array_view[self._slice]
+        return array_view
 
     @property
     def timestamps(self) -> ArrayView[float]:
-        return self.tree.array('time')
+        array_view = self.tree.array('time')
+        if self._slice is not None:
+            array_view = array_view[self._slice]
+        return array_view
 
     def __getitem__(
         self,
@@ -111,18 +138,15 @@ class Trace(Generic[T]):
         self,
         include_name: bool = False,
         include_context: bool = False,
-        include_run: bool = False,
-        trace_slice: slice = None
+        include_run: bool = False
     ) -> 'DataFrame':
         # Returns dataframe with rows corresponding to iters
         # Columns: `step`, `value`, `time`
         # steps = list(self.steps)
-        if trace_slice is None:
-            trace_slice = slice(None, None, None)
-        iters = self.iters.tolist()[trace_slice]
-        steps = [i for i, _ in enumerate(iters)][trace_slice]
-        values = self.values.tolist()[trace_slice]
-        timestamps = [datetime.datetime.fromtimestamp(t) for t in self.timestamps.tolist()][trace_slice]
+        iters = self.iters.tolist()
+        steps = [i for i, _ in enumerate(iters)]
+        values = self.values.tolist()
+        timestamps = [datetime.datetime.fromtimestamp(t) for t in self.timestamps.tolist()]
         data = {
             'step': steps,
             'iter': iters,
@@ -198,10 +222,9 @@ class TraceCollection:
         trace_slice: slice = None
     ) -> 'DataFrame':
         dfs = [
-            trace.dataframe(include_run=True,
+            trace[trace_slice].dataframe(include_run=True,
                             include_name=True,
-                            include_context=True,
-                            trace_slice=trace_slice)
+                            include_context=True)
             for trace in self
         ]
         if not dfs:
