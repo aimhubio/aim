@@ -3,15 +3,15 @@ import datetime
 import json
 import time
 import numpy as np
-import wrapt
 from tqdm import tqdm
 
+from aim.storage import treeutils
+from aim.storage import encoding as E
 from aim.storage.types import AimObject
+from aim.storage.proxy import AimObjectProxy
+from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.arrayview import ArrayView
-from aim.storage.context import Context
-from aim.storage import encoding as E
-from aim.storage import treeutils
 
 from typing import Any, Generic, Iterable, Iterator, NamedTuple, TYPE_CHECKING, Tuple, TypeVar, List
 
@@ -87,7 +87,7 @@ class Trace(Generic[T]):
         idx: int
     ) -> Tuple[int, Any, float]:
         # TODO implement slice
-        return self.iters[idx], self.valus[idx], self.time[idx]
+        return self.iters[idx], self.values[idx], self.timestamps[idx]
         # Or shortcut from lower-level storage api
 
     def __len__(self) -> int:
@@ -110,7 +110,7 @@ class Trace(Generic[T]):
     def dataframe(
         self,
         include_name: bool = False,
-        include_context: bool = True,
+        include_context: bool = False,
         include_run: bool = False,
         trace_slice: slice = None
     ) -> 'DataFrame':
@@ -132,7 +132,9 @@ class Trace(Generic[T]):
 
         if include_run:
             data['run'] = [self.run.name] * len(iters)
-            for path, val in treeutils.unfold_tree(self.run[...], unfold_array=False):
+            for path, val in treeutils.unfold_tree(self.run[...],
+                                                   unfold_array=False,
+                                                   depth=3):
                 s = 'run'
                 for key in path:
                     if isinstance(key, str):
@@ -140,14 +142,16 @@ class Trace(Generic[T]):
                     else:
                         s += f'[{key}]'
                 # path = '.'.join(path)
-                if isinstance(val, (tuple, list)):
+                if isinstance(val, (tuple, list, dict)):
                     val = json.dumps(val)
                 data[s] = [val for _ in iters]
         if include_name:
             # df['metric'] = self.name
             data['metric'] = [self.name for _ in iters]
         if include_context:
-            for path, val in treeutils.unfold_tree(self.context.to_dict(), unfold_array=False):
+            for path, val in treeutils.unfold_tree(self.context.to_dict(),
+                                                   unfold_array=False,
+                                                   depth=3):
                 s = 'context'
                 for key in path:
                     if isinstance(key, str):
@@ -234,6 +238,8 @@ class RunTraceCollection(TraceCollection):
         self,
         run: 'Run'
     ):
+        self.run: 'Run'
+        self.repo: 'Repo'
         super().__init__(run=run, repo=run.repo)
 
     def iter(
@@ -243,41 +249,34 @@ class RunTraceCollection(TraceCollection):
             yield Trace(metric_name, ctx, run)
 
 
-class AimObjectProxy(wrapt.ObjectProxy):
-
-    # NotFound = object()
-
-    def __getattr__(self, name):
-        try:
-            val = super().__getattr__(name)
-        except:
-            if name in self.__wrapped__:
-                return AimObjectProxy(self.__wrapped__[name])
-            return None
-        return val
-
-
 class QueryTraceCollection(TraceCollection):
     def __init__(
         self,
         repo: 'Repo',
         query: str
     ):
+        self.repo: 'Repo'
         super().__init__(repo=repo)
         self.query = query
 
     def iter(self) -> Iterator[Trace]:
         for run in tqdm(self.repo.iter_runs(from_union=True)):
             for metric_name, ctx, run in run.iter_all_traces():
-                statement = eval(self.query, dict(), dict(
-                    metric_name=metric_name,
-                    metric=metric_name,
-                    context=ctx.to_dict(),
-                    # context=AimObjectProxy(ctx.to_dict()),
-                    # ctx=AimObjectProxy(ctx.to_dict()),
-                    run=run #AimObjectProxy(run.meta_run_tree)
-                ))
-                if self.query and not statement:
+                ctx_dict = ctx.to_dict()
+                ctx_proxy = AimObjectProxy(lambda: ctx_dict)
+                run_tree_proxy = AimObjectProxy(lambda: run.meta_run_tree,
+                                                run.meta_run_tree)
+                if not self.query:
+                    statement = True
+                else:
+                    statement = eval(self.query, dict(), dict(
+                        metric_name=metric_name,
+                        metric=metric_name,
+                        context=ctx_proxy,
+                        ctx=ctx_proxy,
+                        run=run_tree_proxy
+                    ))
+                if not statement:
                     continue
                 yield Trace(metric_name, ctx, run)
 
