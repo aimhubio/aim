@@ -1,15 +1,15 @@
-import aimrocks
-from . import encoding as E
-from .types import AimObject, AimObjectKey, AimObjectPath
-from .utils import ArrayFlag, ObjectFlag
 import numpy as np
 
+import aimrocks
+
+from aim.storage import encoding as E
+from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.storage.utils import ArrayFlag, ObjectFlag
+from aim.storage.containerview import ContainerView
+from aim.storage import treeutils
+from aim.storage.arrayview import ArrayView
+
 from typing import Any, Iterable, Iterator, MutableMapping, Tuple, Type, Union
-
-
-from .containerview import ContainerView
-from . import treeutils
-from .arrayview import ArrayView
 
 
 class TreeView:  # TODO implement (MutableMapping):

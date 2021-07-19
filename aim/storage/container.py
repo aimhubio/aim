@@ -3,15 +3,15 @@ from pathlib import Path
 from abc import abstractmethod
 import aimrocks
 
-from . import encoding as E
+from aim.storage import encoding as E
 
 from typing import Any, Iterable, Iterator, MutableMapping, Tuple, Union
 
-from .treeview import TreeView
+from aim.storage.treeview import TreeView
 # run1.meta.db
 # run1.series.db
-from .containerview import ContainerView
-from .singlecontainerview import SingleContainerView
+from aim.storage.containerview import ContainerView
+from aim.storage.singlecontainerview import SingleContainerView
 
 
 class Container(ContainerView):
@@ -73,7 +73,7 @@ class Container(ContainerView):
         self,
         key: bytes,
         value: bytes
-    ) -> bytes:
+    ):
         self.db.put(key=key, value=value)
 
     def __getitem__(
