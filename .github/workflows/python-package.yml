@@ -35,6 +35,7 @@ jobs:
           AIM_PKG_NAME=aim-cli python setup.py sdist
 
       - name: List wheels
+        run: |
           ls -al dist
           ls -al multilinux_dist
 
@@ -72,6 +73,7 @@ jobs:
           AIM_PKG_NAME=aim-cli python setup.py bdist_wheel -d dist
 
       - name: List wheels
+        run: |
           ls -al dist
 #      - name: Publish wheel
 #        env:
