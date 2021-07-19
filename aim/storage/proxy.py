@@ -116,10 +116,16 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         return (self.__wrapped__(),)
 
     def __lt__(self, other):
-        return self.__wrapped__() < other
+        try:
+            return self.__wrapped__() < other
+        except TypeError:
+            return False
 
     def __le__(self, other):
-        return self.__wrapped__() <= other
+        try:
+            return self.__wrapped__() <= other
+        except TypeError:
+            return False
 
     def __eq__(self, other):
         return self.__wrapped__() == other
@@ -128,10 +134,16 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         return self.__wrapped__() != other
 
     def __gt__(self, other):
-        return self.__wrapped__() > other
+        try:
+            return self.__wrapped__() > other
+        except TypeError:
+            return False
 
     def __ge__(self, other):
-        return self.__wrapped__() >= other
+        try:
+            return self.__wrapped__() >= other
+        except TypeError:
+            return False
 
     def __hash__(self):
         return hash(self.__wrapped__())
