@@ -48,9 +48,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const onActivePointChange = React.useCallback(
     (activePointData: IActivePointData): void => {
       tableRef.current?.updateData({
-        newData: metricsCollectionModel.getDataAsTableRows(
-          activePointData.xValue,
-        )[0],
+        newData: metricsCollectionModel
+          .getDataAsTableRows(activePointData.xValue)
+          .flat(),
       });
       tableRef.current?.setHoveredRow(activePointData.key);
     },
