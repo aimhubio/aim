@@ -283,9 +283,9 @@ def nested_runs_dict_constructor(traces: QueryTraceCollection, steps_num: int, x
 def sliced_np_array(array: np.ndarray, num_records: int, step: int) -> np.ndarray:
     last_step_needed = (num_records - 1) % step != 0
     if last_step_needed:
-        return np.append(array[0, num_records, step], array[-1])
+        return np.append(array[0:num_records:step], array[-1])
     else:
-        return array[0, num_records, step]
+        return array[0:num_records:step]
 
 
 def numpy_to_encodable(array: np.ndarray) -> dict:
