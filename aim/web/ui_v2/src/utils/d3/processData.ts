@@ -9,18 +9,18 @@ import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { ScaleEnum } from '.';
 import { removeOutliers } from '../removeOutliers';
 
-const isInvalidValue = (v: number): boolean =>
-  !isFinite(v) || isNaN(v) || v === null;
+const isInvalidValue = (v: number, scaleType: ScaleEnum): boolean =>
+  !isFinite(v) ||
+  isNaN(v) ||
+  v === null ||
+  (scaleType === ScaleEnum.Log && v <= 0);
 
 function getFilteredValues(params: IGetFilteredValuesParams): number[] {
-  const { data, invalidXIndices, invalidYIndices, scaleType } = params;
+  const { data, invalidXIndices, invalidYIndices } = params;
 
-  return data.filter((v: number, i: number) =>
-    invalidXIndices.indexOf(i) === -1 &&
-    invalidYIndices.indexOf(i) === -1 &&
-    scaleType === ScaleEnum.Log
-      ? v > 0
-      : true,
+  return data.filter(
+    (v: number, i: number) =>
+      invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
   );
 }
 
@@ -33,7 +33,7 @@ function processData(params: IProcessDataProps): IProcessData {
   const processedData = data.map((line) => {
     const invalidXIndices: number[] = line.data.xValues.reduce(
       (acc: number[], v: number, i: number) => {
-        if (isInvalidValue(v)) {
+        if (isInvalidValue(v, axesScaleType.xAxis)) {
           acc = acc.concat([i]);
         }
         return acc;
@@ -42,7 +42,7 @@ function processData(params: IProcessDataProps): IProcessData {
     );
     const invalidYIndices: number[] = line.data.yValues.reduce(
       (acc: number[], v: number, i: number) => {
-        if (isInvalidValue(v)) {
+        if (isInvalidValue(v, axesScaleType.yAxis)) {
           acc = acc.concat([i]);
         }
         return acc;
@@ -54,14 +54,12 @@ function processData(params: IProcessDataProps): IProcessData {
       data: line.data.xValues,
       invalidXIndices,
       invalidYIndices,
-      scaleType: axesScaleType.xAxis,
     });
 
     const filteredYValues: number[] = getFilteredValues({
       data: line.data.yValues,
       invalidXIndices,
       invalidYIndices,
-      scaleType: axesScaleType.yAxis,
     });
 
     xValues = xValues.concat(filteredXValues);

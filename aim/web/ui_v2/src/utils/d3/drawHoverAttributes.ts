@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import '../../components/LineChart/LineChart.css';
+import 'components/LineChart/LineChart.css';
 import {
   IClosestCircle,
   IDrawHoverAttributesProps,
