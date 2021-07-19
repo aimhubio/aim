@@ -1,14 +1,12 @@
 from abc import abstractmethod
 import datetime
 import json
-import time
 import numpy as np
 from tqdm import tqdm
 
 from aim.storage import treeutils
-from aim.storage import encoding as E
-from aim.storage.types import AimObject
 from aim.storage.proxy import AimObjectProxy
+from aim.storage.query import RestrictedPythonQuery
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.arrayview import ArrayView
@@ -131,7 +129,18 @@ class Trace(Generic[T]):
                                           self.timestamps)):
             yield Record(s, i, v, t)
 
-    def __getitem__(self, step: int) -> Any:
+    def __getitem__(
+        self,
+        step: int
+    ) -> Any:
+        if isinstance(step, slice):
+            # We do not support slice of slice right now
+            assert self._slice is None
+
+            return Trace(name=self.name,
+                         context=self.context,
+                         run=self.run,
+                         _slice=step)
         return Record(step, self.iters[step], self.values[step], self.timestamps[step])
 
     def dataframe(
@@ -280,28 +289,19 @@ class QueryTraceCollection(TraceCollection):
     ):
         self.repo: 'Repo'
         super().__init__(repo=repo)
-        self.query = query
+        self.query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
         for run in tqdm(self.repo.iter_runs(from_union=True)):
             for metric_name, ctx, run in run.iter_all_traces():
-                ctx_dict = ctx.to_dict()
-                ctx_proxy = AimObjectProxy(lambda: ctx_dict)
-                run_tree_proxy = AimObjectProxy(lambda: run.meta_run_tree,
-                                                run.meta_run_tree)
                 if not self.query:
                     statement = True
                 else:
-                    statement = eval(self.query, dict(), dict(
-                        metric_name=metric_name,
-                        metric=metric_name,
-                        context=ctx_proxy,
-                        ctx=ctx_proxy,
-                        run=run_tree_proxy
-                    ))
+                    statement = self.query.match(
+                        run=run,
+                        context=ctx,
+                        metric_name=metric_name
+                    )
                 if not statement:
                     continue
                 yield Trace(metric_name, ctx, run)
-
-        # for metric_name, ctx, run in self.from_repo():
-        #     yield Trace(metric_name, ctx, run)
