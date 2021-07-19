@@ -12,7 +12,7 @@ import {
   IGetNearestCircles,
 } from 'types/utils/d3/drawHoverAttributes';
 import { CircleEnum, XAlignmentEnum } from './index';
-import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
+import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 
 import classes from 'components/LineChart/LineChart.module.css';
 
@@ -31,8 +31,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   } = props;
 
   attributesRef.current.updateScales = function (
-    xScale: IGetAxisScale['xScale'],
-    yScale: IGetAxisScale['yScale'],
+    xScale: IGetAxesScale['xScale'],
+    yScale: IGetAxesScale['yScale'],
   ) {
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;

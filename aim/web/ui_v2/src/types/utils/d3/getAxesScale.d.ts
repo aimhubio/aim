@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
-export interface IGetAxisScaleProps {
+export interface IGetAxesScaleProps {
   visBoxRef: React.MutableRefObject<>;
   axesScaleType: IAxesScaleState;
   min: { x: number; y: number };
@@ -11,7 +11,7 @@ export interface IGetAxisScaleProps {
 
 export type IScale = d3.ScaleLogarithmic | d3.ScaleLinear;
 
-export interface IGetAxisScale {
+export interface IGetAxesScale {
   xScale: IScale;
   yScale: IScale;
 }

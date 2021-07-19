@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 import { ScaleEnum } from './index';
 import { ScaleType } from 'types/components/LineChart/LineChart';
-import { IGetAxisScale, IGetAxisScaleProps } from 'types/utils/d3/getAxesScale';
+import { IGetAxesScale, IGetAxesScaleProps } from 'types/utils/d3/getAxesScale';
 
 function getScaleBaseFor(scaleType?: ScaleType) {
   switch (scaleType) {
@@ -15,7 +15,7 @@ function getScaleBaseFor(scaleType?: ScaleType) {
   }
 }
 
-function getAxisScale(params: IGetAxisScaleProps): IGetAxisScale {
+function getAxesScale(params: IGetAxesScaleProps): IGetAxesScale {
   const { visBoxRef, axesScaleType, min, max } = params;
   const { width, height, margin } = visBoxRef.current;
 
@@ -35,4 +35,4 @@ function getAxisScale(params: IGetAxisScaleProps): IGetAxisScale {
   return { xScale, yScale };
 }
 
-export default getAxisScale;
+export default getAxesScale;

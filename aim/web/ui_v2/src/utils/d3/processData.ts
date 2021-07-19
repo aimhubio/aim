@@ -1,12 +1,28 @@
 import _ from 'lodash';
 
-import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
-import getFilteredValues from 'utils/getFilteredValues';
+import {
+  IProcessData,
+  IProcessDataProps,
+  IGetFilteredValuesParams,
+} from 'types/utils/d3/processData';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
+import { ScaleEnum } from '.';
 import { removeOutliers } from '../removeOutliers';
 
 const isInvalidValue = (v: number): boolean =>
   !isFinite(v) || isNaN(v) || v === null;
+
+function getFilteredValues(params: IGetFilteredValuesParams): number[] {
+  const { data, invalidXIndices, invalidYIndices, scaleType } = params;
+
+  return data.filter((v: number, i: number) =>
+    invalidXIndices.indexOf(i) === -1 &&
+    invalidYIndices.indexOf(i) === -1 &&
+    scaleType === ScaleEnum.Log
+      ? v > 0
+      : true,
+  );
+}
 
 function processData(params: IProcessDataProps): IProcessData {
   const { data, displayOutliers, axesScaleType } = params;
@@ -34,19 +50,19 @@ function processData(params: IProcessDataProps): IProcessData {
       [],
     );
 
-    const filteredXValues: number[] = getFilteredValues(
-      line.data.xValues,
+    const filteredXValues: number[] = getFilteredValues({
+      data: line.data.xValues,
       invalidXIndices,
       invalidYIndices,
-      axesScaleType.xAxis,
-    );
+      scaleType: axesScaleType.xAxis,
+    });
 
-    const filteredYValues: number[] = getFilteredValues(
-      line.data.yValues,
+    const filteredYValues: number[] = getFilteredValues({
+      data: line.data.yValues,
       invalidXIndices,
       invalidYIndices,
-      axesScaleType.yAxis,
-    );
+      scaleType: axesScaleType.yAxis,
+    });
 
     xValues = xValues.concat(filteredXValues);
     yValues = yValues.concat(filteredYValues);

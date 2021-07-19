@@ -8,7 +8,7 @@ function ToggleButton(
   return (
     <Box>
       <Box component='span' marginLeft={1}>
-        {props.label}
+        {props.leftLabel}
       </Box>
       <Switch
         color={props.color || 'primary'}
@@ -17,7 +17,7 @@ function ToggleButton(
         inputProps={props.inputProps}
         onChange={props.onChange}
       />
-      {props.secondLabel && <Box component='span'>{props.secondLabel}</Box>}
+      {props.rightLabel && <Box component='span'>{props.rightLabel}</Box>}
     </Box>
   );
 }

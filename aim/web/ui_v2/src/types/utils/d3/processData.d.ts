@@ -17,3 +17,10 @@ export interface IProcessDataProps {
   displayOutliers: boolean;
   axesScaleType: IAxesScaleState;
 }
+
+export interface IGetFilteredValuesParams {
+  data: number[];
+  invalidXIndices: number[];
+  invalidYIndices: number[];
+  scaleType: ScaleEnum;
+}

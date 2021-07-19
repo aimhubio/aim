@@ -6,7 +6,7 @@ import {
   drawAxes,
   drawLines,
   processData,
-  getAxisScale,
+  getAxesScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
@@ -90,7 +90,7 @@ function LineChart(
       attributesNodeRef,
     });
 
-    const { xScale, yScale } = getAxisScale({
+    const { xScale, yScale } = getAxesScale({
       visBoxRef,
       axesScaleType,
       min,
