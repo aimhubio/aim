@@ -1,3 +1,6 @@
-VERSION = (2, 7, 1)
+version_file = 'VERSION'
 
-__version__ = '.'.join(map(str, VERSION))
+__version__ = None
+with open(version_file) as vf:
+    __version__ = vf.read().strip()
+

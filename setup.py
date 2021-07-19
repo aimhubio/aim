@@ -2,9 +2,13 @@ import sys
 import os
 import io
 from shutil import rmtree
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup, Command, Extension
 
-from aim.__version__ import __version__
+version_file = 'VERSION'
+
+__version__ = None
+with open(version_file) as vf:
+    __version__ = vf.read().strip()
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -37,6 +41,7 @@ LONG_DESCRIPTION = DESCRIPTION
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
+    'aimrocks==0.0.2',
     'anytree>=2.8.0',
     'click>=7.0',
     'GitPython>=3.0.4',
@@ -55,6 +60,7 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'tensorboard>=2.0.0',
+    'Cython>=0.20.0',
 ]
 
 
@@ -124,6 +130,18 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy'
+    ],
+    ext_modules=[
+        Extension(
+            'aim.storage.c_hash',
+            ['aim/storage/c_hash.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.encoding_native',
+            ['aim/storage/encoding_native.pyx'],
+            language='c++'
+        )
     ],
     entry_points={
         'console_scripts': [
