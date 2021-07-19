@@ -46,7 +46,7 @@ class ContainerArrayView(ArrayView):
             return self.tree[idx]
         elif isinstance(idx, slice):
             assert self._slice is None
-            return ArrayView(self.tree, dtype=self.dtype, _slice=idx)
+            return ContainerArrayView(self.tree, dtype=self.dtype, _slice=idx)
         else:
             raise NotImplementedError
 
