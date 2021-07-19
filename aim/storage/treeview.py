@@ -7,7 +7,7 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag, ObjectFlag
 from aim.storage.containerview import ContainerView
 from aim.storage import treeutils
-from aim.storage.arrayview import ArrayView
+from aim.storage.arrayview import ContainerArrayView
 
 from typing import Any, Iterable, Iterator, MutableMapping, Tuple, Type, Union
 
@@ -149,19 +149,19 @@ class TreeView:  # TODO implement (MutableMapping):
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> ArrayView:
-        return ArrayView(self.view(path))
+    ) -> ContainerArrayView:
+        return ContainerArrayView(self.view(path))
 
-    def numpy(
-        self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        *,
-        dtype=None
-    ) -> np.ndarray:
-        # TODO URGENT implement using cython
-        val = self.collect(path)
-        assert isinstance(val, list)
-        return np.array(val, dtype=dtype)
+    # def numpy(
+    #     self,
+    #     path: Union[AimObjectKey, AimObjectPath] = (),
+    #     *,
+    #     dtype=None
+    # ) -> np.ndarray:
+    #     # TODO URGENT implement using cython
+    #     val = self.collect(path)
+    #     assert isinstance(val, list)
+    #     return np.array(val, dtype=dtype)
 
     # __iter__
     # __len__
