@@ -1,0 +1,81 @@
+name: aim/aim-cli packaging pipeline
+
+on: workflow_dispatch
+
+jobs:
+  linux-dist:
+    runs-on: ubuntu-latest
+    name: Linux wheels build (using Docker)
+    steps:
+      - name: Install Docker & pull images
+        run: |
+          apt update && apt install -y docker.io
+          sudo systemctl enable --now docker
+
+          docker pull quay.io/pypa/manylinux_2_24_x86_64
+
+      - name: Checkout sources
+        uses: actions/checkout@v2
+        with:
+          ref: pre_release_v3
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: x64
+
+      - name: Build bdist wheels
+        run: |
+         docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
+
+      - name: Build sdist
+        run: |
+          AIM_PKG_NAME=aim python setup.py sdist
+          AIM_PKG_NAME=aim-cli python setup.py sdist
+
+      - name: List wheels
+          ls -al dist
+          ls -al multilinux_dist
+
+#      - name: Publish wheels
+#        env:
+#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+#        run: |
+#          python -m pip install twine
+#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
+#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+
+  macos-dist:
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        os: [ 'macos-latest' ]
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+        with:
+          ref: pre_release_v3
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: Build bdist wheel
+        run: |
+          AIM_PKG_NAME=aim python setup.py bdist_wheel -d dist
+          AIM_PKG_NAME=aim-cli python setup.py bdist_wheel -d dist
+
+      - name: List wheels
+          ls -al dist
+#      - name: Publish wheel
+#        env:
+#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+#        run: |
+#          python -m pip install twine
+#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
