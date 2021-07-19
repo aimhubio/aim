@@ -9,8 +9,14 @@ def unfold_tree(
     obj: AimObject,
     *,
     path: Tuple[Union[int, str], ...] = (),
-    unfold_array: bool = True
+    unfold_array: bool = True,
+    depth: int = None
 ) -> Iterator[Tuple[Tuple[Union[int, str], ...], Any]]:
+    if depth == 0:
+        return obj
+    if depth is not None:
+        depth -= 1
+
     if obj is None:
         yield path, obj
     elif isinstance(obj, (bool, int, float, str, bytes)):
@@ -22,11 +28,11 @@ def unfold_tree(
             yield path, ArrayFlag
             # Ellipsis (...) is set when array elements are expected
             for idx, val in enumerate(obj):
-                yield from unfold_tree(val, path=path + (idx,), unfold_array=unfold_array)
+                yield from unfold_tree(val, path=path + (idx,), unfold_array=unfold_array, depth=depth)
     elif isinstance(obj, dict):
         # yield path, ObjectFlag
         for key, val in obj.items():
-            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array)
+            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
     else:
         raise NotImplementedError
 
