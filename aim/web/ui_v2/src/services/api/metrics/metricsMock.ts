@@ -20,10 +20,10 @@ function generateMetrics(count = 500, pointsCount = 50) {
             values: new Float64Array(
               context === 'val'
                 ? [...Array(Math.ceil(pointsCount / 5))].map(
-                    (e, j) => Math.random() * 1.1 + Math.random() * (j + 1),
+                    (e, j) => Math.random() * -1.1 + Math.random() * (j + 1),
                   )
                 : [...Array(pointsCount)].map(
-                    (e, j) => Math.random() * 1.1 + Math.random() * (j + 1),
+                    (e, j) => Math.random() * -1.1 + Math.random() * (j + 1),
                   ),
             ),
             steps: new Uint32Array(
