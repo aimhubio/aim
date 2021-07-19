@@ -87,12 +87,17 @@ function drawArea(props: IDrawAreaProps): void {
     .attr('id', 'circles-rect-clip-' + index)
     .append('rect')
     .attr('x', -7)
-    .attr('y', 0)
+    .attr('y', -7)
     .attr(
       'width',
-      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius,
+      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius + 4,
+      // + circle-diameter(2 * CircleEnum.ActiveRadius) + stroke-width(4)
     )
-    .attr('height', height - margin.top - margin.bottom);
+    .attr(
+      'height',
+      height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius + 4,
+      // + circle-diameter(2 * CircleEnum.ActiveRadius) + stroke-width(4)
+    );
 }
 
 export default drawArea;

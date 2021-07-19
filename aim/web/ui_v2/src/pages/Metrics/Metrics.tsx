@@ -12,6 +12,7 @@ import { ScaleEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
+import { table } from 'console';
 
 function Metrics(
   props: IMetricProps,
@@ -76,6 +77,7 @@ function Metrics(
                     curveInterpolation: props.curveInterpolation,
                     displayOutliers: props.displayOutliers,
                     zoomMode: props.zoomMode,
+                    highlightMode: props.highlightMode,
                   },
                 ]}
                 controls={
@@ -84,6 +86,8 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     toggleZoomMode={props.toggleZoomMode}
+                    highlightMode={props.highlightMode}
+                    onChangeHighlightMode={props.onChangeHighlightMode}
                     onSmoothingChange={props.onSmoothingChange}
                   />
                 }
@@ -109,7 +113,7 @@ function Metrics(
                   ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
-                  data={props.tableData[0]}
+                  data={[...props.tableData[0], ...props.tableData[1]]}
                   columns={props.tableColumns}
                   onRowHover={props.onTableRowHover}
                 />

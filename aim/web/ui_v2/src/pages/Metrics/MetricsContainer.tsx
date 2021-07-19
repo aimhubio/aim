@@ -7,6 +7,7 @@ import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { CurveEnum } from 'utils/d3';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -16,12 +17,16 @@ const metricsRequestRef = metricsCollectionModel.getMetricsData();
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-  const metricsData = useModel(metricsCollectionModel);
   const [lineChartData, setLineChartData] = React.useState<any>([]);
+  const [tableData, setTableData] = React.useState<any>([]);
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
+  const [highlightMode, setHighlightMode] = React.useState<HighlightEnum>(
+    HighlightEnum.Off,
+  );
 
+  const metricsData = useModel(metricsCollectionModel);
   const tableRef = React.useRef<ITableRef>(null);
   const chartPanelRef = React.useRef<IChartPanelRef>(null);
 
@@ -48,6 +53,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         )[0],
       });
       tableRef.current?.setHoveredRow(activePointData.key);
+    },
+    [],
+  );
+
+  const onChangeHighlightMode = React.useCallback(
+    (mode: number) => (): void => {
+      setHighlightMode(mode);
     },
     [],
   );
@@ -80,6 +92,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     if (metricsCollectionModel.getDataAsLines()[0]?.length) {
       setLineChartData(metricsCollectionModel.getDataAsLines());
+      setTableData(metricsCollectionModel.getDataAsTableRows());
     }
   }, [metricsData]);
 
@@ -94,12 +107,14 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       lineChartData={lineChartData}
-      tableData={metricsCollectionModel.getDataAsTableRows()}
+      tableData={tableData}
       tableColumns={getTableColumns()}
       zoomMode={zoomMode}
       curveInterpolation={curveInterpolation}
       toggleZoomMode={toggleZoomMode}
       onActivePointChange={onActivePointChange}
+      highlightMode={highlightMode}
+      onChangeHighlightMode={onChangeHighlightMode}
       onSmoothingChange={onSmoothingChange}
       onTableRowHover={onTableRowHover}
     />

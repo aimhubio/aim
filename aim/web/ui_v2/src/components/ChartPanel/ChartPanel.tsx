@@ -36,7 +36,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
       chartRefs.forEach((chartRef) => {
-        chartRef.current.setActiveLine?.(lineKey);
+        chartRef.current?.setActiveLine?.(lineKey);
       });
     },
   }));
@@ -54,13 +54,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           <Grid container spacing={1} className={classes.chartGrid}>
             {props.data.map((data, index) => (
               <Grid
+                key={index}
                 item
                 xs={
                   (props.data.length > 9
                     ? 4
                     : chartGridPattern[props.data.length][index]) as any
                 }
-                key={index}
               >
                 <LineChart
                   ref={chartRefs[index]}

@@ -65,6 +65,19 @@ function processData(data: IRun[]): IMetric[][] {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
+          selectors: [
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            run.run_hash,
+          ],
           key: encode({
             runHash: run.run_hash,
             metricName: metric.metric_name,
@@ -76,7 +89,10 @@ function processData(data: IRun[]): IMetric[][] {
       }),
     );
   });
-  return [metrics, metrics, metrics];
+  return [
+    metrics.filter((_, i) => i % 3 === 0),
+    metrics.filter((_, i) => i % 3 !== 0),
+  ];
 }
 
 function getDataAsLines(props: IGetDataAsLinesProps | null = null): ILine[][] {

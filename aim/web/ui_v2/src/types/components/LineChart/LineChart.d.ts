@@ -1,5 +1,6 @@
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export type ScaleType = 'log' | 'linear';
 
@@ -9,9 +10,9 @@ export interface ILine {
     xValues: number[];
     yValues: number[];
   };
-  color?: string;
-  dasharray?: string;
-  selector?: string;
+  color: string;
+  dasharray: string;
+  selectors: string[];
 }
 
 export interface ILineChartProps {
@@ -28,5 +29,6 @@ export interface ILineChartProps {
     mousePosition: [number, number],
     activePointData: IActivePointData,
   ) => void;
+  highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
 }
