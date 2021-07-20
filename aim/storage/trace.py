@@ -26,8 +26,9 @@ T = TypeVar('T')
 
 
 class Record(NamedTuple):
+    idx: int
     step: int
-    iter: int
+    epoch: int
     value: Any
     time: float
 
@@ -39,8 +40,7 @@ class Trace(Generic[T]):
         self,
         name: str,
         context: Context,  # TODO ?dict
-        run: 'Run',
-        _slice: slice = None
+        run: 'Run'
     ):
         self.name = name
         self.context = context
@@ -55,16 +55,10 @@ class Trace(Generic[T]):
         return f'<Trace#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
 
     def _calc_hash(self):
-        if self._slice is not None:
-            slice_hash = hash_auto((self._slice.start, self._slice.stop, self._slice.step))
-        else:
-            slice_hash = None
         return hash_auto(
             (self.name,
              hash(self.context),
-             hash(self.run),
-             slice_hash
-            )
+             hash(self.run))
         )
 
     def __hash__(self) -> int:
@@ -79,18 +73,11 @@ class Trace(Generic[T]):
             array_view = array_view[self._slice]
         return array_view
 
-    @property
-    def iters(self) -> ArrayView[int]:
-        array_view = self.tree.array('iter')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
-        return array_view
+
 
     @property
-    def steps(self) -> List[int]:
-        array_view = [i for i, _ in enumerate(self.iters)]
-        if self._slice is not None:
-            array_view = array_view[self._slice]
+    def indices(self) -> List[int]:
+        array_view = [i for i, _ in enumerate(self.values)]
         return array_view
 
     @property
@@ -111,13 +98,12 @@ class Trace(Generic[T]):
         self,
         idx: int
     ) -> Tuple[int, Any, float]:
-        # TODO implement slice
-        return self.iters[idx], self.values[idx], self.timestamps[idx]
+        return idx, self.values[idx], self.epochs[idx], self.timestamps[idx]
         # Or shortcut from lower-level storage api
 
     def __len__(self) -> int:
         # if self.slice is None:
-        return len(self.iters)
+        return len(self.values)
         # else:
         # Let's calc ...
 
@@ -147,24 +133,34 @@ class Trace(Generic[T]):
         self,
         include_name: bool = False,
         include_context: bool = False,
-        include_run: bool = False
+        include_run: bool = False,
+        only_last: bool = False
     ) -> 'DataFrame':
         # Returns dataframe with rows corresponding to iters
         # Columns: `step`, `value`, `time`
         # steps = list(self.steps)
-        iters = self.iters.tolist()
-        steps = [i for i, _ in enumerate(iters)]
-        values = self.values.tolist()
-        timestamps = [datetime.datetime.fromtimestamp(t) for t in self.timestamps.tolist()]
+        if only_last:
+            last_step, last_value = self.values.last()
+            steps = [last_step]
+            values = [last_value]
+            epochs = [self.epochs[last_step]]
+            timestamps = [self.timestamps[last_step]]
+        else:
+            steps, values = self.values.sparse_list()
+            epochs = self.epochs.values_list()
+            timestamps = self.timestamps.values_list()
+        indices = [i for i, _ in enumerate(steps)]
+        timestamps = [datetime.datetime.fromtimestamp(t) for t in timestamps]
         data = {
+            'idx': indices,
             'step': steps,
-            'iter': iters,
             'value': values,
+            'epoch': epochs,
             'time': timestamps
         }
 
         if include_run:
-            data['run'] = [self.run.name] * len(iters)
+            data['run'] = [self.run.name] * len(indices)
             for path, val in treeutils.unfold_tree(self.run[...],
                                                    unfold_array=False,
                                                    depth=3):
@@ -177,10 +173,10 @@ class Trace(Generic[T]):
                 # path = '.'.join(path)
                 if isinstance(val, (tuple, list, dict)):
                     val = json.dumps(val)
-                data[s] = [val for _ in iters]
+                data[s] = [val for _ in indices]
         if include_name:
             # df['metric'] = self.name
-            data['metric'] = [self.name for _ in iters]
+            data['metric'] = [self.name for _ in indices]
         if include_context:
             for path, val in treeutils.unfold_tree(self.context.to_dict(),
                                                    unfold_array=False,
@@ -195,7 +191,7 @@ class Trace(Generic[T]):
                 if isinstance(val, (tuple, list)):
                     val = json.dumps(val)
                 # df[s] = val
-                data[s] = [val for _ in iters]
+                data[s] = [val for _ in indices]
         import pandas as pd
         df = pd.DataFrame(data)
         return df
@@ -228,12 +224,13 @@ class TraceCollection:
     @abstractmethod
     def dataframe(
         self,
-        trace_slice: slice = None
+        only_last: bool = False
     ) -> 'DataFrame':
         dfs = [
-            trace[trace_slice].dataframe(include_run=True,
+            trace.dataframe(include_run=True,
                             include_name=True,
-                            include_context=True)
+                            include_context=True,
+                            only_last=only_last)
             for trace in self
         ]
         if not dfs:
