@@ -35,7 +35,6 @@ jobs:
 
       - name: List wheels
         run: |
-          ls -al dist
           ls -al multilinux_dist
 
 #      - name: Publish wheels
