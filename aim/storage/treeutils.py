@@ -13,7 +13,8 @@ def unfold_tree(
     depth: int = None
 ) -> Iterator[Tuple[Tuple[Union[int, str], ...], Any]]:
     if depth == 0:
-        return obj
+        yield path, obj
+        return
     if depth is not None:
         depth -= 1
 
