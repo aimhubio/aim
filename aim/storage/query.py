@@ -1,15 +1,51 @@
 import logging
+import datetime
+
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from RestrictedPython import safe_builtins
-from RestrictedPython import compile_restricted
+from RestrictedPython import (
+    safe_builtins,
+    utility_builtins,
+    limited_builtins,
+    compile_restricted
+)
+from RestrictedPython.Eval import default_guarded_getitem
+from RestrictedPython.Guards import (
+    full_write_guard,
+    guarded_iter_unpack_sequence,
+    guarded_unpack_sequence
+)
 
 from aim.storage.proxy import AimObjectProxy
 if TYPE_CHECKING:
     from aim.storage.run import Run
     from aim.storage.context import Context
 
+
+extra_builtins = {
+    "datetime": datetime,
+    "sorted": sorted,
+    "min": min,
+    "max": max,
+    "sum": sum,
+    "any": any,
+    "all": all,
+}
+
+builtins = safe_builtins.copy()
+builtins.update(utility_builtins)
+builtins.update(limited_builtins)
+builtins.update(extra_builtins)
+
+restricted_globals = {
+    "__builtins__": builtins,
+    "_write_": full_write_guard,
+    "_getiter_": iter,
+    "_getitem_": default_guarded_getitem,
+    "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
+    "_unpack_sequence_": guarded_unpack_sequence
+}
 
 logger = logging.getLogger(__name__)
 
@@ -66,8 +102,9 @@ class RestrictedPythonQuery(Query):
         self.byte_code = compile_restricted(self.source_code,
                                             filename='<inline code>',
                                             mode='exec')
+
         namespace = dict()
-        exec(self.byte_code, {'__builtins__': safe_builtins}, namespace)
+        exec(self.byte_code, restricted_globals, namespace)
         self._check = namespace['check']
 
     def match(
