@@ -38,10 +38,17 @@ enum ScaleEnum {
   Linear = 'linear',
 }
 
+enum ChartTypeEnum {
+  LineChart = 'LineChart',
+  ParPlot = 'ParPlot',
+  ScatterPlot = 'ScatterPlot',
+}
+
 export {
   CircleEnum,
   CurveEnum,
   ScaleEnum,
+  ChartTypeEnum,
   XAlignmentEnum,
   clearArea,
   drawArea,

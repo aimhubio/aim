@@ -96,6 +96,21 @@ function Controls(
       </Grid>
       <Grid item>
         <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box className={classes.anchor} onClick={onAnchorClick}>
+              <CenterFocusWeak />
+            </Box>
+          )}
+          component={
+            <HighlightModePopup
+              mode={props.highlightMode}
+              onChange={props.onChangeHighlightMode}
+            />
+          }
+        />
+      </Grid>
+      <Grid item>
+        <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
             <Box className={classes.anchor} position='relative'>
               <span
@@ -128,26 +143,6 @@ function Controls(
           )}
           component={<ZoomOutPopup />}
         />
-      </Grid>
-      <Grid item>
-        <ControlPopover
-          anchor={({ onAnchorClick }) => (
-            <Box className={classes.anchor} onClick={onAnchorClick}>
-              <CenterFocusWeak />
-            </Box>
-          )}
-          component={
-            <HighlightModePopup
-              mode={props.highlightMode}
-              onChange={props.onChangeHighlightMode}
-            />
-          }
-        />
-      </Grid>
-      <Grid item>
-        <Box className={classes.anchor}>
-          <ImportExportOutlined />
-        </Box>
       </Grid>
     </Grid>
   );

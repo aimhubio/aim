@@ -69,6 +69,7 @@ class BaseTable extends React.PureComponent {
     this.state = {
       scrollbarSize: 0,
       hoveredRowKey: null,
+      activeRowKey: null,
       resizingKey: null,
       resizingWidth: 0,
       expandedRowKeys: cloneArray(defaultExpandedRowKeys),
@@ -339,6 +340,24 @@ class BaseTable extends React.PureComponent {
       expandedRowKeys: cloneArray(expandedRowKeys),
     });
   }
+
+  /**
+   * Set `hoveredRowKey` manually.
+   *
+   * @param {string} rowKey
+   */
+  setHoveredRow = (rowKey) => {
+    this.setState({ hoveredRowKey: rowKey });
+  };
+
+  /**
+   * Set `activeRowKey` manually.
+   *
+   * @param {string} rowKey
+   */
+  setActiveRow = (rowKey) => {
+    this.setState({ activeRowKey: rowKey });
+  };
 
   renderExpandIcon({ rowData, rowIndex, depth, onExpand }) {
     const { rowKey, expandColumnKey, expandIconProps } = this.props;
@@ -1117,7 +1136,13 @@ class BaseTable extends React.PureComponent {
   }
 
   _handleRowHover({ hovered, rowKey }) {
+    if (this.state.activeRowKey !== null) {
+      return;
+    }
     this.setState({ hoveredRowKey: hovered ? rowKey : null });
+    if (typeof this.props.onRowHover === 'function' && hovered) {
+      this.props.onRowHover(rowKey);
+    }
   }
 
   _handleRowExpand({ expanded, rowData, rowIndex, rowKey }) {

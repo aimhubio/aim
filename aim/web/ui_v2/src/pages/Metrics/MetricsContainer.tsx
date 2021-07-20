@@ -6,8 +6,10 @@ import getTableColumns from './components/TableColumns/TableColumns';
 import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
+import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
@@ -17,6 +19,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
   const [zoomMode, setZoomMode] = React.useState<boolean>(false);
   const [lineChartData, setLineChartData] = React.useState<any>([]);
+  const [tableData, setTableData] = React.useState<any>([]);
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
@@ -30,6 +33,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   const metricsData = useModel(metricsCollectionModel);
   const tableRef = React.useRef<ITableRef>(null);
+  const chartPanelRef = React.useRef<IChartPanelRef>(null);
+
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
@@ -45,6 +50,18 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     setZoomMode(!zoomMode);
   }, [zoomMode]);
 
+  const onActivePointChange = React.useCallback(
+    (activePointData: IActivePointData): void => {
+      tableRef.current?.updateData({
+        newData: metricsCollectionModel
+          .getDataAsTableRows(activePointData.xValue)
+          .flat(),
+      });
+      tableRef.current?.setHoveredRow(activePointData.key);
+    },
+    [],
+  );
+
   const onChangeHighlightMode = React.useCallback(
     (mode: number) => (): void => {
       setHighlightMode(mode);
@@ -52,35 +69,22 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     [],
   );
 
-  React.useEffect(() => {
-    metricsCollectionModel.initialize();
-    metricsRequestRef.call();
+  function onTableRowHover(rowKey: string) {
+    chartPanelRef.current?.setActiveLine(rowKey);
+  }
 
-    // tableRef.current?.updateData({
-    //   newData: metricsCollectionModel.getDataAsTableRows(xValue)[0],
-    // });
-    return () => {
-      metricsRequestRef.abort();
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (metricsCollectionModel.getDataAsLines()[0]?.length) {
-      setLineChartData(metricsCollectionModel.getDataAsLines()[0]);
-    }
-  }, [metricsData]);
-
-  const onSmoothingChange = React.useCallback(
-    ({ algorithm, factor, curveInterpolation }: IOnSmoothingChange): void => {
-      let newData = metricsCollectionModel.getDataAsLines({
-        algorithm,
-        factor,
-      })[0];
-      setLineChartData(newData);
-      setCurveInterpolation(curveInterpolation);
-    },
-    [],
-  );
+  function onSmoothingChange({
+    algorithm,
+    factor,
+    curveInterpolation,
+  }: IOnSmoothingChange) {
+    let newData = metricsCollectionModel.getDataAsLines({
+      smoothingAlgorithm: algorithm,
+      smoothingFactor: factor,
+    });
+    setLineChartData(newData);
+    setCurveInterpolation(curveInterpolation);
+  }
 
   const onAxesScaleTypeChange = React.useCallback(
     (params: IAxesScaleState): void => {
@@ -89,25 +93,43 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     [],
   );
 
+  React.useEffect(() => {
+    metricsCollectionModel.initialize();
+    metricsRequestRef.call();
+    return () => {
+      metricsRequestRef.abort();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (metricsCollectionModel.getDataAsLines()[0]?.length) {
+      setLineChartData(metricsCollectionModel.getDataAsLines());
+      setTableData(metricsCollectionModel.getDataAsTableRows());
+    }
+  }, [metricsData]);
+
   return (
     <Metrics
       tableRef={tableRef}
+      chartPanelRef={chartPanelRef}
       displayOutliers={displayOutliers}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       lineChartData={lineChartData}
-      zoomMode={zoomMode}
-      axesScaleType={axesScaleType}
-      curveInterpolation={curveInterpolation}
-      tableData={metricsCollectionModel.getDataAsTableRows()}
-      toggleDisplayOutliers={toggleDisplayOutliers}
+      tableData={tableData}
       tableColumns={getTableColumns()}
+      zoomMode={zoomMode}
+      curveInterpolation={curveInterpolation}
+      axesScaleType={axesScaleType}
+      toggleDisplayOutliers={toggleDisplayOutliers}
       toggleZoomMode={toggleZoomMode}
+      onActivePointChange={onActivePointChange}
       highlightMode={highlightMode}
       onChangeHighlightMode={onChangeHighlightMode}
       onSmoothingChange={onSmoothingChange}
+      onTableRowHover={onTableRowHover}
       onAxesScaleTypeChange={onAxesScaleTypeChange}
     />
   );

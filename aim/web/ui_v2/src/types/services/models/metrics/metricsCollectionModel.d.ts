@@ -28,6 +28,6 @@ export interface IMetricTableRowData {
 }
 
 export interface IGetDataAsLinesProps {
-  factor: number;
-  algorithm: string;
+  smoothingFactor: number;
+  smoothingAlgorithm: string;
 }

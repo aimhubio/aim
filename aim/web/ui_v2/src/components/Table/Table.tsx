@@ -26,6 +26,7 @@ const Table = React.forwardRef(function Table(
       }
       // tableRef.current?.forceUpdateTable();
     },
+    setHoveredRow: tableRef.current?.setHoveredRow,
   }));
 
   return (
@@ -134,6 +135,7 @@ const Table = React.forwardRef(function Table(
               onColumnSort={() => null}
               onColumnResize={() => null}
               onColumnResizeEnd={() => null}
+              onRowHover={props.onRowHover}
             />
           )}
         </AutoResizer>
