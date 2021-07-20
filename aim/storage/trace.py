@@ -302,3 +302,33 @@ class QueryTraceCollection(TraceCollection):
                 if not statement:
                     continue
                 yield Trace(metric_name, ctx, run)
+
+
+class QueryRunTraceCollection(TraceCollection):
+    def __init__(
+        self,
+        repo: 'Repo',
+        query: str
+    ):
+        self.repo: 'Repo'
+        super().__init__(repo=repo)
+        self.query = RestrictedPythonQuery(query)
+
+    def iter(self) -> Iterator[Trace]:
+        for run in self._iter_runs():
+            for metric_name, ctx, run in run.iter_all_traces():
+                yield Trace(metric_name, ctx, run)
+
+    def _iter_runs(self) -> Iterator['Run']:
+        for run in tqdm(self.repo.iter_runs(from_union=True)):
+            if not self.query:
+                statement = True
+            else:
+                statement = self.query.match(run=run)
+            if not statement:
+                continue
+            yield run
+
+    def iter_runs(self) -> Iterator['TraceCollection']:
+        for run in self._iter_runs():
+            yield RunTraceCollection(run)
