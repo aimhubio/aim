@@ -34,6 +34,7 @@ def package_files(directory):
 
 ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
+version_files = ['../VERSION', ]
 
 # TODO: Get long description from the README file
 LONG_DESCRIPTION = DESCRIPTION
@@ -123,7 +124,7 @@ setup(
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
     packages=packages,
-    package_data={'aim': ui_files + migration_files},
+    package_data={'aim': ui_files + migration_files + version_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',
