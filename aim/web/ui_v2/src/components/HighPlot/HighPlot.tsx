@@ -7,7 +7,6 @@ import {
   drawAxes,
   drawLines,
   processData,
-  getAxisScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';

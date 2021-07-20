@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(({ spacing, palette }) => ({
   paper: {
-    width: spacing(4.375),
+    width: spacing(5.075),
     backgroundColor: palette.primary.main,
   },
   logo: {
@@ -22,6 +22,9 @@ export default makeStyles(({ spacing, palette }) => ({
   },
   listItemText: {
     fontSize: spacing(0.875),
+    color: '#fff',
+  },
+  listItemIcon: {
     color: '#fff',
   },
   anchor: {

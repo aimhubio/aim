@@ -3,7 +3,7 @@ import drawArea from './drawArea';
 import drawAxes from './drawAxes';
 import drawLines from './drawLines';
 import processData from './processData';
-import getAxisScale from './getAxisScale';
+import getAxesScale from './getAxesScale';
 import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
 
@@ -48,7 +48,7 @@ export {
   drawAxes,
   drawLines,
   processData,
-  getAxisScale,
+  getAxesScale,
   drawBrush,
   drawHoverAttributes,
 };

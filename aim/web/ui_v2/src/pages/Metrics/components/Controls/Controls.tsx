@@ -25,11 +25,13 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
 
 import useStyles from './controlsStyles';
+import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
+
   return (
     <Grid
       container
@@ -46,9 +48,19 @@ function Controls(
         )}
       </Grid>
       <Grid item>
-        <Box className={classes.anchor}>
-          <ShowChart />
-        </Box>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
+              <ShowChart />
+            </Box>
+          )}
+          component={
+            <AxesScalePopover
+              axesScaleType={props.axesScaleType}
+              onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+            />
+          }
+        />
       </Grid>
       <Grid item>
         <ControlPopover
