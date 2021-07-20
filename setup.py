@@ -34,7 +34,7 @@ def package_files(directory):
 
 ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
-version_files = ['../VERSION', ]
+version_files = ['../aim/VERSION', ]
 
 # TODO: Get long description from the README file
 LONG_DESCRIPTION = DESCRIPTION
