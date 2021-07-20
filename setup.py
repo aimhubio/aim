@@ -4,7 +4,7 @@ import io
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
 
-version_file = 'VERSION'
+version_file = 'aim/VERSION'
 
 __version__ = None
 with open(version_file) as vf:
