@@ -172,7 +172,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     };
   }
 
-  function setActiveCircle(circleKey: string) {
+  // TODO: improve active line detection method
+  function setActiveLine(lineKey: string) {
     const { mouseX, mouseY } = getCoordinates({
       mouse: [attributesRef.current.x, attributesRef.current.y],
       xScale: attributesRef.current.xScale,
@@ -189,7 +190,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     });
 
     nearestCircles.forEach((circle: INearestCircle) => {
-      if (circle.key !== circleKey) {
+      if (circle.key !== lineKey) {
         return;
       }
       updateHoverAttributes([circle.x + margin.left, circle.y + margin.top]);
@@ -197,7 +198,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   attributesRef.current.updateHoverAttributes = updateHoverAttributes;
-  attributesRef.current.setActiveCircle = setActiveCircle;
+  attributesRef.current.setActiveLine = setActiveLine;
 
   function handleMouseMove(event: MouseEvent) {
     const mouse = d3.pointer(event);

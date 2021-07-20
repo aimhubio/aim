@@ -14,9 +14,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 ) {
   const classes = useStyles();
   const [chartRefs, setChartsRefs] = React.useState<React.RefObject<any>[]>(
-    new Array(props.data.length).fill('*').map((_) => React.createRef()),
+    new Array(props.data.length).fill('*').map(() => React.createRef()),
   );
 
+  // TODO: update only x with applied scale
   function syncHoverState(
     chartIndex: number,
     mousePosition: [number, number],
@@ -41,6 +42,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     },
   }));
 
+  // TODO: remove setTimeout
   React.useEffect(() => {
     setTimeout(() => {
       setChartsRefs((refs) => [...refs]);

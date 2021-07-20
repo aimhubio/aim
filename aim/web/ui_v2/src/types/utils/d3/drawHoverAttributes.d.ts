@@ -21,7 +21,7 @@ export interface IDrawHoverAttributesProps {
     updateHoverAttributes?: (
       mousePosition: [number, number],
     ) => IActivePointData;
-    setActiveCircle: (circleKey: string) => void;
+    setActiveLine: (lineKey: string) => void;
   }>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;

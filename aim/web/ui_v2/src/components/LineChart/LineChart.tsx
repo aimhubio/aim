@@ -192,13 +192,14 @@ const LineChart = React.forwardRef(function LineChart(
     requestAnimationFrame(renderChart);
   }, [props.data, renderChart, zoomMode, displayOutliers, highlightMode]);
 
+  // TODO: improve setting of ref methods
   React.useImperativeHandle(ref, () => ({
     ...axesRef.current,
     ...brushRef.current,
     ...linesRef.current,
     ...attributesRef.current,
     setActiveLine: (lineKey: string) => {
-      attributesRef.current?.setActiveCircle(lineKey);
+      attributesRef.current?.setActiveLine(lineKey);
     },
   }));
 
