@@ -152,6 +152,29 @@ class TreeView:  # TODO implement (MutableMapping):
     ) -> ContainerArrayView:
         return ContainerArrayView(self.view(path))
 
+    def first(
+        self,
+        path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> Tuple[AimObjectKey, AimObject]:
+        if isinstance(path, (int, str)):
+            path = [path]
+        prefix = E.encode_path(path)
+        p = E.decode_path(self.container.next_key(prefix))
+        return p[0]
+
+    def last(
+        self,
+        path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> Tuple[AimObjectKey, AimObject]:
+        if isinstance(path, (int, str)):
+            path = [path]
+        prefix = E.encode_path(path)
+        # assert prefix.endswith(b'\xfe')
+        # prefix = prefix[:-1] + b'\xff'
+        p = E.decode_path(self.container.prev_key(prefix))
+        return p[0]
+
+
     # def numpy(
     #     self,
     #     path: Union[AimObjectKey, AimObjectPath] = (),

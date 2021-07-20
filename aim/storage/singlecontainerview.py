@@ -75,6 +75,50 @@ class SingleContainerView(ContainerView):
         path = self.absolute_path(key)
         return self.container.batch_delete(path, store_batch=store_batch)
 
+    def next_key(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        path = self.absolute_path(key)
+        keys = self.container.next_key(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            assert not _prefix and _path == path
+        return keys
+
+    def next_key_value(
+        self,
+        key: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        path = self.absolute_path(key)
+        keys, value = self.container.next_key_value(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            assert not _prefix and _path == path
+        return keys, value
+
+    def prev_key(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        path = self.absolute_path(key)
+        keys = self.container.prev_key(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            assert not _prefix and _path == path
+        return keys
+
+    def prev_key_value(
+        self,
+        key: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        path = self.absolute_path(key)
+        keys, value = self.container.prev_key_value(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            assert not _prefix and _path == path
+        return keys, value
+
     def walk(
         self,
         key: bytes = b''
