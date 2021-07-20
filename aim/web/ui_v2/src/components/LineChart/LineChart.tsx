@@ -29,7 +29,7 @@ function LineChart(
     curveInterpolation,
   } = props;
   const classes = useStyles();
-
+  console.log(data);
   // boxes
   const visBoxRef = React.useRef({
     margin: {
