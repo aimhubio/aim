@@ -28,6 +28,7 @@ const LineChart = React.forwardRef(function LineChart(
     zoomMode,
     highlightMode,
     curveInterpolation,
+    onMouseOver,
   } = props;
   const classes = useStyles();
 
@@ -139,7 +140,7 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       highlightedNodeRef,
       highlightMode,
-      callback: props.onMouseOver,
+      callback: onMouseOver,
     });
 
     if (zoomMode) {
@@ -163,10 +164,11 @@ const LineChart = React.forwardRef(function LineChart(
   }, [
     axesScaleType,
     curveInterpolation,
-    index,
     highlightMode,
-    min,
+    index,
     max,
+    min,
+    onMouseOver,
     processedData,
     xAlignment,
     zoomMode,

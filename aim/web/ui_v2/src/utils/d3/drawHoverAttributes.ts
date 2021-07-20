@@ -95,6 +95,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       }
       // hover Circle Changed case
       if (
+        closestCircle.key !== closestCircleRef.current?.key ||
         closestCircle.x !== closestCircleRef.current?.x ||
         closestCircle.y !== closestCircleRef.current?.y
       ) {
@@ -102,10 +103,34 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           'highlight',
           highlightMode !== HighlightEnum.Off,
         );
-        // FIXME need to check  axisLineData coords min max size
+
+        const boundedX =
+          closestCircle.x < 0
+            ? 0
+            : closestCircle.x > width
+            ? width
+            : closestCircle.x;
+
+        const boundedY =
+          closestCircle.y < 0
+            ? 0
+            : closestCircle.y > height
+            ? height
+            : closestCircle.y;
+
         const axisLineData: IAxisLineData[] = [
-          { x1: closestCircle.x, y1: 0, x2: closestCircle.x, y2: height },
-          { x1: 0, y1: closestCircle.y, x2: width, y2: closestCircle.y },
+          {
+            x1: boundedX,
+            y1: 0,
+            x2: boundedX,
+            y2: height,
+          }, // hoverLine-y projection
+          {
+            x1: 0,
+            y1: boundedY,
+            x2: width,
+            y2: boundedY,
+          }, // hoverLine-x projection
         ];
         // Draw horizontal/vertical lines
         attributesNodeRef.current
@@ -125,6 +150,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           .attr('x2', (axisLine: IAxisLineData) => axisLine.x2)
           .attr('y2', (axisLine: IAxisLineData) => axisLine.y2)
           .lower();
+
         // Draw Circles
         attributesNodeRef.current
           .selectAll('circle')
@@ -141,6 +167,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
             // TODO handle click
             d3.select(this).classed('active', false).classed('focus', true);
           });
+
         // set active circle
         d3.select(`[id=Circle-${closestCircle.key}]`)
           .attr('r', CircleEnum.ActiveRadius)
@@ -159,6 +186,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           xAlignment,
         });
       }
+
       closestCircleRef.current = closestCircle;
 
       attributesRef.current.x = closestCircle.x + margin.left;
@@ -209,9 +237,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   }
 
-  svgArea?.on('mousemove', handleMouseMove);
-
-  svgArea?.on('mouseleave', () => {
+  function handleMouseLeave(event: MouseEvent) {
     if (closestCircleRef.current?.key) {
       linesNodeRef.current.classed('highlight', false);
 
@@ -229,8 +255,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       attributesNodeRef.current.select('.HoverLine-y').remove();
       yAxisLabelNodeRef.current?.remove();
     }
-  });
+  }
+
+  svgArea?.on('mousemove', handleMouseMove);
+  svgArea?.on('mouseleave', handleMouseLeave);
 }
+
 function getNearestCircles({
   data,
   xScale,
@@ -282,6 +312,7 @@ function getNearestCircles({
   closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
   return { nearestCircles, closestCircle: closestCircles[0] };
 }
+
 function getCoordinates({
   mouse,
   margin,
@@ -297,6 +328,7 @@ function getCoordinates({
     mouseY: yPixel < yMin ? yMin : yPixel > yMax ? yMax : yPixel,
   };
 }
+
 function setAxisLabel({
   closestCircle,
   visAreaRef,
@@ -386,4 +418,5 @@ function setAxisLabel({
     );
   }
 }
+
 export default drawHoverAttributes;
