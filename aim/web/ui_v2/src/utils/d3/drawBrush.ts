@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 
 import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
-import { IGetAxisScale } from 'types/utils/d3/getAxesScale';
-import getAxisScale from './getAxisScale';
+import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
+import getAxesScale from './getAxesScale';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
@@ -15,7 +15,7 @@ function drawBrush(props: IDrawBrushProps): void {
     linesRef,
     linesNodeRef,
     svgNodeRef,
-    axisScaleType,
+    axesScaleType,
     min,
     max,
   } = props;
@@ -31,8 +31,8 @@ function drawBrush(props: IDrawBrushProps): void {
   plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
 
   brushRef.current.updateScales = function (
-    xScale: IGetAxisScale['xScale'],
-    yScale: IGetAxisScale['yScale'],
+    xScale: IGetAxesScale['xScale'],
+    yScale: IGetAxesScale['yScale'],
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;
@@ -49,7 +49,10 @@ function drawBrush(props: IDrawBrushProps): void {
     const mousePosition = d3.pointer(event);
     if (!extent) {
       return;
-    } else if (extent[1][0] - extent[0][0] < 5) {
+    } else if (
+      extent[1][0] - extent[0][0] < 5 ||
+      extent[1][1] - extent[0][1] < 5
+    ) {
       removeBrush();
     } else {
       // inverting pixels to x,y values
@@ -61,6 +64,8 @@ function drawBrush(props: IDrawBrushProps): void {
 
       const [xMin, xMax]: number[] = brushRef.current.xScale.domain();
       const [yMin, yMax]: number[] = brushRef.current.yScale.domain();
+
+      console.log(extent);
 
       const xValues: number[] | null =
         extent[1][0] - extent[0][0] < 5
@@ -118,9 +123,9 @@ function drawBrush(props: IDrawBrushProps): void {
   }
 
   function handleZoomOut(event: Event): void {
-    const { xScale, yScale } = getAxisScale({
+    const { xScale, yScale } = getAxesScale({
       visBoxRef,
-      axisScaleType,
+      axesScaleType,
       min,
       max,
     });

@@ -8,7 +8,8 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -19,6 +20,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
+  const [axesScaleType, setAxesScaleType] = React.useState<IAxesScaleState>({
+    xAxis: ScaleEnum.Linear,
+    yAxis: ScaleEnum.Linear,
+  });
   const [highlightMode, setHighlightMode] = React.useState<HighlightEnum>(
     HighlightEnum.Off,
   );
@@ -65,37 +70,45 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [metricsData]);
 
-  function onSmoothingChange({
-    algorithm,
-    factor,
-    curveInterpolation,
-  }: IOnSmoothingChange) {
-    let newData = metricsCollectionModel.getDataAsLines({
-      algorithm,
-      factor,
-    })[0];
-    setLineChartData(newData);
-    setCurveInterpolation(curveInterpolation);
-  }
+  const onSmoothingChange = React.useCallback(
+    ({ algorithm, factor, curveInterpolation }: IOnSmoothingChange): void => {
+      let newData = metricsCollectionModel.getDataAsLines({
+        algorithm,
+        factor,
+      })[0];
+      setLineChartData(newData);
+      setCurveInterpolation(curveInterpolation);
+    },
+    [],
+  );
+
+  const onAxesScaleTypeChange = React.useCallback(
+    (params: IAxesScaleState): void => {
+      setAxesScaleType(params);
+    },
+    [],
+  );
 
   return (
     <Metrics
       tableRef={tableRef}
       displayOutliers={displayOutliers}
-      toggleDisplayOutliers={toggleDisplayOutliers}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       lineChartData={lineChartData}
-      tableData={metricsCollectionModel.getDataAsTableRows()}
-      tableColumns={getTableColumns()}
       zoomMode={zoomMode}
+      axesScaleType={axesScaleType}
+      curveInterpolation={curveInterpolation}
+      tableData={metricsCollectionModel.getDataAsTableRows()}
+      toggleDisplayOutliers={toggleDisplayOutliers}
+      tableColumns={getTableColumns()}
       toggleZoomMode={toggleZoomMode}
       highlightMode={highlightMode}
       onChangeHighlightMode={onChangeHighlightMode}
       onSmoothingChange={onSmoothingChange}
-      curveInterpolation={curveInterpolation}
+      onAxesScaleTypeChange={onAxesScaleTypeChange}
     />
   );
 }

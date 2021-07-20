@@ -1,7 +1,7 @@
 import React from 'react';
-import { IGetAxisScale, IGetAxisScaleProps } from './getAxesScale';
+import { IGetAxesScale, IGetAxesScaleProps } from './getAxesScale';
 
-export interface IDrawBrushProps extends IGetAxisScaleProps {
+export interface IDrawBrushProps extends IGetAxesScaleProps {
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;
   brushRef: React.MutableRefObject<>;
@@ -14,7 +14,7 @@ export interface IDrawBrushProps extends IGetAxisScaleProps {
 }
 
 export interface IHandleBrushChange {
-  xValues: IGetAxisScale['xScale'];
-  yValues: IGetAxisScale['yScale'];
+  xValues: IGetAxesScale['xScale'];
+  yValues: IGetAxesScale['yScale'];
   mousePosition: number[];
 }
