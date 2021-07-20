@@ -33,17 +33,12 @@ jobs:
         run: |
          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
 
-      - name: List wheels
+      - name: Publish wheels
+        env:
+          PYPI_PASSWORD: ${{ secrets.pypi_password }}
         run: |
-          ls -al multilinux_dist
-
-#      - name: Publish wheels
-#        env:
-#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
-#        run: |
-#          python -m pip install twine
-#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
-#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+          python -m pip install twine
+          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
   macos-dist:
     runs-on: ${{matrix.os}}
@@ -80,12 +75,9 @@ jobs:
           AIM_PKG_NAME=aim python setup.py sdist
           AIM_PKG_NAME=aim-cli python setup.py sdist
 
-      - name: List wheels
+      - name: Publish wheel
+        env:
+          PYPI_PASSWORD: ${{ secrets.pypi_password }}
         run: |
-          ls -al dist
-#      - name: Publish wheel
-#        env:
-#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
-#        run: |
-#          python -m pip install twine
-#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+          python -m pip install twine
+          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
