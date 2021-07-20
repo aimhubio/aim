@@ -1,31 +1,48 @@
 import _ from 'lodash';
 
-import { IProcessData, IProcessDataProps } from 'types/utils/d3/processData';
+import {
+  IProcessData,
+  IProcessDataProps,
+  IGetFilteredValuesParams,
+} from 'types/utils/d3/processData';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
+import { ScaleEnum } from '.';
 import { removeOutliers } from '../removeOutliers';
 
-const isInvalidValue = (v: number): boolean =>
-  !isFinite(v) || isNaN(v) || v === null;
+const isInvalidValue = (v: number, scaleType: ScaleEnum): boolean =>
+  !isFinite(v) ||
+  isNaN(v) ||
+  v === null ||
+  (scaleType === ScaleEnum.Log && v <= 0);
 
-function processData(props: IProcessDataProps): IProcessData {
-  const { data, displayOutliers } = props;
+function getFilteredValues(params: IGetFilteredValuesParams): number[] {
+  const { data, invalidXIndices, invalidYIndices } = params;
+
+  return data.filter(
+    (v: number, i: number) =>
+      invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
+  );
+}
+
+function processData(params: IProcessDataProps): IProcessData {
+  const { data, displayOutliers, axesScaleType } = params;
 
   let xValues: number[] = [];
   let yValues: number[] = [];
 
   const processedData = data.map((line) => {
-    const invalidXIndices = line.data.xValues.reduce(
+    const invalidXIndices: number[] = line.data.xValues.reduce(
       (acc: number[], v: number, i: number) => {
-        if (isInvalidValue(v)) {
+        if (isInvalidValue(v, axesScaleType.xAxis)) {
           acc = acc.concat([i]);
         }
         return acc;
       },
       [],
     );
-    const invalidYIndices = line.data.yValues.reduce(
+    const invalidYIndices: number[] = line.data.yValues.reduce(
       (acc: number[], v: number, i: number) => {
-        if (isInvalidValue(v)) {
+        if (isInvalidValue(v, axesScaleType.yAxis)) {
           acc = acc.concat([i]);
         }
         return acc;
@@ -33,14 +50,17 @@ function processData(props: IProcessDataProps): IProcessData {
       [],
     );
 
-    const filteredXValues = line.data.xValues.filter(
-      (v, i) =>
-        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
-    );
-    const filteredYValues = line.data.yValues.filter(
-      (v, i) =>
-        invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
-    );
+    const filteredXValues: number[] = getFilteredValues({
+      data: line.data.xValues,
+      invalidXIndices,
+      invalidYIndices,
+    });
+
+    const filteredYValues: number[] = getFilteredValues({
+      data: line.data.yValues,
+      invalidXIndices,
+      invalidYIndices,
+    });
 
     xValues = xValues.concat(filteredXValues);
     yValues = yValues.concat(filteredYValues);
