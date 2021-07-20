@@ -12,7 +12,6 @@ import { ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
-import { table } from 'console';
 
 function Metrics(
   props: IMetricProps,

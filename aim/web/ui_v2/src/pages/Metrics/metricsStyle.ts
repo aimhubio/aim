@@ -18,7 +18,7 @@ export default makeStyles(({ spacing }) => ({
   },
   chartContainer: {
     flex: '0.5 1 0',
-    minHeight: 420,
+    minHeight: 372,
   },
   tableContainer: {
     flex: '0.5 1 0',
