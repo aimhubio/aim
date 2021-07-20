@@ -6,7 +6,7 @@ import {
   drawAxes,
   drawLines,
   processData,
-  getAxisScale,
+  getAxesScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
@@ -22,7 +22,7 @@ const LineChart = React.forwardRef(function LineChart(
   const {
     data,
     index,
-    axisScaleType = {},
+    axesScaleType,
     displayOutliers,
     xAlignment,
     zoomMode,
@@ -75,8 +75,9 @@ const LineChart = React.forwardRef(function LineChart(
       processData({
         data,
         displayOutliers,
+        axesScaleType,
       }),
-    [data, displayOutliers],
+    [data, displayOutliers, axesScaleType],
   );
 
   const draw = React.useCallback((): void => {
@@ -94,9 +95,9 @@ const LineChart = React.forwardRef(function LineChart(
       attributesNodeRef,
     });
 
-    const { xScale, yScale } = getAxisScale({
+    const { xScale, yScale } = getAxesScale({
       visBoxRef,
-      axisScaleType,
+      axesScaleType,
       min,
       max,
     });
@@ -154,13 +155,13 @@ const LineChart = React.forwardRef(function LineChart(
         linesRef,
         linesNodeRef,
         svgNodeRef,
-        axisScaleType,
+        axesScaleType,
         min,
         max,
       });
     }
   }, [
-    axisScaleType,
+    axesScaleType,
     curveInterpolation,
     index,
     highlightMode,

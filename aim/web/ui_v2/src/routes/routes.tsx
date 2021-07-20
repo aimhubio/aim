@@ -15,10 +15,14 @@ const routes = {
   RUNS: {
     path: PATHS.RUNS,
     component: Runs,
+    showInSidebar: true,
+    displayName: 'Runs',
   },
   METRICS: {
     path: PATHS.METRICS,
     component: Metrics,
+    showInSidebar: true,
+    displayName: 'Metrics',
   },
 };
 

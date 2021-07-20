@@ -67,10 +67,7 @@ function Metrics(
                 data={props.lineChartData as any}
                 chartProps={[
                   {
-                    axisScaleType: {
-                      x: ScaleEnum.Linear,
-                      y: ScaleEnum.Linear,
-                    },
+                    axesScaleType: props.axesScaleType,
                     curveInterpolation: props.curveInterpolation,
                     displayOutliers: props.displayOutliers,
                     zoomMode: props.zoomMode,
@@ -86,6 +83,8 @@ function Metrics(
                     highlightMode={props.highlightMode}
                     onChangeHighlightMode={props.onChangeHighlightMode}
                     onSmoothingChange={props.onSmoothingChange}
+                    onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+                    axesScaleType={props.axesScaleType}
                   />
                 }
                 onActivePointChange={props.onActivePointChange}

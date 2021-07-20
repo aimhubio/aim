@@ -9,8 +9,9 @@ import useModel from 'hooks/model/useModel';
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
-import { CurveEnum } from 'utils/d3';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
+import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 const metricsRequestRef = metricsCollectionModel.getMetricsData();
 
@@ -22,6 +23,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
     CurveEnum.Linear,
   );
+  const [axesScaleType, setAxesScaleType] = React.useState<IAxesScaleState>({
+    xAxis: ScaleEnum.Linear,
+    yAxis: ScaleEnum.Linear,
+  });
   const [highlightMode, setHighlightMode] = React.useState<HighlightEnum>(
     HighlightEnum.Off,
   );
@@ -81,6 +86,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     setCurveInterpolation(curveInterpolation);
   }
 
+  const onAxesScaleTypeChange = React.useCallback(
+    (params: IAxesScaleState): void => {
+      setAxesScaleType(params);
+    },
+    [],
+  );
+
   React.useEffect(() => {
     metricsCollectionModel.initialize();
     metricsRequestRef.call();
@@ -101,7 +113,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRef={tableRef}
       chartPanelRef={chartPanelRef}
       displayOutliers={displayOutliers}
-      toggleDisplayOutliers={toggleDisplayOutliers}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
@@ -111,12 +122,15 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableColumns={getTableColumns()}
       zoomMode={zoomMode}
       curveInterpolation={curveInterpolation}
+      axesScaleType={axesScaleType}
+      toggleDisplayOutliers={toggleDisplayOutliers}
       toggleZoomMode={toggleZoomMode}
       onActivePointChange={onActivePointChange}
       highlightMode={highlightMode}
       onChangeHighlightMode={onChangeHighlightMode}
       onSmoothingChange={onSmoothingChange}
       onTableRowHover={onTableRowHover}
+      onAxesScaleTypeChange={onAxesScaleTypeChange}
     />
   );
 }

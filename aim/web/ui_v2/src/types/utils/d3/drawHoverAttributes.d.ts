@@ -1,5 +1,5 @@
 import React from 'react';
-import { IGetAxisScale } from './getAxesScale';
+import { IGetAxesScale } from './getAxesScale';
 import { ILineChartProps } from 'components/LineChart/LineChart';
 import { IProcessedData } from './processData';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
@@ -10,13 +10,13 @@ export interface IDrawHoverAttributesProps {
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{
-    xScale?: IGetAxisScale['xScale'];
-    yScale?: IGetAxisScale['yScale'];
+    xScale?: IGetAxesScale['xScale'];
+    yScale?: IGetAxesScale['yScale'];
     x: number;
     y: number;
     updateScales?: (
-      xScale: IGetAxisScale['xScale'],
-      yScale: IGetAxisScale['yScale'],
+      xScale: IGetAxesScale['xScale'],
+      yScale: IGetAxesScale['yScale'],
     ) => void;
     updateHoverAttributes?: (
       mousePosition: [number, number],
@@ -69,14 +69,14 @@ export interface IClosestCircle {
 
 export interface ISetAxisLabelProps extends Partial<IDrawHoverAttributesProps> {
   closestCircle: IClosestCircle;
-  xScale?: IGetAxisScale['xScale'];
-  yScale?: IGetAxisScale['yScale'];
+  xScale?: IGetAxesScale['xScale'];
+  yScale?: IGetAxesScale['yScale'];
 }
 
 export interface IGetNearestCirclesProps {
   data: IProcessedData[];
-  xScale: IGetAxisScale['xScale'];
-  yScale: IGetAxisScale['yScale'];
+  xScale: IGetAxesScale['xScale'];
+  yScale: IGetAxesScale['yScale'];
   mouseX: number;
   mouseY: number;
 }
