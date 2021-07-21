@@ -93,3 +93,45 @@ class ContainerView:
         prefix: bytes = b''
     ):
         ...
+
+    @abstractmethod
+    def next_key(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        ...
+
+    @abstractmethod
+    def next_value(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        ...
+
+    @abstractmethod
+    def next_key_value(
+        self,
+        key: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        ...
+
+    @abstractmethod
+    def prev_key(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        ...
+
+    @abstractmethod
+    def prev_value(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        ...
+
+    @abstractmethod
+    def prev_key_value(
+        self,
+        key: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        ...

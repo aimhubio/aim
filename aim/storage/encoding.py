@@ -2,7 +2,8 @@ import struct
 
 import cython
 
-from .utils import ArrayFlag, ObjectFlag
+from aim.storage.encoding_native import decode_path
+from aim.storage.utils import ArrayFlag, ObjectFlag
 
 from typing import List, Tuple, Union
 
@@ -294,5 +295,3 @@ def decode_path_slow(buffer: bytes) -> Tuple[Union[str, int], ...]:
         path.append(key)
 
     return tuple(path)
-
-from .encoding_native import decode_path

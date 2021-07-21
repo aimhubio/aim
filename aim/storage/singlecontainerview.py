@@ -1,10 +1,9 @@
-from calendar import c
 import weakref
 import aimrocks
 
-from . import encoding as E
-from .containerview import ContainerView
-from .treeview import TreeView
+from aim.storage import encoding as E
+from aim.storage.containerview import ContainerView
+from aim.storage.treeview import TreeView
 
 from typing import Iterable, Iterator, Tuple, Union
 
@@ -75,6 +74,53 @@ class SingleContainerView(ContainerView):
     ):
         path = self.absolute_path(key)
         return self.container.batch_delete(path, store_batch=store_batch)
+
+    def next_key(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        path = self.absolute_path(key)
+        keys = self.container.next_key(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            assert not _prefix and _path == path
+        return keys
+
+    def next_key_value(
+        self,
+        key: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        path = self.absolute_path(key)
+        keys, value = self.container.next_key_value(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            if _prefix or _path != path:
+                raise KeyError
+        return keys, value
+
+    def prev_key(
+        self,
+        key: bytes = b''
+    ) -> bytes:
+        path = self.absolute_path(key)
+        keys = self.container.prev_key(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            if _prefix or _path != path:
+                raise KeyError
+        return keys
+
+    def prev_key_value(
+        self,
+        key: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        path = self.absolute_path(key)
+        keys, value = self.container.prev_key_value(path)
+        if path:
+            _prefix, _path, keys = keys.partition(path)
+            if _prefix or _path != path:
+                raise KeyError
+        return keys, value
 
     def walk(
         self,

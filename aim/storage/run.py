@@ -7,18 +7,18 @@ from time import time
 
 from collections import Counter
 
-from .containerview import ContainerView
-from .context import Context, Metric
-from .types import AimObject
-from .container import Container
-from .treeview import TreeView
-from .arrayview import ArrayView
-from .hashing import hash_auto
-from .trace import RunTraceCollection
+from aim.storage.containerview import ContainerView
+from aim.storage.context import Context, Metric
+from aim.storage.types import AimObject
+from aim.storage.container import Container
+from aim.storage.treeview import TreeView
+from aim.storage.hashing import hash_auto
+from aim.storage.trace import RunTraceCollection
 
 if TYPE_CHECKING:
-    from .trace import Trace, TraceCollection
-    from .repo import Repo
+    from aim.storage.arrayview import ArrayView
+    from aim.storage.trace import Trace, TraceCollection
+    from aim.storage.repo import Repo
 
 
 
@@ -36,7 +36,7 @@ class Run:
         from_union: bool = False
     ):
         if repo is None:
-            from .repo import Repo
+            from aim.storage.repo import Repo
             repo = Repo.default_repo()
         self.repo = repo
         self.read_only = read_only
@@ -111,7 +111,7 @@ class Run:
         self,
         value,
         name: str,
-        iter: int = None,
+        step: int,
         epoch: int = None,
         *,
         context: AimObject = None
@@ -129,19 +129,19 @@ class Run:
             self._idx_to_ctx[ctx.idx] = ctx
 
         val_view = self.series_run_tree.view(metric.selector).array('val').allocate()
-        iter_view = self.series_run_tree.view(metric.selector).array('iter').allocate()
         epoch_view = self.series_run_tree.view(metric.selector).array('epoch').allocate()
         time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
 
-        step = self.series_counters.get((name, ctx), None)
-        if step == None:
-            step = len(iter_view)
-        if step == 0:
+        max_idx = self.series_counters.get((ctx, name), None)
+        if max_idx == None:
+            max_idx = len(val_view)
+        if max_idx == 0:
             self.meta_run_tree['traces', ctx.idx, name] = 1
-        self.series_counters[name, ctx] = step + 1
+        self.series_counters[ctx, name] = max_idx + 1
+
+        # TODO perform assignments in an atomic way
 
         val_view[step] = value
-        iter_view[step] = iter
         epoch_view[step] = epoch
         time_view[step] = time()
 

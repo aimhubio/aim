@@ -16,11 +16,11 @@
 
 import hashlib
 import struct
-from .types import AimObject, AimObjectArray, AimObjectKey, AimObjectDict, NoneType
+
+from aim.storage import c_hash
+from aim.storage.types import AimObject, AimObjectArray, AimObjectKey, AimObjectDict, NoneType
 
 from typing import Tuple, Union
-
-from . import c_hash
 
 _HASH_DTYPE = 'q'
 _HASH_SIZE = struct.calcsize(_HASH_DTYPE)
