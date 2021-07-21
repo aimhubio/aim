@@ -3,6 +3,7 @@ import { API_HOST } from 'config/config';
 function createAPIRequestWrapper<ResponseDataType>(
   url: string,
   options: RequestInit = {},
+  stream?: boolean,
 ) {
   const controller = new AbortController();
   const signal = controller.signal;
@@ -11,7 +12,7 @@ function createAPIRequestWrapper<ResponseDataType>(
     call: () =>
       new Promise((resolve: (data: ResponseDataType) => void, reject) => {
         fetch(`${API_HOST}/${url}`, { ...options, signal })
-          .then((response) => response.json())
+          .then((response) => (stream ? response.body : response.json()))
           .then((data: ResponseDataType) => resolve(data))
           .catch((err) => {
             if (err.name === 'AbortError') {
@@ -25,11 +26,33 @@ function createAPIRequestWrapper<ResponseDataType>(
   };
 }
 
-function get<ResponseDataType>(url: string, options?: RequestInit) {
-  return createAPIRequestWrapper<ResponseDataType>(url, {
-    method: 'GET',
-    ...options,
-  });
+function get<ResponseDataType>(
+  url: string,
+  params?: {},
+  options?: RequestInit,
+) {
+  return createAPIRequestWrapper<ResponseDataType>(
+    `${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`,
+    {
+      method: 'GET',
+      ...options,
+    },
+  );
+}
+
+function getStream<ResponseDataType>(
+  url: string,
+  params?: {},
+  options?: RequestInit,
+) {
+  return createAPIRequestWrapper<ResponseDataType>(
+    `${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`,
+    {
+      method: 'GET',
+      ...options,
+    },
+    true,
+  );
 }
 
 function post<ResponseDataType>(
@@ -61,6 +84,7 @@ function remove<ResponseDataType>(url: string, options?: RequestInit) {
 
 const API = {
   get,
+  getStream,
   post,
   put,
   delete: remove,

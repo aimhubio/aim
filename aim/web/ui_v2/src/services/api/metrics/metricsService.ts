@@ -3,22 +3,22 @@ import API from '../api';
 import generateMetrics from './metricsMock';
 
 const endpoints = {
-  GET_METRICS: '/metrics',
+  GET_METRICS: 'commits/search/metric',
 };
 
-function getMetricsData() {
-  // return API.get<unknown>(endpoints.SEARCH_METRICS);
-  return {
-    call: () => ({
-      then: (resolve: (data: IRun[]) => void, reject?: unknown) => {
-        setTimeout(() => {
-          const mock = generateMetrics(200, 100);
-          resolve(mock);
-        }, 1000);
-      },
-    }),
-    abort: () => null,
-  };
+function getMetricsData(params: {}) {
+  return API.getStream<IRun[]>(endpoints.GET_METRICS, params);
+  // return {
+  //   call: () => ({
+  //     then: (resolve: (data: IRun[]) => void, reject?: unknown) => {
+  //       setTimeout(() => {
+  //         const mock = generateMetrics(200, 100);
+  //         resolve(mock);
+  //       }, 1000);
+  //     },
+  //   }),
+  //   abort: () => null,
+  // };
 }
 
 const metricsService = {

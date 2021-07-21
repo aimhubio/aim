@@ -41,15 +41,52 @@ function initialize() {
 }
 
 function getMetricsData() {
-  const { call, abort } = metricsService.getMetricsData();
+  const { call, abort } = metricsService.getMetricsData({
+    q: 'run.get(("hparams", "benchmark")) == "glue" and context.get("subset") != "train" and run.get(("hparams", "dataset")) == "cola"',
+  });
   return {
     call: () =>
-      call().then((data: IRun[]) => {
-        model.setState({
-          rawData: data,
-          collection: processData(data),
-        });
-      }),
+      call()
+        .then((data: any) => {
+          const metricsResult = {};
+          const reader = data.getReader();
+          return new ReadableStream({
+            start(controller) {
+              function push() {
+                // "done" is a Boolean and value a "Uint8Array"
+                reader.read().then((params: any) => {
+                  const { done, value } = params;
+                  // If there is no more data to read
+                  if (done) {
+                    console.log('done', done);
+                    controller.close();
+                    return;
+                  }
+                  // Get the data and send it to the browser via the controller
+                  controller.enqueue(value);
+                  // Check chunks by logging to the console
+                  console.log(done, value);
+                  push();
+                });
+              }
+
+              push();
+            },
+          });
+        })
+        .then((stream) => {
+          // Respond with our stream
+          return new Response(stream, {
+            headers: { 'Content-Type': 'application/json' },
+          }).json();
+        })
+        .then((data) => {
+          console.log(data);
+          // model.setState({
+          //   rawData: data,
+          //   collection: processData(data),
+          // });
+        }),
     abort,
   };
 }
