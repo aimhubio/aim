@@ -1,7 +1,7 @@
 import os
 from weakref import WeakValueDictionary
 
-from typing import Any, Dict, Generic, Iterator, List, TYPE_CHECKING, Tuple, TypeVar, Union
+from typing import Any, Dict, Generic, Iterator, List, Optional, TYPE_CHECKING, Tuple, TypeVar
 
 from time import time
 
@@ -180,7 +180,7 @@ class Run:
             self,
             metric_name: str,
             context: Context
-    ) -> Union[Trace, None]:
+    ) -> Optional[Trace]:
         trace = Trace(metric_name, context, self)
         return trace if bool(trace) else None
 
