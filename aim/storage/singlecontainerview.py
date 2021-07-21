@@ -94,7 +94,8 @@ class SingleContainerView(ContainerView):
         keys, value = self.container.next_key_value(path)
         if path:
             _prefix, _path, keys = keys.partition(path)
-            assert not _prefix and _path == path
+            if _prefix or _path != path:
+                raise KeyError
         return keys, value
 
     def prev_key(
@@ -105,7 +106,8 @@ class SingleContainerView(ContainerView):
         keys = self.container.prev_key(path)
         if path:
             _prefix, _path, keys = keys.partition(path)
-            assert not _prefix and _path == path
+            if _prefix or _path != path:
+                raise KeyError
         return keys
 
     def prev_key_value(
@@ -116,7 +118,8 @@ class SingleContainerView(ContainerView):
         keys, value = self.container.prev_key_value(path)
         if path:
             _prefix, _path, keys = keys.partition(path)
-            assert not _prefix and _path == path
+            if _prefix or _path != path:
+                raise KeyError
         return keys, value
 
     def walk(
