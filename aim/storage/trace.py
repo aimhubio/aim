@@ -1,14 +1,12 @@
 from abc import abstractmethod
 import datetime
 import json
-import time
 import numpy as np
 from tqdm import tqdm
 
 from aim.storage import treeutils
-from aim.storage import encoding as E
-from aim.storage.types import AimObject
 from aim.storage.proxy import AimObjectProxy
+from aim.storage.query import RestrictedPythonQuery
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.arrayview import ArrayView
@@ -28,8 +26,9 @@ T = TypeVar('T')
 
 
 class Record(NamedTuple):
+    idx: int
     step: int
-    iter: int
+    epoch: int
     value: Any
     time: float
 
@@ -41,8 +40,7 @@ class Trace(Generic[T]):
         self,
         name: str,
         context: Context,  # TODO ?dict
-        run: 'Run',
-        _slice: slice = None
+        run: 'Run'
     ):
         self.name = name
         self.context = context
@@ -51,22 +49,15 @@ class Trace(Generic[T]):
         self.tree = run.trace_tree(name, context)
 
         self._hash: int = None
-        self._slice = _slice
 
     def __repr__(self) -> str:
         return f'<Trace#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
 
     def _calc_hash(self):
-        if self._slice is not None:
-            slice_hash = hash_auto((self._slice.start, self._slice.stop, self._slice.step))
-        else:
-            slice_hash = None
         return hash_auto(
             (self.name,
              hash(self.context),
-             hash(self.run),
-             slice_hash
-            )
+             hash(self.run))
         )
 
     def __hash__(self) -> int:
@@ -77,85 +68,62 @@ class Trace(Generic[T]):
     @property
     def values(self) -> ArrayView[T]:
         array_view = self.tree.array('val')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
         return array_view
 
-    @property
-    def iters(self) -> ArrayView[int]:
-        array_view = self.tree.array('iter')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
-        return array_view
 
     @property
-    def steps(self) -> List[int]:
-        array_view = [i for i, _ in enumerate(self.iters)]
-        if self._slice is not None:
-            array_view = array_view[self._slice]
+    def indices(self) -> List[int]:
+        array_view = [i for i, _ in enumerate(self.values)]
         return array_view
 
     @property
     def epochs(self) -> ArrayView[int]:
         array_view = self.tree.array('epoch')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
         return array_view
 
     @property
     def timestamps(self) -> ArrayView[float]:
         array_view = self.tree.array('time')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
         return array_view
 
-    def __getitem__(
-        self,
-        idx: int
-    ) -> Tuple[int, Any, float]:
-        # TODO implement slice
-        return self.iters[idx], self.values[idx], self.timestamps[idx]
-        # Or shortcut from lower-level storage api
+    def __bool__(self) -> bool:
+        return bool(self.values)
 
     def __len__(self) -> int:
-        # if self.slice is None:
-        return len(self.iters)
-        # else:
-        # Let's calc ...
-
-    def __iter__(self) -> Iterator[Any]:
-        # iter on `(step, value, time)` tuples maybe?
-        # TODO iter iter over
-        for s, (i, v, t) in enumerate(zip(self.iters,
-                                          self.values,
-                                          self.timestamps)):
-            yield Record(s, i, v, t)
-
-    def __getitem__(self, step: int) -> Any:
-        return Record(step, self.iters[step], self.values[step], self.timestamps[step])
+        return len(self.values)
 
     def dataframe(
         self,
         include_name: bool = False,
         include_context: bool = False,
-        include_run: bool = False
+        include_run: bool = False,
+        only_last: bool = False
     ) -> 'DataFrame':
         # Returns dataframe with rows corresponding to iters
         # Columns: `step`, `value`, `time`
         # steps = list(self.steps)
-        iters = self.iters.tolist()
-        steps = [i for i, _ in enumerate(iters)]
-        values = self.values.tolist()
-        timestamps = [datetime.datetime.fromtimestamp(t) for t in self.timestamps.tolist()]
+        if only_last:
+            last_step, last_value = self.values.last()
+            steps = [last_step]
+            values = [last_value]
+            epochs = [self.epochs[last_step]]
+            timestamps = [self.timestamps[last_step]]
+        else:
+            steps, values = self.values.sparse_list()
+            epochs = self.epochs.values_list()
+            timestamps = self.timestamps.values_list()
+        indices = [i for i, _ in enumerate(steps)]
+        timestamps = [datetime.datetime.fromtimestamp(t) for t in timestamps]
         data = {
+            'idx': indices,
             'step': steps,
-            'iter': iters,
             'value': values,
+            'epoch': epochs,
             'time': timestamps
         }
 
         if include_run:
-            data['run'] = [self.run.name] * len(iters)
+            data['run'] = [self.run.name] * len(indices)
             for path, val in treeutils.unfold_tree(self.run[...],
                                                    unfold_array=False,
                                                    depth=3):
@@ -168,10 +136,10 @@ class Trace(Generic[T]):
                 # path = '.'.join(path)
                 if isinstance(val, (tuple, list, dict)):
                     val = json.dumps(val)
-                data[s] = [val for _ in iters]
+                data[s] = [val for _ in indices]
         if include_name:
             # df['metric'] = self.name
-            data['metric'] = [self.name for _ in iters]
+            data['metric'] = [self.name for _ in indices]
         if include_context:
             for path, val in treeutils.unfold_tree(self.context.to_dict(),
                                                    unfold_array=False,
@@ -186,21 +154,10 @@ class Trace(Generic[T]):
                 if isinstance(val, (tuple, list)):
                     val = json.dumps(val)
                 # df[s] = val
-                data[s] = [val for _ in iters]
+                data[s] = [val for _ in indices]
         import pandas as pd
         df = pd.DataFrame(data)
         return df
-
-    def numpy(self) -> np.ndarray:
-        # TODO return `iters` and `time` as well somehow
-        # Maybe return Tuple of ndarrays instead?
-        # Or `.iters.numpy()`, `.time.numpy()`, `.values.numpy()` ?
-        return (
-            np.array(self.steps),
-            self.iters.numpy(),
-            self.values.numpy(),
-            self.timestamps.numpy()
-        )
 
 
 class TraceCollection:
@@ -216,15 +173,15 @@ class TraceCollection:
         self.run = run
         self.repo = repo
 
-    @abstractmethod
     def dataframe(
         self,
-        trace_slice: slice = None
+        only_last: bool = False
     ) -> 'DataFrame':
         dfs = [
-            trace[trace_slice].dataframe(include_run=True,
+            trace.dataframe(include_run=True,
                             include_name=True,
-                            include_context=True)
+                            include_context=True,
+                            only_last=only_last)
             for trace in self
         ]
         if not dfs:
@@ -280,28 +237,49 @@ class QueryTraceCollection(TraceCollection):
     ):
         self.repo: 'Repo'
         super().__init__(repo=repo)
-        self.query = query
+        self.query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
         for run in tqdm(self.repo.iter_runs(from_union=True)):
             for metric_name, ctx, run in run.iter_all_traces():
-                ctx_dict = ctx.to_dict()
-                ctx_proxy = AimObjectProxy(lambda: ctx_dict)
-                run_tree_proxy = AimObjectProxy(lambda: run.meta_run_tree,
-                                                run.meta_run_tree)
                 if not self.query:
                     statement = True
                 else:
-                    statement = eval(self.query, dict(), dict(
-                        metric_name=metric_name,
-                        metric=metric_name,
-                        context=ctx_proxy,
-                        ctx=ctx_proxy,
-                        run=run_tree_proxy
-                    ))
+                    statement = self.query.match(
+                        run=run,
+                        context=ctx,
+                        metric_name=metric_name
+                    )
                 if not statement:
                     continue
                 yield Trace(metric_name, ctx, run)
 
-        # for metric_name, ctx, run in self.from_repo():
-        #     yield Trace(metric_name, ctx, run)
+
+class QueryRunTraceCollection(TraceCollection):
+    def __init__(
+        self,
+        repo: 'Repo',
+        query: str
+    ):
+        self.repo: 'Repo'
+        super().__init__(repo=repo)
+        self.query = RestrictedPythonQuery(query)
+
+    def iter(self) -> Iterator[Trace]:
+        for run in self._iter_runs():
+            for metric_name, ctx, run in run.iter_all_traces():
+                yield Trace(metric_name, ctx, run)
+
+    def _iter_runs(self) -> Iterator['Run']:
+        for run in tqdm(self.repo.iter_runs(from_union=True)):
+            if not self.query:
+                statement = True
+            else:
+                statement = self.query.match(run=run)
+            if not statement:
+                continue
+            yield run
+
+    def iter_runs(self) -> Iterator['TraceCollection']:
+        for run in self._iter_runs():
+            yield RunTraceCollection(run)

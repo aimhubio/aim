@@ -7,7 +7,7 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag, ObjectFlag
 from aim.storage.containerview import ContainerView
 from aim.storage import treeutils
-from aim.storage.arrayview import ArrayView
+from aim.storage.arrayview import ContainerArrayView
 
 from typing import Any, Iterable, Iterator, MutableMapping, Tuple, Type, Union
 
@@ -149,19 +149,42 @@ class TreeView:  # TODO implement (MutableMapping):
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> ArrayView:
-        return ArrayView(self.view(path))
+    ) -> ContainerArrayView:
+        return ContainerArrayView(self.view(path))
 
-    def numpy(
+    def first(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        *,
-        dtype=None
-    ) -> np.ndarray:
-        # TODO URGENT implement using cython
-        val = self.collect(path)
-        assert isinstance(val, list)
-        return np.array(val, dtype=dtype)
+        path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> Tuple[AimObjectKey, AimObject]:
+        if isinstance(path, (int, str)):
+            path = [path]
+        prefix = E.encode_path(path)
+        p = E.decode_path(self.container.next_key(prefix))
+        return p[0]
+
+    def last(
+        self,
+        path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> Tuple[AimObjectKey, AimObject]:
+        if isinstance(path, (int, str)):
+            path = [path]
+        prefix = E.encode_path(path)
+        # assert prefix.endswith(b'\xfe')
+        # prefix = prefix[:-1] + b'\xff'
+        p = E.decode_path(self.container.prev_key(prefix))
+        return p[0]
+
+
+    # def numpy(
+    #     self,
+    #     path: Union[AimObjectKey, AimObjectPath] = (),
+    #     *,
+    #     dtype=None
+    # ) -> np.ndarray:
+    #     # TODO URGENT implement using cython
+    #     val = self.collect(path)
+    #     assert isinstance(val, list)
+    #     return np.array(val, dtype=dtype)
 
     # __iter__
     # __len__

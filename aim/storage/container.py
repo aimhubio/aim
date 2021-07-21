@@ -43,7 +43,7 @@ class Container(ContainerView):
         self._db = None
 
     @property
-    def db(self):
+    def db(self) -> aimrocks.DB:
         if self._db is not None:
             return self._db
         try:
@@ -211,3 +211,72 @@ class Container(ContainerView):
         batch: aimrocks.WriteBatch
     ):
         self.db.write(batch)
+
+    def next_key(
+        self,
+        prefix: bytes = b''
+    ) -> bytes:
+        it: Iterator[bytes] = self.db.iterkeys()
+        if prefix is not None:
+            it.seek(prefix + b'\x00')
+        else:
+            it.seek_to_first()
+
+        key = next(it)
+
+        if not key.startswith(prefix):
+            raise KeyError
+
+        return key
+
+    def next_value(
+        self,
+        prefix: bytes = b''
+    ) -> bytes:
+        key, value = self.next_key_value(prefix)
+        return value
+
+    def next_key_value(
+        self,
+        prefix: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        if prefix is not None:
+            it.seek(prefix + b'\x00')
+        else:
+            it.seek_to_first()
+
+        key, value = next(it)
+
+        if not key.startswith(prefix):
+            raise KeyError
+
+        return key, value
+
+    def prev_key(
+        self,
+        prefix: bytes = b''
+    ) -> bytes:
+        key, value = self.prev_key_value(prefix)
+        return key
+
+    def prev_value(
+        self,
+        prefix: bytes = b''
+    ) -> bytes:
+        key, value = self.prev_key_value(prefix)
+        return value
+
+    def prev_key_value(
+        self,
+        prefix: bytes = b''
+    ) -> Tuple[bytes, bytes]:
+        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        if prefix is not None:
+            it.seek_for_prev(prefix + b'\xff')
+        else:
+            it.seek_to_last()
+
+        key, value = it.get()
+
+        return key, value
