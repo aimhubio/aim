@@ -3,7 +3,7 @@ import { RouteChildrenProps } from 'react-router-dom';
 
 import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
-import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
+import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
@@ -22,11 +22,11 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   displayOutliers: boolean;
   zoomMode: boolean;
   curveInterpolation: CurveEnum;
-  toggleDisplayOutliers: () => void;
-  toggleZoomMode: () => void;
+  onDisplayOutliersChange: () => void;
+  onZoomModeChange: () => void;
   onActivePointChange: (activePointData: IActivePointData) => void;
   highlightMode: HighlightEnum;
-  onChangeHighlightMode: (mode: HighlightEnum) => () => void;
+  onChangeHighlightMode: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
   curveInterpolation: CurveEnum;

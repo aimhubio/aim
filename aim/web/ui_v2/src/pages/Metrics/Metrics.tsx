@@ -8,7 +8,7 @@ import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
 import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
-import { ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
@@ -76,15 +76,15 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
-                    toggleDisplayOutliers={props.toggleDisplayOutliers}
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
-                    toggleZoomMode={props.toggleZoomMode}
                     highlightMode={props.highlightMode}
-                    onChangeHighlightMode={props.onChangeHighlightMode}
-                    onSmoothingChange={props.onSmoothingChange}
-                    onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     axesScaleType={props.axesScaleType}
+                    onDisplayOutliersChange={props.onDisplayOutliersChange}
+                    onZoomModeChange={props.onZoomModeChange}
+                    onChangeHighlightMode={props.onChangeHighlightMode}
+                    onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+                    onSmoothingChange={props.onSmoothingChange}
                   />
                 }
                 onActivePointChange={props.onActivePointChange}

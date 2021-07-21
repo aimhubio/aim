@@ -2,33 +2,52 @@ import * as _ from 'lodash-es';
 
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
-import { IMetric } from 'types/services/models/metrics/metricModel';
-import { IRun } from 'types/services/models/metrics/runModel';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { encode } from 'utils/encoder/encoder';
-import {
-  IGetDataAsLinesProps,
-  IMetricCollectionModelState,
-  IMetricTableRowData,
-} from 'types/services/models/metrics/metricsCollectionModel';
-import { ILine } from 'types/components/LineChart/LineChart';
 import getClosestValue from 'utils/getClosestValue';
 import {
   calculateCentralMovingAverage,
   calculateExponentialMovingAverage,
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
-const model = createModel<Partial<IMetricCollectionModelState>>({});
+//Types
+import {
+  IGetDataAsLinesProps,
+  IMetricAppConfig,
+  IMetricAppModelState,
+  IMetricTableRowData,
+} from 'types/services/models/metrics/metricsAppModel';
+import { IMetric } from 'types/services/models/metrics/metricModel';
+import { IRun } from 'types/services/models/metrics/runModel';
+import { ILine } from 'types/components/LineChart/LineChart';
+import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { CurveEnum, ScaleEnum } from 'utils/d3';
+
+const model = createModel<Partial<IMetricAppModelState>>({});
 
 function getConfig() {
   return {
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
     grouping: {
       color: [],
       style: [],
       chart: [],
+    },
+    chart: {
+      highlightMode: 0,
+      displayOutliers: true,
+      zoomMode: false,
+      axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
+      curveInterpolation: CurveEnum.Linear,
     },
   };
 }
@@ -162,12 +181,99 @@ function getDataAsTableRows(
   );
 }
 
-const metricsCollectionModel = {
+function setComponentRefs(refs: any) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    configData.refs = Object.assign(configData.refs, refs);
+    model.setState({ config: configData });
+  }
+}
+
+//Chart Methods
+
+function onChangeHighlightMode(mode: HighlightEnum): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    configData.chart.highlightMode = mode;
+    model.setState({
+      config: configData,
+    });
+  }
+}
+
+function onZoomModeChange(): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    configData.chart.zoomMode = !configData.chart.zoomMode;
+    model.setState({ config: configData });
+  }
+}
+
+function onSmoothingChange({
+  algorithm,
+  factor,
+  curveInterpolation,
+}: IOnSmoothingChange) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let newData = getDataAsLines({
+    smoothingAlgorithm: algorithm,
+    smoothingFactor: factor,
+  });
+  if (configData?.chart) {
+    configData.chart.curveInterpolation = curveInterpolation;
+    model.setState({ config: configData });
+  }
+}
+
+function onDisplayOutliersChange(): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    configData.chart.displayOutliers = !configData?.chart.displayOutliers;
+    model.setState({ config: configData });
+  }
+}
+
+function onAxesScaleTypeChange(params: IAxesScaleState): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    configData.chart.axesScaleType = params;
+    model.setState({ config: configData });
+  }
+}
+
+//Table Methods
+
+function onActivePointChange(activePointData: IActivePointData): void {
+  const tableRef: any = model.getState()?.config?.refs.tableRef;
+  if (tableRef) {
+    tableRef.current?.updateData({
+      newData: getDataAsTableRows(activePointData.xValue).flat(),
+    });
+    tableRef.current?.setHoveredRow(activePointData.key);
+  }
+}
+
+function onTableRowHover(rowKey: string): void {
+  const chartPanelRef: any = model.getState()?.config?.refs.chartPanelRef;
+  if (chartPanelRef) {
+    chartPanelRef.current?.setActiveLine(rowKey);
+  }
+}
+
+const metricAppModel = {
   ...model,
   initialize,
   getMetricsData,
   getDataAsLines,
   getDataAsTableRows,
+  setComponentRefs,
+  onChangeHighlightMode,
+  onZoomModeChange,
+  onSmoothingChange,
+  onDisplayOutliersChange,
+  onAxesScaleTypeChange,
+  onActivePointChange,
+  onTableRowHover,
 };
 
-export default metricsCollectionModel;
+export default metricAppModel;

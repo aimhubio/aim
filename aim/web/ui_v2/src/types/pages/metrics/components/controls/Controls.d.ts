@@ -3,12 +3,12 @@ import { IOnSmoothingChange } from '../../Metrics';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IControlProps {
-  toggleDisplayOutliers: () => void;
+  onDisplayOutliersChange: () => void;
   displayOutliers: boolean;
-  toggleZoomMode: () => void;
+  onZoomModeChange: () => void;
   zoomMode: boolean;
   highlightMode: HighlightEnum;
-  onChangeHighlightMode: (mode: HighlightEnum) => () => void;
+  onChangeHighlightMode: (mode: number) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   axesScaleType: IAxesScaleState;
