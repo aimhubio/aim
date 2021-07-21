@@ -49,7 +49,6 @@ class Trace(Generic[T]):
         self.tree = run.trace_tree(name, context)
 
         self._hash: int = None
-        self._slice = _slice
 
     def __repr__(self) -> str:
         return f'<Trace#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
@@ -69,10 +68,7 @@ class Trace(Generic[T]):
     @property
     def values(self) -> ArrayView[T]:
         array_view = self.tree.array('val')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
         return array_view
-
 
 
     @property
@@ -83,51 +79,18 @@ class Trace(Generic[T]):
     @property
     def epochs(self) -> ArrayView[int]:
         array_view = self.tree.array('epoch')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
         return array_view
 
     @property
     def timestamps(self) -> ArrayView[float]:
         array_view = self.tree.array('time')
-        if self._slice is not None:
-            array_view = array_view[self._slice]
         return array_view
 
-    def __getitem__(
-        self,
-        idx: int
-    ) -> Tuple[int, Any, float]:
-        return idx, self.values[idx], self.epochs[idx], self.timestamps[idx]
-        # Or shortcut from lower-level storage api
+    def __bool__(self) -> bool:
+        return bool(self.values)
 
     def __len__(self) -> int:
-        # if self.slice is None:
         return len(self.values)
-        # else:
-        # Let's calc ...
-
-    def __iter__(self) -> Iterator[Any]:
-        # iter on `(step, value, time)` tuples maybe?
-        # TODO iter iter over
-        for s, (i, v, t) in enumerate(zip(self.iters,
-                                          self.values,
-                                          self.timestamps)):
-            yield Record(s, i, v, t)
-
-    def __getitem__(
-        self,
-        step: int
-    ) -> Any:
-        if isinstance(step, slice):
-            # We do not support slice of slice right now
-            assert self._slice is None
-
-            return Trace(name=self.name,
-                         context=self.context,
-                         run=self.run,
-                         _slice=step)
-        return Record(step, self.iters[step], self.values[step], self.timestamps[step])
 
     def dataframe(
         self,
@@ -196,17 +159,6 @@ class Trace(Generic[T]):
         df = pd.DataFrame(data)
         return df
 
-    def numpy(self) -> np.ndarray:
-        # TODO return `iters` and `time` as well somehow
-        # Maybe return Tuple of ndarrays instead?
-        # Or `.iters.numpy()`, `.time.numpy()`, `.values.numpy()` ?
-        return (
-            np.array(self.steps),
-            self.iters.numpy(),
-            self.values.numpy(),
-            self.timestamps.numpy()
-        )
-
 
 class TraceCollection:
     def __init__(
@@ -221,7 +173,6 @@ class TraceCollection:
         self.run = run
         self.repo = repo
 
-    @abstractmethod
     def dataframe(
         self,
         only_last: bool = False
