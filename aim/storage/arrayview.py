@@ -122,7 +122,14 @@ class ContainerArrayView(ArrayView[T]):
 
     def __len__(self) -> int:
         # TODO lazier
-        return len(self.tolist())
+        try:
+            last_idx = self.last_idx()
+        except KeyError:
+            return 0
+        return last_idx + 1
+
+    def __bool__(self) -> bool:
+        return bool(len(self))
 
     def __getitem__(
         self,
