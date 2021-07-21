@@ -1,5 +1,6 @@
 # sdk
 aimrecords==0.0.7
+aimrocks==0.0.2
 anytree>=2.8.0
 click>=7.0
 GitPython>=3.0.4
