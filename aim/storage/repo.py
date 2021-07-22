@@ -163,7 +163,7 @@ class Repo:
         self,
         query: str = ''
     ):
-        return QueryTraceCollection(self, query)
+        return QueryTraceCollection(repo=self, query=query)
 
     def iter_traces(
         self,
