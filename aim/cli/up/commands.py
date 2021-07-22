@@ -18,6 +18,7 @@ from aim.cli.up.utils import (
 )
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
+from aim.web.api.projects.project import Project
 
 
 @click.command()
@@ -39,6 +40,11 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
         return
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.root_path
+
+    # TODO: [AT] find better way to access run_metadata_db
+    project = Project()
+    run_metadata_db = project.repo.run_metadata_db
+    run_metadata_db.run_upgrades()
 
     if dev:
         os.environ[AIM_WEB_ENV_KEY] = 'dev'
