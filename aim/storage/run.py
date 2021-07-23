@@ -1,7 +1,7 @@
 import os
 from weakref import WeakValueDictionary
 
-from typing import Any, Dict, Generic, Iterator, List, TYPE_CHECKING, Tuple, TypeVar
+from typing import Any, Dict, Generic, Iterator, List, Optional, TYPE_CHECKING, Tuple, TypeVar
 
 from time import time
 
@@ -175,6 +175,14 @@ class Run:
         self
     ) -> 'TraceCollection':
         return RunTraceCollection(self)
+
+    def get_trace(
+            self,
+            metric_name: str,
+            context: Context
+    ) -> Optional[Trace]:
+        trace = Trace(metric_name, context, self)
+        return trace if bool(trace) else None
 
     def __eq__(
         self,
