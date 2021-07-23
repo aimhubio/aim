@@ -89,7 +89,12 @@ function Controls(
             </Box>
           )}
           component={
-            <SmootheningPopup onSmoothingChange={props.onSmoothingChange} />
+            <SmootheningPopup
+              onSmoothingChange={props.onSmoothingChange}
+              smoothingAlgorithm={props.smoothingAlgorithm}
+              curveInterpolation={props.curveInterpolation}
+              smoothingFactor={props.smoothingFactor}
+            />
           }
         />
       </Grid>

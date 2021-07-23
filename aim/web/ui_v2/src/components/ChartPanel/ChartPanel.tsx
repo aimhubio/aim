@@ -40,6 +40,12 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRef.current?.setActiveLine?.(lineKey);
       });
     },
+    // TODO update lines without reRendering
+    updateLines: (data: any) => {
+      chartRefs.forEach((chartRef, index) => {
+        chartRef.current?.updateLines?.(data[index]);
+      });
+    },
   }));
 
   // TODO: remove setTimeout

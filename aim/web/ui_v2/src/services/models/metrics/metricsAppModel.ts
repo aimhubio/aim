@@ -16,7 +16,6 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
-  IGetDataAsLinesProps,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
@@ -43,11 +42,13 @@ function getConfig() {
       chart: [],
     },
     chart: {
-      highlightMode: 0,
+      highlightMode: HighlightEnum.Off,
       displayOutliers: true,
       zoomMode: false,
       axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
       curveInterpolation: CurveEnum.Linear,
+      smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
+      smoothingFactor: 0,
     },
   };
 }
@@ -114,25 +115,27 @@ function processData(data: IRun[]): IMetric[][] {
   ];
 }
 
-function getDataAsLines(props: IGetDataAsLinesProps | null = null): ILine[][] {
+function getDataAsLines(): ILine[][] {
   const metricsCollection = model.getState()?.collection;
+  const configData: IMetricAppConfig | any = model.getState()?.config;
   if (!metricsCollection) {
     return [];
   }
 
+  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
   return metricsCollection.map((metrics: IMetric[]) =>
     metrics.map((metric: IMetric) => {
       let yValues;
-      if (props) {
+      if (smoothingAlgorithm && smoothingFactor) {
         yValues =
-          props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
+          smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
             ? calculateExponentialMovingAverage(
                 [...metric.data.values],
-                props.smoothingFactor,
+                smoothingFactor,
               )
             : calculateCentralMovingAverage(
                 [...metric.data.values],
-                props.smoothingFactor,
+                smoothingFactor,
               );
       } else {
         yValues = [...metric.data.values];
@@ -209,19 +212,14 @@ function onZoomModeChange(): void {
   }
 }
 
-function onSmoothingChange({
-  algorithm,
-  factor,
-  curveInterpolation,
-}: IOnSmoothingChange) {
+function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  let newData = getDataAsLines({
-    smoothingAlgorithm: algorithm,
-    smoothingFactor: factor,
-  });
   if (configData?.chart) {
-    configData.chart.curveInterpolation = curveInterpolation;
-    model.setState({ config: configData });
+    // TODO update lines without reRender
+    configData.chart = { ...configData.chart, ...props };
+    console.log(configData.chart, props);
+
+    model.setState({ config: { ...configData } });
   }
 }
 

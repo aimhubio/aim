@@ -10,6 +10,7 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
 
@@ -63,6 +64,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       axesScaleType={
         metricsData?.config?.chart.axesScaleType as IAxesScaleState
       }
+      smoothingAlgorithm={
+        metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
+      }
+      smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}

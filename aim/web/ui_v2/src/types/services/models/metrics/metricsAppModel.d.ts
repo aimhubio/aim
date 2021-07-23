@@ -1,6 +1,7 @@
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
+import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { CurveEnum } from 'utils/d3';
 import { IMetric } from './metricModel';
@@ -28,6 +29,8 @@ interface IMetricAppConfig {
     zoomMode: boolean;
     axesScaleType: IAxesScaleState;
     curveInterpolation: CurveEnum;
+    smoothingAlgorithm: SmoothingAlgorithmEnum;
+    smoothingFactor: number;
   };
 }
 
@@ -44,6 +47,7 @@ export interface IMetricTableRowData {
 }
 
 export interface IGetDataAsLinesProps {
-  smoothingFactor: number;
-  smoothingAlgorithm: string;
+  smoothingFactor?: number;
+  smoothingAlgorithm?: string;
+  collection?: IMetric[][];
 }

@@ -8,6 +8,7 @@ import { ITableColumn } from './components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
@@ -32,10 +33,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   curveInterpolation: CurveEnum;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   axesScaleType: IAxesScaleState;
+  smoothingAlgorithm: SmoothingAlgorithmEnum;
+  smoothingFactor: number;
 }
 
 export interface IOnSmoothingChange {
-  algorithm: string;
-  factor: number;
-  curveInterpolation: CurveEnum;
+  smoothingAlgorithm?: string;
+  smoothingFactor?: number;
+  curveInterpolation?: CurveEnum;
 }

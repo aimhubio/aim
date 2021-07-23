@@ -136,7 +136,7 @@ function drawBrush(props: IDrawBrushProps): void {
 
     // setting scales and lines to initial state
     brushRef.current.updateScales(xScale, yScale);
-    linesRef.current.updateLines(xScale, yScale);
+    linesRef.current.updateLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
     attributesRef.current.updateHoverAttributes(d3.pointer(event));

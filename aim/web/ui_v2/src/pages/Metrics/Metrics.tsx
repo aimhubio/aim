@@ -85,6 +85,9 @@ function Metrics(
                     onChangeHighlightMode={props.onChangeHighlightMode}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
+                    smoothingAlgorithm={props.smoothingAlgorithm}
+                    smoothingFactor={props.smoothingFactor}
+                    curveInterpolation={props.curveInterpolation}
                   />
                 }
                 onActivePointChange={props.onActivePointChange}
