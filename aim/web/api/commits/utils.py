@@ -248,36 +248,37 @@ def nested_runs_dict_constructor(traces: QueryTraceCollection, steps_num: int, x
         else:
             query_runs_collection[trace.run.name] = [trace]
 
-    runs_list = []
+    runs_dict = {}
     for run_name in query_runs_collection.keys():
         run = Run(run_name)
         query_run_traces = query_runs_collection[run_name]
         traces_list = []
         for trace in query_run_traces:
-            num_records = len(trace)
+            sparse_values_numpy = trace.values.sparse_numpy()
+            num_records = len(sparse_values_numpy[0])
             step = (num_records // steps_num) or 1
 
             traces_list.append(
                 {
                     'metric_name': trace.name,
                     'context': trace.context.to_dict(),
-                    'values': numpy_to_encodable(sliced_np_array(trace.values.numpy(), num_records, step)),
-                    'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.numpy(), num_records, step)),
-                    'iters': numpy_to_encodable(sliced_np_array(trace.iters.numpy(), num_records, step)),
-                    'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.numpy(), num_records, step)),
+                    'values': numpy_to_encodable(sliced_np_array(sparse_values_numpy[1],
+                                                                 num_records, step)),
+                    'iters': numpy_to_encodable(sliced_np_array(sparse_values_numpy[0],
+                                                                num_records, step)),
+                    'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(),
+                                                                 num_records, step)),
+                    'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(),
+                                                                     num_records, step)),
                 }
             )
 
-        runs_list.append({
-            'name': run.name,
-            'hash': hash(run),
+        runs_dict[run.name] = {
             'params': run[...],
             'traces': traces_list
-        })
+        }
 
-    return {
-        'runs': runs_list
-    }
+    return runs_dict
 
 
 def sliced_np_array(array: np.ndarray, num_records: int, step: int) -> np.ndarray:
