@@ -1,6 +1,7 @@
 # sdk
 aimrecords==0.0.7 # to delete
 anytree>=2.8.0 # to delete
+aimrocks==0.0.2
 click>=7.0
 GitPython>=3.0.4 # to delete
 protobuf>=3.11.0 # to delete
