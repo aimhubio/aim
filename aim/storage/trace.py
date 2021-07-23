@@ -232,20 +232,27 @@ class RunTraceCollection(TraceCollection):
 class QueryTraceCollection(TraceCollection):
     def __init__(
         self,
+        *,
         repo: 'Repo',
-        query: str
+        query: str,
+        run: 'Run' = None,
     ):
         self.repo: 'Repo'
-        super().__init__(repo=repo)
-        self.query = RestrictedPythonQuery(query)
+        super().__init__(repo=repo, run=run)
+        self.query = query
+        self._query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
-        for run in tqdm(self.repo.iter_runs(from_union=True)):
+        if self.run is not None:
+            runs = [self.run]
+        else:
+            runs = tqdm(self.repo.iter_runs(from_union=True))
+        for run in runs:
             for metric_name, ctx, run in run.iter_all_traces():
-                if not self.query:
+                if not self._query:
                     statement = True
                 else:
-                    statement = self.query.match(
+                    statement = self._query.match(
                         run=run,
                         context=ctx,
                         metric_name=metric_name
@@ -253,6 +260,11 @@ class QueryTraceCollection(TraceCollection):
                 if not statement:
                     continue
                 yield Trace(metric_name, ctx, run)
+
+    def iter_runs(self):
+        assert self.run is None
+        for run in tqdm(self.repo.iter_runs(from_union=True)):
+            yield QueryTraceCollection(run=run, query=self.query, repo=self.repo)
 
 
 class QueryRunTraceCollection(TraceCollection):
@@ -263,7 +275,8 @@ class QueryRunTraceCollection(TraceCollection):
     ):
         self.repo: 'Repo'
         super().__init__(repo=repo)
-        self.query = RestrictedPythonQuery(query)
+        self.query = query
+        self._query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
         for run in self._iter_runs():
@@ -272,10 +285,10 @@ class QueryRunTraceCollection(TraceCollection):
 
     def _iter_runs(self) -> Iterator['Run']:
         for run in tqdm(self.repo.iter_runs(from_union=True)):
-            if not self.query:
+            if not self._query:
                 statement = True
             else:
-                statement = self.query.match(run=run)
+                statement = self._query.match(run=run)
             if not statement:
                 continue
             yield run
