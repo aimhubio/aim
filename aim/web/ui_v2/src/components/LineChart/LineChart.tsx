@@ -70,17 +70,13 @@ const LineChart = React.forwardRef(function LineChart(
 
   const closestCircleRef = React.useRef(null);
 
-  const { processedData, min, max } = React.useMemo(
-    () =>
-      processData({
-        data,
-        displayOutliers,
-        axesScaleType,
-      }),
-    [data, displayOutliers, axesScaleType],
-  );
-
   const draw = React.useCallback((): void => {
+    const { processedData, min, max } = processData({
+      data,
+      displayOutliers,
+      axesScaleType,
+    });
+
     drawArea({
       index,
       visBoxRef,
@@ -104,6 +100,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
+    attributesRef.current.attributesData = processedData;
 
     drawAxes({
       axesNodeRef,
@@ -125,7 +122,6 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     drawHoverAttributes({
-      data: processedData,
       index,
       xAlignment,
       visAreaRef,
@@ -161,14 +157,14 @@ const LineChart = React.forwardRef(function LineChart(
       });
     }
   }, [
+    data,
+    displayOutliers,
     axesScaleType,
-    curveInterpolation,
     index,
+    curveInterpolation,
     highlightMode,
-    min,
-    max,
-    processedData,
     xAlignment,
+    props.onMouseOver,
     zoomMode,
   ]);
 

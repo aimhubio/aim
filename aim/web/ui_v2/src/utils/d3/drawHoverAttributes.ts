@@ -19,7 +19,6 @@ import 'components/LineChart/LineChart.css';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
-    data,
     index,
     xAlignment,
     attributesNodeRef,
@@ -57,7 +56,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       margin,
     });
     const { nearestCircles, closestCircle } = getNearestCircles({
-      data,
+      data: attributesRef.current.attributesData,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -181,7 +180,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     });
 
     const { nearestCircles } = getNearestCircles({
-      data,
+      data: attributesRef.current.attributesData,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -201,7 +200,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   function handleMouseMove(event: MouseEvent) {
     const mouse = d3.pointer(event);
-    const activePointData = updateHoverAttributes(mouse);
+    const activePointData = updateHoverAttributes?.(mouse);
 
     if (typeof callback === 'function') {
       callback(mouse, activePointData);
