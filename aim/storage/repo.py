@@ -170,3 +170,11 @@ class Repo:
         query: str = ''
     ):
         return self.traces(query=query)
+
+    def meta_tree(
+        self
+    ):
+        meta_tree = self.view(f'runs/dummy_hash.meta',
+                              read_only=True,
+                              from_union=True)
+        return meta_tree.view(b'M\xfe').tree()

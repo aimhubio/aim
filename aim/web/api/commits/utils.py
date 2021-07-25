@@ -61,7 +61,7 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
             sliced_iters = sliced_np_array(iters, _slice)
             x_axis_trace = run.get_trace(x_axis, trace.context) if x_axis else None
             if x_axis_trace:
-                x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters_numpy)
+                x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
 
             traces_list.append(
                 {
