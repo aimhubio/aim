@@ -65,8 +65,6 @@ function drawBrush(props: IDrawBrushProps): void {
       const [xMin, xMax]: number[] = brushRef.current.xScale.domain();
       const [yMin, yMax]: number[] = brushRef.current.yScale.domain();
 
-      console.log(extent);
-
       const xValues: number[] | null =
         extent[1][0] - extent[0][0] < 5
           ? null

@@ -21,29 +21,34 @@ export interface IDrawHoverAttributesProps {
     updateHoverAttributes?: (
       mousePosition: [number, number],
     ) => IActivePointData;
-    setActiveLine: (lineKey: string) => void;
+    setActiveLine: (lineKey: string, index: number) => void;
+    clearLinesAndAttributes: () => void;
   }>;
   plotBoxRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
+  svgNodeRef: React.MutableRefObject<>;
+  bgRectNodeRef: React.MutableRefObject<>;
   xAxisLabelNodeRef: React.MutableRefObject<>;
   yAxisLabelNodeRef: React.MutableRefObject<>;
-  closestCircleRef: React.MutableRefObject<>;
+  closestCircleRef: React.MutableRefObject<INearestCircle | null>;
+  activeLineKeyRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
-  index: number;
-  callback: (
+  onMouseOver: (
+    index: number,
     mousePosition: [number, number],
     activePointData: IActivePointData,
   ) => void;
+  onMouseLeave: (index: number) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
+  hasFocusedCircleRef: React.MutableRefObject<boolean>;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };
 
 export interface IGetCoordinatesProps {
   mouse: [number, number];
-  margin: { left: number; top: number };
   xScale: IDrawHoverAttributesProps['xScale'];
   yScale: IDrawHoverAttributesProps['yScale'];
 }
@@ -58,23 +63,16 @@ export interface INearestCircle {
   y: number;
   key: string;
   color: string;
+  r?: number;
 }
 
-export interface IClosestCircle {
-  key: string;
-  r: number | null;
-  x: number;
-  y: number;
-}
-
-export interface ISetAxisLabelProps extends Partial<IDrawHoverAttributesProps> {
-  closestCircle: IClosestCircle;
+export interface ISetAxisLabelProps {
+  closestCircle: INearestCircle;
   xScale?: IGetAxesScale['xScale'];
   yScale?: IGetAxesScale['yScale'];
 }
 
 export interface IGetNearestCirclesProps {
-  data: IProcessedData[];
   xScale: IGetAxesScale['xScale'];
   yScale: IGetAxesScale['yScale'];
   mouseX: number;
@@ -83,11 +81,13 @@ export interface IGetNearestCirclesProps {
 
 export interface IGetNearestCircles {
   nearestCircles: INearestCircle[];
-  closestCircle: IClosestCircle;
+  closestCircle: INearestCircle;
 }
 
 export interface IActivePointData {
   key: string;
   xValue: number;
   yValue: number;
+  pageX: number;
+  pageY: number;
 }

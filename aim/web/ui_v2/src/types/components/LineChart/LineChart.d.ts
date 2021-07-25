@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from '../AxesScalePopover/AxesScalePopover';
@@ -17,14 +19,17 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
+  hasFocusedCircleRef: React.MutableRefObject<boolean>;
   xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
-  onMouseOver: (
-    mousePosition: [number, number],
-    activePointData: IActivePointData,
-  ) => void;
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
+  onMouseOver: (
+    index: number,
+    mousePosition: [number, number],
+    activePointData: IActivePointData,
+  ) => void;
+  onMouseLeave: (index: number) => void;
 }

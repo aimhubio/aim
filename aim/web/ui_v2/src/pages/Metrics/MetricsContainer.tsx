@@ -70,7 +70,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   );
 
   function onTableRowHover(rowKey: string) {
-    chartPanelRef.current?.setActiveLine(rowKey);
+    // TODO PASS chartIndex DYNAMICALLY
+    const chartIndex = 0;
+    chartPanelRef.current?.setActiveLine(rowKey, chartIndex);
   }
 
   function onSmoothingChange({

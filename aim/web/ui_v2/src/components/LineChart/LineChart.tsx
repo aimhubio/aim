@@ -14,6 +14,7 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 import { ILineChartProps } from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
+import { INearestCircle } from '../../types/utils/d3/drawHoverAttributes';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
@@ -22,14 +23,18 @@ const LineChart = React.forwardRef(function LineChart(
   const {
     data,
     index,
+    onMouseOver,
+    onMouseLeave,
+    hasFocusedCircleRef,
     axesScaleType,
     displayOutliers,
     xAlignment,
     zoomMode,
     highlightMode,
     curveInterpolation,
-    onMouseOver,
   } = props;
+
+  debugger;
   const classes = useStyles();
 
   // boxes
@@ -69,7 +74,8 @@ const LineChart = React.forwardRef(function LineChart(
   const linesRef = React.useRef<any>({});
   const attributesRef = React.useRef<any>({});
 
-  const closestCircleRef = React.useRef(null);
+  const closestCircleRef = React.useRef<INearestCircle | null>(null);
+  const activeLineKeyRef = React.useRef(null);
 
   const { processedData, min, max } = React.useMemo(
     () =>
@@ -81,7 +87,7 @@ const LineChart = React.forwardRef(function LineChart(
     [data, displayOutliers, axesScaleType],
   );
 
-  const draw = React.useCallback((): void => {
+  function draw() {
     drawArea({
       index,
       visBoxRef,
@@ -133,14 +139,19 @@ const LineChart = React.forwardRef(function LineChart(
       attributesRef,
       plotBoxRef,
       visBoxRef,
+      svgNodeRef,
+      bgRectNodeRef,
       closestCircleRef,
+      activeLineKeyRef,
       attributesNodeRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
       linesNodeRef,
       highlightedNodeRef,
       highlightMode,
-      callback: onMouseOver,
+      onMouseOver,
+      onMouseLeave,
+      hasFocusedCircleRef,
     });
 
     if (zoomMode) {
@@ -161,23 +172,12 @@ const LineChart = React.forwardRef(function LineChart(
         max,
       });
     }
-  }, [
-    axesScaleType,
-    curveInterpolation,
-    highlightMode,
-    index,
-    max,
-    min,
-    onMouseOver,
-    processedData,
-    xAlignment,
-    zoomMode,
-  ]);
+  }
 
-  const renderChart = React.useCallback((): void => {
+  function renderChart() {
     clearArea({ visAreaRef });
     draw();
-  }, [draw]);
+  }
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -185,14 +185,14 @@ const LineChart = React.forwardRef(function LineChart(
         requestAnimationFrame(renderChart);
       }
     },
-    [renderChart],
+    [],
   );
 
   useResizeObserver(resizeObserverCallback, parentRef);
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-  }, [props.data, renderChart, zoomMode, displayOutliers, highlightMode]);
+  }, [props.data, props.zoomMode, props.displayOutliers, props.highlightMode]);
 
   // TODO: improve setting of ref methods
   React.useImperativeHandle(ref, () => ({
@@ -200,8 +200,8 @@ const LineChart = React.forwardRef(function LineChart(
     ...brushRef.current,
     ...linesRef.current,
     ...attributesRef.current,
-    setActiveLine: (lineKey: string) => {
-      attributesRef.current?.setActiveLine(lineKey);
+    setActiveLine: (lineKey: string, chartIndex: number) => {
+      attributesRef.current?.setActiveLine(lineKey, chartIndex);
     },
   }));
 

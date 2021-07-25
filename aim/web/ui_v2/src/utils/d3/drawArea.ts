@@ -50,13 +50,14 @@ function drawArea(props: IDrawAreaProps): void {
     .attr('id', 'svg-area')
     .attr('width', '100%')
     .attr('height', '100%')
+    .attr('pointer-events', 'all')
     .attr('xmlns', 'http://www.w3.org/2000/svg');
 
   bgRectNodeRef.current = svgNodeRef.current
     .append('rect')
     .attr('x', margin.left)
-    .attr('class', 'backgroundRect')
     .attr('y', margin.top)
+    .attr('class', 'backgroundRect')
     .attr('width', width - margin.left - margin.right)
     .attr('height', height - margin.top - margin.bottom)
     .style('fill', 'transparent');
@@ -86,17 +87,15 @@ function drawArea(props: IDrawAreaProps): void {
     .append('clipPath')
     .attr('id', 'circles-rect-clip-' + index)
     .append('rect')
-    .attr('x', -7)
-    .attr('y', -7)
+    .attr('x', 0)
+    .attr('y', 0)
     .attr(
       'width',
-      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius + 4,
-      // + circle-diameter(2 * CircleEnum.ActiveRadius) + stroke-width(4)
+      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius,
     )
     .attr(
       'height',
-      height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius + 4,
-      // + circle-diameter(2 * CircleEnum.ActiveRadius) + stroke-width(4)
+      height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius,
     );
 }
 
