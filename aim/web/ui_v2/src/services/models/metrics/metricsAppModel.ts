@@ -37,7 +37,7 @@ function getConfig(): IMetricAppConfig {
       chartPanelRef: { current: null },
     },
     grouping: {
-      color: [],
+      color: ['params.hparams.lr'],
       style: [],
       chart: [],
     },
@@ -49,6 +49,7 @@ function getConfig(): IMetricAppConfig {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
+      aggregated: false,
       focusedState: {
         key: null,
         xValue: null,
@@ -105,10 +106,43 @@ function processData(data: IRun[]): IMetric[][] {
       }),
     );
   });
-  return [
-    metrics.filter((_, i) => i % 3 === 0),
-    metrics.filter((_, i) => i % 3 !== 0),
-  ];
+  return [metrics];
+}
+
+function groupData(data: IMetric[]) {
+  const grouping = model.getState()!.config!.grouping;
+  const groupByColor = grouping.color;
+  const groupByStyle = grouping.style;
+  const groupByChart = grouping.chart;
+  if (
+    groupByColor.length === 0 &&
+    groupByStyle.length === 0 &&
+    groupByChart.length === 0
+  ) {
+    return [data];
+  }
+
+  const groupValues: { [key: string]: { config: unknown; data: IMetric[] } } =
+    {};
+
+  for (let i = 0; i < data.length; i++) {
+    const groupValue: { [key: string]: unknown } = {};
+
+    groupByColor.forEach((field) => {
+      groupValue[field] = _.get(data[i], field);
+    });
+    const groupKey = encode(groupValue);
+    if (groupValues.hasOwnProperty(groupKey)) {
+      groupValues[groupKey].data.push(data[i]);
+    } else {
+      groupValues[groupKey] = {
+        config: groupValue,
+        data: [data[i]],
+      };
+    }
+  }
+
+  return Object.values(groupValues);
 }
 
 function getDataAsLines(
@@ -151,7 +185,7 @@ function getDataAsLines(
 
 function getDataAsTableRows(
   xValue: number | null = null,
-): IMetricTableRowData[][] {
+): IMetricTableRowData[][] | any {
   const metricsData = model.getState()?.data;
   if (!metricsData) {
     return [];
@@ -163,7 +197,7 @@ function getDataAsTableRows(
         xValue === null
           ? null
           : getClosestValue(metric.data.iterations as any, xValue).index;
-      return {
+      const rowValues: { [key: string]: unknown } = {
         key: metric.key,
         dasharray: metric.dasharray,
         color: metric.color,
@@ -178,6 +212,12 @@ function getDataAsTableRows(
           closestIndex === null ? '-' : metric.data.iterations[closestIndex]
         }`,
       };
+      _.forEach(metric.run.params, (paramsValues, paramsKey) =>
+        _.forEach(paramsValues, (param, key) => {
+          rowValues[`${paramsKey}.${key}`] = param;
+        }),
+      );
+      return rowValues;
     }),
   );
 }

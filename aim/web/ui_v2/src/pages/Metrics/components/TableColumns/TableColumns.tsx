@@ -2,7 +2,7 @@ import React from 'react';
 import { Chip } from '@material-ui/core';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-function getTableColumns(): ITableColumn[] {
+function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
   return [
     {
       dataKey: 'experiment',
@@ -28,8 +28,8 @@ function getTableColumns(): ITableColumn[] {
       dataKey: 'context',
       key: 'context',
       title: 'Context',
-      cellRenderer: ({ cellData }) =>
-        (cellData as string[]).map((c, i) => (
+      cellRenderer: (data: any) =>
+        (data.cellData as string[]).map((c, i) => (
           <Chip
             key={i}
             variant='outlined'
@@ -52,7 +52,14 @@ function getTableColumns(): ITableColumn[] {
       title: 'Iteration',
       width: 150,
     },
-  ];
+  ].concat(
+    paramColumns.map((param) => ({
+      dataKey: param,
+      key: param,
+      title: param,
+      width: 150,
+    })),
+  );
 }
 
 export default getTableColumns;

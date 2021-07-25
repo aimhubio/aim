@@ -32,6 +32,7 @@ interface IMetricAppConfig {
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
+    aggregated: boolean;
     focusedState: {
       key: string | null;
       xValue: number | null;

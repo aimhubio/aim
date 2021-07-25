@@ -118,7 +118,7 @@ function Metrics(
                   ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
-                  data={[...props.tableData[0], ...props.tableData[1]]}
+                  data={[...props.tableData[0]]}
                   columns={props.tableColumns}
                   onRowHover={props.onTableRowHover}
                 />
