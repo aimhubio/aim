@@ -16,14 +16,9 @@ from aim.web.api.commits.models import Commit, TFSummaryLog, Tag
 from aim.web.api.db import get_session
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.api.commits.utils import (
-    select_tf_summary_scalars,
-    separate_select_statement,
-    is_tf_run,
-    process_trace_record,
-    process_custom_aligned_run,
-    runs_resp_generator,
-    nested_runs_dict_constructor,
-    metric_search_response_streamer
+    aligned_traces_dict_constructor,
+    query_traces_dict_constructor,
+    encoded_tree_streamer
 )
 
 commits_router = APIRouter()
@@ -89,19 +84,11 @@ async def commits_metric_custom_align_api(request: Request):
     requested_runs = request_data.get('runs')
     if not (x_axis_metric_name and requested_runs):
         HTTPException(status_code=403)
-    processed_runs = []
 
-    for run_data in requested_runs:
-        processed_run = process_custom_aligned_run(project, run_data, x_axis_metric_name)
-        if processed_run:
-            processed_runs.append(processed_run)
+    processed_runs = aligned_traces_dict_constructor(requested_runs, x_axis_metric_name)
+    encoded_runs_tree = treeutils.encode_tree(processed_runs)
 
-    response = {
-        'runs': [],
-    }
-
-    return StreamingResponse(runs_resp_generator(response, processed_runs, ['params', 'date']),
-                             media_type='application/json')
+    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
 @commits_router.get('/search/metric/')
@@ -119,10 +106,10 @@ async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] =
     search_statement = q.strip()
 
     traces = project.repo.traces(query=search_statement)
-    runs_dict = nested_runs_dict_constructor(traces, steps_num, x_axis)
+    runs_dict = query_traces_dict_constructor(traces, steps_num, x_axis)
     flat_encoded_runs_tree = treeutils.encode_tree(runs_dict)
 
-    return StreamingResponse(metric_search_response_streamer(flat_encoded_runs_tree))
+    return StreamingResponse(encoded_tree_streamer(flat_encoded_runs_tree))
 
 
 @commits_router.get('/search/dictionary/')

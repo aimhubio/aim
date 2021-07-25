@@ -1,5 +1,5 @@
 # sdk
-aimrocks==0.0.2
+aimrocks==0.0.4
 aimrecords==0.0.7 # to delete
 anytree>=2.8.0 # to delete
 click>=7.0

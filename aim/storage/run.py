@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from aim.storage.repo import Repo
 
 
-
 class Run:
 
     contexts: Dict[Context, int] = dict()
