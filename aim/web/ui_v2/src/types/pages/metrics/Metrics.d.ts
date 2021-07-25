@@ -35,6 +35,13 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   axesScaleType: IAxesScaleState;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;
+  focusedState: {
+    key: string | null;
+    xValue: number | null;
+    yValue: numbae | null;
+    active: boolean;
+    chartIndex: number | null;
+  };
 }
 
 export interface IOnSmoothingChange {

@@ -11,6 +11,7 @@ import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { ILine } from 'types/components/LineChart/LineChart';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
 
@@ -52,7 +53,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       //options
-      lineChartData={metricAppModel.getDataAsLines()}
+      lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
       tableData={metricAppModel.getDataAsTableRows()}
       tableColumns={getTableColumns()}
@@ -68,6 +69,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
+      focusedState={metricsData?.config?.chart.focusedState as any}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}

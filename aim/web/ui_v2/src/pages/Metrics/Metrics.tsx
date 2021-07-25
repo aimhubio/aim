@@ -60,7 +60,7 @@ function Metrics(
             className={classes.chartContainer}
             item
           >
-            {!!props.lineChartData[0]?.length && (
+            {!!props.lineChartData?.[0]?.length && (
               <ChartPanel
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
@@ -72,6 +72,7 @@ function Metrics(
                     displayOutliers: props.displayOutliers,
                     zoomMode: props.zoomMode,
                     highlightMode: props.highlightMode,
+                    focusedState: props.focusedState,
                   },
                 ]}
                 controls={

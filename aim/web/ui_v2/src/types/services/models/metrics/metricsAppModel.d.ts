@@ -10,7 +10,8 @@ import { IRun } from './runModel';
 export interface IMetricAppModelState {
   rawData: IRun[];
   config: IMetricAppConfig;
-  collection: IMetric[][];
+  data: IMetric[][];
+  lineChartData: ILine[][];
 }
 
 interface IMetricAppConfig {
@@ -31,6 +32,13 @@ interface IMetricAppConfig {
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
+    focusedState: {
+      key: string | null;
+      xValue: number | null;
+      yValue: numbae | null;
+      active: boolean;
+      chartIndex: number | null;
+    };
   };
 }
 
@@ -44,10 +52,4 @@ export interface IMetricTableRowData {
   context: string[];
   value: string;
   iteration: string;
-}
-
-export interface IGetDataAsLinesProps {
-  smoothingFactor?: number;
-  smoothingAlgorithm?: string;
-  collection?: IMetric[][];
 }
