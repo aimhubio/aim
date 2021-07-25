@@ -365,7 +365,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function setActiveLine(lineKey: string, chartIndex: number) {
-    if (index === chartIndex) {
+    if (index === chartIndex && !hasFocusedCircleRef.current) {
       if (attributesRef.current?.x && attributesRef.current.y) {
         const { mouseX, mouseY } = getCoordinates({
           mouse: [attributesRef.current.x, attributesRef.current.y],
@@ -415,7 +415,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     attributesNodeRef.current
       .selectAll('circle')
       .attr('r', CircleEnum.Radius)
-      .classed('active', false);
+      .classed('active', false)
+      .classed('focus', false);
 
     attributesNodeRef.current.select('#HoverLine-x').remove();
     if (yAxisLabelNodeRef.current) {
@@ -424,15 +425,42 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   }
 
-  function handlePointClick(this: SVGElement, circle: INearestCircle) {
+  function handlePointClick(
+    this: SVGElement,
+    event: MouseEvent,
+    circle: INearestCircle,
+  ) {
     hasFocusedCircleRef.current = true;
+
+    const mouse: [number, number] = [
+      circle.x + margin.left,
+      circle.y + margin.top,
+    ];
+    const activePointData = updateHoverAttributes(mouse);
+
+    if (typeof onMouseOver === 'function') {
+      onMouseOver(index, mouse, activePointData);
+    }
+
     bgRectNodeRef.current.on('click', () => {
       hasFocusedCircleRef.current = false;
     });
+
     linesNodeRef.current.on('click', () => {
       hasFocusedCircleRef.current = false;
     });
-    d3.select(this).classed('active', false).classed('focus', true);
+
+    attributesNodeRef.current
+      .selectAll('circle')
+      .attr('r', CircleEnum.Radius)
+      .classed('active', false)
+      .classed('focus', false);
+
+    attributesNodeRef.current
+      .select(`[id=Circle-${circle.key}]`)
+      .classed('focus', true)
+      .attr('r', CircleEnum.ActiveRadius)
+      .raise();
   }
 
   function handleMouseMove(event: MouseEvent): void {

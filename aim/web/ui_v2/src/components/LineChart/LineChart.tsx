@@ -34,7 +34,6 @@ const LineChart = React.forwardRef(function LineChart(
     curveInterpolation,
   } = props;
 
-  debugger;
   const classes = useStyles();
 
   // boxes
@@ -182,6 +181,8 @@ const LineChart = React.forwardRef(function LineChart(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
+        onMouseLeave(index);
+        hasFocusedCircleRef.current = false;
         requestAnimationFrame(renderChart);
       }
     },

@@ -129,8 +129,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       <Grid item>
         <Paper className={classes.paper}>{controls}</Paper>
       </Grid>
-      {popover && (
+      {!!popover && (
         <Popover
+          id={'lineChart-popover'}
           open={!!(data.length > 0 && popover)}
           anchorReference='anchorPosition'
           anchorPosition={popover}
