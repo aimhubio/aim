@@ -6,9 +6,10 @@ import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
-import LineChart from 'components/LineChart/LineChart';
 import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
+import { ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
 
@@ -56,30 +57,24 @@ function Metrics(
           </Grid>
           <Grid
             ref={props.chartElemRef}
-            style={{
-              flex: '0.5 1 0',
-            }}
+            className={classes.chartContainer}
             item
           >
-            <Grid container className={classes.fullHeight} spacing={1}>
-              <Grid item xs>
-                <Paper className={classes.paper}>
-                  {props.lineChartData.length ? (
-                    <LineChart
-                      index={0}
-                      key='uniqueKey'
-                      data={props.lineChartData as any}
-                      axesScaleType={props.axesScaleType}
-                      curveInterpolation={props.curveInterpolation}
-                      displayOutliers={props.displayOutliers}
-                      zoomMode={props.zoomMode}
-                      highlightMode={props.highlightMode}
-                    />
-                  ) : null}
-                </Paper>
-              </Grid>
-              <Grid item>
-                <Paper className={classes.paper}>
+            {!!props.lineChartData[0]?.length && (
+              <ChartPanel
+                ref={props.chartPanelRef}
+                chartType={ChartTypeEnum.LineChart}
+                data={props.lineChartData as any}
+                chartProps={[
+                  {
+                    axesScaleType: props.axesScaleType,
+                    curveInterpolation: props.curveInterpolation,
+                    displayOutliers: props.displayOutliers,
+                    zoomMode: props.zoomMode,
+                    highlightMode: props.highlightMode,
+                  },
+                ]}
+                controls={
                   <Controls
                     toggleDisplayOutliers={props.toggleDisplayOutliers}
                     displayOutliers={props.displayOutliers}
@@ -91,9 +86,10 @@ function Metrics(
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     axesScaleType={props.axesScaleType}
                   />
-                </Paper>
-              </Grid>
-            </Grid>
+                }
+                onActivePointChange={props.onActivePointChange}
+              />
+            )}
           </Grid>
           <div ref={props.resizeElemRef}>
             <Box
@@ -106,15 +102,21 @@ function Metrics(
               <MoreHorizIcon />
             </Box>
           </div>
-          <Grid style={{ flex: '0.5 1 0' }} item xs ref={props.tableElemRef}>
+          <Grid
+            item
+            xs
+            ref={props.tableElemRef}
+            className={classes.tableContainer}
+          >
             <Paper className={classes.paper}>
               {props.tableData.length ? (
                 <Table
                   ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
-                  data={props.tableData[0]}
+                  data={[...props.tableData[0], ...props.tableData[1]]}
                   columns={props.tableColumns}
+                  onRowHover={props.onTableRowHover}
                 />
               ) : null}
             </Paper>

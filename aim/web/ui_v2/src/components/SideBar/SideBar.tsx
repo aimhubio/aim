@@ -40,7 +40,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 key={index}
               >
                 <ListItem className={classes.listItem} button>
-                  <TimelineOutlinedIcon />
+                  <TimelineOutlinedIcon className={classes.listItemIcon} />
                   <ListItemText
                     primaryTypographyProps={{ className: classes.listItemText }}
                     primary={displayName}

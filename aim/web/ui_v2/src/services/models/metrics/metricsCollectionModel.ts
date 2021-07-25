@@ -89,7 +89,10 @@ function processData(data: IRun[]): IMetric[][] {
       }),
     );
   });
-  return [metrics];
+  return [
+    metrics.filter((_, i) => i % 3 === 0),
+    metrics.filter((_, i) => i % 3 !== 0),
+  ];
 }
 
 function getDataAsLines(props: IGetDataAsLinesProps | null = null): ILine[][] {
@@ -103,14 +106,14 @@ function getDataAsLines(props: IGetDataAsLinesProps | null = null): ILine[][] {
       let yValues;
       if (props) {
         yValues =
-          props.algorithm === SmoothingAlgorithmEnum.EMA
+          props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
             ? calculateExponentialMovingAverage(
                 [...metric.data.values],
-                props.factor,
+                props.smoothingFactor,
               )
             : calculateCentralMovingAverage(
                 [...metric.data.values],
-                props.factor,
+                props.smoothingFactor,
               );
       } else {
         yValues = [...metric.data.values];

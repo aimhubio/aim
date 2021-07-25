@@ -8,11 +8,19 @@ export default makeStyles(({ spacing }) => ({
   },
   fullHeight: {
     height: '-webkit-fill-available',
+    overflow: 'scroll',
   },
   section: {
     padding: spacing(0.5),
   },
   resize: {
     cursor: 'ns-resize',
+  },
+  chartContainer: {
+    flex: '0.5 1 0',
+    minHeight: 372,
+  },
+  tableContainer: {
+    flex: '0.5 1 0',
   },
 }));

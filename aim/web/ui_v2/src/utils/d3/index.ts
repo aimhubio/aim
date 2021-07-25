@@ -41,10 +41,17 @@ enum ScaleEnum {
   Point = 'point',
 }
 
+enum ChartTypeEnum {
+  LineChart = 'LineChart',
+  ParPlot = 'ParPlot',
+  ScatterPlot = 'ScatterPlot',
+}
+
 export {
   CircleEnum,
   CurveEnum,
   ScaleEnum,
+  ChartTypeEnum,
   XAlignmentEnum,
   clearArea,
   drawArea,

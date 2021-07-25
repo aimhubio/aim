@@ -15,8 +15,9 @@ import { ILineChartProps } from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
 
-function LineChart(
+const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
+  ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
@@ -142,6 +143,7 @@ function LineChart(
       linesNodeRef,
       highlightedNodeRef,
       highlightMode,
+      callback: props.onMouseOver,
     });
 
     if (zoomMode) {
@@ -194,6 +196,17 @@ function LineChart(
     requestAnimationFrame(renderChart);
   }, [props.data, renderChart, zoomMode, displayOutliers, highlightMode]);
 
+  // TODO: improve setting of ref methods
+  React.useImperativeHandle(ref, () => ({
+    ...axesRef.current,
+    ...brushRef.current,
+    ...linesRef.current,
+    ...attributesRef.current,
+    setActiveLine: (lineKey: string) => {
+      attributesRef.current?.setActiveLine(lineKey);
+    },
+  }));
+
   return (
     <div
       ref={parentRef}
@@ -202,6 +215,6 @@ function LineChart(
       <div ref={visAreaRef} />
     </div>
   );
-}
+});
 
 export default React.memo(LineChart);
