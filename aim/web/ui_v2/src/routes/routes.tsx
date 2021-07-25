@@ -25,7 +25,7 @@ const routes = {
     showInSidebar: true,
     displayName: 'Metrics',
   },
-  CORRELATIONS: {
+  PARAMS: {
     path: PATHS.PARAMS,
     component: Params,
     showInSidebar: true,

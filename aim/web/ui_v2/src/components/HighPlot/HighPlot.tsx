@@ -1,17 +1,18 @@
 import React from 'react';
+import * as d3 from 'd3';
 import useStyles from './highPlotStyle';
+//delete before commit
+import { mockData } from './helper';
 
 import {
   drawArea,
   clearArea,
-  drawAxes,
-  drawLines,
-  processData,
-  drawBrush,
-  drawHoverAttributes,
+  drawParallelAxes,
+  drawParallelLines,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
+import './highPlot.scss';
 
 const HighPlot = (
   props: IHighPlotProps,
@@ -25,7 +26,7 @@ const HighPlot = (
   const visBoxRef = React.useRef({
     margin: {
       top: 24,
-      right: 20,
+      right: 60,
       bottom: 30,
       left: 60,
     },
@@ -43,9 +44,9 @@ const HighPlot = (
   const axesNodeRef = React.useRef<any>(null);
   const linesNodeRef = React.useRef<any>(null);
   const attributesNodeRef = React.useRef(null);
-  const xAxisLabelNodeRef = React.useRef(null);
-  const yAxisLabelNodeRef = React.useRef(null);
-  const highlightedNodeRef = React.useRef(null);
+
+  // methods and values refs
+  const attributesRef = React.useRef<any>({});
 
   const draw = React.useCallback((): void => {
     drawArea({
@@ -60,6 +61,26 @@ const HighPlot = (
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
+    });
+
+    drawParallelAxes({
+      axesNodeRef,
+      visBoxRef,
+      attributesRef,
+      dimensions: mockData.dimensions,
+    });
+    // drawParallelLines({
+    //   linesNodeRef,
+    //   attributesRef,
+    //   dimensions: mockData.dimensions,
+    //   data: mockData.data,
+    // });
+
+    drawParallelLines({
+      linesNodeRef,
+      attributesRef,
+      dimensions: mockData.dimensions,
+      data: mockData.data,
     });
 
     // const { xScale, yScale } = getAxisScale({
@@ -160,7 +181,7 @@ const HighPlot = (
   }, [renderChart]);
 
   return (
-    <div ref={parentRef} className={`${classes.chart}`}>
+    <div ref={parentRef} className={`${classes.chart} HighPlot__container`}>
       <div ref={visAreaRef} />
     </div>
   );

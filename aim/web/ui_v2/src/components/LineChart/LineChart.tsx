@@ -29,7 +29,6 @@ function LineChart(
     curveInterpolation,
   } = props;
   const classes = useStyles();
-  console.log(data);
   // boxes
   const visBoxRef = React.useRef({
     margin: {
@@ -94,11 +93,16 @@ function LineChart(
       attributesNodeRef,
     });
 
-    const { xScale, yScale } = getAxesScale({
-      visBoxRef,
-      axesScaleType,
-      min,
-      max,
+    const { width, height, margin } = visBoxRef.current;
+    const xScale = getAxesScale({
+      domainData: [min.x, max.x],
+      rangeData: [0, width - margin.left - margin.right],
+      scaleType: axesScaleType.xAxis,
+    });
+    const yScale = getAxesScale({
+      domainData: [min.y, max.y],
+      rangeData: [height - margin.top - margin.bottom, 0],
+      scaleType: axesScaleType.yAxis,
     });
 
     attributesRef.current.xScale = xScale;

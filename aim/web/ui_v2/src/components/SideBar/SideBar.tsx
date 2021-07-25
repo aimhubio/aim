@@ -1,5 +1,4 @@
 import React from 'react';
-import { values } from 'lodash-es';
 import { NavLink } from 'react-router-dom';
 import { ThemeContext } from 'components/Theme/Theme';
 import { IThemeContextValues } from 'types/components/Theme/Theme';
@@ -29,26 +28,26 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
         <ListItem className={classes.listItem}>
           <img className={classes.logo} src={logoImg} alt='logo' />
         </ListItem>
-        {values(routes).map((route, index) => {
+        {Object.values(routes).map((route, index) => {
           const { showInSidebar, path, displayName } = route;
 
-          return showInSidebar ? (
-            <NavLink
-              activeClassName={classes.anchorActive}
-              className={classes.anchor}
-              to={path}
-              key={index}
-            >
-              <ListItem className={classes.listItem} button>
-                <TimelineOutlinedIcon />
-                <ListItemText
-                  primaryTypographyProps={{ className: classes.listItemText }}
-                  primary={displayName}
-                />
-              </ListItem>
-            </NavLink>
-          ) : (
-            <></>
+          return (
+            showInSidebar && (
+              <NavLink
+                activeClassName={classes.anchorActive}
+                className={classes.anchor}
+                to={path}
+                key={index}
+              >
+                <ListItem className={classes.listItem} button>
+                  <TimelineOutlinedIcon />
+                  <ListItemText
+                    primaryTypographyProps={{ className: classes.listItemText }}
+                    primary={displayName}
+                  />
+                </ListItem>
+              </NavLink>
+            )
           );
         })}
         {/* <ListItem className={classes.listItem} onClick={handleTheme}>

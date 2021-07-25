@@ -36,7 +36,7 @@ const Params = (
           <Grid container className={classes.fullHeight} spacing={1}>
             <Grid item xs>
               <Paper className={classes.paper}>
-                <HighPlot index={0} />;
+                <HighPlot index={0} />
               </Paper>
             </Grid>
           </Grid>
