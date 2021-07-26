@@ -3,7 +3,7 @@ import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from '../AxesScalePopover/AxesScalePopover';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
-export type ScaleType = 'log' | 'linear';
+export type ScaleType = 'log' | 'linear' | 'point';
 
 export interface ILine {
   key: string;
