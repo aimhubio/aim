@@ -7,7 +7,6 @@ from aim.engine.configs import AIM_COMMIT_CONFIG_FILE_NAME
 
 from aim.storage.repo import Repo
 from aim.web.utils import get_root_path
-from aim.web.api.commits.utils import TFSummaryAdapter
 
 
 class Project:
@@ -19,7 +18,6 @@ class Project:
         self.path = root_path
         self.repo_path = repo_path
         self.description = ''
-        self.tf_enabled = TFSummaryAdapter.exists()
         # self.repo = AimRepo(repo_full_path=repo_path,
         #                     mode=AimRepo.READING_MODE)
         self.repo = Repo.from_path(self.repo_path)

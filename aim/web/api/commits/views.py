@@ -107,9 +107,9 @@ async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] =
 
     traces = project.repo.traces(query=search_statement)
     runs_dict = query_traces_dict_constructor(traces, steps_num, x_axis)
-    flat_encoded_runs_tree = treeutils.encode_tree(runs_dict)
+    encoded_runs_tree = treeutils.encode_tree(runs_dict)
 
-    return StreamingResponse(encoded_tree_streamer(flat_encoded_runs_tree))
+    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
 @commits_router.get('/search/dictionary/')
