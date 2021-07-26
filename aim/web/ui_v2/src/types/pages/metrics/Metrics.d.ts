@@ -38,7 +38,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   focusedState: {
     key: string | null;
     xValue: number | null;
-    yValue: numbae | null;
+    yValue: number | null;
     active: boolean;
     chartIndex: number | null;
   };

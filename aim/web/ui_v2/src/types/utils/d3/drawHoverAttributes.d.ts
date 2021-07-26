@@ -12,7 +12,6 @@ export interface IDrawHoverAttributesProps {
   attributesRef: React.MutableRefObject<{
     xScale?: IGetAxesScale['xScale'];
     yScale?: IGetAxesScale['yScale'];
-    attributesData: IProcessedData[];
     x: number;
     y: number;
     updateScales?: (
@@ -41,7 +40,7 @@ export interface IDrawHoverAttributesProps {
   focusedState: {
     key: string | null;
     xValue: number | null;
-    yValue: numbae | null;
+    yValue: number | null;
     active: boolean;
     chartIndex: number | null;
   };
