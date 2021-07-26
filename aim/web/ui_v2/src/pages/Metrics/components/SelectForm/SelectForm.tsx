@@ -1,81 +1,112 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  Select,
-  TextField,
-} from '@material-ui/core';
+import { Box, Chip, Grid, TextField, Button } from '@material-ui/core';
+import MultiSelect from 'components/MultiSelect/MultiSelect';
 
+const options = [
+  'best_loss',
+  'bleu',
+  'bsz',
+  'gnorm',
+  'loss',
+  'loss_scale',
+  'lr',
+  'nll_loss',
+  'ppl',
+  'train_wall',
+  'ups',
+  'wall',
+  'wpb',
+  'wps',
+];
 function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
+  const [fields, setFields] = React.useState<string[]>(options);
+  const [editMode, setEditMode] = React.useState<boolean>(false);
+
+  function onSelect(event: React.ChangeEvent<{ value: unknown }>) {
+    setFields(event.target.value as string[]);
+  }
+
+  function handleDelete(field: string) {
+    let fieldData = [...fields].filter((v) => v !== field);
+    setFields(fieldData);
+  }
+
+  function resetFields(): void {
+    setFields([]);
+  }
+
+  function toggleEditMode(): void {
+    setEditMode(!editMode);
+  }
+
   return (
-    <Grid container direction='column' spacing={1}>
+    <Grid container direction='column' spacing={1} wrap='nowrap'>
       <Grid item xs={12}>
-        <Grid container justify='space-between' alignItems='center' spacing={1}>
-          <Grid item xs={2}>
-            <FormControl fullWidth size='small' variant='outlined'>
-              <InputLabel htmlFor='outlined-native-simple'>
-                Select Metric
-              </InputLabel>
-              <Select
+        <Box
+          width='100%'
+          display='flex'
+          flexWrap='wrap'
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          {editMode ? (
+            <Box flex={1} mr={2}>
+              <TextField
                 fullWidth
-                native
-                label='Select Metric'
-                inputProps={{
-                  name: 'age',
-                  id: 'outlined-native-simple',
-                }}
-              >
-                <option aria-label='None' value='' />
-                <option value={10}>actor_loss</option>
-                <option value={20}>agg_metric</option>
-                <option value={30}>critic_loss</option>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={9}>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              placeholder='Metric expression'
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <Button size='small' variant='outlined'>
-              +
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={1} justify='space-between' alignItems='center'>
-          <Grid xs={2} item>
-            <Box
-              border={1}
-              borderRadius={4}
-              borderColor='grey.400'
-              display='flex'
-              height='100%'
-              justifyContent='flex-end'
-              alignItems='center'
-              padding={0.5}
-            >
-              Run
+                variant='outlined'
+                placeholder='Select statement e.g. select m:Metric if m.name in [“loss”, “accuract”] and m.run.lr > 10 return m'
+              />
             </Box>
-          </Grid>
-          <Grid xs={10} item>
-            <TextField
-              fullWidth
-              size='small'
+          ) : (
+            <>
+              <Box minWidth={130}>
+                <MultiSelect
+                  id={'SelectMetric'}
+                  values={fields}
+                  onSelect={onSelect}
+                  options={options}
+                  renderValue={() => 'Select Metric'}
+                  defaultValue='Select Metric'
+                />
+              </Box>
+              <Box flex='1' maxWidth='75%' display='flex' overflow='scroll'>
+                {fields.map((field: string) => {
+                  return (
+                    <Box key={field} mr={1}>
+                      <Chip
+                        label={field}
+                        onDelete={() => handleDelete(field)}
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </>
+          )}
+          <Box minWidth={140} display='flex'>
+            <Button
+              style={{ marginRight: 10 }}
               variant='outlined'
-              placeholder='Run expression'
-            />
-          </Grid>
-        </Grid>
+              onClick={resetFields}
+            >
+              X
+            </Button>
+            <Button variant='outlined' onClick={toggleEditMode}>
+              {editMode ? '!' : ''} E
+            </Button>
+          </Box>
+        </Box>
       </Grid>
+      {editMode ? null : (
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            size='small'
+            variant='outlined'
+            placeholder='Run expression'
+          />
+        </Grid>
+      )}
     </Grid>
   );
 }

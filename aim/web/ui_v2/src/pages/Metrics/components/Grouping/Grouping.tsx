@@ -3,7 +3,13 @@ import { Button, Grid } from '@material-ui/core';
 
 function Grouping(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Grid container spacing={1} justify='center' alignItems='center'>
+    <Grid
+      container
+      spacing={1}
+      justify='center'
+      alignItems='center'
+      wrap='nowrap'
+    >
       Group By:
       <Grid item>
         <Button color='primary' variant='outlined' size='small'>
