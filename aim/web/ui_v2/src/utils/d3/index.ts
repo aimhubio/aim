@@ -6,6 +6,8 @@ import processData from './processData';
 import getAxesScale from './getAxesScale';
 import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
+import drawParallelAxes from './drawParallelAxes';
+import drawParallelLines from './drawParallelLines';
 
 enum XAlignmentEnum {
   Epoch = 'epoch',
@@ -36,6 +38,7 @@ enum CurveEnum {
 enum ScaleEnum {
   Log = 'log',
   Linear = 'linear',
+  Point = 'point',
 }
 
 enum ChartTypeEnum {
@@ -58,4 +61,6 @@ export {
   getAxesScale,
   drawBrush,
   drawHoverAttributes,
+  drawParallelAxes,
+  drawParallelLines,
 };
