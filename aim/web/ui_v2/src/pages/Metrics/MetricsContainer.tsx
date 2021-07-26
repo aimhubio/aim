@@ -12,6 +12,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ILine } from 'types/components/LineChart/LineChart';
+import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
 
@@ -55,7 +56,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       //options
       lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricAppModel.getDataAsTableRows()}
+      tableData={metricsData?.tableData as IMetricTableRowData[][]}
       tableColumns={getTableColumns()}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
       curveInterpolation={

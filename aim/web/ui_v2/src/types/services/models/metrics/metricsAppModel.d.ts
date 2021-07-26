@@ -12,6 +12,7 @@ export interface IMetricAppModelState {
   config: IMetricAppConfig;
   data: IMetric[][];
   lineChartData: ILine[][];
+  tableData: IMetricTableRowData[][];
 }
 
 interface IMetricAppConfig {

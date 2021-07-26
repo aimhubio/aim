@@ -78,6 +78,7 @@ function getMetricsData() {
           rawData: data,
           data: processedData,
           lineChartData: getDataAsLines(processedData),
+          tableData: getDataAsTableRows(processedData),
         });
       }),
     abort,
@@ -184,14 +185,14 @@ function getDataAsLines(
 }
 
 function getDataAsTableRows(
+  processedData: IMetric[][],
   xValue: number | null = null,
 ): IMetricTableRowData[][] | any {
-  const metricsData = model.getState()?.data;
-  if (!metricsData) {
+  if (!processedData) {
     return [];
   }
 
-  return metricsData.map((metrics: IMetric[]) =>
+  return processedData.map((metrics: IMetric[]) =>
     metrics.map((metric: IMetric) => {
       const closestIndex =
         xValue === null
@@ -283,9 +284,16 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 
 function onActivePointChange(activePointData: IActivePointData): void {
   const tableRef: any = model.getState()?.config?.refs.tableRef;
+  const tableData = getDataAsTableRows(
+    model.getState()!.data!,
+    activePointData.xValue,
+  );
+  const stateUpdate: Partial<IMetricAppModelState> = {
+    tableData,
+  };
   if (tableRef) {
     tableRef.current?.updateData({
-      newData: getDataAsTableRows(activePointData.xValue).flat(),
+      newData: tableData.flat(),
     });
     tableRef.current?.setHoveredRow(activePointData.key);
   }
@@ -295,8 +303,10 @@ function onActivePointChange(activePointData: IActivePointData): void {
       active: false,
       ...activePointData,
     };
-    model.setState({ config: configData });
+    stateUpdate.config = configData;
   }
+
+  model.setState(stateUpdate);
 }
 
 function onTableRowHover(rowKey: string): void {
