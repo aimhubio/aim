@@ -20,6 +20,7 @@ import 'components/LineChart/LineChart.css';
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     index,
+    data,
     xAlignment,
     attributesNodeRef,
     attributesRef,
@@ -57,7 +58,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       margin,
     });
     const { nearestCircles, closestCircle } = getNearestCircles({
-      data: attributesRef.current.attributesData,
+      data,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -183,7 +184,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     });
 
     const { nearestCircles } = getNearestCircles({
-      data: attributesRef.current.attributesData,
+      data,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -235,7 +236,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   });
 
-  if (focusedState.key === null) {
+  if (focusedState.key !== null) {
+    setActiveLine(focusedState.key, true);
+  } else if (focusedState.xValue !== null) {
     updateHoverAttributes(
       [
         attributesRef.current.xScale(focusedState.xValue),
@@ -243,8 +246,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       ],
       true,
     );
-  } else {
-    setActiveLine(focusedState.key, true);
   }
 }
 

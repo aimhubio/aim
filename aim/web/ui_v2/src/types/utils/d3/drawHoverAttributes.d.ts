@@ -6,6 +6,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IDrawHoverAttributesProps {
   index: number;
+  data: IProcessedData[];
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{

@@ -100,7 +100,6 @@ const LineChart = React.forwardRef(function LineChart(
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
-    attributesRef.current.attributesData = processedData;
 
     drawAxes({
       axesNodeRef,
@@ -122,6 +121,7 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     drawHoverAttributes({
+      data: processedData,
       index,
       xAlignment,
       visAreaRef,
