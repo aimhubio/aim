@@ -16,16 +16,17 @@ function createAPIRequestWrapper<ResponseDataType>(
           .then((response) => (stream ? response.body : response.json()))
           .then((data: ResponseDataType | ReadableStream) => {
             if (stream) {
-              return streamHandler(data as ReadableStream);
+              streamHandlerThroughGenerator(data as ReadableStream);
             } else {
               resolve(data as ResponseDataType);
             }
           })
-          .then((stream) => {
+          .then((data: any) => {
             // Respond with our stream
-            return new Response(stream, {
-              headers: { 'Content-Type': 'application/json' },
-            }).json();
+            console.log('========', data);
+            // return new Response(data, {
+            //   headers: { 'Content-Type': 'application/json' },
+            // }).json();
           })
           .catch((err) => {
             if (err.name === 'AbortError') {
@@ -41,35 +42,68 @@ function createAPIRequestWrapper<ResponseDataType>(
 
 function streamHandler(data: ReadableStream) {
   const reader = data.getReader();
+  let i = 0;
+  let prevValue: Uint8Array;
   return new ReadableStream({
     start(controller) {
-      function push() {
+      async function push() {
         // "done" is a Boolean and value a "Uint8Array"
-        reader.read().then((params: any) => {
-          const { done, value } = params;
-          // If there is no more data to read
-          if (done) {
-            console.log('done', done);
-            controller.close();
-            return;
-          }
-          // Get the data and send it to the browser via the controller
+        const { done, value } = await reader.read();
+        // If there is no more data to read
+        if (done) {
+          controller.close();
+          return;
+        }
+        // Get the data and send it to the browser via the controller
 
-          // 1. Uint8Array to ArrayBuffer
-          // 2. tuple
-          // 3. decode
-          // 4. fold tree to get JSON
-
-          controller.enqueue(value);
-          // Check chunks by logging to the console
-          console.log(done, value);
-          push();
-        });
+        console.log(done, value);
+        controller.enqueue(value);
+        i++;
+        push();
       }
 
-      push();
+      return push();
     },
   });
+}
+
+async function* makeStreamChunkIterator(data: ReadableStream) {
+  const utf8Encoder = new TextEncoder();
+  const utf8Decoder = new TextDecoder('utf-8');
+  let reader = data.getReader();
+  let { value: chunk, done: readerDone } = await reader.read();
+
+  // decode chunk
+  chunk = chunk ? utf8Decoder.decode(chunk, { stream: true }) : '';
+
+  let re = /\r\n|\n|\r/gm;
+  let startIndex = 0;
+  for (;;) {
+    let result = re.exec(chunk);
+    if (!result) {
+      if (readerDone) {
+        break;
+      }
+      let remainder = chunk.substr(startIndex);
+      ({ value: chunk, done: readerDone } = await reader.read());
+      chunk =
+        remainder + (chunk ? utf8Decoder.decode(chunk, { stream: true }) : '');
+      startIndex = re.lastIndex = 0;
+      continue;
+    }
+    yield utf8Encoder.encode(chunk.substr(startIndex, result.index));
+    startIndex = re.lastIndex;
+  }
+  if (startIndex < chunk.length) {
+    // last line didn't end in a newline char
+    yield utf8Encoder.encode(chunk.substr(startIndex));
+  }
+}
+
+async function streamHandlerThroughGenerator(data: ReadableStream) {
+  for await (const chunk of makeStreamChunkIterator(data)) {
+    // console.log(chunk);
+  }
 }
 
 function getStream<ResponseDataType>(

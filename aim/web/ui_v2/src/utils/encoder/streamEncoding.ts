@@ -18,38 +18,39 @@ const OBJECT = 7;
 const ArrayFlag = {};
 const ObjectFlag = {};
 
+let utf8decoder = new TextDecoder('utf-8');
+
 function decodeNone(buffer: ArrayBuffer) {
   return null;
 }
 
 function decodeBool(buffer: ArrayBuffer) {
-  return struct('?').unpack(buffer)[0];
+  return struct('<?').unpack(buffer)[0];
 }
 
 function decodeInt(buffer: ArrayBuffer) {
   const len = buffer.byteLength;
-  if (len === struct('q').size) {
-    return struct('q').unpack(buffer)[0];
-  } else if (len === struct('l').size) {
-    return struct('l').unpack(buffer)[0];
-  } else if (len === struct('h').size) {
-    return struct('h').unpack(buffer)[0];
+  if (len === struct('<q').size) {
+    return struct('<q').unpack(buffer)[0];
+  } else if (len === struct('<l').size) {
+    return struct('<l').unpack(buffer)[0];
+  } else if (len === struct('<h').size) {
+    return struct('<h').unpack(buffer)[0];
   }
 }
 
 function decodeFloat(buffer: ArrayBuffer) {
   const len = buffer.byteLength;
-  if (len === struct('d').size) {
-    return struct('d').unpack(buffer)[0];
-  } else if (len === struct('f').size) {
-    return struct('f').unpack(buffer)[0];
-  } else if (len === struct('e').size) {
-    return struct('e').unpack(buffer)[0];
+  if (len === struct('<d').size) {
+    return struct('<d').unpack(buffer)[0];
+  } else if (len === struct('<f').size) {
+    return struct('<f').unpack(buffer)[0];
+  } else if (len === struct('<e').size) {
+    return struct('<e').unpack(buffer)[0];
   }
 }
 
 function decodeString(buffer: ArrayBuffer) {
-  let utf8decoder = new TextDecoder();
   return utf8decoder.decode(buffer);
 }
 
