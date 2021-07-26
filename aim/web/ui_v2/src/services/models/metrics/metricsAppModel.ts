@@ -217,9 +217,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   if (configData?.chart) {
     // TODO update lines without reRender
     configData.chart = { ...configData.chart, ...props };
-    console.log(configData.chart, props);
-
-    model.setState({ config: { ...configData } });
+    model.setState({ config: configData });
   }
 }
 
