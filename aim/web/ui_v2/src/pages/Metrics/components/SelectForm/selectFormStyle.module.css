@@ -6,12 +6,9 @@
     display: flex;
 }
 
-.selectForm__tags {
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    padding: 4px;
-    border-radius: 4px;
-    flex: 1;
-    max-width: 75%;
+.selectForm__tags { 
+    padding: 4px; 
+    max-width: 74em; 
     display: flex;
-    overflow: scroll;
+    overflow: auto;
 }

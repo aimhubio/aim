@@ -21,20 +21,27 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
       <BrowserRouter>
         <ProjectWrapper />
         <Theme>
-          <SideBar />
-          <Box component='main' bgcolor='grey.200' className={classes.main}>
-            <React.Suspense fallback={null}>
-              <Switch>
-                {Object.values(routes).map((route, index) => {
-                  const { component: Component, path } = route;
-                  return (
-                    <Route path={path} key={index}>
-                      <Component />
-                    </Route>
-                  );
-                })}
-              </Switch>
-            </React.Suspense>
+          <Box display='flex'>
+            <SideBar />
+            <Box
+              flex='1 1 0%'
+              component='main'
+              bgcolor='grey.200'
+              className={classes.main}
+            >
+              <React.Suspense fallback={null}>
+                <Switch>
+                  {Object.values(routes).map((route, index) => {
+                    const { component: Component, path } = route;
+                    return (
+                      <Route path={path} key={index}>
+                        <Component />
+                      </Route>
+                    );
+                  })}
+                </Switch>
+              </React.Suspense>
+            </Box>
           </Box>
         </Theme>
       </BrowserRouter>

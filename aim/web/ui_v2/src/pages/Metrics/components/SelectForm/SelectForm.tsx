@@ -1,35 +1,58 @@
 import React from 'react';
-import { Box, Chip, Grid, TextField, Button } from '@material-ui/core';
-import MultiSelect from 'components/MultiSelect/MultiSelect';
+import {
+  Box,
+  Chip,
+  Grid,
+  TextField,
+  Button,
+  Checkbox,
+} from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import styles from './selectFormStyle.module.css';
+import {
+  CheckBox as CheckBoxIcon,
+  CheckBoxOutlineBlank,
+} from '@material-ui/icons';
 
-const metricOptions = [
-  'best_loss',
-  'bleu',
-  'bsz',
-  'gnorm',
-  'loss',
-  'loss_scale',
-  'lr',
-  'nll_loss',
-  'ppl',
-  'train_wall',
-  'ups',
-  'wall',
-  'wpb',
-  'wps',
+const selectOptions = [
+  { name: 'bleu', group: 'metric' },
+  { name: 'best_loss', group: 'metric' },
+  { name: 'bsz', group: 'metric' },
+  { name: 'gnorm', group: 'metric' },
+  { name: 'loss', group: 'metric' },
+  { name: 'loss_scale', group: 'metric' },
+  { name: 'lr', group: 'metric' },
+  { name: 'nll_loss', group: 'metric' },
+  { name: 'ppl', group: 'metric' },
+  { name: 'train_wall', group: 'metric' },
+  { name: 'ups', group: 'metric' },
+  { name: 'wall', group: 'metric' },
+  { name: 'wpb', group: 'metric' },
+  { name: 'wps', group: 'metric' },
+  { name: 'label_smoothing', group: 'hparams' },
+  { name: 'learning_rate', group: 'hparams' },
+  { name: 'max_k', group: 'hparams' },
+  { name: 'max_tokens', group: 'hparams' },
+  { name: 'method', group: 'hparams' },
+  { name: 'normalize', group: 'hparams' },
+  { name: 'pooling', group: 'hparams' },
+  { name: 'seed', group: 'hparams' },
+  { name: 'seg', group: 'hparams' },
+  { name: 'upscale_primary', group: 'hparams' },
+  { name: 'warmup_steps', group: 'hparams' },
 ];
+
 function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
-  const [fields, setFields] = React.useState<string[]>([]);
+  const [fields, setFields] = React.useState<any>([]);
   const [editMode, setEditMode] = React.useState<boolean>(false);
 
-  function onSelect(event: React.ChangeEvent<{ value: unknown }>) {
-    setFields(event.target.value as string[]);
+  function onSelect(event: object, value: any, reason: string): void {
+    setFields([...value]);
   }
 
-  function handleDelete(field: string): void {
-    let fieldData = [...fields].filter((v) => v !== field);
+  function handleDelete(field: any): void {
+    let fieldData = [...fields].filter((opt: any) => opt.name !== field);
     setFields(fieldData);
   }
 
@@ -70,30 +93,57 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
             </Box>
           ) : (
             <>
-              <Box minWidth={130}>
-                <MultiSelect
-                  values={fields}
-                  onSelect={onSelect}
-                  options={metricOptions}
-                  renderValue={() => 'Select Metric'}
-                  defaultValue='Select Metric'
-                />
-              </Box>
-              {fields.length ? (
-                <Box className={styles.selectForm__tags}>
-                  {fields.map((field: string) => {
+              <Box width='100%' maxWidth='94em'>
+                <Autocomplete
+                  id='select-metrics'
+                  size='small'
+                  multiple
+                  disableCloseOnSelect
+                  limitTags={6}
+                  options={selectOptions}
+                  value={fields}
+                  onChange={onSelect}
+                  groupBy={(option) => option.group}
+                  getOptionLabel={(option) => option.name}
+                  renderTags={(tags) => {
                     return (
-                      <Box key={field} mr={1}>
-                        <Chip
-                          label={field}
-                          data-name={field}
-                          onDelete={() => handleDelete(field)}
-                        />
+                      <Box className={styles.selectForm__tags}>
+                        {fields.map((tag: any) => {
+                          return (
+                            <Box component='span' key={tag.name} mr={1}>
+                              <Chip
+                                size='small'
+                                label={tag.name}
+                                data-name={tag.name}
+                                onDelete={() => handleDelete(tag.name)}
+                              />
+                            </Box>
+                          );
+                        })}
                       </Box>
                     );
-                  })}
-                </Box>
-              ) : null}
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant='outlined'
+                      label='Select Metrics'
+                      placeholder='Select'
+                    />
+                  )}
+                  renderOption={(option, { selected }) => (
+                    <React.Fragment>
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlank />}
+                        checkedIcon={<CheckBoxIcon />}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </React.Fragment>
+                  )}
+                />
+              </Box>
             </>
           )}
           <Box minWidth={140} display='flex'>
