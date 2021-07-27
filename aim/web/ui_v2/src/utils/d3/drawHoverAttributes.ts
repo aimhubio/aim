@@ -19,8 +19,8 @@ import 'components/LineChart/LineChart.css';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
-    data,
     index,
+    data,
     xAlignment,
     attributesNodeRef,
     attributesRef,
@@ -33,6 +33,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     linesNodeRef,
     highlightedNodeRef,
     highlightMode,
+    focusedState,
     callback,
   } = props;
 
@@ -49,14 +50,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   const svgArea = d3.select(visAreaRef.current).select('svg');
 
-  function updateHoverAttributes(mouse: [number, number]) {
+  function updateHoverAttributes(mouse: [number, number], force = false) {
     const { mouseX, mouseY } = getCoordinates({
       mouse,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       margin,
     });
-
     const { nearestCircles, closestCircle } = getNearestCircles({
       data,
       xScale: attributesRef.current.xScale,
@@ -65,9 +65,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       mouseY,
     });
 
-    if (closestCircleRef.current !== closestCircle) {
+    if (closestCircleRef.current !== closestCircle || force) {
       // hover Line Changed case
-      if (closestCircle.key !== closestCircleRef.current?.key) {
+      if (closestCircle.key !== closestCircleRef.current?.key || force) {
         linesNodeRef.current.classed(
           'highlight',
           highlightMode !== HighlightEnum.Off,
@@ -96,7 +96,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       // hover Circle Changed case
       if (
         closestCircle.x !== closestCircleRef.current?.x ||
-        closestCircle.y !== closestCircleRef.current?.y
+        closestCircle.y !== closestCircleRef.current?.y ||
+        force
       ) {
         attributesNodeRef.current.classed(
           'highlight',
@@ -169,11 +170,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       key: closestCircleRef.current.key,
       xValue: attributesRef.current.xScale.invert(closestCircleRef.current.x),
       yValue: attributesRef.current.yScale.invert(closestCircleRef.current.y),
+      chartIndex: index,
     };
   }
 
   // TODO: improve active line detection method
-  function setActiveLine(lineKey: string) {
+  function setActiveLine(lineKey: string, force = false) {
     const { mouseX, mouseY } = getCoordinates({
       mouse: [attributesRef.current.x, attributesRef.current.y],
       xScale: attributesRef.current.xScale,
@@ -193,7 +195,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       if (circle.key !== lineKey) {
         return;
       }
-      updateHoverAttributes([circle.x + margin.left, circle.y + margin.top]);
+      updateHoverAttributes(
+        [circle.x + margin.left, circle.y + margin.top],
+        force,
+      );
     });
   }
 
@@ -202,7 +207,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   function handleMouseMove(event: MouseEvent) {
     const mouse = d3.pointer(event);
-    const activePointData = updateHoverAttributes(mouse);
+    const activePointData = updateHoverAttributes?.(mouse);
 
     if (typeof callback === 'function') {
       callback(mouse, activePointData);
@@ -230,7 +235,20 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       yAxisLabelNodeRef.current?.remove();
     }
   });
+
+  if (focusedState.key !== null) {
+    setActiveLine(focusedState.key, true);
+  } else if (focusedState.xValue !== null) {
+    updateHoverAttributes(
+      [
+        attributesRef.current.xScale(focusedState.xValue),
+        attributesRef.current.yScale(focusedState.yValue),
+      ],
+      true,
+    );
+  }
 }
+
 function getNearestCircles({
   data,
   xScale,
@@ -282,6 +300,7 @@ function getNearestCircles({
   closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
   return { nearestCircles, closestCircle: closestCircles[0] };
 }
+
 function getCoordinates({
   mouse,
   margin,
@@ -297,6 +316,7 @@ function getCoordinates({
     mouseY: yPixel < yMin ? yMin : yPixel > yMax ? yMax : yPixel,
   };
 }
+
 function setAxisLabel({
   closestCircle,
   visAreaRef,
@@ -337,7 +357,7 @@ function setAxisLabel({
       .text(formattedValue);
     const axisLeftEdge = margin.left - 1;
     const axisRightEdge = width - margin.right + 1;
-    let xAxisValueWidth = xAxisLabelNodeRef.current.node().offsetWidth;
+    let xAxisValueWidth = xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
     if (xAxisValueWidth > plotBoxRef.current.width) {
       xAxisValueWidth = plotBoxRef.current.width;
     }
@@ -372,7 +392,8 @@ function setAxisLabel({
       .text(formattedValue);
     const axisTopEdge = margin.top - 1;
     const axisBottomEdge = height - margin.top;
-    const yAxisValueHeight = yAxisLabelNodeRef.current.node().offsetHeight;
+    const yAxisValueHeight =
+      yAxisLabelNodeRef.current?.node()?.offsetHeight ?? 0;
     yAxisLabelNodeRef.current.style(
       'top',
       `${
@@ -386,4 +407,5 @@ function setAxisLabel({
     );
   }
 }
+
 export default drawHoverAttributes;

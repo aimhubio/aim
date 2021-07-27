@@ -29,4 +29,11 @@ export interface ILineChartProps {
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
+  focusedState: {
+    key: string | null;
+    xValue: number | null;
+    yValue: number | null;
+    active: boolean;
+    chartIndex: number | null;
+  };
 }
