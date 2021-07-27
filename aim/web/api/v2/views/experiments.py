@@ -12,10 +12,32 @@ async def get_experiments_list_api(factory=Depends(object_factory)):
     return response
 
 
+@experiment_router.get('/search/')
+async def search_experiments_by_name_api(request: Request, factory=Depends(object_factory)):
+    params = request.query_params
+    search_term = params.get('q') or ''
+    search_term.strip()
+
+    response = [{'id': exp.uuid, 'name': exp.name} for exp in factory.search_experiments(search_term)]
+    return response
+
+
 @experiment_router.post('/new/')
-async def create_experiment_api(factory=Depends(object_factory)):
+async def create_experiment_api(request: Request, factory=Depends(object_factory)):
+    body = await request.json()
+    exp_name = body.get('name') or ''
+    if not exp_name:
+        raise HTTPException(400)
     with factory:
-        pass
+        try:
+            exp = factory.create_experiment(exp_name)
+        except ValueError as e:
+            raise HTTPException(400, detail=str(e))
+
+        return {
+            'id': exp.uuid,
+            'status': 'OK'
+        }
 
 
 @experiment_router.get('/{exp_id}/')
@@ -60,10 +82,5 @@ async def get_experiment_runs_api(exp_id: str, factory=Depends(object_factory)):
         'runs': [{'run_id': run.hash, 'name': run.name} for run in exp.runs]
     }
     return response
-
-
-@experiment_router.delete('/{exp_id}/runs/{run_id}/')
-async def remove_experiment_run_api(exp_id: str, run_id: str, factory=Depends(object_factory)):
-    pass
 
 

@@ -26,14 +26,20 @@ class ModelMappedFactory(ObjectFactory):
     def find_experiment(self, _id: str) -> Experiment:
         return ModelMappedExperiment.find(_id, session=self._session or self.get_session())
 
+    def create_experiment(self, name: str) -> Experiment:
+        return ModelMappedExperiment.from_name(name, session=self._session or self.get_session())
+
     def tags(self) -> TagCollection:
-        return ModelMappedTag.search(session=self._session or self.get_session())
+        return ModelMappedTag.all(session=self._session or self.get_session())
 
     def search_tags(self, term: str) -> TagCollection:
         return ModelMappedTag.search(term, session=self._session or self.get_session())
 
     def find_tag(self, _id: str) -> Tag:
         return ModelMappedTag.find(_id, session=self._session or self.get_session())
+
+    def create_tag(self, name: str) -> Tag:
+        return ModelMappedTag.from_name(name, session=self._session or self.get_session())
 
     def get_session(self):
         raise NotImplementedError

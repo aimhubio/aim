@@ -114,7 +114,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         else:
             return []
 
-    def add_tag(self, value: str):
+    def add_tag(self, value: str) -> ITag:
         if not self._model:
             self.create_model_instance()
         session = self._session
@@ -124,6 +124,20 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             session.add(tag)
         self._model.tags.append(tag)
         session.add(self._model)
+        return ModelMappedTag.from_model(tag, session)
+
+    def remove_tag(self, tag_id: str) -> bool:
+        if not self._model:
+            self.create_model_instance()
+        session = self._session
+        tag_removed = False
+        for tag in self._model.tags:
+            if tag.uuid == tag_id:
+                self._model.tags.remove(tag)
+                tag_removed = True
+                break
+        session.add(self._model)
+        return tag_removed
 
 
 class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
@@ -140,8 +154,16 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         self._session = session
 
     @classmethod
-    def from_model(cls, model_obj, session):
+    def from_model(cls, model_obj, session) -> 'ModelMappedExperiment':
         return ModelMappedExperiment(model_obj, session)
+
+    @classmethod
+    def from_name(cls, name: str, session) -> 'ModelMappedExperiment':
+        if session.query(ExperimentModel).filter(ExperimentModel.name == name).scalar():
+            raise ValueError(f'Experiment with name \'{name}\' already exists.')
+        exp = ExperimentModel(name)
+        session.add(exp)
+        return ModelMappedExperiment(exp, session)
 
     @property
     def runs(self) -> RunCollection:
@@ -196,8 +218,16 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         self._session = session
 
     @classmethod
-    def from_model(cls, model_obj, session):
+    def from_model(cls, model_obj, session) -> 'ModelMappedTag':
         return ModelMappedTag(model_obj, session)
+
+    @classmethod
+    def from_name(cls, name: str, session) -> 'ModelMappedTag':
+        if session.query(TagModel).filter(TagModel.name == name).scalar():
+            raise ValueError(f'Tag with name \'{name}\' already exists.')
+        tag = TagModel(name)
+        session.add(tag)
+        return ModelMappedTag(tag, session)
 
     @classmethod
     def find(cls, _id: str, **kwargs) -> Optional[ITag]:

@@ -25,9 +25,9 @@ def create_app():
     from aim.web.api.v2.views.tags import tag_router
     from aim.web.api.v2.views.experiments import experiment_router
 
-    app.include_router(run_router, prefix='/api/v2/runs')
-    app.include_router(tag_router, prefix='/api/v2/tags')
-    app.include_router(experiment_router, prefix='/api/v2/experiments')
+    app.include_router(run_router, prefix='/api/runs')
+    app.include_router(tag_router, prefix='/api/tags')
+    app.include_router(experiment_router, prefix='/api/experiments')
 
     app.include_router(commits_router, prefix='/api/v1/commits')
     app.include_router(dashboard_apps_router, prefix='/api/v1/apps')

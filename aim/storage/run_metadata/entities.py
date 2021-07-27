@@ -4,10 +4,16 @@ from typing import Generic, TypeVar, Iterable, Optional
 
 class SafeNone:
     def __getattr__(self, item):
-        return SafeNone()
+        return self
+
+    def __getitem__(self, item):
+        return self
 
     def __bool__(self):
         return False
+
+    def __eq__(self, other):
+        return other is None or isinstance(other, SafeNone)
 
 
 T = TypeVar('T')
@@ -86,7 +92,11 @@ class Run(Searchable['Run']):
         ...
 
     @abstractmethod
-    def add_tag(self, value: str):
+    def add_tag(self, value: str) -> 'Tag':
+        ...
+
+    @abstractmethod
+    def remove_tag(self, tag_id: str) -> bool:
         ...
 
 
@@ -169,6 +179,10 @@ class ObjectFactory:
         ...
 
     @abstractmethod
+    def create_experiment(self, name: str) -> Experiment:
+        ...
+
+    @abstractmethod
     def tags(self) -> TagCollection:
         ...
 
@@ -178,4 +192,8 @@ class ObjectFactory:
 
     @abstractmethod
     def find_tag(self, _id: str) -> Tag:
+        ...
+
+    @abstractmethod
+    def create_tag(self, name: str) -> Tag:
         ...
