@@ -58,7 +58,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       margin,
     });
     const { nearestCircles, closestCircle } = getNearestCircles({
-      data: attributesRef.current.attributesData,
+      data,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -184,7 +184,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     });
 
     const { nearestCircles } = getNearestCircles({
-      data: attributesRef.current.attributesData,
+      data,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,

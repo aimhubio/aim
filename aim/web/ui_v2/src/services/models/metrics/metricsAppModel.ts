@@ -41,9 +41,9 @@ function getConfig(): IMetricAppConfig {
       chartPanelRef: { current: null },
     },
     grouping: {
-      color: ['run.params.hparams.lr'],
-      style: ['run.params.hparams.batch_size'],
-      chart: ['run.params.hparams.seed'],
+      color: ['run.params.hparams.seed'],
+      style: ['run.params.hparams.lr'],
+      chart: [],
     },
     chart: {
       highlightMode: HighlightEnum.Off,
@@ -129,6 +129,7 @@ function processData(data: IRun[]): {
 }
 
 function groupData(data: IMetric[]): IMetricsCollection[] {
+  console.time('grouping');
   const grouping = model.getState()!.config!.grouping;
   const groupByColor = grouping.color;
   const groupByStyle = grouping.style;
@@ -142,7 +143,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       {
         config: null,
         color: null,
-        dashArray: null,
+        dasharray: null,
         chartIndex: 0,
         data: data,
       },
@@ -153,31 +154,77 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     [key: string]: IMetricsCollection;
   } = {};
 
-  let colorIndex = 0;
-  let dasharrayIndex = 0;
-  let chartIndex = 0;
-
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: unknown } = {};
-
-    groupByColor.forEach((field) => {
-      groupValue[field] = _.get(data[i], field);
-    });
+    _.uniq(groupByColor.concat(groupByStyle).concat(groupByChart)).forEach(
+      (field) => {
+        groupValue[field] = _.get(data[i], field);
+      },
+    );
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
       groupValues[groupKey].data.push(data[i]);
     } else {
       groupValues[groupKey] = {
         config: groupValue,
-        color: COLORS[colorIndex % COLORS.length],
-        dashArray: DASH_ARRAYS[0],
+        color: null,
+        dasharray: null,
         chartIndex: 0,
         data: [data[i]],
       };
-      colorIndex++;
     }
   }
 
+  let colorIndex = 0;
+  let dasharrayIndex = 0;
+  let chartIndex = 0;
+
+  const colorConfigsMap: { [key: string]: number } = {};
+  const dasharrayConfigsMap: { [key: string]: number } = {};
+  const chartIndexConfigsMap: { [key: string]: number } = {};
+
+  for (let groupKey in groupValues) {
+    const groupValue = groupValues[groupKey];
+
+    if (groupByColor.length > 0) {
+      const colorConfig = _.pick(groupValue.config, groupByColor);
+      const colorKey = encode(colorConfig);
+      if (colorConfigsMap.hasOwnProperty(colorKey)) {
+        groupValue.color = COLORS[colorConfigsMap[colorKey] % COLORS.length];
+      } else {
+        colorConfigsMap[colorKey] = colorIndex;
+        groupValue.color = COLORS[colorIndex % COLORS.length];
+        colorIndex++;
+      }
+    }
+
+    if (groupByStyle.length > 0) {
+      const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
+      const dasharrayKey = encode(dasharrayConfig);
+      if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
+        groupValue.dasharray =
+          DASH_ARRAYS[dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length];
+      } else {
+        dasharrayConfigsMap[dasharrayKey] = dasharrayIndex;
+        groupValue.dasharray = DASH_ARRAYS[dasharrayIndex % DASH_ARRAYS.length];
+        dasharrayIndex++;
+      }
+    }
+
+    if (groupByChart.length > 0) {
+      const chartIndexConfig = _.pick(groupValue.config, groupByChart);
+      const chartIndexKey = encode(chartIndexConfig);
+      if (chartIndexConfigsMap.hasOwnProperty(chartIndexKey)) {
+        groupValue.dasharray =
+          DASH_ARRAYS[chartIndexConfigsMap[chartIndexKey] % DASH_ARRAYS.length];
+      } else {
+        chartIndexConfigsMap[chartIndexKey] = chartIndex;
+        groupValue.chartIndex = chartIndex;
+        chartIndex++;
+      }
+    }
+  }
+  console.timeEnd('grouping');
   return Object.values(groupValues);
 }
 
@@ -211,7 +258,7 @@ function getDataAsLines(
         return {
           ...metric,
           color: metricsCollection.color ?? metric.color,
-          dasharray: metricsCollection.dashArray ?? metric.color,
+          dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
           selectors: [metric.key, metric.key, metric.run.run_hash],
           data: {
@@ -244,7 +291,7 @@ function getDataAsTableRows(
       const rowValues: { [key: string]: unknown } = {
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
-        dasharray: metricsCollection.dashArray ?? metric.color,
+        dasharray: metricsCollection.dasharray ?? metric.color,
         experiment: metric.run.experiment_name,
         run: metric.run.name,
         metric: metric.metric_name,

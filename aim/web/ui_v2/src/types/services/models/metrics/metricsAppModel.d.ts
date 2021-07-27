@@ -21,7 +21,7 @@ export interface IMetricAppModelState {
 export interface IMetricsCollection {
   config: unknown;
   color: string | null;
-  dashArray: string | null;
+  dasharray: string | null;
   chartIndex: number;
   data: IMetric[];
 }
