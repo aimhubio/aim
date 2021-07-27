@@ -1,17 +1,17 @@
 function getObjectPaths(
   obj: { [key: string]: unknown },
   prefix: string = '',
-  level: number = 1,
+  includeRoot: boolean = false,
 ): string[] {
-  let zeroLevelKeys = Object.getOwnPropertyNames(obj).map((key) =>
+  let rootKeys = Object.getOwnPropertyNames(obj).map((key) =>
     prefix ? `${prefix}.${key}` : key,
   );
-  let paths: string[] = level === 0 ? zeroLevelKeys : [];
-  zeroLevelKeys.forEach((key) => {
+  let paths: string[] = includeRoot ? rootKeys : [];
+  rootKeys.forEach((key) => {
     const val: any = obj[key];
     if (typeof val === 'object' && !Array.isArray(val)) {
       paths = paths.concat(
-        getObjectPaths(val, prefix ? `${prefix}.${key}` : `${key}`, 0),
+        getObjectPaths(val, prefix ? `${prefix}.${key}` : `${key}`, true),
       );
     }
   });
