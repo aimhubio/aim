@@ -20,6 +20,7 @@ import 'components/LineChart/LineChart.css';
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     index,
+    data,
     xAlignment,
     attributesNodeRef,
     attributesRef,
