@@ -18,26 +18,31 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   );
 
   // TODO: update only x with applied scale
-  function syncHoverState(
-    chartIndex: number,
-    mousePosition: [number, number],
-    activePointData: IActivePointData,
-  ): void {
-    chartRefs.forEach((chartRef, index) => {
-      if (index === chartIndex) {
-        return;
+  const syncHoverState = React.useCallback(
+    (mousePosition: [number, number], activePointData: IActivePointData) => {
+      chartRefs.forEach((chartRef, index) => {
+        if (index === activePointData.chartIndex) {
+          return;
+        }
+        chartRef.current.updateHoverAttributes?.(mousePosition);
+      });
+      if (props.onActivePointChange) {
+        props.onActivePointChange(activePointData);
       }
-      chartRef.current.updateHoverAttributes?.(mousePosition);
-    });
-    if (props.onActivePointChange) {
-      props.onActivePointChange(activePointData);
-    }
-  }
+    },
+    [chartRefs, props.onActivePointChange],
+  );
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
       chartRefs.forEach((chartRef) => {
         chartRef.current?.setActiveLine?.(lineKey);
+      });
+    },
+    // TODO update lines without reRendering
+    updateLines: (data: any) => {
+      chartRefs.forEach((chartRef, index) => {
+        chartRef.current?.updateLines?.(data[index]);
       });
     },
   }));
@@ -69,9 +74,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   {...props.chartProps[0]}
                   index={index}
                   data={data}
-                  onMouseOver={(mouse, activePointData) =>
-                    syncHoverState(index, mouse, activePointData)
-                  }
+                  onMouseOver={syncHoverState}
                 />
               </Grid>
             ))}

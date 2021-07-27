@@ -1,5 +1,4 @@
 import React from 'react';
-import * as d3 from 'd3';
 import { Box, Grid, Paper } from '@material-ui/core';
 import useStyles from './paramsStyle';
 import { IParamsProps } from 'types/pages/params/Params';

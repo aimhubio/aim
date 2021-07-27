@@ -13,19 +13,19 @@ function HighlightModesPopover(
       <MenuList>
         <MenuItem
           selected={props.mode === HighlightEnum.Off}
-          onClick={props.onChange(HighlightEnum.Off)}
+          onClick={() => props.onChange(HighlightEnum.Off)}
         >
           Highlight Off
         </MenuItem>
         <MenuItem
           selected={props.mode === HighlightEnum.Run}
-          onClick={props.onChange(HighlightEnum.Run)}
+          onClick={() => props.onChange(HighlightEnum.Run)}
         >
           Highlight Metric on Hover
         </MenuItem>
         <MenuItem
           selected={props.mode === HighlightEnum.Metric}
-          onClick={props.onChange(HighlightEnum.Metric)}
+          onClick={() => props.onChange(HighlightEnum.Metric)}
         >
           Highlight Run On Hover
         </MenuItem>

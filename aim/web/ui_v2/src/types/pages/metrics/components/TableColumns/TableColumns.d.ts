@@ -1,5 +1,5 @@
 import React from 'react';
-import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
+import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
 
 export interface ITableColumn {
   dataKey: string;
