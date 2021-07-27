@@ -2,11 +2,10 @@ import os
 from logging.config import fileConfig
 
 from sqlalchemy import create_engine
-from sqlalchemy import pool
 
 from alembic import context
 
-from aim.storage.run_metadata.models import *
+from aim.storage.run_metadata.sql_engine.models import *
 from aim.storage.run_metadata.db import DB
 
 # this is the Alembic Config object, which provides

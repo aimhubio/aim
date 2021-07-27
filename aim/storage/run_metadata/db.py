@@ -2,21 +2,20 @@ import os
 from weakref import WeakValueDictionary
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from aim.storage.migrations.utils import upgrade_database
+from aim.storage.run_metadata.sql_engine.factory import ModelMappedFactory as ObjectFactory
 
-Base = declarative_base()
 
-
-class DB(object):
+class DB(ObjectFactory):
     _DIALECT = 'sqlite'
     _DB_NAME = 'run_metadata.sqlite'
     _pool = WeakValueDictionary()
 
     # TODO: [AT] implement readonly if needed
     def __init__(self, path: str, readonly: bool = False):
+        super().__init__()
         self.path = path
         self.db_url = self.get_db_url(path)
         self.readonly = readonly

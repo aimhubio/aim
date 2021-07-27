@@ -2,11 +2,12 @@ from sqlalchemy import Column, Table, ForeignKey
 from sqlalchemy import Integer, Text, Boolean, DateTime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm import validates
+from sqlalchemy.ext.declarative import declarative_base
 
 import uuid
 import datetime
 
-from aim.storage.run_metadata.db import Base
+Base = declarative_base()
 
 
 def get_uuid():
@@ -14,7 +15,7 @@ def get_uuid():
 
 
 def default_to_run_hash(context):
-    return f'Run: {context.get_current_parameters()["run_hash"]}'
+    return f'Run: {context.get_current_parameters()["hash"]}'
 
 
 run_tags = Table(
@@ -28,24 +29,23 @@ class Run(Base):
     __tablename__ = 'run'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    uuid = Column(Text, index=True, unique=True, default=get_uuid)
+    # TODO: [AT] make run_hash immutable
+    hash = Column(Text, index=True, unique=True, nullable=False)
     name = Column(Text, default=default_to_run_hash)
     description = Column(Text, nullable=True)
-    # TODO: [AT] make run_hash immutable
-    run_hash = Column(Text, unique=True, nullable=False)
 
     is_archived = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     # relationships
     experiment_id = Column(ForeignKey('experiment.id'), nullable=True)
 
     experiment = relationship('Experiment', backref=backref('runs', uselist=True))
-    tags = relationship('Tag', secondary=run_tags)
+    tags = relationship('Tag', secondary=run_tags, backref=backref('runs', uselist=True))
 
     def __init__(self, run_hash):
-        self.run_hash = run_hash
+        self.hash = run_hash
 
 
 class Experiment(Base):
@@ -56,7 +56,7 @@ class Experiment(Base):
     name = Column(Text, nullable=False, unique=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     def __init__(self, name):
         self.name = name
@@ -71,7 +71,7 @@ class Tag(Base):
     color = Column(Text, nullable=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     def __init__(self, name):
         self.name = name

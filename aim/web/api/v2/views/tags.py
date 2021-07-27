@@ -1,8 +1,6 @@
-from fastapi import HTTPException, Request
+from fastapi import Request
 
 from aim.web.api.utils import APIRouter
-from aim.web.api.projects.project import Project
-from aim.storage.run_metadata.models import Tag, Run
 
 tag_router = APIRouter()
 
