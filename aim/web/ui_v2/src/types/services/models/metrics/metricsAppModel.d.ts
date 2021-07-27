@@ -11,6 +11,8 @@ export interface IMetricAppModelState {
   rawData: IRun[];
   config: IMetricAppConfig;
   collection: IMetric[][];
+  data: IMetric[][];
+  lineChartData: ILine[][];
 }
 
 interface IMetricAppConfig {
@@ -31,6 +33,13 @@ interface IMetricAppConfig {
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
+    focusedState: {
+      key: string | null;
+      xValue: number | null;
+      yValue: number | null;
+      active: boolean;
+      chartIndex: number | null;
+    };
   };
 }
 

@@ -6,12 +6,12 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IDrawHoverAttributesProps {
   index: number;
+  data: IProcessedData[];
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{
     xScale?: IGetAxesScale['xScale'];
     yScale?: IGetAxesScale['yScale'];
-    attributesData: IProcessedData[];
     x: number;
     y: number;
     updateScales?: (
@@ -37,6 +37,13 @@ export interface IDrawHoverAttributesProps {
   ) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
+  focusedState: {
+    key: string | null;
+    xValue: number | null;
+    yValue: number | null;
+    active: boolean;
+    chartIndex: number | null;
+  };
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };
@@ -90,4 +97,5 @@ export interface IActivePointData {
   key: string;
   xValue: number;
   yValue: number;
+  chartIndex: number;
 }

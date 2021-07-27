@@ -104,7 +104,6 @@ const LineChart = React.forwardRef(function LineChart(
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
-    attributesRef.current.attributesData = processedData;
 
     drawAxes({
       axesNodeRef,
@@ -127,6 +126,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawHoverAttributes({
       index,
+      data: processedData,
       xAlignment,
       visAreaRef,
       attributesRef,
@@ -139,6 +139,7 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       highlightedNodeRef,
       highlightMode,
+      focusedState: props.focusedState,
       callback: props.onMouseOver,
     });
 
@@ -190,14 +191,12 @@ const LineChart = React.forwardRef(function LineChart(
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-  }, [props.data, renderChart, zoomMode, displayOutliers, highlightMode]);
+  }, [data, zoomMode, displayOutliers, highlightMode]);
 
-  // TODO: improve setting of ref methods
   React.useImperativeHandle(ref, () => ({
-    ...axesRef.current,
-    ...brushRef.current,
-    ...linesRef.current,
-    ...attributesRef.current,
+    updateHoverAttributes: (mousePosition: [number, number]) => {
+      attributesRef.current?.updateHoverAttributes(mousePosition);
+    },
     setActiveLine: (lineKey: string) => {
       attributesRef.current?.setActiveLine(lineKey);
     },

@@ -49,6 +49,13 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
+      focusedState: {
+        key: null,
+        xValue: null,
+        yValue: null,
+        active: false,
+        chartIndex: null,
+      },
     },
   };
 }
