@@ -30,8 +30,8 @@ function decodeBool(buffer: ArrayBuffer) {
 
 function decodeInt(buffer: ArrayBuffer) {
   const len = buffer.byteLength;
-  if (len === struct('<q').size) {
-    return struct('<q').unpack(buffer)[0];
+  if (len === 8) {
+    return decode_q_le(...new Uint8Array(buffer));
   } else if (len === struct('<l').size) {
     return struct('<l').unpack(buffer)[0];
   } else if (len === struct('<h').size) {
@@ -101,9 +101,21 @@ function decodeValue(buffer: Uint8Array) {
   const bufferValue = buffer.slice(1);
   const arrayBuffer = typedArrayToBuffer(bufferValue);
   const typeId = buffer[0];
-  debugger;
 
   return decodeByType(typeId as number, arrayBuffer);
+}
+
+function decode_q_le(...x: number[]) {
+  return (
+    x[7] * (1 << 56) +
+    x[6] * (1 << 48) +
+    x[5] * (1 << 40) +
+    x[4] * (1 << 32) +
+    x[3] * (1 << 24) +
+    x[2] * (1 << 16) +
+    x[1] * (1 << 8) +
+    x[0] * (1 << 0)
+  );
 }
 
 function decode_q_be(...x: number[]) {
@@ -119,7 +131,7 @@ function decode_q_be(...x: number[]) {
   );
 }
 
-export function decodePath(buffer: Uint8Array) {
+function decodePath(buffer: Uint8Array) {
   const path = [];
   let key: any;
 
@@ -127,7 +139,7 @@ export function decodePath(buffer: Uint8Array) {
 
   for (let cursor = 0; cursor < len; cursor++) {
     if (buffer[cursor] === PATH_SENTINEL) {
-      let keySize = struct.sizeFor(SIZE_T); // 8
+      let keySize = 8; // struct.sizeFor(SIZE_T);
       key = decode_q_be(...buffer.slice(cursor + 1, cursor + keySize + 1));
       cursor += keySize + 1;
     } else {
@@ -270,44 +282,41 @@ function decodePathsVals(pathsVals: [Uint8Array, Uint8Array][]) {
 //   return foldTree(decodePathsVals(pathsVals));
 // }
 
-function buf2hex(buffer) {
-  // buffer is an ArrayBuffer
-  return [...new Uint8Array(buffer)]
-    .map((x) => x.toString(16).padStart(2, '0'))
-    .join('');
-}
-function sample_stream() {
-  return fetch('http://delta.mahnerak.com/response.txt').then((d) => d.body);
-}
-async function* adjustable_reader(stream) {
+export async function* adjustable_reader(stream) {
   var buffer = new Uint8Array(new ArrayBuffer(yield));
   var cursor = 0;
   var reader = stream.getReader();
   var done = false;
-  while (!done) {
-    var item = await reader.read();
+  var p = reader.read();
+  while (true) {
+    var item = await p;
+    p = reader.read();
     done = item.done;
+    if (done) {
+      break;
+    }
     var chunk = item.value;
-    while (chunk.byteLength) {
+    //debugger;
+    while (chunk.byteLength > 0) {
       if (cursor + chunk.byteLength >= buffer.byteLength) {
-        buffer.set(chunk.slice(0, buffer.byteLength - cursor), cursor);
-        chunk = chunk.slice(buffer.byteLength - cursor);
-        var requestedSize = yield buffer;
-        if (!(requestedSize > 0 && requestedSize < 4000000)) {
-          debugger;
-        }
-        buffer = new Uint8Array(new ArrayBuffer(requestedSize));
+        var to_buffer = chunk.subarray(0, buffer.byteLength - cursor);
+        // debugger;
+        // console.log(to_buffer, buffer.byteLength - cursor, buffer.byteLength, to_buffer.byteLength, cursor, to_buffer.length);
+        buffer.set(to_buffer, cursor);
+        chunk = chunk.subarray(buffer.byteLength - cursor);
+        buffer = new Uint8Array(new ArrayBuffer(yield buffer));
         cursor = 0;
       } else {
         buffer.set(chunk, cursor);
         cursor += chunk.byteLength;
+        break;
       }
     }
   }
   yield buffer;
 }
 
-async function* decode_buffer_pairs(async_generator) {
+export async function* decode_buffer_pairs(async_generator) {
   var item;
   await async_generator.next();
   while (true) {
@@ -315,8 +324,6 @@ async function* decode_buffer_pairs(async_generator) {
     if (item.done) {
       break;
     }
-    // TODO: check for undefined
-    // TODO: check limitation for data capacity (> 4GB)
     var key_buffer_len =
       (item.value[0] << 0) +
       (item.value[1] << 8) +
@@ -324,29 +331,29 @@ async function* decode_buffer_pairs(async_generator) {
       (item.value[3] << 24);
     item = await async_generator.next(key_buffer_len);
     var key_buffer = item.value;
-
     item = await async_generator.next(4);
     if (item.done) {
       break;
     }
-    // console.log(item);
     var val_buffer_len =
       (item.value[0] << 0) +
       (item.value[1] << 8) +
       (item.value[2] << 16) +
       (item.value[3] << 24);
-    if (val_buffer_len > 1000000) debugger;
     item = await async_generator.next(val_buffer_len);
     var value_buffer = item.value;
-    yield [key_buffer, value_buffer];
+
+    yield [decodePath(key_buffer), decodeValue(value_buffer)];
   }
 }
 
-(async function () {
-  var stream = await sample_stream();
-  var gen = adjustable_reader(stream);
-  var buffer_pairs = decode_buffer_pairs(gen);
-  for await (i of buffer_pairs) {
-    console.log(buf2hex(i[0]), buf2hex(i[1]));
-  }
-})();
+// (async function () {
+//   var stream = await sample_stream();
+//   console.time('done');
+//   var gen = adjustable_reader(stream);
+//   var buffer_pairs = decode_buffer_pairs(gen);
+//   for await (i of buffer_pairs) {
+//     console.log(i);
+//   }
+//   console.timeEnd('done');
+// })();

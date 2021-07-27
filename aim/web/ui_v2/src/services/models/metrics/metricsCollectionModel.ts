@@ -20,7 +20,10 @@ import {
   calculateExponentialMovingAverage,
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
-import { decodePath } from 'utils/encoder/streamEncoding';
+import {
+  adjustable_reader,
+  decode_buffer_pairs,
+} from 'utils/encoder/streamEncoding';
 
 const model = createModel<Partial<IMetricCollectionModelState>>({});
 
@@ -46,14 +49,16 @@ function getMetricsData() {
     q: 'run.get(("hparams", "benchmark")) == "glue" and context.get("subset") != "train" and run.get(("hparams", "dataset")) == "cola"',
   });
   return {
-    call: () =>
-      call().then((data) => {
-        console.log(data);
-        // model.setState({
-        //   rawData: data,
-        //   collection: processData(data),
-        // });
-      }),
+    call: async () => {
+      const pathsVals = [];
+      const stream = await call();
+      let gen = adjustable_reader(stream);
+      let buffer_pairs = decode_buffer_pairs(gen);
+      for await (let pathVal of buffer_pairs) {
+        pathsVals.push(pathVal);
+      }
+      console.log(pathsVals);
+    },
     abort,
   };
 }
