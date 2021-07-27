@@ -17,7 +17,7 @@ function getScaleBaseFor(scaleType?: ScaleType) {
   }
 }
 
-function getAxesScale(params: IGetAxisScaleProps): IGetAxisScale {
+function getAxisScale(params: IGetAxisScaleProps): IGetAxisScale {
   const { scaleType, domainData, rangeData } = params;
 
   const scaleBase = getScaleBaseFor(scaleType);
@@ -25,4 +25,4 @@ function getAxesScale(params: IGetAxisScaleProps): IGetAxisScale {
   return scaleBase.domain(domainData).range(rangeData);
 }
 
-export default getAxesScale;
+export default getAxisScale;

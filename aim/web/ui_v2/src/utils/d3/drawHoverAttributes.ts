@@ -3,15 +3,13 @@ import * as d3 from 'd3';
 import {
   IClosestCircle,
   IDrawHoverAttributesProps,
-  IGetCoordinates,
-  IGetCoordinatesProps,
   IAxisLineData,
   INearestCircle,
   ISetAxisLabelProps,
   IGetNearestCirclesProps,
   IGetNearestCircles,
 } from 'types/utils/d3/drawHoverAttributes';
-import { CircleEnum, XAlignmentEnum } from './index';
+import { CircleEnum, getCoordinates } from './index';
 import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
@@ -281,21 +279,6 @@ function getNearestCircles({
   }
   closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
   return { nearestCircles, closestCircle: closestCircles[0] };
-}
-function getCoordinates({
-  mouse,
-  margin,
-  xScale,
-  yScale,
-}: IGetCoordinatesProps): IGetCoordinates {
-  const xPixel = Math.floor(mouse[0]) - margin.left;
-  const yPixel = Math.floor(mouse[1]) - margin.top;
-  const [xMin, xMax] = xScale.range();
-  const [yMax, yMin] = yScale.range();
-  return {
-    mouseX: xPixel < xMin ? xMin : xPixel > xMax ? xMax : xPixel,
-    mouseY: yPixel < yMin ? yMin : yPixel > yMax ? yMax : yPixel,
-  };
 }
 function setAxisLabel({
   closestCircle,
