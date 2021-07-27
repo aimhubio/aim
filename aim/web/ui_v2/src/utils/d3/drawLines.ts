@@ -3,11 +3,9 @@ import * as d3 from 'd3';
 import { CurveEnum } from './';
 import { IDrawLinesProps } from 'types/utils/d3/drawLines';
 import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
+import { toTupleData } from 'utils/toTupleData';
+import lineGenerator from './lineGenerator';
 import { IProcessedData } from 'types/utils/d3/processData';
-
-const toTupleData = (x: number[], y: number[]): [number, number][] => {
-  return x.map((v: number, i: number) => [v, y[i]]);
-};
 
 function drawLines(props: IDrawLinesProps): void {
   const {
@@ -46,7 +44,7 @@ function drawLines(props: IDrawLinesProps): void {
       .selectAll('.Line')
       .transition()
       .duration(500)
-      .attr('d', linesRef.current.lineGenerator(xScale, yScale, curve));
+      .attr('d', lineGenerator(xScale, yScale, curve));
   };
 
   linesRef.current.updateLines = function (updateData: IProcessedData[]) {

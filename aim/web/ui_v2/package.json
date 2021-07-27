@@ -103,6 +103,7 @@
   },
   "devDependencies": {
     "@types/d3": "^7.0.0",
+    "@types/node-sass": "^4.11.2",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "eslint": "^7.29.0",
@@ -111,6 +112,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jss-plugin-template": "^10.7.1",
+    "node-sass": "^6.0.1",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0"
   }
