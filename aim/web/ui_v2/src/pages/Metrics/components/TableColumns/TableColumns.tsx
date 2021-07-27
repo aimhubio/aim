@@ -1,5 +1,7 @@
 import React from 'react';
 import { Chip } from '@material-ui/core';
+import _ from 'lodash-es';
+
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
@@ -28,8 +30,8 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
       dataKey: 'context',
       key: 'context',
       title: 'Context',
-      cellRenderer: (data: any) =>
-        (data.cellData as string[]).map((c, i) => (
+      cellRenderer: ({ cellData }: any) =>
+        (cellData as string[]).map((c, i) => (
           <Chip
             key={i}
             variant='outlined'
@@ -54,7 +56,7 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
     },
   ].concat(
     paramColumns.map((param) => ({
-      dataKey: param,
+      dataKey: param.replaceAll('.', '_'),
       key: param,
       title: param,
       width: 150,

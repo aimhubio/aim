@@ -235,7 +235,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   });
 
-  if (focusedState.key === null) {
+  if (focusedState.key !== null) {
+    setActiveLine(focusedState.key, true);
+  } else if (focusedState.xValue !== null) {
     updateHoverAttributes(
       [
         attributesRef.current.xScale(focusedState.xValue),
@@ -243,8 +245,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       ],
       true,
     );
-  } else {
-    setActiveLine(focusedState.key, true);
   }
 }
 

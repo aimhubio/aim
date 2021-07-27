@@ -18,6 +18,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import {
   IMetricAppConfig,
   IMetricAppModelState,
+  IMetricsCollection,
   IMetricTableRowData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
@@ -27,6 +28,9 @@ import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
+import getObjectPaths from 'utils/getObjectPaths';
+import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
+import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -37,9 +41,9 @@ function getConfig(): IMetricAppConfig {
       chartPanelRef: { current: null },
     },
     grouping: {
-      color: ['params.hparams.lr'],
-      style: [],
-      chart: [],
+      color: ['run.params.hparams.lr'],
+      style: ['run.params.hparams.batch_size'],
+      chart: ['run.params.hparams.seed'],
     },
     chart: {
       highlightMode: HighlightEnum.Off,
@@ -76,20 +80,31 @@ function getMetricsData() {
         const processedData = processData(data);
         model.setState({
           rawData: data,
-          data: processedData,
-          lineChartData: getDataAsLines(processedData),
-          tableData: getDataAsTableRows(processedData),
+          params: processedData.params,
+          data: processedData.data,
+          lineChartData: getDataAsLines(processedData.data),
+          tableData: getDataAsTableRows(
+            processedData.data,
+            null,
+            processedData.params,
+          ),
+          tableColumns: getTableColumns(processedData.params),
         });
       }),
     abort,
   };
 }
 
-function processData(data: IRun[]): IMetric[][] {
+function processData(data: IRun[]): {
+  data: IMetricsCollection[];
+  params: string[];
+} {
   let metrics: IMetric[] = [];
   let index = -1;
+  let params: string[] = [];
 
   data.forEach((run: any) => {
+    params = params.concat(getObjectPaths(run.params));
     metrics = metrics.concat(
       run.metrics.map((metric: IMetric) => {
         index++;
@@ -107,10 +122,13 @@ function processData(data: IRun[]): IMetric[][] {
       }),
     );
   });
-  return [metrics];
+  return {
+    data: groupData(metrics),
+    params: _.uniq(params),
+  };
 }
 
-function groupData(data: IMetric[]) {
+function groupData(data: IMetric[]): IMetricsCollection[] {
   const grouping = model.getState()!.config!.grouping;
   const groupByColor = grouping.color;
   const groupByStyle = grouping.style;
@@ -120,11 +138,24 @@ function groupData(data: IMetric[]) {
     groupByStyle.length === 0 &&
     groupByChart.length === 0
   ) {
-    return [data];
+    return [
+      {
+        config: null,
+        color: null,
+        dashArray: null,
+        chartIndex: 0,
+        data: data,
+      },
+    ];
   }
 
-  const groupValues: { [key: string]: { config: unknown; data: IMetric[] } } =
-    {};
+  const groupValues: {
+    [key: string]: IMetricsCollection;
+  } = {};
+
+  let colorIndex = 0;
+  let dasharrayIndex = 0;
+  let chartIndex = 0;
 
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: unknown } = {};
@@ -138,8 +169,12 @@ function groupData(data: IMetric[]) {
     } else {
       groupValues[groupKey] = {
         config: groupValue,
+        color: COLORS[colorIndex % COLORS.length],
+        dashArray: DASH_ARRAYS[0],
+        chartIndex: 0,
         data: [data[i]],
       };
+      colorIndex++;
     }
   }
 
@@ -147,7 +182,7 @@ function groupData(data: IMetric[]) {
 }
 
 function getDataAsLines(
-  processedData: IMetric[][],
+  processedData: IMetricsCollection[],
   configData: IMetricAppConfig | any = model.getState()?.config,
 ): ILine[][] {
   if (!processedData) {
@@ -155,53 +190,61 @@ function getDataAsLines(
   }
 
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
-  return processedData.map((metrics: IMetric[]) =>
-    metrics.map((metric: IMetric) => {
-      let yValues;
-      if (smoothingAlgorithm && smoothingFactor) {
-        yValues =
-          smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
-            ? calculateExponentialMovingAverage(
-                [...metric.data.values],
-                smoothingFactor,
-              )
-            : calculateCentralMovingAverage(
-                [...metric.data.values],
-                smoothingFactor,
-              );
-      } else {
-        yValues = [...metric.data.values];
-      }
-      return {
-        ...metric,
-        selectors: [metric.key, metric.key, metric.run.run_hash],
-        data: {
-          xValues: [...metric.data.iterations],
-          yValues,
-        },
-      };
-    }),
-  );
+  const lines = processedData
+    .map((metricsCollection: IMetricsCollection) =>
+      metricsCollection.data.map((metric: IMetric) => {
+        let yValues;
+        if (smoothingAlgorithm && smoothingFactor) {
+          yValues =
+            smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
+              ? calculateExponentialMovingAverage(
+                  [...metric.data.values],
+                  smoothingFactor,
+                )
+              : calculateCentralMovingAverage(
+                  [...metric.data.values],
+                  smoothingFactor,
+                );
+        } else {
+          yValues = [...metric.data.values];
+        }
+        return {
+          ...metric,
+          color: metricsCollection.color ?? metric.color,
+          dasharray: metricsCollection.dashArray ?? metric.color,
+          chartIndex: metricsCollection.chartIndex,
+          selectors: [metric.key, metric.key, metric.run.run_hash],
+          data: {
+            xValues: [...metric.data.iterations],
+            yValues,
+          },
+        };
+      }),
+    )
+    .flat();
+
+  return _.values(_.groupBy(lines, 'chartIndex'));
 }
 
 function getDataAsTableRows(
-  processedData: IMetric[][],
+  processedData: IMetricsCollection[],
   xValue: number | null = null,
+  paramKeys: string[],
 ): IMetricTableRowData[][] | any {
   if (!processedData) {
     return [];
   }
 
-  return processedData.map((metrics: IMetric[]) =>
-    metrics.map((metric: IMetric) => {
+  return processedData.map((metricsCollection: IMetricsCollection) =>
+    metricsCollection.data.map((metric: IMetric) => {
       const closestIndex =
         xValue === null
           ? null
           : getClosestValue(metric.data.iterations as any, xValue).index;
       const rowValues: { [key: string]: unknown } = {
         key: metric.key,
-        dasharray: metric.dasharray,
-        color: metric.color,
+        color: metricsCollection.color ?? metric.color,
+        dasharray: metricsCollection.dashArray ?? metric.color,
         experiment: metric.run.experiment_name,
         run: metric.run.name,
         metric: metric.metric_name,
@@ -213,11 +256,13 @@ function getDataAsTableRows(
           closestIndex === null ? '-' : metric.data.iterations[closestIndex]
         }`,
       };
-      _.forEach(metric.run.params, (paramsValues, paramsKey) =>
-        _.forEach(paramsValues, (param, key) => {
-          rowValues[`${paramsKey}.${key}`] = param;
-        }),
-      );
+      paramKeys.forEach((paramKey) => {
+        rowValues[paramKey.replaceAll('.', '_')] = _.get(
+          metric.run.params,
+          paramKey,
+          '-',
+        );
+      });
       return rowValues;
     }),
   );
@@ -287,6 +332,7 @@ function onActivePointChange(activePointData: IActivePointData): void {
   const tableData = getDataAsTableRows(
     model.getState()!.data!,
     activePointData.xValue,
+    model.getState()!.params!,
   );
   const stateUpdate: Partial<IMetricAppModelState> = {
     tableData,
