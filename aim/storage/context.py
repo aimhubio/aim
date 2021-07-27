@@ -18,7 +18,7 @@ class Context:
 
     @property
     def idx(self) -> int:
-        return self._hash
+        return hash(self)
 
     def __repr__(self) -> str:
         return f'<Context#{hash(self)} {self._context}>'
