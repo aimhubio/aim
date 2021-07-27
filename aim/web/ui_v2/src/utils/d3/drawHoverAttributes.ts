@@ -9,6 +9,7 @@ import {
   ISetAxisLabelProps,
   IGetNearestCirclesProps,
   IGetNearestCircles,
+  IActivePointData,
 } from 'types/utils/d3/drawHoverAttributes';
 import { CircleEnum, XAlignmentEnum } from './index';
 import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
@@ -120,7 +121,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     };
   }
 
-  function setAxisLabel({ closestCircle, xScale, yScale }: ISetAxisLabelProps) {
+  function setAxisLabel({
+    closestCircle,
+    xScale,
+    yScale,
+  }: ISetAxisLabelProps): void {
     const visArea = d3.select(visAreaRef.current);
     const xAxisTickValue = xScale.invert(closestCircle.x);
     // Set X axis value label related by 'xAlignment'
@@ -202,10 +207,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   function closestCircleChange(
     circle: INearestCircle,
     nearestCircles: INearestCircle[],
-  ) {
+  ): void {
     // hover Line Changed case
     if (circle.key !== closestCircleRef.current?.key) {
-      drawHoverLineChange(activeLineKeyRef.current, circle.key);
+      drawHoverLineChange(circle.key, activeLineKeyRef.current);
     }
     // hover Circle Changed case
     if (
@@ -222,10 +227,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     attributesRef.current.y = circle.y + margin.top;
   }
 
-  function drawHoverLineChange(
-    prevLineKey: string | undefined,
-    lineKey: string,
-  ) {
+  function drawHoverLineChange(lineKey: string, prevLineKey?: string): void {
     linesNodeRef.current.classed(
       'highlight',
       highlightMode !== HighlightEnum.Off,
@@ -258,7 +260,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   function drawHoverCircleChange(
     circle: INearestCircle,
     nearestCircles: INearestCircle[],
-  ) {
+  ): void {
     const { height, width } = plotBoxRef.current;
 
     attributesNodeRef.current.classed(
@@ -335,7 +337,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     });
   }
 
-  function getActivePointData(circle: INearestCircle) {
+  function getActivePointData(circle: INearestCircle): IActivePointData {
     return {
       key: circle.key,
       xValue: getFormattedValue(attributesRef.current.xScale.invert(circle.x)),
@@ -345,7 +347,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     };
   }
 
-  function updateHoverAttributes(mouse: [number, number]) {
+  function updateHoverAttributes(mouse: [number, number]): IActivePointData {
     const { mouseX, mouseY } = getCoordinates({
       mouse,
       xScale: attributesRef.current.xScale,
@@ -364,7 +366,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     return getActivePointData(closestCircle);
   }
 
-  function setActiveLine(lineKey: string, chartIndex: number) {
+  function setActiveLine(lineKey: string, chartIndex: number): void {
     if (index === chartIndex && !hasFocusedCircleRef.current) {
       if (attributesRef.current?.x && attributesRef.current.y) {
         const { mouseX, mouseY } = getCoordinates({
@@ -398,12 +400,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
           }
         }
       } else {
-        drawHoverLineChange(activeLineKeyRef.current, lineKey);
+        drawHoverLineChange(lineKey, activeLineKeyRef.current);
       }
     }
   }
 
-  function clearLinesAndAttributes() {
+  function clearLinesAndAttributes(): void {
     linesNodeRef.current.classed('highlight', false);
     attributesNodeRef.current.classed('highlight', false);
 
@@ -425,11 +427,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   }
 
+  // Interactions
   function handlePointClick(
     this: SVGElement,
     event: MouseEvent,
     circle: INearestCircle,
-  ) {
+  ): void {
     hasFocusedCircleRef.current = true;
 
     const mouse: [number, number] = [
@@ -442,14 +445,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       onMouseOver(index, mouse, activePointData);
     }
 
-    bgRectNodeRef.current.on('click', () => {
-      hasFocusedCircleRef.current = false;
-    });
-
-    linesNodeRef.current.on('click', () => {
-      hasFocusedCircleRef.current = false;
-    });
-
     attributesNodeRef.current
       .selectAll('circle')
       .attr('r', CircleEnum.Radius)
@@ -461,6 +456,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .classed('focus', true)
       .attr('r', CircleEnum.ActiveRadius)
       .raise();
+  }
+
+  function handleLeaveFocusedState(): void {
+    if (hasFocusedCircleRef.current) {
+      hasFocusedCircleRef.current = false;
+    }
   }
 
   function handleMouseMove(event: MouseEvent): void {
@@ -508,6 +509,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   svgNodeRef.current?.on('mousemove', handleMouseMove);
   svgNodeRef.current?.on('mouseleave', handleMouseLeave);
+  bgRectNodeRef.current.on('click', handleLeaveFocusedState);
+  linesNodeRef.current.on('click', handleLeaveFocusedState);
 }
 
 export default drawHoverAttributes;

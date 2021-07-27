@@ -181,6 +181,7 @@ const LineChart = React.forwardRef(function LineChart(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
+        // FiXME need to fix later to save focused state on resize
         onMouseLeave(index);
         hasFocusedCircleRef.current = false;
         requestAnimationFrame(renderChart);
@@ -193,16 +194,17 @@ const LineChart = React.forwardRef(function LineChart(
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-  }, [props.data, props.zoomMode, props.displayOutliers, props.highlightMode]);
+  }, [data, zoomMode, displayOutliers, highlightMode]);
 
-  // TODO: improve setting of ref methods
   React.useImperativeHandle(ref, () => ({
-    ...axesRef.current,
-    ...brushRef.current,
-    ...linesRef.current,
-    ...attributesRef.current,
+    updateHoverAttributes: (mousePosition: [number, number]) => {
+      attributesRef.current?.updateHoverAttributes(mousePosition);
+    },
     setActiveLine: (lineKey: string, chartIndex: number) => {
       attributesRef.current?.setActiveLine(lineKey, chartIndex);
+    },
+    clearLinesAndAttributes: () => {
+      attributesRef.current?.clearLinesAndAttributes();
     },
   }));
 
