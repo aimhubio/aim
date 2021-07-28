@@ -8,12 +8,12 @@ import {
   Checkbox,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
-import styles from './selectFormStyle.module.css';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
+
+import styles from './selectFormStyle.module.scss';
 
 const selectOptions = [
   { name: 'bleu', group: 'metric' },
@@ -56,10 +56,6 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
     setFields(fieldData);
   }
 
-  function resetFields(): void {
-    setFields([]);
-  }
-
   function toggleEditMode(): void {
     setEditMode(!editMode);
   }
@@ -76,12 +72,11 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
         <Box
           width='100%'
           display='flex'
-          flexWrap='wrap'
           justifyContent='space-between'
           alignItems='center'
         >
           {editMode ? (
-            <Box flex={1} mr={2}>
+            <Box flex={1} flexWrap='nowrap' mr={1}>
               <TextField
                 fullWidth
                 multiline
@@ -92,72 +87,60 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
               />
             </Box>
           ) : (
-            <>
-              <Box width='100%' maxWidth='94em'>
-                <Autocomplete
-                  id='select-metrics'
-                  size='small'
-                  multiple
-                  disableCloseOnSelect
-                  limitTags={6}
-                  options={selectOptions}
-                  value={fields}
-                  onChange={onSelect}
-                  groupBy={(option) => option.group}
-                  getOptionLabel={(option) => option.name}
-                  renderTags={(tags) => {
-                    return (
-                      <Box className={styles.selectForm__tags}>
-                        {fields.map((tag: any) => {
-                          return (
-                            <Box component='span' key={tag.name} mr={1}>
-                              <Chip
-                                size='small'
-                                label={tag.name}
-                                data-name={tag.name}
-                                onDelete={() => handleDelete(tag.name)}
-                              />
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    );
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant='outlined'
-                      label='Select Metrics'
-                      placeholder='Select'
+            <Box width='100%' mr={2}>
+              <Autocomplete
+                id='select-metrics'
+                size='small'
+                multiple
+                disableCloseOnSelect
+                options={selectOptions}
+                value={fields}
+                onChange={onSelect}
+                groupBy={(option) => option.group}
+                getOptionLabel={(option) => option.name}
+                renderTags={() => {
+                  return (
+                    <Box className={styles.selectForm__tags}>
+                      {fields.map((tag: any) => {
+                        return (
+                          <Box component='span' key={tag.name} mr={1}>
+                            <Chip
+                              size='small'
+                              label={tag.name}
+                              data-name={tag.name}
+                              onDelete={() => handleDelete(tag.name)}
+                            />
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant='outlined'
+                    label='Select Metrics'
+                    placeholder='Select'
+                  />
+                )}
+                renderOption={(option, { selected }) => (
+                  <React.Fragment>
+                    <Checkbox
+                      icon={<CheckBoxOutlineBlank />}
+                      checkedIcon={<CheckBoxIcon />}
+                      style={{ marginRight: 4 }}
+                      checked={selected}
                     />
-                  )}
-                  renderOption={(option, { selected }) => (
-                    <React.Fragment>
-                      <Checkbox
-                        icon={<CheckBoxOutlineBlank />}
-                        checkedIcon={<CheckBoxIcon />}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                      />
-                      {option.name}
-                    </React.Fragment>
-                  )}
-                />
-              </Box>
-            </>
+                    {option.name}
+                  </React.Fragment>
+                )}
+              />
+            </Box>
           )}
-          <Box minWidth={140} display='flex'>
-            <Button
-              style={{ marginRight: 10 }}
-              variant='outlined'
-              onClick={resetFields}
-            >
-              X
-            </Button>
-            <Button variant='outlined' onClick={toggleEditMode}>
-              {editMode ? '!' : ''}E
-            </Button>
-          </Box>
+          <Button variant='outlined' onClick={toggleEditMode}>
+            {editMode ? '!' : ''}E
+          </Button>
         </Box>
       </Grid>
       {editMode ? null : (

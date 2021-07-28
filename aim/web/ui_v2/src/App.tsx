@@ -1,21 +1,15 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 import { routes } from 'routes/routes';
 
-const useStyles = makeStyles(({ spacing }) => ({
-  main: {
-    paddingLeft: spacing(8.75),
-  },
-}));
+import styles from './appStyles.module.scss';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
-  const classes = useStyles();
-
   return (
     <>
       <BrowserRouter>
@@ -23,12 +17,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         <Theme>
           <Box display='flex'>
             <SideBar />
-            <Box
-              flex='1 1 0%'
-              component='main'
-              bgcolor='grey.200'
-              className={classes.main}
-            >
+            <Box className={styles.mainContainer}>
               <React.Suspense fallback={null}>
                 <Switch>
                   {Object.values(routes).map((route, index) => {
