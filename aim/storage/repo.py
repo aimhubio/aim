@@ -14,6 +14,7 @@ from aim.storage.trace import TraceCollection
 from aim.storage.trace import QueryRunTraceCollection, QueryTraceCollection
 
 from aim.storage.run import Run
+from aim.storage.run_metadata.db import DB
 
 
 class ContainerConfig(NamedTuple):
@@ -46,6 +47,8 @@ class Repo:
         os.makedirs(os.path.join(self.path, 'runs'), exist_ok=True)
         os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
         os.makedirs(os.path.join(self.path, 'progress'), exist_ok=True)
+
+        self.run_metadata_db = DB.from_path(path)
 
     def runs_in_progress(
         self
