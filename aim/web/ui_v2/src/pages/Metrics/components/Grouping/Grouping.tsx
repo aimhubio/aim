@@ -1,26 +1,41 @@
 import React from 'react';
-import { Button, Grid } from '@material-ui/core';
+import { Box, Divider, Grid } from '@material-ui/core';
+import GroupingItem from '../GroupingItem/GroupingItem';
 
 function Grouping(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Grid container spacing={1} justify='center' alignItems='center'>
-      Group By:
-      <Grid item>
-        <Button color='primary' variant='outlined' size='small'>
-          Color
-        </Button>
+    <Box>
+      <Box>Group selected metrics By:</Box>
+      <Grid container spacing={1} justify='center' alignItems='center'>
+        <Grid item>
+          <GroupingItem
+            groupName='Color'
+            groupPopup={<div>GroupPopup</div>}
+            advancedPopup={<div>Advance Popup</div>}
+            onReset={() => null}
+            onVisibilityChange={() => null}
+          />
+        </Grid>
+        <Grid item>
+          <GroupingItem
+            groupName='Style'
+            groupPopup={<div>GroupPopup</div>}
+            advancedPopup={<div>Advance Popup</div>}
+            onReset={() => null}
+            onVisibilityChange={() => null}
+          />
+        </Grid>
+        <Grid item>
+          <GroupingItem
+            groupName='Chart'
+            groupPopup={<div>GroupPopup</div>}
+            advancedPopup={<div>Advance Popup</div>}
+            onReset={() => null}
+            onVisibilityChange={() => null}
+          />
+        </Grid>
       </Grid>
-      <Grid item>
-        <Button color='primary' variant='outlined' size='small'>
-          Style
-        </Button>
-      </Grid>
-      <Grid item>
-        <Button color='primary' variant='outlined' size='small'>
-          Chart
-        </Button>
-      </Grid>
-    </Grid>
+    </Box>
   );
 }
 
