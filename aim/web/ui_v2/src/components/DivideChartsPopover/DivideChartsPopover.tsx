@@ -1,33 +1,15 @@
 import React from 'react';
-import {
-  AccordionDetails,
-  Accordion,
-  AccordionSummary,
-  Box,
-  Checkbox,
-  Chip,
-  TextField,
-  Divider,
-} from '@material-ui/core';
-import ToggleButton from 'components/ToggleButton/ToggleButton';
-
-import styles from './colorPopoverStyle.module.scss';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Box, Checkbox, Chip, TextField } from '@material-ui/core';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
-  ExpandMore,
 } from '@material-ui/icons';
-import ColorPopoverAdvanced from 'components/ColorPopoverAdvanced/ColorPopoverAdvanced';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { colorOptions } from 'utils/mockOptions';
 
-function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
+function DivideChartsPopover(): React.FunctionComponentElement<React.ReactNode> {
   const [fields, setFields] = React.useState<any>([]);
-  const [selectedPersistence, setSelectedPersistence] = React.useState(0);
-
-  const onPaletteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedPersistence(+event.target.value);
-  };
 
   function onSelect(event: object, value: any, reason: string): void {
     setFields([...value]);
@@ -39,13 +21,14 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
   }
 
   function handleGroupingMode() {}
-  function onPersistenceChange() {}
 
   return (
-    <Box width='25em' className={styles.popover_container}>
+    <Box
+      width='25em'
+      // className={styles.popover_container}
+    >
       <Box p={0.5}>
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
-          <h3>Select fields for grouping by color</h3>
           <Autocomplete
             style={{ marginTop: '8px' }}
             id='select-fields'
@@ -59,7 +42,9 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
             getOptionLabel={(option) => option.name}
             renderTags={() => {
               return (
-                <Box className={styles.selectForm__tags}>
+                <Box
+                // className={styles.selectForm__tags}
+                >
                   {fields.map((tag: any) => {
                     return (
                       <Box
@@ -112,34 +97,17 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
           mb={0.5}
           p={0.5}
         >
-          <h3>select grouping mode</h3>
+          <h3>select dividing mode</h3>
           <ToggleButton
             id='groupMode'
-            leftLabel='Group'
+            leftLabel='Divide'
             rightLabel='Reverse'
             onChange={handleGroupingMode}
           />
         </Box>
-        <Accordion className={styles.popover_accordion__container}>
-          <AccordionSummary
-            style={{ padding: '0 0.5em' }}
-            expandIcon={<ExpandMore />}
-            id='panel1c-header'
-          >
-            <span>Advanced options</span>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: 0 }}>
-            <ColorPopoverAdvanced
-              onPaletteChange={onPaletteChange}
-              onPersistenceChange={onPersistenceChange}
-              selectedPersistence={selectedPersistence}
-            />
-          </AccordionDetails>
-          <Divider />
-        </Accordion>
       </Box>
     </Box>
   );
 }
 
-export default ColorPopover;
+export default DivideChartsPopover;

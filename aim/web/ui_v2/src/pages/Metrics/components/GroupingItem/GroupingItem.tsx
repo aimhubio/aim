@@ -12,10 +12,13 @@ function GroupingItem({
   onReset,
   onVisibilityChange,
   groupName,
+  title,
+  advancedTitle,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box className={styles.groupingItem__container_div} mt={0.5}>
       <ControlPopover
+        title={title}
         anchor={({ onAnchorClick }) => (
           <Button
             onClick={onAnchorClick}
@@ -31,6 +34,7 @@ function GroupingItem({
 
       <Box mt={0.25} display='flex' justifyContent='space-between'>
         <ControlPopover
+          title={advancedTitle}
           anchor={({ onAnchorClick }) => (
             <Box
               className={styles.groupingItem__button_small}

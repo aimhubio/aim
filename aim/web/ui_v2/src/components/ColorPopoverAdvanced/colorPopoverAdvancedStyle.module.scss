@@ -1,0 +1,28 @@
+.advancedPopover_container {
+    width: 25em;
+    padding: 0.5em;
+     h3 {
+    color: #324480;
+    text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+ .palette_span__colorsContainer {
+  display: flex;
+  border-radius: 4px;
+  width: 10.5em;
+  border: 1px solid;
+  height: 2em;
+  margin-right: 0.5em;
+  overflow: hidden;
+}
+
+.palette_span__colorItem {
+  display: inline-block;
+  flex: 1;
+  height: 100%;
+}

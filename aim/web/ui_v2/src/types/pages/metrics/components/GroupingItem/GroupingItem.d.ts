@@ -6,4 +6,6 @@ export interface IGroupingItemProps {
   onVisibilityChange: () => void;
   groupPopover: React.FunctionComponentElement<React.ReactNode>;
   advancedPopover: React.FunctionComponentElement<React.ReactNode>;
+  title: string;
+  advancedTitle?: string;
 }

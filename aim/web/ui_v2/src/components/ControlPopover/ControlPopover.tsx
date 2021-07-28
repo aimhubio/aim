@@ -3,9 +3,11 @@ import { Box, Popover } from '@material-ui/core';
 
 import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
 
-function ControlPopover(
-  props: IControlPopoverProps,
-): React.FunctionComponentElement<React.ReactNode> {
+function ControlPopover({
+  component,
+  title,
+  anchor,
+}: IControlPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const onAnchorClick = React.useCallback(
@@ -20,8 +22,8 @@ function ControlPopover(
   }, []);
 
   return (
-    <Box>
-      {props.anchor({ onAnchorClick, opened: !!anchorEl })}
+    <>
+      {anchor({ onAnchorClick, opened: !!anchorEl })}
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}
@@ -36,9 +38,23 @@ function ControlPopover(
           horizontal: 'right',
         }}
       >
-        {props.component}
+        <Box>
+          {title && (
+            <Box
+              padding='0.5em 1em'
+              borderBottom='1px solid #dfe6f7'
+              color='#243969'
+              bgcolor='#f7faff'
+              fontWeight={700}
+              style={{ textTransform: 'uppercase' }}
+            >
+              {title}
+            </Box>
+          )}
+          {component}
+        </Box>
       </Popover>
-    </Box>
+    </>
   );
 }
 

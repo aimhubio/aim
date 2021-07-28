@@ -1,16 +1,22 @@
 .popover_container {
-    h3 {
-        color: #324480;
-        text-transform: uppercase;
-        font-size: 1em;
-        padding: 0;
-        margin: 0;
-        font-weight: 500;
-    }
+  h3 {
+    color: #324480;
+    text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
 }
 
 .popover__header {
-    padding: 0.5em 1em;
-    border-bottom: 1px solid #B7B7B7;
+  padding: 0.5em 1em;
+  border-bottom: 1px solid #b7b7b7;
 }
 
+.popover_accordion__container {
+  box-shadow: unset;
+  border: 1px solid #b7b7b7;
+  border-radius: 4px;
+  margin: 0 !important;
+}
