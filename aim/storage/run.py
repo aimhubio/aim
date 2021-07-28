@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from aim.storage.repo import Repo
 
 
-
 class Run:
 
     contexts: Dict[Context, int] = dict()
@@ -180,7 +179,8 @@ class Run:
             self,
             metric_name: str,
             context: Context
-    ) -> Optional[Trace]:
+    ) -> Optional['Trace']:
+        from aim.storage.trace import Trace
         trace = Trace(metric_name, context, self)
         return trace if bool(trace) else None
 
