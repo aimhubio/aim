@@ -129,7 +129,6 @@ function processData(data: IRun[]): {
 }
 
 function groupData(data: IMetric[]): IMetricsCollection[] {
-  console.time('grouping');
   const grouping = model.getState()!.config!.grouping;
   const groupByColor = grouping.color;
   const groupByStyle = grouping.style;
@@ -154,13 +153,15 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     [key: string]: IMetricsCollection;
   } = {};
 
+  const groupingFields = _.uniq(
+    groupByColor.concat(groupByStyle).concat(groupByChart),
+  );
+
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: unknown } = {};
-    _.uniq(groupByColor.concat(groupByStyle).concat(groupByChart)).forEach(
-      (field) => {
-        groupValue[field] = _.get(data[i], field);
-      },
-    );
+    groupingFields.forEach((field) => {
+      groupValue[field] = _.get(data[i], field);
+    });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
       groupValues[groupKey].data.push(data[i]);
@@ -224,7 +225,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       }
     }
   }
-  console.timeEnd('grouping');
+
   return Object.values(groupValues);
 }
 
