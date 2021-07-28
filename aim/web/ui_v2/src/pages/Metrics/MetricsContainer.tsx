@@ -1,138 +1,83 @@
 import React from 'react';
 
-import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
 import Metrics from './Metrics';
 import getTableColumns from './components/TableColumns/TableColumns';
-import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
-import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { ITableRef } from 'types/components/Table/Table';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import metricAppModel from 'services/models/metrics/metricsAppModel';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { ILine } from 'types/components/LineChart/LineChart';
 
-const metricsRequestRef = metricsCollectionModel.getMetricsData();
+const metricsRequestRef = metricAppModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
-  const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-  const [lineChartData, setLineChartData] = React.useState<any>([]);
-  const [tableData, setTableData] = React.useState<any>([]);
-  const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
-    CurveEnum.Linear,
-  );
-  const [axesScaleType, setAxesScaleType] = React.useState<IAxesScaleState>({
-    xAxis: ScaleEnum.Linear,
-    yAxis: ScaleEnum.Linear,
-  });
-  const [highlightMode, setHighlightMode] = React.useState<HighlightEnum>(
-    HighlightEnum.Off,
-  );
-
-  const metricsData = useModel(metricsCollectionModel);
   const tableRef = React.useRef<ITableRef>(null);
   const chartPanelRef = React.useRef<IChartPanelRef>(null);
-
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
 
+  const metricsData = useModel(metricAppModel);
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
-  const toggleDisplayOutliers = React.useCallback((): void => {
-    setDisplayOutliers(!displayOutliers);
-  }, [displayOutliers]);
-
-  const toggleZoomMode = React.useCallback((): void => {
-    setZoomMode(!zoomMode);
-  }, [zoomMode]);
-
-  const onActivePointChange = React.useCallback(
-    (activePointData: IActivePointData): void => {
-      tableRef.current?.updateData({
-        newData: metricsCollectionModel
-          .getDataAsTableRows(activePointData.xValue)
-          .flat(),
+  React.useEffect(() => {
+    if (tableRef.current && chartPanelRef.current) {
+      metricAppModel.setComponentRefs({
+        tableRef,
+        chartPanelRef,
       });
-      tableRef.current?.setHoveredRow(activePointData.key);
-    },
-    [],
-  );
-
-  const onChangeHighlightMode = React.useCallback(
-    (mode: number) => (): void => {
-      setHighlightMode(mode);
-    },
-    [],
-  );
-
-  function onTableRowHover(rowKey: string) {
-    // TODO PASS chartIndex DYNAMICALLY
-    const chartIndex = 0;
-    chartPanelRef.current?.setActiveLine(rowKey, chartIndex);
-  }
-
-  function onSmoothingChange({
-    algorithm,
-    factor,
-    curveInterpolation,
-  }: IOnSmoothingChange) {
-    let newData = metricsCollectionModel.getDataAsLines({
-      smoothingAlgorithm: algorithm,
-      smoothingFactor: factor,
-    });
-    setLineChartData(newData);
-    setCurveInterpolation(curveInterpolation);
-  }
-
-  const onAxesScaleTypeChange = React.useCallback(
-    (params: IAxesScaleState): void => {
-      setAxesScaleType(params);
-    },
-    [],
-  );
+    }
+  }, [metricsData?.rawData]);
 
   React.useEffect(() => {
-    metricsCollectionModel.initialize();
+    metricAppModel.initialize();
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();
     };
   }, []);
 
-  React.useEffect(() => {
-    if (metricsCollectionModel.getDataAsLines()[0]?.length) {
-      setLineChartData(metricsCollectionModel.getDataAsLines());
-      setTableData(metricsCollectionModel.getDataAsTableRows());
-    }
-  }, [metricsData]);
-
   return (
     <Metrics
+      //refs
       tableRef={tableRef}
       chartPanelRef={chartPanelRef}
-      displayOutliers={displayOutliers}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      lineChartData={lineChartData}
-      tableData={tableData}
+      //options
+      lineChartData={metricsData?.lineChartData as ILine[][]}
+      displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
+      tableData={metricAppModel.getDataAsTableRows()}
       tableColumns={getTableColumns()}
-      zoomMode={zoomMode}
-      curveInterpolation={curveInterpolation}
-      axesScaleType={axesScaleType}
-      toggleDisplayOutliers={toggleDisplayOutliers}
-      toggleZoomMode={toggleZoomMode}
-      onActivePointChange={onActivePointChange}
-      highlightMode={highlightMode}
-      onChangeHighlightMode={onChangeHighlightMode}
-      onSmoothingChange={onSmoothingChange}
-      onTableRowHover={onTableRowHover}
-      onAxesScaleTypeChange={onAxesScaleTypeChange}
+      zoomMode={metricsData?.config?.chart.zoomMode as boolean}
+      curveInterpolation={
+        metricsData?.config?.chart.curveInterpolation as CurveEnum
+      }
+      highlightMode={metricsData?.config?.chart.highlightMode as HighlightEnum}
+      axesScaleType={
+        metricsData?.config?.chart.axesScaleType as IAxesScaleState
+      }
+      smoothingAlgorithm={
+        metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
+      }
+      smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
+      focusedState={metricsData?.config?.chart.focusedState as any}
+      //methods
+      onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
+      onZoomModeChange={metricAppModel.onZoomModeChange}
+      onChangeHighlightMode={metricAppModel.onChangeHighlightMode}
+      onSmoothingChange={metricAppModel.onSmoothingChange}
+      onTableRowHover={metricAppModel.onTableRowHover}
+      onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
+      onActivePointChange={metricAppModel.onActivePointChange}
     />
   );
 }

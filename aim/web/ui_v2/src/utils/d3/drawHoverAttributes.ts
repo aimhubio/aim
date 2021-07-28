@@ -40,6 +40,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     onMouseOver,
     onMouseLeave,
     hasFocusedCircleRef,
+    focusedState,
   } = props;
 
   const { top: chartTop, left: chartLeft }: { top: number; left: number } =
@@ -154,7 +155,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         .text(formattedValue);
       const axisLeftEdge = margin.left - 1;
       const axisRightEdge = width - margin.right + 1;
-      let xAxisValueWidth = xAxisLabelNodeRef.current.node().offsetWidth;
+      let xAxisValueWidth = xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
       if (xAxisValueWidth > plotBoxRef.current.width) {
         xAxisValueWidth = plotBoxRef.current.width;
       }
@@ -189,7 +190,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         .text(formattedValue);
       const axisTopEdge = margin.top - 1;
       const axisBottomEdge = height - margin.top;
-      const yAxisValueHeight = yAxisLabelNodeRef.current.node().offsetHeight;
+      const yAxisValueHeight =
+        yAxisLabelNodeRef.current?.node()?.offsetHeight ?? 0;
       yAxisLabelNodeRef.current.style(
         'top',
         `${
@@ -207,13 +209,15 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   function closestCircleChange(
     circle: INearestCircle,
     nearestCircles: INearestCircle[],
+    force: boolean = false,
   ): void {
     // hover Line Changed case
-    if (circle.key !== closestCircleRef.current?.key) {
+    if (force || circle.key !== closestCircleRef.current?.key) {
       drawHoverLineChange(circle.key, activeLineKeyRef.current);
     }
     // hover Circle Changed case
     if (
+      force ||
       circle.key !== closestCircleRef.current?.key ||
       circle.x !== closestCircleRef.current?.x ||
       circle.y !== closestCircleRef.current?.y
@@ -344,10 +348,14 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       yValue: getFormattedValue(attributesRef.current.yScale.invert(circle.y)),
       pageX: chartLeft + attributesRef.current.x,
       pageY: chartTop + attributesRef.current.y,
+      chartIndex: index,
     };
   }
 
-  function updateHoverAttributes(mouse: [number, number]): IActivePointData {
+  function updateHoverAttributes(
+    mouse: [number, number],
+    focus: boolean = false,
+  ): IActivePointData {
     const { mouseX, mouseY } = getCoordinates({
       mouse,
       xScale: attributesRef.current.xScale,
@@ -366,7 +374,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     return getActivePointData(closestCircle);
   }
 
-  function setActiveLine(lineKey: string, chartIndex: number): void {
+  function setActiveLine(
+    lineKey: string,
+    chartIndex: number,
+    force: boolean = false,
+  ): void {
     if (index === chartIndex && !hasFocusedCircleRef.current) {
       if (attributesRef.current?.x && attributesRef.current.y) {
         const { mouseX, mouseY } = getCoordinates({
@@ -392,11 +404,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
             circle.y + margin.top,
           ];
 
-          closestCircleChange(circle, nearestCircles);
+          closestCircleChange(circle, nearestCircles, force);
 
           const activePointData = getActivePointData(circle);
           if (typeof onMouseOver === 'function') {
-            onMouseOver(index, mouse, activePointData);
+            onMouseOver(mouse, activePointData);
           }
         }
       } else {
@@ -442,7 +454,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const activePointData = updateHoverAttributes(mouse);
 
     if (typeof onMouseOver === 'function') {
-      onMouseOver(index, mouse, activePointData);
+      onMouseOver(mouse, activePointData);
     }
 
     attributesNodeRef.current
@@ -474,7 +486,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       const activePointData = updateHoverAttributes(mouse);
 
       if (typeof onMouseOver === 'function') {
-        onMouseOver(index, mouse, activePointData);
+        // callback(mouse, activePointData);
+        onMouseOver(mouse, activePointData);
       }
     }
   }
@@ -500,6 +513,18 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   ) {
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
+  }
+
+  if (focusedState.key !== null) {
+    setActiveLine(focusedState.key, index, true);
+  } else if (focusedState.xValue !== null) {
+    updateHoverAttributes(
+      [
+        attributesRef.current.xScale(focusedState.xValue),
+        attributesRef.current.yScale(focusedState.yValue),
+      ],
+      true,
+    );
   }
 
   attributesRef.current.updateScales = updateScales;

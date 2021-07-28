@@ -41,23 +41,22 @@ const cmaProps = {
 function SmoothingPopover(
   props: ISmoothingPopoverProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const mounted = React.useRef<boolean>(false);
-  const [smoothingAlgorithm, setSmoothingAlgorithm] = React.useState<string>(
-    SmoothingAlgorithmEnum.EMA,
-  );
-  const [factor, setFactor] = React.useState<number>(emaProps.min);
-  const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
-    CurveEnum.Linear,
-  );
+  const [factor, setFactor] = React.useState<number>(props.smoothingFactor);
 
-  const handleAlgorithmChange = React.useCallback((event): void => {
-    const factorMin: number =
-      event.target.id === SmoothingAlgorithmEnum.EMA
-        ? emaProps.min
-        : cmaProps.min;
-    setSmoothingAlgorithm(event.target.id);
-    setFactor(factorMin);
-  }, []);
+  const handleAlgorithmChange = React.useCallback(
+    (event): void => {
+      const factorMin: number =
+        event.target.id === SmoothingAlgorithmEnum.EMA
+          ? emaProps.min
+          : cmaProps.min;
+      setFactor(factorMin);
+      props.onSmoothingChange({
+        smoothingAlgorithm: event.target.id,
+        smoothingFactor: factorMin,
+      });
+    },
+    [props],
+  );
 
   function handleFactorChange(
     event: React.ChangeEvent<any>,
@@ -69,30 +68,25 @@ function SmoothingPopover(
   }
 
   function handleInterpolation(ev: React.ChangeEvent, checked: boolean): void {
-    setCurveInterpolation(checked ? CurveEnum.MonotoneX : CurveEnum.Linear);
+    props.onSmoothingChange({
+      curveInterpolation: checked ? CurveEnum.MonotoneX : CurveEnum.Linear,
+    });
   }
 
-  function handleSmoothingData(): void {
+  function handleSmoothingData(
+    ev: React.ChangeEvent<any>,
+    value: number | any,
+  ): void {
     props.onSmoothingChange({
-      algorithm: smoothingAlgorithm,
-      factor,
-      curveInterpolation,
+      smoothingFactor: value,
     });
   }
 
   const sliderProps = React.useMemo(() => {
-    return smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
+    return props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
       ? emaProps
       : cmaProps;
-  }, [smoothingAlgorithm]);
-
-  React.useEffect(() => {
-    if (mounted.current) {
-      handleSmoothingData();
-    } else {
-      mounted.current = true;
-    }
-  }, [curveInterpolation, smoothingAlgorithm]);
+  }, [props.smoothingAlgorithm]);
 
   return (
     <Box>
@@ -115,14 +109,14 @@ function SmoothingPopover(
       <MenuList>
         <MenuItem
           id={SmoothingAlgorithmEnum.EMA}
-          selected={smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
+          selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
           onClick={handleAlgorithmChange}
         >
           Exponential Moving area
         </MenuItem>
         <MenuItem
           id={SmoothingAlgorithmEnum.CMA}
-          selected={smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
+          selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
           onClick={handleAlgorithmChange}
         >
           Central Moving area
@@ -136,6 +130,7 @@ function SmoothingPopover(
           Linear
         </Box>
         <Switch
+          checked={props.curveInterpolation === CurveEnum.MonotoneX}
           color='primary'
           inputProps={{ 'aria-label': 'checkbox with default color' }}
           onChange={handleInterpolation}

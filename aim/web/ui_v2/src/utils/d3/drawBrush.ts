@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
 import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 import getAxesScale from './getAxesScale';
+import lineGenerator from './lineGenerator';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
@@ -113,28 +114,30 @@ function drawBrush(props: IDrawBrushProps): void {
       .duration(500)
       .attr(
         'd',
-        linesRef.current.lineGenerator(
-          brushRef.current.xScale,
-          brushRef.current.yScale,
-        ),
+        lineGenerator(brushRef.current.xScale, brushRef.current.yScale),
       );
   }
 
   function handleZoomOut(event: Event): void {
-    const { xScale, yScale } = getAxesScale({
-      visBoxRef,
-      axesScaleType,
-      min,
-      max,
-    });
+    const { width, height, margin } = visBoxRef.current;
 
+    const xScale = getAxesScale({
+      domainData: [min.x, max.x],
+      rangeData: [0, width - margin.left - margin.right],
+      scaleType: axesScaleType.xAxis,
+    });
+    const yScale = getAxesScale({
+      domainData: [min.y, max.y],
+      rangeData: [height - margin.top - margin.bottom, 0],
+      scaleType: axesScaleType.yAxis,
+    });
     // setting axes to initial state
     axesRef.current.updateXAxis(xScale);
     axesRef.current.updateYAxis(yScale);
 
     // setting scales and lines to initial state
     brushRef.current.updateScales(xScale, yScale);
-    linesRef.current.updateLines(xScale, yScale);
+    linesRef.current.updateLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
     attributesRef.current.updateHoverAttributes(d3.pointer(event));

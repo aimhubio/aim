@@ -35,7 +35,6 @@ export interface IDrawHoverAttributesProps {
   linesNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
   onMouseOver: (
-    index: number,
     mousePosition: [number, number],
     activePointData: IActivePointData,
   ) => void;
@@ -43,6 +42,13 @@ export interface IDrawHoverAttributesProps {
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
   hasFocusedCircleRef: React.MutableRefObject<boolean>;
+  focusedState: {
+    key: string | null;
+    xValue: number | null;
+    yValue: number | null;
+    active: boolean;
+    chartIndex: number | null;
+  };
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };
@@ -90,4 +96,5 @@ export interface IActivePointData {
   yValue: number;
   pageX: number;
   pageY: number;
+  chartIndex: number;
 }

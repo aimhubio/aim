@@ -27,9 +27,15 @@ export interface ILineChartProps {
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   onMouseOver: (
-    index: number,
     mousePosition: [number, number],
     activePointData: IActivePointData,
   ) => void;
   onMouseLeave: (index: number) => void;
+  focusedState: {
+    key: string | null;
+    xValue: number | null;
+    yValue: number | null;
+    active: boolean;
+    chartIndex: number | null;
+  };
 }

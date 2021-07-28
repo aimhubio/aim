@@ -5,7 +5,6 @@ import {
   BlurOn,
   CenterFocusWeak,
   GroupWorkOutlined,
-  ImportExportOutlined,
   KeyboardArrowLeft,
   MultilineChart,
   ScatterPlot,
@@ -40,7 +39,7 @@ function Controls(
       spacing={1}
       alignItems='center'
     >
-      <Grid onClick={props.toggleDisplayOutliers} item>
+      <Grid onClick={props.onDisplayOutliersChange} item>
         {props.displayOutliers ? (
           <BlurOn className={classes.anchor} />
         ) : (
@@ -90,7 +89,12 @@ function Controls(
             </Box>
           )}
           component={
-            <SmootheningPopup onSmoothingChange={props.onSmoothingChange} />
+            <SmootheningPopup
+              onSmoothingChange={props.onSmoothingChange}
+              smoothingAlgorithm={props.smoothingAlgorithm}
+              curveInterpolation={props.curveInterpolation}
+              smoothingFactor={props.smoothingFactor}
+            />
           }
         />
       </Grid>
@@ -121,7 +125,7 @@ function Controls(
               </span>
               <ZoomIn
                 color={props.zoomMode ? 'primary' : 'inherit'}
-                onClick={props.toggleZoomMode}
+                onClick={props.onZoomModeChange}
               />
             </Box>
           )}
@@ -138,7 +142,7 @@ function Controls(
               >
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
-              <ZoomOut onClick={props.toggleZoomMode} />
+              <ZoomOut onClick={props.onZoomModeChange} />
             </Box>
           )}
           component={<ZoomOutPopup />}

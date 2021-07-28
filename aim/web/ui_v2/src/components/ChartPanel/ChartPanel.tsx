@@ -60,12 +60,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   // TODO: update only x with applied scale
   const syncHoverState = React.useCallback(
     (
-      chartIndex: number,
       mousePosition: [number, number],
       activePointData: IActivePointData,
     ): void => {
       chartRefs.forEach((chartRef, index) => {
-        if (index === chartIndex) {
+        if (index === activePointData.chartIndex) {
           activePointDataRef.current = activePointData;
           onPopoverChange({
             top: activePointData.pageY,
