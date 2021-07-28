@@ -22,7 +22,9 @@ import {
 } from 'utils/smoothingData';
 import {
   adjustable_reader,
+  decodePathsVals,
   decode_buffer_pairs,
+  iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 
 const model = createModel<Partial<IMetricCollectionModelState>>({});
@@ -50,14 +52,17 @@ function getMetricsData() {
   });
   return {
     call: async () => {
-      const pathsVals = [];
       const stream = await call();
+      // @ts-ignore
       let gen = adjustable_reader(stream);
       let buffer_pairs = decode_buffer_pairs(gen);
-      for await (let pathVal of buffer_pairs) {
-        pathsVals.push(pathVal);
+      let decodedPairs = decodePathsVals(buffer_pairs);
+      let objects = iterFoldTree(decodedPairs, 2);
+
+      for await (let [keys, val] of objects) {
+        console.log(keys, val);
       }
-      console.log(pathsVals);
+      console.timeEnd('test');
     },
     abort,
   };

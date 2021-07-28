@@ -15,8 +15,18 @@ const BYTES = 5;
 const ARRAY = 6;
 const OBJECT = 7;
 
-const ArrayFlag = {};
-const ObjectFlag = {};
+class Flag {
+  private flagType: string;
+  constructor(flagType: string) {
+    this.flagType = flagType;
+  }
+
+  toString() {
+    return `<${this.flagType}>`;
+  }
+}
+const ArrayFlag = new Flag('ARRAY_FLAG');
+const ObjectFlag = new Flag('OBJECT_FLAG');
 
 let utf8decoder = new TextDecoder('utf-8');
 
@@ -97,7 +107,7 @@ function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
   );
 }
 
-function decodeValue(buffer: Uint8Array) {
+function decodeValue(buffer: Uint8Array): any {
   const bufferValue = buffer.slice(1);
   const arrayBuffer = typedArrayToBuffer(bufferValue);
   const typeId = buffer[0];
@@ -131,9 +141,9 @@ function decode_q_be(...x: number[]) {
   );
 }
 
-function decodePath(buffer: Uint8Array) {
+function decodePath(buffer: Uint8Array): (string | number)[] {
   const path = [];
-  let key: any;
+  let key: string | number;
 
   let len = buffer.length;
 
@@ -157,132 +167,110 @@ function decodePath(buffer: Uint8Array) {
   return path;
 }
 
-function iterFoldTree(pathsVals) {
-  const stack = [];
-  const path = [];
-}
+type AimObjectPrimitive = null | boolean | number | string | ArrayBuffer;
+type AimObjectArray = AimObject[];
+type AimObjectDict = { [key: string]: AimObject };
+type AimObjectNode = AimObjectDict | AimObjectArray;
 
-// def iter_fold_tree(
-//   paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
-//   *,
-//   # prefix: Tuple[Tuple[int, str], ...] = (),
-//   level: int = 0
-// ) -> AimObject:
-//   # assert 0 <= level <= 1
-//   stack = []
-//   # path = list(prefix)
-//   path = []
+type AimObject = AimObjectPrimitive | AimObjectNode;
 
-//   # # TODO remove
-//   # paths_vals = list(paths_vals)
-//   # L = paths_vals
+type AimObjectKey = string | number;
+type AimObjectPath = AimObjectKey[];
 
-//   paths_vals = iter(paths_vals)
-//   try:
-//       keys, val = next(paths_vals)
-//       # assert not keys
-//       if keys:
-//           raise StopIteration
-//       node = val_to_node(val)
-//       stack.append(node)
-//   except StopIteration:
-//       if level > 0:
-//           return
-//       else:
-//           raise KeyError
-
-//   for keys, val in paths_vals:
-//       keys = list(keys)
-
-//       # TODO precalc common path; implement in O(1)
-//       while path != keys[:len(path)]:
-//           last_state = stack.pop()
-//           if len(stack) == level:
-//               yield path, last_state
-//           path.pop()
-
-//       # while path != keys:
-//       #     adding_path = keys[len(path)]
-//       #     path.append(adding_path)
-//       #     new_state = dict()
-//       #     if isinstance(stack[-1], dict):
-//       #         stack[-1][adding_path] = new_state
-//       #     else:
-//       #         stack[-1].append(new_state)
-//       #     stack.append(new_state)
-//       node = val_to_node(val)
-
-//       assert len(keys) == len(path) + 1
-//       key_to_add = keys[-1]
-//       path.append(key_to_add)
-//       assert stack
-
-//       if isinstance(stack[-1], list):
-//           while len(stack[-1]) != key_to_add:
-//               stack[-1].append(None)
-//           stack[-1].append(node)
-//       elif isinstance(stack[-1], dict):
-//           stack[-1][key_to_add] = node
-//       else:
-//           raise ValueError
-//       stack.append(node)
-
-//       # # stack.pop()
-//       # stack.append(new_state)
-
-//   # while path != keys[:len(path)]:
-//   #     last_state = stack.pop()
-//   #     if len(stack) == level:
-//   #         yield path, last_state
-//   #     path.pop()
-
-//   # if level == 0:
-//   #     yield (), stack[0]
-
-//   if level < len(stack):
-//       yield tuple(path[:level]), stack[level]
-//   # return stack[0]
-
-// def fold_tree(
-//   paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
-//   # prefix: Tuple[Tuple[int, str], ...] = ()
-// ) -> AimObject:
-//   (keys, val), = iter_fold_tree(paths_vals,
-//                                       # prefix=prefix,
-//                                       level=0)
-//   # TODO raise KeyError here
-//   return val
-
-function decodePathsVals(pathsVals: [Uint8Array, Uint8Array][]) {
-  const currentPath = [];
-  const result = [[undefined, ObjectFlag]];
-
-  for (let [encodedPath, encodedVal] of pathsVals) {
-    let path = decodePath(encodedPath);
-    let val = decodeValue(encodedVal);
-
-    while (!isEqual(path.slice(0, currentPath.length), currentPath)) {
-      currentPath.pop();
+function valToNode(val: AimObjectPrimitive | Flag): AimObject {
+  if (val instanceof Flag) {
+    if (val === ObjectFlag) {
+      return {};
+    }
+    if (val === ArrayFlag) {
+      return [];
     }
 
-    while (!isEqual(currentPath, path)) {
-      currentPath.push(path[currentPath.length] as any);
-      if (!isEqual(currentPath, path)) {
-        result.push([currentPath, ObjectFlag]);
-      }
-    }
-
-    result.push(path, val);
+    throw new TypeError('Not implemented flag');
   }
 
-  return result;
+  return val;
+}
+
+export async function* iterFoldTree(
+  pathsVals: AsyncGenerator<[AimObjectPath, AimObjectPrimitive | Flag]>,
+  level: number = 0,
+): AsyncGenerator<[AimObjectPath, AimObject | undefined]> {
+  const stack: AimObject[] = [];
+  const path: AimObjectPath = [];
+
+  // try {
+  // } catch (ex) {}
+
+  let item: IteratorResult<[AimObjectPath, AimObjectPrimitive | Flag], void>;
+
+  item = await pathsVals.next();
+  if (item.done) {
+    if (level > 0) {
+      return;
+    }
+
+    yield [[], undefined];
+    return;
+  }
+
+  let [keys, val] = item.value;
+
+  if (keys.length) {
+    return;
+  }
+
+  let node = valToNode(val);
+  stack.push(node);
+
+  for await (let [keys, val] of pathsVals) {
+    while (!isEqual(path, keys.slice(0, path.length))) {
+      let lastState = stack.pop();
+      if (stack.length === level) {
+        yield [path.slice(), lastState];
+      }
+      path.pop();
+    }
+
+    node = valToNode(val);
+
+    if (keys.length !== path.length + 1) {
+      throw new Error('Assertion Error');
+    }
+    let keyToAdd: AimObjectKey = keys[keys.length - 1];
+    path.push(keyToAdd);
+
+    if (stack.length === 0) {
+      throw new Error('Assertion Error');
+    }
+
+    let lastState = stack[stack.length - 1] as AimObjectNode;
+
+    if (Array.isArray(lastState)) {
+      while (lastState.length !== (keyToAdd as number)) {
+        lastState.push(null);
+      }
+      lastState.push(node);
+    } else {
+      lastState[keyToAdd] = node;
+    }
+
+    stack.push(node);
+  }
+
+  if (level < stack.length) {
+    yield [path.slice(0, level), stack[level]];
+  }
 }
 
 // function decodeTree(pathsVals) {
 //   return foldTree(decodePathsVals(pathsVals));
 // }
 
-export async function* adjustable_reader(stream) {
+export async function* adjustable_reader(
+  stream: ReadableStream,
+): AsyncGenerator<Uint8Array, void, number> {
+  // @ts-ignore
   var buffer = new Uint8Array(new ArrayBuffer(yield));
   var cursor = 0;
   var reader = stream.getReader();
@@ -313,37 +301,84 @@ export async function* adjustable_reader(stream) {
       }
     }
   }
-  yield buffer;
+  if (cursor !== 0) {
+    throw new RangeError('Can not read given number of bytes. EOF');
+  }
 }
 
-export async function* decode_buffer_pairs(async_generator) {
-  var item;
+export async function* decode_buffer_pairs(
+  async_generator: AsyncGenerator<Uint8Array, void, number>,
+): AsyncGenerator<[Uint8Array, Uint8Array]> {
+  let item: IteratorResult<Uint8Array, void>;
   await async_generator.next();
   while (true) {
     item = await async_generator.next(4);
     if (item.done) {
       break;
     }
-    var key_buffer_len =
+
+    let key_buffer_len =
       (item.value[0] << 0) +
       (item.value[1] << 8) +
       (item.value[2] << 16) +
       (item.value[3] << 24);
     item = await async_generator.next(key_buffer_len);
-    var key_buffer = item.value;
+    if (item.done) {
+      throw new Error('Corrupted stream');
+    }
+
+    let key_buffer = item.value;
+
     item = await async_generator.next(4);
     if (item.done) {
-      break;
+      throw new Error('Corrupted stream');
     }
-    var val_buffer_len =
+
+    let val_buffer_len =
       (item.value[0] << 0) +
       (item.value[1] << 8) +
       (item.value[2] << 16) +
       (item.value[3] << 24);
-    item = await async_generator.next(val_buffer_len);
-    var value_buffer = item.value;
 
-    yield [decodePath(key_buffer), decodeValue(value_buffer)];
+    item = await async_generator.next(val_buffer_len);
+    if (item.done) {
+      throw new Error('Corrupted stream');
+    }
+
+    let value_buffer = item.value;
+
+    yield [key_buffer, value_buffer];
+  }
+}
+
+export async function* decodePathsVals(
+  pathsVals: AsyncGenerator<[Uint8Array, Uint8Array]>,
+): AsyncGenerator<[AimObjectPath, AimObjectPrimitive | Flag]> {
+  let currentPath: AimObjectPath | null = null;
+
+  for await (let [encodedPath, encodedVal] of pathsVals) {
+    let path: AimObjectPath = decodePath(encodedPath);
+    let val: AimObjectPrimitive = decodeValue(encodedVal);
+
+    if (currentPath === null) {
+      if (path.length) {
+        yield [[], ObjectFlag];
+      }
+      currentPath = [];
+    }
+
+    while (!isEqual(path.slice(0, currentPath.length), currentPath)) {
+      currentPath.pop();
+    }
+
+    while (!isEqual(currentPath, path)) {
+      currentPath.push(path[currentPath.length]);
+      if (!isEqual(currentPath, path)) {
+        yield [currentPath, ObjectFlag];
+      }
+    }
+
+    yield [path, val];
   }
 }
 
