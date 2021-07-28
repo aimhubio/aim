@@ -305,11 +305,7 @@ function getDataAsTableRows(
         }`,
       };
       paramKeys.forEach((paramKey) => {
-        rowValues[paramKey.replaceAll('.', '_')] = _.get(
-          metric.run.params,
-          paramKey,
-          '-',
-        );
+        rowValues[paramKey] = _.get(metric.run.params, paramKey, '-');
       });
       return rowValues;
     }),

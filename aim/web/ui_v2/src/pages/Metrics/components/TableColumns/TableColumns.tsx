@@ -56,9 +56,10 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
     },
   ].concat(
     paramColumns.map((param) => ({
-      dataKey: param.replaceAll('.', '_'),
+      dataKey: param,
       key: param,
       title: param,
+      cellRenderer: ({ rowData }: any) => rowData[param],
       width: 150,
     })),
   );
