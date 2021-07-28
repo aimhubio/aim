@@ -3,11 +3,13 @@ import drawArea from './drawArea';
 import drawAxes from './drawAxes';
 import drawLines from './drawLines';
 import processData from './processData';
-import getAxesScale from './getAxesScale';
+import getAxisScale from './getAxisScale';
 import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
 import drawParallelAxes from './drawParallelAxes';
 import drawParallelLines from './drawParallelLines';
+import drawParallelHoverAttributes from './drawParallelHoverAttributes';
+import getCoordinates from './getCoordinates';
 
 enum XAlignmentEnum {
   Epoch = 'epoch',
@@ -57,10 +59,12 @@ export {
   drawArea,
   drawAxes,
   drawLines,
+  getCoordinates,
   processData,
-  getAxesScale,
+  getAxisScale,
   drawBrush,
   drawHoverAttributes,
   drawParallelAxes,
   drawParallelLines,
+  drawParallelHoverAttributes,
 };

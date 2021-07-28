@@ -3,13 +3,13 @@ import {
   IDrawParallelAxesProps,
   YScaleType,
 } from 'types/utils/d3/drawParallelAxes';
-import { getAxesScale } from 'utils/d3';
+import { getAxisScale } from 'utils/d3';
 
 function drawParallelAxes(params: IDrawParallelAxesProps): void {
   const { axesNodeRef, visBoxRef, attributesRef, dimensions } = params;
   const keysOfDimensions = Object.keys(dimensions);
   const { width, height, margin } = visBoxRef.current;
-  const xScale = getAxesScale({
+  const xScale = getAxisScale({
     domainData: keysOfDimensions,
     rangeData: [0, width - margin.left - margin.right],
     scaleType: 'point',
@@ -18,7 +18,7 @@ function drawParallelAxes(params: IDrawParallelAxesProps): void {
   const yScale: YScaleType = {};
 
   keysOfDimensions.forEach((keyOfDimension: string, i: number) => {
-    const tmpYScale = getAxesScale({
+    const tmpYScale = getAxisScale({
       domainData: dimensions[keyOfDimension].domainData,
       scaleType: dimensions[keyOfDimension].scaleType,
       rangeData: [height - margin.top - margin.bottom, 0],
