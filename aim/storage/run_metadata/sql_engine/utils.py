@@ -45,7 +45,7 @@ class ModelMappedCollection(Iterable[T]):
         return ret
 
 
-class ModelMappedClassMeta(ABCMeta, GenericMeta):
+class ModelMappedClassMeta(GenericMeta, ABCMeta):
     __mapping__ = {}
 
     def __new__(mcls, name, bases, namespace, **kwargs):
