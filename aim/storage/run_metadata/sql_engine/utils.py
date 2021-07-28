@@ -1,5 +1,5 @@
 from abc import ABCMeta
-from typing import Iterable, Iterator, TypeVar
+from typing import Iterable, Iterator, TypeVar, GenericMeta
 
 T = TypeVar('T')
 
@@ -45,7 +45,7 @@ class ModelMappedCollection(Iterable[T]):
         return ret
 
 
-class ModelMappedClassMeta(ABCMeta):
+class ModelMappedClassMeta(ABCMeta, GenericMeta):
     __mapping__ = {}
 
     def __new__(mcls, name, bases, namespace, **kwargs):
@@ -56,7 +56,6 @@ class ModelMappedClassMeta(ABCMeta):
 
         if mcls.__mapping__.get(model):
             return mcls.__mapping__.get(model)
-            # raise TypeError(f'Model \'{model.__name__}\' has already been mapped.')
 
         for attribute in mapped_properties:
             if not isinstance(attribute, ModelMappedProperty):

@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Generic, TypeVar, Iterable, Optional
 
 
@@ -23,7 +23,7 @@ ExperimentCollection = Iterable['Experiment']
 TagCollection = Iterable['Tag']
 
 
-class Searchable(Generic[T]):
+class Searchable(ABC, Generic[T]):
     @classmethod
     @abstractmethod
     def find(cls, _id: str, **kwargs) -> Optional[T]:
