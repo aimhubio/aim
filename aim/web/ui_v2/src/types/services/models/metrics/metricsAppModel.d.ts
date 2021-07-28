@@ -10,6 +10,7 @@ import { IRun } from './runModel';
 export interface IMetricAppModelState {
   rawData: IRun[];
   config: IMetricAppConfig;
+  collection: IMetric[][];
   data: IMetric[][];
   lineChartData: ILine[][];
 }
@@ -52,4 +53,10 @@ export interface IMetricTableRowData {
   context: string[];
   value: string;
   iteration: string;
+}
+
+export interface IGetDataAsLinesProps {
+  smoothingFactor?: number;
+  smoothingAlgorithm?: string;
+  collection?: IMetric[][];
 }

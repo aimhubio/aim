@@ -30,7 +30,7 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
-function getConfig(): IMetricAppConfig {
+function getConfig() {
   return {
     refs: {
       tableRef: { current: null },
@@ -72,11 +72,9 @@ function getMetricsData() {
   return {
     call: () =>
       call().then((data: IRun[]) => {
-        const processedData = processData(data);
         model.setState({
           rawData: data,
-          data: processedData,
-          lineChartData: getDataAsLines(processedData),
+          collection: processData(data),
         });
       }),
     abort,
@@ -94,6 +92,19 @@ function processData(data: IRun[]): IMetric[][] {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
+          selectors: [
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            run.run_hash,
+          ],
           key: encode({
             runHash: run.run_hash,
             metricName: metric.metric_name,
@@ -111,16 +122,15 @@ function processData(data: IRun[]): IMetric[][] {
   ];
 }
 
-function getDataAsLines(
-  processedData: IMetric[][],
-  configData: IMetricAppConfig | any = model.getState()?.config,
-): ILine[][] {
-  if (!processedData) {
+function getDataAsLines(): ILine[][] {
+  const metricsCollection = model.getState()?.collection;
+  const configData: IMetricAppConfig | any = model.getState()?.config;
+  if (!metricsCollection) {
     return [];
   }
 
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
-  return processedData.map((metrics: IMetric[]) =>
+  return metricsCollection.map((metrics: IMetric[]) =>
     metrics.map((metric: IMetric) => {
       let yValues;
       if (smoothingAlgorithm && smoothingFactor) {
@@ -139,7 +149,6 @@ function getDataAsLines(
       }
       return {
         ...metric,
-        selectors: [metric.key, metric.key, metric.run.run_hash],
         data: {
           xValues: [...metric.data.iterations],
           yValues,
@@ -152,12 +161,12 @@ function getDataAsLines(
 function getDataAsTableRows(
   xValue: number | null = null,
 ): IMetricTableRowData[][] {
-  const metricsData = model.getState()?.data;
-  if (!metricsData) {
+  const metricsCollection = model.getState()?.collection;
+  if (!metricsCollection) {
     return [];
   }
 
-  return metricsData.map((metrics: IMetric[]) =>
+  return metricsCollection.map((metrics: IMetric[]) =>
     metrics.map((metric: IMetric) => {
       const closestIndex =
         xValue === null
@@ -215,11 +224,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   if (configData?.chart) {
     // TODO update lines without reRender
     configData.chart = { ...configData.chart, ...props };
-
-    model.setState({
-      config: { ...configData },
-      lineChartData: getDataAsLines(model.getState()!.data!, configData),
-    });
+    model.setState({ config: configData });
   }
 }
 
@@ -248,14 +253,6 @@ function onActivePointChange(activePointData: IActivePointData): void {
       newData: getDataAsTableRows(activePointData.xValue).flat(),
     });
     tableRef.current?.setHoveredRow(activePointData.key);
-  }
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    configData.chart.focusedState = {
-      active: false,
-      ...activePointData,
-    };
-    model.setState({ config: configData });
   }
 }
 
