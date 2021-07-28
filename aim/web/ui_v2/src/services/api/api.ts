@@ -11,7 +11,7 @@ function createAPIRequestWrapper<ResponseDataType>(
   return {
     call: () =>
       new Promise((resolve: (data: ResponseDataType) => void, reject) => {
-        fetch(`${url}`, { ...options, signal })
+        fetch(`${API_HOST}/${url}`, { ...options, signal })
           .then((response) => (stream ? response.body : response.json()))
           .then((data) => resolve(data))
           .catch((err) => {
@@ -32,7 +32,7 @@ function getStream<ResponseDataType>(
   options?: RequestInit,
 ) {
   return createAPIRequestWrapper<ResponseDataType>(
-    `/metric${params ? '?' + new URLSearchParams(params).toString() : ''}`,
+    `${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`,
     {
       method: 'GET',
       ...options,
