@@ -1,18 +1,20 @@
-import { Box, Button } from '@material-ui/core';
-import ControlPopover from 'components/ControlPopover/ControlPopover';
 import React from 'react';
+import { Box, Button } from '@material-ui/core';
 
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
 
+import styles from './groupingItem.module.scss';
+
 function GroupingItem({
-  groupPopup,
-  advancedPopup,
+  groupPopover,
+  advancedPopover,
   onReset,
   onVisibilityChange,
   groupName,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box border='1px solid' borderRadius={4} padding='4px'>
+    <Box className={styles.groupingItem__container_div} mt={0.5}>
       <ControlPopover
         anchor={({ onAnchorClick }) => (
           <Button
@@ -24,37 +26,28 @@ function GroupingItem({
             {groupName}
           </Button>
         )}
-        component={groupPopup}
+        component={groupPopover}
       />
 
       <Box mt={0.25} display='flex' justifyContent='space-between'>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
             <Box
-              border='1px solid'
-              padding='0px 4px'
-              borderRadius={4}
+              className={styles.groupingItem__button_small}
               onClick={onAnchorClick}
             >
               A
             </Box>
           )}
-          component={advancedPopup}
+          component={advancedPopover}
         />
         <Box
-          border='1px solid'
-          padding='0px 4px'
-          borderRadius={4}
+          className={styles.groupingItem__button_small}
           onClick={onVisibilityChange}
         >
           V
         </Box>
-        <Box
-          border='1px solid'
-          padding='0px 4px'
-          borderRadius={4}
-          onClick={onReset}
-        >
+        <Box className={styles.groupingItem__button_small} onClick={onReset}>
           X
         </Box>
       </Box>

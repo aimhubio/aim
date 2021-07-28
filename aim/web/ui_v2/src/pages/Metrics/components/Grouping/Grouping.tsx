@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Divider, Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import GroupingItem from '../GroupingItem/GroupingItem';
+import ColorPopover from 'components/ColorPopover/ColorPopover';
 
 function Grouping(): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -10,8 +11,8 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
         <Grid item>
           <GroupingItem
             groupName='Color'
-            groupPopup={<div>GroupPopup</div>}
-            advancedPopup={<div>Advance Popup</div>}
+            groupPopover={<ColorPopover />}
+            advancedPopover={<div>Advance Popup</div>}
             onReset={() => null}
             onVisibilityChange={() => null}
           />
@@ -19,8 +20,8 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
         <Grid item>
           <GroupingItem
             groupName='Style'
-            groupPopup={<div>GroupPopup</div>}
-            advancedPopup={<div>Advance Popup</div>}
+            groupPopover={<div>GroupPopup</div>}
+            advancedPopover={<div>Advance Popup</div>}
             onReset={() => null}
             onVisibilityChange={() => null}
           />
@@ -28,8 +29,8 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
         <Grid item>
           <GroupingItem
             groupName='Chart'
-            groupPopup={<div>GroupPopup</div>}
-            advancedPopup={<div>Advance Popup</div>}
+            groupPopover={<div>GroupPopup</div>}
+            advancedPopover={<div>Advance Popup</div>}
             onReset={() => null}
             onVisibilityChange={() => null}
           />
