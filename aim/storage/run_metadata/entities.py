@@ -3,6 +3,12 @@ from typing import Generic, TypeVar, Iterable, Optional
 
 
 class SafeNone:
+    def get(self, item):
+        return self
+
+    def __call__(self, *args, **kwargs):
+        return self
+
     def __getattr__(self, item):
         return self
 
