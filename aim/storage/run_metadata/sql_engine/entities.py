@@ -1,4 +1,4 @@
-from typing import Optional, Iterable
+from typing import Optional, Collection
 from sqlalchemy.orm import joinedload
 
 from aim.storage.run_metadata.entities import \
@@ -19,7 +19,6 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
     __mapped_properties__ = [
         Property('name'),
         Property('description'),
-        Property('hash', with_setter=False),
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
         Property('updated_at', with_setter=False),
@@ -29,6 +28,13 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         self._hash = _hash
         self._model = None
         self._session = session
+
+    def __repr__(self) -> str:
+        return f'<ModelMappedRun id={self.hash}, name=\'{self.name}\'>'
+
+    @property
+    def hash(self) -> str:
+        return self._hash
 
     @classmethod
     def from_model(cls, model_obj, session):
@@ -62,7 +68,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedRun(_id, session)
 
     @classmethod
-    def all(cls, **kwargs) -> Iterable[IRun]:
+    def all(cls, **kwargs) -> Collection[IRun]:
         session = kwargs.get('session')
         if not session:
             return []
@@ -70,10 +76,10 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             joinedload(RunModel.experiment),
             joinedload(RunModel.tags),
         ])
-        return ModelMappedRunCollection(q, session=session)
+        return ModelMappedRunCollection(session, query=q)
 
     @classmethod
-    def search(cls, term: str, **kwargs) -> Iterable[IRun]:
+    def search(cls, term: str, **kwargs) -> Collection[IRun]:
         session = kwargs.get('session')
         if not session:
             return []
@@ -82,7 +88,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             joinedload(RunModel.experiment),
             joinedload(RunModel.tags),
         ]).filter(RunModel.name.like(term))
-        return ModelMappedRunCollection(q, session=session)
+        return ModelMappedRunCollection(session, query=q)
 
     @property
     def experiment(self) -> Optional[IExperiment]:
@@ -110,7 +116,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
     @property
     def tags(self) -> TagCollection:
         if self._model:
-            return (ModelMappedTag.from_model(tag, self._session) for tag in self._model.tags)
+            return ModelMappedTagCollection(self._session, collection=self._model.tags)
         else:
             return []
 
@@ -153,6 +159,9 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         self._model = model_inst
         self._session = session
 
+    def __repr__(self) -> str:
+        return f'<ModelMappedExperiment id={self.uuid}, name=\'{self.name}\'>'
+
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedExperiment':
         return ModelMappedExperiment(model_obj, session)
@@ -167,7 +176,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
 
     @property
     def runs(self) -> RunCollection:
-        return (ModelMappedRun.from_model(run, self._session) for run in self._model.runs)
+        return ModelMappedRunCollection(self._session, collection=self._model.runs)
 
     @classmethod
     def find(cls, _id: str, **kwargs) -> Optional[IExperiment]:
@@ -182,17 +191,17 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         return None
 
     @classmethod
-    def all(cls, **kwargs) -> Iterable[IExperiment]:
+    def all(cls, **kwargs) -> Collection[IExperiment]:
         session = kwargs.get('session')
         if not session:
             return []
         q = session.query(ExperimentModel).options([
             joinedload(ExperimentModel.runs),
         ])
-        return ModelMappedExperimentCollection(q, session=session)
+        return ModelMappedExperimentCollection(session, query=q)
 
     @classmethod
-    def search(cls, term: str, **kwargs) -> Iterable[IExperiment]:
+    def search(cls, term: str, **kwargs) -> Collection[IExperiment]:
         session = kwargs.get('session')
         if not session:
             return []
@@ -200,7 +209,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         q = session.query(ExperimentModel).options([
             joinedload(ExperimentModel.runs),
         ]).filter(ExperimentModel.name.like(term))
-        return ModelMappedExperimentCollection(q, session=session)
+        return ModelMappedExperimentCollection(session, query=q)
 
 
 class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
@@ -216,6 +225,9 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
     def __init__(self, model_inst: TagModel, session):
         self._model = model_inst
         self._session = session
+
+    def __repr__(self) -> str:
+        return f'<ModelMappedTag id={self.uuid}, name=\'{self.name}\'>'
 
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedTag':
@@ -242,17 +254,17 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         return None
 
     @classmethod
-    def all(cls, **kwargs) -> Iterable[ITag]:
+    def all(cls, **kwargs) -> Collection[ITag]:
         session = kwargs.get('session')
         if not session:
             return []
         q = session.query(TagModel).options([
             joinedload(TagModel.runs),
         ])
-        return ModelMappedTagCollection(q, session=session)
+        return ModelMappedTagCollection(session, query=q)
 
     @classmethod
-    def search(cls, term: str, **kwargs) -> Iterable[ITag]:
+    def search(cls, term: str, **kwargs) -> Collection[ITag]:
         session = kwargs.get('session')
         if not session:
             return []
@@ -260,11 +272,11 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         q = session.query(TagModel).options([
             joinedload(TagModel.runs),
         ]).filter(TagModel.name.like(term))
-        return ModelMappedTagCollection(q, session=session)
+        return ModelMappedTagCollection(session, query=q)
 
     @property
     def runs(self) -> RunCollection:
-        return (ModelMappedRun.from_model(run, self._session) for run in self._model.runs)
+        return ModelMappedRunCollection(self._session, collection=self._model.runs)
 
 
 ModelMappedRunCollection = ModelMappedCollection[ModelMappedRun]

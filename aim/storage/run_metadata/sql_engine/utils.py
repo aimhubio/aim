@@ -1,5 +1,11 @@
 from abc import ABCMeta
-from typing import Iterable, Iterator, TypeVar, GenericMeta
+from typing import Iterator, Collection, TypeVar, Union
+
+try:
+    from typing import GenericMeta
+except ImportError:
+    class GenericMeta(type):
+        pass
 
 T = TypeVar('T')
 
@@ -24,16 +30,24 @@ class ModelMappedProperty:
         return property(getter, setter)
 
 
-# TODO: [AT] Switch to typing.Collection
-class ModelMappedCollection(Iterable[T]):
-    def __init__(self, q, session):
-        self.query = q
+class ModelMappedCollection(Collection[T]):
+    def __init__(self, session, **kwargs):
+        # TODO: [AT] Find elegant way to check mutually exclusive args
+        if ('query' not in kwargs and 'collection' not in kwargs) \
+                or ('query' in kwargs and 'collection' in kwargs):
+            raise ValueError('Cannot initialize ModelMappedCollection. Please provide \'query\' or \'collection\'.')
+
         self.session = session
-        self._cache = []
+        self.query = kwargs.get('query')
+        self._cache = kwargs.get('collection')
+
+    def _create_cache(self):
+        self._it_cls = self.__orig_class__.__args__[0]
+        if self._cache is None:
+            self._cache = self.query.all()
 
     def __iter__(self) -> Iterator[T]:
-        self._it_cls = self.__orig_class__.__args__[0]
-        self._cache = self.query.all()
+        self._create_cache()
         self._idx = 0
         return self
 
@@ -43,6 +57,20 @@ class ModelMappedCollection(Iterable[T]):
         ret = self._it_cls.from_model(self._cache[self._idx], self.session)
         self._idx += 1
         return ret
+
+    def __len__(self):
+        self._create_cache()
+        return len(self._cache)
+
+    def __contains__(self, item: Union[T, str]) -> bool:
+        self._create_cache()
+        if isinstance(item, str):
+            match = next((i for i in self._cache if i.name == item), None)
+            return match is not None
+        elif isinstance(item, self._it_cls):
+            match = next((i for i in self._cache if i.id == item._model.id), None)
+            return match is not None
+        return False
 
 
 class ModelMappedClassMeta(GenericMeta, ABCMeta):

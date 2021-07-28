@@ -1,8 +1,11 @@
 from abc import abstractmethod, ABC
-from typing import Generic, TypeVar, Iterable, Optional
+from typing import Generic, TypeVar, Collection, Optional
 
 
 class SafeNone:
+    def __repr__(self):
+        return 'None'
+
     def __getattr__(self, item):
         return self
 
@@ -18,9 +21,9 @@ class SafeNone:
 
 T = TypeVar('T')
 
-RunCollection = Iterable['Run']
-ExperimentCollection = Iterable['Experiment']
-TagCollection = Iterable['Tag']
+RunCollection = Collection['Run']
+ExperimentCollection = Collection['Experiment']
+TagCollection = Collection['Tag']
 
 
 class Searchable(ABC, Generic[T]):
@@ -31,12 +34,12 @@ class Searchable(ABC, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def all(cls, **kwargs) -> Iterable[T]:
+    def all(cls, **kwargs) -> Collection[T]:
         ...
 
     @classmethod
     @abstractmethod
-    def search(cls, term: str, **kwargs) -> Iterable[T]:
+    def search(cls, term: str, **kwargs) -> Collection[T]:
         ...
 
 
