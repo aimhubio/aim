@@ -5,6 +5,7 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { colorOptions } from 'utils/mockOptions';
 
@@ -23,10 +24,7 @@ function DivideChartsPopover(): React.FunctionComponentElement<React.ReactNode> 
   function handleGroupingMode() {}
 
   return (
-    <Box
-      width='25em'
-      // className={styles.popover_container}
-    >
+    <Box width='25em' className='groupingPopover_container'>
       <Box p={0.5}>
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
           <Autocomplete
@@ -42,9 +40,7 @@ function DivideChartsPopover(): React.FunctionComponentElement<React.ReactNode> 
             getOptionLabel={(option) => option.name}
             renderTags={() => {
               return (
-                <Box
-                // className={styles.selectForm__tags}
-                >
+                <Box className='selectForm__tags'>
                   {fields.map((tag: any) => {
                     return (
                       <Box

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   Accordion,
   AccordionDetails,
@@ -14,9 +16,9 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import StylePopoverAdvanced from 'components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
-import React from 'react';
 import { colorOptions } from 'utils/mockOptions';
 
 function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
@@ -34,10 +36,7 @@ function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
   function handleGroupingMode() {}
 
   return (
-    <Box
-      width='25em'
-      // className={styles.popover_container}
-    >
+    <Box className='groupingPopover_container'>
       <Box p={0.5}>
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
           <Autocomplete
@@ -98,16 +97,7 @@ function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
             )}
           />
         </Box>
-        <Box
-          display='flex'
-          alignItems='center'
-          borderRadius={4}
-          flexDirection='column'
-          border='1px solid #B7B7B7'
-          mt={0.5}
-          mb={0.5}
-          p={0.5}
-        >
+        <Box className='popover_toggleMode__div'>
           <h3>select grouping mode</h3>
           <ToggleButton
             id='groupMode'
@@ -116,9 +106,7 @@ function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
             onChange={handleGroupingMode}
           />
         </Box>
-        <Accordion
-        // className={styles.popover_accordion__container}
-        >
+        <Accordion className='popover_accordion__container'>
           <AccordionSummary
             style={{ padding: '0 0.5em' }}
             expandIcon={<ExpandMore />}

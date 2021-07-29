@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Divider, Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
+
 import GroupingItem from '../GroupingItem/GroupingItem';
 import ColorPopover from 'components/ColorPopover/ColorPopover';
 import ColorPopoverAdvanced from 'components/ColorPopoverAdvanced/ColorPopoverAdvanced';
@@ -7,9 +8,11 @@ import StylePopover from 'components/StylePopover/StylePopover';
 import StylePopoverAdvanced from 'components/StylePopoverAdvanced/StylePopoverAdvanced';
 import DivideChartsPopover from 'components/DivideChartsPopover/DivideChartsPopover';
 
+import './groupingStyle.scss';
+
 function Grouping(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box>
+    <Box className='grouping_container__div'>
       <Box>Group selected metrics By:</Box>
       <Grid container spacing={1} justify='center' alignItems='center'>
         <Grid item>
@@ -34,7 +37,7 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
         <Grid item>
           <GroupingItem
             title='Select Fields For Grouping by stroke style'
-            advancedTitle=''
+            advancedTitle='stroke style advanced options'
             groupName='Style'
             groupPopover={<StylePopover />}
             advancedPopover={<StylePopoverAdvanced />}

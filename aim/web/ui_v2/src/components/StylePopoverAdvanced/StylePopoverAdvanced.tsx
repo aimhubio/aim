@@ -1,13 +1,11 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
+
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 
 function StylePopoverAdvanced(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box
-      width='25em'
-      // className={styles.advancedPopover_container}
-    >
+    <Box className='advancedPopover_container'>
       <div>
         <h3>Stroke Style persistence:</h3>
         <span>

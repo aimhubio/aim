@@ -1,10 +1,9 @@
 import React from 'react';
 import { Box, Radio } from '@material-ui/core';
+
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IColorPopoverAdvancedProps } from 'types/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import { COLORS } from 'utils/mockOptions';
-
-import styles from './colorPopoverAdvancedStyle.module.scss';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
@@ -12,7 +11,7 @@ function ColorPopoverAdvanced({
   selectedPersistence,
 }: IColorPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className={styles.advancedPopover_container}>
+    <div className='advancedPopover_container'>
       <div>
         <h3>colors persistence:</h3>
         <span>
@@ -39,12 +38,12 @@ function ColorPopoverAdvanced({
                 size='small'
                 value={index}
               />
-              <div className={styles.palette_span__colorsContainer}>
+              <div className='palette_colorsContainer'>
                 {options.map((color) => (
                   <Box
                     key={color}
                     component='span'
-                    className={styles.palette_span__colorItem}
+                    className='palette_span__colorItem'
                     bgcolor={color}
                   />
                 ))}
