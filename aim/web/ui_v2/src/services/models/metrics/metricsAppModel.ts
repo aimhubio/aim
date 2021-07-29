@@ -79,7 +79,6 @@ function getMetricsData() {
     call: () =>
       call().then((data: IRun[]) => {
         const processedData = processData(data);
-
         model.setState({
           rawData: data,
           params: processedData.params,
@@ -358,9 +357,12 @@ function onZoomModeChange(): void {
 function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    // TODO update lines without reRender
     configData.chart = { ...configData.chart, ...props };
-    model.setState({ config: configData });
+
+    model.setState({
+      config: { ...configData },
+      lineChartData: getDataAsLines(model.getState()!.data!, configData),
+    });
   }
 }
 

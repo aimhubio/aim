@@ -14,6 +14,7 @@ import {
   IMetricAppConfig,
   IMetricTableRowData,
 } from 'types/services/models/metrics/metricsAppModel';
+import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
@@ -58,7 +59,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       //options
-      lineChartData={metricsData?.lineChartData as any}
+      lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[][]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}

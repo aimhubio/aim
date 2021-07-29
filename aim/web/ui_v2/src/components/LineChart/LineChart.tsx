@@ -126,7 +126,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawHoverAttributes({
       index,
-      data: processedData,
+      data,
       xAlignment,
       visAreaRef,
       attributesRef,
