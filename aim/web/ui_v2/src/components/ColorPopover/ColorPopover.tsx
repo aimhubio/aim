@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 
-import styles from './colorPopoverStyle.module.scss';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
@@ -42,7 +41,7 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
   function onPersistenceChange() {}
 
   return (
-    <Box width='25em' className={styles.popover_container}>
+    <Box className='groupingPopover_container'>
       <Box p={0.5}>
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
           <h3>Select fields for grouping by color</h3>
@@ -59,7 +58,7 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
             getOptionLabel={(option) => option.name}
             renderTags={() => {
               return (
-                <Box className={styles.selectForm__tags}>
+                <Box className='selectForm__tags'>
                   {fields.map((tag: any) => {
                     return (
                       <Box
@@ -120,7 +119,7 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
             onChange={handleGroupingMode}
           />
         </Box>
-        <Accordion className={styles.popover_accordion__container}>
+        <Accordion className='popover_accordion__container'>
           <AccordionSummary
             style={{ padding: '0 0.5em' }}
             expandIcon={<ExpandMore />}
