@@ -39,7 +39,7 @@ function randomGenerateLineData(count: number, dimensions: any) {
   };
 }
 
-export const mockData = randomGenerateLineData(10, {
+export const mockData = randomGenerateLineData(100, {
   column1: { scaleType: 'linear', domainData: [2, 5.6] },
   column2: {
     scaleType: 'point',

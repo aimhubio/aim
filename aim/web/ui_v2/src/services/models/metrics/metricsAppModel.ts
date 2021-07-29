@@ -34,7 +34,7 @@ import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
-function getConfig(): IMetricAppConfig {
+function getConfig() {
   return {
     refs: {
       tableRef: { current: null },
@@ -111,6 +111,19 @@ function processData(data: IRun[]): {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
+          selectors: [
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            encode({
+              runHash: run.run_hash,
+              metricName: metric.metric_name,
+              metricContext: metric.context,
+            }),
+            run.run_hash,
+          ],
           key: encode({
             runHash: run.run_hash,
             metricName: metric.metric_name,
@@ -345,11 +358,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   if (configData?.chart) {
     // TODO update lines without reRender
     configData.chart = { ...configData.chart, ...props };
-
-    model.setState({
-      config: { ...configData },
-      lineChartData: getDataAsLines(model.getState()!.data!, configData),
-    });
+    model.setState({ config: configData });
   }
 }
 

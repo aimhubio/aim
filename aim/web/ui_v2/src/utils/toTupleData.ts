@@ -1,6 +1,3 @@
-export const toTupleData = (
-  x: number[] | string[],
-  y: number[] | string[],
-): [number | string, number | string][] => {
-  return x.map((v: number | string, i: number) => [v, y[i]]);
+export const toTupleData = (x: number[], y: number[]): [number, number][] => {
+  return x.map((v: number, i: number) => [v, y[i]]);
 };

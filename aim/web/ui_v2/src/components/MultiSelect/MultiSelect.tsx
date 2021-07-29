@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Checkbox,
   FormControl,
   Input,
   InputLabel,
@@ -14,23 +15,34 @@ function MultiSelect(
   props: IMultiSelectProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <FormControl fullWidth size='small' variant='outlined'>
-      <InputLabel id='mutiple-checkbox-label'>{props.label}</InputLabel>
+    <FormControl
+      variant={props.variant || 'outlined'}
+      className={props.formClassName || ''}
+    >
+      {props.label && <InputLabel id={props.labelId}>{props.label}</InputLabel>}
       <Select
-        variant='outlined'
-        labelId='mutiple-checkbox-label'
-        id='mutiple-checkbox'
-        multiple
-        value={props.value}
-        onChange={props.handleChange}
+        labelId={props.labelId || ''}
+        id={props.id || ''}
+        multiple={true}
+        value={props.values}
+        onChange={props.onSelect}
+        defaultValue={props.defaultValue || ''}
         input={<Input />}
-        // renderValue={(selected) => selected.join(', ')}
-        // MenuProps={MenuProps}
+        renderValue={props.renderValue}
+        variant={props.variant || 'outlined'}
+        MenuProps={{
+          PaperProps: {
+            style: {
+              height: props.menuListHeight || 300,
+            },
+          },
+        }}
+        displayEmpty
       >
-        {props.options.map((name) => (
-          <MenuItem key={name} value={name}>
-            {/* <Checkbox checked={personName.indexOf(name) > -1} /> */}
-            <ListItemText primary={name} />
+        {props.options.map((value) => (
+          <MenuItem key={value} value={value}>
+            <Checkbox checked={props.values.indexOf(value) > -1} />
+            <ListItemText primary={value} />
           </MenuItem>
         ))}
       </Select>

@@ -66,3 +66,9 @@ export interface IMetricTableRowData {
   value: string;
   iteration: string;
 }
+
+export interface IGetDataAsLinesProps {
+  smoothingFactor?: number;
+  smoothingAlgorithm?: string;
+  collection?: IMetric[][];
+}
