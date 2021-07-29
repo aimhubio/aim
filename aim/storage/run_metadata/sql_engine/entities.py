@@ -162,6 +162,13 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
     def __repr__(self) -> str:
         return f'<ModelMappedExperiment id={self.uuid}, name=\'{self.name}\'>'
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, str):
+            return self._model.name == other
+        elif isinstance(other, ModelMappedExperiment):
+            return self._model.id == other._model.id
+        return False
+
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedExperiment':
         return ModelMappedExperiment(model_obj, session)
@@ -228,6 +235,13 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
 
     def __repr__(self) -> str:
         return f'<ModelMappedTag id={self.uuid}, name=\'{self.name}\'>'
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, str):
+            return self._model.name == other
+        elif isinstance(other, ModelMappedTag):
+            return self._model.id == other._model.id
+        return False
 
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedTag':
