@@ -3,6 +3,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { CurveEnum } from 'utils/d3';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
@@ -10,9 +11,19 @@ import { IRun } from './runModel';
 export interface IMetricAppModelState {
   rawData: IRun[];
   config: IMetricAppConfig;
-  collection: IMetric[][];
-  data: IMetric[][];
+  data: IMetricsCollection[];
   lineChartData: ILine[][];
+  tableData: IMetricTableRowData[][];
+  tableColumns: ITableColumn[];
+  params: string[];
+}
+
+export interface IMetricsCollection {
+  config: unknown;
+  color: string | null;
+  dasharray: string | null;
+  chartIndex: number;
+  data: IMetric[];
 }
 
 interface IMetricAppConfig {
@@ -33,6 +44,7 @@ interface IMetricAppConfig {
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
+    aggregated: boolean;
     focusedState: {
       key: string | null;
       xValue: number | null;

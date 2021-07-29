@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Metrics from './Metrics';
-import getTableColumns from './components/TableColumns/TableColumns';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import { ITableRef } from 'types/components/Table/Table';
@@ -11,6 +10,8 @@ import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
 
@@ -52,10 +53,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       //options
-      lineChartData={metricAppModel.getDataAsLines()}
+      lineChartData={metricsData?.lineChartData as any}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricAppModel.getDataAsTableRows()}
-      tableColumns={getTableColumns()}
+      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableColumns={metricsData?.tableColumns as ITableColumn[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum
