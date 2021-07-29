@@ -153,6 +153,13 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         self._model = model_inst
         self._session = session
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, str):
+            return self._model.name == other
+        elif isinstance(other, ModelMappedExperiment):
+            return self._model.id == other._model.id
+        return False
+
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedExperiment':
         return ModelMappedExperiment(model_obj, session)
@@ -216,6 +223,13 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
     def __init__(self, model_inst: TagModel, session):
         self._model = model_inst
         self._session = session
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, str):
+            return self._model.name == other
+        elif isinstance(other, ModelMappedTag):
+            return self._model.id == other._model.id
+        return False
 
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedTag':

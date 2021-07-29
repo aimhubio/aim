@@ -2,6 +2,7 @@ import logging
 import datetime
 
 from abc import abstractmethod
+from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from RestrictedPython import (
@@ -18,7 +19,10 @@ from RestrictedPython.Guards import (
 )
 
 from aim.storage.proxy import AimObjectProxy
+from aim.storage.run_metadata.entities import SafeNone
+
 if TYPE_CHECKING:
+    from aim.storage.repo import Repo
     from aim.storage.run import Run
     from aim.storage.context import Context
 
@@ -53,6 +57,7 @@ logger = logging.getLogger(__name__)
 CODE_FORMAT = """
 def check(
     run,
+    run_ = None,
     context = None,
     metric_name = None
 ) -> bool:
@@ -91,6 +96,26 @@ class Query:
                           metric_name=metric_name)
 
 
+class RunMetadataCache:
+    def __init__(
+            self,
+            repo: 'Repo'
+    ):
+        self.repo = repo
+        self.cache = None
+
+    def __call__(self) -> dict:
+        if self.cache is not None:
+            return self.cache
+
+        runs_factory = self.repo.run_metadata_db.runs()
+        query_results = defaultdict(SafeNone)
+        for run in runs_factory:
+            query_results[run.hash] = run
+        self.cache = query_results
+        return query_results
+
+
 class RestrictedPythonQuery(Query):
 
     def __init__(
@@ -102,7 +127,7 @@ class RestrictedPythonQuery(Query):
         self.byte_code = compile_restricted(self.source_code,
                                             filename='<inline code>',
                                             mode='exec')
-
+        self.run_metadata_cache = None
         namespace = dict()
         exec(self.byte_code, restricted_globals, namespace)
         self._check = namespace['check']
@@ -117,11 +142,16 @@ class RestrictedPythonQuery(Query):
         run_tree_proxy = AimObjectProxy(lambda: run.meta_run_tree,
                                         run.meta_run_tree)
 
+        if not self.run_metadata_cache:
+            self.run_metadata_cache = RunMetadataCache(run.repo)  # to not overcomplicate things to pass repo to init
+        run_sql_meta_proxy = AimObjectProxy(lambda: self.run_metadata_cache()[run.name])
+
         context_proxy = AimObjectProxy(lambda: context.to_dict())
 
         # TODO enforce immutable
         try:
             return self._check(run=run_tree_proxy,
+                               run_=run_sql_meta_proxy,
                                context=context_proxy,
                                metric_name=metric_name)
         except BaseException as e:
