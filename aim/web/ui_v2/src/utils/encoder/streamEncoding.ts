@@ -4,7 +4,7 @@ import { isEqual } from 'lodash-es';
 import struct from '@aksel/structjs';
 
 const PATH_SENTINEL = 0xfe;
-const SIZE_T = 'q';
+// const SIZE_T = 'q';
 
 const NONE = 0;
 const BOOL = 1;
@@ -15,7 +15,7 @@ const BYTES = 5;
 const ARRAY = 6;
 const OBJECT = 7;
 
-class Flag {
+class AimObjectFlag {
   private flagType: string;
   constructor(flagType: string) {
     this.flagType = flagType;
@@ -25,8 +25,8 @@ class Flag {
     return `<${this.flagType}>`;
   }
 }
-const ArrayFlag = new Flag('ARRAY_FLAG');
-const ObjectFlag = new Flag('OBJECT_FLAG');
+const ArrayFlag = new AimObjectFlag('ARRAY_FLAG');
+const ObjectFlag = new AimObjectFlag('OBJECT_FLAG');
 
 let utf8decoder = new TextDecoder('utf-8');
 
@@ -177,8 +177,8 @@ type AimObject = AimObjectPrimitive | AimObjectNode;
 type AimObjectKey = string | number;
 type AimObjectPath = AimObjectKey[];
 
-function valToNode(val: AimObjectPrimitive | Flag): AimObject {
-  if (val instanceof Flag) {
+function valToNode(val: AimObjectPrimitive | AimObjectFlag): AimObject {
+  if (val instanceof AimObjectFlag) {
     if (val === ObjectFlag) {
       return {};
     }
@@ -193,16 +193,18 @@ function valToNode(val: AimObjectPrimitive | Flag): AimObject {
 }
 
 export async function* iterFoldTree(
-  pathsVals: AsyncGenerator<[AimObjectPath, AimObjectPrimitive | Flag]>,
+  pathsVals: AsyncGenerator<
+    [AimObjectPath, AimObjectPrimitive | AimObjectFlag]
+  >,
   level: number = 0,
 ): AsyncGenerator<[AimObjectPath, AimObject | undefined]> {
   const stack: AimObject[] = [];
   const path: AimObjectPath = [];
 
-  // try {
-  // } catch (ex) {}
-
-  let item: IteratorResult<[AimObjectPath, AimObjectPrimitive | Flag], void>;
+  let item: IteratorResult<
+    [AimObjectPath, AimObjectPrimitive | AimObjectFlag],
+    void
+  >;
 
   item = await pathsVals.next();
   if (item.done) {
@@ -263,33 +265,26 @@ export async function* iterFoldTree(
   }
 }
 
-// function decodeTree(pathsVals) {
-//   return foldTree(decodePathsVals(pathsVals));
-// }
-
 export async function* adjustable_reader(
   stream: ReadableStream,
 ): AsyncGenerator<Uint8Array, void, number> {
   // @ts-ignore
-  var buffer = new Uint8Array(new ArrayBuffer(yield));
-  var cursor = 0;
-  var reader = stream.getReader();
-  var done = false;
-  var p = reader.read();
+  let buffer = new Uint8Array(new ArrayBuffer(yield));
+  let cursor = 0;
+  let reader = stream.getReader();
+  let done = false;
+  let p = reader.read();
   while (true) {
-    var item = await p;
+    let item = await p;
     p = reader.read();
     done = item.done;
     if (done) {
       break;
     }
-    var chunk = item.value;
-    //debugger;
+    let chunk = item.value;
     while (chunk.byteLength > 0) {
       if (cursor + chunk.byteLength >= buffer.byteLength) {
-        var to_buffer = chunk.subarray(0, buffer.byteLength - cursor);
-        // debugger;
-        // console.log(to_buffer, buffer.byteLength - cursor, buffer.byteLength, to_buffer.byteLength, cursor, to_buffer.length);
+        let to_buffer = chunk.subarray(0, buffer.byteLength - cursor);
         buffer.set(to_buffer, cursor);
         chunk = chunk.subarray(buffer.byteLength - cursor);
         buffer = new Uint8Array(new ArrayBuffer(yield buffer));
@@ -353,7 +348,7 @@ export async function* decode_buffer_pairs(
 
 export async function* decodePathsVals(
   pathsVals: AsyncGenerator<[Uint8Array, Uint8Array]>,
-): AsyncGenerator<[AimObjectPath, AimObjectPrimitive | Flag]> {
+): AsyncGenerator<[AimObjectPath, AimObjectPrimitive | AimObjectFlag]> {
   let currentPath: AimObjectPath | null = null;
 
   for await (let [encodedPath, encodedVal] of pathsVals) {
@@ -381,14 +376,3 @@ export async function* decodePathsVals(
     yield [path, val];
   }
 }
-
-// (async function () {
-//   var stream = await sample_stream();
-//   console.time('done');
-//   var gen = adjustable_reader(stream);
-//   var buffer_pairs = decode_buffer_pairs(gen);
-//   for await (i of buffer_pairs) {
-//     console.log(i);
-//   }
-//   console.timeEnd('done');
-// })();

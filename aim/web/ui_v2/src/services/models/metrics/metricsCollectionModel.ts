@@ -53,16 +53,20 @@ function getMetricsData() {
   return {
     call: async () => {
       const stream = await call();
-      // @ts-ignore
       let gen = adjustable_reader(stream);
       let buffer_pairs = decode_buffer_pairs(gen);
       let decodedPairs = decodePathsVals(buffer_pairs);
       let objects = iterFoldTree(decodedPairs, 2);
 
+      const runContainers: IRun[] = [];
       for await (let [keys, val] of objects) {
-        console.log(keys, val);
+        runContainers.push(val as any);
       }
-      console.timeEnd('test');
+
+      model.setState({
+        rawData: runContainers,
+        collection: processData(runContainers),
+      });
     },
     abort,
   };
@@ -72,30 +76,37 @@ function processData(data: IRun[]): IMetric[][] {
   let metrics: IMetric[] = [];
   let index = -1;
 
-  data.forEach((run: any) => {
+  data.forEach((run: IRun) => {
     metrics = metrics.concat(
-      run.metrics.map((metric: IMetric) => {
+      run.traces.map((trace) => {
         index++;
         return createMetricModel({
-          ...metric,
-          run: createRunModel(_.omit(run, 'metrics') as IRun),
+          metric_name: trace.metric_name,
+          context: trace.context,
+          data: {
+            values: new Float64Array(trace.values.blob),
+            iterations: new Float64Array(trace.iters.blob),
+            epochs: new Float64Array(trace.epochs.blob),
+            timestamps: new Float64Array(trace.timestamps.blob),
+          },
+          run: createRunModel(_.omit(run, 'traces') as IRun),
           selectors: [
             encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
+              runHash: run.hash,
+              metricName: trace.metric_name,
+              metricContext: trace.context,
             }),
             encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
+              runHash: run.hash,
+              metricName: trace.metric_name,
+              metricContext: trace.context,
             }),
-            run.run_hash,
+            run.hash,
           ],
           key: encode({
-            runHash: run.run_hash,
-            metricName: metric.metric_name,
-            traceContext: metric.context,
+            runHash: run.hash,
+            metricName: trace.metric_name,
+            traceContext: trace.context,
           }),
           dasharray: '0',
           color: COLORS[index % COLORS.length],
@@ -161,7 +172,7 @@ function getDataAsTableRows(
         key: metric.key,
         dasharray: metric.dasharray,
         color: metric.color,
-        experiment: metric.run.experiment_name,
+        // experiment: metric.run.experiment_name,
         run: metric.run.name,
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
