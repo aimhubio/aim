@@ -356,9 +356,12 @@ function onZoomModeChange(): void {
 function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    // TODO update lines without reRender
     configData.chart = { ...configData.chart, ...props };
-    model.setState({ config: configData });
+
+    model.setState({
+      config: { ...configData },
+      lineChartData: getDataAsLines(model.getState()!.data!, configData),
+    });
   }
 }
 
