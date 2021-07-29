@@ -2,6 +2,7 @@ from abc import abstractmethod, ABC
 from typing import Generic, TypeVar, Iterable, Optional
 
 
+# TODO: [MV] consider making this Singleton
 class SafeNone:
     def get(self, item):
         return self
