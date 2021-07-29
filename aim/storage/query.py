@@ -111,10 +111,7 @@ class RunMetadataCache:
         runs_factory = self.repo.run_metadata_db.runs()
         query_results = defaultdict(SafeNone)
         for run in runs_factory:
-            query_results[run.hash] = {
-                'experiment': run.experiment,
-                'tags': run.tags
-            }
+            query_results[run.hash] = run
         self.cache = query_results
         return query_results
 
