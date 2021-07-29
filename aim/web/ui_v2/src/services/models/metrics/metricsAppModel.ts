@@ -20,6 +20,7 @@ import {
   IMetricAppModelState,
   IMetricsCollection,
   IMetricTableRowData,
+  IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IRun } from 'types/services/models/metrics/runModel';
@@ -78,6 +79,7 @@ function getMetricsData() {
     call: () =>
       call().then((data: IRun[]) => {
         const processedData = processData(data);
+
         model.setState({
           rawData: data,
           params: processedData.params,
@@ -378,6 +380,17 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
   }
 }
 
+function onGroupingSelectChange({
+  field,
+  list,
+}: IOnGroupingSelectChangeParams) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = { ...configData.grouping, [field]: list };
+    model.setState({ config: configData });
+  }
+}
+
 //Table Methods
 
 function onActivePointChange(activePointData: IActivePointData): void {
@@ -429,6 +442,7 @@ const metricAppModel = {
   onAxesScaleTypeChange,
   onActivePointChange,
   onTableRowHover,
+  onGroupingSelectChange,
 };
 
 export default metricAppModel;

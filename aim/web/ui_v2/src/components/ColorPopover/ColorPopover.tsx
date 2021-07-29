@@ -18,23 +18,30 @@ import {
   ExpandMore,
 } from '@material-ui/icons';
 import ColorPopoverAdvanced from 'components/ColorPopoverAdvanced/ColorPopoverAdvanced';
-import { colorOptions } from 'utils/mockOptions';
+import { IColorPopoverProps } from 'types/components/ColorPopover/ColorPopover';
 
-function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
-  const [fields, setFields] = React.useState<any>([]);
+function ColorPopover({
+  selectOptions,
+  selectedValues,
+  onSelect,
+}: IColorPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [selectedPersistence, setSelectedPersistence] = React.useState(0);
 
   const onPaletteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedPersistence(+event.target.value);
   };
 
-  function onSelect(event: object, value: any, reason: string): void {
-    setFields([...value]);
+  function onChange(event: object, values: any, reason: string): void {
+    onSelect({ field: 'color', list: values });
   }
 
-  function handleDelete(field: any): void {
-    let fieldData = [...fields].filter((opt: any) => opt.name !== field);
-    setFields(fieldData);
+  function handleDelete(field: string): void {
+    const listData: string[] = [...selectedValues].filter(
+      (opt: any) => opt !== field,
+    );
+    console.log();
+
+    onSelect({ field: 'color', list: listData });
   }
 
   function handleGroupingMode() {}
@@ -47,32 +54,32 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
           <h3>Select fields for grouping by color</h3>
           <Autocomplete
             style={{ marginTop: '8px' }}
-            id='select-fields'
+            id='color'
             size='small'
             multiple
             disableCloseOnSelect
-            options={colorOptions}
-            value={fields}
-            onChange={onSelect}
-            groupBy={(option) => option.group}
-            getOptionLabel={(option) => option.name}
+            options={selectOptions}
+            value={selectedValues}
+            onChange={onChange}
+            // groupBy={(option) => option.group}
+            getOptionLabel={(option) => option}
             renderTags={() => {
               return (
                 <Box className='selectForm__tags'>
-                  {fields.map((tag: any) => {
+                  {selectedValues.map((tag: string) => {
                     return (
                       <Box
                         component='span'
                         display='inline-block'
-                        key={tag.name}
+                        key={tag}
                         mr={0.5}
                         mt={0.25}
                       >
                         <Chip
                           size='small'
-                          label={tag.name}
-                          data-name={tag.name}
-                          onDelete={() => handleDelete(tag.name)}
+                          label={tag}
+                          data-name={tag}
+                          onDelete={() => handleDelete(tag)}
                         />
                       </Box>
                     );
@@ -96,7 +103,7 @@ function ColorPopover(): React.FunctionComponentElement<React.ReactNode> {
                   style={{ marginRight: 4 }}
                   checked={selected}
                 />
-                {option.name}
+                {option}
               </React.Fragment>
             )}
           />

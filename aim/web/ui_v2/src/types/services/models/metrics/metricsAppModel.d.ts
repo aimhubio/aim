@@ -72,3 +72,8 @@ export interface IGetDataAsLinesProps {
   smoothingAlgorithm?: string;
   collection?: IMetric[][];
 }
+
+export interface IOnGroupingSelectChangeParams {
+  field: 'color' | 'style' | 'chart';
+  list: string[];
+}

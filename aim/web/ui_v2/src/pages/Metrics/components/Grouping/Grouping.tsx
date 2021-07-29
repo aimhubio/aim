@@ -9,8 +9,13 @@ import StylePopoverAdvanced from 'components/StylePopoverAdvanced/StylePopoverAd
 import DivideChartsPopover from 'components/DivideChartsPopover/DivideChartsPopover';
 
 import './groupingStyle.scss';
+import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
 
-function Grouping(): React.FunctionComponentElement<React.ReactNode> {
+function Grouping({
+  groupingSelectOptions,
+  grouping,
+  onGroupingSelectChange,
+}: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box className='grouping_container__div'>
       <Box>Group selected metrics By:</Box>
@@ -20,7 +25,13 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
             title='Run Color Settings'
             advancedTitle='Color Advanced Options'
             groupName='Color'
-            groupPopover={<ColorPopover />}
+            groupPopover={
+              <ColorPopover
+                selectOptions={groupingSelectOptions}
+                selectedValues={grouping?.color}
+                onSelect={onGroupingSelectChange}
+              />
+            }
             advancedPopover={
               <Box p={0.5}>
                 <ColorPopoverAdvanced
@@ -39,7 +50,13 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
             title='Select Fields For Grouping by stroke style'
             advancedTitle='stroke style advanced options'
             groupName='Style'
-            groupPopover={<StylePopover />}
+            groupPopover={
+              <StylePopover
+                selectOptions={groupingSelectOptions}
+                selectedValues={grouping?.style}
+                onSelect={onGroupingSelectChange}
+              />
+            }
             advancedPopover={<StylePopoverAdvanced />}
             onReset={() => null}
             onVisibilityChange={() => null}
@@ -49,7 +66,13 @@ function Grouping(): React.FunctionComponentElement<React.ReactNode> {
           <GroupingItem
             title='Select fields to divide into charts'
             groupName='Chart'
-            groupPopover={<DivideChartsPopover />}
+            groupPopover={
+              <DivideChartsPopover
+                selectOptions={groupingSelectOptions}
+                selectedValues={grouping?.chart}
+                onSelect={onGroupingSelectChange}
+              />
+            }
             advancedPopover={<div>Advanced Popup</div>}
             onReset={() => null}
             onVisibilityChange={() => null}

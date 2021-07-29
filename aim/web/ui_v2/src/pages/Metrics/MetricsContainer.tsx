@@ -10,7 +10,10 @@ import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IMetricAppConfig,
+  IMetricTableRowData,
+} from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
@@ -43,6 +46,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  console.log(metricsData?.config?.grouping.color);
+
   return (
     <Metrics
       //refs
@@ -70,6 +75,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
       focusedState={metricsData?.config?.chart.focusedState as any}
+      grouping={metricsData?.config?.grouping as IMetricAppConfig['grouping']}
+      groupingSelectOptions={metricsData?.params as string[]}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -78,6 +85,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableRowHover={metricAppModel.onTableRowHover}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
       onActivePointChange={metricAppModel.onActivePointChange}
+      onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
     />
   );
 }

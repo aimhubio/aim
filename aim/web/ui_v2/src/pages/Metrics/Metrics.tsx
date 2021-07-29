@@ -18,6 +18,8 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
 
+  console.log(props.grouping);
+
   return (
     <div ref={props.wrapperElemRef}>
       <Box
@@ -49,7 +51,11 @@ function Metrics(
               <Grid item>
                 <Paper className={classes.paper}>
                   <Box height='100%' display='flex'>
-                    <Grouping />
+                    <Grouping
+                      grouping={props.grouping}
+                      groupingSelectOptions={props.groupingSelectOptions}
+                      onGroupingSelectChange={props.onGroupingSelectChange}
+                    />
                   </Box>
                 </Paper>
               </Grid>

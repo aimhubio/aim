@@ -19,18 +19,22 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import StylePopoverAdvanced from 'components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
-import { colorOptions } from 'utils/mockOptions';
+import { IStylePopoverProps } from 'types/components/StylePopover/StylePopover';
 
-function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
-  const [fields, setFields] = React.useState<any>([]);
-
-  function onSelect(event: object, value: any, reason: string): void {
-    setFields([...value]);
+function StylePopover({
+  selectOptions,
+  selectedValues,
+  onSelect,
+}: IStylePopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  function onChange(event: object, values: any, reason: string): void {
+    onSelect({ field: 'style', list: values });
   }
 
   function handleDelete(field: any): void {
-    let fieldData = [...fields].filter((opt: any) => opt.name !== field);
-    setFields(fieldData);
+    const listData: string[] = [...selectedValues].filter(
+      (opt: any) => opt !== field,
+    );
+    onSelect({ field: 'style', list: listData });
   }
 
   function handleGroupingMode() {}
@@ -41,34 +45,32 @@ function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
           <Autocomplete
             style={{ marginTop: '8px' }}
-            id='select-fields'
+            id='color'
             size='small'
             multiple
             disableCloseOnSelect
-            options={colorOptions}
-            value={fields}
-            onChange={onSelect}
-            groupBy={(option) => option.group}
-            getOptionLabel={(option) => option.name}
+            options={selectOptions}
+            value={selectedValues}
+            onChange={onChange}
+            // groupBy={(option) => option.group}
+            getOptionLabel={(option) => option}
             renderTags={() => {
               return (
-                <Box
-                // className={styles.selectForm__tags}
-                >
-                  {fields.map((tag: any) => {
+                <Box className='selectForm__tags'>
+                  {selectedValues.map((tag: string) => {
                     return (
                       <Box
                         component='span'
                         display='inline-block'
-                        key={tag.name}
+                        key={tag}
                         mr={0.5}
                         mt={0.25}
                       >
                         <Chip
                           size='small'
-                          label={tag.name}
-                          data-name={tag.name}
-                          onDelete={() => handleDelete(tag.name)}
+                          label={tag}
+                          data-name={tag}
+                          onDelete={() => handleDelete(tag)}
                         />
                       </Box>
                     );
@@ -92,7 +94,7 @@ function StylePopover(): React.FunctionComponentElement<React.ReactNode> {
                   style={{ marginRight: 4 }}
                   checked={selected}
                 />
-                {option.name}
+                {option}
               </React.Fragment>
             )}
           />

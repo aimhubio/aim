@@ -3,7 +3,11 @@ import { RouteChildrenProps } from 'react-router-dom';
 
 import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
-import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IMetricAppConfig,
+  IMetricTableRowData,
+  IOnGroupingSelectChangeParams,
+} from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
@@ -42,6 +46,9 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     active: boolean;
     chartIndex: number | null;
   };
+  grouping: IMetricAppConfig['grouping'];
+  groupingSelectOptions: string[];
+  onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
 }
 
 export interface IOnSmoothingChange {
