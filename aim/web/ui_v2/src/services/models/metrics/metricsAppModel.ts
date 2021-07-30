@@ -111,7 +111,7 @@ function processData(data: IRun[]): IMetric[][] {
             traceContext: metric.context,
           }),
           dasharray: '0',
-          color: COLORS[index % COLORS.length],
+          color: COLORS[0][index % COLORS[0].length],
         } as IMetric);
       }),
     );

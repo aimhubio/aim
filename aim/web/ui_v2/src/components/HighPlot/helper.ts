@@ -29,7 +29,7 @@ function randomGenerateLineData(count: number, dimensions: any) {
     data.push({
       values: a,
       key: encode({ a }),
-      color: COLORS[i % COLORS.length],
+      color: COLORS[0][i % COLORS[0].length],
     });
   }
 

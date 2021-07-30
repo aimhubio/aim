@@ -3,7 +3,7 @@ import { Box, Radio } from '@material-ui/core';
 
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IColorPopoverAdvancedProps } from 'types/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
-import { COLORS } from 'utils/mockOptions';
+import COLORS from 'config/colors/colors';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
