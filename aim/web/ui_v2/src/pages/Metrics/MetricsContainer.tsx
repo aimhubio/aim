@@ -47,8 +47,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  console.log(metricsData?.config?.grouping.color);
-
   return (
     <Metrics
       //refs
@@ -77,7 +75,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
       focusedState={metricsData?.config?.chart.focusedState as any}
       grouping={metricsData?.config?.grouping as IMetricAppConfig['grouping']}
-      groupingSelectOptions={metricsData?.params as string[]}
+      groupingSelectOptions={{ params: metricsData?.params } as any}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}

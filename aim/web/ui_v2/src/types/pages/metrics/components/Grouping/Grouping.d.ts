@@ -3,6 +3,6 @@ import { IMetricProps } from '../../Metrics';
 
 export interface IGroupingProps {
   grouping: IMetricAppConfig['grouping'];
-  groupingSelectOptions: string[];
+  groupingSelectOptions: IMetricProps['groupingSelectOptions'];
   onGroupingSelectChange: IMetricProps['onGroupingSelectChange'];
 }

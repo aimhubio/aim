@@ -47,7 +47,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     chartIndex: number | null;
   };
   grouping: IMetricAppConfig['grouping'];
-  groupingSelectOptions: string[];
+  groupingSelectOptions: { params: string[]; metrics? };
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
 }
 

@@ -33,6 +33,8 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
     setEditMode(!editMode);
   }
 
+  console.log(fields, metricOptions);
+
   return (
     <Grid
       container

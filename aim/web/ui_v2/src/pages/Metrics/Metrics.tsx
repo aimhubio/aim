@@ -18,8 +18,6 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
 
-  console.log(props.grouping);
-
   return (
     <div ref={props.wrapperElemRef}>
       <Box

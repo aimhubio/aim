@@ -2,14 +2,12 @@ import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 
 import GroupingItem from '../GroupingItem/GroupingItem';
-import ColorPopover from 'components/ColorPopover/ColorPopover';
-import ColorPopoverAdvanced from 'components/ColorPopoverAdvanced/ColorPopoverAdvanced';
-import StylePopover from 'components/StylePopover/StylePopover';
-import StylePopoverAdvanced from 'components/StylePopoverAdvanced/StylePopoverAdvanced';
-import DivideChartsPopover from 'components/DivideChartsPopover/DivideChartsPopover';
+import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
+import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
 
 import './groupingStyle.scss';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
+import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 
 function Grouping({
   groupingSelectOptions,
@@ -24,12 +22,20 @@ function Grouping({
           <GroupingItem
             title='Run Color Settings'
             advancedTitle='Color Advanced Options'
-            groupName='Color'
+            groupName='color'
             groupPopover={
-              <ColorPopover
+              <GroupingPopover
+                groupName='color'
                 selectOptions={groupingSelectOptions}
                 selectedValues={grouping?.color}
                 onSelect={onGroupingSelectChange}
+                advancedComponent={
+                  <ColorPopoverAdvanced
+                    onPersistenceChange={() => null}
+                    onPaletteChange={(e: any) => null}
+                    selectedPersistence={1}
+                  />
+                }
               />
             }
             advancedPopover={
@@ -49,12 +55,14 @@ function Grouping({
           <GroupingItem
             title='Select Fields For Grouping by stroke style'
             advancedTitle='stroke style advanced options'
-            groupName='Style'
+            groupName='style'
             groupPopover={
-              <StylePopover
+              <GroupingPopover
+                groupName='style'
                 selectOptions={groupingSelectOptions}
                 selectedValues={grouping?.style}
                 onSelect={onGroupingSelectChange}
+                advancedComponent={<StylePopoverAdvanced />}
               />
             }
             advancedPopover={<StylePopoverAdvanced />}
@@ -67,7 +75,8 @@ function Grouping({
             title='Select fields to divide into charts'
             groupName='Chart'
             groupPopover={
-              <DivideChartsPopover
+              <GroupingPopover
+                groupName='chart'
                 selectOptions={groupingSelectOptions}
                 selectedValues={grouping?.chart}
                 onSelect={onGroupingSelectChange}
