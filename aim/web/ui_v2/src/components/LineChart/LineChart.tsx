@@ -126,7 +126,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawHoverAttributes({
       index,
-      data: processedData,
+      data,
       xAlignment,
       visAreaRef,
       attributesRef,
@@ -195,10 +195,10 @@ const LineChart = React.forwardRef(function LineChart(
 
   React.useImperativeHandle(ref, () => ({
     updateHoverAttributes: (mousePosition: [number, number]) => {
-      attributesRef.current?.updateHoverAttributes(mousePosition);
+      attributesRef.current?.updateHoverAttributes?.(mousePosition);
     },
     setActiveLine: (lineKey: string) => {
-      attributesRef.current?.setActiveLine(lineKey);
+      attributesRef.current?.setActiveLine?.(lineKey);
     },
   }));
 

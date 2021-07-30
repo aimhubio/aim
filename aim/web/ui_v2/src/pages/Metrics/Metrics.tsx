@@ -113,16 +113,16 @@ function Metrics(
             className={classes.tableContainer}
           >
             <Paper className={classes.paper}>
-              {props.tableData.length ? (
+              {props.tableData?.length && (
                 <Table
                   ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
-                  data={[...props.tableData[0], ...props.tableData[1]]}
+                  data={props.tableData.flat()}
                   columns={props.tableColumns}
                   onRowHover={props.onTableRowHover}
                 />
-              ) : null}
+              )}
             </Paper>
           </Grid>
         </Grid>
