@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from abc import abstractmethod
@@ -12,6 +13,9 @@ from aim.storage.treeview import TreeView
 # run1.series.db
 from aim.storage.containerview import ContainerView
 from aim.storage.singlecontainerview import SingleContainerView
+
+
+logger = logging.getLogger(__name__)
 
 
 class Container(ContainerView):
@@ -32,7 +36,7 @@ class Container(ContainerView):
         self.path = path
         self.read_only = read_only
         # TODO implement column families
-        self._db_opts = aimrocks.Options(create_if_missing=True)
+        self._db_opts = dict(create_if_missing=True)
         # opts.allow_concurrent_memtable_write = False
         # opts.memtable_factory = aimrocks.VectorMemtableFactory()
         # opts.table_factory = aimrocks.PlainTableFactory()
@@ -46,16 +50,12 @@ class Container(ContainerView):
     def db(self) -> aimrocks.DB:
         if self._db is not None:
             return self._db
-        try:
-            self._db = aimrocks.DB(self.path, self._db_opts, read_only=self.read_only)
-        except Exception as e:
-            print(self.path)
-            pass
 
-        if not self.read_only:
-            self.progress_path = Path(f'{self.path.replace("runs", "progress")}.progress')
-            self.progress_path.touch(exist_ok=True)
-            self.mutex = None  # TODO create a mutex and lock some ops
+        logger.debug(f'opening {self.path} as aimrocks db')
+        Path(self.path).parent.mkdir(parents=True, exist_ok=True)
+        self._db = aimrocks.DB(self.path, aimrocks.Options(**self._db_opts), read_only=self.read_only)
+
+        # TODO acquire locks
         return self._db
 
     def batch_set(

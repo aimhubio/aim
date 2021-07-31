@@ -132,6 +132,11 @@ class RestrictedPythonQuery(Query):
         exec(self.byte_code, restricted_globals, namespace)
         self._check = namespace['check']
 
+    def __bool__(
+        self
+    ) -> bool:
+        return bool(self.expr)
+
     def match(
         self,
         run: 'Run',

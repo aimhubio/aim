@@ -37,30 +37,32 @@ class TreeView:  # TODO implement (MutableMapping):
 
     def collect(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        strict: bool = True
     ) -> AimObject:
+        if path == Ellipsis:
+            path = ()
+        if isinstance(path, (int, str)):
+            path = [path]
         prefix = E.encode_path(path)
         it = self.container.items(prefix)
-        return treeutils.decode_tree(it)
+        return treeutils.decode_tree(it, strict=strict)
 
     def __getitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ) -> AimObject:
-        if path == Ellipsis:
-            path = ()
-        if not isinstance(path, (tuple, list)):
-            path = [path]
         return self.collect(path)
 
     def get(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        default: Any = None
     ) -> AimObject:
         try:
             return self.__getitem__(path)
         except KeyError as e:
-            return None
+            return default
 
     def __delitem__(
         self,
@@ -172,19 +174,9 @@ class TreeView:  # TODO implement (MutableMapping):
         # assert prefix.endswith(b'\xfe')
         # prefix = prefix[:-1] + b'\xff'
         p = E.decode_path(self.container.prev_key(prefix))
+        if not p:
+            raise KeyError
         return p[0]
-
-
-    # def numpy(
-    #     self,
-    #     path: Union[AimObjectKey, AimObjectPath] = (),
-    #     *,
-    #     dtype=None
-    # ) -> np.ndarray:
-    #     # TODO URGENT implement using cython
-    #     val = self.collect(path)
-    #     assert isinstance(val, list)
-    #     return np.array(val, dtype=dtype)
 
     # __iter__
     # __len__

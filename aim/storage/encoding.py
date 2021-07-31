@@ -1,3 +1,4 @@
+from aim.storage.types import AimObjectKey, AimObjectPath
 import struct
 
 import cython
@@ -267,8 +268,8 @@ def decode_key(buffer: bytes) -> Union[str, int]:
     raise NotImplementedError
 
 
-def encode_path(path: Tuple[Union[str, int], ...] = ()) -> bytes:
-    if not isinstance(path, (list, tuple)):
+def encode_path(path: Union[AimObjectKey, AimObjectPath] = ()) -> bytes:
+    if isinstance(path, (int, str)):
         path = [path]
     return b''.join(
         encode_key(key) + _PATH_SENTINEL

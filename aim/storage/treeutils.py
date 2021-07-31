@@ -1,5 +1,5 @@
 from aim.storage import encoding as E
-from aim.storage.types import AimObject
+from aim.storage.types import AimObject, AimObjectPath
 from aim.storage.utils import ArrayFlag, ObjectFlag
 
 from typing import Any, Iterator, List, Tuple, Union
@@ -39,8 +39,16 @@ def unfold_tree(
 
 
 def val_to_node(
-    val: Any
+    val: Any,
+    strict: bool = True
 ) -> Any:
+    if not strict:
+        node = dict()
+        if val == ArrayFlag:
+            node['__example_type__'] = str(list)
+        elif val != ObjectFlag:
+            node['__example_type__'] = str(type(val))
+        return node
     if val == ObjectFlag:
         return dict()
     elif val == ArrayFlag:
@@ -51,11 +59,10 @@ def val_to_node(
 
 def fold_tree(
     paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
-    # prefix: Tuple[Tuple[int, str], ...] = ()
+    strict: bool = True
 ) -> AimObject:
     (keys, val), = iter_fold_tree(paths_vals,
-                                        # prefix=prefix,
-                                        level=0)
+                                  level=0, strict=strict)
     # TODO raise KeyError here
     return val
 
@@ -63,9 +70,9 @@ def fold_tree(
 def iter_fold_tree(
     paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
     *,
-    # prefix: Tuple[Tuple[int, str], ...] = (),
-    level: int = 0
-) -> AimObject:
+    level: int = 0,
+    strict: bool = True
+) -> Iterator[Tuple[AimObjectPath, AimObject]]:
     # assert 0 <= level <= 1
     stack = []
     # path = list(prefix)
@@ -96,29 +103,30 @@ def iter_fold_tree(
         while path != keys[:len(path)]:
             last_state = stack.pop()
             if len(stack) == level:
-                yield path, last_state
+                yield tuple(path), last_state
             path.pop()
 
-        # while path != keys:
-        #     adding_path = keys[len(path)]
-        #     path.append(adding_path)
-        #     new_state = dict()
-        #     if isinstance(stack[-1], dict):
-        #         stack[-1][adding_path] = new_state
-        #     else:
-        #         stack[-1].append(new_state)
-        #     stack.append(new_state)
-        node = val_to_node(val)
+        node = val_to_node(val, strict=strict)
 
+        if len(keys) == len(path):
+            # override with new
+            stack.pop()
+            path.pop()
         assert len(keys) == len(path) + 1
         key_to_add = keys[-1]
         path.append(key_to_add)
         assert stack
 
         if isinstance(stack[-1], list):
-            while len(stack[-1]) != key_to_add:
-                stack[-1].append(None)
-            stack[-1].append(node)
+            assert isinstance(key_to_add, int)
+            if key_to_add < 0:
+                raise NotImplementedError
+            elif key_to_add < len(stack[-1]):
+                stack[-1][key_to_add] = node
+            else:
+                while len(stack[-1]) != key_to_add:
+                    stack[-1].append(None)
+                stack[-1].append(node)
         elif isinstance(stack[-1], dict):
             stack[-1][key_to_add] = node
         else:
@@ -161,6 +169,9 @@ def decode_paths_vals(
         val = E.decode(encoded_val)
         # go back
 
+        if current_path == path:
+            continue
+
         if current_path is None:
             if path:
                 yield (), ObjectFlag
@@ -186,10 +197,12 @@ def encode_tree(
 
 
 def decode_tree(
-    paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]]
+    paths_vals: Iterator[Tuple[bytes, bytes]],
+    strict: bool = True
 ) -> AimObject:
     return fold_tree(
-        decode_paths_vals(paths_vals)
+        decode_paths_vals(paths_vals),
+        strict=strict
     )
 
 
