@@ -42,6 +42,28 @@ builtins.update(utility_builtins)
 builtins.update(limited_builtins)
 builtins.update(extra_builtins)
 
+
+def safer_getattr(object, name, default=None, getattr=getattr):
+    """Getattr implementation which prevents using format on string objects.
+
+    format() is considered harmful:
+    http://lucumr.pocoo.org/2016/12/29/careful-with-str-format/
+
+    """
+    if name == 'format' and isinstance(object, str):
+        raise NotImplementedError(
+            'Using format() on a %s is not safe.' % object.__class__.__name__)
+    if name.startswith('_'):
+        raise AttributeError(
+            '"{name}" is an invalid attribute name because it '
+            'starts with "_"'.format(name=name)
+        )
+    return getattr(object, name, default)
+
+
+builtins['_getattr_'] = safer_getattr
+
+
 restricted_globals = {
     "__builtins__": builtins,
     "_write_": full_write_guard,
