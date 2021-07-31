@@ -5,6 +5,7 @@ from weakref import WeakValueDictionary
 
 from pathlib import Path
 
+from aim.storage.run import Run
 from aim.storage.union import UnionContainer
 from aim.storage.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.encoding import encode_path
@@ -12,7 +13,7 @@ from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
 from aim.storage.singlecontainerview import SingleContainerView
 
-from aim.storage.run import Run
+from aim.storage.run_metadata.db import DB
 
 
 class ContainerConfig(NamedTuple):
@@ -33,11 +34,14 @@ class Repo:
         self.path = path
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[
-            ContainerConfig, ContainerView
-        ] = WeakValueDictionary()
+        self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
 
         os.makedirs(self.path, exist_ok=True)
+        os.makedirs(os.path.join(self.path, "chunks"), exist_ok=True)
+        os.makedirs(os.path.join(self.path, "locks"), exist_ok=True)
+        os.makedirs(os.path.join(self.path, "progress"), exist_ok=True)
+
+        self.run_metadata_db = DB.from_path(path)
 
     def __repr__(self) -> str:
         return f"<Repo#{hash(self)} path={self.path} read_only={self.read_only}>"
@@ -99,9 +103,7 @@ class Repo:
 
             prefix = b""
 
-            container_view = SingleContainerView(
-                container=container, read_only=read_only, prefix=prefix
-            )
+            container_view = SingleContainerView(container=container, read_only=read_only, prefix=prefix)
             self.container_view_pool[container_config] = container_view
 
         return container_view
@@ -118,7 +120,7 @@ class Repo:
         return QueryRunTraceCollection(self, query)
 
     def traces(self, query: str = ""):
-        return QueryTraceCollection(self, query)
+        return QueryTraceCollection(repo=self, query=query)
 
     def iter_traces(self, query: str = ""):
         return self.traces(query=query)

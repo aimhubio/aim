@@ -244,6 +244,7 @@ class RunTraceCollection(TraceCollection):
 class QueryTraceCollection(TraceCollection):
     def __init__(
         self,
+        *,
         repo: 'Repo',
         query: str = ''
     ):
@@ -268,7 +269,8 @@ class QueryRunTraceCollection(TraceCollection):
     ):
         self.repo: 'Repo'
         super().__init__(repo=repo)
-        self.query = RestrictedPythonQuery(query)
+        self.query = query
+        self._query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
         for run_traces in self.iter_runs():
@@ -279,7 +281,7 @@ class QueryRunTraceCollection(TraceCollection):
             if not self.query:
                 statement = True
             else:
-                statement = self.query.match(run=run)
+                statement = self._query.match(run=run)
             if not statement:
                 continue
             yield RunTraceCollection(run)

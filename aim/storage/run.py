@@ -1,7 +1,5 @@
 import logging
 
-from typing import Any, Dict, Iterator, TYPE_CHECKING, Tuple
-
 from time import time
 
 from collections import Counter
@@ -13,7 +11,11 @@ from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
 from aim.storage.containerview import ContainerView
 
+from typing import Any, Dict, Iterator, Optional, Tuple
+from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
+    from aim.storage.trace import Trace
     from aim.storage.trace import TraceCollection
     from aim.storage.repo import Repo
 
@@ -143,6 +145,14 @@ class Run:
 
     def __eq__(self, other: "Run") -> bool:
         return self.hashname == other.hashname and self.repo == other.repo
+
+    def get_trace(
+            self,
+            metric_name: str,
+            context: Context
+    ) -> Optional['Trace']:
+        trace = Trace(metric_name, context, self)
+        return trace if bool(trace) else None
 
     def _calc_hash(self) -> int:
         # TODO maybe take read_only flag into account?

@@ -1,2 +1,2 @@
-include README.md LICENSE VERSION
+include README.md LICENSE aim/VERSION
 recursive-include aim *.h *.hpp *.cpp *.cxx *.pxd *.pyx

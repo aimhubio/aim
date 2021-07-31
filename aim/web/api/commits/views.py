@@ -9,18 +9,16 @@ from pyrser.error import Diagnostic, Severity, Notification
 from sqlalchemy.orm import Session
 from typing import Optional
 
+from aim.storage import treeutils
 from aim.ql.grammar.statement import Statement, Expression
 from aim.web.api.projects.project import Project
 from aim.web.api.commits.models import Commit, TFSummaryLog, Tag
 from aim.web.api.db import get_session
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.api.commits.utils import (
-    select_tf_summary_scalars,
-    separate_select_statement,
-    is_tf_run,
-    process_trace_record,
-    process_custom_aligned_run,
-    runs_resp_generator
+    aligned_traces_dict_constructor,
+    query_traces_dict_constructor,
+    encoded_tree_streamer
 )
 
 commits_router = APIRouter()
@@ -86,24 +84,15 @@ async def commits_metric_custom_align_api(request: Request):
     requested_runs = request_data.get('runs')
     if not (x_axis_metric_name and requested_runs):
         HTTPException(status_code=403)
-    processed_runs = []
 
-    for run_data in requested_runs:
-        processed_run = process_custom_aligned_run(project, run_data, x_axis_metric_name)
-        if processed_run:
-            processed_runs.append(processed_run)
+    processed_runs = aligned_traces_dict_constructor(requested_runs, x_axis_metric_name)
+    encoded_runs_tree = treeutils.encode_tree(processed_runs)
 
-    response = {
-        'runs': [],
-    }
-
-    return StreamingResponse(runs_resp_generator(response, processed_runs, ['params', 'date']),
-                             media_type='application/json')
+    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
 @commits_router.get('/search/metric/')
-async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None,
-                                   session: Session = Depends(get_session)):
+async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:
@@ -116,171 +105,11 @@ async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] =
 
     search_statement = q.strip()
 
-    # Parse statement
-    try:
-        parser = Statement()
-        parsed_stmt = parser.parse(search_statement.strip())
-    except Diagnostic as d:
-        parser_error_logs = d.logs or []
-        for error_log in reversed(parser_error_logs):
-            if not isinstance(error_log, Notification):
-                continue
-            if error_log.severity != Severity.ERROR:
-                continue
-            error_location = error_log.location
-            if error_location:
-                return JSONResponse(content={
-                    'type': 'parse_error',
-                    'statement': search_statement,
-                    'location': error_location.col,
-                }, status_code=403)
-        raise HTTPException(status_code=403)
-    except Exception:
-        raise HTTPException(status_code=403)
+    traces = project.repo.traces(query=search_statement)
+    runs_dict = query_traces_dict_constructor(traces, steps_num, x_axis)
+    encoded_runs_tree = treeutils.encode_tree(runs_dict)
 
-    statement_select = parsed_stmt.node['select']
-    statement_expr = parsed_stmt.node['expression']
-
-    aim_select, tf_logs = separate_select_statement(statement_select)
-
-    if len(tf_logs) and x_axis:
-        # raise error if tf_run and x_axis are present together
-        # discuss error message needs
-        raise HTTPException(status_code=403)
-
-    if 'run.archived' not in search_statement:
-        default_expression = 'run.archived is not True'
-    else:
-        default_expression = None
-
-    aim_select_result = project.repo.select(aim_select,
-                                            statement_expr,
-                                            default_expression)
-    (
-        aim_selected_runs,
-        aim_selected_params,
-        aim_selected_metrics,
-    ) = (
-        aim_select_result.runs,
-        aim_select_result.get_selected_params(),
-        aim_select_result.get_selected_metrics_context()
-    )
-
-    aim_selected_runs.sort(key=lambda r: r.config.get('date'), reverse=True)
-
-    response = {
-        'runs': [],
-        'params': [],
-        'agg_metrics': {},
-        'meta': {
-            'tf_selected': False,
-            'params_selected': False,
-            'metrics_selected': False,
-        },
-    }
-
-    retrieve_traces = False
-    retrieve_agg_metrics = False
-
-    if len(aim_selected_params):
-        response['meta']['params_selected'] = True
-        response['params'] = aim_selected_params
-        if len(aim_selected_metrics):
-            response['meta']['metrics_selected'] = True
-            response['agg_metrics'] = aim_selected_metrics
-            retrieve_agg_metrics = True
-    elif len(aim_selected_metrics) or len(tf_logs):
-        response['meta']['metrics_selected'] = True
-        retrieve_traces = True
-
-    runs = []
-
-    if aim_selected_runs and len(aim_selected_runs):
-        runs += aim_selected_runs
-    if len(tf_logs) > 0:
-        if not retrieve_traces:
-            # TODO: aggregate tf logs and return aggregated values
-            response['meta']['tf_selected'] = True
-            pass
-        else:
-            try:
-                tf_runs = select_tf_summary_scalars(session, tf_logs, statement_expr)
-                if tf_runs and len(tf_runs):
-                    runs += tf_runs
-            except:
-                pass
-            else:
-                response['meta']['tf_selected'] = True
-
-    if retrieve_traces:
-        for run in runs:
-            if is_tf_run(run):
-                for metric in run['metrics']:
-                    for trace in metric['traces']:
-                        trace_scaled_data = []
-                        for i in range(0,
-                                       trace['num_steps'],
-                                       trace['num_steps'] // steps_num or 1
-                                       ):
-                            trace_scaled_data.append(trace['data'][i])
-                        trace['data'] = trace_scaled_data
-            else:
-                run.open_storage()
-                x_axis_metric = None
-                if x_axis:
-                    try:
-                        x_axis_metric = run.get_all_metrics().get(x_axis)
-                        x_axis_metric.open_artifact()
-                    except:
-                        pass
-                for metric in run.metrics.values():
-                    try:
-                        metric.open_artifact()
-                        for trace in metric.traces:
-                            step = (trace.num_records // steps_num) or 1
-                            trace.slice = (0, trace.num_records, step)
-                            x_axis_trace = None
-                            if x_axis_metric is not None:
-                                x_axis_trace = x_axis_metric.get_trace(trace.context)
-                                if x_axis_trace is not None:
-                                    trace.alignment = {
-                                        'is_synced': True,
-                                        'is_asc': True,
-                                        'skipped_steps': 0,
-                                        'aligned_by': {
-                                            'metric_name': x_axis_metric.name,
-                                            'trace_context': x_axis_trace.context
-                                        }
-                                    }
-                            x_idx = 0
-                            for r in trace.read_records(slice(*trace.slice)):
-                                process_trace_record(r, trace, x_axis_trace, x_idx)
-                                x_idx += step
-                            if (trace.num_records - 1) % step != 0:
-                                for r in trace.read_records(trace.num_records-1):
-                                    process_trace_record(r, trace, x_axis_trace, trace.num_records-1)
-                            if x_axis_trace is not None:
-                                # clear current_x_axis_value for the x_axis_trace for the next possible iteration
-                                x_axis_trace.current_x_axis_value = None
-                    except:
-                        pass
-
-                    try:
-                        metric.close_artifact()
-                    except:
-                        pass
-                if x_axis:
-                    try:
-                        x_axis_metric.close_artifact()
-                    except:
-                        pass
-                run.close_storage()
-
-    if retrieve_agg_metrics:
-        # TODO: Retrieve and return aggregated metrics
-        pass
-
-    return StreamingResponse(runs_resp_generator(response, runs), media_type='application/json')
+    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
 @commits_router.get('/search/dictionary/')
