@@ -20,6 +20,8 @@ export type InitialPathDataType = {
 export interface IDrawParallelLinesProps {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
+  attributesNodeRef: React.MutableRefObject<>;
+  linesRef: React.MutableRefObject<>;
   dimensions: DimensionsType;
   data: LinesDataType[];
 }
@@ -32,4 +34,11 @@ export interface IDrawParallelLineProps {
   isDotted: boolean;
   key: number | string;
   color: string;
+}
+
+export interface ILineRendererProps {
+  linesNodeRef: React.MutableRefObject<>;
+  attributesRef: React.MutableRefObject<>;
+  keysOfDimensions: string[];
+  data: LinesDataType[];
 }
