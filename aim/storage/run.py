@@ -43,7 +43,7 @@ class Run:
         self._hash = None
 
         meta_container: ContainerView = self.repo.request(
-            "meta", hashname, read_only=read_only
+            "meta", hashname, read_only=read_only, from_union=True
         )
         series_container: ContainerView = self.repo.request(
             "trcs", hashname, read_only=read_only

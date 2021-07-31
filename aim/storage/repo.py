@@ -41,6 +41,8 @@ class Repo:
         os.makedirs(os.path.join(self.path, "locks"), exist_ok=True)
         os.makedirs(os.path.join(self.path, "progress"), exist_ok=True)
 
+        self.meta_tree = self.request("meta", read_only=True, from_union=True).view(b"meta\xfe").tree()
+
         self.run_metadata_db = DB.from_path(path)
 
     def __repr__(self) -> str:
@@ -83,21 +85,28 @@ class Repo:
 
         return container
 
-    def request(self, name: str, sub: str = None, *, read_only: bool):
+    def request(
+        self,
+        name: str,
+        sub: str = None,
+        *,
+        read_only: bool,
+        from_union: bool = False
+    ):
 
         container_config = ContainerConfig(name, sub, read_only)
         container_view = self.container_view_pool.get(container_config)
         if container_view is None:
             if read_only:
-                path = name
-                container = self.get_container(path, read_only=True, from_union=True)
-                if sub is not None:
-                    prefix = encode_path((Path(name).name, sub))
+                if from_union:
+                    path = name
                 else:
-                    prefix = encode_path((Path(name).name,))
+                    assert sub is not None
+                    path = os.path.join(name, "chunks", sub)
+                container = self.get_container(path, read_only=True, from_union=from_union)
             else:
                 assert sub is not None
-                prefix = encode_path((Path(name).name, sub))
+                assert not from_union
                 path = os.path.join(name, "chunks", sub)
                 container = self.get_container(path, read_only=False)
 
@@ -109,9 +118,7 @@ class Repo:
         return container_view
 
     def iter_runs(self) -> Iterator["Run"]:
-        for run_name in (
-            self.request("meta", read_only=True).view(b"meta\xfe").tree().keys()
-        ):
+        for run_name in self.meta_tree.keys():
             if run_name == "_":
                 continue
             yield Run(run_name, repo=self, read_only=True)
