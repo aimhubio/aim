@@ -1,0 +1,75 @@
+.grouping_container__div {
+  .groupingItem__container_div {
+    border: 1px solid;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .groupingItem__button_small {
+    border: 1px solid;
+    padding: 0px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
+.groupingPopover_container {
+  width: 25em;
+  h3 {
+    color: #324480;
+    text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .popover_toggleMode__div {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    flex-direction: column;
+    border: 1px solid #b7b7b7;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+  }
+
+  .popover_accordion__container {
+    box-shadow: unset;
+    border: 1px solid #b7b7b7;
+    border-radius: 4px;
+    margin: 0 !important;
+  }
+}
+
+.popover__header {
+  padding: 0.5em 1em;
+  border-bottom: 1px solid #b7b7b7;
+}
+
+.advancedPopover_container {
+  width: 25em;
+  padding: 0.5em;
+  h3 {
+    color: #324480;
+    text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+}
+.palette_colorsContainer {
+  display: flex;
+  border-radius: 4px;
+  width: 10.5em;
+  border: 1px solid;
+  height: 2em;
+  margin-right: 0.5em;
+  overflow: hidden;
+}
+
+.palette_span__colorItem {
+  display: inline-block;
+  flex: 1;
+  height: 100%;
+}
