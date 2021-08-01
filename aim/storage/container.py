@@ -98,8 +98,7 @@ class Container(ContainerView):
         else:
             batch = store_batch
 
-        for key in self.keys(prefix=prefix):
-            batch.delete(key)
+        batch.delete_range((prefix, prefix + b'\xff'))
 
         if not store_batch:
             self.db.write(batch)
