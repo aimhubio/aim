@@ -35,6 +35,12 @@ interface IMetricAppConfig {
     color: string[];
     style: string[];
     chart: string[];
+    reverseMode: {
+      color: boolean;
+      style: boolean;
+      chart: boolean;
+    };
+    paletteIndex: number;
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -74,6 +80,13 @@ export interface IGetDataAsLinesProps {
 }
 
 export interface IOnGroupingSelectChangeParams {
-  field: 'color' | 'style' | 'chart';
+  field: groupNames;
   list: string[];
 }
+
+export interface IOnGroupingModeChangeParams {
+  field: groupNames;
+  value: boolean;
+}
+
+export type groupNames = 'color' | 'style' | 'chart';

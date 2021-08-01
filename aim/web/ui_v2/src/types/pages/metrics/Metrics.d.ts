@@ -6,6 +6,7 @@ import { ITableRef } from 'types/components/Table/Table';
 import {
   IMetricAppConfig,
   IMetricTableRowData,
+  IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
@@ -46,9 +47,11 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     active: boolean;
     chartIndex: number | null;
   };
-  grouping: IMetricAppConfig['grouping'];
+  groupingData: IMetricAppConfig['grouping'];
   groupingSelectOptions: { params: string[]; metrics? };
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
+  onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
+  onGroupingPaletteChange: (index: number) => void;
 }
 
 export interface IOnSmoothingChange {

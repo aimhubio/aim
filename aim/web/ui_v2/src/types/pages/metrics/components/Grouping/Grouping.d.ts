@@ -2,7 +2,9 @@ import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel'
 import { IMetricProps } from '../../Metrics';
 
 export interface IGroupingProps {
-  grouping: IMetricAppConfig['grouping'];
+  groupingData: IMetricAppConfig['grouping'];
   groupingSelectOptions: IMetricProps['groupingSelectOptions'];
   onGroupingSelectChange: IMetricProps['onGroupingSelectChange'];
+  onGroupingModeChange: IMetricProps['onGroupingModeChange']
+  onGroupingPaletteChange: IMetricProps['onGroupingPaletteChange']
 }

@@ -2,8 +2,11 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 
 import ToggleButton from 'components/ToggleButton/ToggleButton';
+import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 
-function StylePopoverAdvanced(): React.FunctionComponentElement<React.ReactNode> {
+function StylePopoverAdvanced(
+  props: IGroupingPopoverAdvancedProps,
+): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box className='advancedPopover_container'>
       <div>

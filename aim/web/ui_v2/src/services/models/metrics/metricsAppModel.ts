@@ -20,6 +20,7 @@ import {
   IMetricAppModelState,
   IMetricsCollection,
   IMetricTableRowData,
+  IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
@@ -45,6 +46,12 @@ function getConfig() {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.lr'],
       chart: [],
+      reverseMode: {
+        color: false,
+        style: false,
+        chart: false,
+      },
+      paletteIndex: 0,
     },
     chart: {
       highlightMode: HighlightEnum.Off,
@@ -103,7 +110,7 @@ function processData(data: IRun[]): {
   let metrics: IMetric[] = [];
   let index = -1;
   let params: string[] = [];
-
+  const paletteIndex = model.getState()?.config?.grouping.paletteIndex || 0;
   data.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params));
     metrics = metrics.concat(
@@ -131,7 +138,7 @@ function processData(data: IRun[]): {
             traceContext: metric.context,
           }),
           dasharray: '0',
-          color: COLORS[index % COLORS.length],
+          color: COLORS[paletteIndex][index % COLORS.length],
         } as IMetric);
       }),
     );
@@ -147,6 +154,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
   const groupByColor = grouping.color;
   const groupByStyle = grouping.style;
   const groupByChart = grouping.chart;
+  const paletteIndex = grouping.paletteIndex;
   if (
     groupByColor.length === 0 &&
     groupByStyle.length === 0 &&
@@ -203,12 +211,15 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
 
     if (groupByColor.length > 0) {
       const colorConfig = _.pick(groupValue.config, groupByColor);
+      console.log(colorConfig, groupByColor, groupValue);
+
       const colorKey = encode(colorConfig);
       if (colorConfigsMap.hasOwnProperty(colorKey)) {
-        groupValue.color = COLORS[colorConfigsMap[colorKey] % COLORS.length];
+        groupValue.color =
+          COLORS[paletteIndex][colorConfigsMap[colorKey] % COLORS.length];
       } else {
         colorConfigsMap[colorKey] = colorIndex;
-        groupValue.color = COLORS[colorIndex % COLORS.length];
+        groupValue.color = COLORS[paletteIndex][colorIndex % COLORS.length];
         colorIndex++;
       }
     }
@@ -389,10 +400,54 @@ function onGroupingSelectChange({
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [field]: list };
+    const processedData = processData(model.getState()?.rawData as IRun[]);
+    model.setState({
+      config: configData,
+      data: processedData.data,
+      lineChartData: getDataAsLines(processedData.data),
+      tableData: getDataAsTableRows(
+        processedData.data,
+        null,
+        processedData.params,
+      ),
+    });
+  }
+}
+
+function onGroupingModeChange({
+  field,
+  value,
+}: IOnGroupingModeChangeParams): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping.reverseMode = {
+      ...configData.grouping.reverseMode,
+      [field]: value,
+    };
     model.setState({ config: configData });
   }
 }
 
+function onGroupingPaletteChange(index: number): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      paletteIndex: index,
+    };
+    const processedData = processData(model.getState()?.rawData as IRun[]);
+    model.setState({
+      config: configData,
+      data: processedData.data,
+      lineChartData: getDataAsLines(processedData.data),
+      tableData: getDataAsTableRows(
+        processedData.data,
+        null,
+        processedData.params,
+      ),
+    });
+  }
+}
 //Table Methods
 
 function onActivePointChange(activePointData: IActivePointData): void {
@@ -445,6 +500,8 @@ const metricAppModel = {
   onActivePointChange,
   onTableRowHover,
   onGroupingSelectChange,
+  onGroupingModeChange,
+  onGroupingPaletteChange,
 };
 
 export default metricAppModel;

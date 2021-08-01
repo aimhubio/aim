@@ -74,7 +74,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
       focusedState={metricsData?.config?.chart.focusedState as any}
-      grouping={metricsData?.config?.grouping as IMetricAppConfig['grouping']}
+      groupingData={
+        metricsData?.config?.grouping as IMetricAppConfig['grouping']
+      }
       groupingSelectOptions={{ params: metricsData?.params } as any}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
@@ -85,6 +87,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
       onActivePointChange={metricAppModel.onActivePointChange}
       onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
+      onGroupingModeChange={metricAppModel.onGroupingModeChange}
+      onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
     />
   );
 }

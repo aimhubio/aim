@@ -15,16 +15,17 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
+import { groupNames } from 'types/services/models/metrics/metricsAppModel';
 
 function GroupingPopover({
   groupName,
   selectOptions,
-  selectedValues,
   advancedComponent,
+  groupingData,
   onSelect,
+  onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   function onChange(event: object, values: any, reason: string): void {
     onSelect({
@@ -35,7 +36,12 @@ function GroupingPopover({
     });
   }
 
-  function handleGroupingMode() {}
+  function handleGroupingMode(
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) {
+    onGroupingModeChange({ field: groupName, value: checked });
+  }
 
   function getOptionLabel(option: string): string {
     let split = option.split('.');
@@ -54,12 +60,12 @@ function GroupingPopover({
 
   const values: { name: string; group: string }[] = React.useMemo(() => {
     let data: { name: string; group: string }[] = [];
-    selectedValues.forEach((option: string) => {
+    groupingData?.[groupName as groupNames].forEach((option: string) => {
       let split = option.split('.');
       data.push({ name: option, group: split[1] });
     });
     return data;
-  }, [selectedValues]);
+  }, [groupName, groupingData]);
 
   return (
     <Box className='groupingPopover_container'>
@@ -101,6 +107,7 @@ function GroupingPopover({
           <h3>select grouping mode</h3>
           <ToggleButton
             id='groupMode'
+            value={groupingData.reverseMode[groupName as groupNames]}
             leftLabel='Group'
             rightLabel='Reverse'
             onChange={handleGroupingMode}
@@ -116,7 +123,7 @@ function GroupingPopover({
               <span>Advanced options</span>
             </AccordionSummary>
             <AccordionDetails style={{ padding: 0 }}>
-              <StylePopoverAdvanced />
+              {advancedComponent}
             </AccordionDetails>
             <Divider />
           </Accordion>

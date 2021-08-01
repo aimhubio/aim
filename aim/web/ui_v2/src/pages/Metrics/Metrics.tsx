@@ -50,9 +50,11 @@ function Metrics(
                 <Paper className={classes.paper}>
                   <Box height='100%' display='flex'>
                     <Grouping
-                      grouping={props.grouping}
+                      groupingData={props.groupingData}
                       groupingSelectOptions={props.groupingSelectOptions}
                       onGroupingSelectChange={props.onGroupingSelectChange}
+                      onGroupingModeChange={props.onGroupingModeChange}
+                      onGroupingPaletteChange={props.onGroupingPaletteChange}
                     />
                   </Box>
                 </Paper>
