@@ -44,14 +44,14 @@ class Run:
 
         meta_container: ContainerView = self.repo.request(
             "meta", hashname, read_only=read_only, from_union=True
-        )
+        ).view(b"meta\xfe")
         series_container: ContainerView = self.repo.request(
             "trcs", hashname, read_only=read_only
-        )
+        ).view(b"trcs\xfe")
 
-        self.meta_tree: TreeView = meta_container.view(b"meta\xfe_\xfe").tree()
-        self.meta_run_tree: TreeView = meta_container.view(b"meta\xfe").tree().view(hashname)
-        self.series_run_tree: TreeView = series_container.view(b"trcs\xfe").tree().view(hashname)
+        self.meta_tree: TreeView = meta_container.tree().view("_")
+        self.meta_run_tree: TreeView = meta_container.tree().view(hashname)
+        self.series_run_tree: TreeView = series_container.tree().view(hashname)
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 

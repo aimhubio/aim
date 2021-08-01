@@ -106,7 +106,7 @@ class Repo:
                 container = self.get_container(path, read_only=True, from_union=from_union)
             else:
                 assert sub is not None
-                assert not from_union
+                from_union = False
                 path = os.path.join(name, "chunks", sub)
                 container = self.get_container(path, read_only=False)
 

@@ -25,14 +25,6 @@ logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
 
-class Record(NamedTuple):
-    idx: int
-    step: int
-    epoch: int
-    value: Any
-    time: float
-
-
 class Trace(Generic[T]):
     # TODO move the core logic of Run.track here
 

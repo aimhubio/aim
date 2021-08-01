@@ -82,8 +82,7 @@ class ContainerView:
 
     @abstractmethod
     def tree(
-        self,
-        prefix: bytes = b''
+        self
     ) -> 'TreeView':
         ...
 
