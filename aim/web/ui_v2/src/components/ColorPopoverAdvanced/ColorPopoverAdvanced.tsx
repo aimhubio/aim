@@ -2,21 +2,14 @@ import React from 'react';
 import { Box, Radio } from '@material-ui/core';
 
 import ToggleButton from 'components/ToggleButton/ToggleButton';
-import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
+import { IColorPopoverAdvancedProps } from 'types/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import COLORS from 'config/colors/colors';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
-  onGroupingPaletteChange,
-  persistence,
-  paletteIndex,
-}: IGroupingPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
-  function onPaletteChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let { value } = e.target;
-    if (onGroupingPaletteChange) {
-      onGroupingPaletteChange(parseInt(value));
-    }
-  }
+  onPaletteChange,
+  selectedPersistence,
+}: IColorPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='advancedPopover_container'>
       <div>
@@ -40,7 +33,7 @@ function ColorPopoverAdvanced({
           {COLORS.map((options, index) => (
             <Box key={index} display='flex' alignItems='center'>
               <Radio
-                checked={paletteIndex === index}
+                checked={selectedPersistence === index}
                 onChange={onPaletteChange}
                 size='small'
                 value={index}

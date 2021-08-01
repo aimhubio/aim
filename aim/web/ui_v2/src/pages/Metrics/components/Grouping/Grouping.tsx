@@ -4,7 +4,6 @@ import { Box, Grid } from '@material-ui/core';
 import GroupingItem from '../GroupingItem/GroupingItem';
 import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
-import { groupNames } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
 
 import './groupingStyle.scss';
