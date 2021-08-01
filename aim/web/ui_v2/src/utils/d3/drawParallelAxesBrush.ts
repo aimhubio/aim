@@ -49,30 +49,31 @@ function drawParallelAxesBrush({
         ].invert(extent[1]);
         brushRef.current.domainsData[keyOfDimension] = [bottom, top];
       }
-
-      const filteredData = data.filter((line: LinesDataType) =>
-        filterDataByBrushedScale({
-          line,
-          domainsData: brushRef.current.domainsData,
-          dimensions,
-        }),
-      );
-      linesRef.current.updateLines(filteredData);
-      linesRef.current.data = filteredData;
-      attributesRef.current.updateHoverAttributes(
-        [brushRef.current.xScale(keyOfDimension), extent[0]],
-        true,
-      );
     } else {
-      linesRef.current.updateLines(data);
-      linesRef.current.data = data;
-      attributesRef.current.updateHoverAttributes(
-        [brushRef.current.xScale(keyOfDimension), 1],
-        true,
-      );
       brushRef.current.domainsData[keyOfDimension] =
         dimensions[keyOfDimension].domainData;
     }
+    updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
+  }
+
+  function updateLinesAndHoverAttributes(
+    brushRef: any,
+    keyOfDimension: string,
+    extent: d3.BrushSelection | any,
+  ) {
+    const filteredData = data.filter((line: LinesDataType) =>
+      filterDataByBrushedScale({
+        line,
+        domainsData: brushRef.current.domainsData,
+        dimensions,
+      }),
+    );
+    linesRef.current.updateLines(filteredData);
+    linesRef.current.data = filteredData;
+    attributesRef.current.updateHoverAttributes(
+      [brushRef.current.xScale(keyOfDimension), extent ? extent[0] : 1],
+      true,
+    );
   }
 
   function handleBrushStart(event: d3.D3BrushEvent<d3.BrushSelection>): void {
@@ -88,8 +89,8 @@ function drawParallelAxesBrush({
         d3
           .brushY()
           .extent([
-            [-10, 0],
-            [10, brushHeight],
+            [-15, 0],
+            [15, brushHeight],
           ])
           .on('start', handleBrushStart)
           .on('brush', (event) => handleBrushChange(event, keyOfDimension))
