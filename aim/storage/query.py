@@ -1,3 +1,4 @@
+from functools import lru_cache
 import logging
 import datetime
 
@@ -138,6 +139,17 @@ class RunMetadataCache:
         return query_results
 
 
+@lru_cache(maxsize=100)
+def compile_checker(expr):
+    source_code = CODE_FORMAT.format(expr=expr)
+    byte_code = compile_restricted(source_code,
+                                   filename='<inline code>',
+                                   mode='exec')
+    namespace = dict()
+    exec(byte_code, restricted_globals, namespace)
+    return namespace['check']
+
+
 class RestrictedPythonQuery(Query):
 
     def __init__(
@@ -145,14 +157,8 @@ class RestrictedPythonQuery(Query):
         expr: str
     ):
         super().__init__(expr=expr)
-        self.source_code = CODE_FORMAT.format(expr=self.expr)
-        self.byte_code = compile_restricted(self.source_code,
-                                            filename='<inline code>',
-                                            mode='exec')
+        self._check = compile_checker(expr)
         self.run_metadata_cache = None
-        namespace = dict()
-        exec(self.byte_code, restricted_globals, namespace)
-        self._check = namespace['check']
 
     def __bool__(
         self
