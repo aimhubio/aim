@@ -5,8 +5,13 @@ import {
 } from 'types/utils/d3/drawParallelAxes';
 import { getAxisScale } from 'utils/d3';
 
-function drawParallelAxes(params: IDrawParallelAxesProps): void {
-  const { axesNodeRef, visBoxRef, attributesRef, dimensions } = params;
+function drawParallelAxes({
+  axesNodeRef,
+  visBoxRef,
+  attributesRef,
+  axesRef,
+  dimensions,
+}: IDrawParallelAxesProps): void {
   const keysOfDimensions = Object.keys(dimensions);
   const { width, height, margin } = visBoxRef.current;
   const xScale = getAxisScale({
@@ -14,6 +19,7 @@ function drawParallelAxes(params: IDrawParallelAxesProps): void {
     rangeData: [0, width - margin.left - margin.right],
     scaleType: 'point',
   });
+  axesRef.current.yAxes = {};
 
   const yScale: YScaleType = {};
 
@@ -27,6 +33,7 @@ function drawParallelAxes(params: IDrawParallelAxesProps): void {
     const tickWidth = i === 0 ? 40 : width / keysOfDimensions.length - 10;
     const axes = axesNodeRef.current
       .append('g')
+      .attr('class', 'Axis')
       .data([keyOfDimension])
       .attr('transform', `translate(${xScale(keyOfDimension)})`)
       .call(d3.axisLeft(tmpYScale));
@@ -55,6 +62,7 @@ function drawParallelAxes(params: IDrawParallelAxesProps): void {
           <p>${keyOfDimension}</p>
         </div>`;
       });
+    axesRef.current.yAxes[keyOfDimension] = axes;
   });
 
   attributesRef.current.xScale = xScale;

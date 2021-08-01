@@ -204,10 +204,10 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const colorConfig = _.pick(groupValue.config, groupByColor);
       const colorKey = encode(colorConfig);
       if (colorConfigsMap.hasOwnProperty(colorKey)) {
-        groupValue.color = COLORS[colorConfigsMap[colorKey] % COLORS.length];
+        groupValue.color = COLORS[0][colorConfigsMap[colorKey] % COLORS.length];
       } else {
         colorConfigsMap[colorKey] = colorIndex;
-        groupValue.color = COLORS[colorIndex % COLORS.length];
+        groupValue.color = COLORS[0][colorIndex % COLORS.length];
         colorIndex++;
       }
     }

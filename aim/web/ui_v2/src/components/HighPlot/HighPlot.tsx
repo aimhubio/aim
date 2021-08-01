@@ -9,6 +9,7 @@ import {
   drawParallelAxes,
   drawParallelLines,
   drawParallelHoverAttributes,
+  drawParallelAxesBrush,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
@@ -47,7 +48,10 @@ const HighPlot = (
   const highlightedNodeRef = React.useRef(null);
   // methods and values refs
   const attributesRef = React.useRef<any>({});
+  const axesRef = React.useRef<any>({});
+  const linesRef = React.useRef<any>({});
   const closestCircleRef = React.useRef(null);
+  const brushRef = React.useRef<any>({});
 
   const draw = React.useCallback((): void => {
     drawArea({
@@ -68,21 +72,26 @@ const HighPlot = (
       axesNodeRef,
       visBoxRef,
       attributesRef,
+      axesRef,
       dimensions: mockData.dimensions,
     });
 
     drawParallelLines({
       linesNodeRef,
       attributesRef,
+      attributesNodeRef,
+      linesRef,
       dimensions: mockData.dimensions,
       data: mockData.data,
     });
 
+    linesRef.current.data = mockData.data;
+
     drawParallelHoverAttributes({
       dimensions: mockData.dimensions,
-      data: mockData.data,
       index,
       visAreaRef,
+      linesRef,
       attributesRef,
       visBoxRef,
       closestCircleRef,
@@ -92,34 +101,15 @@ const HighPlot = (
       highlightMode: 0,
       callback: () => {},
     });
-    // const { xScale, yScale } = getAxisScale({
-    //   visBoxRef,
-    //   axisScaleType,
-    //   min,
-    //   max,
-    // });
-
-    // attributesRef.current.xScale = xScale;
-    // attributesRef.current.yScale = yScale;
-
-    // if (zoomMode) {
-    //   brushRef.current.xScale = xScale;
-    //   brushRef.current.yScale = yScale;
-    //   drawBrush({
-    //     brushRef,
-    //     plotBoxRef,
-    //     plotNodeRef,
-    //     visBoxRef,
-    //     axesRef,
-    //     attributesRef,
-    //     linesRef,
-    //     linesNodeRef,
-    //     svgNodeRef,
-    //     axisScaleType,
-    //     min,
-    //     max,
-    //   });
-    // }
+    drawParallelAxesBrush({
+      plotBoxRef,
+      plotNodeRef,
+      brushRef,
+      linesRef,
+      attributesRef,
+      dimensions: mockData.dimensions,
+      data: mockData.data,
+    });
   }, [
     // axisScaleType,
     // curveInterpolation,

@@ -1,8 +1,8 @@
 export interface IDrawParallelHoverAttributesProps {
   index: number;
   dimensions: DimensionsType;
-  data: LinesDataType[];
   visAreaRef: React.MutableRefObject<>;
+  linesRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{
