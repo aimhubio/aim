@@ -6,4 +6,5 @@ export default interface IControlPopoverProps {
     opened?: boolean;
   }) => React.FunctionComponentElement<React.ReactNode> | HTMLElement | null;
   component: React.FunctionComponentElement<React.ReactNode>;
+  title?: string;
 }

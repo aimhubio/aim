@@ -7,9 +7,7 @@ function ToggleButton(
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box>
-      <Box component='span' marginLeft={1}>
-        {props.leftLabel}
-      </Box>
+      <Box component='span'>{props.leftLabel}</Box>
       <Switch
         color={props.color || 'primary'}
         id={props.id}

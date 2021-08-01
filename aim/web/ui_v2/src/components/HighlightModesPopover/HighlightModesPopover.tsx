@@ -8,8 +8,9 @@ function HighlightModesPopover(
   props: IHighlightModesPopoverProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   function handleClick(e: React.ChangeEvent<any>): void {
-    props.onChange(e.target.getAttribute('data-name'));
+    props.onChange(+e.target.getAttribute('data-name'));
   }
+
   return (
     <Box>
       <Box p={0.5}>Highlight Modes</Box>
