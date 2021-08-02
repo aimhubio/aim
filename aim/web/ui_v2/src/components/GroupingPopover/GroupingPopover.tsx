@@ -28,7 +28,7 @@ function GroupingPopover({
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   function onChange(event: object, values: any, reason: string): void {
     onSelect({
-      field: groupName,
+      groupName,
       list: values.map((item: any) =>
         typeof item === 'string' ? item : item.name,
       ),
@@ -62,7 +62,7 @@ function GroupingPopover({
     checked: boolean,
   ) {
     onGroupingModeChange({
-      field: groupName,
+      groupName,
       value: checked,
       options: groupingData.reverseMode[groupName as groupNames]
         ? options

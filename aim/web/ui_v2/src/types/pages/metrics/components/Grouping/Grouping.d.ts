@@ -7,4 +7,5 @@ export interface IGroupingProps {
   onGroupingModeChange: IMetricProps['onGroupingModeChange'];
   onGroupingPaletteChange: IMetricProps['onGroupingPaletteChange'];
   onGroupingReset: IMetricProps['onGroupingReset']
+  onGroupingApplyChange: IMetricAppConfig['onGroupingApplyChange']
 }

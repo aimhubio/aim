@@ -53,6 +53,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
   onGroupingReset: (groupName: groupNames) => void;
+  onGroupingApplyChange: (groupName: groupNames) => void;
 }
 
 export interface IOnSmoothingChange {

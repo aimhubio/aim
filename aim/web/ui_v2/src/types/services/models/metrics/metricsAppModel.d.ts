@@ -40,6 +40,11 @@ interface IMetricAppConfig {
       style: boolean;
       chart: boolean;
     };
+    isApplied: {
+      color: boolean;
+      style: boolean;
+      chart: boolean;
+    };
     paletteIndex: number;
     selectOptions: string[];
   };
@@ -81,12 +86,12 @@ export interface IGetDataAsLinesProps {
 }
 
 export interface IOnGroupingSelectChangeParams {
-  field: groupNames;
+  groupName: groupNames;
   list: string[];
 }
 
 export interface IOnGroupingModeChangeParams {
-  field: groupNames;
+  groupName: groupNames;
   value: boolean;
   options?: any[] | null;
 }

@@ -52,6 +52,11 @@ function getConfig() {
         style: false,
         chart: false,
       },
+      isApplied: {
+        color: true,
+        style: true,
+        chart: true,
+      },
       paletteIndex: 0,
       selectOptions: [],
     },
@@ -416,25 +421,25 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 }
 
 function onGroupingSelectChange({
-  field,
+  groupName,
   list,
 }: IOnGroupingSelectChangeParams) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
-    configData.grouping = { ...configData.grouping, [field]: list };
+    configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData);
   }
 }
 
 function onGroupingModeChange({
-  field,
+  groupName,
   value,
 }: IOnGroupingModeChangeParams): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {
       ...configData.grouping.reverseMode,
-      [field]: value,
+      [groupName]: value,
     };
     updateModelData(configData);
   }
@@ -478,6 +483,8 @@ function updateModelData(configData: IMetricAppConfig): void {
     ),
   });
 }
+
+function onGroupingApplyChange(groupName: groupNames): void {}
 //Table Methods
 
 function onActivePointChange(activePointData: IActivePointData): void {
@@ -533,6 +540,7 @@ const metricAppModel = {
   onGroupingModeChange,
   onGroupingPaletteChange,
   onGroupingReset,
+  onGroupingApplyChange,
 };
 
 export default metricAppModel;
