@@ -46,7 +46,7 @@ class Run:
             "meta", hashname, read_only=read_only, from_union=True
         ).view(b"meta\xfe")
         series_container: ContainerView = self.repo.request(
-            "trcs", hashname, read_only=read_only
+            "trcs", hashname, read_only=read_only, from_union=False
         ).view(b"trcs\xfe")
 
         self.meta_tree: TreeView = meta_container.tree().view("_")
