@@ -19,7 +19,7 @@ def collect_x_axis_data(x_trace: Trace, iters: np.ndarray) -> Tuple[np.ndarray, 
             x_axis_iters.append(idx.item())
             x_axis_values.append(x_val)
 
-    return np.array(x_axis_iters, dtype='int64',), np.array(x_axis_values, dtype='float64')
+    return np.array(x_axis_iters, dtype='float64',), np.array(x_axis_values, dtype='float64')
 
 
 def sliced_np_array(array: np.ndarray, _slice: slice) -> np.ndarray:
@@ -74,8 +74,8 @@ def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
             traces_list.append({
                 'metric_name': trace.name,
                 'context': trace.context.to_dict(),
-                'x_axis_values': numpy_to_encodable(x_axis_values),
-                'x_axis_iters': numpy_to_encodable(x_axis_iters)
+                'x_axis_values': numpy_to_encodable(x_axis_values) if x_axis_values else None,
+                'x_axis_iters': numpy_to_encodable(x_axis_iters) if x_axis_iters else None,
             })
 
         processed_runs_dict[run_name] = traces_list
