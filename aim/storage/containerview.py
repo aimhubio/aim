@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Iterator, Tuple
+from typing import Iterable, Iterator, List, Tuple
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -8,10 +8,13 @@ if TYPE_CHECKING:
 
 class ContainerView:
 
+    def preload(self):
+        ...
+
     @classmethod
     def path_join(
-        self,
-        *args: Iterable[bytes],
+        cls,
+        *args: bytes,
         prefix: bytes = b''
     ) -> bytes:
         return prefix + b'.'.join(args)
@@ -126,4 +129,22 @@ class ContainerView:
         self,
         key: bytes = b''
     ) -> Tuple[bytes, bytes]:
+        ...
+
+    @abstractmethod
+    def batch_delete(
+        self,
+        prefix: bytes,
+        store_batch = None
+    ):
+        ...
+
+    @abstractmethod
+    def batch_set(
+        self,
+        key: bytes,
+        value: bytes,
+        *,
+        store_batch = None
+    ):
         ...
