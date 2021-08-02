@@ -1,36 +1,28 @@
 from abc import abstractmethod
-import datetime
+
 import json
-import numpy as np
+import logging
+import datetime
 from tqdm import tqdm
 
 from aim.storage import treeutils
-from aim.storage.proxy import AimObjectProxy
 from aim.storage.query import RestrictedPythonQuery
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.arrayview import ArrayView
 
-from typing import Any, Generic, Iterable, Iterator, NamedTuple, TYPE_CHECKING, Tuple, TypeVar, List
+from typing import Any, Generic, Iterator, NamedTuple, TypeVar, List
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.storage.run import Run
     from aim.storage.repo import Repo
     from pandas import DataFrame
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 T = TypeVar('T')
-
-
-class Record(NamedTuple):
-    idx: int
-    step: int
-    epoch: int
-    value: Any
-    time: float
 
 
 class Trace(Generic[T]):
@@ -123,7 +115,7 @@ class Trace(Generic[T]):
         }
 
         if include_run:
-            data['run'] = [self.run.name] * len(indices)
+            data['run'] = [self.run.hashname] * len(indices)
             for path, val in treeutils.unfold_tree(self.run[...],
                                                    unfold_array=False,
                                                    depth=3):
@@ -133,12 +125,11 @@ class Trace(Generic[T]):
                         s += f'.{key}'
                     else:
                         s += f'[{key}]'
-                # path = '.'.join(path)
+
                 if isinstance(val, (tuple, list, dict)):
                     val = json.dumps(val)
                 data[s] = [val for _ in indices]
         if include_name:
-            # df['metric'] = self.name
             data['metric'] = [self.name for _ in indices]
         if include_context:
             for path, val in treeutils.unfold_tree(self.context.to_dict(),
@@ -155,6 +146,7 @@ class Trace(Generic[T]):
                     val = json.dumps(val)
                 # df[s] = val
                 data[s] = [val for _ in indices]
+
         import pandas as pd
         df = pd.DataFrame(data)
         return df
@@ -216,16 +208,28 @@ class TraceCollection:
 class RunTraceCollection(TraceCollection):
     def __init__(
         self,
-        run: 'Run'
+        run: 'Run',
+        query_traces: str = ''  # query traces of a given run
     ):
         self.run: 'Run'
         self.repo: 'Repo'
+        self.query_traces = RestrictedPythonQuery(query_traces)
         super().__init__(run=run, repo=run.repo)
 
     def iter(
         self
     ) -> Iterator[Trace]:
         for metric_name, ctx, run in self.run.iter_all_traces():
+            if not self.query_traces:
+                statement = True
+            else:
+                statement = self.query_traces.match(
+                    run=run,
+                    context=ctx,
+                    metric_name=metric_name
+                )
+            if not statement:
+                continue
             yield Trace(metric_name, ctx, run)
 
 
@@ -234,37 +238,19 @@ class QueryTraceCollection(TraceCollection):
         self,
         *,
         repo: 'Repo',
-        query: str,
-        run: 'Run' = None,
+        query: str = ''
     ):
         self.repo: 'Repo'
-        super().__init__(repo=repo, run=run)
+        super().__init__(repo=repo)
         self.query = query
-        self._query = RestrictedPythonQuery(query)
+
+    def iter_runs(self) -> Iterator['TraceCollection']:
+        for run in tqdm(self.repo.iter_runs()):
+            yield RunTraceCollection(run, self.query)
 
     def iter(self) -> Iterator[Trace]:
-        if self.run is not None:
-            runs = [self.run]
-        else:
-            runs = tqdm(self.repo.iter_runs(from_union=True))
-        for run in runs:
-            for metric_name, ctx, run in run.iter_all_traces():
-                if not self._query:
-                    statement = True
-                else:
-                    statement = self._query.match(
-                        run=run,
-                        context=ctx,
-                        metric_name=metric_name
-                    )
-                if not statement:
-                    continue
-                yield Trace(metric_name, ctx, run)
-
-    def iter_runs(self):
-        assert self.run is None
-        for run in tqdm(self.repo.iter_runs(from_union=True)):
-            yield QueryTraceCollection(run=run, query=self.query, repo=self.repo)
+        for run_traces in self.iter_runs():
+            yield from run_traces
 
 
 class QueryRunTraceCollection(TraceCollection):
@@ -279,20 +265,15 @@ class QueryRunTraceCollection(TraceCollection):
         self._query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
-        for run in self._iter_runs():
-            for metric_name, ctx, run in run.iter_all_traces():
-                yield Trace(metric_name, ctx, run)
+        for run_traces in self.iter_runs():
+            yield from run_traces
 
-    def _iter_runs(self) -> Iterator['Run']:
-        for run in tqdm(self.repo.iter_runs(from_union=True)):
-            if not self._query:
+    def iter_runs(self) -> Iterator['TraceCollection']:
+        for run in tqdm(self.repo.iter_runs()):
+            if not self.query:
                 statement = True
             else:
                 statement = self._query.match(run=run)
             if not statement:
                 continue
-            yield run
-
-    def iter_runs(self) -> Iterator['TraceCollection']:
-        for run in self._iter_runs():
             yield RunTraceCollection(run)

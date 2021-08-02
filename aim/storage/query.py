@@ -1,3 +1,4 @@
+from functools import lru_cache
 import logging
 import datetime
 
@@ -41,6 +42,28 @@ builtins = safe_builtins.copy()
 builtins.update(utility_builtins)
 builtins.update(limited_builtins)
 builtins.update(extra_builtins)
+
+
+def safer_getattr(object, name, default=None, getattr=getattr):
+    """Getattr implementation which prevents using format on string objects.
+
+    format() is considered harmful:
+    http://lucumr.pocoo.org/2016/12/29/careful-with-str-format/
+
+    """
+    if name == 'format' and isinstance(object, str):
+        raise NotImplementedError(
+            'Using format() on a %s is not safe.' % object.__class__.__name__)
+    if name.startswith('_'):
+        raise AttributeError(
+            '"{name}" is an invalid attribute name because it '
+            'starts with "_"'.format(name=name)
+        )
+    return getattr(object, name, default)
+
+
+builtins['_getattr_'] = safer_getattr
+
 
 restricted_globals = {
     "__builtins__": builtins,
@@ -116,6 +139,17 @@ class RunMetadataCache:
         return query_results
 
 
+@lru_cache(maxsize=100)
+def compile_checker(expr):
+    source_code = CODE_FORMAT.format(expr=expr)
+    byte_code = compile_restricted(source_code,
+                                   filename='<inline code>',
+                                   mode='exec')
+    namespace = dict()
+    exec(byte_code, restricted_globals, namespace)
+    return namespace['check']
+
+
 class RestrictedPythonQuery(Query):
 
     def __init__(
@@ -123,14 +157,13 @@ class RestrictedPythonQuery(Query):
         expr: str
     ):
         super().__init__(expr=expr)
-        self.source_code = CODE_FORMAT.format(expr=self.expr)
-        self.byte_code = compile_restricted(self.source_code,
-                                            filename='<inline code>',
-                                            mode='exec')
+        self._check = compile_checker(expr)
         self.run_metadata_cache = None
-        namespace = dict()
-        exec(self.byte_code, restricted_globals, namespace)
-        self._check = namespace['check']
+
+    def __bool__(
+        self
+    ) -> bool:
+        return bool(self.expr)
 
     def __bool__(
         self
