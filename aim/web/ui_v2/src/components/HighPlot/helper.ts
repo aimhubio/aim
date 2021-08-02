@@ -29,7 +29,7 @@ function randomGenerateLineData(count: number, dimensions: any) {
     data.push({
       values: a,
       key: encode({ a }),
-      color: COLORS[i % COLORS.length],
+      color: COLORS[0][i % COLORS[0].length],
     });
   }
 
@@ -39,7 +39,7 @@ function randomGenerateLineData(count: number, dimensions: any) {
   };
 }
 
-export const mockData = randomGenerateLineData(100, {
+export const mockData = randomGenerateLineData(10, {
   column1: { scaleType: 'linear', domainData: [2, 5.6] },
   column2: {
     scaleType: 'point',

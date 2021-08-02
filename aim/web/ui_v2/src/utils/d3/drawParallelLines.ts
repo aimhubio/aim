@@ -7,6 +7,7 @@ import {
   InitialPathDataType,
   LinesDataType,
   IDrawParallelLineProps,
+  ILineRendererProps,
 } from 'types/utils/d3/drawParallelLines';
 
 const initialPathData: InitialPathDataType = {
@@ -16,18 +17,80 @@ const initialPathData: InitialPathDataType = {
   isDotted: false,
 };
 
-function drawParallelLines(params: IDrawParallelLinesProps) {
-  const { linesNodeRef, attributesRef, dimensions, data } = params;
+function drawParallelLines({
+  linesNodeRef,
+  attributesRef,
+  dimensions,
+  data,
+  linesRef,
+  attributesNodeRef,
+}: IDrawParallelLinesProps) {
   const keysOfDimensions: string[] = Object.keys(dimensions);
+  linesRenderer({ data, keysOfDimensions, linesNodeRef, attributesRef });
+  linesRef.current.updateLines = function (updatedData: LinesDataType[]) {
+    linesNodeRef.current?.selectAll('*')?.remove();
+    attributesNodeRef.current?.selectAll('*')?.remove();
+    linesRenderer({
+      data: updatedData,
+      keysOfDimensions,
+      linesNodeRef,
+      attributesRef,
+    });
+  };
+}
+
+function drawParallelLine({
+  linesNodeRef,
+  attributesRef,
+  dimensionList,
+  lineData,
+  isDotted,
+  color,
+  key,
+}: IDrawParallelLineProps) {
+  linesNodeRef.current
+    .append('path')
+    .data([
+      dimensionList.map((dimension: number | string, i: number) => [
+        dimension,
+        lineData[dimensionList[i]],
+      ]),
+    ])
+    .attr('id', `Line-${key}`)
+    .attr('clip-path', `url(#lines-rect-clip-${0})`)
+    .attr(
+      'd',
+      lineGenerator(
+        attributesRef.current.xScale,
+        attributesRef.current.yScale,
+        CurveEnum.Linear,
+        true,
+      ),
+    )
+    .attr('class', 'Line')
+    .style('fill', 'none')
+    .style('stroke', color)
+    .style('stroke-opacity', isDotted ? '0.5' : '1')
+    .style('stroke-dasharray', isDotted ? '4 1' : 0);
+}
+
+function linesRenderer({
+  data,
+  keysOfDimensions,
+  linesNodeRef,
+  attributesRef,
+}: ILineRendererProps) {
   data.forEach(({ values: line, key, color }: LinesDataType) => {
     if (Object.values(line).includes(null)) {
-      const arrayOfPathData = [cloneDeep(initialPathData)];
-      let pathDataArrayIndex = 0;
+      const arrayOfPathData: InitialPathDataType[] = [
+        cloneDeep(initialPathData),
+      ];
+      let pathDataArrayIndex: number = 0;
       for (let i = 0; i < keysOfDimensions.length; i++) {
-        const keyOfDimension = keysOfDimensions[i];
+        const keyOfDimension: string = keysOfDimensions[i];
         if (line[keyOfDimension] === null) {
           if (i === 0) continue;
-          let nextStep = 1;
+          let nextStep: number = 1;
           while (line[keysOfDimensions[i + nextStep]] === null) {
             nextStep++;
           }
@@ -84,45 +147,6 @@ function drawParallelLines(params: IDrawParallelLinesProps) {
       });
     }
   });
-}
-
-function drawParallelLine({
-  linesNodeRef,
-  attributesRef,
-  dimensionList,
-  lineData,
-  isDotted,
-  color,
-  key,
-}: IDrawParallelLineProps) {
-  linesNodeRef.current
-    .append('path')
-    .data([
-      dimensionList.map((dimension: number | string, i: number) => [
-        dimension,
-        lineData[dimensionList[i]],
-      ]),
-    ])
-    .attr('id', `Line-${key}`)
-    .attr('clip-path', `url(#lines-rect-clip-${0})`)
-    .attr(
-      'd',
-      lineGenerator(
-        attributesRef.current.xScale,
-        attributesRef.current.yScale,
-        CurveEnum.Linear,
-        true,
-      ),
-    )
-    .attr('class', 'Line')
-    // .attr(
-    //   'data-selector',
-    //   `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
-    // )
-    .style('fill', 'none')
-    .style('stroke', color)
-    .style('stroke-opacity', isDotted ? '0.5' : '1')
-    .style('stroke-dasharray', isDotted ? '4 1' : 0);
 }
 
 export default drawParallelLines;

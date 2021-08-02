@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { isNil } from 'lodash-es';
+import { isNil, isEmpty } from 'lodash-es';
 
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import {
@@ -15,11 +15,11 @@ import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 import { getCoordinates, CircleEnum } from './';
 
 const drawParallelHoverAttributes = ({
-  data,
   dimensions,
   index,
   attributesNodeRef,
   attributesRef,
+  linesRef,
   visAreaRef,
   visBoxRef,
   closestCircleRef,
@@ -32,7 +32,10 @@ const drawParallelHoverAttributes = ({
   const svgArea = d3.select(visAreaRef.current).select('svg');
   const keysOfDimensions = Object.keys(dimensions);
 
-  function updateHoverAttributes(mouse: [number, number]) {
+  function updateHoverAttributes(
+    mouse: [number, number],
+    brushEventUpdate: boolean = false,
+  ) {
     const { mouseX, mouseY } = getCoordinates({
       mouse,
       xScale: attributesRef.current.xScale,
@@ -42,9 +45,8 @@ const drawParallelHoverAttributes = ({
         ],
       margin,
     });
-
     const { nearestCircles, closestCircle } = getNearestCircles({
-      data,
+      data: linesRef.current.data,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -54,7 +56,10 @@ const drawParallelHoverAttributes = ({
 
     if (closestCircleRef.current !== closestCircle) {
       // hover Line Changed case
-      if (closestCircle.key !== closestCircleRef.current?.key) {
+      if (
+        closestCircle.key !== closestCircleRef.current?.key ||
+        brushEventUpdate
+      ) {
         linesNodeRef.current.classed(
           'highlight',
           highlightMode !== HighlightEnum.Off,
@@ -70,20 +75,22 @@ const drawParallelHoverAttributes = ({
         const newActiveLine = linesNodeRef.current.selectAll(
           `[id=Line-${closestCircle.key}]`,
         );
-        // get lines data selector
-        const linesSelectorToHighlight = newActiveLine.attr('data-selector');
-        // set highlighted lines
-        highlightedNodeRef.current = linesNodeRef.current
-          .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
-          .classed('highlighted', true)
-          .raise();
-        // set active line
-        newActiveLine.classed('active', true).raise();
+        if (!isEmpty(newActiveLine.nodes())) {
+          const linesSelectorToHighlight = newActiveLine.attr('data-selector');
+          // set highlighted lines
+          highlightedNodeRef.current = linesNodeRef.current
+            .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
+            .classed('highlighted', true)
+            .raise();
+          // set active line
+          newActiveLine?.classed('active', true).raise();
+        }
       }
       // hover Circle Changed case
       if (
         closestCircle.x !== closestCircleRef.current?.x ||
-        closestCircle.y !== closestCircleRef.current?.y
+        closestCircle.y !== closestCircleRef.current?.y ||
+        brushEventUpdate
       ) {
         attributesNodeRef.current.classed(
           'highlight',
@@ -149,7 +156,7 @@ const drawParallelHoverAttributes = ({
     });
 
     const { nearestCircles } = getNearestCircles({
-      data,
+      data: linesRef.current.data,
       xScale: attributesRef.current.xScale,
       yScale: attributesRef.current.yScale,
       mouseX,
@@ -261,7 +268,7 @@ function getNearestCircles({
     const closestYPixel = yScale[dimension](
       closestCircles[0].values[dimension],
     );
-    if (nearestCircles[0].x !== closestXPixel && !isNil(closestYPixel)) {
+    if (nearestCircles[0]?.x !== closestXPixel && !isNil(closestYPixel)) {
       nearestCircles.push({
         x: closestXPixel,
         y: closestYPixel,

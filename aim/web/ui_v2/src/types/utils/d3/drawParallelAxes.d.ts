@@ -18,5 +18,6 @@ export interface IDrawParallelAxesProps {
   axesNodeRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
+  axesRef: React.MutableRefObject<>;
   dimensions: DimensionsType;
 }

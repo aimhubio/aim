@@ -9,6 +9,7 @@ import drawHoverAttributes from './drawHoverAttributes';
 import drawParallelAxes from './drawParallelAxes';
 import drawParallelLines from './drawParallelLines';
 import drawParallelHoverAttributes from './drawParallelHoverAttributes';
+import drawParallelAxesBrush from './drawParallelAxesBrush';
 import getCoordinates from './getCoordinates';
 
 enum XAlignmentEnum {
@@ -67,4 +68,5 @@ export {
   drawParallelAxes,
   drawParallelLines,
   drawParallelHoverAttributes,
+  drawParallelAxesBrush,
 };
