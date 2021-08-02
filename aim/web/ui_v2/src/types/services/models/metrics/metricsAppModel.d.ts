@@ -41,6 +41,7 @@ interface IMetricAppConfig {
       chart: boolean;
     };
     paletteIndex: number;
+    selectOptions: string[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -87,6 +88,7 @@ export interface IOnGroupingSelectChangeParams {
 export interface IOnGroupingModeChangeParams {
   field: groupNames;
   value: boolean;
+  options?: any[] | null;
 }
 
 export type groupNames = 'color' | 'style' | 'chart';

@@ -16,6 +16,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
+  groupNames,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
@@ -52,6 +53,7 @@ function getConfig() {
         chart: false,
       },
       paletteIndex: 0,
+      selectOptions: [],
     },
     chart: {
       highlightMode: HighlightEnum.Off,
@@ -86,8 +88,15 @@ function getMetricsData() {
     call: () =>
       call().then((data: IRun[]) => {
         const processedData = processData(data);
+        const configData = model.getState()?.config;
+        if (configData) {
+          configData.grouping.selectOptions = processedData.params.map(
+            (param) => `run.params.${param}`,
+          );
+        }
         model.setState({
           rawData: data,
+          config: configData,
           params: processedData.params,
           data: processedData.data,
           lineChartData: getDataAsLines(processedData.data),
@@ -138,7 +147,7 @@ function processData(data: IRun[]): {
             traceContext: metric.context,
           }),
           dasharray: '0',
-          color: COLORS[paletteIndex][index % COLORS.length],
+          color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
         } as IMetric);
       }),
     );
@@ -149,12 +158,24 @@ function processData(data: IRun[]): {
   };
 }
 
+function getFilteredOptions(
+  grouping: IMetricAppConfig['grouping'],
+  groupName: string,
+): string[] {
+  const { selectOptions, reverseMode } = grouping;
+  return reverseMode[groupName as groupNames]
+    ? selectOptions.filter(
+        (opt: string) => grouping[groupName as groupNames].indexOf(opt) === -1,
+      )
+    : grouping[groupName as groupNames];
+}
+
 function groupData(data: IMetric[]): IMetricsCollection[] {
   const grouping = model.getState()!.config!.grouping;
-  const groupByColor = grouping.color;
-  const groupByStyle = grouping.style;
-  const groupByChart = grouping.chart;
-  const paletteIndex = grouping.paletteIndex;
+  const { paletteIndex } = grouping;
+  const groupByColor = getFilteredOptions(grouping, 'color');
+  const groupByStyle = getFilteredOptions(grouping, 'style');
+  const groupByChart = getFilteredOptions(grouping, 'chart');
   if (
     groupByColor.length === 0 &&
     groupByStyle.length === 0 &&
@@ -211,15 +232,16 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
 
     if (groupByColor.length > 0) {
       const colorConfig = _.pick(groupValue.config, groupByColor);
-      console.log(colorConfig, groupByColor, groupValue);
-
       const colorKey = encode(colorConfig);
       if (colorConfigsMap.hasOwnProperty(colorKey)) {
         groupValue.color =
-          COLORS[paletteIndex][colorConfigsMap[colorKey] % COLORS.length];
+          COLORS[paletteIndex][
+            colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+          ];
       } else {
         colorConfigsMap[colorKey] = colorIndex;
-        groupValue.color = COLORS[paletteIndex][colorIndex % COLORS.length];
+        groupValue.color =
+          COLORS[paletteIndex][colorIndex % COLORS[paletteIndex].length];
         colorIndex++;
       }
     }
@@ -400,17 +422,7 @@ function onGroupingSelectChange({
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [field]: list };
-    const processedData = processData(model.getState()?.rawData as IRun[]);
-    model.setState({
-      config: configData,
-      data: processedData.data,
-      lineChartData: getDataAsLines(processedData.data),
-      tableData: getDataAsTableRows(
-        processedData.data,
-        null,
-        processedData.params,
-      ),
-    });
+    updateModelData(configData);
   }
 }
 
@@ -424,7 +436,7 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [field]: value,
     };
-    model.setState({ config: configData });
+    updateModelData(configData);
   }
 }
 
@@ -435,18 +447,36 @@ function onGroupingPaletteChange(index: number): void {
       ...configData.grouping,
       paletteIndex: index,
     };
-    const processedData = processData(model.getState()?.rawData as IRun[]);
-    model.setState({
-      config: configData,
-      data: processedData.data,
-      lineChartData: getDataAsLines(processedData.data),
-      tableData: getDataAsTableRows(
-        processedData.data,
-        null,
-        processedData.params,
-      ),
-    });
+    updateModelData(configData);
   }
+}
+
+function onGroupingReset(groupName: groupNames) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      reverseMode: { ...configData.grouping.reverseMode, [groupName]: false },
+      [groupName]: [],
+      paletteIndex:
+        groupName === 'color' ? 0 : configData.grouping.paletteIndex,
+    };
+    updateModelData(configData);
+  }
+}
+
+function updateModelData(configData: IMetricAppConfig): void {
+  const processedData = processData(model.getState()?.rawData as IRun[]);
+  model.setState({
+    config: configData,
+    data: processedData.data,
+    lineChartData: getDataAsLines(processedData.data),
+    tableData: getDataAsTableRows(
+      processedData.data,
+      null,
+      processedData.params,
+    ),
+  });
 }
 //Table Methods
 
@@ -502,6 +532,7 @@ const metricAppModel = {
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
+  onGroupingReset,
 };
 
 export default metricAppModel;

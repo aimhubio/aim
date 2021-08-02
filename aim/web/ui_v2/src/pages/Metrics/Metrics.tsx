@@ -51,10 +51,10 @@ function Metrics(
                   <Box height='100%' display='flex'>
                     <Grouping
                       groupingData={props.groupingData}
-                      groupingSelectOptions={props.groupingSelectOptions}
                       onGroupingSelectChange={props.onGroupingSelectChange}
                       onGroupingModeChange={props.onGroupingModeChange}
                       onGroupingPaletteChange={props.onGroupingPaletteChange}
+                      onGroupingReset={props.onGroupingReset}
                     />
                   </Box>
                 </Paper>

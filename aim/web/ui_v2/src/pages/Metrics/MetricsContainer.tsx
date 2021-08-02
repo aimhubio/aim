@@ -77,7 +77,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingData={
         metricsData?.config?.grouping as IMetricAppConfig['grouping']
       }
-      groupingSelectOptions={{ params: metricsData?.params } as any}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -89,6 +88,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
       onGroupingModeChange={metricAppModel.onGroupingModeChange}
       onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
+      onGroupingReset={metricAppModel.onGroupingReset}
     />
   );
 }

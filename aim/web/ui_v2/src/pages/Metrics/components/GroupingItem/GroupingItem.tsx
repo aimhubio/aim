@@ -11,7 +11,6 @@ function GroupingItem({
   groupingData,
   advancedTitle,
   advancedComponent,
-  selectOptions,
   onSelect,
   onGroupingModeChange,
   onReset,
@@ -35,7 +34,6 @@ function GroupingItem({
           <GroupingPopover
             groupName={groupName}
             groupingData={groupingData}
-            selectOptions={selectOptions}
             advancedComponent={advancedComponent}
             onSelect={onSelect}
             onGroupingModeChange={onGroupingModeChange}
@@ -70,4 +68,4 @@ function GroupingItem({
   );
 }
 
-export default React.memo(GroupingItem);
+export default GroupingItem;

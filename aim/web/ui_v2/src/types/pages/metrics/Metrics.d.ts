@@ -4,6 +4,7 @@ import { RouteChildrenProps } from 'react-router-dom';
 import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
 import {
+  groupNames,
   IMetricAppConfig,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
@@ -48,10 +49,10 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     chartIndex: number | null;
   };
   groupingData: IMetricAppConfig['grouping'];
-  groupingSelectOptions: { params: string[]; metrics? };
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
+  onGroupingReset: (groupName: groupNames) => void;
 }
 
 export interface IOnSmoothingChange {

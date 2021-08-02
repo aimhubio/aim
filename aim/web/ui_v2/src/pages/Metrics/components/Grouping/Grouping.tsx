@@ -5,6 +5,7 @@ import GroupingItem from '../GroupingItem/GroupingItem';
 import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
+import { groupNames } from 'types/services/models/metrics/metricsAppModel';
 
 import './groupingStyle.scss';
 
@@ -30,10 +31,10 @@ const groupingPopovers = [
 
 function Grouping({
   groupingData,
-  groupingSelectOptions,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
+  onGroupingReset,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box className='grouping_container__div'>
@@ -47,7 +48,6 @@ function Grouping({
                   title={title}
                   advancedTitle={advancedTitle}
                   groupName={groupName}
-                  selectOptions={groupingSelectOptions}
                   groupingData={groupingData}
                   onSelect={onGroupingSelectChange}
                   onGroupingModeChange={onGroupingModeChange}
@@ -63,7 +63,7 @@ function Grouping({
                       />
                     )
                   }
-                  onReset={() => null}
+                  onReset={() => onGroupingReset(groupName as groupNames)}
                   onVisibilityChange={() => null}
                 />
               </Grid>

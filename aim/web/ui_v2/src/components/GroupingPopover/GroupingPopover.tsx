@@ -21,7 +21,6 @@ import { groupNames } from 'types/services/models/metrics/metricsAppModel';
 
 function GroupingPopover({
   groupName,
-  selectOptions,
   advancedComponent,
   groupingData,
   onSelect,
@@ -36,13 +35,6 @@ function GroupingPopover({
     });
   }
 
-  function handleGroupingMode(
-    e: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
-  ) {
-    onGroupingModeChange({ field: groupName, value: checked });
-  }
-
   function getOptionLabel(option: string): string {
     let split = option.split('.');
     return `${split[split.length - 2]}.${split[split.length - 1]}`;
@@ -50,13 +42,11 @@ function GroupingPopover({
 
   const options: { name: string; group: string }[] = React.useMemo(() => {
     let data = [];
-    for (let key in selectOptions) {
-      for (let value of selectOptions[key as 'params']) {
-        data.push({ name: `run.${key}.${value}`, group: key });
-      }
+    for (let value of groupingData.selectOptions) {
+      data.push({ name: value, group: value.split('.')[1] });
     }
     return data;
-  }, [selectOptions]);
+  }, [groupingData]);
 
   const values: { name: string; group: string }[] = React.useMemo(() => {
     let data: { name: string; group: string }[] = [];
@@ -66,6 +56,19 @@ function GroupingPopover({
     });
     return data;
   }, [groupName, groupingData]);
+
+  function handleGroupingMode(
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) {
+    onGroupingModeChange({
+      field: groupName,
+      value: checked,
+      options: groupingData.reverseMode[groupName as groupNames]
+        ? options
+        : null,
+    });
+  }
 
   return (
     <Box className='groupingPopover_container'>
@@ -110,6 +113,7 @@ function GroupingPopover({
             value={groupingData.reverseMode[groupName as groupNames]}
             leftLabel='Group'
             rightLabel='Reverse'
+            defaultChecked={groupingData.reverseMode[groupName as groupNames]}
             onChange={handleGroupingMode}
           />
         </Box>
