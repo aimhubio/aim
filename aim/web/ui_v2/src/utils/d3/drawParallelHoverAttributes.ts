@@ -8,8 +8,8 @@ import {
   IGetParallelNearestCirclesProps,
   IParallelClosestCircle,
 } from 'types/utils/d3/drawParallelHoverAttributes';
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 import { getCoordinates, CircleEnum } from './';
+import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
 
 const drawParallelHoverAttributes = ({
   dimensions,
@@ -23,7 +23,6 @@ const drawParallelHoverAttributes = ({
   linesNodeRef,
   highlightedNodeRef,
   highlightMode,
-  callback,
 }: IDrawParallelHoverAttributesProps) => {
   const { margin } = visBoxRef.current;
   const svgArea = d3.select(visAreaRef.current).select('svg');
@@ -120,22 +119,6 @@ const drawParallelHoverAttributes = ({
       attributesRef.current.x = closestCircle.x + margin.left;
       attributesRef.current.y = closestCircle.y + margin.top;
     }
-    return {
-      key: closestCircleRef.current.key,
-      xValue: scalePointPosition(
-        attributesRef.current.xScale,
-        closestCircleRef.current.x,
-      ),
-      yValue: scalePointPosition(
-        attributesRef.current.yScale[
-          scalePointPosition(
-            attributesRef.current.xScale,
-            closestCircleRef.current.x,
-          )
-        ],
-        closestCircleRef.current.y,
-      ),
-    };
   }
 
   function setActiveLine(lineKey: string) {
@@ -174,11 +157,7 @@ const drawParallelHoverAttributes = ({
 
   function handleMouseMove(event: MouseEvent) {
     const mouse = d3.pointer(event);
-    const activePointData = updateHoverAttributes(mouse);
-
-    if (typeof callback === 'function') {
-      callback(mouse, activePointData);
-    }
+    updateHoverAttributes(mouse);
   }
 
   svgArea?.on('mousemove', handleMouseMove);
@@ -218,7 +197,7 @@ function getNearestCircles({
       r: null,
       x: 0,
       y: 0,
-      values: [],
+      values: {},
       color: '',
     },
   ];
@@ -278,7 +257,7 @@ function getNearestCircles({
   return { nearestCircles, closestCircle: closestCircles[0] };
 }
 
-function scalePointPosition(xScale: IGetAxesScale['xScale'], xPos: number) {
+function scalePointPosition(xScale: IGetAxisScale, xPos: number) {
   var domain = xScale.domain();
   var range = xScale.range();
   var rangePoints = d3.range(range[0], range[1], xScale.step && xScale.step());

@@ -4,7 +4,7 @@ import useStyles from './highPlotStyle';
 import { mockData } from './helper';
 
 import {
-  drawArea,
+  drawParallelArea,
   clearArea,
   drawParallelAxes,
   drawParallelLines,
@@ -54,7 +54,7 @@ const HighPlot = (
   const brushRef = React.useRef<any>({});
 
   const draw = React.useCallback((): void => {
-    drawArea({
+    drawParallelArea({
       index,
       visBoxRef,
       plotBoxRef,
@@ -99,7 +99,6 @@ const HighPlot = (
       linesNodeRef,
       highlightedNodeRef,
       highlightMode: 0,
-      callback: () => {},
     });
     drawParallelAxesBrush({
       plotBoxRef,

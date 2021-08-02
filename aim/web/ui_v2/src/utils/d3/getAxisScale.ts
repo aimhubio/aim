@@ -4,7 +4,7 @@ import { ScaleEnum } from './index';
 import {
   IGetAxisScale,
   IGetAxisScaleProps,
-} from '../../types/utils/d3/getAxesScale';
+} from '../../types/utils/d3/getAxisScale';
 
 function getScaleBaseFor(scaleType?: ScaleEnum) {
   switch (scaleType) {
