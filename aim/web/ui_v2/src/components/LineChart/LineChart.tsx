@@ -186,7 +186,15 @@ const LineChart = React.forwardRef(function LineChart(
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-  }, [data, zoomMode, displayOutliers, highlightMode]);
+  }, [
+    data,
+    zoomMode,
+    displayOutliers,
+    highlightMode,
+    axesScaleType,
+    curveInterpolation,
+    zoomMode,
+  ]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
