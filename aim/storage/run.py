@@ -151,6 +151,7 @@ class Run:
             metric_name: str,
             context: Context
     ) -> Optional['Trace']:
+        from aim.storage.trace import Trace
         trace = Trace(metric_name, context, self)
         return trace if bool(trace) else None
 

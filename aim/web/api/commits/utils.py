@@ -10,26 +10,6 @@ from aim.storage.trace import Trace
 from aim.storage.trace import QueryTraceCollection
 
 
-def collect_x_axis_data(x_trace: Trace, iters: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    x_axis_values = []
-    x_axis_iters = []
-    for idx in iters:
-        x_val = x_trace.values[idx.item()]
-        if x_val:
-            x_axis_iters.append(idx.item())
-            x_axis_values.append(x_val)
-
-    return np.array(x_axis_iters, dtype='float64',), np.array(x_axis_values, dtype='float64')
-
-
-def sliced_np_array(array: np.ndarray, _slice: slice) -> np.ndarray:
-    last_step_needed = (_slice.stop - 1) % _slice.step != 0
-    if last_step_needed:
-        return np.append(array[_slice], array[-1])
-    else:
-        return array[_slice]
-
-
 def numpy_to_encodable(array: np.ndarray) -> dict:
     encoded_numpy = {
         '_type': 'numpy',
@@ -48,6 +28,33 @@ def numpy_to_encodable(array: np.ndarray) -> dict:
         })
 
     return encoded_numpy
+
+
+def sliced_np_array(array: np.ndarray, _slice: slice) -> np.ndarray:
+    last_step_needed = (_slice.stop - 1) % _slice.step != 0
+    if last_step_needed:
+        return np.append(array[_slice], array[-1])
+    else:
+        return array[_slice]
+
+
+def collect_x_axis_data(x_trace: Trace, iters: np.ndarray) -> Tuple[Optional[dict], Optional[dict]]:
+    if not x_trace:
+        return None, None
+
+    x_axis_values = []
+    x_axis_iters = []
+    for idx in iters:
+        x_val = x_trace.values[idx.item()]
+        if x_val:
+            x_axis_iters.append(idx.item())
+            x_axis_values.append(x_val)
+
+    if not x_axis_iters:
+        return None, None
+
+    return numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),\
+        numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
 
 
 def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
@@ -74,8 +81,8 @@ def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
             traces_list.append({
                 'metric_name': trace.name,
                 'context': trace.context.to_dict(),
-                'x_axis_values': numpy_to_encodable(x_axis_values) if x_axis_values else None,
-                'x_axis_iters': numpy_to_encodable(x_axis_iters) if x_axis_iters else None,
+                'x_axis_values': x_axis_values,
+                'x_axis_iters': x_axis_iters,
             })
 
         processed_runs_dict[run_name] = traces_list
@@ -100,8 +107,7 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
             _slice = slice(0, num_records, step)
             sliced_iters = sliced_np_array(iters, _slice)
             x_axis_trace = run.get_trace(x_axis, trace.context) if x_axis else None
-            if x_axis_trace:
-                x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
+            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
 
             traces_list.append({
                     'metric_name': trace.name,
@@ -111,8 +117,8 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
                     'iters': numpy_to_encodable(sliced_iters),
                     'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
                     'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
-                    'x_axis_values': x_axis_values if x_axis_trace and x_axis_values else None,
-                    'x_axis_iters': x_axis_iters if x_axis_trace and x_axis_iters else None,
+                    'x_axis_values': x_axis_values,
+                    'x_axis_iters': x_axis_iters,
                 })
 
         runs_dict[run.hashname] = {
