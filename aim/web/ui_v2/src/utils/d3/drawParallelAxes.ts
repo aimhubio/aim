@@ -30,6 +30,7 @@ function drawParallelAxes(params: IDrawParallelAxesProps): void {
       .data([keyOfDimension])
       .attr('transform', `translate(${xScale(keyOfDimension)})`)
       .call(d3.axisLeft(tmpYScale));
+
     axes
       .selectAll('.tick')
       .append('foreignObject')

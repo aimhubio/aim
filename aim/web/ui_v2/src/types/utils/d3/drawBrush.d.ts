@@ -16,5 +16,5 @@ export interface IDrawBrushProps extends IGetAxesScaleProps {
 export interface IHandleBrushChange {
   xValues: IGetAxesScale['xScale'];
   yValues: IGetAxesScale['yScale'];
-  mousePosition: number[];
+  mousePos: number[];
 }

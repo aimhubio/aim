@@ -47,7 +47,7 @@ function drawBrush(props: IDrawBrushProps): void {
   // This event firing after brush selection ends
   function handleBrushChange(event: d3.D3BrushEvent<d3.BrushSelection>): void {
     const extent: d3.BrushSelection | any = event.selection;
-    const mousePosition = d3.pointer(event);
+    const mousePos = d3.pointer(event);
     if (!extent) {
       return;
     } else if (
@@ -79,7 +79,7 @@ function drawBrush(props: IDrawBrushProps): void {
       handleZoomIn({
         xValues,
         yValues,
-        mousePosition,
+        mousePos,
       });
     }
     svgNodeRef.current.on('dblclick', handleZoomOut);
@@ -89,7 +89,7 @@ function drawBrush(props: IDrawBrushProps): void {
   function handleZoomIn({
     xValues,
     yValues,
-    mousePosition,
+    mousePos,
   }: IHandleBrushChange): void {
     //
     const { width, height, margin } = visBoxRef.current;
@@ -106,7 +106,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateHoverAttributes(mousePosition);
+    attributesRef.current.updateFocusedChart(mousePos);
 
     linesNodeRef.current
       .selectAll('.Line')
@@ -140,7 +140,7 @@ function drawBrush(props: IDrawBrushProps): void {
     linesRef.current.updateLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
-    attributesRef.current.updateHoverAttributes(d3.pointer(event));
+    attributesRef.current.updateFocusedChart(d3.pointer(event));
   }
 }
 

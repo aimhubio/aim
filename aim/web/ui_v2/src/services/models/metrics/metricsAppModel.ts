@@ -25,7 +25,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
@@ -241,26 +241,33 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 
 //Table Methods
 
-function onActivePointChange(activePointData: IActivePointData): void {
+function onFocusedStateChange(
+  activePoint: IActivePoint,
+  focusedStateActive: boolean = false,
+): void {
   const tableRef: any = model.getState()?.config?.refs.tableRef;
   if (tableRef) {
     tableRef.current?.updateData({
-      newData: getDataAsTableRows(activePointData.xValue).flat(),
+      newData: getDataAsTableRows(activePoint.xValue).flat(),
     });
-    tableRef.current?.setHoveredRow(activePointData.key);
+    tableRef.current?.setHoveredRow?.(activePoint.key);
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
-      active: false,
-      ...activePointData,
+      active: focusedStateActive,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
     };
     model.setState({ config: configData });
   }
 }
 
 function onTableRowHover(rowKey: string): void {
-  const chartPanelRef: any = model.getState()?.config?.refs.chartPanelRef;
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const chartPanelRef: any = configData?.refs.chartPanelRef;
   if (chartPanelRef) {
     chartPanelRef.current?.setActiveLine(rowKey);
   }
@@ -278,7 +285,7 @@ const metricAppModel = {
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
-  onActivePointChange,
+  onFocusedStateChange,
   onTableRowHover,
 };
 

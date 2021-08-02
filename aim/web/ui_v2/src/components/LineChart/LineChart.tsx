@@ -11,10 +11,13 @@ import {
   drawHoverAttributes,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
-import { ILineChartProps } from 'types/components/LineChart/LineChart';
+import {
+  IAttributesRef,
+  ILineChartProps,
+} from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
-import { INearestCircle } from '../../types/utils/d3/drawHoverAttributes';
+import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
@@ -23,9 +26,7 @@ const LineChart = React.forwardRef(function LineChart(
   const {
     data,
     index,
-    onMouseOver,
-    onMouseLeave,
-    hasFocusedCircleRef,
+    syncHoverState,
     axesScaleType,
     displayOutliers,
     xAlignment,
@@ -70,10 +71,7 @@ const LineChart = React.forwardRef(function LineChart(
   const axesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
-  const attributesRef = React.useRef<any>({});
-
-  const closestCircleRef = React.useRef<INearestCircle | null>(null);
-  const activeLineKeyRef = React.useRef(null);
+  const attributesRef = React.useRef<IAttributesRef>({});
 
   function draw() {
     const { processedData, min, max } = processData({
@@ -97,6 +95,7 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     const { width, height, margin } = visBoxRef.current;
+
     const xScale = getAxesScale({
       domainData: [min.x, max.x],
       rangeData: [0, width - margin.left - margin.right],
@@ -134,24 +133,19 @@ const LineChart = React.forwardRef(function LineChart(
       data: processedData,
       index,
       xAlignment,
+      highlightMode,
+      syncHoverState,
       visAreaRef,
       attributesRef,
       plotBoxRef,
       visBoxRef,
       svgNodeRef,
       bgRectNodeRef,
-      closestCircleRef,
-      activeLineKeyRef,
       attributesNodeRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
       linesNodeRef,
       highlightedNodeRef,
-      highlightMode,
-      onMouseOver,
-      onMouseLeave,
-      hasFocusedCircleRef,
-      focusedState: props.focusedState,
     });
 
     if (zoomMode) {
@@ -179,12 +173,10 @@ const LineChart = React.forwardRef(function LineChart(
     draw();
   }
 
+  // TODO keep position of active point by value not by mouse position
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        // FiXME need to fix later to save focused state on resize
-        onMouseLeave(index);
-        hasFocusedCircleRef.current = false;
         requestAnimationFrame(renderChart);
       }
     },
@@ -198,14 +190,17 @@ const LineChart = React.forwardRef(function LineChart(
   }, [data, zoomMode, displayOutliers, highlightMode]);
 
   React.useImperativeHandle(ref, () => ({
-    updateHoverAttributes: (mousePosition: [number, number]) => {
-      attributesRef.current?.updateHoverAttributes(mousePosition);
+    setActiveLine: (lineKey: string) => {
+      attributesRef.current.setActiveLine?.(lineKey);
     },
-    setActiveLine: (lineKey: string, chartIndex: number) => {
-      attributesRef.current?.setActiveLine(lineKey, chartIndex);
+    updateHoverAttributes: (xValue: number) => {
+      attributesRef.current.updateHoverAttributes?.(xValue);
     },
-    clearLinesAndAttributes: () => {
-      attributesRef.current?.clearLinesAndAttributes();
+    clearHoverAttributes: () => {
+      attributesRef.current.clearHoverAttributes?.();
+    },
+    setFocusedState: (focusedState: IFocusedState) => {
+      attributesRef.current.focusedState = focusedState;
     },
   }));
 
