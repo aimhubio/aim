@@ -1,6 +1,7 @@
 import numpy as np
 import struct
 
+from collections import defaultdict
 from typing import Iterator, Tuple, Optional
 
 from aim.storage.context import Context
@@ -30,12 +31,23 @@ def sliced_np_array(array: np.ndarray, _slice: slice) -> np.ndarray:
 
 
 def numpy_to_encodable(array: np.ndarray) -> dict:
-    return {
-        "_type": "numpy",
-        "shape": array.shape[0],
-        "dtype": str(array.dtype),
-        "blob": array.tobytes()
+    encoded_numpy = {
+        '_type': 'numpy',
+        'shape': array.shape[0],
     }
+
+    if array.dtype == 'int64':
+        encoded_numpy.update({
+            'dtype': 'float64',
+            'blob': array.astype('float64').tobytes()
+        })
+    else:
+        encoded_numpy.update({
+            'dtype': str(array.dtype),
+            'blob': array.tobytes()
+        })
+
+    return encoded_numpy
 
 
 def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
@@ -43,7 +55,7 @@ def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
     for run_data in requested_runs:
         run_name = run_data.get('name')
         requested_traces = run_data.get('traces')
-        run = Run(run_name)
+        run = Run(hashname=run_name)
 
         traces_list = []
         for trace_data in requested_traces:
@@ -72,20 +84,17 @@ def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
 
 
 def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, x_axis: Optional[str]) -> dict:
-    query_runs_collection = {}
-    for trace in traces:
-        if query_runs_collection.get(trace.run.name):
-            query_runs_collection[trace.run.name].append(trace)
-        else:
-            query_runs_collection[trace.run.name] = [trace]
+    query_runs_collection = defaultdict(list)
+    for trace in traces.iter():
+        query_runs_collection[trace.run.hashname].append(trace)
 
     runs_dict = {}
     for run_name in query_runs_collection.keys():
-        run = Run(run_name)
+        run = Run(hashname=run_name)
         query_run_traces = query_runs_collection[run_name]
         traces_list = []
         for trace in query_run_traces:
-            values, iters = trace.values.sparse_numpy()
+            iters, values = trace.values.sparse_numpy()
             num_records = len(values)
             step = (num_records // steps_num) or 1
             _slice = slice(0, num_records, step)
@@ -106,7 +115,7 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
                     'x_axis_iters': x_axis_iters if x_axis_trace and x_axis_iters else None,
                 })
 
-        runs_dict[run.name] = {
+        runs_dict[run.hashname] = {
             'params': run[...],
             'traces': traces_list
         }
@@ -116,19 +125,15 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
 
 async def encoded_tree_streamer(encoded_runs_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
     for key, val in encoded_runs_tree:
-        yield struct.pack('I', len(key))
-        yield key
-        yield struct.pack('I', len(val))
-        yield val
+        yield struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val
 
 
 # TODO: [MV] don't forget to delete this block
 # remains here for Karen to convert old storage files to new one
 import json
-from typing import Optional
 
 from aim.artifacts.metric import Metric as MetricArtifact
-from aim.engine.repo.run import Run
+from aim.engine.repo.run import Run as OldRun
 from aim.ql.grammar import Expression
 from aim.ql.utils import match
 from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
@@ -256,7 +261,7 @@ def process_trace_record(r, trace, x_axis_trace, x_idx):
     ))
 
 
-def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or None:
+def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> OldRun or None:
     # get run_hash and experiment_name from request data
     run_hash = run_data.get('run_hash')
     experiment_name = run_data.get('experiment_name')
@@ -264,7 +269,7 @@ def process_custom_aligned_run(project, run_data, x_axis_metric_name) -> Run or 
         return None
 
     # initialize Run object and try to get metric corresponding to x_axis_metric_name
-    selected_run = Run(project.repo, experiment_name, run_hash)
+    selected_run = OldRun(project.repo, experiment_name, run_hash)
     x_axis_metric = selected_run.get_all_metrics().get(x_axis_metric_name)
     if x_axis_metric is None:
         return None
