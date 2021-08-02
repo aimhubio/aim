@@ -19,6 +19,11 @@ class TreeView:  # TODO implement (MutableMapping):
     ) -> None:
         self.container = container
 
+    def preload(
+        self
+    ):
+        self.container.preload()
+
     def view(
         self,
         path: Union[AimObjectKey, AimObjectPath]

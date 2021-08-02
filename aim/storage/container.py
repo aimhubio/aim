@@ -35,8 +35,10 @@ class Container(ContainerView):
     ) -> None:
         self.path = path
         self.read_only = read_only
-        # TODO implement column families
-        self._db_opts = dict(create_if_missing=True)
+        self._db_opts = dict(
+            create_if_missing=True,
+            paranoid_checks=False
+        )
         # opts.allow_concurrent_memtable_write = False
         # opts.memtable_factory = aimrocks.VectorMemtableFactory()
         # opts.table_factory = aimrocks.PlainTableFactory()
@@ -57,6 +59,9 @@ class Container(ContainerView):
 
         # TODO acquire locks
         return self._db
+
+    def preload(self):
+        self.db
 
     def batch_set(
         self,

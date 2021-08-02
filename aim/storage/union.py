@@ -4,11 +4,10 @@ import os
 import aimrocks
 from pathlib import Path
 
-from aim.storage.encoding import encode, encode_path
+from aim.storage.encoding import encode_path
 from aim.storage.container import Container
-from aim.storage.containerview import ContainerView
 
-from typing import Any, Dict, Iterable, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -19,6 +18,7 @@ class Racer(NamedTuple):
     priority: int
     value: bytes
     prefix: bytes
+    iterator: 'aimrocks.ItemsIterator'
 
 
 class ItemsIterator:
@@ -65,26 +65,24 @@ class ItemsIterator:
         if not self._heap:
             raise StopIteration
 
-        key, _, value, prefix = self._heap[0]
+        key, _, value, prefix, iterator = self._heap[0]
 
         if not seek_next:
             return key, value
 
         while self._heap:
-            alt_prefix = self._heap[0].prefix
-            alt_key = self._heap[0].key
+            alt = self._heap[0]
 
             if (
-                alt_key != key and
-                (alt_prefix == prefix or not alt_key.startswith(prefix))
+                alt.key != key and
+                (alt.prefix == prefix or not alt.key.startswith(prefix))
             ):
                break
 
             heapq.heappop(self._heap)
-            iterator = self._iterators[alt_prefix]
             try:
-                new_key, new_value = next(iterator)
-                racer = Racer(new_key, self._priority[alt_prefix], new_value, alt_prefix)
+                new_key, new_value = next(alt.iterator)
+                racer = Racer(new_key, alt.priority, new_value, alt.prefix, alt.iterator)
                 heapq.heappush(self._heap, racer)
                 # self._state[prefix] = (new_key, new_value)
             except StopIteration:
@@ -103,9 +101,9 @@ class ItemsIterator:
                 max_key = max(key, max_key)
             except ValueError:
                 continue
-            racer = Racer(key, self._priority[prefix], value, prefix)
+            racer = Racer(key, self._priority[prefix], value, prefix, iterator)
             heapq.heappush(self._heap, racer)
-            # self._state[prefix] = (key, value)
+
         return max_key
 
     def __next__(self) -> Tuple[bytes, bytes]:
