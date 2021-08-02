@@ -1,5 +1,4 @@
 import React from 'react';
-import * as d3 from 'd3';
 import useStyles from './highPlotStyle';
 //delete before commit
 import { mockData } from './helper';
@@ -9,6 +8,8 @@ import {
   clearArea,
   drawParallelAxes,
   drawParallelLines,
+  drawParallelHoverAttributes,
+  drawParallelAxesBrush,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
@@ -44,9 +45,13 @@ const HighPlot = (
   const axesNodeRef = React.useRef<any>(null);
   const linesNodeRef = React.useRef<any>(null);
   const attributesNodeRef = React.useRef(null);
-
+  const highlightedNodeRef = React.useRef(null);
   // methods and values refs
   const attributesRef = React.useRef<any>({});
+  const axesRef = React.useRef<any>({});
+  const linesRef = React.useRef<any>({});
+  const closestCircleRef = React.useRef(null);
+  const brushRef = React.useRef<any>({});
 
   const draw = React.useCallback((): void => {
     drawArea({
@@ -67,86 +72,44 @@ const HighPlot = (
       axesNodeRef,
       visBoxRef,
       attributesRef,
+      axesRef,
       dimensions: mockData.dimensions,
     });
-    // drawParallelLines({
-    //   linesNodeRef,
-    //   attributesRef,
-    //   dimensions: mockData.dimensions,
-    //   data: mockData.data,
-    // });
 
     drawParallelLines({
       linesNodeRef,
       attributesRef,
+      attributesNodeRef,
+      linesRef,
       dimensions: mockData.dimensions,
       data: mockData.data,
     });
 
-    // const { xScale, yScale } = getAxisScale({
-    //   visBoxRef,
-    //   axisScaleType,
-    //   min,
-    //   max,
-    // });
+    linesRef.current.data = mockData.data;
 
-    // attributesRef.current.xScale = xScale;
-    // attributesRef.current.yScale = yScale;
-
-    // drawAxes({
-    //   axesNodeRef,
-    //   axesRef,
-    //   plotBoxRef,
-    //   xScale,
-    //   yScale,
-    // });
-
-    // drawLines({
-    //   data: processedData,
-    //   linesNodeRef,
-    //   linesRef,
-    //   curveInterpolation,
-    //   xScale,
-    //   yScale,
-    //   index,
-    //   highlightMode,
-    // });
-
-    // drawHoverAttributes({
-    //   data: processedData,
-    //   index,
-    //   xAlignment,
-    //   visAreaRef,
-    //   attributesRef,
-    //   plotBoxRef,
-    //   visBoxRef,
-    //   closestCircleRef,
-    //   attributesNodeRef,
-    //   xAxisLabelNodeRef,
-    //   yAxisLabelNodeRef,
-    //   linesNodeRef,
-    //   highlightedNodeRef,
-    //   highlightMode,
-    // });
-
-    // if (zoomMode) {
-    //   brushRef.current.xScale = xScale;
-    //   brushRef.current.yScale = yScale;
-    //   drawBrush({
-    //     brushRef,
-    //     plotBoxRef,
-    //     plotNodeRef,
-    //     visBoxRef,
-    //     axesRef,
-    //     attributesRef,
-    //     linesRef,
-    //     linesNodeRef,
-    //     svgNodeRef,
-    //     axisScaleType,
-    //     min,
-    //     max,
-    //   });
-    // }
+    drawParallelHoverAttributes({
+      dimensions: mockData.dimensions,
+      index,
+      visAreaRef,
+      linesRef,
+      attributesRef,
+      visBoxRef,
+      closestCircleRef,
+      attributesNodeRef,
+      linesNodeRef,
+      highlightedNodeRef,
+      highlightMode: 0,
+      callback: () => {},
+    });
+    drawParallelAxesBrush({
+      plotBoxRef,
+      plotNodeRef,
+      brushRef,
+      linesRef,
+      attributesRef,
+      dimensions: mockData.dimensions,
+      data: mockData.data,
+    });
   }, [
     // axisScaleType,
     // curveInterpolation,

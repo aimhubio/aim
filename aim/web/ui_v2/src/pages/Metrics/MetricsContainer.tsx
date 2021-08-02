@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Metrics from './Metrics';
-import getTableColumns from './components/TableColumns/TableColumns';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import { ITableRef } from 'types/components/Table/Table';
@@ -13,6 +12,8 @@ import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
+import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
 
@@ -56,8 +57,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       //options
       lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricAppModel.getDataAsTableRows()}
-      tableColumns={getTableColumns()}
+      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableColumns={metricsData?.tableColumns as ITableColumn[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum

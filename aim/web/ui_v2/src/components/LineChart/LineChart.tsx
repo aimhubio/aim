@@ -6,7 +6,7 @@ import {
   drawAxes,
   drawLines,
   processData,
-  getAxesScale,
+  getAxisScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
@@ -96,12 +96,12 @@ const LineChart = React.forwardRef(function LineChart(
 
     const { width, height, margin } = visBoxRef.current;
 
-    const xScale = getAxesScale({
+    const xScale = getAxisScale({
       domainData: [min.x, max.x],
       rangeData: [0, width - margin.left - margin.right],
       scaleType: axesScaleType.xAxis,
     });
-    const yScale = getAxesScale({
+    const yScale = getAxisScale({
       domainData: [min.y, max.y],
       rangeData: [height - margin.top - margin.bottom, 0],
       scaleType: axesScaleType.yAxis,
@@ -130,8 +130,8 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     drawHoverAttributes({
-      data: processedData,
       index,
+      data,
       xAlignment,
       highlightMode,
       syncHoverState,
@@ -173,7 +173,6 @@ const LineChart = React.forwardRef(function LineChart(
     draw();
   }
 
-  // TODO keep position of active point by value not by mouse position
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
