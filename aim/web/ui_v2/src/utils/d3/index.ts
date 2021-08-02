@@ -6,6 +6,7 @@ import processData from './processData';
 import getAxisScale from './getAxisScale';
 import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
+import drawParallelArea from './drawParrallelArea';
 import drawParallelAxes from './drawParallelAxes';
 import drawParallelLines from './drawParallelLines';
 import drawParallelHoverAttributes from './drawParallelHoverAttributes';
@@ -65,6 +66,7 @@ export {
   getAxisScale,
   drawBrush,
   drawHoverAttributes,
+  drawParallelArea,
   drawParallelAxes,
   drawParallelLines,
   drawParallelHoverAttributes,

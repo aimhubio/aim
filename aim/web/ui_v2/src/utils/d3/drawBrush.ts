@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 
 import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 import getAxisScale from './getAxisScale';
 import lineGenerator from './lineGenerator';
+import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
@@ -32,8 +32,8 @@ function drawBrush(props: IDrawBrushProps): void {
   plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
 
   brushRef.current.updateScales = function (
-    xScale: IGetAxesScale['xScale'],
-    yScale: IGetAxesScale['yScale'],
+    xScale: IGetAxisScale,
+    yScale: IGetAxisScale,
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;

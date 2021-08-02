@@ -10,17 +10,13 @@ export interface IGetAxesScaleProps {
   max: { x: number; y: number };
 }
 
-export type IScale = d3.ScaleLogarithmic | d3.ScaleLinear | d3.ScalePoint;
-
-export interface IGetAxesScale {
-  xScale: IScale;
-  yScale: IScale;
-}
+export type IGetAxisScale =
+  | d3.ScaleLogarithmic
+  | d3.ScaleLinear
+  | d3.ScalePoint;
 
 export interface IGetAxisScaleProps {
   scaleType: ScaleEnum;
   domainData: any;
   rangeData: any;
 }
-
-export type IGetAxisScale = IScale;

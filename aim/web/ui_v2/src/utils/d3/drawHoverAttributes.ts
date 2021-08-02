@@ -2,13 +2,12 @@ import * as d3 from 'd3';
 
 import {
   IDrawHoverAttributesProps,
-  IGetCoordinates,
   IAxisLineData,
   INearestCircle,
   IActivePoint,
 } from 'types/utils/d3/drawHoverAttributes';
-import { CircleEnum, XAlignmentEnum } from './index';
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
+import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { CircleEnum, getCoordinates, XAlignmentEnum } from './index';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 import 'components/LineChart/LineChart.css';
@@ -96,17 +95,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
 
     return nearestCircles;
-  }
-
-  function getCoordinates(mousePos: [number, number]): IGetCoordinates {
-    const xPosition = Math.floor(mousePos[0]) - margin.left;
-    const yPosition = Math.floor(mousePos[1]) - margin.top;
-    const [xMin, xMax] = attributesRef.current.xScale.range();
-    const [yMax, yMin] = attributesRef.current.yScale.range();
-    return {
-      mouseX: xPosition < xMin ? xMin : xPosition > xMax ? xMax : xPosition,
-      mouseY: yPosition < yMin ? yMin : yPosition > yMax ? yMax : yPosition,
-    };
   }
 
   function drawXAxisLabel(x: number): void {
@@ -378,7 +366,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     mousePos: [number, number],
     force: boolean = false,
   ): IActivePoint {
-    const { mouseX, mouseY } = getCoordinates(mousePos);
+    const { mouseX, mouseY } = getCoordinates({
+      mouse: mousePos,
+      margin,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
+    });
     const nearestCircles = getNearestCircles(mouseX);
     const closestC = getClosestCircle(nearestCircles, mouseX, mouseY);
 
@@ -552,10 +545,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   }
 
-  function updateScales(
-    xScale: IGetAxesScale['xScale'],
-    yScale: IGetAxesScale['yScale'],
-  ) {
+  function updateScales(xScale: IGetAxisScale, yScale: IGetAxisScale) {
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
   }

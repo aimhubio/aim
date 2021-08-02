@@ -5,7 +5,7 @@ import {
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from '../AxesScalePopover/AxesScalePopover';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import { IGetAxesScale } from '../../utils/d3/getAxesScale';
+import { IGetAxisScale } from '../../utils/d3/getAxisScale';
 import { IFocusedState } from '../../services/models/metrics/metricsAppModel';
 
 export interface ILine {
@@ -36,12 +36,9 @@ export interface IAttributesRef {
   activePoint?: IActivePoint;
   xStep?: number;
   lineKey?: string;
-  xScale?: IGetAxesScale['xScale'];
-  yScale?: IGetAxesScale['yScale'];
-  updateScales?: (
-    xScale: IGetAxesScale['xScale'],
-    yScale: IGetAxesScale['yScale'],
-  ) => void;
+  xScale?: IGetAxisScale;
+  yScale?: IGetAxisScale;
+  updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
   setActiveLine?: (lineKey: string) => void;
   updateHoverAttributes?: (xValue: number) => void;
   updateFocusedChart?: (mousePos: [number, number]) => IActivePoint;
