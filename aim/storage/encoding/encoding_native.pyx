@@ -36,6 +36,7 @@ cdef inline ll q(
 
 #@cython.wraparound(False)
 #@cython.boundscheck(False)
+@cython.exceptval(check=False)
 cdef vector[pair[ll, ll]] split_path(const unsigned char[:] buffer, ll N) nogil:
     # cdef int N = len(buffer)
     cdef vector[pair[ll, ll]] path
