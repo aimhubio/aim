@@ -1,10 +1,11 @@
 import * as d3 from 'd3';
 
 import { CurveEnum } from './';
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
+import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+
 export default function lineGenerator(
-  xValues: IGetAxesScale['xScale'],
-  yValues: IGetAxesScale['yScale'],
+  xValues: IGetAxisScale,
+  yValues: IGetAxisScale,
   curve: CurveEnum = CurveEnum.Linear,
   isYValuesAnObject: boolean = false,
 ) {

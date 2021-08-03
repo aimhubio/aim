@@ -11,6 +11,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ILine } from 'types/components/LineChart/LineChart';
+import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
 import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
@@ -70,7 +71,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
-      focusedState={metricsData?.config?.chart.focusedState as any}
+      focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -78,7 +79,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSmoothingChange={metricAppModel.onSmoothingChange}
       onTableRowHover={metricAppModel.onTableRowHover}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
-      onActivePointChange={metricAppModel.onActivePointChange}
+      onFocusedStateChange={metricAppModel.onFocusedStateChange}
     />
   );
 }

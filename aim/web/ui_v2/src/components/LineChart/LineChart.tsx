@@ -11,9 +11,13 @@ import {
   drawHoverAttributes,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
-import { ILineChartProps } from 'types/components/LineChart/LineChart';
+import {
+  IAttributesRef,
+  ILineChartProps,
+} from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
+import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
@@ -22,6 +26,7 @@ const LineChart = React.forwardRef(function LineChart(
   const {
     data,
     index,
+    syncHoverState,
     axesScaleType,
     displayOutliers,
     xAlignment,
@@ -29,6 +34,7 @@ const LineChart = React.forwardRef(function LineChart(
     highlightMode,
     curveInterpolation,
   } = props;
+
   const classes = useStyles();
   // boxes
   const visBoxRef = React.useRef({
@@ -65,11 +71,9 @@ const LineChart = React.forwardRef(function LineChart(
   const axesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
-  const attributesRef = React.useRef<any>({});
+  const attributesRef = React.useRef<IAttributesRef>({});
 
-  const closestCircleRef = React.useRef(null);
-
-  const draw = React.useCallback((): void => {
+  function draw() {
     const { processedData, min, max } = processData({
       data,
       displayOutliers,
@@ -91,6 +95,7 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     const { width, height, margin } = visBoxRef.current;
+
     const xScale = getAxisScale({
       domainData: [min.x, max.x],
       rangeData: [0, width - margin.left - margin.right],
@@ -128,19 +133,19 @@ const LineChart = React.forwardRef(function LineChart(
       index,
       data,
       xAlignment,
+      highlightMode,
+      syncHoverState,
       visAreaRef,
       attributesRef,
       plotBoxRef,
       visBoxRef,
-      closestCircleRef,
+      svgNodeRef,
+      bgRectNodeRef,
       attributesNodeRef,
       xAxisLabelNodeRef,
       yAxisLabelNodeRef,
       linesNodeRef,
       highlightedNodeRef,
-      highlightMode,
-      focusedState: props.focusedState,
-      callback: props.onMouseOver,
     });
 
     if (zoomMode) {
@@ -161,22 +166,12 @@ const LineChart = React.forwardRef(function LineChart(
         max,
       });
     }
-  }, [
-    data,
-    displayOutliers,
-    axesScaleType,
-    index,
-    curveInterpolation,
-    highlightMode,
-    xAlignment,
-    props.onMouseOver,
-    zoomMode,
-  ]);
+  }
 
-  const renderChart = React.useCallback((): void => {
+  function renderChart() {
     clearArea({ visAreaRef });
     draw();
-  }, [draw]);
+  }
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -184,21 +179,35 @@ const LineChart = React.forwardRef(function LineChart(
         requestAnimationFrame(renderChart);
       }
     },
-    [renderChart],
+    [],
   );
 
   useResizeObserver(resizeObserverCallback, parentRef);
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-  }, [data, zoomMode, displayOutliers, highlightMode]);
+  }, [
+    data,
+    zoomMode,
+    displayOutliers,
+    highlightMode,
+    axesScaleType,
+    curveInterpolation,
+    zoomMode,
+  ]);
 
   React.useImperativeHandle(ref, () => ({
-    updateHoverAttributes: (mousePosition: [number, number]) => {
-      attributesRef.current?.updateHoverAttributes?.(mousePosition);
-    },
     setActiveLine: (lineKey: string) => {
-      attributesRef.current?.setActiveLine?.(lineKey);
+      attributesRef.current.setActiveLine?.(lineKey);
+    },
+    updateHoverAttributes: (xValue: number) => {
+      attributesRef.current.updateHoverAttributes?.(xValue);
+    },
+    clearHoverAttributes: () => {
+      attributesRef.current.clearHoverAttributes?.();
+    },
+    setFocusedState: (focusedState: IFocusedState) => {
+      attributesRef.current.focusedState = focusedState;
     },
   }));
 
