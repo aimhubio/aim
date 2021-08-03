@@ -19,13 +19,13 @@ export interface IDrawHoverAttributesProps {
   yAxisLabelNodeRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   xAlignment: ILineChartProps['xAlignment'];
-  syncHoverState: (params: ISyncHoverStateParams | null) => void;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
 }
 
 export interface ISyncHoverStateParams {
-  activePoint: IActivePoint;
+  activePoint: IActivePoint | null;
   focusedStateActive?: boolean;
 }
 
