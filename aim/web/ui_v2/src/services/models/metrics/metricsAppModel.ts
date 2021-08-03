@@ -16,10 +16,13 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
+  groupNames,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
   IMetricTableRowData,
+  IOnGroupingModeChangeParams,
+  IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IRun } from 'types/services/models/metrics/runModel';
@@ -44,6 +47,13 @@ function getConfig() {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.lr'],
       chart: [],
+      reverseMode: {
+        color: false,
+        style: false,
+        chart: false,
+      },
+      paletteIndex: 0,
+      selectOptions: [],
     },
     chart: {
       highlightMode: HighlightEnum.Off,
@@ -78,8 +88,15 @@ function getMetricsData() {
     call: () =>
       call().then((data: IRun[]) => {
         const processedData = processData(data);
+        const configData = model.getState()?.config;
+        if (configData) {
+          configData.grouping.selectOptions = processedData.params.map(
+            (param) => `run.params.${param}`,
+          );
+        }
         model.setState({
           rawData: data,
+          config: configData,
           params: processedData.params,
           data: processedData.data,
           lineChartData: getDataAsLines(processedData.data),
@@ -102,7 +119,7 @@ function processData(data: IRun[]): {
   let metrics: IMetric[] = [];
   let index = -1;
   let params: string[] = [];
-
+  const paletteIndex = model.getState()?.config?.grouping.paletteIndex || 0;
   data.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params));
     metrics = metrics.concat(
@@ -130,7 +147,7 @@ function processData(data: IRun[]): {
             traceContext: metric.context,
           }),
           dasharray: '0',
-          color: COLORS[0][index % COLORS[0].length],
+          color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
         } as IMetric);
       }),
     );
@@ -141,11 +158,24 @@ function processData(data: IRun[]): {
   };
 }
 
+function getFilteredOptions(
+  grouping: IMetricAppConfig['grouping'],
+  groupName: string,
+): string[] {
+  const { selectOptions, reverseMode } = grouping;
+  return reverseMode[groupName as groupNames]
+    ? selectOptions.filter(
+        (opt: string) => grouping[groupName as groupNames].indexOf(opt) === -1,
+      )
+    : grouping[groupName as groupNames];
+}
+
 function groupData(data: IMetric[]): IMetricsCollection[] {
   const grouping = model.getState()!.config!.grouping;
-  const groupByColor = grouping.color;
-  const groupByStyle = grouping.style;
-  const groupByChart = grouping.chart;
+  const { paletteIndex } = grouping;
+  const groupByColor = getFilteredOptions(grouping, 'color');
+  const groupByStyle = getFilteredOptions(grouping, 'style');
+  const groupByChart = getFilteredOptions(grouping, 'chart');
   if (
     groupByColor.length === 0 &&
     groupByStyle.length === 0 &&
@@ -204,10 +234,14 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const colorConfig = _.pick(groupValue.config, groupByColor);
       const colorKey = encode(colorConfig);
       if (colorConfigsMap.hasOwnProperty(colorKey)) {
-        groupValue.color = COLORS[0][colorConfigsMap[colorKey] % COLORS.length];
+        groupValue.color =
+          COLORS[paletteIndex][
+            colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+          ];
       } else {
         colorConfigsMap[colorKey] = colorIndex;
-        groupValue.color = COLORS[0][colorIndex % COLORS.length];
+        groupValue.color =
+          COLORS[paletteIndex][colorIndex % COLORS[paletteIndex].length];
         colorIndex++;
       }
     }
@@ -381,6 +415,69 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
   }
 }
 
+function onGroupingSelectChange({
+  field,
+  list,
+}: IOnGroupingSelectChangeParams) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = { ...configData.grouping, [field]: list };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingModeChange({
+  field,
+  value,
+}: IOnGroupingModeChangeParams): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping.reverseMode = {
+      ...configData.grouping.reverseMode,
+      [field]: value,
+    };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingPaletteChange(index: number): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      paletteIndex: index,
+    };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingReset(groupName: groupNames) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      reverseMode: { ...configData.grouping.reverseMode, [groupName]: false },
+      [groupName]: [],
+      paletteIndex:
+        groupName === 'color' ? 0 : configData.grouping.paletteIndex,
+    };
+    updateModelData(configData);
+  }
+}
+
+function updateModelData(configData: IMetricAppConfig): void {
+  const processedData = processData(model.getState()?.rawData as IRun[]);
+  model.setState({
+    config: configData,
+    data: processedData.data,
+    lineChartData: getDataAsLines(processedData.data),
+    tableData: getDataAsTableRows(
+      processedData.data,
+      null,
+      processedData.params,
+    ),
+  });
+}
 //Table Methods
 
 function onFocusedStateChange(
@@ -439,6 +536,10 @@ const metricAppModel = {
   onAxesScaleTypeChange,
   onFocusedStateChange,
   onTableRowHover,
+  onGroupingSelectChange,
+  onGroupingModeChange,
+  onGroupingPaletteChange,
+  onGroupingReset,
 };
 
 export default metricAppModel;

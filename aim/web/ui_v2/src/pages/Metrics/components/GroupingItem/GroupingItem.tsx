@@ -3,15 +3,18 @@ import { Box, Button } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
+import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 
 function GroupingItem({
-  groupPopover,
-  advancedPopover,
+  title,
+  groupName,
+  groupingData,
+  advancedTitle,
+  advancedComponent,
+  onSelect,
+  onGroupingModeChange,
   onReset,
   onVisibilityChange,
-  groupName,
-  title,
-  advancedTitle,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box className='groupingItem__container_div' mt={0.5}>
@@ -27,7 +30,15 @@ function GroupingItem({
             {groupName}
           </Button>
         )}
-        component={groupPopover}
+        component={
+          <GroupingPopover
+            groupName={groupName}
+            groupingData={groupingData}
+            advancedComponent={advancedComponent}
+            onSelect={onSelect}
+            onGroupingModeChange={onGroupingModeChange}
+          />
+        }
       />
 
       <Box mt={0.75} display='flex' justifyContent='space-between'>
@@ -41,7 +52,7 @@ function GroupingItem({
               A
             </Box>
           )}
-          component={advancedPopover}
+          component={advancedComponent}
         />
         <Box
           className='groupingItem__button_small'
@@ -57,4 +68,4 @@ function GroupingItem({
   );
 }
 
-export default React.memo(GroupingItem);
+export default GroupingItem;

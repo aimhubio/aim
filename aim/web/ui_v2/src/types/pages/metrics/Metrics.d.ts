@@ -4,8 +4,12 @@ import { RouteChildrenProps } from 'react-router-dom';
 import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
 import {
-  IFocusedState,
+  groupNames,
+  IMetricAppConfig,
   IMetricTableRowData,
+  IOnGroupingModeChangeParams,
+  IOnGroupingSelectChangeParams,
+  IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -32,6 +36,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   smoothingFactor: number;
   focusedState: IFocusedState;
   highlightMode: HighlightEnum;
+  groupingData: IMetricAppConfig['grouping'];
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onFocusedStateChange?: (
@@ -42,6 +47,10 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
+  onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
+  onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
+  onGroupingPaletteChange: (index: number) => void;
+  onGroupingReset: (groupName: groupNames) => void;
 }
 
 export interface IOnSmoothingChange {

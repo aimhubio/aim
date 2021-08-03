@@ -14,7 +14,7 @@ import LineChart from 'components/LineChart/LineChart';
 
 import useStyles from './chartPanelStyle';
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
-import { ISyncHoverStateParams } from '../../types/utils/d3/drawHoverAttributes';
+import { ISyncHoverStateParams } from 'types/utils/d3/drawHoverAttributes';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
