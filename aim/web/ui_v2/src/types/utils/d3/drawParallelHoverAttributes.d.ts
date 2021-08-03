@@ -1,3 +1,9 @@
+import { IGetAxisScale } from './getAxisScale';
+import { ILineDataType, ILinesDataType } from './drawParallelLines';
+import { DimensionsType } from './drawParallelAxes';
+import React from 'react';
+import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
+
 export interface IDrawParallelHoverAttributesProps {
   index: number;
   dimensions: DimensionsType;
@@ -6,34 +12,25 @@ export interface IDrawParallelHoverAttributesProps {
   visBoxRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{
-    xScale?: IGetAxesScale['xScale'];
-    yScale?: IGetAxesScale['yScale'];
+    xScale?: IGetAxisScale;
+    yScale?: IGetAxisScale;
     x: number;
     y: number;
-    updateScales?: (
-      xScale: IGetAxesScale['xScale'],
-      yScale: IGetAxesScale['yScale'],
-    ) => void;
-    updateHoverAttributes?: (
-      mousePosition: [number, number],
-    ) => IActivePointData;
+    updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
+    updateHoverAttributes?: (mousePosition: [number, number]) => void;
     setActiveLine: (lineKey: string) => void;
   }>;
   closestCircleRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   index: number;
-  callback: (
-    mousePosition: [number, number],
-    activePointData: IActivePointData,
-  ) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
 }
 
 export interface IGetParallelNearestCirclesProps {
-  data: LinesDataType[];
-  xScale: IGetAxesScale['xScale'];
-  yScale: IGetAxesScale['yScale'];
+  data: ILinesDataType[];
+  xScale: IGetAxisScale;
+  yScale: IGetAxisScale;
   mouseX: number;
   mouseY: number;
   keysOfDimensions: string[];
@@ -44,6 +41,13 @@ export interface IParallelClosestCircle {
   r: number | null;
   x: number;
   y: number;
-  values: LineDataType;
+  values: ILineDataType;
+  color: string;
+}
+
+export interface IParallelNearestCircle {
+  x: number;
+  y: number;
+  key: string;
   color: string;
 }

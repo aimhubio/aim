@@ -10,8 +10,12 @@ import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import {
+  IMetricAppConfig,
+  IMetricTableRowData,
+} from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { IMetricTableRowData } from 'types/services/models/metrics/metricsAppModel';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 const metricsRequestRef = metricAppModel.getMetricsData();
@@ -70,7 +74,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
-      focusedState={metricsData?.config?.chart.focusedState as any}
+      groupingData={
+        metricsData?.config?.grouping as IMetricAppConfig['grouping']
+      }
+      focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -78,7 +85,11 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSmoothingChange={metricAppModel.onSmoothingChange}
       onTableRowHover={metricAppModel.onTableRowHover}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
-      onActivePointChange={metricAppModel.onActivePointChange}
+      onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
+      onGroupingModeChange={metricAppModel.onGroupingModeChange}
+      onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
+      onGroupingReset={metricAppModel.onGroupingReset}
+      onFocusedStateChange={metricAppModel.onFocusedStateChange}
     />
   );
 }

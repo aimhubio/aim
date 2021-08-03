@@ -7,6 +7,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { CurveEnum } from 'utils/d3';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { SmoothingAlgorithmEnum } from '../../../../utils/smoothingData';
 
 export interface IMetricAppModelState {
   rawData: IRun[];
@@ -35,6 +36,13 @@ interface IMetricAppConfig {
     color: string[];
     style: string[];
     chart: string[];
+    reverseMode: {
+      color: boolean;
+      style: boolean;
+      chart: boolean;
+    };
+    paletteIndex: number;
+    selectOptions: string[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -44,15 +52,17 @@ interface IMetricAppConfig {
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
+    focusedState: IFocusedState;
     aggregated: boolean;
-    focusedState: {
-      key: string | null;
-      xValue: number | null;
-      yValue: number | null;
-      active: boolean;
-      chartIndex: number | null;
-    };
   };
+}
+
+export interface IFocusedState {
+  key: string | null;
+  xValue: number | null;
+  yValue: number | null;
+  active: boolean;
+  chartIndex: number | null;
 }
 
 export interface IMetricTableRowData {
@@ -72,3 +82,16 @@ export interface IGetDataAsLinesProps {
   smoothingAlgorithm?: string;
   collection?: IMetric[][];
 }
+
+export interface IOnGroupingSelectChangeParams {
+  field: groupNames;
+  list: string[];
+}
+
+export interface IOnGroupingModeChangeParams {
+  field: groupNames;
+  value: boolean;
+  options?: any[] | null;
+}
+
+export type groupNames = 'color' | 'style' | 'chart';

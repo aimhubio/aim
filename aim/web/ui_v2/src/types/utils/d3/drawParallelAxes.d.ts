@@ -1,5 +1,5 @@
 import { ScaleType } from 'types/components/LineChart/LineChart';
-import { IScale } from 'types/utils/d3/getAxesScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 export type DimensionType = {
   scaleType: ScaleType;
@@ -7,7 +7,7 @@ export type DimensionType = {
 };
 
 export type YScaleType = {
-  [key: string]: IScale;
+  [key: string]: IGetAxisScale;
 };
 
 export type DimensionsType = {

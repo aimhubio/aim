@@ -1,18 +1,19 @@
+import React from 'react';
 import { DimensionsType } from './drawParallelAxes';
 
-type LineDataType = {
+interface ILineDataType {
   [key: string]: number | string | null;
-};
+}
 
-export type LinesDataType = {
-  values: LineDataType;
-  key: string | number;
+export interface ILinesDataType {
+  values: ILineDataType;
+  key: string;
   color: string;
-};
+}
 
 export type InitialPathDataType = {
   dimensionList: string[];
-  lineData: LineDataType;
+  lineData: ILineDataType;
   isEmpty: boolean;
   isDotted: boolean;
 };
@@ -23,14 +24,14 @@ export interface IDrawParallelLinesProps {
   attributesNodeRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;
   dimensions: DimensionsType;
-  data: LinesDataType[];
+  data: ILinesDataType[];
 }
 
 export interface IDrawParallelLineProps {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   dimensionList: string[];
-  lineData: LineDataType;
+  lineData: ILineDataType;
   isDotted: boolean;
   key: number | string;
   color: string;
@@ -40,5 +41,5 @@ export interface ILineRendererProps {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   keysOfDimensions: string[];
-  data: LinesDataType[];
+  data: ILinesDataType[];
 }

@@ -49,7 +49,13 @@ function Metrics(
               <Grid item>
                 <Paper className={classes.paper}>
                   <Box height='100%' display='flex'>
-                    <Grouping />
+                    <Grouping
+                      groupingData={props.groupingData}
+                      onGroupingSelectChange={props.onGroupingSelectChange}
+                      onGroupingModeChange={props.onGroupingModeChange}
+                      onGroupingPaletteChange={props.onGroupingPaletteChange}
+                      onGroupingReset={props.onGroupingReset}
+                    />
                   </Box>
                 </Paper>
               </Grid>
@@ -65,6 +71,8 @@ function Metrics(
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData as any}
+                focusedState={props.focusedState}
+                onFocusedStateChange={props.onFocusedStateChange}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,
@@ -72,11 +80,13 @@ function Metrics(
                     displayOutliers: props.displayOutliers,
                     zoomMode: props.zoomMode,
                     highlightMode: props.highlightMode,
-                    focusedState: props.focusedState,
                   },
                 ]}
                 controls={
                   <Controls
+                    smoothingAlgorithm={props.smoothingAlgorithm}
+                    smoothingFactor={props.smoothingFactor}
+                    curveInterpolation={props.curveInterpolation}
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     highlightMode={props.highlightMode}
@@ -86,12 +96,8 @@ function Metrics(
                     onChangeHighlightMode={props.onChangeHighlightMode}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
-                    smoothingAlgorithm={props.smoothingAlgorithm}
-                    smoothingFactor={props.smoothingFactor}
-                    curveInterpolation={props.curveInterpolation}
                   />
                 }
-                onActivePointChange={props.onActivePointChange}
               />
             )}
           </Grid>
