@@ -432,9 +432,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       yScale: attributesRef.current.yScale,
     });
     const nearestCircles = getNearestCircles(mouseX);
-    const closestC = getClosestCircle(nearestCircles, mouseX, mouseY);
+    const closestCircle = getClosestCircle(nearestCircles, mouseX, mouseY);
 
-    return drawUpdateAttributes(closestC, nearestCircles, force);
+    return drawUpdateAttributes(closestCircle, nearestCircles, force);
   }
 
   function setActiveLine(lineKey: string, force: boolean = false): void {
@@ -448,19 +448,17 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         const [xMin, xMax] = xScale.range();
         const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
         const nearestCircles = getNearestCircles(mouseX);
-        const closestC = nearestCircles.find((c) => c.key === lineKey);
+        const closestCircle = nearestCircles.find((c) => c.key === lineKey);
 
-        if (closestC) {
+        if (closestCircle) {
           if (typeof syncHoverState === 'function') {
             syncHoverState({ activePoint: null });
           }
-
           const activePoint = drawUpdateAttributes(
-            closestC,
+            closestCircle,
             nearestCircles,
             force,
           );
-
           if (typeof syncHoverState === 'function') {
             syncHoverState({ activePoint });
           }
