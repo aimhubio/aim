@@ -35,6 +35,7 @@ function Grouping({
   onGroupingModeChange,
   onGroupingPaletteChange,
   onGroupingReset,
+  onGroupingApplyChange,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Box className='grouping_container__div'>
@@ -64,7 +65,9 @@ function Grouping({
                     )
                   }
                   onReset={() => onGroupingReset(groupName as groupNames)}
-                  onVisibilityChange={() => null}
+                  onVisibilityChange={() =>
+                    onGroupingApplyChange(groupName as groupNames)
+                  }
                 />
               </Grid>
             );
