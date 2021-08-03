@@ -1,5 +1,4 @@
 import * as _ from 'lodash-es';
-import md5 from 'md5';
 
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
@@ -31,7 +30,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IActivePointData } from 'types/utils/d3/drawHoverAttributes';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
@@ -193,7 +192,7 @@ function getPersistIndex({
   groupKey,
   grouping,
 }: IGetPersistIndex) {
-  const configHash = md5(JSON.stringify(groupValues[groupKey].config));
+  const configHash = encode(groupValues[groupKey].config as {});
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
@@ -259,8 +258,8 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     }
   }
 
-  let colorIndex: any = 0;
-  let dasharrayIndex: any = 0;
+  let colorIndex = 0;
+  let dasharrayIndex = 0;
   let chartIndex = 0;
 
   const colorConfigsMap: { [key: string]: number } = {};
@@ -297,9 +296,9 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
       const dasharrayKey = encode(dasharrayConfig);
       if (grouping.persistence.style && grouping.isApplied.style) {
-        dasharrayIndex = getPersistIndex({ groupValues, groupKey, grouping });
+        let index = getPersistIndex({ groupValues, groupKey, grouping });
         groupValue.dasharray =
-          DASH_ARRAYS[Number(dasharrayIndex % BigInt(DASH_ARRAYS.length))];
+          DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
       } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
         groupValue.dasharray =
           DASH_ARRAYS[dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length];
@@ -563,11 +562,14 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
 
 //Table Methods
 
-function onActivePointChange(activePointData: IActivePointData): void {
+function onFocusedStateChange(
+  activePoint: IActivePoint,
+  focusedStateActive: boolean = false,
+): void {
   const tableRef: any = model.getState()?.config?.refs.tableRef;
   const tableData = getDataAsTableRows(
     model.getState()!.data!,
-    activePointData.xValue,
+    activePoint.xValue,
     model.getState()!.params!,
   );
   const stateUpdate: Partial<IMetricAppModelState> = {
@@ -577,13 +579,16 @@ function onActivePointChange(activePointData: IActivePointData): void {
     tableRef.current?.updateData({
       newData: tableData.flat(),
     });
-    tableRef.current?.setHoveredRow(activePointData.key);
+    tableRef.current?.setHoveredRow?.(activePoint.key);
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
-      active: false,
-      ...activePointData,
+      active: focusedStateActive,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
     };
     stateUpdate.config = configData;
   }
@@ -592,7 +597,8 @@ function onActivePointChange(activePointData: IActivePointData): void {
 }
 
 function onTableRowHover(rowKey: string): void {
-  const chartPanelRef: any = model.getState()?.config?.refs.chartPanelRef;
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const chartPanelRef: any = configData?.refs.chartPanelRef;
   if (chartPanelRef) {
     chartPanelRef.current?.setActiveLine(rowKey);
   }
@@ -610,7 +616,7 @@ const metricAppModel = {
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
-  onActivePointChange,
+  onFocusedStateChange,
   onTableRowHover,
   onGroupingSelectChange,
   onGroupingModeChange,

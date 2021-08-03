@@ -7,6 +7,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { CurveEnum } from 'utils/d3';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { SmoothingAlgorithmEnum } from '../../../../utils/smoothingData';
 
 export interface IMetricAppModelState {
   rawData: IRun[];
@@ -64,15 +65,17 @@ interface IMetricAppConfig {
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
+    focusedState: IFocusedState;
     aggregated: boolean;
-    focusedState: {
-      key: string | null;
-      xValue: number | null;
-      yValue: number | null;
-      active: boolean;
-      chartIndex: number | null;
-    };
   };
+}
+
+export interface IFocusedState {
+  key: string | null;
+  xValue: number | null;
+  yValue: number | null;
+  active: boolean;
+  chartIndex: number | null;
 }
 
 export interface IMetricTableRowData {

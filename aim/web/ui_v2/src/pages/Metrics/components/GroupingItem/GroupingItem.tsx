@@ -7,6 +7,7 @@ import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import { More, Visibility, VisibilityOff } from '@material-ui/icons';
 
 import './groupingItemStyle.scss';
+
 function GroupingItem({
   title,
   groupName,
@@ -64,7 +65,6 @@ function GroupingItem({
             <Visibility
               className='GroupingItem__button__icon'
               color='primary'
-              style={{ width: 12, height: 12, padding: 0, margin: 0 }}
             />
           ) : (
             <VisibilityOff

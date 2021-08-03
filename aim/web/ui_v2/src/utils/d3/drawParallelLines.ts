@@ -5,7 +5,7 @@ import lineGenerator from './lineGenerator';
 import {
   IDrawParallelLinesProps,
   InitialPathDataType,
-  LinesDataType,
+  ILinesDataType,
   IDrawParallelLineProps,
   ILineRendererProps,
 } from 'types/utils/d3/drawParallelLines';
@@ -27,7 +27,7 @@ function drawParallelLines({
 }: IDrawParallelLinesProps) {
   const keysOfDimensions: string[] = Object.keys(dimensions);
   linesRenderer({ data, keysOfDimensions, linesNodeRef, attributesRef });
-  linesRef.current.updateLines = function (updatedData: LinesDataType[]) {
+  linesRef.current.updateLines = function (updatedData: ILinesDataType[]) {
     linesNodeRef.current?.selectAll('*')?.remove();
     attributesNodeRef.current?.selectAll('*')?.remove();
     linesRenderer({
@@ -80,7 +80,7 @@ function linesRenderer({
   linesNodeRef,
   attributesRef,
 }: ILineRendererProps) {
-  data.forEach(({ values: line, key, color }: LinesDataType) => {
+  data.forEach(({ values: line, key, color }: ILinesDataType) => {
     if (Object.values(line).includes(null)) {
       const arrayOfPathData: InitialPathDataType[] = [
         cloneDeep(initialPathData),
