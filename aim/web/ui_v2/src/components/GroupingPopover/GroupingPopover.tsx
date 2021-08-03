@@ -19,6 +19,8 @@ import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import { groupNames } from 'types/services/models/metrics/metricsAppModel';
 
+import './groupingPopoverStyle.scss';
+
 function GroupingPopover({
   groupName,
   advancedComponent,
@@ -71,7 +73,7 @@ function GroupingPopover({
   }
 
   return (
-    <Box className='groupingPopover_container'>
+    <Box className='GroupingPopover__container'>
       <Box p={0.5}>
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
           <Autocomplete
@@ -106,7 +108,7 @@ function GroupingPopover({
             )}
           />
         </Box>
-        <Box className='popover_toggleMode__div'>
+        <Box className='GroupingPopover__toggleMode_div'>
           <h3>select grouping mode</h3>
           <ToggleButton
             id='groupMode'
@@ -118,7 +120,7 @@ function GroupingPopover({
           />
         </Box>
         {advancedComponent && (
-          <Accordion className='popover_accordion__container'>
+          <Accordion className='GroupingPopover__accordion__container'>
             <AccordionSummary
               style={{ padding: '0 0.5em' }}
               expandIcon={<ExpandMore />}
