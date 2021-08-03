@@ -10,7 +10,7 @@
 
 /* on click */
 .HoverCircle.focus {
-    stroke: #3b5896; /* var(--primary) */
+    stroke: #3b5896;  /* var(--primary) */
     stroke-width: 2;
     opacity: 1;
 }

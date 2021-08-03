@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
 import { isNil } from 'lodash-es';
 
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
-import { LinesDataType } from 'types/utils/d3/drawParallelLines';
+import { ILinesDataType } from 'types/utils/d3/drawParallelLines';
 import {
   IDrawParallelAxesBrushBrushProps,
   IFilterDataByBrushedScaleProps,
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
+import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
 
 function drawParallelAxesBrush({
   brushRef,
@@ -61,7 +61,7 @@ function drawParallelAxesBrush({
     keyOfDimension: string,
     extent: d3.BrushSelection | any,
   ) {
-    const filteredData = data.filter((line: LinesDataType) =>
+    const filteredData = data.filter((line: ILinesDataType) =>
       filterDataByBrushedScale({
         line,
         domainsData: brushRef.current.domainsData,
@@ -103,7 +103,7 @@ function drawParallelAxesBrush({
 }
 
 function scalePointDomainData(
-  yScale: IGetAxesScale['yScale'],
+  yScale: IGetAxisScale,
   extent: number[],
 ): string[] {
   const domain: string[] = yScale.domain();
