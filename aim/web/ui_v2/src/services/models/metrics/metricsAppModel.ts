@@ -17,6 +17,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 //Types
 import {
   groupNames,
+  IGetPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
@@ -47,6 +48,7 @@ function getConfig() {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.lr'],
       chart: [],
+      // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
         style: false,
@@ -60,6 +62,10 @@ function getConfig() {
       persistence: {
         color: false,
         style: false,
+      },
+      seed: {
+        color: 10,
+        style: 10,
       },
       paletteIndex: 0,
       selectOptions: [],
@@ -181,6 +187,28 @@ function getFilteredOptions(
     : [];
 }
 
+function getPersistIndex({
+  groupValues,
+  groupKey,
+  grouping,
+}: IGetPersistIndex) {
+  const configHash = encode(groupValues[groupKey].config as {});
+  let index = BigInt(0);
+  for (let i = 0; i < configHash.length; i++) {
+    const charCode = configHash.charCodeAt(i);
+    if (charCode > 47 && charCode < 58) {
+      index += BigInt(
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+      );
+    } else if (charCode > 96 && charCode < 103) {
+      index += BigInt(
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+      );
+    }
+  }
+  return index;
+}
+
 function groupData(data: IMetric[]): IMetricsCollection[] {
   const grouping = model.getState()!.config!.grouping;
   const { paletteIndex } = grouping;
@@ -245,7 +273,13 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const colorConfig = _.pick(groupValue.config, groupByColor);
       const colorKey = encode(colorConfig);
 
-      if (colorConfigsMap.hasOwnProperty(colorKey)) {
+      if (grouping.persistence.color && grouping.isApplied.color) {
+        let index = getPersistIndex({ groupValues, groupKey, grouping });
+        groupValue.color =
+          COLORS[paletteIndex][
+            Number(index % BigInt(COLORS[paletteIndex].length))
+          ];
+      } else if (colorConfigsMap.hasOwnProperty(colorKey)) {
         groupValue.color =
           COLORS[paletteIndex][
             colorConfigsMap[colorKey] % COLORS[paletteIndex].length
@@ -261,7 +295,11 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     if (groupByStyle.length > 0) {
       const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
       const dasharrayKey = encode(dasharrayConfig);
-      if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
+      if (grouping.persistence.style && grouping.isApplied.style) {
+        let index = getPersistIndex({ groupValues, groupKey, grouping });
+        groupValue.dasharray =
+          DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
+      } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
         groupValue.dasharray =
           DASH_ARRAYS[dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length];
       } else {
@@ -466,12 +504,15 @@ function onGroupingPaletteChange(index: number): void {
 function onGroupingReset(groupName: groupNames) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
+    const { reverseMode, paletteIndex, isApplied, persistence } =
+      configData.grouping;
     configData.grouping = {
       ...configData.grouping,
-      reverseMode: { ...configData.grouping.reverseMode, [groupName]: false },
+      reverseMode: { ...reverseMode, [groupName]: false },
       [groupName]: [],
-      paletteIndex:
-        groupName === 'color' ? 0 : configData.grouping.paletteIndex,
+      paletteIndex: groupName === 'color' ? 0 : paletteIndex,
+      persistence: { ...persistence, [groupName]: false },
+      isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData);
   }
@@ -505,7 +546,20 @@ function onGroupingApplyChange(groupName: groupNames): void {
   }
 }
 
-function onGroupingPersistenceChange() {}
+function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      persistence: {
+        ...configData.grouping.persistence,
+        [groupName]: !configData.grouping.persistence[groupName],
+      },
+    };
+    updateModelData(configData);
+  }
+}
+
 //Table Methods
 
 function onFocusedStateChange(
@@ -569,6 +623,7 @@ const metricAppModel = {
   onGroupingPaletteChange,
   onGroupingReset,
   onGroupingApplyChange,
+  onGroupingPersistenceChange,
 };
 
 export default metricAppModel;

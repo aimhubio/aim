@@ -1,13 +1,11 @@
 import React from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 import GroupingItem from '../GroupingItem/GroupingItem';
 import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
 import { groupNames } from 'types/services/models/metrics/metricsAppModel';
-
-import './groupingStyle.scss';
 
 const groupingPopovers = [
   {
@@ -35,11 +33,12 @@ function Grouping({
   onGroupingModeChange,
   onGroupingPaletteChange,
   onGroupingReset,
+  onGroupingPersistenceChange,
   onGroupingApplyChange,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box className='grouping_container__div'>
-      <Box>Group selected metrics By:</Box>
+    <div>
+      <span>Group selected metrics By:</span>
       <Grid container spacing={1} justify='center' alignItems='center'>
         {groupingPopovers.map(
           ({ title, advancedTitle, groupName, AdvancedComponent }) => {
@@ -48,15 +47,19 @@ function Grouping({
                 <GroupingItem
                   title={title}
                   advancedTitle={advancedTitle}
-                  groupName={groupName}
+                  groupName={groupName as groupNames}
                   groupingData={groupingData}
                   onSelect={onGroupingSelectChange}
                   onGroupingModeChange={onGroupingModeChange}
                   advancedComponent={
                     AdvancedComponent && (
                       <AdvancedComponent
-                        onPersistenceChange={() => null}
-                        persistence={1}
+                        onPersistenceChange={onGroupingPersistenceChange}
+                        persistence={
+                          groupingData?.persistence[
+                            groupName as 'color' | 'style'
+                          ]
+                        }
                         {...(groupName === 'color' && {
                           onGroupingPaletteChange,
                           paletteIndex: groupingData?.paletteIndex,
@@ -74,7 +77,7 @@ function Grouping({
           },
         )}
       </Grid>
-    </Box>
+    </div>
   );
 }
 

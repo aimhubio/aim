@@ -12,7 +12,7 @@ export interface IGroupingPopoverProps {
 
 export interface IGroupingPopoverAdvancedProps {
   paletteIndex?: number;
-  persistence: number;
-  onPersistenceChange: () => void;
+  persistence?: boolean;
+  onPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
   onGroupingPaletteChange?: IMetricProps['onGroupingPaletteChange'];
 }

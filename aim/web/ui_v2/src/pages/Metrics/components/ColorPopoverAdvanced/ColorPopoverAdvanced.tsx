@@ -18,7 +18,7 @@ function ColorPopoverAdvanced({
     }
   }
   return (
-    <div className='advancedPopover_container'>
+    <div className='AdvancedPopover__container'>
       <div>
         <h3>colors persistence:</h3>
         <span>
@@ -29,8 +29,9 @@ function ColorPopoverAdvanced({
           <ToggleButton
             id='persistence'
             leftLabel='Enabled'
-            defaultChecked
-            onChange={onPersistenceChange}
+            defaultChecked={persistence}
+            value={persistence}
+            onChange={() => onPersistenceChange('color')}
           />
         </div>
       </div>
@@ -45,12 +46,12 @@ function ColorPopoverAdvanced({
                 size='small'
                 value={index}
               />
-              <div className='palette_colorsContainer'>
+              <div className='AdvancedPopover__paletteColors__container'>
                 {options.map((color) => (
                   <Box
                     key={color}
                     component='span'
-                    className='palette_span__colorItem'
+                    className='AdvancedPopover__paletteColors_colorItem'
                     bgcolor={color}
                   />
                 ))}
