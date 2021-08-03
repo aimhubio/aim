@@ -3,7 +3,7 @@ import {
   IDrawParallelAxesProps,
   YScaleType,
 } from 'types/utils/d3/drawParallelAxes';
-import { getAxisScale } from 'utils/d3';
+import { getAxisScale, ScaleEnum } from 'utils/d3';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -17,7 +17,7 @@ function drawParallelAxes({
   const xScale = getAxisScale({
     domainData: keysOfDimensions,
     rangeData: [0, width - margin.left - margin.right],
-    scaleType: 'point',
+    scaleType: ScaleEnum.Point,
   });
   axesRef.current.yAxes = {};
 
@@ -37,6 +37,7 @@ function drawParallelAxes({
       .data([keyOfDimension])
       .attr('transform', `translate(${xScale(keyOfDimension)})`)
       .call(d3.axisLeft(tmpYScale));
+
     axes
       .selectAll('.tick')
       .append('foreignObject')

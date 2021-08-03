@@ -2,10 +2,10 @@ import * as d3 from 'd3';
 
 import { CurveEnum } from './';
 import { IDrawLinesProps } from 'types/utils/d3/drawLines';
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
 import { toTupleData } from 'utils/toTupleData';
 import lineGenerator from './lineGenerator';
 import { IProcessedData } from 'types/utils/d3/processData';
+import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
 
 function drawLines(props: IDrawLinesProps): void {
   const {
@@ -24,8 +24,8 @@ function drawLines(props: IDrawLinesProps): void {
   }
 
   linesRef.current.lineGenerator = function (
-    xScaleValues: IGetAxesScale['xScale'] = xScale,
-    yScaleValues: IGetAxesScale['yScale'] = yScale,
+    xScaleValues: IGetAxisScale = xScale,
+    yScaleValues: IGetAxisScale = yScale,
     curve: CurveEnum = curveInterpolation,
   ) {
     return d3
@@ -36,8 +36,8 @@ function drawLines(props: IDrawLinesProps): void {
   };
 
   linesRef.current.updateLinesScales = function (
-    xScale: IGetAxesScale['xScale'],
-    yScale: IGetAxesScale['yScale'],
+    xScale: IGetAxisScale,
+    yScale: IGetAxisScale,
     curve?: CurveEnum,
   ) {
     linesNodeRef.current

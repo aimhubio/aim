@@ -16,4 +16,11 @@ export default makeStyles(({ spacing }) => ({
     height: '100%',
     overflow: 'auto',
   },
+  popover: {
+    pointerEvents: 'none',
+  },
+  popoverContent: {
+    margin: '1em',
+    minWidth: 250,
+  },
 }));
