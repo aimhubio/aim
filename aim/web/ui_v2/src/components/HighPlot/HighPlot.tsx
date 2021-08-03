@@ -1,7 +1,5 @@
 import React from 'react';
 import useStyles from './highPlotStyle';
-//delete before commit
-import { mockData } from './helper';
 
 import {
   drawParallelArea,
@@ -18,6 +16,7 @@ import './highPlot.scss';
 const HighPlot = ({
   index,
   curveInterpolation,
+  data,
 }: IHighPlotProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
   // containers
@@ -73,7 +72,7 @@ const HighPlot = ({
       visBoxRef,
       attributesRef,
       axesRef,
-      dimensions: mockData.dimensions,
+      dimensions: data.dimensions,
     });
 
     drawParallelLines({
@@ -82,14 +81,14 @@ const HighPlot = ({
       attributesNodeRef,
       curveInterpolation,
       linesRef,
-      dimensions: mockData.dimensions,
-      data: mockData.data,
+      dimensions: data.dimensions,
+      data: data.data,
     });
 
-    linesRef.current.data = mockData.data;
+    linesRef.current.data = data.data;
 
     drawParallelHoverAttributes({
-      dimensions: mockData.dimensions,
+      dimensions: data.dimensions,
       index,
       visAreaRef,
       linesRef,
@@ -107,8 +106,8 @@ const HighPlot = ({
       brushRef,
       linesRef,
       attributesRef,
-      dimensions: mockData.dimensions,
-      data: mockData.data,
+      dimensions: data.dimensions,
+      data: data.data,
     });
   }, [
     // axisScaleType,

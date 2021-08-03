@@ -8,9 +8,12 @@ import { IFocusedState } from '../../services/models/metrics/metricsAppModel';
 
 export interface IChartPanelProps {
   chartType: ChartTypeEnum;
-  data: ILine[][];
+  data: ILine[][] | any;
   focusedState: IFocusedState;
-  chartProps: Omit<ILineChartProps, 'data' | 'index' | 'syncHoverState'>[];
+  chartProps: Omit<
+    ILineChartProps | IHighPlotProps,
+    'data' | 'index' | 'syncHoverState'
+  >[];
   controls: React.ReactNode;
   onFocusedStateChange?: (
     activePoint: IActivePoint,

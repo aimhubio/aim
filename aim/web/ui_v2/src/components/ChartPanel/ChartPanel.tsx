@@ -14,6 +14,7 @@ import LineChart from 'components/LineChart/LineChart';
 
 import useStyles from './chartPanelStyle';
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
+import { chartTypesConfig } from './config';
 import { ISyncHoverStateParams } from '../../types/utils/d3/drawHoverAttributes';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
@@ -97,25 +98,30 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       <Grid item xs className={classes.chartPanel}>
         <Paper className={classes.paper}>
           <Grid container spacing={1} className={classes.chartGrid}>
-            {props.data.map((lineChartData, index) => (
-              <Grid
-                key={index}
-                item
-                xs={
-                  props.data.length > 9
-                    ? 4
-                    : (chartGridPattern[props.data.length][index] as any)
-                }
-              >
-                <LineChart
-                  ref={chartRefs[index]}
-                  {...props.chartProps[0]}
-                  index={index}
-                  data={lineChartData}
-                  syncHoverState={syncHoverState}
-                />
-              </Grid>
-            ))}
+            {props.data.map((chartData: any, index: number) => {
+              //@ts-ignore
+              const Component = chartTypesConfig[props.chartType];
+              return (
+                <Grid
+                  key={index}
+                  item
+                  xs={
+                    props.data.length > 9
+                      ? 4
+                      : (chartGridPattern[props.data.length][index] as any)
+                  }
+                >
+                  <Component
+                    ref={chartRefs[index]}
+                    // TODO change props.chartProps[0] to props.chartProps
+                    {...props.chartProps[0]}
+                    index={index}
+                    data={chartData}
+                    syncHoverState={syncHoverState}
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
         </Paper>
       </Grid>

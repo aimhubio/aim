@@ -32,92 +32,96 @@ const drawParallelHoverAttributes = ({
     mouse: [number, number],
     brushEventUpdate: boolean = false,
   ) {
-    const { mouseX, mouseY } = getCoordinates({
-      mouse,
-      xScale: attributesRef.current.xScale,
-      yScale:
-        attributesRef.current.yScale[
-          scalePointPosition(attributesRef.current.xScale, mouse[0])
-        ],
-      margin,
-    });
-    const { nearestCircles, closestCircle } = getNearestCircles({
-      data: linesRef.current.data,
-      xScale: attributesRef.current.xScale,
-      yScale: attributesRef.current.yScale,
-      mouseX,
-      mouseY,
-      keysOfDimensions,
-    });
+    const dimensionLabel = scalePointPosition(
+      attributesRef.current.xScale,
+      mouse[0],
+    );
+    if (dimensionLabel) {
+      const { mouseX, mouseY } = getCoordinates({
+        mouse,
+        xScale: attributesRef.current.xScale,
+        yScale: attributesRef.current.yScale[dimensionLabel],
+        margin,
+      });
+      const { nearestCircles, closestCircle } = getNearestCircles({
+        data: linesRef.current.data,
+        xScale: attributesRef.current.xScale,
+        yScale: attributesRef.current.yScale,
+        mouseX,
+        mouseY,
+        keysOfDimensions,
+      });
 
-    if (closestCircleRef.current !== closestCircle) {
-      // hover Line Changed case
-      if (
-        closestCircle.key !== closestCircleRef.current?.key ||
-        brushEventUpdate
-      ) {
-        linesNodeRef.current.classed(
-          'highlight',
-          highlightMode !== HighlightEnum.Off,
-        );
-        // previous line
-        if (closestCircleRef.current?.key) {
-          linesNodeRef.current
-            .selectAll(`[id=Line-${closestCircleRef.current.key}]`)
-            .classed('active', false);
-          highlightedNodeRef.current.classed('highlighted', false);
+      if (closestCircleRef.current !== closestCircle) {
+        // hover Line Changed case
+        if (
+          closestCircle.key !== closestCircleRef.current?.key ||
+          brushEventUpdate
+        ) {
+          linesNodeRef.current.classed(
+            'highlight',
+            highlightMode !== HighlightEnum.Off,
+          );
+          // previous line
+          if (closestCircleRef.current?.key) {
+            linesNodeRef.current
+              .selectAll(`[id=Line-${closestCircleRef.current.key}]`)
+              .classed('active', false);
+            highlightedNodeRef.current.classed('highlighted', false);
+          }
+          // new line
+          const newActiveLine = linesNodeRef.current.selectAll(
+            `[id=Line-${closestCircle.key}]`,
+          );
+          if (!isEmpty(newActiveLine.nodes())) {
+            const linesSelectorToHighlight =
+              newActiveLine.attr('data-selector');
+            // set highlighted lines
+            highlightedNodeRef.current = linesNodeRef.current
+              .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
+              .classed('highlighted', true)
+              .raise();
+            // set active line
+            newActiveLine?.classed('active', true).raise();
+          }
         }
-        // new line
-        const newActiveLine = linesNodeRef.current.selectAll(
-          `[id=Line-${closestCircle.key}]`,
-        );
-        if (!isEmpty(newActiveLine.nodes())) {
-          const linesSelectorToHighlight = newActiveLine.attr('data-selector');
-          // set highlighted lines
-          highlightedNodeRef.current = linesNodeRef.current
-            .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
-            .classed('highlighted', true)
+        // hover Circle Changed case
+        if (
+          closestCircle.x !== closestCircleRef.current?.x ||
+          closestCircle.y !== closestCircleRef.current?.y ||
+          brushEventUpdate
+        ) {
+          attributesNodeRef.current.classed(
+            'highlight',
+            highlightMode !== HighlightEnum.Off,
+          );
+          // Draw Circles
+          attributesNodeRef.current
+            .selectAll('circle')
+            .data(nearestCircles)
+            .join('circle')
+            .attr('class', 'HoverCircle')
+            .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
+            .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
+            .attr('cx', (circle: INearestCircle) => circle.x)
+            .attr('cy', (circle: INearestCircle) => circle.y)
+            .attr('r', CircleEnum.Radius)
+            .style('fill', (circle: INearestCircle) => circle.color)
+            .on('click', function (this: SVGElement, circle: INearestCircle) {
+              // TODO handle click
+              d3.select(this).classed('active', false).classed('focus', true);
+            });
+          // set active circle
+          d3.selectAll(`[id=Circle-${closestCircle.key}]`)
+            .attr('r', CircleEnum.ActiveRadius)
+            .classed('active', true)
             .raise();
-          // set active line
-          newActiveLine?.classed('active', true).raise();
         }
-      }
-      // hover Circle Changed case
-      if (
-        closestCircle.x !== closestCircleRef.current?.x ||
-        closestCircle.y !== closestCircleRef.current?.y ||
-        brushEventUpdate
-      ) {
-        attributesNodeRef.current.classed(
-          'highlight',
-          highlightMode !== HighlightEnum.Off,
-        );
-        // Draw Circles
-        attributesNodeRef.current
-          .selectAll('circle')
-          .data(nearestCircles)
-          .join('circle')
-          .attr('class', 'HoverCircle')
-          .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
-          .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
-          .attr('cx', (circle: INearestCircle) => circle.x)
-          .attr('cy', (circle: INearestCircle) => circle.y)
-          .attr('r', CircleEnum.Radius)
-          .style('fill', (circle: INearestCircle) => circle.color)
-          .on('click', function (this: SVGElement, circle: INearestCircle) {
-            // TODO handle click
-            d3.select(this).classed('active', false).classed('focus', true);
-          });
-        // set active circle
-        d3.selectAll(`[id=Circle-${closestCircle.key}]`)
-          .attr('r', CircleEnum.ActiveRadius)
-          .classed('active', true)
-          .raise();
-      }
-      closestCircleRef.current = closestCircle;
+        closestCircleRef.current = closestCircle;
 
-      attributesRef.current.x = closestCircle.x + margin.left;
-      attributesRef.current.y = closestCircle.y + margin.top;
+        attributesRef.current.x = closestCircle.x + margin.left;
+        attributesRef.current.y = closestCircle.y + margin.top;
+      }
     }
   }
 
@@ -167,17 +171,17 @@ const drawParallelHoverAttributes = ({
       linesNodeRef.current.classed('highlight', false);
 
       linesNodeRef.current
-        .select(`[id=Line-${closestCircleRef.current.key}]`)
+        .selectAll(`[id=Line-${closestCircleRef.current.key}]`)
         .classed('active', false);
 
       attributesNodeRef.current.classed('highlight', false);
 
       attributesNodeRef.current
-        .select(`[id=Circle-${closestCircleRef.current.key}]`)
+        .selectAll(`[id=Circle-${closestCircleRef.current.key}]`)
         .attr('r', CircleEnum.Radius)
         .classed('active', false);
 
-      attributesNodeRef.current.select('.HoverLine-y').remove();
+      attributesNodeRef.current.selectAll('.HoverLine-y').remove();
     }
   });
 };
