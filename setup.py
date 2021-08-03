@@ -139,13 +139,13 @@ setup(
     ],
     ext_modules=[
         Extension(
-            'aim.storage.c_hash',
-            ['aim/storage/c_hash.pyx'],
+            'aim.storage.hashing.c_hash',
+            ['aim/storage/hashing/c_hash.pyx'],
             language='c++'
         ),
         Extension(
-            'aim.storage.encoding_native',
-            ['aim/storage/encoding_native.pyx'],
+            'aim.storage.encoding.encoding_native',
+            ['aim/storage/encoding/encoding_native.pyx'],
             language='c++'
         )
     ],

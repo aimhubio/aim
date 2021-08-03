@@ -1,40 +1,6 @@
 from abc import abstractmethod, ABC
 from typing import Generic, TypeVar, Collection, Optional
 
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args,
-                                                                 **kwargs)
-        return cls._instances[cls]
-
-
-class SafeNone(metaclass=Singleton):
-    def get(self, item):
-        return self
-
-    def __repr__(self):
-        return 'None'
-
-    def __call__(self, *args, **kwargs):
-        return self
-
-    def __getattr__(self, item):
-        return self
-
-    def __getitem__(self, item):
-        return self
-
-    def __bool__(self):
-        return False
-
-    def __eq__(self, other):
-        return other is None or isinstance(other, SafeNone)
-
-
 T = TypeVar('T')
 
 RunCollection = Collection['Run']

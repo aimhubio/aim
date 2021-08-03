@@ -2,10 +2,9 @@ import os
 from pathlib import Path
 import json
 
-from aim.engine.repo import AimRepo
 from aim.engine.configs import AIM_COMMIT_CONFIG_FILE_NAME
 
-from aim.storage.repo import Repo
+from aim.storage.sdk.repo import Repo
 from aim.web.utils import get_root_path
 
 
@@ -18,8 +17,6 @@ class Project:
         self.path = root_path
         self.repo_path = repo_path
         self.description = ''
-        # self.repo = AimRepo(repo_full_path=repo_path,
-        #                     mode=AimRepo.READING_MODE)
         self.repo = Repo.from_path(self.repo_path)
 
     def exists(self):

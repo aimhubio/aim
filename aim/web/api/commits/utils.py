@@ -5,9 +5,9 @@ from collections import defaultdict
 from typing import Iterator, Tuple, Optional
 
 from aim.storage.context import Context
-from aim.storage.run import Run
-from aim.storage.trace import Trace
-from aim.storage.trace import QueryTraceCollection
+from aim.storage.sdk.run import Run
+from aim.storage.sdk.trace import Trace
+from aim.storage.sdk.trace import QueryTraceCollection
 
 
 def numpy_to_encodable(array: np.ndarray) -> dict:

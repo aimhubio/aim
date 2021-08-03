@@ -4,16 +4,9 @@ from typing import Iterable, Iterator, Tuple
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .treeview import TreeView
-    from .repo import Repo
 
 
 class ContainerView:
-
-    @property
-    def repo(
-        self
-    ) -> 'Repo':
-        ...
 
     @classmethod
     def path_join(
