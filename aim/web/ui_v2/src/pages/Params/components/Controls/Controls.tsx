@@ -3,11 +3,12 @@ import { Grid } from '@material-ui/core';
 import { MultilineChart } from '@material-ui/icons';
 
 import { CurveEnum } from 'utils/d3';
+import { IControlProps } from 'types/pages/params/components/controls/Controls';
 
 function Controls({
-  curveInterpolationChangeHandler,
+  onCurveInterpolationChange,
   curveInterpolation,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: IControlProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Grid
       container
@@ -16,7 +17,7 @@ function Controls({
       spacing={1}
       alignItems='center'
     >
-      <Grid onClick={curveInterpolationChangeHandler} item>
+      <Grid onClick={onCurveInterpolationChange} item>
         <MultilineChart
           style={{
             background:

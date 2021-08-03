@@ -9,7 +9,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     CurveEnum.Linear,
   );
 
-  function curveInterpolationChangeHandler() {
+  function onCurveInterpolationChange() {
     setCurveInterpolation(
       curveInterpolation === CurveEnum.Linear
         ? CurveEnum.MonotoneX
@@ -21,7 +21,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     <Params
       chartElemRef={chartElemRef}
       curveInterpolation={curveInterpolation}
-      curveInterpolationChangeHandler={curveInterpolationChangeHandler}
+      onCurveInterpolationChange={onCurveInterpolationChange}
     />
   );
 }

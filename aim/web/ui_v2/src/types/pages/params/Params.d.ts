@@ -19,7 +19,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   //   resizeElemRef: React.RefObject<HTMLDivElement>;
   //   displayOutliers: boolean;
   //   zoomMode: boolean;
-  curveInterpolationChangeHandler: () => void;
+  onCurveInterpolationChange: () => void;
   //   toggleZoomMode: () => void;
   //   highlightMode: HighlightEnum;
   //   onChangeHighlightMode: (mode: HighlightEnum) => () => void;
