@@ -40,18 +40,16 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   );
 
   const syncHoverState = React.useCallback(
-    (params: ISyncHoverStateParams | null): void => {
+    (params: ISyncHoverStateParams): void => {
+      const { activePoint, focusedStateActive } = params;
       // on MouseHover
-      if (params) {
-        const { activePoint, focusedStateActive } = params;
-
+      if (activePoint !== null) {
         chartRefs.forEach((chartRef, index) => {
           if (index === activePoint.chartIndex) {
             return;
           }
           chartRef.current.updateHoverAttributes?.(activePoint.xValue);
         });
-
         if (props.onFocusedStateChange) {
           props.onFocusedStateChange(activePoint, focusedStateActive);
         }
