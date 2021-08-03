@@ -1,3 +1,4 @@
+import { CurveEnum } from 'utils/d3';
 import { DimensionsType } from './drawParallelAxes';
 
 type LineDataType = {
@@ -21,6 +22,7 @@ export interface IDrawParallelLinesProps {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
+  curveInterpolation: CurveEnum;
   linesRef: React.MutableRefObject<>;
   dimensions: DimensionsType;
   data: LinesDataType[];
@@ -31,6 +33,7 @@ export interface IDrawParallelLineProps {
   attributesRef: React.MutableRefObject<>;
   dimensionList: string[];
   lineData: LineDataType;
+  curveInterpolation: CurveEnum;
   isDotted: boolean;
   key: number | string;
   color: string;
@@ -39,6 +42,7 @@ export interface IDrawParallelLineProps {
 export interface ILineRendererProps {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
+  curveInterpolation: CurveEnum;
   keysOfDimensions: string[];
   data: LinesDataType[];
 }

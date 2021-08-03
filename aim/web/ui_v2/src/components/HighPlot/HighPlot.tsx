@@ -15,11 +15,11 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 import './highPlot.scss';
 
-const HighPlot = (
-  props: IHighPlotProps,
-): React.FunctionComponentElement<React.ReactNode> => {
+const HighPlot = ({
+  index,
+  curveInterpolation,
+}: IHighPlotProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
-  const { index } = props;
   // containers
   const parentRef = React.useRef<HTMLDivElement>(null);
   const visAreaRef = React.useRef<HTMLDivElement>(null);
@@ -80,6 +80,7 @@ const HighPlot = (
       linesNodeRef,
       attributesRef,
       attributesNodeRef,
+      curveInterpolation,
       linesRef,
       dimensions: mockData.dimensions,
       data: mockData.data,
@@ -112,7 +113,7 @@ const HighPlot = (
     });
   }, [
     // axisScaleType,
-    // curveInterpolation,
+    curveInterpolation,
     index,
     // highlightMode,
     // min,
