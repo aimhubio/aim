@@ -8,8 +8,10 @@ function clearArea(props: IClearAreaProps): void {
   }
 
   const area = d3.select(props.visAreaRef.current);
-  area.selectAll('*').remove();
-  area.attr('style', null);
+  if (area) {
+    area.selectAll('*').remove();
+    area.attr('style', null);
+  }
 }
 
 export default clearArea;

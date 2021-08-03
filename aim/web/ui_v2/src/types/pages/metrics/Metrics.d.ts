@@ -9,46 +9,44 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
+  IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { IActivePoint } from '../../utils/d3/drawHoverAttributes';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
-  lineChartData: ILine[][];
-  tableData: IMetricTableRowData[][];
-  tableColumns: ITableColumn[];
   tableRef: React.RefObject<ITableRef>;
   chartPanelRef: React.RefObject<IChartPanelRef>;
   tableElemRef: React.RefObject<HTMLDivElement>;
   chartElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
+  lineChartData: ILine[][];
+  tableData: IMetricTableRowData[][];
+  tableColumns: ITableColumn[];
   displayOutliers: boolean;
   zoomMode: boolean;
   curveInterpolation: CurveEnum;
-  onDisplayOutliersChange: () => void;
-  onZoomModeChange: () => void;
-  onActivePointChange: (activePointData: IActivePointData) => void;
-  highlightMode: HighlightEnum;
-  onChangeHighlightMode: (mode: HighlightEnum) => void;
-  onSmoothingChange: (props: IOnSmoothingChange) => void;
-  onTableRowHover: (rowKey: string) => void;
-  curveInterpolation: CurveEnum;
-  onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   axesScaleType: IAxesScaleState;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;
-  focusedState: {
-    key: string | null;
-    xValue: number | null;
-    yValue: number | null;
-    active: boolean;
-    chartIndex: number | null;
-  };
+  focusedState: IFocusedState;
+  highlightMode: HighlightEnum;
   groupingData: IMetricAppConfig['grouping'];
+  onDisplayOutliersChange: () => void;
+  onZoomModeChange: () => void;
+  onFocusedStateChange?: (
+    activePoint: IActivePoint,
+    focusedStateActive?: boolean,
+  ) => void;
+  onChangeHighlightMode: (mode: HighlightEnum) => void;
+  onSmoothingChange: (props: IOnSmoothingChange) => void;
+  onTableRowHover: (rowKey: string) => void;
+  onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
@@ -56,7 +54,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
 }
 
 export interface IOnSmoothingChange {
-  smoothingAlgorithm?: string;
+  smoothingAlgorithm?: SmoothingAlgorithmEnum;
   smoothingFactor?: number;
   curveInterpolation?: CurveEnum;
 }
