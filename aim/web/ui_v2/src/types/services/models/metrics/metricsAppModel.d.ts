@@ -45,6 +45,14 @@ interface IMetricAppConfig {
       style: boolean;
       chart: boolean;
     };
+    persistence: {
+      color: boolean;
+      style: boolean;
+    };
+    seed: {
+      color: number;
+      style: number;
+    };
     paletteIndex: number;
     selectOptions: string[];
   };
@@ -94,6 +102,14 @@ export interface IOnGroupingModeChangeParams {
   groupName: groupNames;
   value: boolean;
   options?: any[] | null;
+}
+
+export interface IGetPersistIndex {
+  groupValues: {
+    [key: string]: IMetricsCollection;
+  };
+  groupKey: string;
+  grouping: IMetricAppConfig['grouping'];
 }
 
 export type groupNames = 'color' | 'style' | 'chart';

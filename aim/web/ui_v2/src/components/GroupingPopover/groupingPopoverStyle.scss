@@ -1,17 +1,4 @@
-.grouping_container__div {
-  .groupingItem__container_div {
-    border: 1px solid;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  .groupingItem__button_small {
-    border: 1px solid;
-    padding: 0px 4px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-}
-.groupingPopover_container {
+.GroupingPopover__container {
   width: 25em;
   h3 {
     color: #324480;
@@ -22,7 +9,7 @@
     font-weight: 500;
   }
 
-  .popover_toggleMode__div {
+  .GroupingPopover__toggleMode__div {
     display: flex;
     align-items: center;
     border-radius: 4px;
@@ -33,20 +20,15 @@
     padding: 0.5em;
   }
 
-  .popover_accordion__container {
+  .GroupingPopover__accordion__container {
     box-shadow: unset;
     border: 1px solid #b7b7b7;
     border-radius: 4px;
     margin: 0 !important;
-  }
+  }   
 }
 
-.popover__header {
-  padding: 0.5em 1em;
-  border-bottom: 1px solid #b7b7b7;
-}
-
-.advancedPopover_container {
+.AdvancedPopover__container {
   width: 25em;
   padding: 0.5em;
   h3 {
@@ -58,7 +40,7 @@
     font-weight: 500;
   }
 }
-.palette_colorsContainer {
+.AdvancedPopover__paletteColors__container {
   display: flex;
   border-radius: 4px;
   width: 10.5em;
@@ -68,7 +50,7 @@
   overflow: hidden;
 }
 
-.palette_span__colorItem {
+.AdvancedPopover__paletteColors_colorItem {
   display: inline-block;
   flex: 1;
   height: 100%;

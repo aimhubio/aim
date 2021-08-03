@@ -4,7 +4,9 @@ import { Box, Button } from '@material-ui/core';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
+import { More, Visibility, VisibilityOff } from '@material-ui/icons';
 
+import './groupingItemStyle.scss';
 function GroupingItem({
   title,
   groupName,
@@ -17,7 +19,7 @@ function GroupingItem({
   onVisibilityChange,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box className='groupingItem__container_div' mt={0.5}>
+    <div className='GroupingItem__container'>
       <ControlPopover
         title={title}
         anchor={({ onAnchorClick }) => (
@@ -45,26 +47,37 @@ function GroupingItem({
         <ControlPopover
           title={advancedTitle}
           anchor={({ onAnchorClick }) => (
-            <Box
-              className={'groupingItem__button_small'}
-              onClick={onAnchorClick}
-            >
-              A
-            </Box>
+            <div className='GroupingItem__button_small' onClick={onAnchorClick}>
+              <More
+                color='primary'
+                style={{ width: 10, height: 10, padding: 0, margin: 0 }}
+              />
+            </div>
           )}
           component={advancedComponent}
         />
-        <Box
-          className='groupingItem__button_small'
+        <div
+          className='GroupingItem__button_small'
           onClick={onVisibilityChange}
         >
-          V
-        </Box>
-        <Box className='groupingItem__button_small' onClick={onReset}>
+          {groupingData?.isApplied[groupName] ? (
+            <Visibility
+              className='GroupingItem__button__icon'
+              color='primary'
+              style={{ width: 12, height: 12, padding: 0, margin: 0 }}
+            />
+          ) : (
+            <VisibilityOff
+              className='GroupingItem__button__icon'
+              color='secondary'
+            />
+          )}
+        </div>
+        <div className='GroupingItem__button_small' onClick={onReset}>
           X
-        </Box>
+        </div>
       </Box>
-    </Box>
+    </div>
   );
 }
 

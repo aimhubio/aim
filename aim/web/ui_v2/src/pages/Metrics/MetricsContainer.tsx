@@ -90,6 +90,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
       onGroupingReset={metricAppModel.onGroupingReset}
       onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
+      onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
     />
   );
 }
