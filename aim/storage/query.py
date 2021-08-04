@@ -20,11 +20,12 @@ from RestrictedPython.Guards import (
 )
 
 from aim.storage.proxy import AimObjectProxy
-from aim.storage.run_metadata.entities import SafeNone
+from aim.storage.types import SafeNone
 
 if TYPE_CHECKING:
-    from aim.storage.repo import Repo
-    from aim.storage.run import Run
+    # TODO: [AT] get rid of SDK Repo/Run deps.
+    from aim.storage.sdk.repo import Repo
+    from aim.storage.sdk.run import Run
     from aim.storage.context import Context
 
 
@@ -177,6 +178,7 @@ class RestrictedPythonQuery(Query):
         metric_name: str = None
     ) -> bool:
 
+        # TODO: [AT] get rid of SDK Repo/Run deps.
         run_tree_proxy = AimObjectProxy(lambda: run.meta_run_tree,
                                         run.meta_run_tree)
 

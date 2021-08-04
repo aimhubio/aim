@@ -3,17 +3,14 @@ import os
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
-from pathlib import Path
-
-from aim.storage.run import Run
+from aim.storage.sdk.run import Run
 from aim.storage.union import UnionContainer
-from aim.storage.trace import QueryRunTraceCollection, QueryTraceCollection
-from aim.storage.encoding import encode_path
+from aim.storage.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
 from aim.storage.singlecontainerview import SingleContainerView
 
-from aim.storage.run_metadata.db import DB
+from aim.storage.structured.db import DB
 
 
 class ContainerConfig(NamedTuple):
@@ -66,7 +63,7 @@ class Repo:
             cls._pool[path] = repo
         return repo
 
-    def get_container(
+    def _get_container(
         self, name: str, read_only: bool, from_union: bool = False
     ) -> Container:
         if self.read_only and not read_only:
@@ -103,12 +100,12 @@ class Repo:
                 else:
                     assert sub is not None
                     path = os.path.join(name, "chunks", sub)
-                container = self.get_container(path, read_only=True, from_union=from_union)
+                container = self._get_container(path, read_only=True, from_union=from_union)
             else:
                 assert sub is not None
                 from_union = False
                 path = os.path.join(name, "chunks", sub)
-                container = self.get_container(path, read_only=False)
+                container = self._get_container(path, read_only=False)
 
             prefix = b""
 

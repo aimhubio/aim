@@ -1,23 +1,7 @@
-# AimObjectPrimitives = Union[
-#     NoneType,
-#     bool,
-#     int,
-#     float,
-#     str,
-#     bytes
-# ]
-# AimObjectArray = List['AimObject']
-# AimObjectDict = Dict[str, 'AimObject']
-# AimObject = Union[
-#     AimObjectPrimitives,
-#     AimObjectArray,
-#     AimObjectDict
-# ]
-
 import hashlib
 import struct
 
-from aim.storage import c_hash
+from aim.storage.hashing import c_hash
 from aim.storage.types import AimObject, AimObjectArray, AimObjectKey, AimObjectDict, NoneType
 
 from typing import Tuple, Union
