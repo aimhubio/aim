@@ -16,8 +16,8 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
-  groupingSelectOption,
-  groupNames,
+  GroupingSelectOptionType,
+  GroupNameType,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -124,8 +124,10 @@ function getMetricsData() {
   };
 }
 
-function getGroupingSelectOptions(params: string[]): groupingSelectOption[] {
-  const paramsOptions: groupingSelectOption[] = params.map((param) => ({
+function getGroupingSelectOptions(
+  params: string[],
+): GroupingSelectOptionType[] {
+  const paramsOptions: GroupingSelectOptionType[] = params.map((param) => ({
     value: `run.params.${param}`,
     group: 'params',
     label: param,
@@ -205,7 +207,7 @@ function processData(data: IRun[]): {
 
 function getFilteredGroupingOptions(
   grouping: IMetricAppConfig['grouping'],
-  groupName: groupNames,
+  groupName: GroupNameType,
 ): string[] {
   const { selectOptions, reverseMode, isApplied } = grouping;
 
@@ -541,7 +543,7 @@ function onGroupingPaletteChange(index: number): void {
   }
 }
 
-function onGroupingReset(groupName: groupNames) {
+function onGroupingReset(groupName: GroupNameType) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     const { reverseMode, paletteIndex, isApplied, persistence } =
@@ -572,7 +574,7 @@ function updateModelData(configData: IMetricAppConfig): void {
   });
 }
 
-function onGroupingApplyChange(groupName: groupNames): void {
+function onGroupingApplyChange(groupName: GroupNameType): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {

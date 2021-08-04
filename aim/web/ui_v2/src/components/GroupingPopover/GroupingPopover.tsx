@@ -18,8 +18,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
-  groupingSelectOption,
-  groupNames,
+  GroupingSelectOptionType,
+  GroupNameType,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import './groupingPopoverStyle.scss';
@@ -31,16 +31,16 @@ function GroupingPopover({
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  function onChange(e: object, values: groupingSelectOption[]): void {
+  function onChange(e: object, values: GroupingSelectOptionType[]): void {
     onSelect({
       groupName,
-      list: values.map((item: groupingSelectOption) =>
+      list: values.map((item: GroupingSelectOptionType) =>
         typeof item === 'string' ? item : item.value,
       ),
     });
   }
 
-  const values: groupingSelectOption[] = React.useMemo(() => {
+  const values: GroupingSelectOptionType[] = React.useMemo(() => {
     let data: { value: string; group: string; label: string }[] = [];
     groupingData.selectOptions.forEach((option) => {
       if (groupingData?.[groupName].indexOf(option.value) !== -1) {
@@ -57,7 +57,7 @@ function GroupingPopover({
     onGroupingModeChange({
       groupName,
       value: checked,
-      options: groupingData.reverseMode[groupName as groupNames]
+      options: groupingData.reverseMode[groupName as GroupNameType]
         ? groupingData.selectOptions
         : null,
     });
@@ -103,10 +103,12 @@ function GroupingPopover({
           <h3>select grouping mode</h3>
           <ToggleButton
             id='groupMode'
-            value={groupingData.reverseMode[groupName as groupNames]}
+            value={groupingData.reverseMode[groupName as GroupNameType]}
             leftLabel='Group'
             rightLabel='Reverse'
-            defaultChecked={groupingData.reverseMode[groupName as groupNames]}
+            defaultChecked={
+              groupingData.reverseMode[groupName as GroupNameType]
+            }
             onChange={handleGroupingMode}
           />
         </Box>

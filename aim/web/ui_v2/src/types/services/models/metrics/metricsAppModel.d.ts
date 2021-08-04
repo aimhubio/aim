@@ -55,7 +55,7 @@ interface IMetricAppConfig {
       style: number;
     };
     paletteIndex: number;
-    selectOptions: groupingSelectOption[];
+    selectOptions: GroupingSelectOptionType[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -97,12 +97,12 @@ export interface IGetDataAsLinesProps {
 }
 
 export interface IOnGroupingSelectChangeParams {
-  groupName: groupNames;
+  groupName: GroupNameType;
   list: string[];
 }
 
 export interface IOnGroupingModeChangeParams {
-  groupName: groupNames;
+  groupName: GroupNameType;
   value: boolean;
   options?: any[] | null;
 }
@@ -115,8 +115,8 @@ export interface IGetGroupingPersistIndex {
   grouping: IMetricAppConfig['grouping'];
 }
 
-export type groupNames = 'color' | 'style' | 'chart';
-export type groupingSelectOption = {
+export type GroupNameType = 'color' | 'style' | 'chart';
+export type GroupingSelectOptionType = {
   label: string;
   group: string;
   value: string;
