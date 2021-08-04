@@ -5,7 +5,7 @@ import GroupingItem from '../GroupingItem/GroupingItem';
 import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
-import { groupNames } from 'types/services/models/metrics/metricsAppModel';
+import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 
 const groupingPopovers = [
   {
@@ -47,7 +47,7 @@ function Grouping({
                 <GroupingItem
                   title={title}
                   advancedTitle={advancedTitle}
-                  groupName={groupName as groupNames}
+                  groupName={groupName as GroupNameType}
                   groupingData={groupingData}
                   onSelect={onGroupingSelectChange}
                   onGroupingModeChange={onGroupingModeChange}
@@ -67,9 +67,9 @@ function Grouping({
                       />
                     )
                   }
-                  onReset={() => onGroupingReset(groupName as groupNames)}
+                  onReset={() => onGroupingReset(groupName as GroupNameType)}
                   onVisibilityChange={() =>
-                    onGroupingApplyChange(groupName as groupNames)
+                    onGroupingApplyChange(groupName as GroupNameType)
                   }
                 />
               </Grid>
