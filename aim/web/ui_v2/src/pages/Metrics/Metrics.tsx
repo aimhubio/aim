@@ -49,7 +49,17 @@ function Metrics(
               <Grid item>
                 <Paper className={classes.paper}>
                   <Box height='100%' display='flex'>
-                    <Grouping />
+                    <Grouping
+                      groupingData={props.groupingData}
+                      onGroupingSelectChange={props.onGroupingSelectChange}
+                      onGroupingModeChange={props.onGroupingModeChange}
+                      onGroupingPaletteChange={props.onGroupingPaletteChange}
+                      onGroupingReset={props.onGroupingReset}
+                      onGroupingApplyChange={props.onGroupingApplyChange}
+                      onGroupingPersistenceChange={
+                        props.onGroupingPersistenceChange
+                      }
+                    />
                   </Box>
                 </Paper>
               </Grid>

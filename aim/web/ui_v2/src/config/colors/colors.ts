@@ -1,4 +1,4 @@
-export const COLORS = [
+const COLORS: Array<string[]> = [
   [
     '#16A085',
     '#B33771',

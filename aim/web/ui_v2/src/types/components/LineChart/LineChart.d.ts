@@ -28,7 +28,7 @@ export interface ILineChartProps {
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
-  syncHoverState: (params: ISyncHoverStateParams | null) => void;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
 }
 
 export interface IAttributesRef {

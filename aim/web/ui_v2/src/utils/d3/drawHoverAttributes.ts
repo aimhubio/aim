@@ -97,6 +97,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     return nearestCircles;
   }
 
+  function clearXAxisLabel(): void {
+    if (xAxisLabelNodeRef.current) {
+      xAxisLabelNodeRef.current.remove();
+      xAxisLabelNodeRef.current = null;
+    }
+  }
+
   function drawXAxisLabel(x: number): void {
     const visArea = d3.select(visAreaRef.current);
     const xAxisTickValue = attributesRef.current.xScale.invert(x);
@@ -113,10 +120,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     //     xAxisValueLabel = xAxisTickValue;
     // }
     if (xAxisTickValue || xAxisTickValue === 0) {
-      if (xAxisLabelNodeRef.current) {
-        xAxisLabelNodeRef.current.remove();
-        xAxisLabelNodeRef.current = null;
-      }
+      clearXAxisLabel();
       const formattedValue = getFormattedValue(xAxisTickValue);
       // X Axis Label
       xAxisLabelNodeRef.current = visArea
@@ -145,15 +149,19 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   }
 
+  function clearYAxisLabel(): void {
+    if (yAxisLabelNodeRef.current) {
+      yAxisLabelNodeRef.current.remove();
+      yAxisLabelNodeRef.current = null;
+    }
+  }
+
   function drawYAxisLabel(y: number): void {
     const visArea = d3.select(visAreaRef.current);
     const yAxisTickValue = attributesRef.current.yScale.invert(y);
 
     if (yAxisTickValue || yAxisTickValue === 0) {
-      if (yAxisLabelNodeRef.current) {
-        yAxisLabelNodeRef.current.remove();
-        yAxisLabelNodeRef.current = null;
-      }
+      clearYAxisLabel();
       const formattedValue = getFormattedValue(yAxisTickValue);
       // Y Axis Label
       yAxisLabelNodeRef.current = visArea
@@ -204,8 +212,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         .raise();
       // set active line
       newActiveLine.classed('active', true).raise();
+
+      attributesRef.current.lineKey = key;
     }
-    attributesRef.current.lineKey = key;
+  }
+
+  function clearVerticalAxisLine(): void {
+    attributesNodeRef.current.select('#HoverLine-y').remove();
   }
 
   function drawVerticalAxisLine(x: number): void {
@@ -220,7 +233,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       y2: height,
     };
 
-    attributesNodeRef.current.select('#HoverLine-y').remove();
+    clearVerticalAxisLine();
 
     // Draw vertical axis line
     attributesNodeRef.current
@@ -237,6 +250,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .lower();
   }
 
+  function clearHorizontalAxisLine(): void {
+    attributesNodeRef.current.select('#HoverLine-x').remove();
+  }
+
   function drawHorizontalAxisLine(y: number): void {
     const { height, width } = plotBoxRef.current;
     const boundedHoverLineY = y < 0 ? 0 : y > height ? height : y;
@@ -249,7 +266,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       y2: boundedHoverLineY,
     };
 
-    attributesNodeRef.current.select('#HoverLine-x').remove();
+    clearHorizontalAxisLine();
 
     // Draw horizontal axis line
     attributesNodeRef.current
@@ -331,6 +348,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       'highlight',
       highlightMode !== HighlightEnum.Off,
     );
+
+    clearHorizontalAxisLine();
+    clearYAxisLabel();
+
     drawCircles(nearestCircles);
     drawVerticalAxisLine(mouseX);
     drawXAxisLabel(mouseX);
@@ -340,6 +361,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   function clearHoverAttributes(): void {
     attributesRef.current.activePoint = undefined;
+    attributesRef.current.lineKey = undefined;
 
     linesNodeRef.current.classed('highlight', false);
     attributesNodeRef.current.classed('highlight', false);
@@ -355,11 +377,48 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .classed('active', false)
       .classed('focus', false);
 
-    attributesNodeRef.current.select('#HoverLine-x').remove();
-    if (yAxisLabelNodeRef.current) {
-      yAxisLabelNodeRef.current.remove();
-      yAxisLabelNodeRef.current = null;
+    clearHorizontalAxisLine();
+    clearYAxisLabel();
+  }
+
+  function drawUpdateAttributes(
+    circle: INearestCircle,
+    nearestCircles: INearestCircle[],
+    force: boolean = false,
+  ): IActivePoint {
+    // hover Line Changed case
+    if (force || circle.key !== attributesRef.current.lineKey) {
+      linesNodeRef.current.classed(
+        'highlight',
+        highlightMode !== HighlightEnum.Off,
+      );
+      clearActiveLine(attributesRef.current.lineKey);
+      drawActiveLine(circle.key);
     }
+
+    // hover Circle Changed case
+    if (
+      force ||
+      circle.key !== attributesRef.current.activePoint?.key ||
+      circle.x !== attributesRef.current.activePoint?.xPos ||
+      circle.y !== attributesRef.current.activePoint?.yPos
+    ) {
+      attributesNodeRef.current.classed(
+        'highlight',
+        highlightMode !== HighlightEnum.Off,
+      );
+      drawCircles(nearestCircles);
+      drawVerticalAxisLine(circle.x);
+      drawHorizontalAxisLine(circle.y);
+      drawXAxisLabel(circle.x);
+      drawYAxisLabel(circle.y);
+      drawActiveCircle(circle.key);
+    }
+
+    const activePoint = getActivePoint(circle);
+    attributesRef.current.xStep = activePoint.xValue;
+    attributesRef.current.activePoint = activePoint;
+    return activePoint;
   }
 
   function updateFocusedChart(
@@ -373,99 +432,36 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       yScale: attributesRef.current.yScale,
     });
     const nearestCircles = getNearestCircles(mouseX);
-    const closestC = getClosestCircle(nearestCircles, mouseX, mouseY);
+    const closestCircle = getClosestCircle(nearestCircles, mouseX, mouseY);
 
-    // hover Line Changed case
-    if (force || closestC.key !== attributesRef.current.lineKey) {
-      linesNodeRef.current.classed(
-        'highlight',
-        highlightMode !== HighlightEnum.Off,
-      );
-      clearActiveLine(attributesRef.current.lineKey);
-      drawActiveLine(closestC.key);
-    }
-
-    // hover Circle Changed case
-    if (
-      force ||
-      closestC.key !== attributesRef.current.activePoint?.key ||
-      closestC.x !== attributesRef.current.activePoint?.xPos ||
-      closestC.y !== attributesRef.current.activePoint?.yPos
-    ) {
-      attributesNodeRef.current.classed(
-        'highlight',
-        highlightMode !== HighlightEnum.Off,
-      );
-      drawCircles(nearestCircles);
-      drawVerticalAxisLine(closestC.x);
-      drawHorizontalAxisLine(closestC.y);
-      drawXAxisLabel(closestC.x);
-      drawYAxisLabel(closestC.y);
-      drawActiveCircle(closestC.key);
-    }
-
-    const activePoint = getActivePoint(closestC);
-    attributesRef.current.xStep = activePoint.xValue;
-    attributesRef.current.activePoint = activePoint;
-    return activePoint;
+    return drawUpdateAttributes(closestCircle, nearestCircles, force);
   }
 
   function setActiveLine(lineKey: string, force: boolean = false): void {
     if (!attributesRef.current.focusedState?.active) {
-      const { focusedState, activePoint, xScale, xStep } =
-        attributesRef.current;
       if (
-        focusedState?.chartIndex === null ||
-        focusedState?.chartIndex === index
+        attributesRef.current.xStep &&
+        attributesRef.current.lineKey !== lineKey
       ) {
-        if (xStep) {
-          const x = xScale(xStep);
-          const [xMin, xMax] = xScale.range();
-          const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
-          const nearestCircles = getNearestCircles(mouseX);
-          const closestC = nearestCircles.find((c) => c.key === lineKey);
+        const { xScale, xStep } = attributesRef.current;
+        const x = xScale(xStep);
+        const [xMin, xMax] = xScale.range();
+        const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
+        const nearestCircles = getNearestCircles(mouseX);
+        const closestCircle = nearestCircles.find((c) => c.key === lineKey);
 
-          if (closestC) {
-            // hover Line Changed case
-            if (force || closestC.key !== attributesRef.current.lineKey) {
-              linesNodeRef.current.classed(
-                'highlight',
-                highlightMode !== HighlightEnum.Off,
-              );
-              clearActiveLine(attributesRef.current.lineKey);
-              drawActiveLine(closestC.key);
-            }
-
-            // hover Circle Changed case
-            if (
-              force ||
-              closestC.key !== activePoint?.key ||
-              closestC.x !== activePoint?.xPos ||
-              closestC.y !== activePoint?.yPos
-            ) {
-              attributesNodeRef.current.classed(
-                'highlight',
-                highlightMode !== HighlightEnum.Off,
-              );
-              drawCircles(nearestCircles);
-              drawVerticalAxisLine(closestC.x);
-              drawHorizontalAxisLine(closestC.y);
-              drawXAxisLabel(closestC.x);
-              drawYAxisLabel(closestC.y);
-              drawActiveCircle(closestC.key);
-            }
-
-            const point = getActivePoint(closestC);
-            attributesRef.current.xStep = point.xValue;
-            attributesRef.current.activePoint = point;
-
-            if (typeof syncHoverState === 'function') {
-              syncHoverState({ activePoint: point });
-            }
+        if (closestCircle) {
+          if (typeof syncHoverState === 'function') {
+            syncHoverState({ activePoint: null });
           }
-        } else {
-          clearActiveLine(attributesRef.current.lineKey);
-          drawActiveLine(lineKey);
+          const activePoint = drawUpdateAttributes(
+            closestCircle,
+            nearestCircles,
+            force,
+          );
+          if (typeof syncHoverState === 'function') {
+            syncHoverState({ activePoint });
+          }
         }
       }
     }
@@ -479,7 +475,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   ): void {
     if (attributesRef.current.focusedState?.chartIndex !== index) {
       if (typeof syncHoverState === 'function') {
-        syncHoverState(null);
+        syncHoverState({ activePoint: null });
       }
     }
 
@@ -501,7 +497,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   function handleLeaveFocusedPoint(event: MouseEvent): void {
     if (attributesRef.current.focusedState?.chartIndex !== index) {
       if (typeof syncHoverState === 'function') {
-        syncHoverState(null);
+        syncHoverState({ activePoint: null });
       }
     }
     const mousePos = d3.pointer(event);
@@ -540,7 +536,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       clearHoverAttributes();
 
       if (typeof syncHoverState === 'function') {
-        syncHoverState(null);
+        syncHoverState({ activePoint: null });
       }
     }
   }

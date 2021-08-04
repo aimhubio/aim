@@ -10,12 +10,10 @@ import {
 import { isEqual } from 'lodash-es';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
-import LineChart from 'components/LineChart/LineChart';
-
-import useStyles from './chartPanelStyle';
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { chartTypesConfig } from './config';
-import { ISyncHoverStateParams } from '../../types/utils/d3/drawHoverAttributes';
+import { ISyncHoverStateParams } from 'types/utils/d3/drawHoverAttributes';
+import useStyles from './chartPanelStyle';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
@@ -41,18 +39,16 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   );
 
   const syncHoverState = React.useCallback(
-    (params: ISyncHoverStateParams | null): void => {
+    (params: ISyncHoverStateParams): void => {
+      const { activePoint, focusedStateActive } = params;
       // on MouseHover
-      if (params) {
-        const { activePoint, focusedStateActive } = params;
-
+      if (activePoint !== null) {
         chartRefs.forEach((chartRef, index) => {
           if (index === activePoint.chartIndex) {
             return;
           }
           chartRef.current.updateHoverAttributes?.(activePoint.xValue);
         });
-
         if (props.onFocusedStateChange) {
           props.onFocusedStateChange(activePoint, focusedStateActive);
         }

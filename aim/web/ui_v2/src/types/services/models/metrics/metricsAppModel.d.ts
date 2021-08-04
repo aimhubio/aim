@@ -36,6 +36,26 @@ interface IMetricAppConfig {
     color: string[];
     style: string[];
     chart: string[];
+    reverseMode: {
+      color: boolean;
+      style: boolean;
+      chart: boolean;
+    };
+    isApplied: {
+      color: boolean;
+      style: boolean;
+      chart: boolean;
+    };
+    persistence: {
+      color: boolean;
+      style: boolean;
+    };
+    seed: {
+      color: number;
+      style: number;
+    };
+    paletteIndex: number;
+    selectOptions: string[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -75,3 +95,24 @@ export interface IGetDataAsLinesProps {
   smoothingAlgorithm?: string;
   collection?: IMetric[][];
 }
+
+export interface IOnGroupingSelectChangeParams {
+  groupName: groupNames;
+  list: string[];
+}
+
+export interface IOnGroupingModeChangeParams {
+  groupName: groupNames;
+  value: boolean;
+  options?: any[] | null;
+}
+
+export interface IGetPersistIndex {
+  groupValues: {
+    [key: string]: IMetricsCollection;
+  };
+  groupKey: string;
+  grouping: IMetricAppConfig['grouping'];
+}
+
+export type groupNames = 'color' | 'style' | 'chart';

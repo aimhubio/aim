@@ -2,16 +2,23 @@ import React from 'react';
 import { Box, Radio } from '@material-ui/core';
 
 import ToggleButton from 'components/ToggleButton/ToggleButton';
-import { IColorPopoverAdvancedProps } from 'types/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
+import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
-  onPaletteChange,
-  selectedPersistence,
-}: IColorPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
+  onGroupingPaletteChange,
+  persistence,
+  paletteIndex,
+}: IGroupingPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
+  function onPaletteChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let { value } = e.target;
+    if (onGroupingPaletteChange) {
+      onGroupingPaletteChange(parseInt(value));
+    }
+  }
   return (
-    <div className='advancedPopover_container'>
+    <div className='AdvancedPopover__container'>
       <div>
         <h3>colors persistence:</h3>
         <span>
@@ -22,8 +29,9 @@ function ColorPopoverAdvanced({
           <ToggleButton
             id='persistence'
             leftLabel='Enabled'
-            defaultChecked
-            onChange={onPersistenceChange}
+            defaultChecked={persistence}
+            value={persistence}
+            onChange={() => onPersistenceChange('color')}
           />
         </div>
       </div>
@@ -33,17 +41,17 @@ function ColorPopoverAdvanced({
           {COLORS.map((options, index) => (
             <Box key={index} display='flex' alignItems='center'>
               <Radio
-                checked={selectedPersistence === index}
+                checked={paletteIndex === index}
                 onChange={onPaletteChange}
                 size='small'
                 value={index}
               />
-              <div className='palette_colorsContainer'>
+              <div className='AdvancedPopover__paletteColors__container'>
                 {options.map((color) => (
                   <Box
                     key={color}
                     component='span'
-                    className='palette_span__colorItem'
+                    className='AdvancedPopover__paletteColors_colorItem'
                     bgcolor={color}
                   />
                 ))}

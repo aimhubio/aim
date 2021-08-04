@@ -3,18 +3,24 @@ import { Box, Button } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
+import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
+import { More, Visibility, VisibilityOff } from '@material-ui/icons';
+
+import './groupingItemStyle.scss';
 
 function GroupingItem({
-  groupPopover,
-  advancedPopover,
+  title,
+  groupName,
+  groupingData,
+  advancedTitle,
+  advancedComponent,
+  onSelect,
+  onGroupingModeChange,
   onReset,
   onVisibilityChange,
-  groupName,
-  title,
-  advancedTitle,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box className='groupingItem__container_div' mt={0.5}>
+    <div className='GroupingItem__container'>
       <ControlPopover
         title={title}
         anchor={({ onAnchorClick }) => (
@@ -27,34 +33,52 @@ function GroupingItem({
             {groupName}
           </Button>
         )}
-        component={groupPopover}
+        component={
+          <GroupingPopover
+            groupName={groupName}
+            groupingData={groupingData}
+            advancedComponent={advancedComponent}
+            onSelect={onSelect}
+            onGroupingModeChange={onGroupingModeChange}
+          />
+        }
       />
 
       <Box mt={0.75} display='flex' justifyContent='space-between'>
         <ControlPopover
           title={advancedTitle}
           anchor={({ onAnchorClick }) => (
-            <Box
-              className={'groupingItem__button_small'}
-              onClick={onAnchorClick}
-            >
-              A
-            </Box>
+            <div className='GroupingItem__button_small' onClick={onAnchorClick}>
+              <More
+                color='primary'
+                style={{ width: 10, height: 10, padding: 0, margin: 0 }}
+              />
+            </div>
           )}
-          component={advancedPopover}
+          component={advancedComponent}
         />
-        <Box
-          className='groupingItem__button_small'
+        <div
+          className='GroupingItem__button_small'
           onClick={onVisibilityChange}
         >
-          V
-        </Box>
-        <Box className='groupingItem__button_small' onClick={onReset}>
+          {groupingData?.isApplied[groupName] ? (
+            <Visibility
+              className='GroupingItem__button__icon'
+              color='primary'
+            />
+          ) : (
+            <VisibilityOff
+              className='GroupingItem__button__icon'
+              color='secondary'
+            />
+          )}
+        </div>
+        <div className='GroupingItem__button_small' onClick={onReset}>
           X
-        </Box>
+        </div>
       </Box>
-    </Box>
+    </div>
   );
 }
 
-export default React.memo(GroupingItem);
+export default GroupingItem;
