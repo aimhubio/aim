@@ -2,12 +2,12 @@ import numpy as np
 import struct
 
 from collections import defaultdict
-from typing import Iterator, Tuple, Optional
+from typing import Iterator, Tuple, Optional, List
 
 from aim.storage.context import Context
 from aim.storage.run import Run
 from aim.storage.trace import Trace
-from aim.storage.trace import QueryTraceCollection
+from aim.storage.trace import QueryTraceCollection, QueryRunTraceCollection
 
 
 def numpy_to_encodable(array: np.ndarray) -> dict:
@@ -122,11 +122,50 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
                 })
 
         runs_dict[run.hashname] = {
-            'params': run[...],
-            'traces': traces_list
+            'params': run.get_params(),
+            'traces': traces_list,
+            'created_at': run.created_at,
         }
 
     return runs_dict
+
+
+def query_runs_dict_constructor(runs: QueryRunTraceCollection) -> dict:
+    runs_dict = {}
+    for run_trace_collection in runs.iter_runs():
+        run = run_trace_collection.run
+        runs_dict[run.hashname] = {
+            'params': run.get_params(),
+            'traces': run.get_traces_overview(),
+            'created_at': run.created_at,
+        }
+
+    return runs_dict
+
+
+def collect_requested_traces(run: Run, requested_traces: dict, steps_num: int = 200) -> List[dict]:
+    processed_traces_list = []
+    for requested_trace in requested_traces:
+        metric_name = requested_trace.get('metric_name')
+        context = requested_trace.get('context')
+        trace = run.get_trace(metric_name=metric_name, context=context)
+        if not trace:
+            continue
+
+        iters, values = trace.values.sparse_numpy()
+
+        num_records = len(values)
+        step = (num_records // steps_num) or 1
+        _slice = slice(0, num_records, step)
+
+        processed_traces_list.append({
+            'metric_name': metric_name,
+            'context': context,
+            'values': numpy_to_encodable(sliced_np_array(values, _slice)),
+            'iters': numpy_to_encodable(sliced_np_array(iters, _slice)),
+        })
+
+    return processed_traces_list
 
 
 async def encoded_tree_streamer(encoded_runs_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:

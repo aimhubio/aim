@@ -1,22 +1,15 @@
-import json
-import os
-import time
-
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from pyrser.error import Diagnostic, Severity, Notification
-from sqlalchemy.orm import Session
+
 from typing import Optional
 
 from aim.storage import treeutils
-from aim.ql.grammar.statement import Statement, Expression
 from aim.web.api.projects.project import Project
-from aim.web.api.commits.models import Commit, TFSummaryLog, Tag
-from aim.web.api.db import get_session
-from aim.web.adapters.tf_summary_adapter import TFSummaryAdapter
 from aim.web.api.commits.utils import (
     aligned_traces_dict_constructor,
+    collect_requested_traces,
+    query_runs_dict_constructor,
     query_traces_dict_constructor,
     encoded_tree_streamer
 )
@@ -31,44 +24,12 @@ async def commits_search_api(q: Optional[str] = ''):
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    raw_expression = q.strip()
+    query = q.strip()
+    runs = project.repo.query_runs(query=query)
+    runs_dict = query_runs_dict_constructor(runs)
+    encoded_runs_tree = treeutils.encode_tree(runs_dict)
 
-    if 'run.archived' not in raw_expression:
-        default_expression = 'run.archived is not True'
-    else:
-        default_expression = None
-
-    if raw_expression:
-        try:
-            parser = Expression()
-            parser.parse(raw_expression)
-        except Diagnostic as d:
-            parser_error_logs = d.logs or []
-            for error_log in reversed(parser_error_logs):
-                if not isinstance(error_log, Notification):
-                    continue
-                if error_log.severity != Severity.ERROR:
-                    continue
-                error_location = error_log.location
-                if error_location:
-                    JSONResponse(content={
-                        'type': 'parse_error',
-                        'statement': raw_expression,
-                        'location': error_location.col,
-                    }, status_code=403)
-            raise HTTPException(status_code=403)
-        except Exception:
-            raise HTTPException(status_code=403)
-
-    runs = project.repo.select_runs(raw_expression, default_expression)
-
-    serialized_runs = []
-    for run in runs:
-        serialized_runs.append(run.to_dict())
-
-    return {
-        'runs': serialized_runs,
-    }
+    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
 @commits_router.post('/search/metric/align/')
@@ -112,168 +73,41 @@ async def commit_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] =
     return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
-@commits_router.get('/search/dictionary/')
-async def commit_dictionary_api():
-    # Get tf logs saved params
-    # tf_logs_params = {}
-    # tf_logs = TFSummaryLog.query.filter(
-    #     TFSummaryLog.is_archived.is_(False)) \
-    #     .all()
-    #
-    # for tf_log in tf_logs:
-    #     tf_logs_params[tf_log.log_path] = {
-    #         'data': tf_log.params_json,
-    #     }
-    # for tf_log_path, tf_log_params in tf_logs_params.items():
-    #     dicts[tf_log_path] = tf_log_params
-
-    return {}
-
-
-@commits_router.get('/tf-summary/list/')
-async def tf_summary_list_api():
-    dir_paths = TFSummaryAdapter.list_log_dir_paths()
-    return dir_paths
-
-
-@commits_router.post('/tf-summary/params/list/')
-async def tf_summary_params_list_api(request: Request, session: Session = Depends(get_session)):
-    params_form = await request.form()
-    path = params_form.get('path')
-
-    if not path:
-        return {'params': ''}
-
-    tf_log = session.query(TFSummaryLog)\
-        .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
-        .first()
-    if tf_log is None:
-        return {'params': ''}
-
-    return {
-        'params': tf_log.params,
-    }
-
-
-@commits_router.post('/tf-summary/params/update/')
-async def tf_summary_params_update_api(request: Request, session: Session = Depends(get_session)):
-    params_form = await request.form()
-    path = params_form.get('path')
-    params = params_form.get('params')
-
-    if not path:
-        raise HTTPException(status_code=403)
-
-    tf_log = session.query(TFSummaryLog)\
-        .filter((TFSummaryLog.log_path == path) & (TFSummaryLog.is_archived.is_(False)))\
-        .first()
-    if tf_log is None:
-        tf_log = TFSummaryLog(path)
-        session.add(tf_log)
-
-    tf_log.params = params
-    session.commit()
-
-    return {
-        'params': params,
-    }
-
-
-@commits_router.get('/tags/{commit_hash}/')
-async def commit_tag_api(commit_hash: str, session: Session = Depends(get_session)):
-    commit = session.query(Commit).filter(Commit.hash == commit_hash).first()
-
-    if not commit:
-        raise HTTPException(status_code=404)
-
-    commit_tags = []
-    for t in commit.tags:
-        commit_tags.append({
-            'id': t.uuid,
-            'name': t.name,
-            'color': t.color,
-        })
-
-    return commit_tags
-
-
-@commits_router.post('/tags/update/')
-async def commit_tag_update_api(request: Request, session: Session = Depends(get_session)):
-    form = await request.form()
-
-    commit_hash = form.get('commit_hash')
-    experiment_name = form.get('experiment_name')
-    tag_id = form.get('tag_id')
-
-    commit = session.query(Commit)\
-        .filter((Commit.hash == commit_hash) & (Commit.experiment_name == experiment_name))\
-        .first()
-    if not commit:
-        commit = Commit(commit_hash, experiment_name)
-        session.add(commit)
-        session.commit()
-
-    tag = session.query(Tag).filter(Tag.uuid == tag_id).first()
-    if not tag:
-        raise HTTPException(status_code=404)
-
-    if tag in commit.tags:
-        commit.tags.remove(tag)
-    else:
-        for t in commit.tags:
-            commit.tags.remove(t)
-        commit.tags.append(tag)
-
-    session.commit()
-
-    return {
-        'tag': list(map(lambda t: t.uuid, commit.tags)),
-    }
-
-
-@commits_router.get('/{experiment}/{commit_hash}/info/')
-async def commit_info_api(experiment: str, commit_hash: str):
-    project = Project()
-
-    commit_path = os.path.join(project.repo_path, experiment, commit_hash)
-
-    if not os.path.isdir(commit_path):
-        raise HTTPException(status_code=404)
-
-    commit_config_file_path = os.path.join(commit_path, 'config.json')
-    info = {}
-
-    try:
-        with open(commit_config_file_path, 'r+') as commit_config_file:
-            info = json.loads(commit_config_file.read())
-    except:
-        pass
-
-    process = info.get('process')
-    if process:
-        if not process['finish']:
-            if process.get('start_date'):
-                process['time'] = time.time() - process['start_date']
-            else:
-                process['time'] = None
-
-    return info
-
-
-@commits_router.post('/{experiment}/{commit_hash}/archivation/update/')
-async def commit_archivation_api(experiment, commit_hash):
+@commits_router.get('/{run_id}/params/')
+async def run_traces_api(run_id: str):
     # Get project
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+    return JSONResponse(run.get_params())
 
-    if project.repo.is_archived(experiment, commit_hash):
-        project.repo.unarchive(experiment, commit_hash)
-        return {
-            'archived': False,
-        }
-    else:
-        project.repo.archive(experiment, commit_hash)
-        return {
-            'archived': True,
-        }
+
+@commits_router.get('/{run_id}/traces/')
+async def run_params_api(run_id: str):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+    return JSONResponse(run.get_traces_overview())
+
+
+@commits_router.post('/{run_id}/traces/batch/')
+async def run_traces_batch(run_id: str, request: Request):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+
+    requested_traces = await request.json()
+    traces_data = collect_requested_traces(run, requested_traces)
+
+    return JSONResponse(traces_data)
