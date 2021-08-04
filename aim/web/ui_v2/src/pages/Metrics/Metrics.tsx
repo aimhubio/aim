@@ -55,6 +55,10 @@ function Metrics(
                       onGroupingModeChange={props.onGroupingModeChange}
                       onGroupingPaletteChange={props.onGroupingPaletteChange}
                       onGroupingReset={props.onGroupingReset}
+                      onGroupingApplyChange={props.onGroupingApplyChange}
+                      onGroupingPersistenceChange={
+                        props.onGroupingPersistenceChange
+                      }
                     />
                   </Box>
                 </Paper>
