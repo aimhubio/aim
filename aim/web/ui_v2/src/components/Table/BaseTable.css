@@ -88,7 +88,7 @@
 .BaseTable__row {
   background-color: #fff;
 }
-.BaseTable__row:hover, .BaseTable__row--hovered {
+.BaseTable__row--hovered {
   background-color: #f3f3f3;
 }
 .BaseTable__row-expanded {
