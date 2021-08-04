@@ -76,7 +76,7 @@ function Metrics(
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData as any}
                 focusedState={props.focusedState}
-                onFocusedStateChange={props.onFocusedStateChange}
+                onActivePointChange={props.onActivePointChange}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,
@@ -131,6 +131,7 @@ function Metrics(
                   data={props.tableData.flat()}
                   columns={props.tableColumns}
                   onRowHover={props.onTableRowHover}
+                  onRowClick={props.onTableRowClick}
                 />
               )}
             </Paper>

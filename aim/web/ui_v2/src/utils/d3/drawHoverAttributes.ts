@@ -438,30 +438,28 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function setActiveLine(lineKey: string, force: boolean = false): void {
-    if (!attributesRef.current.focusedState?.active) {
-      if (
-        attributesRef.current.xStep &&
-        attributesRef.current.lineKey !== lineKey
-      ) {
-        const { xScale, xStep } = attributesRef.current;
-        const x = xScale(xStep);
-        const [xMin, xMax] = xScale.range();
-        const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
-        const nearestCircles = getNearestCircles(mouseX);
-        const closestCircle = nearestCircles.find((c) => c.key === lineKey);
+    if (
+      attributesRef.current.xStep &&
+      attributesRef.current.lineKey !== lineKey
+    ) {
+      const { xScale, xStep } = attributesRef.current;
+      const x = xScale(xStep);
+      const [xMin, xMax] = xScale.range();
+      const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
+      const nearestCircles = getNearestCircles(mouseX);
+      const closestCircle = nearestCircles.find((c) => c.key === lineKey);
 
-        if (closestCircle) {
-          if (typeof syncHoverState === 'function') {
-            syncHoverState({ activePoint: null });
-          }
-          const activePoint = drawUpdateAttributes(
-            closestCircle,
-            nearestCircles,
-            force,
-          );
-          if (typeof syncHoverState === 'function') {
-            syncHoverState({ activePoint });
-          }
+      if (closestCircle) {
+        if (typeof syncHoverState === 'function') {
+          syncHoverState({ activePoint: null });
+        }
+        const activePoint = drawUpdateAttributes(
+          closestCircle,
+          nearestCircles,
+          force,
+        );
+        if (typeof syncHoverState === 'function') {
+          syncHoverState({ activePoint });
         }
       }
     }

@@ -15,7 +15,7 @@ export interface IChartPanelProps {
     'data' | 'index' | 'syncHoverState'
   >[];
   controls: React.ReactNode;
-  onFocusedStateChange?: (
+  onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;

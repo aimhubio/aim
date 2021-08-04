@@ -47,7 +47,7 @@ function getConfig() {
     grouping: {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.lr'],
-      chart: [],
+      chart: ['run.params.hparams.lr'],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -561,8 +561,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
 }
 
 //Table Methods
-
-function onFocusedStateChange(
+function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
@@ -576,10 +575,20 @@ function onFocusedStateChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({
-      newData: tableData.flat(),
-    });
+    tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
+    tableRef.current?.setActiveRow?.(
+      focusedStateActive ? activePoint.key : null,
+    );
+
+    if (focusedStateActive) {
+      setTimeout(() => {
+        let activeRow = document.querySelector('.BaseTable__row--hovered');
+        if (activeRow) {
+          activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      });
+    }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
@@ -598,9 +607,26 @@ function onFocusedStateChange(
 
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    const chartPanelRef: any = configData.refs.chartPanelRef;
+    if (chartPanelRef && !configData.chart.focusedState.active) {
+      chartPanelRef.current?.setActiveLine(rowKey);
+    }
+  }
+}
+
+function onTableRowClick(rowKey: string | null): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const chartPanelRef: any = configData?.refs.chartPanelRef;
-  if (chartPanelRef) {
-    chartPanelRef.current?.setActiveLine(rowKey);
+  if (chartPanelRef && rowKey) {
+    chartPanelRef.current?.setActiveLine(rowKey, true);
+  }
+  if (configData?.chart) {
+    configData.chart.focusedState = {
+      ...configData.chart.focusedState,
+      active: !!rowKey,
+    };
+    updateModelData(configData);
   }
 }
 
@@ -616,8 +642,9 @@ const metricAppModel = {
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
-  onFocusedStateChange,
+  onActivePointChange,
   onTableRowHover,
+  onTableRowClick,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
