@@ -6,7 +6,7 @@ import {
   INearestCircle,
   IActivePoint,
 } from 'types/utils/d3/drawHoverAttributes';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import { CircleEnum, getCoordinates, XAlignmentEnum } from './index';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 

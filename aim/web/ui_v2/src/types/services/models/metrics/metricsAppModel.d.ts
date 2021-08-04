@@ -5,9 +5,9 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { CurveEnum } from 'utils/d3';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
-import { SmoothingAlgorithmEnum } from '../../../../utils/smoothingData';
 
 export interface IMetricAppModelState {
   rawData: IRun[];
@@ -55,7 +55,7 @@ interface IMetricAppConfig {
       style: number;
     };
     paletteIndex: number;
-    selectOptions: string[];
+    selectOptions: groupingSelectOption[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -107,7 +107,7 @@ export interface IOnGroupingModeChangeParams {
   options?: any[] | null;
 }
 
-export interface IGetPersistIndex {
+export interface IGetGroupingPersistIndex {
   groupValues: {
     [key: string]: IMetricsCollection;
   };
@@ -116,3 +116,8 @@ export interface IGetPersistIndex {
 }
 
 export type groupNames = 'color' | 'style' | 'chart';
+export type groupingSelectOption = {
+  label: string;
+  group: string;
+  value: string;
+};
