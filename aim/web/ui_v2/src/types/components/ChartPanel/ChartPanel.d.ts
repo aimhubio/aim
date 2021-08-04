@@ -12,7 +12,7 @@ export interface IChartPanelProps {
   focusedState: IFocusedState;
   chartProps: Omit<ILineChartProps, 'data' | 'index' | 'syncHoverState'>[];
   controls: React.ReactNode;
-  onFocusedStateChange?: (
+  onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;

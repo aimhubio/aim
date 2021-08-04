@@ -84,12 +84,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onChangeHighlightMode={metricAppModel.onChangeHighlightMode}
       onSmoothingChange={metricAppModel.onSmoothingChange}
       onTableRowHover={metricAppModel.onTableRowHover}
+      onTableRowClick={metricAppModel.onTableRowClick}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
       onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
       onGroupingModeChange={metricAppModel.onGroupingModeChange}
       onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
       onGroupingReset={metricAppModel.onGroupingReset}
-      onFocusedStateChange={metricAppModel.onFocusedStateChange}
+      onActivePointChange={metricAppModel.onActivePointChange}
     />
   );
 }

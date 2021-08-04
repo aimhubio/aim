@@ -39,13 +39,14 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   groupingData: IMetricAppConfig['grouping'];
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
-  onFocusedStateChange?: (
+  onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
   onChangeHighlightMode: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
+  onTableRowClick: (rowKey: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;

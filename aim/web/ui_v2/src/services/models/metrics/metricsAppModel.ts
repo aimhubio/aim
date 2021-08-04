@@ -45,8 +45,8 @@ function getConfig() {
     },
     grouping: {
       color: ['run.params.hparams.seed'],
-      style: ['run.params.hparams.lr'],
-      chart: [],
+      style: [],
+      chart: ['run.params.hparams.lr'],
       reverseMode: {
         color: false,
         style: false,
@@ -478,9 +478,9 @@ function updateModelData(configData: IMetricAppConfig): void {
     ),
   });
 }
-//Table Methods
 
-function onFocusedStateChange(
+//Table Methods
+function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
@@ -494,10 +494,11 @@ function onFocusedStateChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({
-      newData: tableData.flat(),
-    });
+    tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
+    tableRef.current?.setActiveRow?.(
+      focusedStateActive ? activePoint.key : null,
+    );
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
@@ -516,9 +517,26 @@ function onFocusedStateChange(
 
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    const chartPanelRef: any = configData.refs.chartPanelRef;
+    if (chartPanelRef && !configData.chart.focusedState.active) {
+      chartPanelRef.current?.setActiveLine(rowKey);
+    }
+  }
+}
+
+function onTableRowClick(rowKey: string | null): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const chartPanelRef: any = configData?.refs.chartPanelRef;
-  if (chartPanelRef) {
-    chartPanelRef.current?.setActiveLine(rowKey);
+  if (chartPanelRef && rowKey) {
+    chartPanelRef.current?.setActiveLine(rowKey, true);
+  }
+  if (configData?.chart) {
+    configData.chart.focusedState = {
+      ...configData.chart.focusedState,
+      active: !!rowKey,
+    };
+    updateModelData(configData);
   }
 }
 
@@ -534,8 +552,9 @@ const metricAppModel = {
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
-  onFocusedStateChange,
+  onActivePointChange,
   onTableRowHover,
+  onTableRowClick,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
