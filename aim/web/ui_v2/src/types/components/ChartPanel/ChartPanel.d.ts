@@ -25,3 +25,7 @@ export interface IChartPanelRef {
   setActiveLine: (rowKey: string) => void;
   updateLines: (data: IProcessedData[]) => void;
 }
+
+interface IChartTypeConfig {
+  [key: string]: React.LazyExoticComponent<any>;
+}

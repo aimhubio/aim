@@ -95,7 +95,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         <Paper className={classes.paper}>
           <Grid container spacing={1} className={classes.chartGrid}>
             {props.data.map((chartData: any, index: number) => {
-              //@ts-ignore
               const Component = chartTypesConfig[props.chartType];
               return (
                 <Grid

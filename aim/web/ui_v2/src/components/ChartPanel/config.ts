@@ -1,8 +1,6 @@
 import React from 'react';
 
-interface IChartTypeConfig {
-  [key: string]: React.LazyExoticComponent<any>;
-}
+import { IChartTypeConfig } from 'types/components/ChartPanel/ChartPanel';
 
 export const chartTypesConfig: IChartTypeConfig = {
   LineChart: React.lazy(() => import('../LineChart/LineChart')),
