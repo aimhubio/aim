@@ -1,7 +1,7 @@
-from aim.storage.run_metadata.entities import \
+from aim.storage.structured.entities import \
     ObjectFactory, Run, Tag, Experiment,\
     RunCollection, ExperimentCollection, TagCollection
-from aim.storage.run_metadata.sql_engine.entities import ModelMappedRun, ModelMappedExperiment, ModelMappedTag
+from aim.storage.structured.sql_engine.entities import ModelMappedRun, ModelMappedExperiment, ModelMappedTag
 
 
 class ModelMappedFactory(ObjectFactory):

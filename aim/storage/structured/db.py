@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from aim.storage.migrations.utils import upgrade_database
-from aim.storage.run_metadata.sql_engine.factory import ModelMappedFactory as ObjectFactory
+from aim.storage.structured.sql_engine.factory import ModelMappedFactory as ObjectFactory
 
 
 class DB(ObjectFactory):

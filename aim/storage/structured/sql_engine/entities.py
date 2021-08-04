@@ -1,17 +1,18 @@
 from typing import Optional, Collection
 from sqlalchemy.orm import joinedload
 
-from aim.storage.run_metadata.entities import \
+from aim.storage.types import SafeNone
+from aim.storage.structured.entities import \
     Run as IRun, \
     Experiment as IExperiment, \
     Tag as ITag,\
-    RunCollection, TagCollection, SafeNone
-from aim.storage.run_metadata.sql_engine.models import \
+    RunCollection, TagCollection
+from aim.storage.structured.sql_engine.models import \
     Run as RunModel,\
     Experiment as ExperimentModel,\
     Tag as TagModel
-from aim.storage.run_metadata.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
-from aim.storage.run_metadata.sql_engine.utils import ModelMappedProperty as Property
+from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
+from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
 
 
 class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):

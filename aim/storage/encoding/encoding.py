@@ -3,7 +3,7 @@ import struct
 
 import cython
 
-from aim.storage.encoding_native import decode_path
+from aim.storage.encoding.encoding_native import decode_path
 from aim.storage.utils import ArrayFlag, ObjectFlag
 
 from typing import List, Tuple, Union
