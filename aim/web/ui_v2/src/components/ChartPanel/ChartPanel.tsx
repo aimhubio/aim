@@ -98,6 +98,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             {props.data.map((lineChartData, index) => (
               <Grid
                 key={index}
+                //TODO generate new only when chart changes
+                // key={lineChartData.map((line) => line.key).join('_')}
                 item
                 xs={
                   props.data.length > 9
