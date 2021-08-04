@@ -209,13 +209,12 @@ function getFilteredGroupingOptions(
 ): string[] {
   const { selectOptions, reverseMode, isApplied } = grouping;
 
-  const filteredOptions = [...selectOptions].filter(
-    (opt) => grouping[groupName].indexOf(opt.value) === -1,
-  );
-  const options = filteredOptions.map((item) => item.value);
+  const filteredOptions = [...selectOptions]
+    .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+    .map((item) => item.value);
   return isApplied[groupName]
     ? reverseMode[groupName]
-      ? options
+      ? filteredOptions
       : grouping[groupName]
     : [];
 }
@@ -527,7 +526,6 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
-    console.log(configData.grouping.reverseMode);
     updateModelData(configData);
   }
 }

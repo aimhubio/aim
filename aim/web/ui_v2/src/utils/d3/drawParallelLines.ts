@@ -1,6 +1,5 @@
 import { cloneDeep } from 'lodash-es';
 
-import { CurveEnum } from './';
 import lineGenerator from './lineGenerator';
 import {
   IDrawParallelLinesProps,
@@ -21,18 +20,26 @@ function drawParallelLines({
   linesNodeRef,
   attributesRef,
   dimensions,
+  curveInterpolation,
   data,
   linesRef,
   attributesNodeRef,
 }: IDrawParallelLinesProps) {
   const keysOfDimensions: string[] = Object.keys(dimensions);
-  linesRenderer({ data, keysOfDimensions, linesNodeRef, attributesRef });
+  linesRenderer({
+    data,
+    keysOfDimensions,
+    curveInterpolation,
+    linesNodeRef,
+    attributesRef,
+  });
   linesRef.current.updateLines = function (updatedData: ILinesDataType[]) {
     linesNodeRef.current?.selectAll('*')?.remove();
     attributesNodeRef.current?.selectAll('*')?.remove();
     linesRenderer({
       data: updatedData,
       keysOfDimensions,
+      curveInterpolation,
       linesNodeRef,
       attributesRef,
     });
@@ -43,6 +50,7 @@ function drawParallelLine({
   linesNodeRef,
   attributesRef,
   dimensionList,
+  curveInterpolation,
   lineData,
   isDotted,
   color,
@@ -63,7 +71,7 @@ function drawParallelLine({
       lineGenerator(
         attributesRef.current.xScale,
         attributesRef.current.yScale,
-        CurveEnum.Linear,
+        curveInterpolation,
         true,
       ),
     )
@@ -77,6 +85,7 @@ function drawParallelLine({
 function linesRenderer({
   data,
   keysOfDimensions,
+  curveInterpolation,
   linesNodeRef,
   attributesRef,
 }: ILineRendererProps) {
@@ -127,6 +136,7 @@ function linesRenderer({
           drawParallelLine({
             linesNodeRef,
             attributesRef,
+            curveInterpolation,
             dimensionList: pathData.dimensionList,
             lineData: pathData.lineData,
             isDotted: pathData.isDotted,
@@ -139,6 +149,7 @@ function linesRenderer({
       drawParallelLine({
         linesNodeRef,
         attributesRef,
+        curveInterpolation,
         dimensionList: keysOfDimensions,
         lineData: line,
         isDotted: false,

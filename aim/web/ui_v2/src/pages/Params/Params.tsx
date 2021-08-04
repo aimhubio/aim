@@ -4,10 +4,13 @@ import useStyles from './paramsStyle';
 import { IParamsProps } from 'types/pages/params/Params';
 
 import HighPlot from 'components/HighPlot/HighPlot';
+import Controls from './components/Controls/Controls';
 
-const Params = (
-  props: IParamsProps,
-): React.FunctionComponentElement<React.ReactNode> => {
+const Params = ({
+  curveInterpolation,
+  onCurveInterpolationChange,
+  chartElemRef,
+}: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
 
   return (
@@ -26,7 +29,7 @@ const Params = (
         spacing={1}
       >
         <Grid
-          ref={props.chartElemRef}
+          ref={chartElemRef}
           style={{
             flex: '0.5 1 0',
           }}
@@ -35,7 +38,15 @@ const Params = (
           <Grid container className={classes.fullHeight} spacing={1}>
             <Grid item xs>
               <Paper className={classes.paper}>
-                <HighPlot index={0} />
+                <HighPlot index={0} curveInterpolation={curveInterpolation} />
+              </Paper>
+            </Grid>
+            <Grid item>
+              <Paper className={classes.paper}>
+                <Controls
+                  onCurveInterpolationChange={onCurveInterpolationChange}
+                  curveInterpolation={curveInterpolation}
+                />
               </Paper>
             </Grid>
           </Grid>
