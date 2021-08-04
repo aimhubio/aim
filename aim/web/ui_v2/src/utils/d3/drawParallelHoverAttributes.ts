@@ -2,14 +2,18 @@ import * as d3 from 'd3';
 import { isNil, isEmpty } from 'lodash-es';
 
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import { INearestCircle } from 'types/utils/d3/drawHoverAttributes';
+import {
+  IActivePoint,
+  INearestCircle,
+} from 'types/utils/d3/drawHoverAttributes';
 import {
   IDrawParallelHoverAttributesProps,
   IGetParallelNearestCirclesProps,
   IParallelClosestCircle,
 } from 'types/utils/d3/drawParallelHoverAttributes';
-import { getCoordinates, CircleEnum } from './';
+import { getCoordinates, CircleEnum, ScaleEnum } from './';
 import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import getFormattedValue from '../formattedValue';
 
 const drawParallelHoverAttributes = ({
   dimensions,
@@ -20,13 +24,47 @@ const drawParallelHoverAttributes = ({
   visAreaRef,
   visBoxRef,
   closestCircleRef,
+  syncHoverState,
   linesNodeRef,
   highlightedNodeRef,
   highlightMode,
 }: IDrawParallelHoverAttributesProps) => {
+  const { top: chartTop, left: chartLeft }: { top: number; left: number } =
+    visAreaRef.current?.getBoundingClientRect() || {};
   const { margin } = visBoxRef.current;
   const svgArea = d3.select(visAreaRef.current).select('svg');
   const keysOfDimensions = Object.keys(dimensions);
+
+  function getActivePoint(circle: INearestCircle): IActivePoint {
+    const dimensionLabel = scalePointPosition(
+      attributesRef.current.xScale,
+      circle.x,
+    );
+    let yValue: number = 0;
+
+    if (dimensions[dimensionLabel].scaleType === ScaleEnum.Point) {
+      yValue = scalePointPosition(
+        attributesRef.current.yScale[dimensionLabel],
+        circle.y,
+        true,
+      );
+    } else {
+      yValue = getFormattedValue(
+        attributesRef.current.yScale[dimensionLabel].invert(circle.y),
+      );
+    }
+
+    return {
+      key: circle.key,
+      xValue: attributesRef.current.xScale(dimensionLabel),
+      yValue,
+      xPos: circle.x,
+      yPos: circle.y,
+      pageX: chartLeft + circle.x + margin.left,
+      pageY: chartTop + circle.y + margin.top,
+      chartIndex: index,
+    };
+  }
 
   function updateHoverAttributes(
     mouse: [number, number],
@@ -43,14 +81,15 @@ const drawParallelHoverAttributes = ({
         yScale: attributesRef.current.yScale[dimensionLabel],
         margin,
       });
-      const { nearestCircles, closestCircle } = getNearestCircles({
-        data: linesRef.current.data,
-        xScale: attributesRef.current.xScale,
-        yScale: attributesRef.current.yScale,
-        mouseX,
-        mouseY,
-        keysOfDimensions,
-      });
+      const { nearestCircles, closestCircle, lineCirclesOfClosestCircle } =
+        getNearestCircles({
+          data: linesRef.current.data,
+          xScale: attributesRef.current.xScale,
+          yScale: attributesRef.current.yScale,
+          mouseX,
+          mouseY,
+          keysOfDimensions,
+        });
 
       if (closestCircleRef.current !== closestCircle) {
         // hover Line Changed case
@@ -98,7 +137,7 @@ const drawParallelHoverAttributes = ({
           // Draw Circles
           attributesNodeRef.current
             .selectAll('circle')
-            .data(nearestCircles)
+            .data([...nearestCircles, ...lineCirclesOfClosestCircle])
             .join('circle')
             .attr('class', 'HoverCircle')
             .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
@@ -116,6 +155,13 @@ const drawParallelHoverAttributes = ({
             .attr('r', CircleEnum.ActiveRadius)
             .classed('active', true)
             .raise();
+          d3.selectAll(`[id=Circle-${closestCircle.key}line]`)
+            .attr('r', CircleEnum.ActiveRadius)
+            .classed('active', true)
+            .raise();
+          if (typeof syncHoverState === 'function') {
+            syncHoverState({ activePoint: getActivePoint(closestCircle) });
+          }
         }
         closestCircleRef.current = closestCircle;
 
@@ -181,6 +227,10 @@ const drawParallelHoverAttributes = ({
         .attr('r', CircleEnum.Radius)
         .classed('active', false);
 
+      attributesNodeRef.current
+        .selectAll(`[id=Circle-${closestCircleRef.current.key}line]`)
+        .remove();
+
       attributesNodeRef.current.selectAll('.HoverLine-y').remove();
     }
   });
@@ -206,6 +256,7 @@ function getNearestCircles({
     },
   ];
   const nearestCircles: INearestCircle[] = [];
+  const lineCirclesOfClosestCircle: INearestCircle[] = [];
   for (const line of data) {
     const xAxesValues = keysOfDimensions.map((d: string) => xScale(d));
     const index = d3.bisectCenter(xAxesValues, mouseX);
@@ -250,23 +301,34 @@ function getNearestCircles({
       closestCircles[0].values[dimension],
     );
     if (nearestCircles[0]?.x !== closestXPixel && !isNil(closestYPixel)) {
-      nearestCircles.push({
+      lineCirclesOfClosestCircle.push({
         x: closestXPixel,
         y: closestYPixel,
-        key: closestCircles[0].key,
+        key: closestCircles[0].key + 'line',
         color: closestCircles[0].color,
       });
     }
   });
-  return { nearestCircles, closestCircle: closestCircles[0] };
+  return {
+    nearestCircles,
+    closestCircle: closestCircles[0],
+    lineCirclesOfClosestCircle,
+  };
 }
 
-function scalePointPosition(xScale: IGetAxisScale, xPos: number) {
-  var domain = xScale.domain();
-  var range = xScale.range();
-  var rangePoints = d3.range(range[0], range[1], xScale.step && xScale.step());
-  var yPos = domain[d3.bisect(rangePoints, xPos) - 1];
-  return yPos;
+function scalePointPosition(
+  xScale: IGetAxisScale,
+  xPos: number,
+  rangeReversed: boolean = false,
+) {
+  const domain = rangeReversed ? xScale.domain().reverse() : xScale.domain();
+  const range = rangeReversed ? xScale.range().reverse() : xScale.range();
+  const rangePoints = d3.range(
+    range[0],
+    range[1],
+    xScale.step && xScale.step(),
+  );
+  return domain[d3.bisect(rangePoints, xPos) - 1];
 }
 
 export default drawParallelHoverAttributes;

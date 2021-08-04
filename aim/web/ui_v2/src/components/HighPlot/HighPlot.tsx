@@ -9,15 +9,15 @@ import {
   drawParallelHoverAttributes,
   drawParallelAxesBrush,
 } from 'utils/d3';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 import './highPlot.scss';
 
-const HighPlot = ({
-  index,
-  curveInterpolation,
-  data,
-}: IHighPlotProps): React.FunctionComponentElement<React.ReactNode> => {
+const HighPlot = React.forwardRef(function HighPlot(
+  { index, curveInterpolation, syncHoverState, data }: IHighPlotProps,
+  ref,
+): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
   // containers
   const parentRef = React.useRef<HTMLDivElement>(null);
@@ -99,6 +99,7 @@ const HighPlot = ({
       linesNodeRef,
       highlightedNodeRef,
       highlightMode: 0,
+      syncHoverState,
     });
     drawParallelAxesBrush({
       plotBoxRef,
@@ -120,6 +121,21 @@ const HighPlot = ({
     // xAlignment,
     // zoomMode,
   ]);
+
+  React.useImperativeHandle(ref, () => ({
+    setActiveLine: (lineKey: string) => {
+      attributesRef.current.setActiveLine?.(lineKey);
+    },
+    // updateHoverAttributes: (xValue: number) => {
+    //   attributesRef.current.updateHoverAttributes?.(xValue);
+    // },
+    clearHoverAttributes: () => {
+      attributesRef.current.clearHoverAttributes?.();
+    },
+    setFocusedState: (focusedState: IFocusedState) => {
+      attributesRef.current.focusedState = focusedState;
+    },
+  }));
 
   const renderChart = React.useCallback((): void => {
     clearArea({ visAreaRef });
@@ -147,6 +163,6 @@ const HighPlot = ({
       <div ref={visAreaRef} />
     </div>
   );
-};
+});
 
 export default HighPlot;

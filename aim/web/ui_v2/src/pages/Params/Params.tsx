@@ -13,8 +13,10 @@ import { mockData, mockData2 } from '../../components/HighPlot/helper';
 const Params = ({
   curveInterpolation,
   onCurveInterpolationChange,
+  onFocusedStateChange,
   chartPanelRef,
   chartElemRef,
+  focusedState,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
 
@@ -45,14 +47,8 @@ const Params = ({
               ref={chartPanelRef}
               chartType={ChartTypeEnum.HighPlot}
               data={[mockData, mockData2]}
-              focusedState={{
-                key: 'asfasf',
-                xValue: 10,
-                yValue: 10,
-                active: true,
-                chartIndex: 0,
-              }}
-              onFocusedStateChange={() => {}}
+              focusedState={focusedState}
+              onFocusedStateChange={onFocusedStateChange}
               chartProps={[
                 {
                   curveInterpolation,
