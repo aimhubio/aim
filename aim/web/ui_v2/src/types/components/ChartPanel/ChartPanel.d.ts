@@ -8,6 +8,7 @@ import { IFocusedState } from '../../services/models/metrics/metricsAppModel';
 
 export interface IChartPanelProps {
   chartType: ChartTypeEnum;
+  // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
   focusedState: IFocusedState;
   chartProps: Omit<

@@ -13,7 +13,7 @@ import { mockData, mockData2 } from '../../components/HighPlot/helper';
 const Params = ({
   curveInterpolation,
   onCurveInterpolationChange,
-  onFocusedStateChange,
+  onActivePointChange,
   chartPanelRef,
   chartElemRef,
   focusedState,
@@ -48,7 +48,7 @@ const Params = ({
               chartType={ChartTypeEnum.HighPlot}
               data={[mockData, mockData2]}
               focusedState={focusedState}
-              onFocusedStateChange={onFocusedStateChange}
+              onActivePointChange={onActivePointChange}
               chartProps={[
                 {
                   curveInterpolation,

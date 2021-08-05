@@ -14,7 +14,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartPanelRef: React.RefObject<IChartPanelRef>;
   curveInterpolation: CurveEnum;
   onCurveInterpolationChange: () => void;
-  onFocusedStateChange: (
+  onActivePointChange: (
     activePoint: IActivePoint,
     focusedStateActive: boolean = false,
   ) => void;

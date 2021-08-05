@@ -21,7 +21,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartIndex: null,
   });
 
-  function onFocusedStateChange(
+  function onActivePointChange(
     activePoint: IActivePoint,
     focusedStateActive: boolean = false,
   ): void {
@@ -49,7 +49,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       curveInterpolation={curveInterpolation}
       focusedState={focusedState}
       onCurveInterpolationChange={onCurveInterpolationChange}
-      onFocusedStateChange={onFocusedStateChange}
+      onActivePointChange={onActivePointChange}
     />
   );
 }
