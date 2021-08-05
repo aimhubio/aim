@@ -186,7 +186,7 @@ class Run:
 
     # TODO: [MV] refer to real implementation later, hardcoded for now
     @property
-    def created_at(self) -> float:
+    def started_at(self) -> float:
         from datetime import datetime
         created_time = datetime(2021, 1, 1, hour=0, minute=0, second=0)
         return created_time.timestamp()

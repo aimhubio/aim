@@ -51,7 +51,7 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
     num_runs = 0
     activity_counter = Counter()
     for run in project.repo.iter_runs():
-        creation_timestamp = run.created_at if run.created_at > 0 else 0
+        creation_timestamp = run.started_at if run.started_at > 0 else 0
         activity_counter[datetime.fromtimestamp(creation_timestamp, timezone).strftime('%Y-%m-%d')] += 1
         num_runs += 1
 
