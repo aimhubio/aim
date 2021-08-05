@@ -16,8 +16,9 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
-  groupNames,
-  IGetPersistIndex,
+  GroupingSelectOptionType,
+  GroupNameType,
+  IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
@@ -47,7 +48,7 @@ function getConfig() {
     grouping: {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.lr'],
-      chart: [],
+      chart: ['run.params.hparams.lr'],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -101,40 +102,70 @@ function getMetricsData() {
   const { call, abort } = metricsService.getMetricsData();
   return {
     call: () =>
-      call().then((data: IRun[]) => {
-        const processedData = processData(data);
+      call().then((runData: IRun[]) => {
+        const { data, params } = processData(runData);
         const configData = model.getState()?.config;
         if (configData) {
-          configData.grouping.selectOptions = processedData.params.map(
-            (param) => `run.params.${param}`,
-          );
+          configData.grouping.selectOptions = [
+            ...getGroupingSelectOptions(params),
+          ];
         }
         model.setState({
-          rawData: data,
+          rawData: runData,
           config: configData,
-          params: processedData.params,
-          data: processedData.data,
-          lineChartData: getDataAsLines(processedData.data),
-          tableData: getDataAsTableRows(
-            processedData.data,
-            null,
-            processedData.params,
-          ),
-          tableColumns: getTableColumns(processedData.params),
+          params,
+          data,
+          lineChartData: getDataAsLines(data),
+          tableData: getDataAsTableRows(data, null, params),
+          tableColumns: getTableColumns(params),
         });
       }),
     abort,
   };
 }
 
+function getGroupingSelectOptions(
+  params: string[],
+): GroupingSelectOptionType[] {
+  const paramsOptions: GroupingSelectOptionType[] = params.map((param) => ({
+    value: `run.params.${param}`,
+    group: 'params',
+    label: param,
+  }));
+  return [
+    ...paramsOptions,
+    {
+      group: 'Other',
+      label: 'experiment_name',
+      value: 'run.experiment_name',
+    },
+    {
+      group: 'Other',
+      label: 'run_hash',
+      value: 'run.run_hash',
+    },
+    {
+      group: 'Other',
+      label: 'metric_name',
+      value: 'metric_name',
+    },
+    {
+      group: 'context',
+      label: 'subset',
+      value: 'context.subset',
+    },
+  ];
+}
+
 function processData(data: IRun[]): {
   data: IMetricsCollection[];
   params: string[];
 } {
+  const grouping = model.getState()?.config?.grouping;
   let metrics: IMetric[] = [];
-  let index = -1;
+  let index: number = -1;
   let params: string[] = [];
-  const paletteIndex = model.getState()?.config?.grouping.paletteIndex || 0;
+  const paletteIndex: number = grouping?.paletteIndex || 0;
   data.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params));
     metrics = metrics.concat(
@@ -167,31 +198,34 @@ function processData(data: IRun[]): {
       }),
     );
   });
+
   return {
     data: groupData(metrics),
     params: _.uniq(params),
   };
 }
 
-function getFilteredOptions(
+function getFilteredGroupingOptions(
   grouping: IMetricAppConfig['grouping'],
-  groupName: groupNames,
+  groupName: GroupNameType,
 ): string[] {
   const { selectOptions, reverseMode, isApplied } = grouping;
+
+  const filteredOptions = [...selectOptions]
+    .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+    .map((item) => item.value);
   return isApplied[groupName]
     ? reverseMode[groupName]
-      ? selectOptions.filter(
-          (opt: string) => grouping[groupName].indexOf(opt) === -1,
-        )
+      ? filteredOptions
       : grouping[groupName]
     : [];
 }
 
-function getPersistIndex({
+function getGroupingPersistIndex({
   groupValues,
   groupKey,
   grouping,
-}: IGetPersistIndex) {
+}: IGetGroupingPersistIndex) {
   const configHash = encode(groupValues[groupKey].config as {});
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
@@ -212,9 +246,9 @@ function getPersistIndex({
 function groupData(data: IMetric[]): IMetricsCollection[] {
   const grouping = model.getState()!.config!.grouping;
   const { paletteIndex } = grouping;
-  const groupByColor = getFilteredOptions(grouping, 'color');
-  const groupByStyle = getFilteredOptions(grouping, 'style');
-  const groupByChart = getFilteredOptions(grouping, 'chart');
+  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
+  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
   if (
     groupByColor.length === 0 &&
     groupByStyle.length === 0 &&
@@ -274,7 +308,11 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const colorKey = encode(colorConfig);
 
       if (grouping.persistence.color && grouping.isApplied.color) {
-        let index = getPersistIndex({ groupValues, groupKey, grouping });
+        let index = getGroupingPersistIndex({
+          groupValues,
+          groupKey,
+          grouping,
+        });
         groupValue.color =
           COLORS[paletteIndex][
             Number(index % BigInt(COLORS[paletteIndex].length))
@@ -296,7 +334,11 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
       const dasharrayKey = encode(dasharrayConfig);
       if (grouping.persistence.style && grouping.isApplied.style) {
-        let index = getPersistIndex({ groupValues, groupKey, grouping });
+        let index = getGroupingPersistIndex({
+          groupValues,
+          groupKey,
+          grouping,
+        });
         groupValue.dasharray =
           DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
       } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
@@ -501,7 +543,7 @@ function onGroupingPaletteChange(index: number): void {
   }
 }
 
-function onGroupingReset(groupName: groupNames) {
+function onGroupingReset(groupName: GroupNameType) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     const { reverseMode, paletteIndex, isApplied, persistence } =
@@ -532,7 +574,7 @@ function updateModelData(configData: IMetricAppConfig): void {
   });
 }
 
-function onGroupingApplyChange(groupName: groupNames): void {
+function onGroupingApplyChange(groupName: GroupNameType): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {
@@ -561,8 +603,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
 }
 
 //Table Methods
-
-function onFocusedStateChange(
+function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
@@ -576,10 +617,20 @@ function onFocusedStateChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({
-      newData: tableData.flat(),
-    });
+    tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
+    tableRef.current?.setActiveRow?.(
+      focusedStateActive ? activePoint.key : null,
+    );
+
+    if (focusedStateActive) {
+      setTimeout(() => {
+        let activeRow = document.querySelector('.BaseTable__row--hovered');
+        if (activeRow) {
+          activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      });
+    }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
@@ -598,9 +649,26 @@ function onFocusedStateChange(
 
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    const chartPanelRef: any = configData.refs.chartPanelRef;
+    if (chartPanelRef && !configData.chart.focusedState.active) {
+      chartPanelRef.current?.setActiveLine(rowKey);
+    }
+  }
+}
+
+function onTableRowClick(rowKey: string | null): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const chartPanelRef: any = configData?.refs.chartPanelRef;
-  if (chartPanelRef) {
-    chartPanelRef.current?.setActiveLine(rowKey);
+  if (chartPanelRef && rowKey) {
+    chartPanelRef.current?.setActiveLine(rowKey, true);
+  }
+  if (configData?.chart) {
+    configData.chart.focusedState = {
+      ...configData.chart.focusedState,
+      active: !!rowKey,
+    };
+    updateModelData(configData);
   }
 }
 
@@ -608,7 +676,6 @@ const metricAppModel = {
   ...model,
   initialize,
   getMetricsData,
-  getDataAsLines,
   getDataAsTableRows,
   setComponentRefs,
   onChangeHighlightMode,
@@ -616,8 +683,9 @@ const metricAppModel = {
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
-  onFocusedStateChange,
+  onActivePointChange,
   onTableRowHover,
+  onTableRowClick,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,

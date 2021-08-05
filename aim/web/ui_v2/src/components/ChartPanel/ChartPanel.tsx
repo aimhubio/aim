@@ -48,10 +48,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           if (index === activePoint.chartIndex) {
             return;
           }
-          chartRef.current.updateHoverAttributes?.(activePoint.xValue);
+          chartRef.current?.updateHoverAttributes?.(activePoint.xValue);
         });
-        if (props.onFocusedStateChange) {
-          props.onFocusedStateChange(activePoint, focusedStateActive);
+        if (props.onActivePointChange) {
+          props.onActivePointChange(activePoint, focusedStateActive);
         }
         onPopoverChange({
           top: activePoint.pageY as number,
@@ -61,7 +61,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       // on MouseLeave
       else {
         chartRefs.forEach((chartRef) => {
-          chartRef.current.clearHoverAttributes?.();
+          chartRef.current?.clearHoverAttributes?.();
         });
         onPopoverChange(null);
       }
@@ -98,6 +98,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             {props.data.map((lineChartData, index) => (
               <Grid
                 key={index}
+                //TODO generate new only when chart changes
+                // key={lineChartData.map((line) => line.key).join('_')}
                 item
                 xs={
                   props.data.length > 9

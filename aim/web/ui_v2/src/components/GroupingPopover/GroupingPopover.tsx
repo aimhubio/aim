@@ -17,7 +17,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
-import { groupNames } from 'types/services/models/metrics/metricsAppModel';
+import {
+  GroupingSelectOptionType,
+  GroupNameType,
+} from 'types/services/models/metrics/metricsAppModel';
 
 import './groupingPopoverStyle.scss';
 
@@ -28,33 +31,21 @@ function GroupingPopover({
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  function onChange(event: object, values: any, reason: string): void {
+  function onChange(e: object, values: GroupingSelectOptionType[]): void {
     onSelect({
       groupName,
-      list: values.map((item: any) =>
-        typeof item === 'string' ? item : item.name,
+      list: values.map((item: GroupingSelectOptionType) =>
+        typeof item === 'string' ? item : item.value,
       ),
     });
   }
 
-  function getOptionLabel(option: string): string {
-    let split = option.split('.');
-    return `${split[split.length - 2]}.${split[split.length - 1]}`;
-  }
-
-  const options: { name: string; group: string }[] = React.useMemo(() => {
-    let data = [];
-    for (let value of groupingData.selectOptions) {
-      data.push({ name: value, group: value.split('.')[1] });
-    }
-    return data;
-  }, [groupingData]);
-
-  const values: { name: string; group: string }[] = React.useMemo(() => {
-    let data: { name: string; group: string }[] = [];
-    groupingData?.[groupName as groupNames].forEach((option: string) => {
-      let split = option.split('.');
-      data.push({ name: option, group: split[1] });
+  const values: GroupingSelectOptionType[] = React.useMemo(() => {
+    let data: { value: string; group: string; label: string }[] = [];
+    groupingData.selectOptions.forEach((option) => {
+      if (groupingData?.[groupName].indexOf(option.value) !== -1) {
+        data.push(option);
+      }
     });
     return data;
   }, [groupName, groupingData]);
@@ -66,8 +57,8 @@ function GroupingPopover({
     onGroupingModeChange({
       groupName,
       value: checked,
-      options: groupingData.reverseMode[groupName as groupNames]
-        ? options
+      options: groupingData.reverseMode[groupName as GroupNameType]
+        ? groupingData.selectOptions
         : null,
     });
   }
@@ -81,12 +72,12 @@ function GroupingPopover({
             size='small'
             multiple
             disableCloseOnSelect
-            options={options}
+            options={groupingData?.selectOptions}
             value={values}
             onChange={onChange}
             groupBy={(option) => option.group}
-            getOptionLabel={(option) => getOptionLabel(option.name)}
-            getOptionSelected={(option, value) => option.name === value.name}
+            getOptionLabel={(option) => option.label}
+            getOptionSelected={(option, value) => option.value === value.value}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -103,7 +94,7 @@ function GroupingPopover({
                   style={{ marginRight: 4 }}
                   checked={selected}
                 />
-                {getOptionLabel(option.name)}
+                {option.label}
               </React.Fragment>
             )}
           />
@@ -112,10 +103,12 @@ function GroupingPopover({
           <h3>select grouping mode</h3>
           <ToggleButton
             id='groupMode'
-            value={groupingData.reverseMode[groupName as groupNames]}
+            value={groupingData.reverseMode[groupName as GroupNameType]}
             leftLabel='Group'
             rightLabel='Reverse'
-            defaultChecked={groupingData.reverseMode[groupName as groupNames]}
+            defaultChecked={
+              groupingData.reverseMode[groupName as GroupNameType]
+            }
             onChange={handleGroupingMode}
           />
         </Box>

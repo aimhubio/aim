@@ -4,7 +4,7 @@ import { RouteChildrenProps } from 'react-router-dom';
 import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
 import {
-  groupNames,
+  GroupNameType,
   IMetricAppConfig,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
@@ -39,19 +39,20 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   groupingData: IMetricAppConfig['grouping'];
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
-  onFocusedStateChange?: (
+  onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
   onChangeHighlightMode: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
+  onTableRowClick: (rowKey: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
-  onGroupingReset: (groupName: groupNames) => void;
-  onGroupingApplyChange: (groupName: groupNames) => void;
+  onGroupingReset: (groupName: GroupNameType) => void;
+  onGroupingApplyChange: (groupName: GroupNameType) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'style') => void;
 }
 

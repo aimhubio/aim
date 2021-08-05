@@ -61,6 +61,7 @@ class TableRow extends React.PureComponent {
       onRowHover,
       onRowExpand,
       onRowHeightChange,
+      onRowClick,
       ...rest
     } = this.props;
     /* eslint-enable no-unused-vars */
@@ -144,7 +145,7 @@ class TableRow extends React.PureComponent {
   }
 
   _getEventHandlers(handlers = {}) {
-    const { rowData, rowIndex, rowKey, onRowHover } = this.props;
+    const { rowData, rowIndex, rowKey, onRowHover, onRowClick } = this.props;
     const eventHandlers = {};
     Object.keys(handlers).forEach((eventKey) => {
       const callback = handlers[eventKey];
@@ -178,6 +179,19 @@ class TableRow extends React.PureComponent {
           event,
         });
         mouseLeaveHandler && mouseLeaveHandler(event);
+      };
+    }
+
+    if (onRowClick) {
+      const clickHandler = eventHandlers['onClick'];
+      eventHandlers['onClick'] = (event) => {
+        onRowClick({
+          rowData,
+          rowIndex,
+          rowKey,
+          event,
+        });
+        clickHandler && clickHandler(event);
       };
     }
 
