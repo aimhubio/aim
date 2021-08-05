@@ -196,11 +196,11 @@ class RunPropsView:
         else:
             return self.meta_run_tree.view(path)
 
-    def __getattr__(self, item):
+    def __getitem__(self, item):
         if item in self.structured_run_cls.fields():
             return getattr(self.db.caches['runs_cache'][self.hashname], item)
         else:
-            return self.run.meta_run_tree.collect(item)
+            return self.meta_run_tree.collect(item)
 
 
 class RunView:

@@ -23,6 +23,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
         Property('updated_at', with_setter=False),
+        Property('hashname', autogenerate=False),
         Property('experiment', autogenerate=False),
         Property('tags', autogenerate=False),
     ]
@@ -33,10 +34,10 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         self._session = session
 
     def __repr__(self) -> str:
-        return f'<ModelMappedRun id={self.hash}, name=\'{self.name}\'>'
+        return f'<ModelMappedRun id={self.hashname}, name=\'{self.name}\'>'
 
     @property
-    def hash(self) -> str:
+    def hashname(self) -> str:
         return self._hash
 
     @classmethod
@@ -51,7 +52,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             # TODO: [AT] provide error message
             raise ValueError()
         session = self._session
-        model_inst = session.query(RunModel).filter(RunModel.hash == self._hash).first()
+        model_inst = session.query(RunModel).filter(RunModel.hash == self.hashname).first()
         if not model_inst:
             model_inst = RunModel(self._hash)
             session.add(model_inst)

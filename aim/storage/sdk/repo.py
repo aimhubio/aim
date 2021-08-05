@@ -122,12 +122,12 @@ class Repo:
 
     def query_runs(self, query: str = "") -> QueryRunTraceCollection:
         db = self.structured_db
-        db.init_cache(db.runs, lambda run: run.hashname)
+        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         return QueryRunTraceCollection(self, query)
 
     def traces(self, query: str = ""):
         db = self.structured_db
-        db.init_cache(db.runs, lambda run: run.hashname)
+        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         return QueryTraceCollection(repo=self, query=query)
 
     def iter_traces(self, query: str = ""):

@@ -35,7 +35,7 @@ class Searchable(ABC, Generic[T]):
 class Run(StructuredObject, Searchable['Run']):
     @property
     @abstractmethod
-    def hash(self) -> str:
+    def hashname(self) -> str:
         ...
 
     @property
