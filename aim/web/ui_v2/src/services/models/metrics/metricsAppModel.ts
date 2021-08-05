@@ -36,8 +36,9 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { IBookmarkFormState } from '../../../types/pages/metrics/components/BookmarkForm/BookmarkForm';
-import { stat } from 'fs';
+import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -128,13 +129,13 @@ function getMetricsData() {
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const { call } = metricsService.createApp();
+  const { call } = appsService.createApp();
   if (configData) {
     const data = await call({
       colorPalette: configData.grouping.paletteIndex,
     });
     if (data.id) {
-      metricsService
+      dashboardService
         .createBookmark()
         .call({ app_id: data.id, name, description });
     }

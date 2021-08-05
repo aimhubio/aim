@@ -8,9 +8,9 @@ import { IAppBarProps } from 'types/pages/metrics/components/AppBar/AppBar';
 function AppBar({
   onBookmarkCreate,
 }: IAppBarProps): React.FunctionComponentElement<React.ReactNode> {
-  const [openBookmark, setOpenBookmark] = React.useState(false);
+  const [openBookmark, setOpenBookmark] = React.useState<boolean>(false);
 
-  function handleOpenChange() {
+  function handleOpenChange(): void {
     setOpenBookmark(!openBookmark);
   }
   return (
