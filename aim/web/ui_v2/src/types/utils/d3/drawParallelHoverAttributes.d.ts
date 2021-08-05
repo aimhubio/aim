@@ -20,6 +20,8 @@ export interface IDrawParallelHoverAttributesProps {
     updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
     updateHoverAttributes?: (mousePosition: [number, number]) => void;
     setActiveLine: (lineKey: string) => void;
+    yColorIndicatorScale: d3.ScaleSequential;
+    mousePosition: number[];
   }>;
   syncHoverState: (params: ISyncHoverStateParams | null) => void;
   closestCircleRef: React.MutableRefObject<>;
@@ -27,6 +29,7 @@ export interface IDrawParallelHoverAttributesProps {
   index: number;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
+  isVisibleColorIndicator: boolean;
 }
 
 export interface IGetParallelNearestCirclesProps {
@@ -36,6 +39,7 @@ export interface IGetParallelNearestCirclesProps {
   mouseX: number;
   mouseY: number;
   keysOfDimensions: string[];
+  isVisibleColorIndicator?: boolean;
 }
 
 export interface IParallelClosestCircle {
