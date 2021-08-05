@@ -155,6 +155,7 @@ const LineChart = React.forwardRef(function LineChart(
         brushRef,
         plotBoxRef,
         plotNodeRef,
+        attributesNodeRef,
         visBoxRef,
         axesRef,
         attributesRef,
@@ -180,7 +181,15 @@ const LineChart = React.forwardRef(function LineChart(
         requestAnimationFrame(renderChart);
       }
     },
-    [],
+    [
+      data,
+      zoomMode,
+      displayOutliers,
+      highlightMode,
+      axesScaleType,
+      curveInterpolation,
+      zoomMode,
+    ],
   );
 
   useResizeObserver(resizeObserverCallback, parentRef);

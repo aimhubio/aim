@@ -5,6 +5,7 @@ import { ISyncHoverStateParams } from './drawHoverAttributes';
 export interface IDrawBrushProps extends IGetAxesScaleProps {
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;
+  attributesNodeRef: React.MutableRefObject<>;
   brushRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
   axesRef: React.MutableRefObject<>;

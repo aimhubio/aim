@@ -4,12 +4,14 @@ import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
 import getAxisScale from './getAxisScale';
 import lineGenerator from './lineGenerator';
 import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { CircleEnum } from './index';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
     brushRef,
     plotBoxRef,
     plotNodeRef,
+    attributesNodeRef,
     visBoxRef,
     axesRef,
     attributesRef,
@@ -107,32 +109,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    let updateMousePos = mousePos;
-
-    if (attributesRef.current.focusedState.active) {
-      updateMousePos = [
-        attributesRef.current.xScale(attributesRef.current.focusedState.xValue),
-        attributesRef.current.yScale(attributesRef.current.focusedState.yValue),
-      ];
-    } else if (
-      attributesRef.current.activePoint?.xValue &&
-      attributesRef.current.activePoint.yValue
-    ) {
-      updateMousePos = [
-        attributesRef.current.xScale(attributesRef.current.activePoint.xValue),
-        attributesRef.current.yScale(attributesRef.current.activePoint.yValue),
-      ];
-    }
-
-    const activePoint =
-      attributesRef.current.updateFocusedChart(updateMousePos);
-
-    if (typeof syncHoverState === 'function') {
-      syncHoverState({
-        activePoint,
-        focusedStateActive: attributesRef.current.focusedState.active,
-      });
-    }
+    attributesRef.current.updateFocusedChart();
 
     linesNodeRef.current
       .selectAll('.Line')
@@ -166,7 +143,7 @@ function drawBrush(props: IDrawBrushProps): void {
     linesRef.current.updateLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
-    attributesRef.current.updateFocusedChart(d3.pointer(event));
+    attributesRef.current.updateFocusedChart();
   }
 }
 
