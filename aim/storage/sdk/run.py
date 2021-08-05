@@ -42,6 +42,7 @@ class Run:
         self.hashname = hashname
 
         self._hash = None
+        self._props = None
 
         meta_container: ContainerView = self.repo.request(
             "meta", hashname, read_only=read_only, from_union=True
@@ -128,8 +129,15 @@ class Run:
         epoch_view[step] = epoch
         time_view[step] = time()
 
+    @property
+    def props(self):
+        if self._props is None:
+            self._props = self.repo.structured_db.find_run(self.hashname)
+        return self._props
+
     def proxy(self):
-        return AimObjectProxy(lambda: self.meta_run_tree, view=self.meta_run_tree)
+        run = RunView(self)
+        return AimObjectProxy(lambda: run, view=run)
 
     def trace_tree(self, name: str, context: Context) -> TreeView:
         return self.series_run_tree.view((context.idx, name))
@@ -167,3 +175,61 @@ class Run:
         if self._hash is None:
             self._hash = self._calc_hash()
         return self._hash
+
+
+from aim.storage.structured.entities import StructuredObject
+from aim.storage.types import Union, AimObjectKey, AimObjectPath
+
+
+class RunPropsView:
+    def __init__(self, run: Run):
+        self.meta_run_tree: TreeView = run.meta_run_tree
+        self.hashname = run.hashname
+        self.db = run.repo.structured_db
+        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
+
+    def view(self, path):
+        if isinstance(path, (int, str)):
+            path = [path]
+        if path[0] in self.structured_run_cls.fields():
+            return None
+        else:
+            return self.meta_run_tree.view(path)
+
+    def __getattr__(self, item):
+        if item in self.structured_run_cls.fields():
+            return getattr(self.db.caches['runs_cache'][self.hashname], item)
+        else:
+            return self.run.meta_run_tree.collect(item)
+
+
+class RunView:
+
+    def __init__(self, run: Run):
+        self.meta_run_tree: TreeView = run.meta_run_tree
+        self.props_view = RunPropsView(run)
+
+    def __getitem__(self, key):
+        if key == 'props':
+            return None
+        else:
+            return self.meta_run_tree.collect(key)
+
+    def get(
+        self,
+        key,
+        default: Any = None
+    ) -> AimObject:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
+    def view(self, path: Union[AimObjectKey, AimObjectPath]):
+        if isinstance(path, (int, str)):
+            path = [path]
+
+        if path[0] == 'props':
+            return self.props_view
+        else:
+            return self.meta_run_tree.view(path)

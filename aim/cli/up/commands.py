@@ -43,7 +43,7 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
 
     # TODO: [AT] find better way to access run_metadata_db
     project = Project()
-    run_metadata_db = project.repo.run_metadata_db
+    run_metadata_db = project.repo.structured_db
     run_metadata_db.run_upgrades()
 
     if dev:

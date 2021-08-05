@@ -23,6 +23,8 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
         Property('updated_at', with_setter=False),
+        Property('experiment', autogenerate=False),
+        Property('tags', autogenerate=False),
     ]
 
     def __init__(self, _hash: str, session):
