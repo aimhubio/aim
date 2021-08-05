@@ -32,7 +32,7 @@ const bookmarkList: IBookmarkCardProps[] = [
     path: '',
   },
 ];
-function Bookmarks() {
+function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Bookmarks'>
       <Grid container justify='center'>

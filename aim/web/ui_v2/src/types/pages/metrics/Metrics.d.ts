@@ -17,6 +17,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IActivePoint } from '../../utils/d3/drawHoverAttributes';
+import { IBookmarkFormState } from './components/BookmarkForm/BookmarkForm';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -54,6 +55,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onGroupingReset: (groupName: GroupNameType) => void;
   onGroupingApplyChange: (groupName: GroupNameType) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'style') => void;
+  onBookmarkCreate: (params: IBookmarkFormState) => void;
 }
 
 export interface IOnSmoothingChange {

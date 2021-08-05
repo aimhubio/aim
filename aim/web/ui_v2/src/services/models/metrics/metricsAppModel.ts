@@ -36,6 +36,8 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import { IBookmarkFormState } from '../../../types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { stat } from 'fs';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -122,6 +124,21 @@ function getMetricsData() {
       }),
     abort,
   };
+}
+
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const { call } = metricsService.createApp();
+  if (configData) {
+    const data = await call({
+      colorPalette: configData.grouping.paletteIndex,
+    });
+    if (data.id) {
+      metricsService
+        .createBookmark()
+        .call({ app_id: data.id, name, description });
+    }
+  }
 }
 
 function getGroupingSelectOptions(
@@ -692,6 +709,7 @@ const metricAppModel = {
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
+  onBookmarkCreate,
 };
 
 export default metricAppModel;

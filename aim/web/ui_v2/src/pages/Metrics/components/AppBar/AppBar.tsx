@@ -2,8 +2,17 @@ import React from 'react';
 import { Breadcrumbs, Button, Grid, Link, Typography } from '@material-ui/core';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import BookmarkForm from '../BookmarkForm/BookmarkForm';
+import { IAppBarProps } from 'types/pages/metrics/components/AppBar/AppBar';
 
-function AppBar(): React.FunctionComponentElement<React.ReactNode> {
+function AppBar({
+  onBookmarkCreate,
+}: IAppBarProps): React.FunctionComponentElement<React.ReactNode> {
+  const [openBookmark, setOpenBookmark] = React.useState(false);
+
+  function handleOpenChange() {
+    setOpenBookmark(!openBookmark);
+  }
   return (
     <Grid container justify='space-between' alignItems='center'>
       <Grid item>
@@ -23,9 +32,19 @@ function AppBar(): React.FunctionComponentElement<React.ReactNode> {
       <Grid item>
         <Grid container spacing={1}>
           <Grid item>
-            <Button size='small' variant='outlined' color='primary'>
+            <Button
+              onClick={handleOpenChange}
+              size='small'
+              variant='outlined'
+              color='primary'
+            >
               S
             </Button>
+            <BookmarkForm
+              onBookmarkCreate={onBookmarkCreate}
+              onClose={handleOpenChange}
+              open={openBookmark}
+            />
           </Grid>
           <Grid item>
             <Button size='small' variant='outlined' color='primary'>

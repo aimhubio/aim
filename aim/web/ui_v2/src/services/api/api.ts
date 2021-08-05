@@ -32,11 +32,7 @@ function get<ResponseDataType>(url: string, options?: RequestInit) {
   });
 }
 
-function post<ResponseDataType>(
-  url: string,
-  data: Body,
-  options?: RequestInit,
-) {
+function post<ResponseDataType>(url: string, data: any, options?: RequestInit) {
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'POST',
     ...options,
