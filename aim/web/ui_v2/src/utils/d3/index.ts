@@ -47,7 +47,7 @@ enum ScaleEnum {
 
 enum ChartTypeEnum {
   LineChart = 'LineChart',
-  ParPlot = 'ParPlot',
+  HighPlot = 'HighPlot',
   ScatterPlot = 'ScatterPlot',
 }
 
