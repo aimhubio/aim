@@ -164,6 +164,7 @@ const LineChart = React.forwardRef(function LineChart(
         axesScaleType,
         min,
         max,
+        syncHoverState,
       });
     }
   }

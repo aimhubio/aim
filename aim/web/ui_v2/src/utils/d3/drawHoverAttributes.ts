@@ -321,6 +321,20 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .on('click', handlePointClick);
   }
 
+  function drawLinesHighlightMode(): void {
+    linesNodeRef.current.classed(
+      'highlight',
+      highlightMode !== HighlightEnum.Off,
+    );
+  }
+
+  function drawCirclesHighlightMode(): void {
+    attributesNodeRef.current.classed(
+      'highlight',
+      highlightMode !== HighlightEnum.Off,
+    );
+  }
+
   function getActivePoint(circle: INearestCircle): IActivePoint {
     return {
       key: circle.key,
@@ -340,14 +354,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
     const nearestCircles = getNearestCircles(mouseX);
 
-    linesNodeRef.current.classed(
-      'highlight',
-      highlightMode !== HighlightEnum.Off,
-    );
-    attributesNodeRef.current.classed(
-      'highlight',
-      highlightMode !== HighlightEnum.Off,
-    );
+    drawLinesHighlightMode();
+    drawCirclesHighlightMode();
 
     clearHorizontalAxisLine();
     clearYAxisLabel();
@@ -388,10 +396,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   ): IActivePoint {
     // hover Line Changed case
     if (force || circle.key !== attributesRef.current.lineKey) {
-      linesNodeRef.current.classed(
-        'highlight',
-        highlightMode !== HighlightEnum.Off,
-      );
+      drawLinesHighlightMode();
       clearActiveLine(attributesRef.current.lineKey);
       drawActiveLine(circle.key);
     }
@@ -403,16 +408,17 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       circle.x !== attributesRef.current.activePoint?.xPos ||
       circle.y !== attributesRef.current.activePoint?.yPos
     ) {
-      attributesNodeRef.current.classed(
-        'highlight',
-        highlightMode !== HighlightEnum.Off,
-      );
+      drawCirclesHighlightMode();
       drawCircles(nearestCircles);
       drawVerticalAxisLine(circle.x);
       drawHorizontalAxisLine(circle.y);
       drawXAxisLabel(circle.x);
       drawYAxisLabel(circle.y);
       drawActiveCircle(circle.key);
+
+      if (attributesRef.current.focusedState?.active) {
+        drawFocusedCircle(circle.key);
+      }
     }
 
     const activePoint = getActivePoint(circle);
@@ -482,7 +488,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       circle.y + margin.top,
     ];
     const activePoint = updateFocusedChart(mousePos);
-    drawFocusedCircle(activePoint.key);
 
     if (typeof syncHoverState === 'function') {
       syncHoverState({
@@ -559,10 +564,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       ];
       if (isMouseInVisArea(mousePos[0], mousePos[1])) {
         const activePoint = updateFocusedChart(mousePos, true);
-
-        if (focusedState.active) {
-          drawFocusedCircle(activePoint.key);
-        }
 
         if (typeof syncHoverState === 'function') {
           syncHoverState({

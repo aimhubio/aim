@@ -19,6 +19,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesScaleType,
     min,
     max,
+    syncHoverState,
   } = props;
 
   const brush = d3
@@ -106,7 +107,32 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateFocusedChart(mousePos);
+    let updateMousePos = mousePos;
+
+    if (attributesRef.current.focusedState.active) {
+      updateMousePos = [
+        attributesRef.current.xScale(attributesRef.current.focusedState.xValue),
+        attributesRef.current.yScale(attributesRef.current.focusedState.yValue),
+      ];
+    } else if (
+      attributesRef.current.activePoint?.xValue &&
+      attributesRef.current.activePoint.yValue
+    ) {
+      updateMousePos = [
+        attributesRef.current.xScale(attributesRef.current.activePoint.xValue),
+        attributesRef.current.yScale(attributesRef.current.activePoint.yValue),
+      ];
+    }
+
+    const activePoint =
+      attributesRef.current.updateFocusedChart(updateMousePos);
+
+    if (typeof syncHoverState === 'function') {
+      syncHoverState({
+        activePoint,
+        focusedStateActive: attributesRef.current.focusedState.active,
+      });
+    }
 
     linesNodeRef.current
       .selectAll('.Line')
