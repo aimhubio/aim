@@ -4,13 +4,14 @@ from time import time
 
 from collections import Counter
 
-from aim.storage.types import AimObject
+from aim.storage.types import Union, AimObjectKey, AimObjectPath, AimObject
 from aim.storage.sdk.trace import RunTraceCollection
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
 from aim.storage.containerview import ContainerView
 from aim.storage.proxy import AimObjectProxy
+from aim.storage.structured.entities import StructuredObject
 
 from typing import Any, Dict, Iterator, Optional, Tuple
 from typing import TYPE_CHECKING
@@ -198,10 +199,6 @@ class Run:
         from datetime import datetime
         created_time = datetime(2021, 1, 1, hour=0, minute=0, second=0)
         return created_time.timestamp()
-
-
-from aim.storage.structured.entities import StructuredObject
-from aim.storage.types import Union, AimObjectKey, AimObjectPath
 
 
 class RunPropsView:
