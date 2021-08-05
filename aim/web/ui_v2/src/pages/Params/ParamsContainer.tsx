@@ -45,7 +45,6 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   }
 
   function onColorIndicatorChange() {
-    chartPanelRef?.current?.updateLinesAndCirclesByColorIndicator?.();
     setIsVisibleColorIndicator(!isVisibleColorIndicator);
   }
 

@@ -149,11 +149,13 @@ function linesRenderer({
             isDotted: pathData.isDotted,
             key,
             color: isVisibleColorIndicator
-              ? getColorIndicatorScaleValue(
+              ? getColorIndicatorScaleValue({
                   line,
                   keysOfDimensions,
-                  attributesRef,
-                )
+                  yColorIndicatorScale:
+                    attributesRef.current.yColorIndicatorScale,
+                  yScale: attributesRef.current.yScale,
+                })
               : color,
           });
         }
@@ -168,7 +170,12 @@ function linesRenderer({
         isDotted: false,
         key,
         color: isVisibleColorIndicator
-          ? getColorIndicatorScaleValue(line, keysOfDimensions, attributesRef)
+          ? getColorIndicatorScaleValue({
+              line,
+              keysOfDimensions,
+              yColorIndicatorScale: attributesRef.current.yColorIndicatorScale,
+              yScale: attributesRef.current.yScale,
+            })
           : color,
       });
     }

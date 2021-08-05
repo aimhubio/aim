@@ -179,12 +179,10 @@ const drawParallelHoverAttributes = ({
       .attr('cx', (circle: INearestCircle) => circle.x)
       .attr('cy', (circle: INearestCircle) => circle.y)
       .attr('r', CircleEnum.Radius)
-      .style(
-        'fill',
-        (circle: INearestCircle) => circle.color,
-        // isVisibleColorIndicator
-        //   ? attributesRef.current.yColorIndicatorScale(circle.lastYScalePos)
-        //   : circle.color,
+      .style('fill', (circle: INearestCircle) =>
+        isVisibleColorIndicator
+          ? attributesRef.current.yColorIndicatorScale(circle.lastYScalePos)
+          : circle.color,
       )
       .on('click', function (this: SVGElement) {
         // TODO handle click
