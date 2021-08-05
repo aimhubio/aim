@@ -56,7 +56,7 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
         num_runs += 1
 
     return {
-        'num_experiments': len(factory.experiments),
+        'num_experiments': len(factory.experiments()),
         'num_runs': num_runs,
         'activity_map': dict(activity_counter),
     }

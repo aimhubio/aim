@@ -59,8 +59,10 @@ class ModelMappedCollection(Collection[T]):
         return ret
 
     def __len__(self):
-        self._create_cache()
-        return len(self._cache)
+        if self._cache is not None:
+            return len(self._cache)
+        else:
+            return self.query.count()
 
     def __contains__(self, item: Union[T, str]) -> bool:
         self._create_cache()
