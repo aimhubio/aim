@@ -159,6 +159,22 @@ class Run:
         trace = Trace(metric_name, context, self)
         return trace if bool(trace) else None
 
+    def get_params(self):
+        return self.meta_run_tree['_attributes']
+
+    def get_traces_overview(self) -> list:
+        traces = self.meta_run_tree.collect('traces')
+        traces_overview = []
+        for idx in traces.keys():
+            ctx_dict = self.idx_to_ctx(idx).to_dict()
+            for metric_name, value in traces[idx].items():
+                traces_overview.append({
+                    'context': ctx_dict,
+                    'metric_name': metric_name,
+                    'last_value': value
+                })
+        return traces_overview
+
     def _calc_hash(self) -> int:
         # TODO maybe take read_only flag into account?
         return hash_auto((self.hashname, hash(self.repo)))
@@ -167,3 +183,10 @@ class Run:
         if self._hash is None:
             self._hash = self._calc_hash()
         return self._hash
+
+    # TODO: [MV] refer to real implementation later, hardcoded for now
+    @property
+    def started_at(self) -> float:
+        from datetime import datetime
+        created_time = datetime(2021, 1, 1, hour=0, minute=0, second=0)
+        return created_time.timestamp()

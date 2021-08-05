@@ -1,6 +1,6 @@
 import os
 
-from typing import Dict, Iterator, NamedTuple, Optional
+from typing import Dict, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
 from aim.storage.sdk.run import Run
@@ -120,11 +120,31 @@ class Repo:
                 continue
             yield Run(run_name, repo=self, read_only=True)
 
+    def get_run(self, hashname: str) -> Optional['Run']:
+        if hashname not in self.meta_tree.keys():
+            return None
+        else:
+            return Run(hashname, repo=self, read_only=True)
+
     def query_runs(self, query: str = "") -> QueryRunTraceCollection:
         return QueryRunTraceCollection(self, query)
 
-    def traces(self, query: str = ""):
+    def traces(self, query: str = "") -> QueryTraceCollection:
         return QueryTraceCollection(repo=self, query=query)
 
-    def iter_traces(self, query: str = ""):
+    def iter_traces(self, query: str = "") -> QueryTraceCollection:
         return self.traces(query=query)
+
+    # TODO: confirm access to meta_tree with Run('_').meta_tree
+    def collect_metrics(self) -> List[str]:
+        default_run = Run('_', repo=self, read_only=True)
+        traces = default_run.meta_tree.collect('traces')
+        metrics = set()
+        for trace_metrics in traces.values():
+            metrics.update(trace_metrics.keys())
+
+        return list(metrics)
+
+    def collect_params(self):
+        default_run = Run('_', repo=self, read_only=True)
+        return default_run.meta_tree.collect('_attributes', strict=False)
