@@ -82,7 +82,7 @@ async def run_traces_api(run_id: str):
     run = project.repo.get_run(run_id)
     if not run:
         raise HTTPException(status_code=404)
-    return JSONResponse(run.get_params())
+    return JSONResponse(run[...])
 
 
 @commits_router.get('/{run_id}/traces/')

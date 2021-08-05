@@ -168,7 +168,7 @@ class DB(object):
         })
 
         self.dbs: Dict[bytes, aimrocks.DB] = {
-            encode_path((self.db_name, prefix)):
+            encode_path((self.db_name, 'chunks', prefix)):
                 aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
             for prefix, path in self.paths.items()
         }

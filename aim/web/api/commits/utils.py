@@ -122,9 +122,9 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
                 })
 
         runs_dict[run.hashname] = {
-            'params': run.get_params(),
+            'params': run[...],
             'traces': traces_list,
-            'created_at': run.started_at,
+            'created_at': run.creation_time,
         }
 
     return runs_dict
@@ -135,9 +135,9 @@ def query_runs_dict_constructor(runs: QueryRunTraceCollection) -> dict:
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
         runs_dict[run.hashname] = {
-            'params': run.get_params(),
+            'params': run[...],
             'traces': run.get_traces_overview(),
-            'created_at': run.started_at,
+            'created_at': run.creation_time,
         }
 
     return runs_dict
