@@ -29,6 +29,12 @@ class SingleContainerView(ContainerView):
 
         self.read_only = read_only
 
+    def preload(self):
+        try:
+            self.container.preload()
+        except:
+            pass
+
     def absolute_path(
         self,
         *args: Iterable[bytes]
@@ -162,13 +168,8 @@ class SingleContainerView(ContainerView):
     ) -> Iterator[Tuple[bytes, bytes]]:
         path = self.absolute_path(key)
         for keys, val in self.container.items(path):
-            assert keys.startswith(path)
-            if path:
-                _prefix, _path, keys = keys.partition(path)
-                assert not _prefix and _path == path
-                yield keys, val
-            else:
-                yield keys, val
+            # assert keys.startswith(path)
+            yield keys[len(path):], val
 
     def keys(
         self,

@@ -73,16 +73,9 @@ def iter_fold_tree(
     level: int = 0,
     strict: bool = True
 ) -> Iterator[Tuple[AimObjectPath, AimObject]]:
-    # assert 0 <= level <= 1
     stack = []
-    # path = list(prefix)
     path = []
 
-    # # TODO remove
-    # paths_vals = list(paths_vals)
-    # L = paths_vals
-
-    paths_vals = iter(paths_vals)
     try:
         keys, val = next(paths_vals)
         # assert not keys
@@ -97,10 +90,13 @@ def iter_fold_tree(
             raise KeyError
 
     for keys, val in paths_vals:
-        keys = list(keys)
+        idx = 0
+        while idx < len(path):
+            if keys[idx] != path[idx]:
+                break
+            idx += 1
 
-        # TODO precalc common path; implement in O(1)
-        while path != keys[:len(path)]:
+        while idx < len(path):
             last_state = stack.pop()
             if len(stack) == level:
                 yield tuple(path), last_state
@@ -112,6 +108,7 @@ def iter_fold_tree(
             # override with new
             stack.pop()
             path.pop()
+
         assert len(keys) == len(path) + 1
         key_to_add = keys[-1]
         path.append(key_to_add)
@@ -133,21 +130,10 @@ def iter_fold_tree(
             raise ValueError
         stack.append(node)
 
-        # # stack.pop()
-        # stack.append(new_state)
-
-    # while path != keys[:len(path)]:
-    #     last_state = stack.pop()
-    #     if len(stack) == level:
-    #         yield path, last_state
-    #     path.pop()
-
-    # if level == 0:
-    #     yield (), stack[0]
 
     if level < len(stack):
         yield tuple(path[:level]), stack[level]
-    # return stack[0]
+
 
 
 def encode_paths_vals(
@@ -169,23 +155,30 @@ def decode_paths_vals(
         val = E.decode(encoded_val)
         # go back
 
-        if current_path == path:
-            continue
-
         if current_path is None:
             if path:
                 yield (), ObjectFlag
             current_path = []
+        elif current_path == path:
+            continue
 
-        while path[:len(current_path)] != current_path:
-            current_path.pop()
+        idx = 0
+        new_path = []
+        while idx < len(current_path):
+            key = path[idx]
+            if key != current_path[idx]:
+                break
+            new_path.append(key)
+            idx += 1
+        current_path = new_path
 
-        while current_path != path:
-            current_path.append(path[len(current_path)])
-            if current_path != path:
+        while idx < len(path):
+            current_path.append(path[idx])
+            if idx < len(path):
                 yield tuple(current_path), ObjectFlag
+            idx += 1
 
-        yield path, val
+        yield tuple(path), val
 
 
 def encode_tree(
@@ -207,7 +200,7 @@ def decode_tree(
 
 
 def iter_decode_tree(
-    paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
+    paths_vals: Iterator[Tuple[bytes, bytes]],
     level: int = 1
 ):
     return iter_fold_tree(

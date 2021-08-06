@@ -25,13 +25,13 @@ if TYPE_CHECKING:
 
 
 extra_builtins = {
-    "datetime": datetime,
-    "sorted": sorted,
-    "min": min,
-    "max": max,
-    "sum": sum,
-    "any": any,
-    "all": all,
+    'datetime': datetime,
+    'sorted': sorted,
+    'min': min,
+    'max': max,
+    'sum': sum,
+    'any': any,
+    'all': all,
 }
 
 builtins = safe_builtins.copy()
@@ -41,12 +41,12 @@ builtins.update(extra_builtins)
 
 
 def safer_getattr(object, name, default=None, getattr=getattr):
-    """Getattr implementation which prevents using format on string objects.
+    '''Getattr implementation which prevents using format on string objects.
 
     format() is considered harmful:
     http://lucumr.pocoo.org/2016/12/29/careful-with-str-format/
 
-    """
+    '''
     if name == 'format' and isinstance(object, str):
         raise NotImplementedError(
             'Using format() on a %s is not safe.' % object.__class__.__name__)
@@ -62,18 +62,18 @@ builtins['_getattr_'] = safer_getattr
 
 
 restricted_globals = {
-    "__builtins__": builtins,
-    "_write_": full_write_guard,
-    "_getiter_": iter,
-    "_getitem_": default_guarded_getitem,
-    "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
-    "_unpack_sequence_": guarded_unpack_sequence
+    '__builtins__': builtins,
+    '_write_': full_write_guard,
+    '_getiter_': iter,
+    '_getitem_': default_guarded_getitem,
+    '_iter_unpack_sequence_': guarded_iter_unpack_sequence,
+    '_unpack_sequence_': guarded_unpack_sequence
 }
 
 logger = logging.getLogger(__name__)
 
 
-CODE_FORMAT = """
+CODE_FORMAT = '''
 def check(
     run,
     context = None,
@@ -84,7 +84,7 @@ def check(
     metric = metric_name
 
     return bool({expr})
-"""
+'''
 
 
 class Query:

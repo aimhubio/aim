@@ -84,6 +84,9 @@ class Trace(Generic[T]):
     def __len__(self) -> int:
         return len(self.values)
 
+    def preload(self):
+        self.tree.preload()
+
     def dataframe(
         self,
         include_name: bool = False,
@@ -94,6 +97,8 @@ class Trace(Generic[T]):
         # Returns dataframe with rows corresponding to iters
         # Columns: `step`, `value`, `time`
         # steps = list(self.steps)
+        self.preload()
+
         if only_last:
             last_step, last_value = self.values.last()
             steps = [last_step]
@@ -167,12 +172,15 @@ class TraceCollection:
 
     def dataframe(
         self,
-        only_last: bool = False
+        only_last: bool = False,
+        include_run=True,
+        include_name=True,
+        include_context=True
     ) -> 'DataFrame':
         dfs = [
-            trace.dataframe(include_run=True,
-                            include_name=True,
-                            include_context=True,
+            trace.dataframe(include_run=include_run,
+                            include_name=include_name,
+                            include_context=include_context,
                             only_last=only_last)
             for trace in self
         ]
