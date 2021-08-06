@@ -20,22 +20,23 @@ from RestrictedPython.Guards import (
 )
 
 from aim.storage.proxy import AimObjectProxy
-from aim.storage.run_metadata.entities import SafeNone
+from aim.storage.types import SafeNone
 
 if TYPE_CHECKING:
-    from aim.storage.repo import Repo
-    from aim.storage.run import Run
+    # TODO: [AT] get rid of SDK Repo/Run deps.
+    from aim.storage.sdk.repo import Repo
+    from aim.storage.sdk.run import Run
     from aim.storage.context import Context
 
 
 extra_builtins = {
-    "datetime": datetime,
-    "sorted": sorted,
-    "min": min,
-    "max": max,
-    "sum": sum,
-    "any": any,
-    "all": all,
+    'datetime': datetime,
+    'sorted': sorted,
+    'min': min,
+    'max': max,
+    'sum': sum,
+    'any': any,
+    'all': all,
 }
 
 builtins = safe_builtins.copy()
@@ -45,12 +46,12 @@ builtins.update(extra_builtins)
 
 
 def safer_getattr(object, name, default=None, getattr=getattr):
-    """Getattr implementation which prevents using format on string objects.
+    '''Getattr implementation which prevents using format on string objects.
 
     format() is considered harmful:
     http://lucumr.pocoo.org/2016/12/29/careful-with-str-format/
 
-    """
+    '''
     if name == 'format' and isinstance(object, str):
         raise NotImplementedError(
             'Using format() on a %s is not safe.' % object.__class__.__name__)
@@ -66,18 +67,18 @@ builtins['_getattr_'] = safer_getattr
 
 
 restricted_globals = {
-    "__builtins__": builtins,
-    "_write_": full_write_guard,
-    "_getiter_": iter,
-    "_getitem_": default_guarded_getitem,
-    "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
-    "_unpack_sequence_": guarded_unpack_sequence
+    '__builtins__': builtins,
+    '_write_': full_write_guard,
+    '_getiter_': iter,
+    '_getitem_': default_guarded_getitem,
+    '_iter_unpack_sequence_': guarded_iter_unpack_sequence,
+    '_unpack_sequence_': guarded_unpack_sequence
 }
 
 logger = logging.getLogger(__name__)
 
 
-CODE_FORMAT = """
+CODE_FORMAT = '''
 def check(
     run,
     run_ = None,
@@ -89,7 +90,7 @@ def check(
     metric = metric_name
 
     return bool({expr})
-"""
+'''
 
 
 class Query:
@@ -177,12 +178,13 @@ class RestrictedPythonQuery(Query):
         metric_name: str = None
     ) -> bool:
 
-        run_tree_proxy = AimObjectProxy(lambda: run.meta_run_tree,
-                                        run.meta_run_tree)
+        # TODO: [AT] get rid of SDK Repo/Run deps.
+        run_tree_proxy = AimObjectProxy(lambda: run.meta_run_attrs_tree,
+                                        run.meta_run_attrs_tree)
 
         if not self.run_metadata_cache:
             self.run_metadata_cache = RunMetadataCache(run.repo)  # to not overcomplicate things to pass repo to init
-        run_sql_meta_proxy = AimObjectProxy(lambda: self.run_metadata_cache()[run.name])
+        run_sql_meta_proxy = AimObjectProxy(lambda: self.run_metadata_cache()[run.hashname])
 
         context_proxy = AimObjectProxy(lambda: context.to_dict())
 

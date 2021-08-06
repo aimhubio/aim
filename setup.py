@@ -47,7 +47,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.2',
+    'aimrocks==0.0.5',
     'anytree>=2.8.0',
     'click>=7.0',
     'GitPython>=3.0.4',
@@ -139,13 +139,13 @@ setup(
     ],
     ext_modules=[
         Extension(
-            'aim.storage.c_hash',
-            ['aim/storage/c_hash.pyx'],
+            'aim.storage.hashing.c_hash',
+            ['aim/storage/hashing/c_hash.pyx'],
             language='c++'
         ),
         Extension(
-            'aim.storage.encoding_native',
-            ['aim/storage/encoding_native.pyx'],
+            'aim.storage.encoding.encoding_native',
+            ['aim/storage/encoding/encoding_native.pyx'],
             language='c++'
         )
     ],

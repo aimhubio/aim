@@ -5,8 +5,8 @@ from sqlalchemy import create_engine
 
 from alembic import context
 
-from aim.storage.run_metadata.sql_engine.models import *
-from aim.storage.run_metadata.db import DB
+from aim.storage.structured.sql_engine.models import *
+from aim.storage.structured.db import DB
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

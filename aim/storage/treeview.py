@@ -51,7 +51,10 @@ class TreeView:  # TODO implement (MutableMapping):
             path = (path,)
         prefix = E.encode_path(path)
         it = self.container.items(prefix)
-        return treeutils.decode_tree(it, strict=strict)
+        try:
+            return treeutils.decode_tree(it, strict=strict)
+        except KeyError:
+            raise KeyError('No key {} is present.'.format(path))
 
     def __getitem__(
         self,

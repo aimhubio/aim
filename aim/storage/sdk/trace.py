@@ -11,12 +11,12 @@ from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.arrayview import ArrayView
 
-from typing import Any, Generic, Iterator, NamedTuple, TypeVar, List
+from typing import Generic, Iterator, TypeVar, List
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aim.storage.run import Run
-    from aim.storage.repo import Repo
+    from aim.storage.sdk.run import Run
+    from aim.storage.sdk.repo import Repo
     from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
