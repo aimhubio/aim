@@ -1,3 +1,5 @@
 import { IBookmarkData } from 'types/services/models/metrics/metricsAppModel';
 
-export interface IBookmarkCardProps extends IBookmarkData {}
+export interface IBookmarksProps {
+  data: IBookmarkData[];
+}

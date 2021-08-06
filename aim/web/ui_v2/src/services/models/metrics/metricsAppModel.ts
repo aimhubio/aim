@@ -37,7 +37,6 @@ import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IBookmarkFormState } from '../../../types/pages/metrics/components/BookmarkForm/BookmarkForm';
-import { stat } from 'fs';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 

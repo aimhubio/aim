@@ -5,7 +5,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 
 const endpoints = {
-  CREATE_DASHBOARD: '/dashboards',
+  CREATE_DASHBOARD: 'dashboards',
 };
 
 function createBookmark() {
@@ -23,9 +23,25 @@ function createBookmark() {
   };
 }
 
+function fetchBookmarks() {
+  return {
+    call: () => ({
+      then: (resolve: (data: IBookmarkData[]) => void, reject?: unknown) => {
+        API.get(endpoints.CREATE_DASHBOARD)
+          .call()
+          .then((res: any) => {
+            resolve(res);
+          });
+      },
+    }),
+    abort: () => null,
+  };
+}
+
 const dashboardService = {
   endpoints,
   createBookmark,
+  fetchBookmarks,
 };
 
 export default dashboardService;

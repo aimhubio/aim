@@ -2,37 +2,14 @@ import React from 'react';
 import { Divider, Grid } from '@material-ui/core';
 
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
-import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
+import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
+import { IBookmarkData } from 'types/services/models/metrics/metricsAppModel';
 
 import './bookmarksStyle.scss';
 
-const bookmarkList: IBookmarkCardProps[] = [
-  {
-    name: 'bookmark 1',
-    selectLabel: '111',
-    ifLabel: '123',
-    path: '',
-  },
-  {
-    name: 'bookmark 2',
-    selectLabel: '111',
-    ifLabel: '123',
-    path: '',
-  },
-  {
-    name: 'bookmark 3',
-    selectLabel: '111',
-    ifLabel: '123',
-    path: '',
-  },
-  {
-    name: 'bookmark 4',
-    selectLabel: '111',
-    ifLabel: '123',
-    path: '',
-  },
-];
-function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
+function Bookmarks({
+  data,
+}: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Bookmarks'>
       <Grid container justify='center'>
@@ -41,11 +18,12 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
           <Divider />
           <div className='Bookmarks__list'>
             <Grid container spacing={1}>
-              {bookmarkList.map((bookmark) => (
-                <Grid key={bookmark.name} item xs={4}>
-                  <BookmarkCard {...bookmark} />
-                </Grid>
-              ))}
+              {data?.length > 0 &&
+                data.map((bookmark: IBookmarkData) => (
+                  <Grid key={bookmark.id} item xs={4}>
+                    <BookmarkCard {...bookmark} />
+                  </Grid>
+                ))}
             </Grid>
           </div>
         </Grid>
