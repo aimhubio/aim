@@ -8,6 +8,7 @@ import {
   drawParallelLines,
   drawParallelHoverAttributes,
   drawParallelAxesBrush,
+  drawParallelColorIndicator,
 } from 'utils/d3';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
@@ -15,7 +16,13 @@ import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 import './highPlot.scss';
 
 const HighPlot = React.forwardRef(function HighPlot(
-  { index, curveInterpolation, syncHoverState, data }: IHighPlotProps,
+  {
+    index,
+    curveInterpolation,
+    syncHoverState,
+    data,
+    isVisibleColorIndicator,
+  }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
@@ -67,6 +74,10 @@ const HighPlot = React.forwardRef(function HighPlot(
       attributesNodeRef,
     });
 
+    if (isVisibleColorIndicator) {
+      drawParallelColorIndicator({ index, plotBoxRef, plotNodeRef });
+    }
+
     drawParallelAxes({
       axesNodeRef,
       visBoxRef,
@@ -80,6 +91,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       attributesRef,
       attributesNodeRef,
       curveInterpolation,
+      isVisibleColorIndicator,
       linesRef,
       dimensions: data.dimensions,
       data: data.data,
@@ -98,9 +110,11 @@ const HighPlot = React.forwardRef(function HighPlot(
       attributesNodeRef,
       linesNodeRef,
       highlightedNodeRef,
+      isVisibleColorIndicator,
       highlightMode: 0,
       syncHoverState,
     });
+
     drawParallelAxesBrush({
       plotBoxRef,
       plotNodeRef,
@@ -110,17 +124,29 @@ const HighPlot = React.forwardRef(function HighPlot(
       dimensions: data.dimensions,
       data: data.data,
     });
-  }, [
-    // axisScaleType,
-    curveInterpolation,
-    index,
-    // highlightMode,
-    // min,
-    // max,
-    // processedData,
-    // xAlignment,
-    // zoomMode,
-  ]);
+    if (isVisibleColorIndicator) {
+      attributesRef.current.mousePosition &&
+        attributesRef.current.updateHoverAttributes(
+          attributesRef.current.mousePosition,
+          true,
+        );
+    }
+  }, [curveInterpolation, index, isVisibleColorIndicator]);
+
+  React.useImperativeHandle(ref, () => ({
+    setActiveLine: (lineKey: string) => {
+      attributesRef.current.setActiveLine?.(lineKey);
+    },
+    // updateHoverAttributes: (xValue: number) => {
+    //   attributesRef.current.updateHoverAttributes?.(xValue);
+    // },
+    clearHoverAttributes: () => {
+      attributesRef.current.clearHoverAttributes?.();
+    },
+    setFocusedState: (focusedState: IFocusedState) => {
+      attributesRef.current.focusedState = focusedState;
+    },
+  }));
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {

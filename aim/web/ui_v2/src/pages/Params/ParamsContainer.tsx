@@ -13,6 +13,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const [curveInterpolation, setCurveInterpolation] = useState<CurveEnum>(
     CurveEnum.Linear,
   );
+  const [isVisibleColorIndicator, setIsVisibleColorIndicator] =
+    useState<boolean>(false);
   const [focusedState, setFocusedState] = useState<IFocusedState>({
     key: null,
     xValue: null,
@@ -42,12 +44,18 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     );
   }
 
+  function onColorIndicatorChange() {
+    setIsVisibleColorIndicator(!isVisibleColorIndicator);
+  }
+
   return (
     <Params
       chartElemRef={chartElemRef}
       chartPanelRef={chartPanelRef}
       curveInterpolation={curveInterpolation}
       focusedState={focusedState}
+      isVisibleColorIndicator={isVisibleColorIndicator}
+      onColorIndicatorChange={onColorIndicatorChange}
       onCurveInterpolationChange={onCurveInterpolationChange}
       onActivePointChange={onActivePointChange}
     />

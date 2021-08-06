@@ -7,7 +7,9 @@ import {
   ILinesDataType,
   IDrawParallelLineProps,
   ILineRendererProps,
+  IGetColorIndicatorScaleValueProps,
 } from 'types/utils/d3/drawParallelLines';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 const initialPathData: InitialPathDataType = {
   dimensionList: [],
@@ -24,6 +26,7 @@ function drawParallelLines({
   data,
   linesRef,
   attributesNodeRef,
+  isVisibleColorIndicator,
 }: IDrawParallelLinesProps) {
   const keysOfDimensions: string[] = Object.keys(dimensions);
   linesRenderer({
@@ -32,6 +35,7 @@ function drawParallelLines({
     curveInterpolation,
     linesNodeRef,
     attributesRef,
+    isVisibleColorIndicator,
   });
   linesRef.current.updateLines = function (updatedData: ILinesDataType[]) {
     linesNodeRef.current?.selectAll('*')?.remove();
@@ -42,6 +46,7 @@ function drawParallelLines({
       curveInterpolation,
       linesNodeRef,
       attributesRef,
+      isVisibleColorIndicator,
     });
   };
 }
@@ -58,6 +63,7 @@ function drawParallelLine({
 }: IDrawParallelLineProps) {
   linesNodeRef.current
     .append('path')
+    .lower()
     .data([
       dimensionList.map((dimension: number | string, i: number) => [
         dimension,
@@ -88,6 +94,7 @@ function linesRenderer({
   curveInterpolation,
   linesNodeRef,
   attributesRef,
+  isVisibleColorIndicator,
 }: ILineRendererProps) {
   data.forEach(({ values: line, key, color }: ILinesDataType) => {
     if (Object.values(line).includes(null)) {
@@ -141,7 +148,15 @@ function linesRenderer({
             lineData: pathData.lineData,
             isDotted: pathData.isDotted,
             key,
-            color,
+            color: isVisibleColorIndicator
+              ? getColorIndicatorScaleValue({
+                  line,
+                  keysOfDimensions,
+                  yColorIndicatorScale:
+                    attributesRef.current.yColorIndicatorScale,
+                  yScale: attributesRef.current.yScale,
+                })
+              : color,
           });
         }
       });
@@ -154,10 +169,30 @@ function linesRenderer({
         lineData: line,
         isDotted: false,
         key,
-        color,
+        color: isVisibleColorIndicator
+          ? getColorIndicatorScaleValue({
+              line,
+              keysOfDimensions,
+              yColorIndicatorScale: attributesRef.current.yColorIndicatorScale,
+              yScale: attributesRef.current.yScale,
+            })
+          : color,
       });
     }
   });
+}
+
+function getColorIndicatorScaleValue({
+  line,
+  keysOfDimensions,
+  yColorIndicatorScale,
+  yScale,
+}: IGetColorIndicatorScaleValueProps) {
+  const lastKeyOfDimension: string =
+    keysOfDimensions[keysOfDimensions.length - 1];
+  const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
+
+  return yColorIndicatorScale(lastYScale(line[lastKeyOfDimension]) || 0);
 }
 
 export default drawParallelLines;

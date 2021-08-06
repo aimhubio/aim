@@ -17,6 +17,8 @@ const Params = ({
   chartPanelRef,
   chartElemRef,
   focusedState,
+  isVisibleColorIndicator,
+  onColorIndicatorChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
 
@@ -52,12 +54,15 @@ const Params = ({
               chartProps={[
                 {
                   curveInterpolation,
+                  isVisibleColorIndicator,
                 },
               ]}
               controls={
                 <Controls
                   onCurveInterpolationChange={onCurveInterpolationChange}
                   curveInterpolation={curveInterpolation}
+                  isVisibleColorIndicator={isVisibleColorIndicator}
+                  onColorIndicatorChange={onColorIndicatorChange}
                 />
               }
             />
