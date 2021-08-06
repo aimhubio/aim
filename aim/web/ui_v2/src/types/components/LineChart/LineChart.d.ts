@@ -31,6 +31,12 @@ export interface ILineChartProps {
   syncHoverState: (params: ISyncHoverStateParams) => void;
 }
 
+export interface IUpdateFocusedChartProps {
+  mousePos: [number, number];
+  focusedStateActive?: boolean;
+  force?: boolean;
+}
+
 export interface IAttributesRef {
   focusedState?: IFocusedState;
   activePoint?: IActivePoint;
@@ -41,6 +47,6 @@ export interface IAttributesRef {
   updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
   setActiveLine?: (lineKey: string) => void;
   updateHoverAttributes?: (xValue: number) => void;
-  updateFocusedChart?: (mousePos: [number, number]) => IActivePoint;
+  updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
   clearHoverAttributes?: () => void;
 }
