@@ -8,7 +8,7 @@ experiment_router = APIRouter()
 
 @experiment_router.get('/list/')
 async def get_experiments_list_api(factory=Depends(object_factory)):
-    response = [{'id': exp.uuid, 'name': exp.name} for exp in factory.experiments()]
+    response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()]
     return response
 
 
@@ -18,7 +18,8 @@ async def search_experiments_by_name_api(request: Request, factory=Depends(objec
     search_term = params.get('q') or ''
     search_term.strip()
 
-    response = [{'id': exp.uuid, 'name': exp.name} for exp in factory.search_experiments(search_term)]
+    response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)}
+                for exp in factory.search_experiments(search_term)]
     return response
 
 
