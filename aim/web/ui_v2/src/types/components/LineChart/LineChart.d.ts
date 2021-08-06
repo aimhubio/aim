@@ -47,6 +47,6 @@ export interface IAttributesRef {
   updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
   setActiveLine?: (lineKey: string) => void;
   updateHoverAttributes?: (xValue: number) => void;
-  updateFocusedChart?: (props?: IUpdateFocusedChartProps) => void;
+  updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
   clearHoverAttributes?: () => void;
 }
