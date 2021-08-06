@@ -7,11 +7,12 @@ import {
   IActivePoint,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import { CircleEnum, getCoordinates, XAlignmentEnum } from './index';
+import { CircleEnum, XAlignmentEnum } from './index';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 import 'components/LineChart/LineChart.css';
 import getFormattedValue from '../formattedValue';
+import { IUpdateFocusedChartProps } from '../../types/components/LineChart/LineChart';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
@@ -321,6 +322,20 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .on('click', handlePointClick);
   }
 
+  function drawLinesHighlightMode(): void {
+    linesNodeRef.current.classed(
+      'highlight',
+      highlightMode !== HighlightEnum.Off,
+    );
+  }
+
+  function drawCirclesHighlightMode(): void {
+    attributesNodeRef.current.classed(
+      'highlight',
+      highlightMode !== HighlightEnum.Off,
+    );
+  }
+
   function getActivePoint(circle: INearestCircle): IActivePoint {
     return {
       key: circle.key,
@@ -335,19 +350,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function updateHoverAttributes(xValue: number): void {
-    const x = attributesRef.current.xScale(xValue);
-    const [xMin, xMax] = attributesRef.current.xScale.range();
-    const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
+    const mouseX = attributesRef.current.xScale(xValue);
     const nearestCircles = getNearestCircles(mouseX);
 
-    linesNodeRef.current.classed(
-      'highlight',
-      highlightMode !== HighlightEnum.Off,
-    );
-    attributesNodeRef.current.classed(
-      'highlight',
-      highlightMode !== HighlightEnum.Off,
-    );
+    drawLinesHighlightMode();
+    drawCirclesHighlightMode();
 
     clearHorizontalAxisLine();
     clearYAxisLabel();
@@ -388,10 +395,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   ): IActivePoint {
     // hover Line Changed case
     if (force || circle.key !== attributesRef.current.lineKey) {
-      linesNodeRef.current.classed(
-        'highlight',
-        highlightMode !== HighlightEnum.Off,
-      );
+      drawLinesHighlightMode();
       clearActiveLine(attributesRef.current.lineKey);
       drawActiveLine(circle.key);
     }
@@ -403,10 +407,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       circle.x !== attributesRef.current.activePoint?.xPos ||
       circle.y !== attributesRef.current.activePoint?.yPos
     ) {
-      attributesNodeRef.current.classed(
-        'highlight',
-        highlightMode !== HighlightEnum.Off,
-      );
+      drawCirclesHighlightMode();
       drawCircles(nearestCircles);
       drawVerticalAxisLine(circle.x);
       drawHorizontalAxisLine(circle.y);
@@ -421,20 +422,57 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     return activePoint;
   }
 
-  function updateFocusedChart(
-    mousePos: [number, number],
-    force: boolean = false,
-  ): IActivePoint {
-    const { mouseX, mouseY } = getCoordinates({
-      mouse: mousePos,
-      margin,
-      xScale: attributesRef.current.xScale,
-      yScale: attributesRef.current.yScale,
-    });
-    const nearestCircles = getNearestCircles(mouseX);
-    const closestCircle = getClosestCircle(nearestCircles, mouseX, mouseY);
+  function updateFocusedChart(props?: IUpdateFocusedChartProps): void {
+    const {
+      mousePos,
+      focusedStateActive = attributesRef.current.focusedState?.active || false,
+      force = false,
+    } = props || {};
+    const { xScale, yScale, focusedState, xStep } = attributesRef.current;
 
-    return drawUpdateAttributes(closestCircle, nearestCircles, force);
+    let mousePosition: [number, number] | [] = [];
+    if (mousePos) {
+      mousePosition = mousePos;
+    } else if (focusedState?.active && focusedState.chartIndex === index) {
+      mousePosition = [
+        xScale(focusedState.xValue),
+        yScale(focusedState.yValue),
+      ];
+    } else if (
+      attributesRef.current.activePoint?.xValue &&
+      attributesRef.current.activePoint.yValue
+    ) {
+      mousePosition = [
+        xScale(attributesRef.current.activePoint?.xValue),
+        yScale(attributesRef.current.activePoint?.yValue),
+      ];
+    }
+
+    if (mousePosition?.length) {
+      const [mouseX, mouseY] = mousePosition;
+      const nearestCircles = getNearestCircles(mouseX);
+      const closestCircle = getClosestCircle(nearestCircles, mouseX, mouseY);
+
+      const activePoint = drawUpdateAttributes(
+        closestCircle,
+        nearestCircles,
+        force,
+      );
+
+      if (focusedStateActive) {
+        drawFocusedCircle(activePoint.key);
+      }
+
+      if (typeof syncHoverState === 'function') {
+        syncHoverState({
+          activePoint,
+          focusedStateActive,
+        });
+      }
+    } else {
+      const xMax = xScale.range()[1];
+      updateHoverAttributes(xStep ?? xMax);
+    }
   }
 
   function setActiveLine(lineKey: string, force: boolean = false): void {
@@ -443,9 +481,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       attributesRef.current.lineKey !== lineKey
     ) {
       const { xScale, xStep } = attributesRef.current;
-      const x = xScale(xStep);
-      const [xMin, xMax] = xScale.range();
-      const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
+      const mouseX = xScale(xStep);
+      // TODO remove if no need
+      // const [xMin, xMax] = xScale.range();
+      // const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
       const nearestCircles = getNearestCircles(mouseX);
       const closestCircle = nearestCircles.find((c) => c.key === lineKey);
 
@@ -477,19 +516,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       }
     }
 
-    const mousePos: [number, number] = [
-      circle.x + margin.left,
-      circle.y + margin.top,
-    ];
-    const activePoint = updateFocusedChart(mousePos);
-    drawFocusedCircle(activePoint.key);
-
-    if (typeof syncHoverState === 'function') {
-      syncHoverState({
-        activePoint,
-        focusedStateActive: true,
-      });
-    }
+    const mousePos: [number, number] = [circle.x, circle.y];
+    updateFocusedChart({ mousePos, focusedStateActive: true });
   }
 
   function handleLeaveFocusedPoint(event: MouseEvent): void {
@@ -500,13 +528,14 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
     const mousePos = d3.pointer(event);
 
-    const activePoint = updateFocusedChart(mousePos, true);
-    if (typeof syncHoverState === 'function') {
-      syncHoverState({
-        activePoint,
-        focusedStateActive: false,
-      });
-    }
+    updateFocusedChart({
+      mousePos: [
+        Math.floor(mousePos[0]) - margin.left,
+        Math.floor(mousePos[1]) - margin.top,
+      ],
+      force: true,
+      focusedStateActive: false,
+    });
   }
 
   function handleMouseMove(event: MouseEvent): void {
@@ -516,11 +545,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const mousePos = d3.pointer(event);
 
     if (isMouseInVisArea(mousePos[0], mousePos[1])) {
-      const activePoint = updateFocusedChart(mousePos);
-
-      if (typeof syncHoverState === 'function') {
-        syncHoverState({ activePoint });
-      }
+      updateFocusedChart({
+        mousePos: [
+          Math.floor(mousePos[0]) - margin.left,
+          Math.floor(mousePos[1]) - margin.top,
+        ],
+        focusedStateActive: false,
+      });
     }
   }
 
@@ -544,7 +575,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     attributesRef.current.yScale = yScale;
   }
 
-  function init() {
+  function init(): void {
     const { focusedState, activePoint, xScale, yScale, xStep } =
       attributesRef.current;
 
@@ -554,22 +585,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       activePoint.yValue
     ) {
       const mousePos: [number, number] = [
-        xScale(activePoint?.xValue) + margin.left,
-        yScale(activePoint?.yValue) + margin.top,
+        xScale(activePoint?.xValue),
+        yScale(activePoint?.yValue),
       ];
       if (isMouseInVisArea(mousePos[0], mousePos[1])) {
-        const activePoint = updateFocusedChart(mousePos, true);
-
-        if (focusedState.active) {
-          drawFocusedCircle(activePoint.key);
-        }
-
-        if (typeof syncHoverState === 'function') {
-          syncHoverState({
-            activePoint,
-            focusedStateActive: focusedState.active,
-          });
-        }
+        updateFocusedChart({ mousePos, force: true });
       }
     } else {
       const xMax = xScale.range()[1];
