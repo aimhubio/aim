@@ -286,6 +286,7 @@ function getNearestCircles({
     },
   ];
   const nearestCircles: INearestCircle[] = [];
+  const lineCirclesOfClosestCircle: INearestCircle[] = [];
   for (const line of data) {
     let colorIndicatorYPixel: number = 0;
     if (isVisibleColorIndicator) {

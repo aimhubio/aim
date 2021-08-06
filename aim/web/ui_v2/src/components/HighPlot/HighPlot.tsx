@@ -148,6 +148,21 @@ const HighPlot = React.forwardRef(function HighPlot(
     },
   }));
 
+  React.useImperativeHandle(ref, () => ({
+    setActiveLine: (lineKey: string) => {
+      attributesRef.current.setActiveLine?.(lineKey);
+    },
+    // updateHoverAttributes: (xValue: number) => {
+    //   attributesRef.current.updateHoverAttributes?.(xValue);
+    // },
+    clearHoverAttributes: () => {
+      attributesRef.current.clearHoverAttributes?.();
+    },
+    setFocusedState: (focusedState: IFocusedState) => {
+      attributesRef.current.focusedState = focusedState;
+    },
+  }));
+
   const renderChart = React.useCallback((): void => {
     clearArea({ visAreaRef });
     draw();
