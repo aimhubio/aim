@@ -19,6 +19,11 @@ class TreeView:  # TODO implement (MutableMapping):
     ) -> None:
         self.container = container
 
+    def preload(
+        self
+    ):
+        self.container.preload()
+
     def view(
         self,
         path: Union[AimObjectKey, AimObjectPath]
@@ -43,7 +48,7 @@ class TreeView:  # TODO implement (MutableMapping):
         if path == Ellipsis:
             path = ()
         if isinstance(path, (int, str)):
-            path = [path]
+            path = (path,)
         prefix = E.encode_path(path)
         it = self.container.items(prefix)
         try:
@@ -74,7 +79,7 @@ class TreeView:  # TODO implement (MutableMapping):
         if path == Ellipsis:
             path = ()
         if not isinstance(path, (tuple, list)):
-            path = [path]
+            path = (path,)
         encoded_path = E.encode_path(path)
         return self.container.batch_delete(encoded_path)
 
@@ -86,7 +91,7 @@ class TreeView:  # TODO implement (MutableMapping):
         if path == Ellipsis:
             path = ()
         if not isinstance(path, (tuple, list)):
-            path = [path]
+            path = (path,)
         # move rocksdb to lower layers
         batch = aimrocks.WriteBatch()
         encoded_path = E.encode_path(path)
@@ -100,10 +105,7 @@ class TreeView:  # TODO implement (MutableMapping):
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         level: int = None
-    ) -> Iterator[Tuple[
-        AimObjectPath,
-        AimObject
-    ]]:
+    ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         encoded_path = E.encode_path(path)
         walker = self.container.walk(encoded_path)
         path = None
@@ -162,7 +164,7 @@ class TreeView:  # TODO implement (MutableMapping):
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
         if isinstance(path, (int, str)):
-            path = [path]
+            path = (path,)
         prefix = E.encode_path(path)
         p = E.decode_path(self.container.next_key(prefix))
         return p[0]
@@ -172,7 +174,7 @@ class TreeView:  # TODO implement (MutableMapping):
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
         if isinstance(path, (int, str)):
-            path = [path]
+            path = (path,)
         prefix = E.encode_path(path)
         # assert prefix.endswith(b'\xfe')
         # prefix = prefix[:-1] + b'\xff'
