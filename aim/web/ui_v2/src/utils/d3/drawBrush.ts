@@ -4,12 +4,14 @@ import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
 import getAxisScale from './getAxisScale';
 import lineGenerator from './lineGenerator';
 import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { CircleEnum } from './index';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
     brushRef,
     plotBoxRef,
     plotNodeRef,
+    attributesNodeRef,
     visBoxRef,
     axesRef,
     attributesRef,
@@ -19,6 +21,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesScaleType,
     min,
     max,
+    syncHoverState,
   } = props;
 
   const brush = d3
@@ -106,7 +109,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateFocusedChart(mousePos);
+    attributesRef.current.updateFocusedChart();
 
     linesNodeRef.current
       .selectAll('.Line')
@@ -140,7 +143,7 @@ function drawBrush(props: IDrawBrushProps): void {
     linesRef.current.updateLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
-    attributesRef.current.updateFocusedChart(d3.pointer(event));
+    attributesRef.current.updateFocusedChart();
   }
 }
 
