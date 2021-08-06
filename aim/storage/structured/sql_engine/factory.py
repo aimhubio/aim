@@ -8,6 +8,18 @@ class ModelMappedFactory(ObjectFactory):
     def __init__(self):
         self._session = None
 
+    @staticmethod
+    def run_cls():
+        return ModelMappedRun
+
+    @staticmethod
+    def experiment_cls():
+        return ModelMappedExperiment
+
+    @staticmethod
+    def tag_cls():
+        return ModelMappedTag
+
     def runs(self) -> RunCollection:
         return ModelMappedRun.all(session=self._session or self.get_session())
 
