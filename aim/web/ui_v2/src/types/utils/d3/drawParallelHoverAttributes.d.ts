@@ -1,8 +1,9 @@
 import { IGetAxisScale } from './getAxisScale';
 import { ILineDataType, ILinesDataType } from './drawParallelLines';
 import { DimensionsType } from './drawParallelAxes';
+import { ISyncHoverStateParams } from './drawHoverAttributes';
 import React from 'react';
-import HighlightEnum from '../../../components/HighlightModesPopover/HighlightEnum';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 export interface IDrawParallelHoverAttributesProps {
   index: number;
@@ -20,6 +21,7 @@ export interface IDrawParallelHoverAttributesProps {
     updateHoverAttributes?: (mousePosition: [number, number]) => void;
     setActiveLine: (lineKey: string) => void;
   }>;
+  syncHoverState: (params: ISyncHoverStateParams | null) => void;
   closestCircleRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   index: number;

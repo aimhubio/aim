@@ -3,13 +3,20 @@ import { Box, Grid, Paper } from '@material-ui/core';
 import useStyles from './paramsStyle';
 import { IParamsProps } from 'types/pages/params/Params';
 
-import HighPlot from 'components/HighPlot/HighPlot';
+import { ChartTypeEnum } from 'utils/d3';
 import Controls from './components/Controls/Controls';
+import ChartPanel from 'components/ChartPanel/ChartPanel';
+
+//delete before commit
+import { mockData, mockData2 } from '../../components/HighPlot/helper';
 
 const Params = ({
   curveInterpolation,
   onCurveInterpolationChange,
+  onActivePointChange,
+  chartPanelRef,
   chartElemRef,
+  focusedState,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
 
@@ -36,19 +43,24 @@ const Params = ({
           item
         >
           <Grid container className={classes.fullHeight} spacing={1}>
-            <Grid item xs>
-              <Paper className={classes.paper}>
-                <HighPlot index={0} curveInterpolation={curveInterpolation} />
-              </Paper>
-            </Grid>
-            <Grid item>
-              <Paper className={classes.paper}>
+            <ChartPanel
+              ref={chartPanelRef}
+              chartType={ChartTypeEnum.HighPlot}
+              data={[mockData, mockData2]}
+              focusedState={focusedState}
+              onActivePointChange={onActivePointChange}
+              chartProps={[
+                {
+                  curveInterpolation,
+                },
+              ]}
+              controls={
                 <Controls
                   onCurveInterpolationChange={onCurveInterpolationChange}
                   curveInterpolation={curveInterpolation}
                 />
-              </Paper>
-            </Grid>
+              }
+            />
           </Grid>
         </Grid>
       </Grid>

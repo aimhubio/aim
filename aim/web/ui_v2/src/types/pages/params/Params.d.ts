@@ -1,34 +1,22 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { CurveEnum } from 'utils/d3';
 import { ITableRef } from 'types/components/Table/Table';
 import { IMetricTableRowData } from 'types/services/models/metrics/metricsCollectionModel';
 import { ITableColumn } from './components/TableColumns/TableColumns';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
-  //   lineChartData: ILine[][];
-  //   tableData: IMetricTableRowData[][];
-  //   tableColumns: ITableColumn[];
-  //   tableRef: React.RefObject<ITableRef>;
-  //   tableElemRef: React.RefObject<HTMLDivElement>;
   chartElemRef: React.RefObject<HTMLDivElement>;
+  chartPanelRef: React.RefObject<IChartPanelRef>;
   curveInterpolation: CurveEnum;
-  //   wrapperElemRef: React.RefObject<HTMLDivElement>;
-  //   resizeElemRef: React.RefObject<HTMLDivElement>;
-  //   displayOutliers: boolean;
-  //   zoomMode: boolean;
   onCurveInterpolationChange: () => void;
-  //   toggleZoomMode: () => void;
-  //   highlightMode: HighlightEnum;
-  //   onChangeHighlightMode: (mode: HighlightEnum) => () => void;
-  //   onSmoothingChange: (props: IOnSmoothingChange) => void;
-  //   curveInterpolation: CurveEnum;
+  onActivePointChange: (
+    activePoint: IActivePoint,
+    focusedStateActive: boolean = false,
+  ) => void;
+  focusedState: IFocusedState;
 }
-
-// export interface IOnSmoothingChange {
-//   algorithm: string;
-//   factor: number;
-//   curveInterpolation: CurveEnum;
-// }

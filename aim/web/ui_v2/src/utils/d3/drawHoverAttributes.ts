@@ -582,7 +582,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   attributesRef.current.updateHoverAttributes = updateHoverAttributes;
   attributesRef.current.updateFocusedChart = updateFocusedChart;
   attributesRef.current.clearHoverAttributes = clearHoverAttributes;
-
   svgNodeRef.current?.on('mousemove', handleMouseMove);
   svgNodeRef.current?.on('mouseleave', handleMouseLeave);
   bgRectNodeRef.current?.on('click', handleLeaveFocusedPoint);

@@ -57,6 +57,24 @@ export const mockData = randomGenerateLineData(10, {
   column6: { scaleType: 'linear', domainData: [45, 60] },
 });
 
+export const mockData2 = randomGenerateLineData(15, {
+  column1: { scaleType: 'linear', domainData: [2, 5.6] },
+  column2: {
+    scaleType: 'point',
+    domainData: [
+      '+inf',
+      'None',
+      '12',
+      'hinalsfhsaifhsaifhoasihfoiawhfiwahfoiawhfowihhinalsfhsaifhsaifhoasihfoiawhfiwahfoiawhfowihff',
+      '-inf',
+    ],
+  },
+  column3: { scaleType: 'linear', domainData: [3, 5] },
+  column4: { scaleType: 'linear', domainData: [1, 2] },
+  column5: { scaleType: 'linear', domainData: [8, 22] },
+  column6: { scaleType: 'linear', domainData: [45, 60] },
+});
+
 function getRandomIntInclusive(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
