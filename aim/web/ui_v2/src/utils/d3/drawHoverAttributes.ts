@@ -422,12 +422,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     return activePoint;
   }
 
-  function updateFocusedChart(props?: IUpdateFocusedChartProps): void {
+  function updateFocusedChart(params?: IUpdateFocusedChartProps): void {
     const {
       mousePos,
       focusedStateActive = attributesRef.current.focusedState?.active || false,
       force = false,
-    } = props || {};
+    } = params || {};
     const { xScale, yScale, focusedState, xStep } = attributesRef.current;
 
     let mousePosition: [number, number] | [] = [];
