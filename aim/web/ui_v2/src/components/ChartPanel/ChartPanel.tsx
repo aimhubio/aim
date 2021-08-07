@@ -2,18 +2,18 @@ import React from 'react';
 import {
   Grid,
   Paper,
-  Popover,
   Typography,
   Box,
   PopoverPosition,
 } from '@material-ui/core';
-import { isEqual } from 'lodash-es';
+import { debounce } from 'lodash-es';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { chartTypesConfig } from './config';
 import { ISyncHoverStateParams } from 'types/utils/d3/drawHoverAttributes';
 import useStyles from './chartPanelStyle';
+import ChartPopover from './ChartPopover';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
@@ -24,19 +24,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const [chartRefs, setChartsRefs] = React.useState<React.RefObject<any>[]>(
     new Array(props.data.length).fill('*').map(() => React.createRef()),
   );
-  const [popover, setPopover] = React.useState<PopoverPosition | null>(null);
+  const [popoverPosition, setPopoverPosition] =
+    React.useState<PopoverPosition | null>(null);
 
-  const onPopoverChange = React.useCallback(
-    (popover: PopoverPosition | null): void => {
-      setPopover((prevState) => {
-        if (isEqual(prevState, popover)) {
-          return prevState;
-        }
-        return popover;
-      });
-    },
-    [],
-  );
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
@@ -49,12 +40,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           }
           chartRef.current?.updateHoverAttributes?.(activePoint.xValue);
         });
+
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);
         }
-        onPopoverChange({
-          top: activePoint.pageY as number,
-          left: activePoint.pageX as number,
+
+        setPopoverPosition({
+          top: activePoint.topPos - (containerRef.current?.scrollTop || 0),
+          left: activePoint.leftPos - (containerRef.current?.scrollLeft || 0),
         });
       }
       // on MouseLeave
@@ -62,11 +55,26 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRefs.forEach((chartRef) => {
           chartRef.current?.clearHoverAttributes?.();
         });
-        onPopoverChange(null);
+        setPopoverPosition(null);
       }
     },
-    [],
+    [chartRefs, props],
   );
+
+  const onScroll = React.useCallback((): void => {
+    setPopoverPosition((prevState) => {
+      return prevState
+        ? {
+            top:
+              (props.focusedState.topPos || 0) -
+              (containerRef.current?.scrollTop || 0),
+            left:
+              (props.focusedState.leftPos || 0) -
+              (containerRef.current?.scrollLeft || 0),
+          }
+        : null;
+    });
+  }, [props.focusedState]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
@@ -89,11 +97,24 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     });
   }, []);
 
+  React.useEffect(() => {
+    const debouncedScroll = debounce(onScroll, 100);
+    containerRef.current?.addEventListener('scroll', debouncedScroll);
+    return () => {
+      containerRef.current?.removeEventListener('scroll', debouncedScroll);
+    };
+  }, [onScroll]);
+
   return (
     <Grid container spacing={1} className={classes.chartContainer}>
       <Grid item xs className={classes.chartPanel}>
         <Paper className={classes.paper}>
-          <Grid container spacing={1} className={classes.chartGrid}>
+          <Grid
+            ref={containerRef}
+            container
+            spacing={1}
+            className={classes.chartGrid}
+          >
             {props.data.map((chartData: any, index: number) => {
               const Component = chartTypesConfig[props.chartType];
               return (
@@ -123,21 +144,16 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       <Grid item>
         <Paper className={classes.paper}>{props.controls}</Paper>
       </Grid>
-      {!!popover && (
-        <Popover
-          id={'lineChart-popover'}
-          open={!!(props.data.length > 0 && popover)}
-          anchorReference='anchorPosition'
-          anchorPosition={popover}
-          className={classes.popover}
-          classes={{ paper: classes.popoverContent }}
-        >
-          <Box p={1}>
-            <Typography>Value: {props.focusedState.yValue || 0}</Typography>
-            <Typography>Step: {props.focusedState.xValue || 0}</Typography>
-          </Box>
-        </Popover>
-      )}
+      <ChartPopover
+        popoverPosition={popoverPosition}
+        open={props.data.length > 0}
+        containerRef={containerRef}
+      >
+        <Box p={1}>
+          <Typography>Value: {props.focusedState.yValue || 0}</Typography>
+          <Typography>Step: {props.focusedState.xValue || 0}</Typography>
+        </Box>
+      </ChartPopover>
     </Grid>
   );
 });

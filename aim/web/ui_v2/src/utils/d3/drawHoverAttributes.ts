@@ -34,8 +34,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     syncHoverState,
   } = props;
 
-  const { top: chartTop, left: chartLeft }: { top: number; left: number } =
-    visAreaRef.current?.getBoundingClientRect() || {};
+  const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
 
   const { margin, width, height } = visBoxRef.current;
 
@@ -336,16 +335,36 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     );
   }
 
+  function getBoundedPosition(
+    xPos: number,
+    yPos: number,
+  ): {
+    topPos: number;
+    leftPos: number;
+  } {
+    const [yMax, yMin] = attributesRef.current.yScale.range();
+    const [xMin, xMax] = attributesRef.current.xScale.range();
+
+    return {
+      topPos: yPos > yMax ? yMax : yPos < yMin ? yMin : yPos,
+      leftPos: xPos > xMax ? xMax : xPos < xMin ? xMin : xPos,
+    };
+  }
+
   function getActivePoint(circle: INearestCircle): IActivePoint {
+    const xPos = circle.x;
+    const yPos = circle.y;
+    const { topPos, leftPos } = getBoundedPosition(xPos, yPos);
+
     return {
       key: circle.key,
-      xValue: getFormattedValue(attributesRef.current.xScale.invert(circle.x)),
-      yValue: getFormattedValue(attributesRef.current.yScale.invert(circle.y)),
-      xPos: circle.x,
-      yPos: circle.y,
-      pageX: chartLeft + circle.x + margin.left,
-      pageY: chartTop + circle.y + margin.top,
+      xValue: getFormattedValue(attributesRef.current.xScale.invert(xPos)),
+      yValue: getFormattedValue(attributesRef.current.yScale.invert(yPos)),
+      xPos,
+      yPos,
       chartIndex: index,
+      topPos: chartRect.top + topPos + margin.top,
+      leftPos: chartRect.left + leftPos + margin.left,
     };
   }
 

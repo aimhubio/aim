@@ -29,8 +29,7 @@ const drawParallelHoverAttributes = ({
   highlightedNodeRef,
   highlightMode,
 }: IDrawParallelHoverAttributesProps) => {
-  const { top: chartTop, left: chartLeft }: { top: number; left: number } =
-    visAreaRef.current?.getBoundingClientRect() || {};
+  const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   const { margin } = visBoxRef.current;
   const svgArea = d3.select(visAreaRef.current).select('svg');
   const keysOfDimensions = Object.keys(dimensions);
@@ -54,15 +53,17 @@ const drawParallelHoverAttributes = ({
       );
     }
 
+    // TODO changed pageX and pageY to
+    //  topPos(bounded circle.y) and leftPos(bounded circle.x)
     return {
       key: circle.key,
       xValue: attributesRef.current.xScale(dimensionLabel),
       yValue,
       xPos: circle.x,
       yPos: circle.y,
-      pageX: chartLeft + circle.x + margin.left,
-      pageY: chartTop + circle.y + margin.top,
       chartIndex: index,
+      topPos: chartRect.top + circle.y + margin.top,
+      leftPos: chartRect.left + circle.x + margin.left,
     };
   }
 

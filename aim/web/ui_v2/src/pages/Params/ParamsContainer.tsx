@@ -14,11 +14,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     CurveEnum.Linear,
   );
   const [focusedState, setFocusedState] = useState<IFocusedState>({
-    key: null,
-    xValue: null,
-    yValue: null,
     active: false,
-    chartIndex: null,
   });
 
   function onActivePointChange(
@@ -27,10 +23,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   ): void {
     setFocusedState({
       active: !!focusedStateActive,
-      key: activePoint.key,
-      xValue: activePoint.xValue,
-      yValue: activePoint.yValue,
-      chartIndex: activePoint.chartIndex,
+      ...activePoint,
     });
   }
 

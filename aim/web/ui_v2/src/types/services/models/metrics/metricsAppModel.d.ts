@@ -8,6 +8,7 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { IActivePoint } from '../../../utils/d3/drawHoverAttributes';
 
 export interface IMetricAppModelState {
   rawData: IRun[];
@@ -70,12 +71,8 @@ interface IMetricAppConfig {
   };
 }
 
-export interface IFocusedState {
-  key: string | null;
-  xValue: number | null;
-  yValue: number | null;
+export interface IFocusedState extends Partial<IActivePoint> {
   active: boolean;
-  chartIndex: number | null;
 }
 
 export interface IMetricTableRowData {

@@ -81,11 +81,7 @@ function getConfig() {
       smoothingFactor: 0,
       aggregated: false,
       focusedState: {
-        key: null,
-        xValue: null,
-        yValue: null,
         active: false,
-        chartIndex: null,
       },
     },
   };
@@ -623,6 +619,8 @@ function onActivePointChange(
       focusedStateActive ? activePoint.key : null,
     );
 
+    // TODO because of virtualized-list selected activeRow is null in
+    //  cases when row is not in viewport
     if (focusedStateActive) {
       setTimeout(() => {
         let activeRow = document.querySelector('.BaseTable__row--hovered');
@@ -636,10 +634,7 @@ function onActivePointChange(
   if (configData?.chart) {
     configData.chart.focusedState = {
       active: focusedStateActive,
-      key: activePoint.key,
-      xValue: activePoint.xValue,
-      yValue: activePoint.yValue,
-      chartIndex: activePoint.chartIndex,
+      ...activePoint,
     };
     stateUpdate.config = configData;
   }

@@ -54,9 +54,9 @@ export interface IActivePoint {
   key: string;
   xValue: number;
   yValue: number;
-  pageX: number;
-  pageY: number;
   xPos: number;
   yPos: number;
   chartIndex: number;
+  topPos: number;
+  leftPos: number;
 }
