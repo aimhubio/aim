@@ -1,4 +1,5 @@
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -10,6 +11,10 @@ import { IMetric } from './metricModel';
 import { IRun } from './runModel';
 
 export interface IMetricAppModelState {
+  refs: {
+    tableRef: { current: ITableRef | null };
+    chartPanelRef: { current: IChartPanelRef | null };
+  };
   rawData: IRun[];
   config: IMetricAppConfig;
   data: IMetricsCollection[];
@@ -28,10 +33,6 @@ export interface IMetricsCollection {
 }
 
 interface IMetricAppConfig {
-  refs: {
-    tableRef: { current: ITableRef | null };
-    chartPanelRef: { current: IChartPanelRef | null };
-  };
   grouping: {
     color: string[];
     style: string[];
