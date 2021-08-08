@@ -1,3 +1,4 @@
+import React from 'react';
 import * as _ from 'lodash-es';
 
 import COLORS from 'config/colors/colors';
@@ -451,7 +452,7 @@ function getDataAsTableRows(
   );
 }
 
-function setComponentRefs(refElement: React.MutableRefObject<any>) {
+function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
   const modelState = model.getState();
   if (modelState?.refs) {
     modelState.refs = Object.assign(modelState.refs, refElement);
