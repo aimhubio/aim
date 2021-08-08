@@ -7,10 +7,6 @@ const model = createModel<Partial<any>>({});
 
 function getConfig() {
   return {
-    refs: {
-      tableRef: { current: null },
-      chartPanelRef: { current: null },
-    },
     grouping: {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.lr'],
