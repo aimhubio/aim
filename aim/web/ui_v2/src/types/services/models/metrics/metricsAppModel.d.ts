@@ -4,6 +4,10 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import {
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
 import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
@@ -25,6 +29,24 @@ export interface IMetricsCollection {
   dasharray: string | null;
   chartIndex: number;
   data: IMetric[];
+  aggregation?: IAggregationData;
+}
+
+export interface IAggregationData {
+  area: {
+    min: {
+      xValues: number[];
+      yValues: number[];
+    } | null;
+    max: {
+      xValues: number[];
+      yValues: number[];
+    } | null;
+  };
+  line: {
+    xValues: number[];
+    yValues: number[];
+  } | null;
 }
 
 interface IMetricAppConfig {
@@ -66,7 +88,13 @@ interface IMetricAppConfig {
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
     focusedState: IFocusedState;
-    aggregated: boolean;
+    aggregation: {
+      methods: {
+        area: AggregationAreaMethods;
+        line: AggregationLineMethods;
+      };
+      isApplied: boolean;
+    };
   };
 }
 
