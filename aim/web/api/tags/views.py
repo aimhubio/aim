@@ -1,111 +1,83 @@
-from fastapi import Depends,HTTPException, Request
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from sqlalchemy.orm import joinedload, Session
+from fastapi import Request, HTTPException, Depends
 
-from aim.web.api.db import get_session
-from aim.web.api.commits.models import Tag
+from aim.web.api.utils import APIRouter
+from aim.web.api.utils import object_factory
 
 tags_router = APIRouter()
 
 
-@tags_router.get('/list/')
-async def tags_list_api(session: Session = Depends(get_session)):
-    tags = session.query(Tag).filter(Tag.is_hidden.isnot(True)) \
-        .order_by(Tag.created_at.desc()).all()
-
-    result = []
-    for t in tags:
-        result.append({
-            'id': t.uuid,
-            'name': t.name,
-            'color': t.color,
-            'num_commits': len(t.commits),
-        })
-
-    return result
+@tags_router.get('/')
+async def get_tags_list_api(factory=Depends(object_factory)):
+    return [{'id': tag.uuid, 'name': tag.name} for tag in factory.tags()]
 
 
-@tags_router.post('/new/')
-async def tags_create_api(request: Request, session: Session = Depends(get_session)):
-    command_form = await request.form()
+@tags_router.get('/search/')
+async def search_tags_by_name_api(request: Request, factory=Depends(object_factory)):
+    params = request.query_params
+    search_term = params.get('q') or ''
+    search_term.strip()
 
-    name = command_form.get('name') or ''
-    name = name.strip()
-
-    color = command_form.get('color') or ''
-    color = color.strip()
-
-    if not name or not color:
-        raise HTTPException(status_code=403)
-
-    t = Tag(name, color)
-    session.add(t)
-    session.commit()
-
-    return {
-        'id': t.uuid,
-    }
+    response = [{'id': tag.uuid, 'name': tag.name} for tag in factory.search_tags(search_term)]
+    return response
 
 
-@tags_router.post('/update/')
-async def tag_update_api(request: Request, session: Session = Depends(get_session)):
-    command_form = await request.form()
-
-    uuid = command_form.get('id') or ''
-    uuid = uuid.strip()
-
-    tag = session.query(Tag).filter_by(uuid=uuid).first()
-    if not tag:
-        raise HTTPException(status_code=404)
-
-    if 'name' in command_form:
-        tag.name = command_form.get('name').strip()
-        if not tag.name:
-            raise HTTPException(status_code=403)
-    if 'color' in command_form:
-        tag.color = command_form.get('color').strip()
-        if not tag.color:
-            raise HTTPException(status_code=403)
-    if 'is_hidden' in command_form:
-        tag.is_hidden = command_form.get('is_hidden') == 'true'
-
-    session.commit()
+@tags_router.post('/')
+async def create_tag_api(request: Request, factory=Depends(object_factory)):
+    body = await request.json()
+    tag_name = body.get('name') or ''
+    if not tag_name:
+        raise HTTPException(400)
+    with factory:
+        try:
+            tag = factory.create_tag(tag_name)
+        except ValueError as e:
+            raise HTTPException(400, detail=str(e))
 
     return {
         'id': tag.uuid,
-    }
-
-
-@tags_router.get('/runs/{tag_id}/')
-async def tag_get_related_runs(tag_id: str, session: Session = Depends(get_session)):
-    tag = session.query(Tag).options(joinedload('commits')) \
-        .filter_by(uuid=tag_id) \
-        .first()
-
-    related_runs = []
-    if tag:
-        for commit in tag.commits:
-            related_runs.append({
-                'hash': commit.hash,
-                'experiment_name': commit.experiment_name,
-                'uuid': commit.uuid,
-                'created_at': commit.created_at,
-            })
-
-    return {
-        'data': related_runs,
+        'status': 'OK'
     }
 
 
 @tags_router.get('/{tag_id}/')
-async def tag_get_api(tag_id: str, session: Session = Depends(get_session)):
-    tag = session.query(Tag).filter_by(uuid=tag_id).first()
-
+async def get_tag_api(tag_id: str, factory=Depends(object_factory)):
+    tag = factory.find_tag(tag_id)
     if not tag:
-        raise HTTPException(status_code=404)
+        raise HTTPException
+
+    response = {
+        'id': tag.uuid,
+        'name': tag.name
+    }
+    return response
+
+
+@tags_router.put('/{tag_id}/')
+async def update_tag_properties_api(tag_id: str, request: Request, factory=Depends(object_factory)):
+    with factory:
+        tag = factory.find_tag(tag_id)
+        if not tag:
+            raise HTTPException(status_code=404)
+        body = await request.json()
+        tag_name = body.get('name') or ''
+        tag_name = tag_name.strip()
+        if tag_name:
+            tag.name = tag_name
 
     return {
-        'name': tag.name,
-        'color': tag.color,
-        'is_hidden': tag.is_hidden,
+        'id': tag.uuid,
+        'status': 'OK'
     }
+
+
+@tags_router.get('/{tag_id}/runs/')
+async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
+    tag = factory.find_tag(tag_id)
+    if not tag:
+        raise HTTPException
+
+    response = {
+        'id': tag.uuid,
+        'runs': [{'run_id': run.hash, 'name': run.name} for run in tag.runs]
+    }
+    return response

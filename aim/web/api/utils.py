@@ -5,6 +5,7 @@ import pytz
 
 from collections import OrderedDict
 from fastapi import APIRouter as FastAPIRouter
+from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable
 
@@ -12,6 +13,16 @@ try:
     from collections.abc import Iterable
 except ImportError:
     from collections import Iterable
+
+
+def object_factory():
+    from aim.web.api.projects.project import Project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    return project.repo.run_metadata_db
+
 
 def datetime_now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
