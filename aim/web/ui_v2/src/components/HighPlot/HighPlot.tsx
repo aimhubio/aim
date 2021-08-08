@@ -131,7 +131,7 @@ const HighPlot = React.forwardRef(function HighPlot(
           true,
         );
     }
-  }, [curveInterpolation, index, isVisibleColorIndicator]);
+  }, [curveInterpolation, index, isVisibleColorIndicator, data]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
