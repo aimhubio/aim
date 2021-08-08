@@ -11,7 +11,11 @@ import drawParallelAxes from './drawParallelAxes';
 import drawParallelLines from './drawParallelLines';
 import drawParallelHoverAttributes from './drawParallelHoverAttributes';
 import drawParallelAxesBrush from './drawParallelAxesBrush';
+import drawParallelColorIndicator from './drawParallelColorIndicator';
 import getCoordinates from './getCoordinates';
+
+const gradientStartColor = '#2980B9';
+const gradientEndColor = '#E74C3C';
 
 enum XAlignmentEnum {
   Epoch = 'epoch',
@@ -62,6 +66,7 @@ export {
   drawAxes,
   drawLines,
   getCoordinates,
+  drawParallelColorIndicator,
   processData,
   getAxisScale,
   drawBrush,
@@ -71,4 +76,6 @@ export {
   drawParallelLines,
   drawParallelHoverAttributes,
   drawParallelAxesBrush,
+  gradientStartColor,
+  gradientEndColor,
 };
