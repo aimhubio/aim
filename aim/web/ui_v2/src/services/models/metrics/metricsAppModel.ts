@@ -46,10 +46,6 @@ const model = createModel<Partial<IMetricAppModelState>>({});
 
 function getConfig() {
   return {
-    refs: {
-      tableRef: { current: null },
-      chartPanelRef: { current: null },
-    },
     grouping: {
       color: [],
       style: [],
@@ -105,6 +101,10 @@ function getConfig() {
 function initialize() {
   model.init();
   model.setState({
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
     config: getConfig(),
   });
 }
@@ -478,11 +478,11 @@ function getDataAsTableRows(
   );
 }
 
-function setComponentRefs(refs: any) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData) {
-    configData.refs = Object.assign(configData.refs, refs);
-    model.setState({ config: configData });
+function setComponentRefs(refElement: React.MutableRefObject<any>) {
+  const modelState = model.getState();
+  if (modelState?.refs) {
+    modelState.refs = Object.assign(modelState.refs, refElement);
+    model.setState({ refs: modelState.refs });
   }
 }
 
@@ -634,7 +634,7 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const tableRef: any = model.getState()?.config?.refs.tableRef;
+  const tableRef: any = model.getState()?.refs?.tableRef;
   const tableData = getDataAsTableRows(
     model.getState()!.data!,
     activePoint.xValue,
@@ -677,7 +677,7 @@ function onActivePointChange(
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    const chartPanelRef: any = configData.refs.chartPanelRef;
+    const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
     if (chartPanelRef && !configData.chart.focusedState.active) {
       chartPanelRef.current?.setActiveLine(rowKey);
     }
@@ -686,7 +686,7 @@ function onTableRowHover(rowKey: string): void {
 
 function onTableRowClick(rowKey: string | null): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const chartPanelRef: any = configData?.refs.chartPanelRef;
+  const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
   if (chartPanelRef && rowKey) {
     chartPanelRef.current?.setActiveLine(rowKey, true);
   }
