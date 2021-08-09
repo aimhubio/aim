@@ -25,7 +25,7 @@ async def project_api(factory=Depends(object_factory)):
         'name': project.name,
         'path': project.path,
         'description': project.description,
-        'branches': factory.experiments(),
+        'branches':  [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()],
         'telemetry_enabled': os.getenv(AIM_UI_TELEMETRY_KEY, '1'),
     }
 
