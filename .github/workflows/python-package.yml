@@ -17,7 +17,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: aim_packaging
+          ref: main
 
       - name: Setup python
         uses: actions/setup-python@v2
@@ -52,7 +52,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: aim_packaging
+          ref: main
 
       - name: Setup python
         uses: actions/setup-python@v2
