@@ -673,6 +673,13 @@ function onTableRowClick(rowKey: string | null): void {
   }
 }
 
+function updateGroupingStateUrl() {
+  const groupingData = model.getState()?.config?.grouping;
+  if (groupingData) {
+    const encodedUrl = encode(groupingData);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -693,6 +700,7 @@ const metricAppModel = {
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
+  updateGroupingStateUrl,
 };
 
 export default metricAppModel;

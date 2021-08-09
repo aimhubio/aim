@@ -6,6 +6,7 @@ import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
+import { decode, encode } from 'utils/encoder/encoder';
 
 const groupingPopovers = [
   {

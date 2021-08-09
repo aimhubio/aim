@@ -48,6 +48,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (metricsData?.config?.grouping) {
+      metricAppModel.updateGroupingStateUrl();
+    }
+  }, [metricsData?.config?.grouping]);
+
   return (
     <Metrics
       //refs
