@@ -1,48 +1,38 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import Params from './Params';
-import { CurveEnum } from 'utils/d3';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
+import paramsAppModel from 'services/models/params/paramsAppModel';
+import useModel from 'hooks/model/useModel';
+
+const paramsRequestRef = paramsAppModel.getParamsData();
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const chartPanelRef = React.useRef<IChartPanelRef>(null);
+  const paramsData = useModel(paramsAppModel);
 
-  const [curveInterpolation, setCurveInterpolation] = useState<CurveEnum>(
-    CurveEnum.Linear,
-  );
-  const [focusedState, setFocusedState] = useState<IFocusedState>({
-    active: false,
-  });
-
-  function onActivePointChange(
-    activePoint: IActivePoint,
-    focusedStateActive: boolean = false,
-  ): void {
-    setFocusedState({
-      active: !!focusedStateActive,
-      ...activePoint,
-    });
-  }
-
-  function onCurveInterpolationChange() {
-    setCurveInterpolation(
-      curveInterpolation === CurveEnum.Linear
-        ? CurveEnum.MonotoneX
-        : CurveEnum.Linear,
-    );
-  }
+  React.useEffect(() => {
+    paramsAppModel.initialize();
+    paramsRequestRef.call();
+    return () => {
+      paramsRequestRef.abort();
+    };
+  }, []);
 
   return (
     <Params
       chartElemRef={chartElemRef}
+      highPlotData={paramsData?.highPlotData}
       chartPanelRef={chartPanelRef}
-      curveInterpolation={curveInterpolation}
-      focusedState={focusedState}
-      onCurveInterpolationChange={onCurveInterpolationChange}
-      onActivePointChange={onActivePointChange}
+      focusedState={paramsData?.config?.chart?.focusedState}
+      isVisibleColorIndicator={
+        paramsData?.config?.chart?.isVisibleColorIndicator
+      }
+      curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
+      onColorIndicatorChange={paramsAppModel?.onColorIndicatorChange}
+      onCurveInterpolationChange={paramsAppModel?.onCurveInterpolationChange}
+      onActivePointChange={paramsAppModel?.onActivePointChange}
     />
   );
 }

@@ -3,7 +3,12 @@ import {
   IDrawParallelAxesProps,
   YScaleType,
 } from 'types/utils/d3/drawParallelAxes';
-import { getAxisScale, ScaleEnum } from 'utils/d3';
+import {
+  getAxisScale,
+  ScaleEnum,
+  gradientStartColor,
+  gradientEndColor,
+} from 'utils/d3';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -68,6 +73,13 @@ function drawParallelAxes({
 
   attributesRef.current.xScale = xScale;
   attributesRef.current.yScale = yScale;
+  const lastYScale =
+    attributesRef.current.yScale[keysOfDimensions[keysOfDimensions.length - 1]];
+  const range = lastYScale.range();
+  attributesRef.current.yColorIndicatorScale = d3
+    .scaleSequential()
+    .domain(range)
+    .interpolator(d3.interpolateRgb(gradientStartColor, gradientEndColor));
 }
 
 export default drawParallelAxes;

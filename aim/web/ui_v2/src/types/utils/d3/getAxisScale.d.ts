@@ -17,6 +17,6 @@ export type IGetAxisScale =
 
 export interface IGetAxisScaleProps {
   scaleType: ScaleEnum;
-  domainData: any;
-  rangeData: any;
+  domainData: string[] | number[];
+  rangeData: number[];
 }

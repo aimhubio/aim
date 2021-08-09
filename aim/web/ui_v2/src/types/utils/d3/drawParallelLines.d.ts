@@ -1,6 +1,7 @@
 import React from 'react';
 import { CurveEnum } from 'utils/d3';
 import { DimensionsType } from './drawParallelAxes';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 interface ILineDataType {
   [key: string]: number | string | null;
@@ -24,6 +25,7 @@ export interface IDrawParallelLinesProps {
   attributesRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   curveInterpolation: CurveEnum;
+  isVisibleColorIndicator: boolean;
   linesRef: React.MutableRefObject<>;
   dimensions: DimensionsType;
   data: ILinesDataType[];
@@ -45,5 +47,13 @@ export interface ILineRendererProps {
   attributesRef: React.MutableRefObject<>;
   curveInterpolation: CurveEnum;
   keysOfDimensions: string[];
+  isVisibleColorIndicator: boolean;
   data: ILinesDataType[];
+}
+
+export interface IGetColorIndicatorScaleValueProps {
+  line: ILineDataType,
+  keysOfDimensions: string[],
+  yColorIndicatorScale: d3.ScaleSequential,
+  yScale: IGetAxisScale,
 }
