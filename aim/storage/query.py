@@ -58,33 +58,22 @@ def safer_getattr(object, name, default=None, getattr=getattr):
     return getattr(object, name, default)
 
 
-builtins['_getattr_'] = safer_getattr
 
 
 restricted_globals = {
-    '__builtins__': builtins,
-    '_write_': full_write_guard,
-    '_getiter_': iter,
-    '_getitem_': default_guarded_getitem,
-    '_iter_unpack_sequence_': guarded_iter_unpack_sequence,
-    '_unpack_sequence_': guarded_unpack_sequence
+    "__builtins__": builtins,
+    "_getattr_": safer_getattr,
+    "_write_": full_write_guard,
+    "_getiter_": iter,
+    "_getitem_": default_guarded_getitem,
+    "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
+    "_unpack_sequence_": guarded_unpack_sequence
 }
 
 logger = logging.getLogger(__name__)
 
 
-CODE_FORMAT = '''
-def check(
-    run,
-    context = None,
-    metric_name = None
-) -> bool:
-    # Some aliases
-    ctx = context
-    metric = metric_name
-
-    return bool({expr})
-'''
+# CODE_FORMAT = """{expr})"""
 
 
 class Query:
@@ -116,13 +105,18 @@ class Query:
 
 @lru_cache(maxsize=100)
 def compile_checker(expr):
-    source_code = CODE_FORMAT.format(expr=expr)
+    source_code = expr
     byte_code = compile_restricted(source_code,
                                    filename='<inline code>',
-                                   mode='exec')
-    namespace = dict()
-    exec(byte_code, restricted_globals, namespace)
-    return namespace['check']
+                                   mode='eval')
+    return byte_code
+
+class LazyLocals(dict):
+    def __getitem__(self, key: str):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            return self['fallback'][key]
 
 
 class RestrictedPythonQuery(Query):
@@ -132,12 +126,21 @@ class RestrictedPythonQuery(Query):
         expr: str
     ):
         super().__init__(expr=expr)
-        self._check = compile_checker(expr)
+        self._checker = compile_checker(expr)
+        self.run_metadata_cache = None
 
-    def __bool__(
-        self
-    ) -> bool:
-        return bool(self.expr)
+    def eval(
+        self,
+        run,
+        context,
+        metric_name
+    ):
+        namespace = LazyLocals(run=run,
+                               context=context,
+                               ctx=context,
+                               metric_name=metric_name,
+                               fallback=run, **restricted_globals)
+        return eval(self._checker, restricted_globals, namespace)
 
     def __bool__(
         self
@@ -155,9 +158,9 @@ class RestrictedPythonQuery(Query):
 
         # TODO enforce immutable
         try:
-            return self._check(run=run,
-                               context=context_proxy,
-                               metric_name=metric_name)
+            return self.eval(run=run,
+                             context=context_proxy,
+                             metric_name=metric_name)
         except BaseException as e:
             logger.warning('query failed', e)
             return False
