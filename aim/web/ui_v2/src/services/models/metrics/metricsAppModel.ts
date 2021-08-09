@@ -78,11 +78,7 @@ function getConfig() {
       smoothingFactor: 0,
       aggregated: false,
       focusedState: {
-        key: null,
-        xValue: null,
-        yValue: null,
         active: false,
-        chartIndex: null,
       },
     },
   };
@@ -618,29 +614,21 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData.flat() });
+    // tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
     );
 
     if (focusedStateActive) {
-      setTimeout(() => {
-        let activeRow = document.querySelector('.BaseTable__row--hovered');
-        if (activeRow) {
-          activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }
-      });
+      tableRef.current?.scrollToRow(activePoint.key);
     }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
       active: focusedStateActive,
-      key: activePoint.key,
-      xValue: activePoint.xValue,
-      yValue: activePoint.yValue,
-      chartIndex: activePoint.chartIndex,
+      ...activePoint,
     };
     stateUpdate.config = configData;
   }

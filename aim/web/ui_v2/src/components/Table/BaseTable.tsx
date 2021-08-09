@@ -327,6 +327,18 @@ class BaseTable extends React.PureComponent {
     this.rightTable && this.rightTable.scrollToRow(rowIndex, align);
   }
 
+  scrollToRowByKey = (rowKey) => {
+    let rowIndex = 0;
+    for (let i = 0; i < this.props.data.length; i++) {
+      if (this.props.data[i].key === rowKey) {
+        rowIndex = i;
+        break;
+      }
+    }
+
+    this.scrollToRow(rowIndex);
+  };
+
   /**
    * Set `expandedRowKeys` manually.
    * This method is available only if `expandedRowKeys` is uncontrolled.

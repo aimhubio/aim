@@ -5,7 +5,7 @@ import { IDrawLinesProps } from 'types/utils/d3/drawLines';
 import { toTupleData } from 'utils/toTupleData';
 import lineGenerator from './lineGenerator';
 import { IProcessedData } from 'types/utils/d3/processData';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawLines(props: IDrawLinesProps): void {
   const {

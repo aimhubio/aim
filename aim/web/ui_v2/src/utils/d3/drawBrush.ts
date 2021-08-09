@@ -3,8 +3,7 @@ import * as d3 from 'd3';
 import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
 import getAxisScale from './getAxisScale';
 import lineGenerator from './lineGenerator';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
-import { CircleEnum } from './index';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {

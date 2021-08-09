@@ -17,7 +17,7 @@ import {
 } from 'types/components/LineChart/LineChart';
 
 import useStyles from './lineChartStyle';
-import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
