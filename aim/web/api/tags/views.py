@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException, Depends
 
 from aim.web.api.utils import APIRouter
-from aim.web.api.v2.helpers import object_factory
+from aim.web.api.utils import object_factory
 
 tags_router = APIRouter()
 
