@@ -8,16 +8,22 @@
     cursor: pointer;
 }
 
-.focus {
-    stroke: #3b5896; /* var(--primary) */
+/* on click */
+.HoverCircle.focus {
+    stroke: #3b5896;  /* var(--primary) */
     stroke-width: 2;
     opacity: 1;
 }
 
-.active {
+/* on hover */
+.HoverCircle.active {
     stroke: #7a94cc ;/* var(--primary-light); */
     stroke-width: 3;
     opacity: 1;
+}
+
+.Attributes.highlight > .HoverCircle:not(.active):not(.focus) {
+    opacity: 0.5;
 }
 
 .ChartMouseValue {
@@ -47,8 +53,26 @@
     box-shadow: inset -8px 0 5px -6px #3b5896; /* var(--primary);*/
 }
 
-.HighlightLine {
+.Lines {
+    overflow: hidden;
+}
+
+.Line {
+    stroke-width: 1;
+    opacity: 1;
+}
+
+.Lines.highlight > .Line:not(.active):not(.highlighted) {
+    stroke-width: 1;
+    opacity: 0.2;
+}
+
+.Line.highlighted {
+    opacity: 1;
+    stroke-width: 2px;
+}
+
+.Line.active {
     opacity: 1;
     stroke-width: 3px;
-
 }

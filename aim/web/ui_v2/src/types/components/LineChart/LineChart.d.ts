@@ -1,6 +1,12 @@
+import {
+  IActivePoint,
+  ISyncHoverStateParams,
+} from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
-
-export type ScaleType = 'log' | 'linear';
+import { IAxesScaleState } from '../AxesScalePopover/AxesScalePopover';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { IGetAxisScale } from 'utils/d3/getAxisScale';
+import { IFocusedState } from 'services/models/metrics/metricsAppModel';
 
 export interface ILine {
   key: string;
@@ -8,9 +14,9 @@ export interface ILine {
     xValues: number[];
     yValues: number[];
   };
-  color?: string;
-  dasharray?: string;
-  selector?: string;
+  color: string;
+  dasharray: string;
+  selectors: string[];
 }
 
 export interface ILineChartProps {
@@ -19,9 +25,28 @@ export interface ILineChartProps {
   xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
-  axisScaleType?: {
-    x?: ScaleType;
-    y?: ScaleType;
-  };
+  axesScaleType: IAxesScaleState;
+  highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
+}
+
+export interface IUpdateFocusedChartProps {
+  mousePos: [number, number];
+  focusedStateActive?: boolean;
+  force?: boolean;
+}
+
+export interface IAttributesRef {
+  focusedState?: IFocusedState;
+  activePoint?: IActivePoint;
+  xStep?: number;
+  lineKey?: string;
+  xScale?: IGetAxisScale;
+  yScale?: IGetAxisScale;
+  updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
+  setActiveLine?: (lineKey: string) => void;
+  updateHoverAttributes?: (xValue: number) => void;
+  updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
+  clearHoverAttributes?: () => void;
 }

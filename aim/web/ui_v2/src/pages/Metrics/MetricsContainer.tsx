@@ -1,88 +1,98 @@
 import React from 'react';
 
-import metricsCollectionModel from 'services/models/metrics/metricsCollectionModel';
 import Metrics from './Metrics';
-import getTableColumns from './components/TableColumns/TableColumns';
-import { ITableRef } from 'types/components/Table/Table';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
+import { ITableRef } from 'types/components/Table/Table';
+import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { CurveEnum } from 'utils/d3';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import metricAppModel from 'services/models/metrics/metricsAppModel';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import {
+  IMetricAppConfig,
+  IMetricTableRowData,
+} from 'types/services/models/metrics/metricsAppModel';
+import { ILine } from 'types/components/LineChart/LineChart';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-const metricsRequestRef = metricsCollectionModel.getMetricsData();
+const metricsRequestRef = metricAppModel.getMetricsData();
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const [displayOutliers, setDisplayOutliers] = React.useState<boolean>(true);
-  const [zoomMode, setZoomMode] = React.useState<boolean>(false);
-  const metricsData = useModel(metricsCollectionModel);
-  const [lineChartData, setLineChartData] = React.useState<any>([]);
-  const [curveInterpolation, setCurveInterpolation] = React.useState<CurveEnum>(
-    CurveEnum.Linear,
-  );
-
   const tableRef = React.useRef<ITableRef>(null);
+  const chartPanelRef = React.useRef<IChartPanelRef>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
 
+  const metricsData = useModel(metricAppModel);
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
-  const toggleDisplayOutliers = React.useCallback((): void => {
-    setDisplayOutliers(!displayOutliers);
-  }, [displayOutliers]);
-
-  const toggleZoomMode = React.useCallback((): void => {
-    setZoomMode(!zoomMode);
-  }, [zoomMode]);
+  React.useEffect(() => {
+    if (tableRef.current && chartPanelRef.current) {
+      metricAppModel.setComponentRefs({
+        tableRef,
+        chartPanelRef,
+      });
+    }
+  }, [metricsData?.rawData]);
 
   React.useEffect(() => {
-    metricsCollectionModel.initialize();
+    metricAppModel.initialize();
     metricsRequestRef.call();
-
-    // tableRef.current?.updateData({
-    //   newData: metricsCollectionModel.getDataAsTableRows(xValue)[0],
-    // });
     return () => {
       metricsRequestRef.abort();
     };
   }, []);
 
-  React.useEffect(() => {
-    if (metricsCollectionModel.getDataAsLines()[0]?.length) {
-      setLineChartData(metricsCollectionModel.getDataAsLines()[0]);
-    }
-  }, [metricsData]);
-
-  function onSmoothingChange({
-    algorithm,
-    factor,
-    curveInterpolation,
-  }: IOnSmoothingChange) {
-    let newData = metricsCollectionModel.getDataAsLines({
-      algorithm,
-      factor,
-    })[0];
-    setLineChartData(newData);
-    setCurveInterpolation(curveInterpolation);
-  }
-
   return (
     <Metrics
+      //refs
       tableRef={tableRef}
-      displayOutliers={displayOutliers}
-      toggleDisplayOutliers={toggleDisplayOutliers}
+      chartPanelRef={chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      lineChartData={lineChartData}
-      tableData={metricsCollectionModel.getDataAsTableRows()}
-      tableColumns={getTableColumns()}
-      zoomMode={zoomMode}
-      toggleZoomMode={toggleZoomMode}
-      onSmoothingChange={onSmoothingChange}
-      curveInterpolation={curveInterpolation}
+      //options
+      lineChartData={metricsData?.lineChartData as ILine[][]}
+      displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
+      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableColumns={metricsData?.tableColumns as ITableColumn[]}
+      zoomMode={metricsData?.config?.chart.zoomMode as boolean}
+      curveInterpolation={
+        metricsData?.config?.chart.curveInterpolation as CurveEnum
+      }
+      highlightMode={metricsData?.config?.chart.highlightMode as HighlightEnum}
+      axesScaleType={
+        metricsData?.config?.chart.axesScaleType as IAxesScaleState
+      }
+      smoothingAlgorithm={
+        metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
+      }
+      smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
+      groupingData={
+        metricsData?.config?.grouping as IMetricAppConfig['grouping']
+      }
+      focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
+      //methods
+      onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
+      onZoomModeChange={metricAppModel.onZoomModeChange}
+      onChangeHighlightMode={metricAppModel.onChangeHighlightMode}
+      onSmoothingChange={metricAppModel.onSmoothingChange}
+      onTableRowHover={metricAppModel.onTableRowHover}
+      onTableRowClick={metricAppModel.onTableRowClick}
+      onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
+      onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
+      onGroupingModeChange={metricAppModel.onGroupingModeChange}
+      onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
+      onGroupingReset={metricAppModel.onGroupingReset}
+      onActivePointChange={metricAppModel.onActivePointChange}
+      onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
+      onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
     />
   );
 }

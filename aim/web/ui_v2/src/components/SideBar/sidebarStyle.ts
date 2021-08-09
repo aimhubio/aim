@@ -24,6 +24,9 @@ export default makeStyles(({ spacing, palette }) => ({
     fontSize: spacing(0.875),
     color: '#fff',
   },
+  listItemIcon: {
+    color: '#fff',
+  },
   anchor: {
     position: 'relative',
     textDecoration: 'none',

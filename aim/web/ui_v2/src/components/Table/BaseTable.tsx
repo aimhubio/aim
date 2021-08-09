@@ -69,6 +69,7 @@ class BaseTable extends React.PureComponent {
     this.state = {
       scrollbarSize: 0,
       hoveredRowKey: null,
+      activeRowKey: null,
       resizingKey: null,
       resizingWidth: 0,
       expandedRowKeys: cloneArray(defaultExpandedRowKeys),
@@ -93,6 +94,7 @@ class BaseTable extends React.PureComponent {
     this._handleVerticalScroll = this._handleVerticalScroll.bind(this);
     this._handleRowsRendered = this._handleRowsRendered.bind(this);
     this._handleRowHover = this._handleRowHover.bind(this);
+    this._handleRowClick = this._handleRowClick.bind(this);
     this._handleRowExpand = this._handleRowExpand.bind(this);
     this._handleColumnResize = throttle(
       this._handleColumnResize.bind(this),
@@ -325,6 +327,18 @@ class BaseTable extends React.PureComponent {
     this.rightTable && this.rightTable.scrollToRow(rowIndex, align);
   }
 
+  scrollToRowByKey = (rowKey) => {
+    let rowIndex = 0;
+    for (let i = 0; i < this.props.data.length; i++) {
+      if (this.props.data[i].key === rowKey) {
+        rowIndex = i;
+        break;
+      }
+    }
+
+    this.scrollToRow(rowIndex);
+  };
+
   /**
    * Set `expandedRowKeys` manually.
    * This method is available only if `expandedRowKeys` is uncontrolled.
@@ -339,6 +353,24 @@ class BaseTable extends React.PureComponent {
       expandedRowKeys: cloneArray(expandedRowKeys),
     });
   }
+
+  /**
+   * Set `hoveredRowKey` manually.
+   *
+   * @param {string} rowKey
+   */
+  setHoveredRow = (rowKey) => {
+    this.setState({ hoveredRowKey: rowKey });
+  };
+
+  /**
+   * Set `activeRowKey` manually.
+   *
+   * @param {string} rowKey
+   */
+  setActiveRow = (rowKey) => {
+    this.setState({ activeRowKey: rowKey });
+  };
 
   renderExpandIcon({ rowData, rowIndex, depth, onExpand }) {
     const { rowKey, expandColumnKey, expandIconProps } = this.props;
@@ -420,6 +452,7 @@ class BaseTable extends React.PureComponent {
       onRowExpand: this._handleRowExpand,
       // for fixed table, we need to sync the hover state across the inner tables
       onRowHover: hasFrozenColumns ? this._handleRowHover : null,
+      onRowClick: this._handleRowClick,
       onRowHeightChange: hasFrozenColumns
         ? this._handleFrozenRowHeightChange
         : this._handleRowHeightChange,
@@ -1116,8 +1149,25 @@ class BaseTable extends React.PureComponent {
     }
   }
 
-  _handleRowHover({ hovered, rowKey }) {
-    this.setState({ hoveredRowKey: hovered ? rowKey : null });
+  _handleRowHover({ rowKey }) {
+    if (this.state.activeRowKey !== null) {
+      return;
+    }
+    this.setHoveredRow(rowKey);
+    if (typeof this.props.onRowHover === 'function') {
+      this.props.onRowHover(rowKey);
+    }
+  }
+
+  _handleRowClick({ rowKey }) {
+    const clickedOnSameRow = this.state.activeRowKey === rowKey;
+    this.setState({
+      hoveredRowKey: rowKey,
+      activeRowKey: clickedOnSameRow ? null : rowKey,
+    });
+    if (typeof this.props.onRowClick === 'function') {
+      this.props.onRowClick(clickedOnSameRow ? null : rowKey);
+    }
   }
 
   _handleRowExpand({ expanded, rowData, rowIndex, rowKey }) {

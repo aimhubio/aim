@@ -5,7 +5,6 @@ import {
   BlurOn,
   CenterFocusWeak,
   GroupWorkOutlined,
-  ImportExportOutlined,
   KeyboardArrowLeft,
   MultilineChart,
   ScatterPlot,
@@ -25,11 +24,13 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
 
 import useStyles from './controlsStyles';
+import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const classes = useStyles();
+
   return (
     <Grid
       container
@@ -38,7 +39,7 @@ function Controls(
       spacing={1}
       alignItems='center'
     >
-      <Grid onClick={props.toggleDisplayOutliers} item>
+      <Grid onClick={props.onDisplayOutliersChange} item>
         {props.displayOutliers ? (
           <BlurOn className={classes.anchor} />
         ) : (
@@ -46,9 +47,19 @@ function Controls(
         )}
       </Grid>
       <Grid item>
-        <Box className={classes.anchor}>
-          <ShowChart />
-        </Box>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box onClick={onAnchorClick} className={classes.anchor}>
+              <ShowChart />
+            </Box>
+          )}
+          component={
+            <AxesScalePopover
+              axesScaleType={props.axesScaleType}
+              onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+            />
+          }
+        />
       </Grid>
       <Grid item>
         <ControlPopover
@@ -78,7 +89,27 @@ function Controls(
             </Box>
           )}
           component={
-            <SmootheningPopup onSmoothingChange={props.onSmoothingChange} />
+            <SmootheningPopup
+              onSmoothingChange={props.onSmoothingChange}
+              smoothingAlgorithm={props.smoothingAlgorithm}
+              curveInterpolation={props.curveInterpolation}
+              smoothingFactor={props.smoothingFactor}
+            />
+          }
+        />
+      </Grid>
+      <Grid item>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <Box className={classes.anchor} onClick={onAnchorClick}>
+              <CenterFocusWeak />
+            </Box>
+          )}
+          component={
+            <HighlightModePopup
+              mode={props.highlightMode}
+              onChange={props.onChangeHighlightMode}
+            />
           }
         />
       </Grid>
@@ -94,7 +125,7 @@ function Controls(
               </span>
               <ZoomIn
                 color={props.zoomMode ? 'primary' : 'inherit'}
-                onClick={props.toggleZoomMode}
+                onClick={props.onZoomModeChange}
               />
             </Box>
           )}
@@ -111,26 +142,11 @@ function Controls(
               >
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
-              <ZoomOut onClick={props.toggleZoomMode} />
+              <ZoomOut onClick={props.onZoomModeChange} />
             </Box>
           )}
           component={<ZoomOutPopup />}
         />
-      </Grid>
-      <Grid item>
-        <ControlPopover
-          anchor={({ onAnchorClick }) => (
-            <Box className={classes.anchor} onClick={onAnchorClick}>
-              <CenterFocusWeak />
-            </Box>
-          )}
-          component={<HighlightModePopup />}
-        />
-      </Grid>
-      <Grid item>
-        <Box className={classes.anchor}>
-          <ImportExportOutlined />
-        </Box>
       </Grid>
     </Grid>
   );

@@ -10,8 +10,13 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
+  onRowHover: (rowKey: string) => void;
+  onRowClick: (rowKey: string) => void;
 }
 
 export interface ITableRef {
   updateData: (params: { newData?: any[]; newColumns?: any[] }) => void;
+  setHoveredRow: (rowKey: string) => void;
+  setActiveRow: (rowKey: string) => void;
+  scrollToRow: (rowKey: string) => void;
 }
