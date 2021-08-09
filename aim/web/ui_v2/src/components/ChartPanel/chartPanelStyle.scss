@@ -1,0 +1,18 @@
+.ChartPanel__container {
+  height: -webkit-fill-available;
+
+  .ChartPanel {
+    height: 100%;
+  }
+
+  .ChartPanel__paper {
+    padding: 1em;
+    height: 100%;
+    user-select: none;
+  }
+
+  .ChartPanel__grid{
+    height: 100%;
+    overflow: auto;
+  }
+}

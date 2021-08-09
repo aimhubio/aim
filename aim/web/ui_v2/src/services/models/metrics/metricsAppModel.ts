@@ -613,21 +613,14 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData.flat() });
+    // tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
     );
 
-    // TODO because of virtualized-list selected activeRow is null in
-    //  cases when row is not in viewport
     if (focusedStateActive) {
-      setTimeout(() => {
-        let activeRow = document.querySelector('.BaseTable__row--hovered');
-        if (activeRow) {
-          activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }
-      });
+      tableRef.current?.scrollToRow(activePoint.key);
     }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
