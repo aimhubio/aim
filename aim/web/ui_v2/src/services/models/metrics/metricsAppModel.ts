@@ -37,6 +37,12 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import {
+  adjustable_reader,
+  decodePathsVals,
+  decode_buffer_pairs,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -96,27 +102,40 @@ function initialize() {
 }
 
 function getMetricsData() {
-  const { call, abort } = metricsService.getMetricsData();
+  const { call, abort } = metricsService.getMetricsData({
+    q: 'run.get(("hparams", "benchmark")) == "glue" and context.get("subset") != "train" and run.get(("hparams", "dataset")) == "cola"',
+  });
   return {
-    call: () =>
-      call().then((runData: IRun[]) => {
-        const { data, params } = processData(runData);
-        const configData = model.getState()?.config;
-        if (configData) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions(params),
-          ];
-        }
-        model.setState({
-          rawData: runData,
-          config: configData,
-          params,
-          data,
-          lineChartData: getDataAsLines(data),
-          tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params),
-        });
-      }),
+    call: async () => {
+      const stream = await call();
+      let gen = adjustable_reader(stream);
+      let buffer_pairs = decode_buffer_pairs(gen);
+      let decodedPairs = decodePathsVals(buffer_pairs);
+      let objects = iterFoldTree(decodedPairs, 2);
+
+      const runData: IRun[] = [];
+      for await (let [keys, val] of objects) {
+        runData.push(val as any);
+      }
+      console.log(runData);
+
+      const { data, params } = processData(runData);
+      const configData = model.getState()?.config;
+      if (configData) {
+        configData.grouping.selectOptions = [
+          ...getGroupingSelectOptions(params),
+        ];
+      }
+      model.setState({
+        rawData: runData,
+        config: configData,
+        params,
+        data,
+        lineChartData: getDataAsLines(data),
+        tableData: getDataAsTableRows(data, null, params),
+        tableColumns: getTableColumns(params),
+      });
+    },
     abort,
   };
 }
@@ -138,8 +157,8 @@ function getGroupingSelectOptions(
     },
     {
       group: 'Other',
-      label: 'run_hash',
-      value: 'run.run_hash',
+      label: 'run.hash',
+      value: 'run.hash',
     },
     {
       group: 'Other',
@@ -171,21 +190,8 @@ function processData(data: IRun[]): {
         return createMetricModel({
           ...metric,
           run: createRunModel(_.omit(run, 'metrics') as IRun),
-          selectors: [
-            encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
-            }),
-            encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
-            }),
-            run.run_hash,
-          ],
           key: encode({
-            runHash: run.run_hash,
+            runHash: run.hash,
             metricName: metric.metric_name,
             traceContext: metric.context,
           }),
@@ -397,7 +403,7 @@ function getDataAsLines(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.run_hash],
+          selectors: [metric.key, metric.key, metric.run.hash],
           data: {
             xValues: [...metric.data.iterations],
             yValues,
