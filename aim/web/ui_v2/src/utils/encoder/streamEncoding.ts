@@ -117,10 +117,10 @@ function decodeValue(buffer: Uint8Array): any {
 
 function decode_q_le(...x: number[]) {
   return (
-    x[7] * (1 << 56) +
-    x[6] * (1 << 48) +
-    x[5] * (1 << 40) +
-    x[4] * (1 << 32) +
+    x[7] * Math.pow(2, 56) +
+    x[6] * Math.pow(2, 48) +
+    x[5] * Math.pow(2, 40) +
+    x[4] * Math.pow(2, 32) +
     x[3] * (1 << 24) +
     x[2] * (1 << 16) +
     x[1] * (1 << 8) +
@@ -130,10 +130,10 @@ function decode_q_le(...x: number[]) {
 
 function decode_q_be(...x: number[]) {
   return (
-    x[0] * (1 << 56) +
-    x[1] * (1 << 48) +
-    x[2] * (1 << 40) +
-    x[3] * (1 << 32) +
+    x[0] * Math.pow(2, 56) +
+    x[1] * Math.pow(2, 48) +
+    x[2] * Math.pow(2, 40) +
+    x[3] * Math.pow(2, 32) +
     x[4] * (1 << 24) +
     x[5] * (1 << 16) +
     x[6] * (1 << 8) +
