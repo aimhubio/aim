@@ -5,18 +5,17 @@ from collections import Counter
 from datetime import datetime
 from fastapi import Depends, HTTPException, Request
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-
 from urllib import parse
 
 from aim.engine.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.api.projects.project import Project
-from aim.web.api.v2.helpers import object_factory
+from aim.web.api.utils import object_factory
 
 projects_router = APIRouter()
 
 
 @projects_router.get('/')
-async def project_api():
+async def project_api(factory=Depends(object_factory)):
     project = Project()
 
     if not project.exists():
@@ -25,9 +24,8 @@ async def project_api():
     return {
         'name': project.name,
         'path': project.path,
-        'tf_enabled': project.tf_enabled,
         'description': project.description,
-        'branches': project.repo.list_branches(),
+        'branches':  [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()],
         'telemetry_enabled': os.getenv(AIM_UI_TELEMETRY_KEY, '1'),
     }
 

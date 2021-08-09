@@ -62,7 +62,7 @@ class Run:
 
         self._creation_time = None
         if not read_only:
-            self.creation_time()
+            self.creation_time
 
     @property
     def creation_time(self):
@@ -118,15 +118,15 @@ class Run:
         *,
         context: AimObject = None,
     ):
-        time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
-        time_view[step] = time()
-
         # TODO move to Trace
         if context is None:
             context = {}
 
         ctx = Context(context)
         metric = Metric(name, ctx)
+
+        time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
+        time_view[step] = time()
 
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = ctx.to_dict()
@@ -141,7 +141,7 @@ class Run:
         if max_idx == None:
             max_idx = len(val_view)
         if max_idx == 0:
-            self.meta_tree['traces', ctx.idx, name] = {}
+            self.meta_tree['traces', ctx.idx, name] = 1
         self.meta_run_tree['traces', ctx.idx, name, "last"] = value
 
         self.series_counters[ctx, name] = max_idx + 1

@@ -140,7 +140,7 @@ class Repo:
 
     def get_meta_tree(self):
         return self.request(
-            'meta', read_only=read_only, from_union=True
+            'meta', read_only=True, from_union=True
         ).tree().view('meta')
 
     def collect_metrics(self) -> List[str]:
