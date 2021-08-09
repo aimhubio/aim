@@ -7,11 +7,31 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from aim.storage.migrations.utils import upgrade_database
 from aim.storage.structured.sql_engine.factory import ModelMappedFactory as ObjectFactory
 
+from collections import defaultdict
+from aim.storage.types import SafeNone
+
+
+class ObjectCache:
+    def __init__(self, data_fetch_func, key_func):
+        self._data = defaultdict(SafeNone)
+        self._cached = False
+        self.data_fetch_func = data_fetch_func
+        self.key_func = key_func
+
+    def __getitem__(self, key):
+        if not self._cached:
+            for obj in self.data_fetch_func():
+                self._data[self.key_func(obj)] = obj
+            self._cached = True
+        return self._data[key]
+
 
 class DB(ObjectFactory):
     _DIALECT = 'sqlite'
     _DB_NAME = 'run_metadata.sqlite'
     _pool = WeakValueDictionary()
+
+    _caches = dict()
 
     # TODO: [AT] implement readonly if needed
     def __init__(self, path: str, readonly: bool = False):
@@ -44,6 +64,10 @@ class DB(ObjectFactory):
         else:
             raise RuntimeError(f'Cannot find database {path}. Please init first.')
 
+    @property
+    def caches(self):
+        return self._caches
+
     def get_session(self):
         return self.session_cls()
 
@@ -53,5 +77,7 @@ class DB(ObjectFactory):
         upgrade_database(self.db_url)
         self._upgraded = True
 
-    # TODO: [AT] add API for SDK -> insert runs once new ones are started
-    # TODO: [AT] add API for QL -> example: run.experiment.name == "Experiment 1" AND run.params.metric IN run.tags.name
+    def init_cache(self, cache_name, callback, key_func):
+        if cache_name in self._caches:
+            return
+        self._caches[cache_name] = ObjectCache(callback, key_func)

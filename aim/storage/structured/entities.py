@@ -8,6 +8,13 @@ ExperimentCollection = Collection['Experiment']
 TagCollection = Collection['Tag']
 
 
+class StructuredObject(ABC):
+    @classmethod
+    @abstractmethod
+    def fields(cls):
+        ...
+
+
 class Searchable(ABC, Generic[T]):
     @classmethod
     @abstractmethod
@@ -25,10 +32,10 @@ class Searchable(ABC, Generic[T]):
         ...
 
 
-class Run(Searchable['Run']):
+class Run(StructuredObject, Searchable['Run']):
     @property
     @abstractmethod
-    def hash(self) -> str:
+    def hashname(self) -> str:
         ...
 
     @property
@@ -85,7 +92,7 @@ class Run(Searchable['Run']):
         ...
 
 
-class Experiment(Searchable['Experiment']):
+class Experiment(StructuredObject, Searchable['Experiment']):
     @property
     @abstractmethod
     def uuid(self) -> str:
@@ -106,7 +113,7 @@ class Experiment(Searchable['Experiment']):
         ...
 
 
-class Tag(Searchable['Tag']):
+class Tag(StructuredObject, Searchable['Tag']):
     @property
     @abstractmethod
     def uuid(self) -> str:

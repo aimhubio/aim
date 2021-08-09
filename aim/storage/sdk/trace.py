@@ -232,7 +232,7 @@ class RunTraceCollection(TraceCollection):
                 statement = True
             else:
                 statement = self.query_traces.match(
-                    run=run,
+                    run=run.proxy(),
                     context=ctx,
                     metric_name=metric_name
                 )
@@ -281,7 +281,7 @@ class QueryRunTraceCollection(TraceCollection):
             if not self.query:
                 statement = True
             else:
-                statement = self._query.match(run=run)
+                statement = self._query.match(run=run.proxy())
             if not statement:
                 continue
             yield RunTraceCollection(run)

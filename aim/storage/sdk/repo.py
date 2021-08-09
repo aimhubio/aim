@@ -40,7 +40,7 @@ class Repo:
 
         self.meta_tree = self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
-        self.run_metadata_db = DB.from_path(path)
+        self.structured_db = DB.from_path(path)
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -126,9 +126,13 @@ class Repo:
             return Run(hashname, repo=self, read_only=True)
 
     def query_runs(self, query: str = '') -> QueryRunTraceCollection:
+        db = self.structured_db
+        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         return QueryRunTraceCollection(self, query)
 
     def traces(self, query: str = '') -> QueryTraceCollection:
+        db = self.structured_db
+        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         return QueryTraceCollection(repo=self, query=query)
 
     def iter_traces(self, query: str = '') -> QueryTraceCollection:

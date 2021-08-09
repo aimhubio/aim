@@ -3,7 +3,6 @@ import logging
 import datetime
 
 from abc import abstractmethod
-from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from RestrictedPython import (
@@ -20,12 +19,8 @@ from RestrictedPython.Guards import (
 )
 
 from aim.storage.proxy import AimObjectProxy
-from aim.storage.types import SafeNone
 
 if TYPE_CHECKING:
-    # TODO: [AT] get rid of SDK Repo/Run deps.
-    from aim.storage.sdk.repo import Repo
-    from aim.storage.sdk.run import Run
     from aim.storage.context import Context
 
 
@@ -81,7 +76,6 @@ logger = logging.getLogger(__name__)
 CODE_FORMAT = '''
 def check(
     run,
-    run_ = None,
     context = None,
     metric_name = None
 ) -> bool:
@@ -103,7 +97,7 @@ class Query:
     @abstractmethod
     def match(
         self,
-        run: 'Run',
+        run,
         context: 'Context' = None,
         metric_name: str = None
     ) -> bool:
@@ -111,33 +105,13 @@ class Query:
 
     def __call__(
         self,
-        run: 'Run',
+        run,
         context: 'Context' = None,
         metric_name: str = None
     ):
         return self.match(run=run,
                           context=context,
                           metric_name=metric_name)
-
-
-class RunMetadataCache:
-    def __init__(
-            self,
-            repo: 'Repo'
-    ):
-        self.repo = repo
-        self.cache = None
-
-    def __call__(self) -> dict:
-        if self.cache is not None:
-            return self.cache
-
-        runs_factory = self.repo.run_metadata_db.runs()
-        query_results = defaultdict(SafeNone)
-        for run in runs_factory:
-            query_results[run.hash] = run
-        self.cache = query_results
-        return query_results
 
 
 @lru_cache(maxsize=100)
@@ -159,7 +133,6 @@ class RestrictedPythonQuery(Query):
     ):
         super().__init__(expr=expr)
         self._check = compile_checker(expr)
-        self.run_metadata_cache = None
 
     def __bool__(
         self
@@ -173,25 +146,16 @@ class RestrictedPythonQuery(Query):
 
     def match(
         self,
-        run: 'Run',
+        run,
         context: 'Context' = None,
         metric_name: str = None
     ) -> bool:
-
-        # TODO: [AT] get rid of SDK Repo/Run deps.
-        run_tree_proxy = AimObjectProxy(lambda: run.meta_run_attrs_tree,
-                                        run.meta_run_attrs_tree)
-
-        if not self.run_metadata_cache:
-            self.run_metadata_cache = RunMetadataCache(run.repo)  # to not overcomplicate things to pass repo to init
-        run_sql_meta_proxy = AimObjectProxy(lambda: self.run_metadata_cache()[run.hashname])
 
         context_proxy = AimObjectProxy(lambda: context.to_dict())
 
         # TODO enforce immutable
         try:
-            return self._check(run=run_tree_proxy,
-                               run_=run_sql_meta_proxy,
+            return self._check(run=run,
                                context=context_proxy,
                                metric_name=metric_name)
         except BaseException as e:
