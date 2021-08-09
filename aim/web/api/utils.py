@@ -21,7 +21,7 @@ def object_factory():
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return project.repo.run_metadata_db
+    return project.repo.structured_db
 
 
 def datetime_now():
