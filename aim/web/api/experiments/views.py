@@ -1,14 +1,14 @@
 from fastapi import Request, HTTPException, Depends
 
 from aim.web.api.utils import APIRouter
-from aim.web.api.v2.helpers import object_factory
+from aim.web.api.utils import object_factory
 
 experiment_router = APIRouter()
 
 
-@experiment_router.get('/list/')
+@experiment_router.get('/')
 async def get_experiments_list_api(factory=Depends(object_factory)):
-    response = [{'id': exp.uuid, 'name': exp.name} for exp in factory.experiments()]
+    response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()]
     return response
 
 
@@ -18,11 +18,12 @@ async def search_experiments_by_name_api(request: Request, factory=Depends(objec
     search_term = params.get('q') or ''
     search_term.strip()
 
-    response = [{'id': exp.uuid, 'name': exp.name} for exp in factory.search_experiments(search_term)]
+    response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)}
+                for exp in factory.search_experiments(search_term)]
     return response
 
 
-@experiment_router.post('/new/')
+@experiment_router.post('/')
 async def create_experiment_api(request: Request, factory=Depends(object_factory)):
     body = await request.json()
     exp_name = body.get('name') or ''
@@ -53,7 +54,7 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
     return response
 
 
-@experiment_router.post('/{exp_id}/')
+@experiment_router.put('/{exp_id}/')
 async def update_experiment_properties_api(exp_id: str, request: Request, factory=Depends(object_factory)):
     with factory:
         exp = factory.find_experiment(exp_id)

@@ -11,10 +11,11 @@ T = TypeVar('T')
 
 
 class ModelMappedProperty:
-    def __init__(self, name: str, mapped_name: str = None, with_setter: bool = True):
+    def __init__(self, name: str, mapped_name: str = None, with_setter: bool = True, autogenerate: bool = True):
         self.name = name
         self.mapped_name = mapped_name or self.name
         self.with_setter = with_setter
+        self.autogenerate = autogenerate
 
     def generate_property(self):
         def getter(object_):
@@ -59,8 +60,10 @@ class ModelMappedCollection(Collection[T]):
         return ret
 
     def __len__(self):
-        self._create_cache()
-        return len(self._cache)
+        if self._cache is not None:
+            return len(self._cache)
+        else:
+            return self.query.count()
 
     def __contains__(self, item: Union[T, str]) -> bool:
         self._create_cache()
@@ -85,10 +88,19 @@ class ModelMappedClassMeta(GenericMeta, ABCMeta):
         if mcls.__mapping__.get(model):
             return mcls.__mapping__.get(model)
 
+        schema = []
         for attribute in mapped_properties:
             if not isinstance(attribute, ModelMappedProperty):
                 raise TypeError(f'Mapped property \'{attribute.name}\' should be of type \'MappedProperty\'.')
-            namespace[attribute.name] = attribute.generate_property()
+            schema.append(attribute.name)
+            if attribute.autogenerate:
+                namespace[attribute.name] = attribute.generate_property()
+        namespace['__schema__'] = tuple(schema)
+
+        def fields(cls):
+            return cls.__schema__
+
+        namespace['fields'] = classmethod(fields)
         type_ = ABCMeta.__new__(mcls, name, bases, namespace, **kwargs)
         mcls.__mapping__[model] = type_
         return type_

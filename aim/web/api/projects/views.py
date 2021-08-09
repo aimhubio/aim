@@ -5,18 +5,17 @@ from collections import Counter
 from datetime import datetime
 from fastapi import Depends, HTTPException, Request
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-
 from urllib import parse
 
 from aim.engine.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.api.projects.project import Project
-from aim.web.api.v2.helpers import object_factory
+from aim.web.api.utils import object_factory
 
 projects_router = APIRouter()
 
 
 @projects_router.get('/')
-async def project_api():
+async def project_api(factory=Depends(object_factory)):
     project = Project()
 
     if not project.exists():
@@ -25,9 +24,8 @@ async def project_api():
     return {
         'name': project.name,
         'path': project.path,
-        'tf_enabled': project.tf_enabled,
         'description': project.description,
-        'branches': project.repo.list_branches(),
+        'branches':  [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()],
         'telemetry_enabled': os.getenv(AIM_UI_TELEMETRY_KEY, '1'),
     }
 
@@ -51,12 +49,12 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
     num_runs = 0
     activity_counter = Counter()
     for run in project.repo.iter_runs():
-        creation_timestamp = run.started_at if run.started_at > 0 else 0
+        creation_timestamp = run.creation_time if run.creation_time > 0 else 0
         activity_counter[datetime.fromtimestamp(creation_timestamp, timezone).strftime('%Y-%m-%d')] += 1
         num_runs += 1
 
     return {
-        'num_experiments': len(factory.experiments),
+        'num_experiments': len(factory.experiments()),
         'num_runs': num_runs,
         'activity_map': dict(activity_counter),
     }

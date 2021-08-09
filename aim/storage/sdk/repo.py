@@ -34,26 +34,26 @@ class Repo:
         self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
 
         os.makedirs(self.path, exist_ok=True)
-        os.makedirs(os.path.join(self.path, "chunks"), exist_ok=True)
-        os.makedirs(os.path.join(self.path, "locks"), exist_ok=True)
-        os.makedirs(os.path.join(self.path, "progress"), exist_ok=True)
+        # os.makedirs(os.path.join(self.path, 'chunks'), exist_ok=True)
+        # os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
+        # os.makedirs(os.path.join(self.path, 'progress'), exist_ok=True)
 
-        self.meta_tree = self.request("meta", read_only=True, from_union=True).view(b"meta\xfe").tree()
+        self.meta_tree = self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
-        self.run_metadata_db = DB.from_path(path)
+        self.structured_db = DB.from_path(path)
 
     def __repr__(self) -> str:
-        return f"<Repo#{hash(self)} path={self.path} read_only={self.read_only}>"
+        return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
 
     def __hash__(self) -> int:
         return hash(self.path)
 
-    def __eq__(self, o: "Repo") -> bool:
+    def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
 
     @classmethod
     def default_repo(cls):
-        return cls.from_path(".aim")
+        return cls.from_path('.aim')
 
     @classmethod
     def from_path(cls, path: str, read_only: bool = None):
@@ -67,7 +67,7 @@ class Repo:
         self, name: str, read_only: bool, from_union: bool = False
     ) -> Container:
         if self.read_only and not read_only:
-            raise ValueError("Repo is read-only")
+            raise ValueError('Repo is read-only')
 
         container_config = ContainerConfig(name, None, read_only=read_only)
         container = self.container_pool.get(container_config)
@@ -88,7 +88,7 @@ class Repo:
         sub: str = None,
         *,
         read_only: bool,
-        from_union: bool = False
+        from_union: bool = False  # TODO maybe = True by default
     ):
 
         container_config = ContainerConfig(name, sub, read_only)
@@ -99,46 +99,53 @@ class Repo:
                     path = name
                 else:
                     assert sub is not None
-                    path = os.path.join(name, "chunks", sub)
+                    path = os.path.join(name, 'chunks', sub)
                 container = self._get_container(path, read_only=True, from_union=from_union)
             else:
                 assert sub is not None
-                from_union = False
-                path = os.path.join(name, "chunks", sub)
-                container = self._get_container(path, read_only=False)
+                path = os.path.join(name, 'chunks', sub)
+                container = self._get_container(path, read_only=False, from_union=False)
 
-            prefix = b""
+            prefix = b''
 
             container_view = SingleContainerView(container=container, read_only=read_only, prefix=prefix)
             self.container_view_pool[container_config] = container_view
 
         return container_view
 
-    def iter_runs(self) -> Iterator["Run"]:
-        for run_name in self.meta_tree.keys():
-            if run_name == "_":
-                continue
+    def iter_runs(self) -> Iterator['Run']:
+        for run_name in self.meta_tree.view('chunks').keys():
+            # if run_name == '_':
+            #     continue
             yield Run(run_name, repo=self, read_only=True)
 
     def get_run(self, hashname: str) -> Optional['Run']:
-        if hashname not in self.meta_tree.keys():
+        if hashname not in self.meta_tree.view('chunks').keys():
             return None
         else:
             return Run(hashname, repo=self, read_only=True)
 
-    def query_runs(self, query: str = "") -> QueryRunTraceCollection:
+    def query_runs(self, query: str = '') -> QueryRunTraceCollection:
+        db = self.structured_db
+        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         return QueryRunTraceCollection(self, query)
 
-    def traces(self, query: str = "") -> QueryTraceCollection:
+    def traces(self, query: str = '') -> QueryTraceCollection:
+        db = self.structured_db
+        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         return QueryTraceCollection(repo=self, query=query)
 
-    def iter_traces(self, query: str = "") -> QueryTraceCollection:
+    def iter_traces(self, query: str = '') -> QueryTraceCollection:
         return self.traces(query=query)
 
-    # TODO: confirm access to meta_tree with Run('_').meta_tree
+    def get_meta_tree(self):
+        return self.request(
+            'meta', read_only=True, from_union=True
+        ).tree().view('meta')
+
     def collect_metrics(self) -> List[str]:
-        default_run = Run('_', repo=self, read_only=True)
-        traces = default_run.meta_tree.collect('traces')
+        meta_tree = self.get_meta_tree()
+        traces = meta_tree.collect('traces')
         metrics = set()
         for trace_metrics in traces.values():
             metrics.update(trace_metrics.keys())
@@ -146,5 +153,5 @@ class Repo:
         return list(metrics)
 
     def collect_params(self):
-        default_run = Run('_', repo=self, read_only=True)
-        return default_run.meta_tree.collect('_attributes', strict=False)
+        meta_tree = self.get_meta_tree()
+        return meta_tree.collect('attrs', strict=False)
