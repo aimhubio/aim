@@ -1,9 +1,11 @@
 import React from 'react';
-import { IGetAxesScale, IGetAxesScaleProps } from './getAxesScale';
+import { IGetAxesScaleProps, IGetAxisScale } from './getAxisScale';
+import { ISyncHoverStateParams } from './drawHoverAttributes';
 
 export interface IDrawBrushProps extends IGetAxesScaleProps {
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;
+  attributesNodeRef: React.MutableRefObject<>;
   brushRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
   axesRef: React.MutableRefObject<>;
@@ -11,10 +13,11 @@ export interface IDrawBrushProps extends IGetAxesScaleProps {
   linesRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   svgNodeRef: React.MutableRefObject<>;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
 }
 
 export interface IHandleBrushChange {
-  xValues: IGetAxesScale['xScale'];
-  yValues: IGetAxesScale['yScale'];
-  mousePosition: number[];
+  xValues: IGetAxisScale;
+  yValues: IGetAxisScale;
+  mousePos: number[];
 }

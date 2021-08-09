@@ -1,19 +1,18 @@
 import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(({ spacing }) => ({
-  chartContainer: {
-    height: '-webkit-fill-available',
-  },
-  chartPanel: {
-    height: '100%',
-  },
   paper: {
     padding: spacing(1),
     height: '100%',
     userSelect: 'none',
   },
-  chartGrid: {
-    height: '100%',
-    overflow: 'auto',
+  fullHeight: {
+    height: '-webkit-fill-available',
+  },
+  section: {
+    padding: spacing(0.5),
+  },
+  resize: {
+    cursor: 'ns-resize',
   },
 }));

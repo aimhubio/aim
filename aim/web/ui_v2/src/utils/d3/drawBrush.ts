@@ -1,14 +1,16 @@
 import * as d3 from 'd3';
 
 import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
-import { IGetAxesScale } from 'types/utils/d3/getAxesScale';
-import getAxesScale from './getAxesScale';
+import getAxisScale from './getAxisScale';
+import lineGenerator from './lineGenerator';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
     brushRef,
     plotBoxRef,
     plotNodeRef,
+    attributesNodeRef,
     visBoxRef,
     axesRef,
     attributesRef,
@@ -18,6 +20,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesScaleType,
     min,
     max,
+    syncHoverState,
   } = props;
 
   const brush = d3
@@ -31,8 +34,8 @@ function drawBrush(props: IDrawBrushProps): void {
   plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
 
   brushRef.current.updateScales = function (
-    xScale: IGetAxesScale['xScale'],
-    yScale: IGetAxesScale['yScale'],
+    xScale: IGetAxisScale,
+    yScale: IGetAxisScale,
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;
@@ -46,7 +49,7 @@ function drawBrush(props: IDrawBrushProps): void {
   // This event firing after brush selection ends
   function handleBrushChange(event: d3.D3BrushEvent<d3.BrushSelection>): void {
     const extent: d3.BrushSelection | any = event.selection;
-    const mousePosition = d3.pointer(event);
+    const mousePos = d3.pointer(event);
     if (!extent) {
       return;
     } else if (
@@ -65,8 +68,6 @@ function drawBrush(props: IDrawBrushProps): void {
       const [xMin, xMax]: number[] = brushRef.current.xScale.domain();
       const [yMin, yMax]: number[] = brushRef.current.yScale.domain();
 
-      console.log(extent);
-
       const xValues: number[] | null =
         extent[1][0] - extent[0][0] < 5
           ? null
@@ -80,7 +81,7 @@ function drawBrush(props: IDrawBrushProps): void {
       handleZoomIn({
         xValues,
         yValues,
-        mousePosition,
+        mousePos,
       });
     }
     svgNodeRef.current.on('dblclick', handleZoomOut);
@@ -90,7 +91,7 @@ function drawBrush(props: IDrawBrushProps): void {
   function handleZoomIn({
     xValues,
     yValues,
-    mousePosition,
+    mousePos,
   }: IHandleBrushChange): void {
     //
     const { width, height, margin } = visBoxRef.current;
@@ -107,7 +108,7 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    attributesRef.current.updateHoverAttributes(mousePosition);
+    attributesRef.current.updateFocusedChart();
 
     linesNodeRef.current
       .selectAll('.Line')
@@ -115,31 +116,33 @@ function drawBrush(props: IDrawBrushProps): void {
       .duration(500)
       .attr(
         'd',
-        linesRef.current.lineGenerator(
-          brushRef.current.xScale,
-          brushRef.current.yScale,
-        ),
+        lineGenerator(brushRef.current.xScale, brushRef.current.yScale),
       );
   }
 
   function handleZoomOut(event: Event): void {
-    const { xScale, yScale } = getAxesScale({
-      visBoxRef,
-      axesScaleType,
-      min,
-      max,
-    });
+    const { width, height, margin } = visBoxRef.current;
 
+    const xScale = getAxisScale({
+      domainData: [min.x, max.x],
+      rangeData: [0, width - margin.left - margin.right],
+      scaleType: axesScaleType.xAxis,
+    });
+    const yScale = getAxisScale({
+      domainData: [min.y, max.y],
+      rangeData: [height - margin.top - margin.bottom, 0],
+      scaleType: axesScaleType.yAxis,
+    });
     // setting axes to initial state
     axesRef.current.updateXAxis(xScale);
     axesRef.current.updateYAxis(yScale);
 
     // setting scales and lines to initial state
     brushRef.current.updateScales(xScale, yScale);
-    linesRef.current.updateLines(xScale, yScale);
+    linesRef.current.updateLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
-    attributesRef.current.updateHoverAttributes(d3.pointer(event));
+    attributesRef.current.updateFocusedChart();
   }
 }
 

@@ -8,7 +8,7 @@ import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
 import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
-import { ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
@@ -49,7 +49,17 @@ function Metrics(
               <Grid item>
                 <Paper className={classes.paper}>
                   <Box height='100%' display='flex'>
-                    <Grouping />
+                    <Grouping
+                      groupingData={props.groupingData}
+                      onGroupingSelectChange={props.onGroupingSelectChange}
+                      onGroupingModeChange={props.onGroupingModeChange}
+                      onGroupingPaletteChange={props.onGroupingPaletteChange}
+                      onGroupingReset={props.onGroupingReset}
+                      onGroupingApplyChange={props.onGroupingApplyChange}
+                      onGroupingPersistenceChange={
+                        props.onGroupingPersistenceChange
+                      }
+                    />
                   </Box>
                 </Paper>
               </Grid>
@@ -60,11 +70,13 @@ function Metrics(
             className={classes.chartContainer}
             item
           >
-            {!!props.lineChartData[0]?.length && (
+            {!!props.lineChartData?.[0]?.length && (
               <ChartPanel
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData as any}
+                focusedState={props.focusedState}
+                onActivePointChange={props.onActivePointChange}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,
@@ -76,18 +88,20 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
-                    toggleDisplayOutliers={props.toggleDisplayOutliers}
+                    smoothingAlgorithm={props.smoothingAlgorithm}
+                    smoothingFactor={props.smoothingFactor}
+                    curveInterpolation={props.curveInterpolation}
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
-                    toggleZoomMode={props.toggleZoomMode}
                     highlightMode={props.highlightMode}
-                    onChangeHighlightMode={props.onChangeHighlightMode}
-                    onSmoothingChange={props.onSmoothingChange}
-                    onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     axesScaleType={props.axesScaleType}
+                    onDisplayOutliersChange={props.onDisplayOutliersChange}
+                    onZoomModeChange={props.onZoomModeChange}
+                    onChangeHighlightMode={props.onChangeHighlightMode}
+                    onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+                    onSmoothingChange={props.onSmoothingChange}
                   />
                 }
-                onActivePointChange={props.onActivePointChange}
               />
             )}
           </Grid>
@@ -109,16 +123,17 @@ function Metrics(
             className={classes.tableContainer}
           >
             <Paper className={classes.paper}>
-              {props.tableData.length ? (
+              {props.tableData?.length && (
                 <Table
                   ref={props.tableRef}
                   onSort={() => null}
                   onExport={() => null}
-                  data={[...props.tableData[0], ...props.tableData[1]]}
+                  data={props.tableData.flat()}
                   columns={props.tableColumns}
                   onRowHover={props.onTableRowHover}
+                  onRowClick={props.onTableRowClick}
                 />
-              ) : null}
+              )}
             </Paper>
           </Grid>
         </Grid>

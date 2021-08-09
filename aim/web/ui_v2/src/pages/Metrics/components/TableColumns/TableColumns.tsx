@@ -1,8 +1,10 @@
 import React from 'react';
 import { Chip } from '@material-ui/core';
+import _ from 'lodash-es';
+
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-function getTableColumns(): ITableColumn[] {
+function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
   return [
     // {
     //   dataKey: 'experiment',
@@ -30,7 +32,7 @@ function getTableColumns(): ITableColumn[] {
       dataKey: 'context',
       key: 'context',
       title: 'Context',
-      cellRenderer: ({ cellData }) =>
+      cellRenderer: ({ cellData }: any) =>
         (cellData as string[]).map((c, i) => (
           <Chip
             key={i}
@@ -54,7 +56,15 @@ function getTableColumns(): ITableColumn[] {
       title: 'Iteration',
       width: 150,
     },
-  ];
+  ].concat(
+    paramColumns.map((param) => ({
+      dataKey: param,
+      key: param,
+      title: param,
+      cellRenderer: ({ rowData }: any) => rowData[param],
+      width: 150,
+    })),
+  );
 }
 
 export default getTableColumns;

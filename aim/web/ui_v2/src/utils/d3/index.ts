@@ -3,9 +3,19 @@ import drawArea from './drawArea';
 import drawAxes from './drawAxes';
 import drawLines from './drawLines';
 import processData from './processData';
-import getAxesScale from './getAxesScale';
+import getAxisScale from './getAxisScale';
 import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
+import drawParallelArea from './drawParrallelArea';
+import drawParallelAxes from './drawParallelAxes';
+import drawParallelLines from './drawParallelLines';
+import drawParallelHoverAttributes from './drawParallelHoverAttributes';
+import drawParallelAxesBrush from './drawParallelAxesBrush';
+import drawParallelColorIndicator from './drawParallelColorIndicator';
+import getCoordinates from './getCoordinates';
+
+const gradientStartColor = '#2980B9';
+const gradientEndColor = '#E74C3C';
 
 enum XAlignmentEnum {
   Epoch = 'epoch',
@@ -36,11 +46,12 @@ enum CurveEnum {
 enum ScaleEnum {
   Log = 'log',
   Linear = 'linear',
+  Point = 'point',
 }
 
 enum ChartTypeEnum {
   LineChart = 'LineChart',
-  ParPlot = 'ParPlot',
+  HighPlot = 'HighPlot',
   ScatterPlot = 'ScatterPlot',
 }
 
@@ -54,8 +65,17 @@ export {
   drawArea,
   drawAxes,
   drawLines,
+  getCoordinates,
+  drawParallelColorIndicator,
   processData,
-  getAxesScale,
+  getAxisScale,
   drawBrush,
   drawHoverAttributes,
+  drawParallelArea,
+  drawParallelAxes,
+  drawParallelLines,
+  drawParallelHoverAttributes,
+  drawParallelAxesBrush,
+  gradientStartColor,
+  gradientEndColor,
 };

@@ -1,4 +1,4 @@
 export interface IHighlightModesPopoverProps {
   mode: number;
-  onChange: (mode: number) => () => void;
+  onChange: (mode: number) => void;
 }

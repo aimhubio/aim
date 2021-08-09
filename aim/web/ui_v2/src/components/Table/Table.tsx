@@ -27,6 +27,8 @@ const Table = React.forwardRef(function Table(
       // tableRef.current?.forceUpdateTable();
     },
     setHoveredRow: tableRef.current?.setHoveredRow,
+    setActiveRow: tableRef.current?.setActiveRow,
+    scrollToRow: tableRef.current?.scrollToRowByKey,
   }));
 
   return (
@@ -136,6 +138,7 @@ const Table = React.forwardRef(function Table(
               onColumnResize={() => null}
               onColumnResizeEnd={() => null}
               onRowHover={props.onRowHover}
+              onRowClick={props.onRowClick}
             />
           )}
         </AutoResizer>

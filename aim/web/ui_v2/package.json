@@ -4,8 +4,9 @@
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
-    "@material-ui/core": "^4.11.4",
+    "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -104,6 +105,7 @@
   },
   "devDependencies": {
     "@types/d3": "^7.0.0",
+    "@types/node-sass": "^4.11.2",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "eslint": "^7.29.0",
@@ -112,6 +114,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jss-plugin-template": "^10.7.1",
+    "node-sass": "^6.0.1",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0"
   }

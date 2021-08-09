@@ -1,0 +1,57 @@
+.GroupingPopover__container {
+  width: 25em;
+  h3 {
+    color: #324480;
+    text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .GroupingPopover__toggleMode__div {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    flex-direction: column;
+    border: 1px solid #b7b7b7;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+  }
+
+  .GroupingPopover__accordion__container {
+    box-shadow: unset;
+    border: 1px solid #b7b7b7;
+    border-radius: 4px;
+    margin: 0 !important;
+  }   
+}
+
+.AdvancedPopover__container {
+  width: 25em;
+  padding: 0.5em;
+  h3 {
+    color: #324480;
+    text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+}
+.AdvancedPopover__paletteColors__container {
+  display: flex;
+  border-radius: 4px;
+  width: 10.5em;
+  border: 1px solid;
+  height: 2em;
+  margin-right: 0.5em;
+  overflow: hidden;
+}
+
+.AdvancedPopover__paletteColors_colorItem {
+  display: inline-block;
+  flex: 1;
+  height: 100%;
+}

@@ -1,81 +1,131 @@
 import React from 'react';
 import {
   Box,
-  Button,
-  FormControl,
+  Chip,
   Grid,
-  InputLabel,
-  Select,
   TextField,
+  Button,
+  Checkbox,
 } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  CheckBox as CheckBoxIcon,
+  CheckBoxOutlineBlank,
+} from '@material-ui/icons';
+
+import styles from './selectFormStyle.module.scss';
+import { metricOptions } from 'utils/mockOptions';
 
 function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
+  const [fields, setFields] = React.useState<any>([]);
+  const [editMode, setEditMode] = React.useState<boolean>(false);
+
+  function onSelect(event: object, value: any, reason: string): void {
+    setFields([...value]);
+  }
+
+  function handleDelete(field: any): void {
+    let fieldData = [...fields].filter((opt: any) => opt.name !== field);
+    setFields(fieldData);
+  }
+
+  function toggleEditMode(): void {
+    setEditMode(!editMode);
+  }
+
   return (
-    <Grid container direction='column' spacing={1}>
-      <Grid item xs={12}>
-        <Grid container justify='space-between' alignItems='center' spacing={1}>
-          <Grid item xs={2}>
-            <FormControl fullWidth size='small' variant='outlined'>
-              <InputLabel htmlFor='outlined-native-simple'>
-                Select Metric
-              </InputLabel>
-              <Select
+    <Grid
+      container
+      direction='column'
+      spacing={1}
+      wrap='nowrap'
+      className={styles.selectForm}
+    >
+      <Grid className={styles.flex} item xs={12}>
+        <Box
+          width='100%'
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          {editMode ? (
+            <Box flex={1} flexWrap='nowrap' mr={1}>
+              <TextField
                 fullWidth
-                native
-                label='Select Metric'
-                inputProps={{
-                  name: 'age',
-                  id: 'outlined-native-simple',
-                }}
-              >
-                <option aria-label='None' value='' />
-                <option value={10}>actor_loss</option>
-                <option value={20}>agg_metric</option>
-                <option value={30}>critic_loss</option>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={9}>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              placeholder='Metric expression'
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <Button size='small' variant='outlined'>
-              +
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={1} justify='space-between' alignItems='center'>
-          <Grid xs={2} item>
-            <Box
-              border={1}
-              borderRadius={4}
-              borderColor='grey.400'
-              display='flex'
-              height='100%'
-              justifyContent='flex-end'
-              alignItems='center'
-              padding={0.5}
-            >
-              Run
+                multiline
+                size='small'
+                rows={4}
+                variant='outlined'
+                placeholder='Select statement e.g. select m:Metric if m.name in [“loss”, “accuract”] and m.run.lr > 10 return m'
+              />
             </Box>
-          </Grid>
-          <Grid xs={10} item>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              placeholder='Run expression'
-            />
-          </Grid>
-        </Grid>
+          ) : (
+            <Box width='100%' mr={2}>
+              <Autocomplete
+                id='select-metrics'
+                size='small'
+                multiple
+                disableCloseOnSelect
+                options={metricOptions}
+                value={fields}
+                onChange={onSelect}
+                groupBy={(option) => option.group}
+                getOptionLabel={(option) => option.name}
+                renderTags={() => {
+                  return (
+                    <Box className={styles.selectForm__tags}>
+                      {fields.map((tag: any) => {
+                        return (
+                          <Box component='span' key={tag.name} mr={1}>
+                            <Chip
+                              size='small'
+                              label={tag.name}
+                              data-name={tag.name}
+                              onDelete={() => handleDelete(tag.name)}
+                            />
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant='outlined'
+                    label='Select Metrics'
+                    placeholder='Select'
+                  />
+                )}
+                renderOption={(option, { selected }) => (
+                  <React.Fragment>
+                    <Checkbox
+                      icon={<CheckBoxOutlineBlank />}
+                      checkedIcon={<CheckBoxIcon />}
+                      style={{ marginRight: 4 }}
+                      checked={selected}
+                    />
+                    {option.name}
+                  </React.Fragment>
+                )}
+              />
+            </Box>
+          )}
+          <Button variant='outlined' onClick={toggleEditMode}>
+            {editMode ? '!' : ''}E
+          </Button>
+        </Box>
       </Grid>
+      {editMode ? null : (
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            size='small'
+            variant='outlined'
+            placeholder='Run expression'
+          />
+        </Grid>
+      )}
     </Grid>
   );
 }

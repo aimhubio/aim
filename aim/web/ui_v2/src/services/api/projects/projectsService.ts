@@ -1,4 +1,4 @@
-import { IProject } from '../../../types/services/models/projects/projectsModel';
+import { IProject } from 'types/services/models/projects/projectsModel';
 import API from '../api';
 
 const endpoints = {
