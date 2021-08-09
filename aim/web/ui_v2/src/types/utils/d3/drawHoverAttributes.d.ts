@@ -2,7 +2,7 @@ import React from 'react';
 import { ILineChartProps } from 'components/LineChart/LineChart';
 import { IProcessedData } from './processData';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import { IAttributesRef } from '../../components/LineChart/LineChart';
+import { IAttributesRef } from 'components/LineChart/LineChart';
 import { IGetAxisScale } from './getAxisScale';
 
 export interface IDrawHoverAttributesProps {

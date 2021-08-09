@@ -1,5 +1,5 @@
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IOnSmoothingChange } from '../../Metrics';
+import { IOnSmoothingChange } from 'Metrics';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { CurveEnum } from 'utils/d3';
 

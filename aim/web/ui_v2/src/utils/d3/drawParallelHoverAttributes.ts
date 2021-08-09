@@ -12,7 +12,7 @@ import {
   IParallelClosestCircle,
 } from 'types/utils/d3/drawParallelHoverAttributes';
 import { getCoordinates, CircleEnum, ScaleEnum } from './';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import getFormattedValue from '../formattedValue';
 
 const drawParallelHoverAttributes = ({

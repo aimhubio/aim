@@ -2,8 +2,8 @@ import React from 'react';
 import { Popover, PopoverPosition } from '@material-ui/core';
 import { isEqual } from 'lodash-es';
 
-import useStyles from './ChartPopoverStyle';
-import { IChartPopover } from '../../types/components/ChartPanel/ChartPopover';
+import './chartPopoverStyle.scss';
+import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
 
 function ChartPopover({
   id,
@@ -13,8 +13,6 @@ function ChartPopover({
   children,
   containerRef,
 }: IChartPopover): JSX.Element | null {
-  const classes = useStyles();
-
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
   );
@@ -80,8 +78,8 @@ function ChartPopover({
       open={open}
       anchorReference='anchorPosition'
       anchorPosition={popoverPos}
-      className={`${classes.popover} ${className}`}
-      classes={{ paper: classes.popoverContent }}
+      className={`ChartPopover ${className}`}
+      classes={{ paper: 'ChartPopover__content' }}
     >
       {children}
     </Popover>

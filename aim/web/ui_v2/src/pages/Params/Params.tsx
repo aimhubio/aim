@@ -8,7 +8,7 @@ import Controls from './components/Controls/Controls';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 //delete before commit
-import { mockData, mockData2 } from '../../components/HighPlot/helper';
+import { mockData, mockData2 } from 'components/HighPlot/helper';
 
 const Params = ({
   curveInterpolation,

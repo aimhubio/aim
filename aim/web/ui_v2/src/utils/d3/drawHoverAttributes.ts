@@ -12,7 +12,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 import 'components/LineChart/LineChart.css';
 import getFormattedValue from '../formattedValue';
-import { IUpdateFocusedChartProps } from '../../types/components/LineChart/LineChart';
+import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {

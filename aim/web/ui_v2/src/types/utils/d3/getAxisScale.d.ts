@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { ScaleEnum } from '../../../utils/d3';
+import { ScaleEnum } from 'utils/d3';
 
 export interface IGetAxesScaleProps {
   visBoxRef: React.MutableRefObject<>;
