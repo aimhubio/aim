@@ -100,15 +100,9 @@ function getConfig() {
 function initialize() {
   model.init();
   const configData: IMetricAppConfig = getConfig();
-  const groupingData: IMetricAppConfig['grouping'] =
-    getStateFromUrl('grouping');
-  const chartData: IMetricAppConfig['chart'] = getStateFromUrl('chart');
-  if (groupingData) {
-    configData.grouping = groupingData;
-  }
-  if (chartData) {
-    configData.chart = chartData;
-  }
+  const grouping: IMetricAppConfig['grouping'] = getStateFromUrl('grouping');
+  const chart: IMetricAppConfig['chart'] = getStateFromUrl('chart');
+  _.merge({}, getConfig(), { chart, grouping });
   model.setState({
     refs: {
       tableRef: { current: null },
