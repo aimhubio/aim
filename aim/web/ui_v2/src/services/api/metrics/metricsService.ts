@@ -2,7 +2,7 @@ import API from '../api';
 // import generateMetrics from './metricsMock';
 
 const endpoints = {
-  GET_METRICS: 'commits/search/metric',
+  GET_METRICS: 'runs/search/metric',
 };
 
 function getMetricsData(params: {}) {

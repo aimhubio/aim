@@ -70,7 +70,7 @@ function Metrics(
             className={classes.chartContainer}
             item
           >
-            {!!props.lineChartData?.[0]?.length && (
+            {!!props.lineChartData?.[0]?.length ? (
               <ChartPanel
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
@@ -103,7 +103,7 @@ function Metrics(
                   />
                 }
               />
-            )}
+            ) : null}
           </Grid>
           <div ref={props.resizeElemRef}>
             <Box
@@ -123,7 +123,7 @@ function Metrics(
             className={classes.tableContainer}
           >
             <Paper className={classes.paper}>
-              {props.tableData?.length && (
+              {props.tableData?.length > 0 ? (
                 <Table
                   ref={props.tableRef}
                   onSort={() => null}
@@ -133,7 +133,7 @@ function Metrics(
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
                 />
-              )}
+              ) : null}
             </Paper>
           </Grid>
         </Grid>
