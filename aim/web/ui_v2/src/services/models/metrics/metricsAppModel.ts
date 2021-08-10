@@ -56,7 +56,7 @@ function getConfig() {
     grouping: {
       color: [],
       style: [],
-      chart: [],
+      chart: ['metric_name'],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -114,7 +114,7 @@ function initialize() {
 
 function getMetricsData() {
   const { call, abort } = metricsService.getMetricsData({
-    q: 'metric_name == "bleu"',
+    q: 'metric_name == "bleu" or metric_name == "loss" or metric_name == "best_loss"',
   });
   return {
     call: async () => {
@@ -168,7 +168,7 @@ function getGroupingSelectOptions(
     {
       group: 'Other',
       label: 'run.hash',
-      value: 'run.hash',
+      value: 'run.params.status.hash',
     },
     {
       group: 'Other',
@@ -651,7 +651,7 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    // tableRef.current?.updateData({ newData: tableData.flat() });
+    tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
