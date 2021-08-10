@@ -10,6 +10,8 @@ export interface IMetric {
     epochs: Float64Array;
     iterations: Float64Array;
     timestamps: Float64Array;
+    xValues: number[];
+    yValues: number[];
   };
   color: string;
   dasharray: string;
