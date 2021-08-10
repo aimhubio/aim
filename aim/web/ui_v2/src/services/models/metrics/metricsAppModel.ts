@@ -37,6 +37,8 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import getStateFromUrl from 'utils/getStateFromUrl';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -90,12 +92,22 @@ function getConfig() {
 
 function initialize() {
   model.init();
+  const configData: IMetricAppConfig = getConfig();
+  const groupingData: IMetricAppConfig['grouping'] =
+    getStateFromUrl('grouping');
+  const chartData: IMetricAppConfig['chart'] = getStateFromUrl('chart');
+  if (groupingData) {
+    configData.grouping = groupingData;
+  }
+  if (chartData) {
+    configData.chart = chartData;
+  }
   model.setState({
     refs: {
       tableRef: { current: null },
       chartPanelRef: { current: null },
     },
-    config: getConfig(),
+    config: configData,
   });
 }
 
@@ -673,11 +685,27 @@ function onTableRowClick(rowKey: string | null): void {
   }
 }
 
-function updateGroupingStateUrl() {
+function updateGroupingStateUrl(): void {
   const groupingData = model.getState()?.config?.grouping;
   if (groupingData) {
-    const encodedUrl = encode(groupingData);
+    updateUrlParam('grouping', groupingData);
   }
+}
+
+function updateChartStateUrl(): void {
+  const chartData = model.getState()?.config?.chart;
+  if (chartData) {
+    updateUrlParam('chart', chartData);
+  }
+}
+
+function updateUrlParam(
+  paramName: string,
+  data: Record<string, unknown>,
+): void {
+  const encodedUrl: string = encode(data);
+  const url: string = getUrlWithParam(paramName, encodedUrl);
+  window.history.pushState(null, '', url);
 }
 
 const metricAppModel = {
@@ -701,6 +729,7 @@ const metricAppModel = {
   onGroupingApplyChange,
   onGroupingPersistenceChange,
   updateGroupingStateUrl,
+  updateChartStateUrl,
 };
 
 export default metricAppModel;

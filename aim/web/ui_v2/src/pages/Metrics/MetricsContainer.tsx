@@ -54,6 +54,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [metricsData?.config?.grouping]);
 
+  React.useEffect(() => {
+    if (metricsData?.config?.chart) {
+      metricAppModel.updateChartStateUrl();
+    }
+  }, [metricsData?.config?.chart]);
+
   return (
     <Metrics
       //refs
