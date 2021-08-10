@@ -99,10 +99,14 @@ function getConfig() {
 
 function initialize() {
   model.init();
-  const configData: IMetricAppConfig = getConfig();
-  const grouping: IMetricAppConfig['grouping'] = getStateFromUrl('grouping');
-  const chart: IMetricAppConfig['chart'] = getStateFromUrl('chart');
-  _.merge({}, getConfig(), { chart, grouping });
+  const grouping: IMetricAppConfig['grouping'] =
+    getStateFromUrl('grouping') || getConfig().grouping;
+  const chart: IMetricAppConfig['chart'] =
+    getStateFromUrl('chart') || getConfig().chart;
+  const configData: IMetricAppConfig = _.merge({}, getConfig(), {
+    chart,
+    grouping,
+  });
   model.setState({
     refs: {
       tableRef: { current: null },
