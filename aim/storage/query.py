@@ -151,7 +151,7 @@ class RestrictedPythonQuery(Query):
         metric_name: str = None
     ) -> bool:
 
-        context_proxy = AimObjectProxy(lambda: context.to_dict())
+        context_proxy = AimObjectProxy(lambda: context.to_dict() if context else {})
 
         # TODO enforce immutable
         try:

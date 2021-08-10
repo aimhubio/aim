@@ -109,6 +109,7 @@ class Experiment(StructuredObject, Searchable['Experiment']):
         ...
 
     @property
+    @abstractmethod
     def runs(self) -> RunCollection:
         ...
 

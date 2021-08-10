@@ -35,10 +35,10 @@ async def create_experiment_api(request: Request, factory=Depends(object_factory
         except ValueError as e:
             raise HTTPException(400, detail=str(e))
 
-        return {
-            'id': exp.uuid,
-            'status': 'OK'
-        }
+    return {
+        'id': exp.uuid,
+        'status': 'OK'
+    }
 
 
 @experiment_router.get('/{exp_id}/')
@@ -80,7 +80,7 @@ async def get_experiment_runs_api(exp_id: str, factory=Depends(object_factory)):
 
     response = {
         'id': exp.uuid,
-        'runs': [{'run_id': run.hash, 'name': run.name} for run in exp.runs]
+        'runs': [{'run_id': run.hashname, 'name': run.name} for run in exp.runs]
     }
     return response
 
