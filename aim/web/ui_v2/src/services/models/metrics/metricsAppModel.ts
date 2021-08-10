@@ -103,7 +103,7 @@ function initialize() {
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
     getStateFromUrl('chart') || getConfig().chart;
-  const configData: IMetricAppConfig = _.merge({}, getConfig(), {
+  const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart,
     grouping,
   });
