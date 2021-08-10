@@ -1,41 +1,16 @@
 import API from '../api';
-import {
-  IBookmarkData,
-  IBookmarkRequestBody,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IBookmarkRequestBody } from 'types/services/models/metrics/metricsAppModel';
 
 const endpoints = {
   CREATE_DASHBOARD: 'dashboards',
 };
 
-function createBookmark() {
-  return {
-    call: (reqBody: IBookmarkRequestBody) => ({
-      then: (resolve: (data: IBookmarkData) => void, reject?: unknown) => {
-        API.post(endpoints.CREATE_DASHBOARD, reqBody)
-          .call()
-          .then((res: any) => {
-            resolve(res);
-          });
-      },
-    }),
-    abort: () => null,
-  };
+function createBookmark(reqBody: IBookmarkRequestBody) {
+  return API.post(endpoints.CREATE_DASHBOARD, reqBody);
 }
 
 function fetchBookmarks() {
-  return {
-    call: () => ({
-      then: (resolve: (data: IBookmarkData[]) => void, reject?: unknown) => {
-        API.get(endpoints.CREATE_DASHBOARD)
-          .call()
-          .then((res: any) => {
-            resolve(res);
-          });
-      },
-    }),
-    abort: () => null,
-  };
+  return API.get(endpoints.CREATE_DASHBOARD);
 }
 
 const dashboardService = {

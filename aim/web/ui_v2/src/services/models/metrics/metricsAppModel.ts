@@ -18,6 +18,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import {
   GroupingSelectOptionType,
   GroupNameType,
+  IAppData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -129,15 +130,16 @@ function getMetricsData() {
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const { call } = appsService.createApp();
   if (configData) {
-    const data = await call({
-      colorPalette: configData.grouping.paletteIndex,
-    });
+    const data: IAppData | any = await appsService
+      .createApp({
+        colorPalette: configData.grouping.paletteIndex,
+      })
+      .call();
     if (data.id) {
       dashboardService
-        .createBookmark()
-        .call({ app_id: data.id, name, description });
+        .createBookmark({ app_id: data.id, name, description })
+        .call();
     }
   }
 }

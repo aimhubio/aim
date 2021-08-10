@@ -122,7 +122,7 @@ export type GroupingSelectOptionType = {
   value: string;
 };
 
-export interface IAppRequestBody {
+export interface IAppData {
   chart?: {
     focused?: {
       circle?: {
@@ -200,89 +200,9 @@ export interface IAppRequestBody {
   };
   sortFields?: null;
   viewMode?: null;
-}
-
-export interface IAppData {
-  chart: {
-    focused: {
-      circle: {
-        active: null;
-        metricName: null;
-        runHash: null;
-        step: null;
-        traceContext: null;
-      };
-      hiddenMetrics: null;
-      metric: {
-        metricName: null;
-        runHash: null;
-        traceContext: null;
-      };
-      settings: {
-        highlightMode: null;
-        persistent: {
-          aggregated: null;
-          displayOutliers: null;
-          indicator: null;
-          pointsCount: null;
-          smoothFactor: null;
-          smoothingAlgorithm: null;
-          xAlignment: null;
-          xScale: null;
-          yScale: null;
-          zoom: null;
-        };
-        singleZoomMode: null;
-        zoomHistory: null;
-        zoomMode: null;
-      };
-      step: null;
-    };
-  };
-  colorPalette: null;
-  columnsOrder: {
-    left: null;
-    middle: null;
-    right: null;
-  };
-  columnsWidth: null;
-  contextFilter: {
-    aggregatedArea: null;
-    aggregatedLine: null;
-    groupAgainst: {
-      chart: null;
-      color: null;
-      style: null;
-    };
-    groupByChart: null;
-    groupByColor: null;
-    groupByStyle: null;
-    persist: {
-      color: null;
-      style: null;
-    };
-    seed: {
-      color: null;
-      style: null;
-    };
-  };
-  excludedFields: null;
-  panelFlex: null;
-  rowHeightMode: null;
-  search: {
-    query: null;
-    v: null;
-  };
-  searchInput: {
-    selectConditionInput: null;
-    selectInput: null;
-    value: null;
-  };
-  sortFields: null;
-  viewMode: null;
-  created_at: string;
-  id: string;
-  updated_at: string;
+  created_at?: string;
+  id?: string;
+  updated_at?: string;
 }
 
 export interface IBookmarkRequestBody {
