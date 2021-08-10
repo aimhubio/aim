@@ -1,4 +1,4 @@
-export default function getUriWithParam(
+export default function getUrlWithParam(
   param: string,
   paramValue: string,
 ): string {
