@@ -37,14 +37,19 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import {
+  aggregateGroupData,
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
 function getConfig() {
   return {
     grouping: {
-      color: ['run.params.hparams.seed'],
-      style: ['run.params.hparams.lr'],
+      color: [],
+      style: [],
       chart: ['run.params.hparams.lr'],
       // TODO refactor boolean value types objects into one
       reverseMode: {
@@ -76,7 +81,13 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
-      aggregated: false,
+      aggregation: {
+        methods: {
+          area: AggregationAreaMethods.MIN_MAX,
+          line: AggregationLineMethods.MEAN,
+        },
+        isApplied: false,
+      },
       focusedState: {
         active: false,
       },
@@ -191,6 +202,11 @@ function processData(data: IRun[]): {
           }),
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+          data: {
+            ...metric.data,
+            xValues: [...metric.data.iterations],
+            yValues: [...metric.data.values],
+          },
         } as IMetric);
       }),
     );
@@ -362,8 +378,19 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     }
   }
 
-  return Object.values(groupValues);
+  const groups = Object.values(groupValues);
+
+  return aggregateGroupData({
+    groupData: groups,
+    methods: {
+      area: AggregationAreaMethods.MIN_MAX,
+      line: AggregationLineMethods.MEAN,
+    },
+    scale: model.getState()!.config!.chart.axesScaleType,
+  });
 }
+
+function alignData() {}
 
 function getDataAsLines(
   processedData: IMetricsCollection[],
@@ -382,15 +409,15 @@ function getDataAsLines(
           yValues =
             smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
               ? calculateExponentialMovingAverage(
-                  [...metric.data.values],
+                  metric.data.yValues,
                   smoothingFactor,
                 )
               : calculateCentralMovingAverage(
-                  [...metric.data.values],
+                  metric.data.yValues,
                   smoothingFactor,
                 );
         } else {
-          yValues = [...metric.data.values];
+          yValues = metric.data.yValues;
         }
         return {
           ...metric,
@@ -399,7 +426,7 @@ function getDataAsLines(
           chartIndex: metricsCollection.chartIndex,
           selectors: [metric.key, metric.key, metric.run.run_hash],
           data: {
-            xValues: [...metric.data.iterations],
+            xValues: metric.data.xValues,
             yValues,
           },
         };
@@ -407,7 +434,7 @@ function getDataAsLines(
     )
     .flat();
 
-  return _.values(_.groupBy(lines, 'chartIndex'));
+  return Object.values(_.groupBy(lines, 'chartIndex'));
 }
 
 function getDataAsTableRows(
