@@ -7,7 +7,7 @@ import {
   IFilterDataByBrushedScaleProps,
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawParallelAxesBrush({
   brushRef,
