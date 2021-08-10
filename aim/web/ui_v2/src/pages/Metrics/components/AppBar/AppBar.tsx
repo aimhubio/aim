@@ -14,7 +14,7 @@ function AppBar({
     setOpenBookmark(!openBookmark);
   }
   return (
-    <Grid container justify='space-between' alignItems='center'>
+    <Grid container justifyContent='space-between' alignItems='center'>
       <Grid item>
         <Breadcrumbs
           separator={<NavigateNextIcon fontSize='small' />}

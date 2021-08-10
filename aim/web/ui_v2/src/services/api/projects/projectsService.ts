@@ -2,7 +2,7 @@ import { IProject } from 'types/services/models/projects/projectsModel';
 import API from '../api';
 
 const endpoints = {
-  GET_PROJECTS: '/projects',
+  GET_PROJECTS: 'projects',
 };
 
 function getProjectsData() {

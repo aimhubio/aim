@@ -39,7 +39,7 @@ function Grouping({
   return (
     <div>
       <span>Group selected metrics By:</span>
-      <Grid container spacing={1} justify='center' alignItems='center'>
+      <Grid container spacing={1} justifyContent='center' alignItems='center'>
         {groupingPopovers.map(
           ({ title, advancedTitle, groupName, AdvancedComponent }) => {
             return (

@@ -1,5 +1,5 @@
-import dashboardService from 'services/api/dashboard/dashboardService';
 import createModel from '../model';
+import dashboardService from 'services/api/dashboard/dashboardService';
 
 const model = createModel<any>({});
 

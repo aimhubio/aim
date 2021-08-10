@@ -13,7 +13,7 @@ function Controls({
     <Grid
       container
       direction='column'
-      justify='center'
+      justifyContent='center'
       spacing={1}
       alignItems='center'
     >

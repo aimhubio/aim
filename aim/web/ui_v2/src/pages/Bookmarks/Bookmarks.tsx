@@ -12,7 +12,7 @@ function Bookmarks({
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Bookmarks'>
-      <Grid container justify='center'>
+      <Grid container justifyContent='center'>
         <Grid xs={8} item>
           <h3 className='Bookmarks__title'>Bookmarks List</h3>
           <Divider />
