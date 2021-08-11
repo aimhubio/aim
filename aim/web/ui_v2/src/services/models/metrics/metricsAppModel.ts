@@ -378,8 +378,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const chartIndexConfig = _.pick(groupValue.config, groupByChart);
       const chartIndexKey = encode(chartIndexConfig);
       if (chartIndexConfigsMap.hasOwnProperty(chartIndexKey)) {
-        groupValue.dasharray =
-          DASH_ARRAYS[chartIndexConfigsMap[chartIndexKey] % DASH_ARRAYS.length];
+        groupValue.chartIndex = chartIndexConfigsMap[chartIndexKey];
       } else {
         chartIndexConfigsMap[chartIndexKey] = chartIndex;
         groupValue.chartIndex = chartIndex;
