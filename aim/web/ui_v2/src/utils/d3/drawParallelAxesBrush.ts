@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
 import { isNil } from 'lodash-es';
 
-import { ILinesDataType } from 'types/utils/d3/drawParallelLines';
+import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 import {
   IDrawParallelAxesBrushBrushProps,
   IFilterDataByBrushedScaleProps,
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawParallelAxesBrush({
   brushRef,
@@ -61,7 +61,7 @@ function drawParallelAxesBrush({
     keyOfDimension: string,
     extent: d3.BrushSelection | any,
   ) {
-    const filteredData = data.filter((line: ILinesDataType) =>
+    const filteredData = data.filter((line: ILineDataType) =>
       filterDataByBrushedScale({
         line,
         domainsData: brushRef.current.domainsData,
@@ -70,10 +70,10 @@ function drawParallelAxesBrush({
     );
     linesRef.current.updateLines(filteredData);
     linesRef.current.data = filteredData;
-    attributesRef.current.updateHoverAttributes(
-      [brushRef.current.xScale(keyOfDimension), extent ? extent[0] : 1],
-      true,
-    );
+    attributesRef.current.updateFocusedChart({
+      mouse: [brushRef.current.xScale(keyOfDimension), extent ? extent[0] : 1],
+      force: true,
+    });
   }
 
   function handleBrushStart(event: d3.D3BrushEvent<d3.BrushSelection>): void {

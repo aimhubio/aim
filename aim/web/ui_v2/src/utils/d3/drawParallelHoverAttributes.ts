@@ -8,12 +8,12 @@ import {
 } from 'types/utils/d3/drawHoverAttributes';
 import {
   IDrawParallelHoverAttributesProps,
-  IGetParallelNearestCirclesProps,
-  IParallelClosestCircle,
+  IParallelNearestCircle,
 } from 'types/utils/d3/drawParallelHoverAttributes';
 import { getCoordinates, CircleEnum, ScaleEnum } from './';
 import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
 import getFormattedValue from '../formattedValue';
+import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
 const drawParallelHoverAttributes = ({
   dimensions,
@@ -23,12 +23,12 @@ const drawParallelHoverAttributes = ({
   linesRef,
   visAreaRef,
   visBoxRef,
-  closestCircleRef,
+  bgRectNodeRef,
   isVisibleColorIndicator,
   syncHoverState,
   linesNodeRef,
   highlightedNodeRef,
-  highlightMode,
+  axesNodeRef,
 }: IDrawParallelHoverAttributesProps) => {
   const { top: chartTop, left: chartLeft }: { top: number; left: number } =
     visAreaRef.current?.getBoundingClientRect() || {};
@@ -36,7 +36,97 @@ const drawParallelHoverAttributes = ({
   const svgArea = d3.select(visAreaRef.current).select('svg');
   const keysOfDimensions = Object.keys(dimensions);
 
-  function getActivePoint(circle: INearestCircle): IActivePoint {
+  function getNearestCircles(mouseX: number): IParallelNearestCircle[] {
+    const { xScale, yScale } = attributesRef.current;
+    const nearestCircles: IParallelNearestCircle[] = [];
+    for (const line of linesRef.current.data) {
+      const xAxesValues = keysOfDimensions.map((d: string) => xScale(d));
+      const index = d3.bisectCenter(xAxesValues, mouseX);
+      const closestXPixel = xScale(keysOfDimensions[index]);
+      const closestYPixel = yScale[keysOfDimensions[index]](
+        line.values[keysOfDimensions[index]],
+      );
+      if (!isNil(closestYPixel)) {
+        nearestCircles.push({
+          x: closestXPixel,
+          y: closestYPixel,
+          lastYScalePos: getColorIndicatorYPixel(line),
+          key: line.key,
+          values: line.values,
+          color: line.color,
+        });
+      }
+    }
+
+    return nearestCircles;
+  }
+
+  function getClosestCircle(
+    nearestCircles: IParallelNearestCircle[],
+    mouseX: number,
+    mouseY: number,
+  ): IParallelNearestCircle {
+    let closestCircles: IParallelNearestCircle[] = [];
+    let minRadius = null;
+    // Find closest circles
+    for (let circle of nearestCircles) {
+      const rX = Math.abs(circle.x - mouseX);
+      const rY = Math.abs(circle.y - mouseY);
+      const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
+      if (minRadius === null || r <= minRadius) {
+        if (r === minRadius) {
+          // Circle coordinates can be equal, to show only one circle on hover
+          // we need to keep array of closest circles
+          closestCircles.push(circle);
+        } else {
+          minRadius = r;
+          closestCircles = [circle];
+        }
+      }
+    }
+    closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
+    return closestCircles[0];
+  }
+
+  function getLineCirclesOfClosestCircle(
+    closestCircle: IParallelNearestCircle,
+    nearestCircles: IParallelNearestCircle[],
+  ): IParallelNearestCircle[] {
+    const { xScale, yScale } = attributesRef.current;
+    const lineCirclesOfClosestCircle: IParallelNearestCircle[] = [];
+
+    keysOfDimensions.forEach((dimension: string) => {
+      const closestXPixel = xScale(dimension);
+      const closestYPixel = yScale[dimension](
+        closestCircle.values && closestCircle.values[dimension],
+      );
+      if (nearestCircles[0]?.x !== closestXPixel && !isNil(closestYPixel)) {
+        lineCirclesOfClosestCircle.push({
+          x: closestXPixel,
+          y: closestYPixel,
+          lastYScalePos: closestCircle.lastYScalePos,
+          key: closestCircle.key + 'line',
+          color: closestCircle.color,
+        });
+      }
+    });
+    return lineCirclesOfClosestCircle;
+  }
+
+  function getColorIndicatorYPixel(line: ILineDataType) {
+    const { yScale } = attributesRef.current;
+    let colorIndicatorYPixel: number = 0;
+    if (isVisibleColorIndicator) {
+      const lastKeyOfDimension: string =
+        keysOfDimensions[keysOfDimensions.length - 1];
+      const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
+      colorIndicatorYPixel = lastYScale(line.values[lastKeyOfDimension]) || 0;
+    }
+
+    return colorIndicatorYPixel;
+  }
+
+  function getActivePoint(circle: IParallelNearestCircle): IActivePoint {
     const dimensionLabel = scalePointValue(
       attributesRef.current.xScale,
       circle.x,
@@ -67,10 +157,11 @@ const drawParallelHoverAttributes = ({
     };
   }
 
-  function updateHoverAttributes(
-    mouse: [number, number],
-    brushEventUpdate: boolean = false,
-  ) {
+  function updateFocusedChart({
+    mouse,
+    focusedStateActive = attributesRef.current.focusedState?.active || false,
+    force,
+  }: any) {
     const dimensionLabel = scalePointValue(
       attributesRef.current.xScale,
       mouse[0],
@@ -82,90 +173,85 @@ const drawParallelHoverAttributes = ({
         yScale: attributesRef.current.yScale[dimensionLabel],
         margin,
       });
-      const { nearestCircles, closestCircle } = getNearestCircles({
-        data: linesRef.current.data,
-        xScale: attributesRef.current.xScale,
-        yScale: attributesRef.current.yScale,
-        mouseX,
-        mouseY,
-        keysOfDimensions,
-        isVisibleColorIndicator,
-      });
-      const lineCirclesOfClosestCircle = getLineCirclesOfClosestCircle({
-        xScale: attributesRef.current.xScale,
-        yScale: attributesRef.current.yScale,
-        closestCircle,
-        nearestCircles,
-        keysOfDimensions,
-      });
+      const nearestCircles = getNearestCircles(mouseX);
+      const closestCircle = getClosestCircle(nearestCircles, mouseX, mouseY);
+      const lineCirclesOfClosestCircle = closestCircle
+        ? getLineCirclesOfClosestCircle(closestCircle, nearestCircles)
+        : [];
 
-      if (closestCircleRef.current !== closestCircle) {
-        // hover Line Changed case
-        if (
-          closestCircle.key !== closestCircleRef.current?.key ||
-          brushEventUpdate
-        ) {
-          linesNodeRef.current.classed(
-            'highlight',
-            highlightMode !== HighlightEnum.Off,
-          );
-          // previous line
-          if (closestCircleRef.current?.key) {
-            linesNodeRef.current
-              .selectAll(`[id=Line-${closestCircleRef.current.key}]`)
-              .classed('active', false);
-            highlightedNodeRef.current.classed('highlighted', false);
-          }
-          // new line
-          const newActiveLine = linesNodeRef.current.selectAll(
-            `[id=Line-${closestCircle.key}]`,
-          );
-          if (!isEmpty(newActiveLine.nodes())) {
-            const linesSelectorToHighlight =
-              newActiveLine.attr('data-selector');
-            // set highlighted lines
-            highlightedNodeRef.current = linesNodeRef.current
-              .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
-              .classed('highlighted', true)
-              .raise();
-            // set active line
-            newActiveLine?.classed('active', true).raise();
-          }
-        }
-        // hover Circle Changed case
-        if (
-          closestCircle.x !== closestCircleRef.current?.x ||
-          closestCircle.y !== closestCircleRef.current?.y ||
-          brushEventUpdate
-        ) {
-          // Draw Circles
+      // hover Line Changed case
+      if (closestCircle?.key !== attributesRef.current?.lineKey || force) {
+        linesNodeRef.current.classed('highlight', false);
+        // previous line
+        clearActiveLine(attributesRef.current.lineKey);
+        // new line
+        drawActiveLine(closestCircle?.key);
+        if (closestCircle) {
+          const activePoint = getActivePoint(closestCircle);
           drawParallelCircles(
             nearestCircles,
             lineCirclesOfClosestCircle,
             closestCircle,
           );
           if (typeof syncHoverState === 'function') {
-            syncHoverState({ activePoint: getActivePoint(closestCircle) });
+            syncHoverState({
+              activePoint,
+              focusedStateActive,
+            });
           }
+          attributesRef.current.activePoint = activePoint;
+          attributesRef.current.lineKey = closestCircle.key;
+          attributesRef.current.x = closestCircle.x + margin.left;
+          attributesRef.current.y = closestCircle.y + margin.top;
         }
       }
-
-      closestCircleRef.current = closestCircle;
-      attributesRef.current.x = closestCircle.x + margin.left;
-      attributesRef.current.y = closestCircle.y + margin.top;
-      attributesRef.current.mousePosition = mouse;
     }
   }
 
+  // Interactions
+  function handlePointClick(
+    this: SVGElement,
+    event: MouseEvent,
+    circle: INearestCircle,
+  ): void {
+    event.stopPropagation();
+    if (attributesRef.current.focusedState?.chartIndex !== index) {
+      if (typeof syncHoverState === 'function') {
+        syncHoverState({ activePoint: null });
+      }
+    }
+    const mousePos: [number, number] = [
+      circle.x + margin.left,
+      circle.y + margin.top,
+    ];
+    updateFocusedChart({
+      mouse: mousePos,
+      focusedStateActive: true,
+      force: true,
+    });
+    drawFocusedCircle(circle.key);
+  }
+
+  function drawFocusedCircle(key: string): void {
+    attributesNodeRef.current
+      .selectAll('circle')
+      .attr('r', CircleEnum.Radius)
+      .classed('active', false)
+      .classed('focus', false);
+
+    attributesNodeRef.current
+      .select(`[id=Circle-${key}]`)
+      .classed('focus', true)
+      .attr('r', CircleEnum.ActiveRadius)
+      .raise();
+  }
+
   function drawParallelCircles(
-    nearestCircles: INearestCircle[],
-    lineCirclesOfClosestCircle: INearestCircle[],
-    closestCircle: INearestCircle,
+    nearestCircles: IParallelNearestCircle[],
+    lineCirclesOfClosestCircle: IParallelNearestCircle[],
+    closestCircle: IParallelNearestCircle,
   ) {
-    attributesNodeRef.current.classed(
-      'highlight',
-      highlightMode !== HighlightEnum.Off,
-    );
+    attributesNodeRef.current.classed('highlight', false);
     attributesNodeRef.current
       .selectAll('circle')
       .data([...nearestCircles, ...lineCirclesOfClosestCircle])
@@ -173,38 +259,35 @@ const drawParallelHoverAttributes = ({
       .raise()
       .attr('class', 'HoverCircle')
       .attr('class', 'ParallelCircle')
-      .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
-      .attr('data-key', (circle: INearestCircle) => circle.key)
+      .attr('id', (circle: IParallelNearestCircle) => `Circle-${circle.key}`)
+      .attr('data-key', (circle: IParallelNearestCircle) => circle.key)
       .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
-      .attr('cx', (circle: INearestCircle) => circle.x)
-      .attr('cy', (circle: INearestCircle) => circle.y)
+      .attr('cx', (circle: IParallelNearestCircle) => circle.x)
+      .attr('cy', (circle: IParallelNearestCircle) => circle.y)
       .attr('r', CircleEnum.Radius)
-      .style('fill', (circle: INearestCircle) =>
+      .style('fill', (circle: IParallelNearestCircle) =>
         isVisibleColorIndicator
           ? attributesRef.current.yColorIndicatorScale(circle.lastYScalePos)
           : circle.color,
       )
-      .on('click', function (this: SVGElement) {
-        // TODO handle click
-        d3.select(this).classed('active', false).classed('focus', true);
-      });
+      .on('click', handlePointClick);
     // set active circle
-    drawActiveCircle(closestCircle);
+    drawActiveCircle(closestCircle?.key);
   }
 
-  function drawActiveCircle(closestCircle: INearestCircle) {
-    d3.selectAll(`[id=Circle-${closestCircle.key}]`)
+  function drawActiveCircle(key: string) {
+    d3.selectAll(`[id=Circle-${key}]`)
       .attr('r', CircleEnum.ActiveRadius)
       .classed('active', true)
       .raise();
-    d3.selectAll(`[id=Circle-${closestCircle.key}line]`)
+    d3.selectAll(`[id=Circle-${key}line]`)
       .attr('r', CircleEnum.ActiveRadius)
       .classed('active', true)
       .raise();
   }
 
   function setActiveLine(lineKey: string) {
-    const { mouseX, mouseY } = getCoordinates({
+    const { mouseX } = getCoordinates({
       mouse: [attributesRef.current.x, attributesRef.current.y],
       xScale: attributesRef.current.xScale,
       yScale:
@@ -214,157 +297,151 @@ const drawParallelHoverAttributes = ({
       margin,
     });
 
-    const { nearestCircles } = getNearestCircles({
-      data: linesRef.current.data,
-      xScale: attributesRef.current.xScale,
-      yScale: attributesRef.current.yScale,
-      mouseX,
-      mouseY,
-      keysOfDimensions,
-    });
+    const nearestCircles = getNearestCircles(mouseX);
 
     nearestCircles.forEach((circle: INearestCircle) => {
       if (circle.key !== lineKey) {
         return;
       }
-      updateHoverAttributes([circle.x + margin.left, circle.y + margin.top]);
+      updateFocusedChart({
+        mouse: [circle.x + margin.left, circle.y + margin.top],
+      });
     });
   }
 
   function handleMouseMove(event: MouseEvent) {
+    if (attributesRef.current.focusedState?.active) {
+      return;
+    }
     const mouse = d3.pointer(event);
-    updateHoverAttributes(mouse);
+    updateFocusedChart({ mouse });
+  }
+
+  function drawActiveLine(key: string): void {
+    // new line
+    const newActiveLine = linesNodeRef.current.selectAll(`[id=Line-${key}]`);
+
+    if (!isEmpty(newActiveLine.nodes())) {
+      const linesSelectorToHighlight = newActiveLine.attr('data-selector');
+      // set highlighted lines
+      highlightedNodeRef.current = linesNodeRef.current
+        .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
+        .classed('highlighted', true)
+        .raise();
+      // set active line
+      newActiveLine?.classed('active', true).raise();
+    }
+
+    attributesRef.current.lineKey = key;
+  }
+
+  function clearActiveLine(key?: string): void {
+    // previous line
+    if (key) {
+      linesNodeRef.current
+        .selectAll(`[id=Line-${key}]`)
+        .classed('active', false);
+      highlightedNodeRef.current.classed('highlighted', false);
+    }
   }
 
   function handleMouseLeave() {
-    if (closestCircleRef.current?.key) {
+    if (attributesRef.current.focusedState?.active) {
+      return;
+    }
+    if (attributesRef.current?.lineKey) {
       linesNodeRef.current.classed('highlight', false);
 
       linesNodeRef.current
-        .selectAll(`[id=Line-${closestCircleRef.current.key}]`)
+        .selectAll(`[id=Line-${attributesRef.current?.lineKey}]`)
         .classed('active', false);
 
       attributesNodeRef.current.classed('highlight', false);
 
       attributesNodeRef.current
-        .selectAll(`[id=Circle-${closestCircleRef.current.key}]`)
+        .selectAll(`[id=Circle-${attributesRef.current?.lineKey}]`)
         .attr('r', CircleEnum.Radius)
         .classed('active', false);
 
       attributesNodeRef.current
-        .selectAll(`[id=Circle-${closestCircleRef.current.key}line]`)
+        .selectAll(`[id=Circle-${attributesRef.current?.lineKey}line]`)
         .remove();
 
-      attributesNodeRef.current.selectAll('.HoverLine-y').remove();
+      clearHoverAttributes();
+      if (typeof syncHoverState === 'function') {
+        syncHoverState({ activePoint: null });
+      }
     }
   }
+
+  function handleLeaveFocusedPoint(event: MouseEvent): void {
+    if (attributesRef.current.focusedState?.chartIndex !== index) {
+      if (typeof syncHoverState === 'function') {
+        syncHoverState({ activePoint: null });
+      }
+    }
+    const mousePos = d3.pointer(event);
+
+    updateFocusedChart({
+      mouse: [
+        Math.floor(mousePos[0]) - margin.left,
+        Math.floor(mousePos[1]) - margin.top,
+      ],
+      force: true,
+      focusedStateActive: false,
+    });
+  }
+
+  function clearHoverAttributes(): void {
+    attributesRef.current.activePoint = undefined;
+    attributesRef.current.lineKey = undefined;
+
+    linesNodeRef.current.classed('highlight', false);
+    attributesNodeRef.current.classed('highlight', false);
+
+    linesNodeRef.current
+      .selectAll('path')
+      .classed('highlighted', false)
+      .classed('active', false);
+
+    attributesNodeRef.current
+      .selectAll('circle')
+      .attr('r', CircleEnum.Radius)
+      .classed('active', false)
+      .classed('focus', false);
+  }
+
+  function init() {
+    const { focusedState, xScale, yScale } = attributesRef.current;
+    if (
+      focusedState?.chartIndex === index &&
+      focusedState?.active &&
+      focusedState?.key &&
+      focusedState?.xValue &&
+      focusedState.yValue
+    ) {
+      const mouse: [number, number] = [
+        xScale(scalePointValue(xScale, focusedState?.xValue)),
+        yScale[scalePointValue(xScale, focusedState?.xValue)](
+          focusedState?.yValue,
+        ) + margin.top,
+      ];
+      updateFocusedChart({ mouse, force: true });
+      drawFocusedCircle(focusedState?.key);
+    }
+  }
+
+  init();
 
   svgArea?.on('mousemove', handleMouseMove);
   svgArea?.on('mouseleave', handleMouseLeave);
-  attributesRef.current.updateHoverAttributes = updateHoverAttributes;
+  bgRectNodeRef.current?.on('click', handleLeaveFocusedPoint);
+  linesNodeRef.current?.on('click', handleLeaveFocusedPoint);
+  attributesNodeRef.current?.on('click', handleLeaveFocusedPoint);
+  axesNodeRef.current?.on('click', handleLeaveFocusedPoint);
   attributesRef.current.setActiveLine = setActiveLine;
+  attributesRef.current.updateFocusedChart = updateFocusedChart;
 };
-
-// TODO IGetNearestCircles interface removed need to fix (returned any) type
-function getNearestCircles({
-  data,
-  xScale,
-  yScale,
-  mouseX,
-  mouseY,
-  keysOfDimensions,
-  isVisibleColorIndicator,
-}: IGetParallelNearestCirclesProps): any {
-  let closestCircles: IParallelClosestCircle[] = [
-    {
-      key: '',
-      r: null,
-      x: 0,
-      y: 0,
-      values: {},
-      color: '',
-    },
-  ];
-  const nearestCircles: INearestCircle[] = [];
-  const lineCirclesOfClosestCircle: INearestCircle[] = [];
-  for (const line of data) {
-    let colorIndicatorYPixel: number = 0;
-    if (isVisibleColorIndicator) {
-      const lastKeyOfDimension: string =
-        keysOfDimensions[keysOfDimensions.length - 1];
-      const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
-      colorIndicatorYPixel = lastYScale(line.values[lastKeyOfDimension]) || 0;
-    }
-    const xAxesValues = keysOfDimensions.map((d: string) => xScale(d));
-    const index = d3.bisectCenter(xAxesValues, mouseX);
-    const closestXPixel = xScale(keysOfDimensions[index]);
-    const closestYPixel = yScale[keysOfDimensions[index]](
-      line.values[keysOfDimensions[index]],
-    );
-    // Find closest circles
-    const rX = Math.abs(closestXPixel - mouseX);
-    const rY = Math.abs(closestYPixel - mouseY);
-    const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
-    if (closestCircles[0].r === null || r <= closestCircles[0].r) {
-      const circle = {
-        key: line.key,
-        values: line.values,
-        color: line.color,
-        lastYScalePos: colorIndicatorYPixel,
-        r,
-        x: closestXPixel,
-        y: closestYPixel,
-      };
-      if (r === closestCircles[0].r) {
-        // Circle coordinates can be equal, to show only one circle on hover
-        // we need to keep array of closest circles
-        closestCircles.push(circle);
-      } else {
-        closestCircles = [circle];
-      }
-    }
-    if (!isNil(closestYPixel)) {
-      nearestCircles.push({
-        x: closestXPixel,
-        y: closestYPixel,
-        lastYScalePos: colorIndicatorYPixel,
-        key: line.key,
-        color: line.color,
-      });
-    }
-  }
-  closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
-
-  return {
-    nearestCircles,
-    closestCircle: closestCircles[0],
-  };
-}
-
-function getLineCirclesOfClosestCircle({
-  keysOfDimensions,
-  xScale,
-  yScale,
-  closestCircle,
-  nearestCircles,
-}: any) {
-  const lineCirclesOfClosestCircle: INearestCircle[] = [];
-
-  keysOfDimensions.forEach((dimension: string) => {
-    const closestXPixel = xScale(dimension);
-    const closestYPixel = yScale[dimension](closestCircle.values[dimension]);
-    if (nearestCircles[0]?.x !== closestXPixel && !isNil(closestYPixel)) {
-      lineCirclesOfClosestCircle.push({
-        x: closestXPixel,
-        y: closestYPixel,
-        lastYScalePos: closestCircle.lastYScalePos,
-        key: closestCircle.key + 'line',
-        color: closestCircle.color,
-      });
-    }
-  });
-  return lineCirclesOfClosestCircle;
-}
 
 function scalePointValue(
   xScale: IGetAxisScale,
