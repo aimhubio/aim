@@ -83,11 +83,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRef.current?.setActiveLine?.(lineKey);
       });
     },
-    updateLinesAndCirclesByColorIndicator: () => {
-      chartRefs.forEach((chartRef) => {
-        chartRef.current?.updateColorIndicator?.();
-      });
-    },
   }));
 
   React.useEffect(() => {
