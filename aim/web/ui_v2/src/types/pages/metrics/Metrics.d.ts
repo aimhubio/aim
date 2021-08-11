@@ -16,8 +16,8 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { IActivePoint } from '../../utils/d3/drawHoverAttributes';
 import { IBookmarkFormState } from './components/BookmarkForm/BookmarkForm';
+import { IActivePoint } from 'utils/d3/drawHoverAttributes';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;

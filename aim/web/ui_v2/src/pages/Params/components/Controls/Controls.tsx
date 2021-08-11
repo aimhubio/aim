@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import { MultilineChart } from '@material-ui/icons';
+import { MultilineChart, ColorLens } from '@material-ui/icons';
 
 import { CurveEnum } from 'utils/d3';
 import { IControlProps } from 'types/pages/params/components/controls/Controls';
@@ -8,6 +8,8 @@ import { IControlProps } from 'types/pages/params/components/controls/Controls';
 function Controls({
   onCurveInterpolationChange,
   curveInterpolation,
+  isVisibleColorIndicator,
+  onColorIndicatorChange,
 }: IControlProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Grid
@@ -24,6 +26,16 @@ function Controls({
               curveInterpolation === CurveEnum.Linear
                 ? 'transparent'
                 : 'rgba(20, 115, 230, 0.06)',
+            cursor: 'pointer',
+          }}
+        />
+      </Grid>
+      <Grid onClick={onColorIndicatorChange} item>
+        <ColorLens
+          style={{
+            background: !isVisibleColorIndicator
+              ? 'transparent'
+              : 'rgba(20, 115, 230, 0.06)',
             cursor: 'pointer',
           }}
         />

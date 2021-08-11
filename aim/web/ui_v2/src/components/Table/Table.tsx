@@ -28,6 +28,7 @@ const Table = React.forwardRef(function Table(
     },
     setHoveredRow: tableRef.current?.setHoveredRow,
     setActiveRow: tableRef.current?.setActiveRow,
+    scrollToRow: tableRef.current?.scrollToRowByKey,
   }));
 
   return (

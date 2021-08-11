@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { ScaleEnum } from '../../../utils/d3';
+import { ScaleEnum } from 'utils/d3';
 
 export interface IGetAxesScaleProps {
   visBoxRef: React.MutableRefObject<>;
@@ -17,6 +17,6 @@ export type IGetAxisScale =
 
 export interface IGetAxisScaleProps {
   scaleType: ScaleEnum;
-  domainData: any;
-  rangeData: any;
+  domainData: string[] | number[];
+  rangeData: number[];
 }

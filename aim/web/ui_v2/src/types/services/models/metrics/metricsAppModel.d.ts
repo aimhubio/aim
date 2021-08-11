@@ -1,15 +1,25 @@
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import {
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
 import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { IActivePoint } from 'utils/d3/drawHoverAttributes';
 
 export interface IMetricAppModelState {
+  refs: {
+    tableRef: { current: ITableRef | null };
+    chartPanelRef: { current: IChartPanelRef | null };
+  };
   rawData: IRun[];
   config: IMetricAppConfig;
   data: IMetricsCollection[];
@@ -25,13 +35,27 @@ export interface IMetricsCollection {
   dasharray: string | null;
   chartIndex: number;
   data: IMetric[];
+  aggregation?: IAggregationData;
+}
+
+export interface IAggregationData {
+  area: {
+    min: {
+      xValues: number[];
+      yValues: number[];
+    } | null;
+    max: {
+      xValues: number[];
+      yValues: number[];
+    } | null;
+  };
+  line: {
+    xValues: number[];
+    yValues: number[];
+  } | null;
 }
 
 interface IMetricAppConfig {
-  refs: {
-    tableRef: { current: ITableRef | null };
-    chartPanelRef: { current: IChartPanelRef | null };
-  };
   grouping: {
     color: string[];
     style: string[];
@@ -66,16 +90,18 @@ interface IMetricAppConfig {
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
     focusedState: IFocusedState;
-    aggregated: boolean;
+    aggregation: {
+      methods: {
+        area: AggregationAreaMethods;
+        line: AggregationLineMethods;
+      };
+      isApplied: boolean;
+    };
   };
 }
 
-export interface IFocusedState {
-  key: string | null;
-  xValue: number | null;
-  yValue: number | null;
+export interface IFocusedState extends Partial<IActivePoint> {
   active: boolean;
-  chartIndex: number | null;
 }
 
 export interface IMetricTableRowData {
