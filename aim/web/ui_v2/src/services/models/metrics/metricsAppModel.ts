@@ -1,3 +1,4 @@
+import React from 'react';
 import * as _ from 'lodash-es';
 
 import COLORS from 'config/colors/colors';
@@ -36,18 +37,21 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import getStateFromUrl from 'utils/getStateFromUrl';
+import {
+  aggregateGroupData,
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
 function getConfig() {
   return {
-    refs: {
-      tableRef: { current: null },
-      chartPanelRef: { current: null },
-    },
     grouping: {
-      color: ['run.params.hparams.seed'],
-      style: ['run.params.hparams.lr'],
+      color: [],
+      style: [],
       chart: ['run.params.hparams.lr'],
       // TODO refactor boolean value types objects into one
       reverseMode: {
@@ -79,13 +83,15 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
-      aggregated: false,
+      aggregation: {
+        methods: {
+          area: AggregationAreaMethods.MIN_MAX,
+          line: AggregationLineMethods.MEAN,
+        },
+        isApplied: false,
+      },
       focusedState: {
-        key: null,
-        xValue: null,
-        yValue: null,
         active: false,
-        chartIndex: null,
       },
     },
   };
@@ -93,8 +99,20 @@ function getConfig() {
 
 function initialize() {
   model.init();
+  const grouping: IMetricAppConfig['grouping'] =
+    getStateFromUrl('grouping') || getConfig().grouping;
+  const chart: IMetricAppConfig['chart'] =
+    getStateFromUrl('chart') || getConfig().chart;
+  const configData: IMetricAppConfig = _.merge(getConfig(), {
+    chart,
+    grouping,
+  });
   model.setState({
-    config: getConfig(),
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
+    config: configData,
   });
 }
 
@@ -194,6 +212,11 @@ function processData(data: IRun[]): {
           }),
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+          data: {
+            ...metric.data,
+            xValues: [...metric.data.iterations],
+            yValues: [...metric.data.values],
+          },
         } as IMetric);
       }),
     );
@@ -365,8 +388,19 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     }
   }
 
-  return Object.values(groupValues);
+  const groups = Object.values(groupValues);
+
+  return aggregateGroupData({
+    groupData: groups,
+    methods: {
+      area: AggregationAreaMethods.MIN_MAX,
+      line: AggregationLineMethods.MEAN,
+    },
+    scale: model.getState()!.config!.chart.axesScaleType,
+  });
 }
+
+function alignData() {}
 
 function getDataAsLines(
   processedData: IMetricsCollection[],
@@ -385,15 +419,15 @@ function getDataAsLines(
           yValues =
             smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
               ? calculateExponentialMovingAverage(
-                  [...metric.data.values],
+                  metric.data.yValues,
                   smoothingFactor,
                 )
               : calculateCentralMovingAverage(
-                  [...metric.data.values],
+                  metric.data.yValues,
                   smoothingFactor,
                 );
         } else {
-          yValues = [...metric.data.values];
+          yValues = metric.data.yValues;
         }
         return {
           ...metric,
@@ -402,7 +436,7 @@ function getDataAsLines(
           chartIndex: metricsCollection.chartIndex,
           selectors: [metric.key, metric.key, metric.run.run_hash],
           data: {
-            xValues: [...metric.data.iterations],
+            xValues: metric.data.xValues,
             yValues,
           },
         };
@@ -410,7 +444,7 @@ function getDataAsLines(
     )
     .flat();
 
-  return _.values(_.groupBy(lines, 'chartIndex'));
+  return Object.values(_.groupBy(lines, 'chartIndex'));
 }
 
 function getDataAsTableRows(
@@ -451,11 +485,11 @@ function getDataAsTableRows(
   );
 }
 
-function setComponentRefs(refs: any) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData) {
-    configData.refs = Object.assign(configData.refs, refs);
-    model.setState({ config: configData });
+function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
+  const modelState = model.getState();
+  if (modelState?.refs) {
+    modelState.refs = Object.assign(modelState.refs, refElement);
+    model.setState({ refs: modelState.refs });
   }
 }
 
@@ -607,7 +641,7 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const tableRef: any = model.getState()?.config?.refs.tableRef;
+  const tableRef: any = model.getState()?.refs?.tableRef;
   const tableData = getDataAsTableRows(
     model.getState()!.data!,
     activePoint.xValue,
@@ -617,29 +651,21 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData.flat() });
+    // tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
     );
 
     if (focusedStateActive) {
-      setTimeout(() => {
-        let activeRow = document.querySelector('.BaseTable__row--hovered');
-        if (activeRow) {
-          activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }
-      });
+      tableRef.current?.scrollToRow(activePoint.key);
     }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
       active: focusedStateActive,
-      key: activePoint.key,
-      xValue: activePoint.xValue,
-      yValue: activePoint.yValue,
-      chartIndex: activePoint.chartIndex,
+      ...activePoint,
     };
     stateUpdate.config = configData;
   }
@@ -650,7 +676,7 @@ function onActivePointChange(
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    const chartPanelRef: any = configData.refs.chartPanelRef;
+    const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
     if (chartPanelRef && !configData.chart.focusedState.active) {
       chartPanelRef.current?.setActiveLine(rowKey);
     }
@@ -659,7 +685,7 @@ function onTableRowHover(rowKey: string): void {
 
 function onTableRowClick(rowKey: string | null): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const chartPanelRef: any = configData?.refs.chartPanelRef;
+  const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
   if (chartPanelRef && rowKey) {
     chartPanelRef.current?.setActiveLine(rowKey, true);
   }
@@ -670,6 +696,29 @@ function onTableRowClick(rowKey: string | null): void {
     };
     updateModelData(configData);
   }
+}
+
+function updateGroupingStateUrl(): void {
+  const groupingData = model.getState()?.config?.grouping;
+  if (groupingData) {
+    updateUrlParam('grouping', groupingData);
+  }
+}
+
+function updateChartStateUrl(): void {
+  const chartData = model.getState()?.config?.chart;
+  if (chartData) {
+    updateUrlParam('chart', chartData);
+  }
+}
+
+function updateUrlParam(
+  paramName: string,
+  data: Record<string, unknown>,
+): void {
+  const encodedUrl: string = encode(data);
+  const url: string = getUrlWithParam(paramName, encodedUrl);
+  window.history.pushState(null, '', url);
 }
 
 const metricAppModel = {
@@ -692,6 +741,8 @@ const metricAppModel = {
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
+  updateGroupingStateUrl,
+  updateChartStateUrl,
 };
 
 export default metricAppModel;

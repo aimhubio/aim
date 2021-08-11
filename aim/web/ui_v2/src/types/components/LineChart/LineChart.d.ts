@@ -5,8 +5,8 @@ import {
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from '../AxesScalePopover/AxesScalePopover';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import { IGetAxisScale } from '../../utils/d3/getAxisScale';
-import { IFocusedState } from '../../services/models/metrics/metricsAppModel';
+import { IGetAxisScale } from 'utils/d3/getAxisScale';
+import { IFocusedState } from 'services/models/metrics/metricsAppModel';
 
 export interface ILine {
   key: string;
@@ -22,7 +22,7 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
-  xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
+  xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;

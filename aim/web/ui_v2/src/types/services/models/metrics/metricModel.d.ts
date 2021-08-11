@@ -11,6 +11,8 @@ export interface IMetric {
     epochs: Uint32Array;
     iterations: Uint32Array;
     timestamp: Uint32Array;
+    xValues: number[];
+    yValues: number[];
   };
   color: string;
   dasharray: string;
