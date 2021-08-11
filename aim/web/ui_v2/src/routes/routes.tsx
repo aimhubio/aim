@@ -6,8 +6,10 @@ const Params = React.lazy(() => import('pages/Params/ParamsContainer'));
 const Bookmarks = React.lazy(
   () => import('pages/Bookmarks/BookmarksContainer'),
 );
+const Front = React.lazy(() => import('pages/Front/FrontContainer'));
 
 const PATHS = {
+  FRONT: '/front',
   RUNS: '/runs',
   METRICS: '/metrics',
   PARAMS: '/params',
@@ -16,6 +18,12 @@ const PATHS = {
 };
 
 const routes = {
+  FRONT: {
+    path: PATHS.FRONT,
+    component: Front,
+    showInSidebar: false,
+    displayName: null,
+  },
   RUNS: {
     path: PATHS.RUNS,
     component: Runs,

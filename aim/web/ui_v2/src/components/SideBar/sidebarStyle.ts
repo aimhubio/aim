@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core';
 export default makeStyles(({ spacing, palette }) => ({
   paper: {
     width: spacing(4.375),
-    backgroundColor: palette.primary.main,
+    backgroundColor: '#09003F',
   },
   logo: {
     width: spacing(2.1875),

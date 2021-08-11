@@ -25,12 +25,17 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
       anchor='left'
     >
       <List className={classes.list}>
-        <ListItem className={classes.listItem}>
-          <img className={classes.logo} src={logoImg} alt='logo' />
-        </ListItem>
+        <NavLink
+          activeClassName={classes.anchorActive}
+          className={classes.anchor}
+          to={routes.FRONT.path}
+        >
+          <ListItem className={classes.listItem}>
+            <img className={classes.logo} src={logoImg} alt='logo' />
+          </ListItem>
+        </NavLink>
         {Object.values(routes).map((route, index) => {
           const { showInSidebar, path, displayName } = route;
-
           return (
             showInSidebar && (
               <NavLink
