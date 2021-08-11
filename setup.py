@@ -66,6 +66,7 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'tensorboard>=2.0.0',
+    'RestrictedPython==5.1',
 ]
 
 
