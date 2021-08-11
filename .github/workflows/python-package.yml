@@ -17,7 +17,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: pre_release_v3
+          ref: main
 
       - name: Setup python
         uses: actions/setup-python@v2
@@ -25,27 +25,20 @@ jobs:
           python-version: 3.9
           architecture: x64
 
+      - name: Install dev dependencies
+        run: |
+          python -m pip install -r requirements.dev.txt
+
       - name: Build bdist wheels
         run: |
          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
 
-      - name: Build sdist
+      - name: Publish wheels
+        env:
+          PYPI_PASSWORD: ${{ secrets.pypi_password }}
         run: |
-          AIM_PKG_NAME=aim python setup.py sdist
-          AIM_PKG_NAME=aim-cli python setup.py sdist
-
-      - name: List wheels
-        run: |
-          ls -al dist
-          ls -al multilinux_dist
-
-#      - name: Publish wheels
-#        env:
-#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
-#        run: |
-#          python -m pip install twine
-#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
-#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+          python -m pip install twine
+          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
   macos-dist:
     runs-on: ${{matrix.os}}
@@ -59,7 +52,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: pre_release_v3
+          ref: main
 
       - name: Setup python
         uses: actions/setup-python@v2
@@ -67,17 +60,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
+      - name: Install dev dependencies
+        run: |
+          python -m pip install -r requirements.dev.txt
+
       - name: Build bdist wheel
         run: |
           AIM_PKG_NAME=aim python setup.py bdist_wheel -d dist
           AIM_PKG_NAME=aim-cli python setup.py bdist_wheel -d dist
 
-      - name: List wheels
+      - name: Build sdist
+        if: matrix.python-version == '3.9'
         run: |
-          ls -al dist
-#      - name: Publish wheel
-#        env:
-#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
-#        run: |
-#          python -m pip install twine
-#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+          AIM_PKG_NAME=aim python setup.py sdist
+          AIM_PKG_NAME=aim-cli python setup.py sdist
+
+      - name: Publish wheel
+        env:
+          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+        run: |
+          python -m pip install twine
+          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
