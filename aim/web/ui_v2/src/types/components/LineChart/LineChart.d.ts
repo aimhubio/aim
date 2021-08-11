@@ -22,7 +22,7 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
-  xAlignment?: 'absolute_time' | 'relative_time' | 'epoch';
+  xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;

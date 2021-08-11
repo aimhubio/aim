@@ -5,6 +5,7 @@ from typing import Union
 from collections import Counter
 
 from aim.storage.sdk.types import AimObjectKey, AimObjectPath, AimObject
+
 from aim.storage.sdk.trace import RunTraceCollection
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
