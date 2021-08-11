@@ -212,6 +212,17 @@ class Run:
             self._hash = self._calc_hash()
         return self._hash
 
+    def __del__(self):
+        if self.read_only:
+            return
+        logger.warning(f'finalizing {self}')
+        self.finalize()
+
+    def finalize(self):
+        index = self.repo._get_container('meta/index',
+                                         read_only=False,
+                                         from_union=False).view(b'')
+        self.meta_run_tree.finalize(index=index)
 
 class RunPropsView:
     def __init__(self, run: Run):

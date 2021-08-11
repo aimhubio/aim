@@ -35,6 +35,12 @@ class SingleContainerView(ContainerView):
         except:
             pass
 
+    def finalize(self, *, index: ContainerView):
+        prefix = self.absolute_path()
+        # Shadowing
+        index.batch_delete(prefix)
+        self.container.finalize(index=index)
+
     def absolute_path(
         self,
         *args: bytes

@@ -8,6 +8,15 @@ if TYPE_CHECKING:
 
 class ContainerView:
 
+    @abstractmethod
+    def close(self):
+        ...
+
+    @abstractmethod
+    def finalize(self, *, index: 'ContainerView'):
+        ...
+
+    @abstractmethod
     def preload(self):
         ...
 

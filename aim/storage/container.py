@@ -1,11 +1,12 @@
 import logging
 from pathlib import Path
+from filelock import FileLock
 
 import aimrocks
 
 from aim.storage import encoding as E
 
-from typing import Iterator, Tuple, Union
+from typing import Iterator, Optional, Tuple, Union
 
 from aim.storage.containerview import ContainerView
 from aim.storage.singlecontainerview import SingleContainerView
@@ -27,13 +28,17 @@ class Container(ContainerView):
     def __init__(
         self,
         path: str,
-        read_only: bool = False
+        read_only: bool = False,
+        wait_if_busy: bool = False
     ) -> None:
-        self.path = path
+        self.path = Path(path)
         self.read_only = read_only
         self._db_opts = dict(
             create_if_missing=True,
-            paranoid_checks=False
+            paranoid_checks=False,
+            keep_log_file_num=10,
+            skip_stats_update_on_db_open=True,
+            skip_checking_sst_file_sizes_on_db_open=True
         )
         # opts.allow_concurrent_memtable_write = False
         # opts.memtable_factory = aimrocks.VectorMemtableFactory()
@@ -43,6 +48,11 @@ class Container(ContainerView):
         # opts.arena_block_size = 67108864
 
         self._db = None
+        self._lock = None
+        self._wait_if_busy = wait_if_busy  # TODO implement
+        self._lock_path: Optional[Path] = None
+        self._progress_path: Optional[Path] = None
+        # TODO check if Containers are reopenable
 
     @property
     def db(self) -> aimrocks.DB:
@@ -50,11 +60,51 @@ class Container(ContainerView):
             return self._db
 
         logger.debug(f'opening {self.path} as aimrocks db')
-        Path(self.path).parent.mkdir(parents=True, exist_ok=True)
-        self._db = aimrocks.DB(self.path, aimrocks.Options(**self._db_opts), read_only=self.read_only)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        locks_dir = self.path.parent.parent / 'locks'
+        locks_dir.mkdir(parents=True, exist_ok=True)
 
-        # TODO acquire locks
+        if not self.read_only:
+            self._lock_path = locks_dir / self.path.name
+            self._lock = FileLock(str(self._lock_path), timeout=10)
+            self._lock.acquire()
+
+        self._db = aimrocks.DB(str(self.path),
+                               aimrocks.Options(**self._db_opts),
+                               read_only=self.read_only)
+
         return self._db
+
+    @property
+    def writable_db(self) -> aimrocks.DB:
+        db = self.db
+        if self._progress_path is None:
+            progress_dir = self.path.parent.parent / 'progress'
+            progress_dir.mkdir(parents=True, exist_ok=True)
+            self._progress_path = progress_dir / self.path.name
+            self._progress_path.touch(exist_ok=True)
+        return db
+
+    def finalize(self, *, index: ContainerView):
+        if not self._progress_path:
+            return
+
+        for k, v in self.items():
+            index[k] = v
+
+        self._progress_path.unlink(missing_ok=False)
+        self._progress_path = None
+
+    def close(self):
+        if self._lock is not None:
+            self._lock.release()
+            self._lock = None
+        if self._db is not None:
+            # self._db.close()
+            self._db = None
+
+    def __del__(self):
+        self.close()
 
     def preload(self):
         self.db
@@ -67,7 +117,7 @@ class Container(ContainerView):
         store_batch: aimrocks.WriteBatch = None
     ):
         if store_batch is None:
-            store_batch = self.db
+            store_batch = self.writable_db
         store_batch.put(key=key, value=value)
 
     def __setitem__(
@@ -75,7 +125,7 @@ class Container(ContainerView):
         key: bytes,
         value: bytes
     ):
-        self.db.put(key=key, value=value)
+        self.writable_db.put(key=key, value=value)
 
     def __getitem__(
         self,
@@ -87,7 +137,7 @@ class Container(ContainerView):
         self,
         key: bytes
     ) -> None:
-        return self.db.delete(key)
+        return self.writable_db.delete(key)
 
     def batch_delete(
         self,
@@ -102,7 +152,7 @@ class Container(ContainerView):
         batch.delete_range((prefix, prefix + b'\xff'))
 
         if not store_batch:
-            self.db.write(batch)
+            self.writable_db.write(batch)
         else:
             return batch
 
@@ -210,7 +260,7 @@ class Container(ContainerView):
         self,
         batch: aimrocks.WriteBatch
     ):
-        self.db.write(batch)
+        self.writable_db.write(batch)
 
     def next_key(
         self,
