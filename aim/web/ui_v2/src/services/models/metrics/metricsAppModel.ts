@@ -41,6 +41,9 @@ import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import getStateFromUrl from 'utils/getStateFromUrl';
+
 import {
   aggregateGroupData,
   AggregationAreaMethods,
@@ -101,12 +104,20 @@ function getConfig() {
 
 function initialize() {
   model.init();
+  const grouping: IMetricAppConfig['grouping'] =
+    getStateFromUrl('grouping') || getConfig().grouping;
+  const chart: IMetricAppConfig['chart'] =
+    getStateFromUrl('chart') || getConfig().chart;
+  const configData: IMetricAppConfig = _.merge(getConfig(), {
+    chart,
+    grouping,
+  });
   model.setState({
     refs: {
       tableRef: { current: null },
       chartPanelRef: { current: null },
     },
-    config: getConfig(),
+    config: configData,
   });
 }
 
@@ -708,6 +719,29 @@ function onTableRowClick(rowKey: string | null): void {
   }
 }
 
+function updateGroupingStateUrl(): void {
+  const groupingData = model.getState()?.config?.grouping;
+  if (groupingData) {
+    updateUrlParam('grouping', groupingData);
+  }
+}
+
+function updateChartStateUrl(): void {
+  const chartData = model.getState()?.config?.chart;
+  if (chartData) {
+    updateUrlParam('chart', chartData);
+  }
+}
+
+function updateUrlParam(
+  paramName: string,
+  data: Record<string, unknown>,
+): void {
+  const encodedUrl: string = encode(data);
+  const url: string = getUrlWithParam(paramName, encodedUrl);
+  window.history.pushState(null, '', url);
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -729,6 +763,8 @@ const metricAppModel = {
   onGroupingApplyChange,
   onGroupingPersistenceChange,
   onBookmarkCreate,
+  updateGroupingStateUrl,
+  updateChartStateUrl,
 };
 
 export default metricAppModel;

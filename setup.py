@@ -2,9 +2,13 @@ import sys
 import os
 import io
 from shutil import rmtree
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup, Command, Extension
 
-from aim.__version__ import __version__
+version_file = 'aim/VERSION'
+
+__version__ = None
+with open(version_file) as vf:
+    __version__ = vf.read().strip()
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -30,13 +34,20 @@ def package_files(directory):
 
 ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
+storage_migration_files = package_files('aim/storage/migrations')
+version_files = ['../aim/VERSION', ]
 
 # TODO: Get long description from the README file
 LONG_DESCRIPTION = DESCRIPTION
 
+SETUP_REQUIRED = [
+    'Cython>=0.20.0',
+]
+
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
+    'aimrocks==0.0.5',
     'anytree>=2.8.0',
     'click>=7.0',
     'GitPython>=3.0.4',
@@ -55,6 +66,7 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'tensorboard>=2.0.0',
+    'RestrictedPython==5.1',
 ]
 
 
@@ -111,9 +123,10 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     python_requires=REQUIRES_PYTHON,
+    setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
     packages=packages,
-    package_data={'aim': ui_files + migration_files},
+    package_data={'aim': ui_files + migration_files + storage_migration_files + version_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',
@@ -124,6 +137,18 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy'
+    ],
+    ext_modules=[
+        Extension(
+            'aim.storage.hashing.c_hash',
+            ['aim/storage/hashing/c_hash.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.encoding.encoding_native',
+            ['aim/storage/encoding/encoding_native.pyx'],
+            language='c++'
+        )
     ],
     entry_points={
         'console_scripts': [
