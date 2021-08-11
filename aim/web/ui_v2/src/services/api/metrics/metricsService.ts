@@ -7,6 +7,10 @@ const endpoints = {
 
 function getMetricsData(params: {}) {
   return API.getStream<ReadableStream>(endpoints.GET_METRICS, params);
+
+  // We will not remove this part yet, though we will need to refactor mock data structure
+  // due to API schema changes
+
   // return {
   //   call: () => ({
   //     then: (resolve: (data: IRun[]) => void, reject?: unknown) => {

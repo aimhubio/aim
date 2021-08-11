@@ -58,7 +58,7 @@ function getConfig() {
     grouping: {
       color: [],
       style: [],
-      chart: ['metric_name'],
+      chart: [],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -124,7 +124,7 @@ function initialize() {
 
 function getMetricsData() {
   const { call, abort } = metricsService.getMetricsData({
-    q: 'metric_name == "bleu" or metric_name == "loss" or metric_name == "best_loss"',
+    q: 'metric_name == "bleu"',
   });
   return {
     call: async () => {
@@ -507,9 +507,14 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
 function onChangeHighlightMode(mode: HighlightEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.highlightMode = mode;
     model.setState({
-      config: configData,
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          highlightMode: mode,
+        },
+      },
     });
   }
 }
@@ -517,8 +522,15 @@ function onChangeHighlightMode(mode: HighlightEnum): void {
 function onZoomModeChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.zoomMode = !configData.chart.zoomMode;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          zoomMode: !configData.chart.zoomMode,
+        },
+      },
+    });
   }
 }
 
@@ -545,8 +557,15 @@ function onDisplayOutliersChange(): void {
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.axesScaleType = params;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          axesScaleType: params,
+        },
+      },
+    });
   }
 }
 
