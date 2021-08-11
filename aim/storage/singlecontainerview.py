@@ -37,7 +37,7 @@ class SingleContainerView(ContainerView):
 
     def absolute_path(
         self,
-        *args: Iterable[bytes]
+        *args: bytes
     ) -> bytes:
         return ContainerView.path_join(prefix=self.prefix, *args)
 

@@ -50,14 +50,14 @@ class Run:
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
         ).tree().view('meta')
-        self.meta_run_tree: TreeView = self.meta_tree.view(['chunks', hashname])
+        self.meta_run_tree: TreeView = self.meta_tree.view(('chunks', hashname))
 
         self.meta_attrs_tree: TreeView = self.meta_tree.view('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
             'trcs', hashname, read_only=read_only
-        ).tree().view('trcs').view(['chunks', hashname])
+        ).tree().view('trcs').view(('chunks', hashname))
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 

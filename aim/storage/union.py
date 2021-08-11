@@ -22,11 +22,13 @@ class Racer(NamedTuple):
 
 
 class ItemsIterator:
-    def __init__(self, iterators: Dict[bytes, "aimrocks.ItemsIterator"]):
-        self._iterators = iterators
+    def __init__(self, dbs: Dict[bytes, "aimrocks.DB"]):
+        self._iterators = {}
+        for key, value in dbs.items():
+            self._iterators[key] = value.iteritems()
         self._priority: Dict[bytes, int] = {
             prefix: idx
-            for idx, prefix in enumerate(iterators)
+            for idx, prefix in enumerate(self._iterators)
         }
         self._heap: List[Racer] = []
 
@@ -188,35 +190,29 @@ class DB(object):
     def iteritems(
         self
     ) -> "ItemsIterator":
-        return ItemsIterator({
-            prefix: db.iteritems()
-            for prefix, db
-            in self.dbs.items()
-        })
+        return ItemsIterator(self.dbs)
 
     def iterkeys(
         self
     ) -> "KeysIterator":
-        return KeysIterator({
-            prefix: db.iteritems()
-            for prefix, db
-            in self.dbs.items()
-        })
+        return KeysIterator(self.dbs)
 
     def itervalues(
         self
     ) -> "ValuesIterator":
-        return ValuesIterator({
-            prefix: db.iteritems()
-            for prefix, db
-            in self.dbs.items()
-        })
+        return ValuesIterator(self.dbs)
 
 
 class UnionContainer(Container):
 
     @property
+    def writable_db(self) -> aimrocks.DB:
+        raise NotImplementedError
+
+    @property
     def db(self) -> aimrocks.DB:
+        assert self.read_only
+
         if self._db is not None:
             return self._db
         try:
