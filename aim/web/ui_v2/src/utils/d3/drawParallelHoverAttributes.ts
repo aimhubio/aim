@@ -9,6 +9,7 @@ import {
 import {
   IDrawParallelHoverAttributesProps,
   IParallelNearestCircle,
+  IUpdateParallelFocusedChartProps,
 } from 'types/utils/d3/drawParallelHoverAttributes';
 import { getCoordinates, CircleEnum, ScaleEnum } from './';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
@@ -162,7 +163,7 @@ const drawParallelHoverAttributes = ({
     mouse,
     focusedStateActive = attributesRef.current.focusedState?.active || false,
     force,
-  }: any) {
+  }: IUpdateParallelFocusedChartProps) {
     const dimensionLabel = scalePointValue(
       attributesRef.current.xScale,
       mouse[0],
@@ -304,9 +305,11 @@ const drawParallelHoverAttributes = ({
       if (circle.key !== lineKey) {
         return;
       }
-      updateFocusedChart({
-        mouse: [circle.x + margin.left, circle.y + margin.top],
-      });
+      const mouse: [number, number] = [
+        circle.x + margin.left,
+        circle.y + margin.top,
+      ];
+      updateFocusedChart({ mouse });
     });
   }
 

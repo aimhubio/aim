@@ -32,7 +32,7 @@ export interface IDrawParallelHoverAttributesProps {
     activePoint?: IActivePoint;
     lineKey?: string;
     focusedState?: IFocusedState;
-    updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
+    updateFocusedChart: (params: IUpdateParallelFocusedChartProps) => void;
   }>;
   syncHoverState: (params: ISyncHoverStateParams | null) => void;
   linesNodeRef: React.MutableRefObject<>;
@@ -48,6 +48,11 @@ export interface IParallelClosestCircle {
   y: number;
   values: ILineValuesDataType;
   color: string;
+}
+export interface IUpdateParallelFocusedChartProps {
+  mouse: [number, number];
+  focusedStateActive?: boolean;
+  force?: boolean;
 }
 
 export interface IParallelNearestCircle extends INearestCircle {
