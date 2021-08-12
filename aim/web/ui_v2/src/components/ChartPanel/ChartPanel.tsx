@@ -12,8 +12,9 @@ import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { chartTypesConfig } from './config';
 import { ISyncHoverStateParams } from 'types/utils/d3/drawHoverAttributes';
-import './chartPanelStyle.scss';
+import { ChartTypeEnum } from 'utils/d3';
 import ChartPopover from './ChartPopover';
+import './chartPanelStyle.scss';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
@@ -32,12 +33,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       const { activePoint, focusedStateActive } = params;
       // on MouseHover
       if (activePoint !== null) {
-        chartRefs.forEach((chartRef, index) => {
-          if (index === activePoint.chartIndex) {
-            return;
-          }
-          chartRef.current?.updateHoverAttributes?.(activePoint.xValue);
-        });
+        if (props.chartType !== ChartTypeEnum.HighPlot) {
+          chartRefs.forEach((chartRef, index) => {
+            if (index === activePoint.chartIndex) {
+              return;
+            }
+            chartRef.current?.updateHoverAttributes?.(activePoint.xValue);
+          });
+        }
 
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);

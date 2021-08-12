@@ -159,5 +159,5 @@ class RestrictedPythonQuery(Query):
                                context=context_proxy,
                                metric_name=metric_name)
         except BaseException as e:
-            logger.warning('query failed', e)
+            logger.warning('query failed, %s', e)
             return False

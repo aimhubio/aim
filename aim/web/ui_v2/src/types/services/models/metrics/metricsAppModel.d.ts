@@ -13,7 +13,7 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
-import { IActivePoint } from 'utils/d3/drawHoverAttributes';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 
 export interface IMetricAppModelState {
   refs: {
@@ -147,3 +147,24 @@ export type GroupingSelectOptionType = {
   group: string;
   value: string;
 };
+
+export interface IAppData extends Partial<IMetricAppConfig> {
+  created_at?: string;
+  id?: string;
+  updated_at?: string;
+}
+
+export interface IBookmarkRequestBody {
+  name: string;
+  description: string;
+  app_id: string;
+}
+
+export interface IBookmarkData {
+  app_id: string;
+  created_at: string;
+  id: string;
+  name: string;
+  description: string;
+  updated_at: string;
+}

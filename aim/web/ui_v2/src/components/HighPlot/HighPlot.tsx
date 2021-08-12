@@ -56,7 +56,6 @@ const HighPlot = React.forwardRef(function HighPlot(
   const attributesRef = React.useRef<any>({});
   const axesRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
-  const closestCircleRef = React.useRef(null);
   const brushRef = React.useRef<any>({});
 
   const draw = React.useCallback((): void => {
@@ -106,12 +105,12 @@ const HighPlot = React.forwardRef(function HighPlot(
       linesRef,
       attributesRef,
       visBoxRef,
-      closestCircleRef,
+      bgRectNodeRef,
       attributesNodeRef,
       linesNodeRef,
       highlightedNodeRef,
       isVisibleColorIndicator,
-      highlightMode: 0,
+      axesNodeRef,
       syncHoverState,
     });
 
@@ -124,22 +123,12 @@ const HighPlot = React.forwardRef(function HighPlot(
       dimensions: data.dimensions,
       data: data.data,
     });
-    if (isVisibleColorIndicator) {
-      attributesRef.current.mousePosition &&
-        attributesRef.current.updateHoverAttributes(
-          attributesRef.current.mousePosition,
-          true,
-        );
-    }
   }, [curveInterpolation, index, isVisibleColorIndicator, data]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
       attributesRef.current.setActiveLine?.(lineKey);
     },
-    // updateHoverAttributes: (xValue: number) => {
-    //   attributesRef.current.updateHoverAttributes?.(xValue);
-    // },
     clearHoverAttributes: () => {
       attributesRef.current.clearHoverAttributes?.();
     },
@@ -152,9 +141,6 @@ const HighPlot = React.forwardRef(function HighPlot(
     setActiveLine: (lineKey: string) => {
       attributesRef.current.setActiveLine?.(lineKey);
     },
-    // updateHoverAttributes: (xValue: number) => {
-    //   attributesRef.current.updateHoverAttributes?.(xValue);
-    // },
     clearHoverAttributes: () => {
       attributesRef.current.clearHoverAttributes?.();
     },
@@ -181,7 +167,6 @@ const HighPlot = React.forwardRef(function HighPlot(
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-    //   }, [props.data, renderChart, displayOutliers, highlightMode]);
   }, [renderChart]);
 
   return (

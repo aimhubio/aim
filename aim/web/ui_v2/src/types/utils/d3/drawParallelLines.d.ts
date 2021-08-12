@@ -3,19 +3,19 @@ import { CurveEnum } from 'utils/d3';
 import { DimensionsType } from './drawParallelAxes';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
-interface ILineDataType {
+interface ILineValuesDataType {
   [key: string]: number | string | null;
 }
 
-export interface ILinesDataType {
-  values: ILineDataType;
+export interface ILineDataType {
+  values: ILineValuesDataType;
   key: string;
   color: string;
 }
 
 export type InitialPathDataType = {
   dimensionList: string[];
-  lineData: ILineDataType;
+  lineData: ILineValuesDataType;
   isEmpty: boolean;
   isDotted: boolean;
 };
@@ -28,7 +28,7 @@ export interface IDrawParallelLinesProps {
   isVisibleColorIndicator: boolean;
   linesRef: React.MutableRefObject<>;
   dimensions: DimensionsType;
-  data: ILinesDataType[];
+  data: ILineDataType[];
 }
 
 export interface IDrawParallelLineProps {
@@ -36,7 +36,7 @@ export interface IDrawParallelLineProps {
   attributesRef: React.MutableRefObject<>;
   dimensionList: string[];
   curveInterpolation: CurveEnum;
-  lineData: ILineDataType;
+  lineData: ILineValuesDataType;
   isDotted: boolean;
   key: number | string;
   color: string;
@@ -48,12 +48,12 @@ export interface ILineRendererProps {
   curveInterpolation: CurveEnum;
   keysOfDimensions: string[];
   isVisibleColorIndicator: boolean;
-  data: ILinesDataType[];
+  data: ILineDataType[];
 }
 
 export interface IGetColorIndicatorScaleValueProps {
-  line: ILineDataType,
-  keysOfDimensions: string[],
-  yColorIndicatorScale: d3.ScaleSequential,
-  yScale: IGetAxisScale,
+  line: ILineValuesDataType;
+  keysOfDimensions: string[];
+  yColorIndicatorScale: d3.ScaleSequential;
+  yScale: IGetAxisScale;
 }

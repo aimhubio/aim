@@ -1,6 +1,3 @@
-export interface IBookmarkCardProps {
-  name: string;
-  ifLabel: string;
-  selectLabel: string;
-  path: string;
-}
+import { IBookmarkData } from 'types/services/models/metrics/metricsAppModel';
+
+export interface IBookmarkCardProps extends IBookmarkData {}

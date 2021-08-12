@@ -127,9 +127,9 @@ async def get_runs_list_api(request: Request, factory=Depends(object_factory)):
 
     # TODO: [AT] add arbitrary filters to SDK runs() method
     if include_archived:
-        response = [{'id': run.hash, 'name': run.name} for run in factory.runs()]
+        response = [{'id': run.hashname, 'name': run.name} for run in factory.runs()]
     else:
-        response = [{'id': run.hash, 'name': run.name} for run in factory.runs() if not run.archived]
+        response = [{'id': run.hashname, 'name': run.name} for run in factory.runs() if not run.archived]
     return response
 
 
@@ -139,7 +139,7 @@ async def search_runs_by_name_api(request: Request, factory=Depends(object_facto
     search_term = params.get('q') or ''
     search_term.strip()
 
-    response = [{'id': run.hash, 'name': run.name} for run in factory.search_runs(search_term)]
+    response = [{'id': run.hashname, 'name': run.name} for run in factory.search_runs(search_term)]
     return response
 
 
@@ -150,7 +150,7 @@ async def get_run_api(run_id: str, factory=Depends(object_factory)):
         raise HTTPException(status_code=404)
 
     response = {
-        'id': run.hash,
+        'id': run.hashname,
         'name': run.name,
         'archived': run.archived,
         'description': run.description or '',
@@ -191,7 +191,7 @@ async def update_run_properties_api(run_id: str, request: Request, factory=Depen
             run.experiment = experiment
 
     return {
-        'id': run.hash,
+        'id': run.hashname,
         'status': 'OK'
     }
 
@@ -211,7 +211,7 @@ async def add_run_tag_api(run_id: str, request: Request, factory=Depends(object_
         tag = run.add_tag(tag_name)
 
     return {
-        'id': run.hash,
+        'id': run.hashname,
         'tag_id': tag.uuid,
         'status': 'OK'
     }
@@ -227,7 +227,7 @@ async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_fa
         removed = run.remove_tag(tag_id)
 
     return {
-        'id': run.hash,
+        'id': run.hashname,
         'removed': removed,
         'status': 'OK'
     }

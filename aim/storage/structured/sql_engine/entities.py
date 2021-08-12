@@ -56,6 +56,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         if not model_inst:
             model_inst = RunModel(self._hash)
             session.add(model_inst)
+            session.flush()
         self._model = model_inst
 
     @classmethod
@@ -134,6 +135,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             session.add(tag)
         self._model.tags.append(tag)
         session.add(self._model)
+        session.flush()
         return ModelMappedTag.from_model(tag, session)
 
     def remove_tag(self, tag_id: str) -> bool:
@@ -147,6 +149,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
                 tag_removed = True
                 break
         session.add(self._model)
+        session.flush()
         return tag_removed
 
 
@@ -183,6 +186,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Experiment with name \'{name}\' already exists.')
         exp = ExperimentModel(name)
         session.add(exp)
+        session.flush()
         return ModelMappedExperiment(exp, session)
 
     @property
@@ -257,6 +261,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Tag with name \'{name}\' already exists.')
         tag = TagModel(name)
         session.add(tag)
+        session.flush()
         return ModelMappedTag(tag, session)
 
     @classmethod

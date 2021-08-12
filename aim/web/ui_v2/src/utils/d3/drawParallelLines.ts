@@ -4,7 +4,7 @@ import lineGenerator from './lineGenerator';
 import {
   IDrawParallelLinesProps,
   InitialPathDataType,
-  ILinesDataType,
+  ILineDataType,
   IDrawParallelLineProps,
   ILineRendererProps,
   IGetColorIndicatorScaleValueProps,
@@ -23,8 +23,8 @@ function drawParallelLines({
   attributesRef,
   dimensions,
   curveInterpolation,
-  data,
   linesRef,
+  data,
   attributesNodeRef,
   isVisibleColorIndicator,
 }: IDrawParallelLinesProps) {
@@ -37,7 +37,7 @@ function drawParallelLines({
     attributesRef,
     isVisibleColorIndicator,
   });
-  linesRef.current.updateLines = function (updatedData: ILinesDataType[]) {
+  linesRef.current.updateLines = function (updatedData: ILineDataType[]) {
     linesNodeRef.current?.selectAll('*')?.remove();
     attributesNodeRef.current?.selectAll('*')?.remove();
     linesRenderer({
@@ -96,7 +96,7 @@ function linesRenderer({
   attributesRef,
   isVisibleColorIndicator,
 }: ILineRendererProps) {
-  data.forEach(({ values: line, key, color }: ILinesDataType) => {
+  data.forEach(({ values: line, key, color }: ILineDataType) => {
     if (Object.values(line).includes(null)) {
       const arrayOfPathData: InitialPathDataType[] = [
         cloneDeep(initialPathData),

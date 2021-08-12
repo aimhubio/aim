@@ -1,8 +1,8 @@
 import _ from 'lodash-es';
 
 export enum SmoothingAlgorithmEnum {
-  EMA = 'EXPONENTIAL_MOVING_AREA',
-  CMA = 'CENTRAL_MOVING_AREA',
+  EMA = 'EXPONENTIAL_MOVING_AVERAGE',
+  CMA = 'CENTRED_MOVING_AVERAGE',
 }
 
 export function calculateExponentialMovingAverage(
