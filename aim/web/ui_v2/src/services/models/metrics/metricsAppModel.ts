@@ -155,7 +155,13 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
     if (data.id) {
       dashboardService
         .createBookmark({ app_id: data.id, name, description })
-        .call();
+        .call()
+        .then((res: any) => {
+          if (res.data) {
+            // onNotificationAdd({});
+          }
+        })
+        .catch((err) => {});
     }
   }
 }
@@ -749,6 +755,9 @@ function onNotificationAdd(notification: INotification) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData, notification];
   model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
 }
 
 const metricAppModel = {

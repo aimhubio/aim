@@ -1,6 +1,6 @@
 export interface INotificationContainer {
   data: ISnackbar[];
-  handleClose: (e: any) => void;
+  handleClose: (id: string) => void;
 }
 
 export interface INotification {

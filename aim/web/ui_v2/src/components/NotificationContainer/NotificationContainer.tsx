@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert } from '@material-ui/lab';
 import { Box, Snackbar } from '@material-ui/core';
+
 import { INotificationContainer } from 'types/components/NotificationContainer/NotificationContainer';
 
 export default function NotificationContainer({
@@ -14,13 +15,15 @@ export default function NotificationContainer({
         autoHideDuration={3000}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Box>
+        <div>
           {data.map(({ id, severity, message }) => (
-            <Alert key={id} onClose={() => handleClose(id)} severity={severity}>
-              {message}
-            </Alert>
+            <Box key={id} mt={0.5}>
+              <Alert onClose={() => handleClose(id)} severity={severity}>
+                {message}
+              </Alert>
+            </Box>
           ))}
-        </Box>
+        </div>
       </Snackbar>
     </Box>
   );

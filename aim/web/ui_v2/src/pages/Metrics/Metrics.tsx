@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Paper } from '@material-ui/core';
+import { Box, Button, Grid, Paper } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -141,7 +141,7 @@ function Metrics(
       </Box>
       {props.notifyData?.length > 0 && (
         <NotificationContainer
-          handleClose={props.onNotificationAdd}
+          handleClose={props.onNotificationDelete}
           data={props.notifyData}
         />
       )}
