@@ -150,11 +150,7 @@ function getMetricsData() {
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
-    const data: IAppData | any = await appsService
-      .createApp({
-        colorPalette: configData.grouping.paletteIndex,
-      })
-      .call();
+    const data: IAppData | any = await appsService.createApp(configData).call();
     if (data.id) {
       dashboardService
         .createBookmark({ app_id: data.id, name, description })
