@@ -29,9 +29,13 @@ async def create_tag_api(request: Request, factory=Depends(object_factory)):
     tag_name = body.get('name') or ''
     if not tag_name:
         raise HTTPException(400)
+    tag_color = body.get('color')
+    if tag_color is not None:
+        tag_color = tag_color.strip()
     with factory:
         try:
             tag = factory.create_tag(tag_name)
+            tag.color = tag_color
         except ValueError as e:
             raise HTTPException(400, detail=str(e))
 
