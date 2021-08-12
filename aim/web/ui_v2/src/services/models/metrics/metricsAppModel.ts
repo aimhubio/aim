@@ -19,6 +19,7 @@ import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import {
   GroupingSelectOptionType,
   GroupNameType,
+  IAppData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -37,8 +38,12 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
+
 import {
   aggregateGroupData,
   AggregationAreaMethods,
@@ -140,6 +145,18 @@ function getMetricsData() {
       }),
     abort,
   };
+}
+
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    const data: IAppData | any = await appsService.createApp(configData).call();
+    if (data.id) {
+      dashboardService
+        .createBookmark({ app_id: data.id, name, description })
+        .call();
+    }
+  }
 }
 
 function getGroupingSelectOptions(
@@ -741,6 +758,7 @@ const metricAppModel = {
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
+  onBookmarkCreate,
   updateGroupingStateUrl,
   updateChartStateUrl,
 };

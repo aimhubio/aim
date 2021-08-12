@@ -1,6 +1,5 @@
-import { IRun } from 'types/services/models/metrics/runModel';
-import API from '../api';
 import generateMetrics from './metricsMock';
+import { IRun } from 'types/services/models/metrics/runModel';
 
 const endpoints = {
   GET_METRICS: '/metrics',

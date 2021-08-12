@@ -105,6 +105,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onActivePointChange={metricAppModel.onActivePointChange}
       onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
       onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
+      onBookmarkCreate={metricAppModel.onBookmarkCreate}
     />
   );
 }
