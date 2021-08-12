@@ -13,7 +13,7 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
-import { IActivePoint } from 'utils/d3/drawHoverAttributes';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 
 export interface IMetricAppModelState {
   refs: {

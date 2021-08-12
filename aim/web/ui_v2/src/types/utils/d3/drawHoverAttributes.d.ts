@@ -48,7 +48,6 @@ export interface INearestCircle {
   y: number;
   key: string;
   color: string;
-  lastYScalePos?: number;
 }
 
 export interface IActivePoint {
