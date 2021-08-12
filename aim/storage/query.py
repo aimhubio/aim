@@ -151,7 +151,7 @@ class RestrictedPythonQuery(Query):
         metric_name: str = None
     ) -> bool:
 
-        context_proxy = AimObjectProxy(lambda: context.to_dict() if context else {})
+        context_proxy = AimObjectProxy(lambda: context.to_dict())
 
         # TODO enforce immutable
         try:
@@ -159,5 +159,5 @@ class RestrictedPythonQuery(Query):
                                context=context_proxy,
                                metric_name=metric_name)
         except BaseException as e:
-            logger.warning('query failed', e)
+            logger.warning('query failed, %s', e)
             return False
