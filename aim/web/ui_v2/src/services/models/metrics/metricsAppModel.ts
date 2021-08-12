@@ -49,6 +49,12 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  adjustable_reader,
+  decodePathsVals,
+  decode_buffer_pairs,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -57,7 +63,7 @@ function getConfig() {
     grouping: {
       color: [],
       style: [],
-      chart: ['run.params.hparams.lr'],
+      chart: [],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -121,30 +127,49 @@ function initialize() {
   });
 }
 
+let metricsRequestRef: {
+  call: () => Promise<ReadableStream<IRun[]>>;
+  abort: () => void;
+};
+
 function getMetricsData() {
-  const { call, abort } = metricsService.getMetricsData();
+  if (metricsRequestRef) {
+    metricsRequestRef.abort();
+  }
+  metricsRequestRef = metricsService.getMetricsData({
+    q: 'metric_name == "bleu"',
+  });
   return {
-    call: () =>
-      call().then((runData: IRun[]) => {
-        const { data, params } = processData(runData);
-        const configData = model.getState()?.config;
-        if (configData) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions(params),
-          ];
-        }
-        model.setState({
-          rawData: runData,
-          config: configData,
-          params,
-          data,
-          lineChartData: getDataAsLines(data),
-          tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params),
-          notifyData: [],
-        });
-      }),
-    abort,
+    call: async () => {
+      const stream = await metricsRequestRef.call();
+      let gen = adjustable_reader(stream);
+      let buffer_pairs = decode_buffer_pairs(gen);
+      let decodedPairs = decodePathsVals(buffer_pairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+
+      const runData: IRun[] = [];
+      for await (let [keys, val] of objects) {
+        runData.push(val as any);
+      }
+
+      const { data, params } = processData(runData);
+      const configData = model.getState()?.config;
+      if (configData) {
+        configData.grouping.selectOptions = [
+          ...getGroupingSelectOptions(params),
+        ];
+      }
+      model.setState({
+        rawData: runData,
+        config: configData,
+        params,
+        data,
+        lineChartData: getDataAsLines(data),
+        tableData: getDataAsTableRows(data, null, params),
+        tableColumns: getTableColumns(params),
+      });
+    },
+    abort: metricsRequestRef.abort,
   };
 }
 
@@ -183,8 +208,8 @@ function getGroupingSelectOptions(
     },
     {
       group: 'Other',
-      label: 'run_hash',
-      value: 'run.run_hash',
+      label: 'run.hash',
+      value: 'run.params.status.hash',
     },
     {
       group: 'Other',
@@ -208,38 +233,30 @@ function processData(data: IRun[]): {
   let index: number = -1;
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
-  data.forEach((run: any) => {
-    params = params.concat(getObjectPaths(run.params));
+  data.forEach((run: IRun) => {
+    params = params.concat(
+      getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
+    );
     metrics = metrics.concat(
-      run.metrics.map((metric: IMetric) => {
+      run.traces.map((trace) => {
         index++;
         return createMetricModel({
-          ...metric,
-          run: createRunModel(_.omit(run, 'metrics') as IRun),
-          selectors: [
-            encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
-            }),
-            encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
-            }),
-            run.run_hash,
-          ],
+          ...trace,
+          run: createRunModel(_.omit(run, 'traces') as IRun),
           key: encode({
-            runHash: run.run_hash,
-            metricName: metric.metric_name,
-            traceContext: metric.context,
+            runHash: run.params.status.hash,
+            metricName: trace.metric_name,
+            traceContext: trace.context,
           }),
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           data: {
-            ...metric.data,
-            xValues: [...metric.data.iterations],
-            yValues: [...metric.data.values],
+            values: new Float64Array(trace.values.blob),
+            iterations: new Float64Array(trace.iters.blob),
+            epochs: new Float64Array(trace.epochs.blob),
+            timestamps: new Float64Array(trace.timestamps.blob),
+            xValues: [...new Float64Array(trace.iters.blob)],
+            yValues: [...new Float64Array(trace.values.blob)],
           },
         } as IMetric);
       }),
@@ -402,8 +419,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const chartIndexConfig = _.pick(groupValue.config, groupByChart);
       const chartIndexKey = encode(chartIndexConfig);
       if (chartIndexConfigsMap.hasOwnProperty(chartIndexKey)) {
-        groupValue.dasharray =
-          DASH_ARRAYS[chartIndexConfigsMap[chartIndexKey] % DASH_ARRAYS.length];
+        groupValue.chartIndex = chartIndexConfigsMap[chartIndexKey];
       } else {
         chartIndexConfigsMap[chartIndexKey] = chartIndex;
         groupValue.chartIndex = chartIndex;
@@ -458,7 +474,7 @@ function getDataAsLines(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.run_hash],
+          selectors: [metric.key, metric.key, metric.run.params.status.hash],
           data: {
             xValues: metric.data.xValues,
             yValues,
@@ -490,8 +506,8 @@ function getDataAsTableRows(
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.color,
-        experiment: metric.run.experiment_name,
-        run: metric.run.name,
+        experiment: metric.run.params.experiment_name,
+        run: metric.run.params.status.name,
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         value: `${
@@ -522,9 +538,14 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
 function onChangeHighlightMode(mode: HighlightEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.highlightMode = mode;
     model.setState({
-      config: configData,
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          highlightMode: mode,
+        },
+      },
     });
   }
 }
@@ -532,8 +553,15 @@ function onChangeHighlightMode(mode: HighlightEnum): void {
 function onZoomModeChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.zoomMode = !configData.chart.zoomMode;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          zoomMode: !configData.chart.zoomMode,
+        },
+      },
+    });
   }
 }
 
@@ -560,8 +588,15 @@ function onDisplayOutliersChange(): void {
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.axesScaleType = params;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          axesScaleType: params,
+        },
+      },
+    });
   }
 }
 
@@ -675,7 +710,7 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    // tableRef.current?.updateData({ newData: tableData.flat() });
+    tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
