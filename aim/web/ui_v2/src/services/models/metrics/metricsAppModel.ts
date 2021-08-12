@@ -117,6 +117,12 @@ let appRequestRef: {
 
 function initialize() {
   model.init();
+  model.setState({
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
+  });
 }
 
 function setDefaultAppConfigData() {
@@ -129,10 +135,6 @@ function setDefaultAppConfigData() {
     grouping,
   });
   model.setState({
-    refs: {
-      tableRef: { current: null },
-      chartPanelRef: { current: null },
-    },
     config: configData,
   });
 }
@@ -147,10 +149,6 @@ function getAppConfigData(appId: string) {
       const appData = await appRequestRef.call();
       const configData: IMetricAppConfig = _.merge(getConfig(), appData);
       model.setState({
-        refs: {
-          tableRef: { current: null },
-          chartPanelRef: { current: null },
-        },
         config: configData,
       });
     },
@@ -221,7 +219,13 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
             });
           }
         })
-        .catch((err) => {});
+        .catch((err) => {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          });
+        });
     }
   }
 }
