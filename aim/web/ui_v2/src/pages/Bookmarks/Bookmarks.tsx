@@ -3,7 +3,7 @@ import { Divider, Grid } from '@material-ui/core';
 
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
-import { IBookmarkData } from 'types/services/models/metrics/metricsAppModel';
+import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
 
 import './bookmarksStyle.scss';
 
@@ -19,7 +19,7 @@ function Bookmarks({
           <div className='Bookmarks__list'>
             <Grid container spacing={1}>
               {data?.length > 0 &&
-                data.map((bookmark: IBookmarkData) => (
+                data.map((bookmark: IDashboardData) => (
                   <Grid key={bookmark.id} item xs={4}>
                     <BookmarkCard {...bookmark} />
                   </Grid>

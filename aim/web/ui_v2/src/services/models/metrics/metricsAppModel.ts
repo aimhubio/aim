@@ -179,7 +179,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
     const data: IAppData | any = await appsService.createApp(configData).call();
     if (data.id) {
       dashboardService
-        .createBookmark({ app_id: data.id, name, description })
+        .createDashboard({ app_id: data.id, name, description })
         .call();
     }
   }
