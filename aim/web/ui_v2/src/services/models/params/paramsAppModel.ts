@@ -2,8 +2,10 @@ import paramsService from 'services/api/params/paramsService';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import createModel from '../model';
+import { ITooltipData } from 'types/services/models/metrics/metricsAppModel';
 
 const model = createModel<Partial<any>>({});
+let tooltipData: ITooltipData = {};
 
 function getConfig() {
   return {
@@ -101,7 +103,10 @@ function onActivePointChange(
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
     };
-    model.setState({ config: configData });
+    model.setState({
+      config: configData,
+      tooltipContent: tooltipData[activePoint.key] || {},
+    });
   }
 }
 

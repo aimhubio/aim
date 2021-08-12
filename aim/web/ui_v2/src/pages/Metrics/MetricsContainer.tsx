@@ -13,6 +13,7 @@ import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
   IMetricAppConfig,
   IMetricTableRowData,
+  ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -89,6 +90,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.grouping as IMetricAppConfig['grouping']
       }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
+      tooltipContent={metricsData?.tooltipContent as ITooltipContent}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}

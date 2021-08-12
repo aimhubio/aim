@@ -16,6 +16,7 @@ const Params = ({
   chartElemRef,
   focusedState,
   isVisibleColorIndicator,
+  tooltipContent,
   onColorIndicatorChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const classes = useStyles();
@@ -50,6 +51,7 @@ const Params = ({
                 data={highPlotData}
                 focusedState={focusedState}
                 onActivePointChange={onActivePointChange}
+                tooltipContent={tooltipContent}
                 chartProps={[
                   {
                     curveInterpolation,

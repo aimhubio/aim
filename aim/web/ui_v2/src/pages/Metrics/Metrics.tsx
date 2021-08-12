@@ -7,9 +7,10 @@ import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
 import AppBar from './components/AppBar/AppBar';
 import Table from 'components/Table/Table';
+import ChartPanel from 'components/ChartPanel/ChartPanel';
+
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { ChartTypeEnum } from 'utils/d3';
-import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import useStyles from './metricsStyle';
 
@@ -30,7 +31,7 @@ function Metrics(
         <Grid
           container
           direction='column'
-          justify='center'
+          justifyContent='center'
           className={classes.fullHeight}
           spacing={1}
         >
@@ -77,6 +78,7 @@ function Metrics(
                 data={props.lineChartData as any}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
+                tooltipContent={props.tooltipContent}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,
