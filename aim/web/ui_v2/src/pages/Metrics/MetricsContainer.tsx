@@ -18,8 +18,6 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-const metricsRequestRef = metricAppModel.getMetricsData();
-
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
   const chartPanelRef = React.useRef<IChartPanelRef>(null);
@@ -42,6 +40,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     metricAppModel.initialize();
+    const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();

@@ -122,13 +122,21 @@ function initialize() {
   });
 }
 
+let metricsRequestRef: {
+  call: () => Promise<ReadableStream<IRun[]>>;
+  abort: () => void;
+};
+
 function getMetricsData() {
-  const { call, abort } = metricsService.getMetricsData({
+  if (metricsRequestRef) {
+    metricsRequestRef.abort();
+  }
+  metricsRequestRef = metricsService.getMetricsData({
     q: 'metric_name == "bleu"',
   });
   return {
     call: async () => {
-      const stream = await call();
+      const stream = await metricsRequestRef.call();
       let gen = adjustable_reader(stream);
       let buffer_pairs = decode_buffer_pairs(gen);
       let decodedPairs = decodePathsVals(buffer_pairs);
@@ -156,7 +164,7 @@ function getMetricsData() {
         tableColumns: getTableColumns(params),
       });
     },
-    abort,
+    abort: metricsRequestRef.abort,
   };
 }
 
