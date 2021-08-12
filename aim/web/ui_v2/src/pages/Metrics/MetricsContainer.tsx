@@ -12,6 +12,7 @@ import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
   IMetricAppConfig,
+  IMetricAppModelState,
   IMetricTableRowData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -90,6 +91,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.grouping as IMetricAppConfig['grouping']
       }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
+      notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -106,6 +108,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
       onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
       onBookmarkCreate={metricAppModel.onBookmarkCreate}
+      onNotificationAdd={metricAppModel.onNotificationAdd}
+      onNotificationDelete={metricAppModel.onNotificationDelete}
     />
   );
 }

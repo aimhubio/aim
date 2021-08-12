@@ -43,12 +43,12 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
-
 import {
   aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -141,6 +141,7 @@ function getMetricsData() {
           lineChartData: getDataAsLines(data),
           tableData: getDataAsTableRows(data, null, params),
           tableColumns: getTableColumns(params),
+          notifyData: [],
         });
       }),
     abort,
@@ -738,6 +739,18 @@ function updateUrlParam(
   window.history.pushState(null, '', url);
 }
 
+function onNotificationDelete(id: string) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -761,6 +774,8 @@ const metricAppModel = {
   onBookmarkCreate,
   updateGroupingStateUrl,
   updateChartStateUrl,
+  onNotificationDelete,
+  onNotificationAdd,
 };
 
 export default metricAppModel;

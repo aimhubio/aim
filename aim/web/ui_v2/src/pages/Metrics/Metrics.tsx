@@ -10,6 +10,7 @@ import Table from 'components/Table/Table';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { ChartTypeEnum } from 'utils/d3';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import useStyles from './metricsStyle';
 
@@ -30,7 +31,7 @@ function Metrics(
         <Grid
           container
           direction='column'
-          justify='center'
+          justifyContent='center'
           className={classes.fullHeight}
           spacing={1}
         >
@@ -138,6 +139,12 @@ function Metrics(
           </Grid>
         </Grid>
       </Box>
+      {props.notifyData?.length > 0 && (
+        <NotificationContainer
+          handleClose={props.onNotificationAdd}
+          data={props.notifyData}
+        />
+      )}
     </div>
   );
 }
