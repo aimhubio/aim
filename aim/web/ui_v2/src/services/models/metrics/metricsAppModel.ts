@@ -20,6 +20,7 @@ import {
   GroupingSelectOptionType,
   GroupNameType,
   IAppData,
+  IBookmarkData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -55,6 +56,7 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 
@@ -108,8 +110,16 @@ function getConfig() {
   };
 }
 
+let appRequestRef: {
+  call: () => Promise<IAppData>;
+  abort: () => void;
+};
+
 function initialize() {
   model.init();
+}
+
+function setDefaultAppConfigData() {
   const grouping: IMetricAppConfig['grouping'] =
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
@@ -125,6 +135,27 @@ function initialize() {
     },
     config: configData,
   });
+}
+
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
+  return {
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData);
+      model.setState({
+        refs: {
+          tableRef: { current: null },
+          chartPanelRef: { current: null },
+        },
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
+  };
 }
 
 let metricsRequestRef: {
@@ -181,9 +212,13 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       dashboardService
         .createBookmark({ app_id: data.id, name, description })
         .call()
-        .then((res: any) => {
-          if (res.data) {
-            // onNotificationAdd({});
+        .then((res: IBookmarkData | any) => {
+          if (res.id) {
+            onNotificationAdd({
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.CREATE,
+            });
           }
         })
         .catch((err) => {});
@@ -780,7 +815,7 @@ function updateUrlParam(
   window.history.pushState(null, '', url);
 }
 
-function onNotificationDelete(id: string) {
+function onNotificationDelete(id: number) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
   model.setState({ notifyData });
@@ -799,8 +834,10 @@ const metricAppModel = {
   ...model,
   initialize,
   getMetricsData,
+  getAppConfigData,
   getDataAsTableRows,
   setComponentRefs,
+  setDefaultAppConfigData,
   onChangeHighlightMode,
   onZoomModeChange,
   onSmoothingChange,

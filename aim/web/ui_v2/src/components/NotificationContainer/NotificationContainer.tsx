@@ -18,7 +18,7 @@ export default function NotificationContainer({
         <div>
           {data.map(({ id, severity, message }) => (
             <Box key={id} mt={0.5}>
-              <Alert onClose={() => handleClose(id)} severity={severity}>
+              <Alert onClose={() => handleClose(+id)} severity={severity}>
                 {message}
               </Alert>
             </Box>

@@ -1,10 +1,12 @@
+import { IMetricProps } from 'types/pages/metrics/Metrics';
+
 export interface INotificationContainer {
-  data: ISnackbar[];
-  handleClose: (id: string) => void;
+  data: INotification[];
+  handleClose: IMetricProps['onNotificationDelete'];
 }
 
 export interface INotification {
-  id: string;
+  id: number;
   message: string;
   severity: 'error' | 'info' | 'success' | 'warning';
 }
