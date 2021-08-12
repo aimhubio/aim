@@ -31,7 +31,7 @@ const Params = ({
       <Grid
         container
         direction='column'
-        justify='center'
+        justifyContent='center'
         className={classes.fullHeight}
         spacing={1}
       >

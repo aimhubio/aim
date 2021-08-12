@@ -36,7 +36,7 @@ function Metrics(
         >
           <Grid item>
             <Paper className={classes.paper}>
-              <AppBar />
+              <AppBar onBookmarkCreate={props.onBookmarkCreate} />
             </Paper>
           </Grid>
           <Grid item>
