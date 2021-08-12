@@ -8,7 +8,7 @@ from aim.storage.union import UnionContainer
 from aim.storage.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
-from aim.storage.singlecontainerview import SingleContainerView
+from aim.storage.prefixview import PrefixView
 
 from aim.storage.structured.db import DB
 
@@ -106,17 +106,14 @@ class Repo:
                 path = os.path.join(name, 'chunks', sub)
                 container = self._get_container(path, read_only=False, from_union=False)
 
-            prefix = b''
-
-            container_view = SingleContainerView(container=container, read_only=read_only, prefix=prefix)
+            container_view = container
             self.container_view_pool[container_config] = container_view
 
         return container_view
 
-    def iter_runs(self) -> Iterator['Run']:
+    def iter_runs(self) -> Iterator["Run"]:
+        self.meta_tree.preload()
         for run_name in self.meta_tree.view('chunks').keys():
-            # if run_name == '_':
-            #     continue
             yield Run(run_name, repo=self, read_only=True)
 
     def get_run(self, hashname: str) -> Optional['Run']:

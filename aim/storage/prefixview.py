@@ -9,7 +9,7 @@ from typing import Iterable, Iterator, Tuple, Union
 
 
 
-class SingleContainerView(ContainerView):
+class PrefixView(ContainerView):
     """
     View to Container given by key prefix
     """
@@ -192,8 +192,7 @@ class SingleContainerView(ContainerView):
         prefix: bytes = b''
     ) -> ContainerView:
         # TODO *args instead?
-        return SingleContainerView(prefix=self.prefix + prefix,
-                                   container=self.container)
+        return self.container.view(self.prefix + prefix)
 
     def tree(
         self

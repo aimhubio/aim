@@ -6,8 +6,10 @@ from pathlib import Path
 
 from aim.storage.encoding import encode_path
 from aim.storage.container import Container
+from aim.storage.prefixview import PrefixView
+from aim.storage.containerview import ContainerView
 
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 
 logger = logging.getLogger(__name__)
@@ -143,7 +145,7 @@ class DB(object):
         self.db_path = db_path
         self.db_name = db_name
         self.paths: List[str]
-        self.dbs: List[aimrocks.DB]
+        self.dbs: Dict[bytes, aimrocks.DB]
         self.opts = opts
         self._get_dbs()
 
@@ -172,9 +174,9 @@ class DB(object):
                 aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
             for prefix, path in self.paths.items()
         }
+        self.prefixes = set(self.dbs)
         if index_db is not None:
-            self.dbs[encode_path((self.db_name,))] = index_db
-        # print(self.dbs)
+            self.dbs[encode_path((self.db_name, 'chunks'))] = index_db
         return self.dbs
 
     def close(self):
@@ -226,3 +228,39 @@ class UnionContainer(Container):
             raise e
 
         return self._db
+
+    def view(
+        self,
+        prefix: bytes = b''
+    ) -> 'ContainerView':
+        container = self
+        if prefix in self.db.dbs:
+            container = UnionSubContainer(container=self, domain=prefix)
+        return PrefixView(prefix=prefix,
+                          container=container)
+
+
+class UnionSubContainer(Container):
+    def __init__(self, container: 'UnionContainer', domain: bytes):
+        self._parent = container
+        self.domain = domain
+
+        self._db = None
+        self._lock = None
+        self._lock_path: Optional[Path] = None
+        self._progress_path: Optional[Path] = None
+
+    @property
+    def writable_db(self) -> aimrocks.DB:
+        raise NotImplementedError
+
+    @property
+    def db(self) -> aimrocks.DB:
+        db: DB = self._parent.db
+        return db.dbs.get(self.domain, db)
+
+    def view(
+        self,
+        prefix: bytes = b''
+    ) -> 'ContainerView':
+        return PrefixView(prefix=prefix, container=self)

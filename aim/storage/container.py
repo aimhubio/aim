@@ -9,7 +9,8 @@ from aim.storage import encoding as E
 from typing import Iterator, Optional, Tuple, Union
 
 from aim.storage.containerview import ContainerView
-from aim.storage.singlecontainerview import SingleContainerView
+from aim.storage.prefixview import PrefixView
+from aim.storage.treeview import TreeView
 
 
 logger = logging.getLogger(__name__)
@@ -108,6 +109,9 @@ class Container(ContainerView):
 
     def preload(self):
         self.db
+
+    def tree(self) -> 'TreeView':
+        return TreeView(self)
 
     def batch_set(
         self,
@@ -254,7 +258,7 @@ class Container(ContainerView):
     ) -> 'ContainerView':
         if not isinstance(prefix, bytes):
             prefix = E.encode_path(prefix)
-        return SingleContainerView(prefix=prefix, container=self)
+        return PrefixView(prefix=prefix, container=self)
 
     def commit(
         self,
