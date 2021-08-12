@@ -171,13 +171,13 @@ export interface IAppData extends Partial<IMetricAppConfig> {
   updated_at?: string;
 }
 
-export interface IBookmarkRequestBody {
+export interface IDashboardRequestBody {
   name: string;
   description: string;
   app_id: string;
 }
 
-export interface IBookmarkData {
+export interface IDashboardData {
   app_id: string;
   created_at: string;
   id: string;
