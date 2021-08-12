@@ -82,6 +82,6 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
 
     response = {
         'id': tag.uuid,
-        'runs': [{'run_id': run.hash, 'name': run.name} for run in tag.runs]
+        'runs': [{'run_id': run.hashname, 'name': run.name} for run in tag.runs]
     }
     return response
