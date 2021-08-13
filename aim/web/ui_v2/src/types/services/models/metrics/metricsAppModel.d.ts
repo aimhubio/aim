@@ -12,6 +12,8 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricAppModelState {
   refs: {
@@ -110,6 +112,9 @@ interface IMetricAppConfig {
       };
       isApplied: boolean;
     };
+  };
+  table: {
+    rowHeight: RowHeight;
   };
 }
 

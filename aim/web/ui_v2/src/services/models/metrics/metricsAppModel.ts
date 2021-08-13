@@ -56,6 +56,7 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import { RowHeight } from 'config/table/tableConfigs';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -110,6 +111,9 @@ function getConfig() {
         yValue: null,
         chartIndex: null,
       },
+    },
+    table: {
+      rowHeight: RowHeight.md,
     },
   };
 }
@@ -502,8 +506,10 @@ function getDataAsTableRows(
     return [];
   }
 
+  const groupingIsApplied = processData.length > 1;
+
   return processedData.map((metricsCollection: IMetricsCollection) =>
-    metricsCollection.data.map((metric: IMetric) => {
+    metricsCollection.data.map((metric: IMetric, index: number) => {
       const closestIndex =
         xValue === null
           ? null

@@ -18,6 +18,7 @@ import {
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { RowHeight } from 'config/table/tableConfigs';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -62,18 +63,20 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Metrics
-      //refs
+      // refs
       tableRef={tableRef}
       chartPanelRef={chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      //options
+      // grouping options
+      groupingData={
+        metricsData?.config?.grouping as IMetricAppConfig['grouping']
+      }
+      // chart options
       lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricsData?.tableData as IMetricTableRowData[][]}
-      tableColumns={metricsData?.tableColumns as ITableColumn[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum
@@ -86,12 +89,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
-      groupingData={
-        metricsData?.config?.grouping as IMetricAppConfig['grouping']
-      }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       tooltipContent={metricsData?.tooltipContent as ITooltipContent}
-      //methods
+      // table options
+      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableColumns={metricsData?.tableColumns as ITableColumn[]}
+      tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
+      // methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
       onChangeHighlightMode={metricAppModel.onChangeHighlightMode}

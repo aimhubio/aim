@@ -18,6 +18,7 @@ import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -39,6 +40,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   highlightMode: HighlightEnum;
   groupingData: IMetricAppConfig['grouping'];
   tooltipContent: ITooltipContent;
+  tableRowHeight: RowHeight;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (

@@ -126,6 +126,9 @@ function Metrics(
               {props.tableData?.length > 0 ? (
                 <Table
                   ref={props.tableRef}
+                  // Table options
+                  rowHeight={props.tableRowHeight}
+                  // Table actions
                   onSort={() => null}
                   onExport={() => null}
                   data={props.tableData.flat()}
