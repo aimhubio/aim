@@ -55,20 +55,17 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
         run_metrics = {}
         legacy_run_map[lrun.run_hash] = run_metrics
         for metric in lrun.get_all_metrics().values():
-            run_metrics[metric.name] = []
             try:
                 metric.open_artifact()
+                run_metrics[metric.name] = []
                 for trace in metric.get_all_traces():
                     metric_name = metric.name
                     context = trace.context
                     run_metrics[metric.name].append(context)
                     for r in trace.read_records(slice(0, None, 1)):
                         step_record, metric_record = MetricArtifact.deserialize_pb(r)
-                        run.track(name=metric_name,
-                                  value=metric_record.value,
-                                  step=step_record.step,
-                                  epoch=step_record.epoch,
-                                  context=context)
+                        val = (metric_record.value, step_record.step, step_record.epoch, step_record.timestamp)
+                        _track_legacy_run_step(run, metric_name, context, val)
             except Exception:
                 metric.close_artifact()
                 raise
@@ -83,20 +80,28 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
         lrun.close_storage()
 
 
-def check_repo_integrity(repo: Repo, legacy_run_map: dict) -> bool:
+def check_repo_integrity(repo: Repo, legacy_run_map: dict):
     try:
-        for run in repo.iter_runs():
-            run_metrics = legacy_run_map.pop(run.get(['v2_params', 'run_hash']))
-            for metric_name, ctx, _ in run.iter_all_traces():
-                idx = run_metrics[metric_name].index(ctx.to_dict())
-                run_metrics[metric_name].pop(idx)
-                if not run_metrics[metric_name]:
-                    del run_metrics[metric_name]
-            if run_metrics:
-                raise RepoIntegrityError
+        ok = True
+        with click.progressbar(repo.iter_runs(),
+                               item_show_func=lambda r: (f'Checking run {r.hashname}' if r else '')) as runs:
+            for run in runs:
+                legacy_hash = run.get(['v2_params', 'run_hash'])
+                run_metrics = legacy_run_map.pop(legacy_hash)
+                for metric_name, ctx, _ in run.iter_all_traces():
+                    idx = run_metrics[metric_name].index(ctx.to_dict())
+                    run_metrics[metric_name].pop(idx)
+                    if not run_metrics[metric_name]:
+                        del run_metrics[metric_name]
+                if run_metrics:
+                    click.echo(f'Run \'{run.hashname}\' [\'{legacy_hash}\'] missing metrics \'{run_metrics.keys()}\'.')
+                    ok = False
         if legacy_run_map:
-            raise RepoIntegrityError
+            click.echo(f'Repo missing runs \'{legacy_run_map.keys()}\'.')
+            ok = False
     except (KeyError, ValueError):
+        ok = False
+    if not ok:
         raise RepoIntegrityError
 
 
@@ -153,5 +158,36 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
     click.echo('DONE')
 
 
-if __name__ == '__main__':
-    convert_2to3('/Users/alberttorosyan/aimhub/logs/karens_logs')
+# this is a duplicate of run.track() method allowing to set timestamp. used for legacy data migration only.
+def _track_legacy_run_step(run: Run, metric_name: str, context: dict, val):
+    (value, step, epoch, timestamp) = val
+
+    from aim.storage.context import Context, Metric
+    if context is None:
+        context = {}
+
+    ctx = Context(context)
+    metric = Metric(metric_name, ctx)
+
+    if ctx not in run.contexts:
+        run.meta_tree['contexts', ctx.idx] = ctx.to_dict()
+        run.meta_run_tree['contexts', ctx.idx] = ctx.to_dict()
+        run.contexts[ctx] = ctx.idx
+        run._idx_to_ctx[ctx.idx] = ctx
+
+    time_view = run.series_run_tree.view(metric.selector).array('time').allocate()
+    val_view = run.series_run_tree.view(metric.selector).array('val').allocate()
+    epoch_view = run.series_run_tree.view(metric.selector).array('epoch').allocate()
+
+    max_idx = run.series_counters.get((ctx, metric_name), None)
+    if max_idx == None:
+        max_idx = len(val_view)
+    if max_idx == 0:
+        run.meta_tree['traces', ctx.idx, metric_name] = 1
+    run.meta_run_tree['traces', ctx.idx, metric_name, "last"] = value
+
+    run.series_counters[ctx, metric_name] = max_idx + 1
+
+    time_view[step] = timestamp
+    val_view[step] = value
+    epoch_view[step] = epoch
