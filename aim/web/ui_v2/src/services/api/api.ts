@@ -67,7 +67,11 @@ function post<ResponseDataType>(
   });
 }
 
-function put<ResponseDataType>(url: string, data: Body, options?: RequestInit) {
+function put<ResponseDataType>(
+  url: string,
+  data: object,
+  options?: RequestInit,
+) {
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'PUT',
     ...options,

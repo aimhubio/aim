@@ -20,6 +20,7 @@ import {
   GroupingSelectOptionType,
   GroupNameType,
   IAppData,
+  IDashboardData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -44,18 +45,19 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
-
 import {
   aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import {
   adjustable_reader,
   decodePathsVals,
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -114,8 +116,22 @@ function getConfig() {
   };
 }
 
+let appRequestRef: {
+  call: () => Promise<IAppData>;
+  abort: () => void;
+};
+
 function initialize() {
   model.init();
+  model.setState({
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
+  });
+}
+
+function setDefaultAppConfigData() {
   const grouping: IMetricAppConfig['grouping'] =
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
@@ -125,12 +141,25 @@ function initialize() {
     grouping,
   });
   model.setState({
-    refs: {
-      tableRef: { current: null },
-      chartPanelRef: { current: null },
-    },
     config: configData,
   });
+}
+
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
+  return {
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData);
+      model.setState({
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
+  };
 }
 
 let metricsRequestRef: {
@@ -185,8 +214,24 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
     const data: IAppData | any = await appsService.createApp(configData).call();
     if (data.id) {
       dashboardService
-        .createBookmark({ app_id: data.id, name, description })
-        .call();
+        .createDashboard({ app_id: data.id, name, description })
+        .call()
+        .then((res: IDashboardData | any) => {
+          if (res.id) {
+            onNotificationAdd({
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.CREATE,
+            });
+          }
+        })
+        .catch((err) => {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          });
+        });
     }
   }
 }
@@ -833,12 +878,29 @@ function updateUrlParam(
   window.history.pushState(null, '', url);
 }
 
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
+}
+
 const metricAppModel = {
   ...model,
   initialize,
   getMetricsData,
+  getAppConfigData,
   getDataAsTableRows,
   setComponentRefs,
+  setDefaultAppConfigData,
   onChangeHighlightMode,
   onZoomModeChange,
   onSmoothingChange,
@@ -856,6 +918,8 @@ const metricAppModel = {
   onBookmarkCreate,
   updateGroupingStateUrl,
   updateChartStateUrl,
+  onNotificationDelete,
+  onNotificationAdd,
 };
 
 export default metricAppModel;

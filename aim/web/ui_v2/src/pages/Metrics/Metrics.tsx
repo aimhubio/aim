@@ -11,6 +11,7 @@ import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { ChartTypeEnum } from 'utils/d3';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import './Metrics.scss';
 
@@ -138,6 +139,12 @@ function Metrics(
           </Grid>
         </Grid>
       </Box>
+      {props.notifyData?.length > 0 && (
+        <NotificationContainer
+          handleClose={props.onNotificationDelete}
+          data={props.notifyData}
+        />
+      )}
     </div>
   );
 }
