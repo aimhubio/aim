@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Divider, Grid } from '@material-ui/core';
 import TagForm from 'components/TagForm/TagForm';
 
-import './tagsStyle.scss';
+import './Tags.scss';
 
 function CreateTag(): React.FunctionComponentElement<React.ReactNode> {
   return (

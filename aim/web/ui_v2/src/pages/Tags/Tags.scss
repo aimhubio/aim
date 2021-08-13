@@ -3,6 +3,7 @@
   &__header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
   &__title {
     font-size: 2em;
@@ -10,8 +11,11 @@
     padding: 0;
     color: #3b5896;
   }
-  &__tag-list-box {
+  &__tagListBox {
     margin-top: 1em;
     flex-direction: column;
+    &__tagBox {
+      margin-bottom: 5px;
+    }
   }
 }

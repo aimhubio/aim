@@ -1,6 +1,5 @@
 import tagsService from 'services/api/tags/tagsService';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum } from 'utils/d3';
+import { ITagsProps } from 'types/pages/tags/Tags';
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({});

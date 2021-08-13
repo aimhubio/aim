@@ -8,6 +8,7 @@ const Bookmarks = React.lazy(
 );
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
 const CreateTag = React.lazy(() => import('pages/Tags/CreateTag'));
+const TagDetail = React.lazy(() => import('pages/Tags/TagDetail'));
 
 const PATHS = {
   RUNS: '/runs',
@@ -15,6 +16,7 @@ const PATHS = {
   PARAMS: '/params',
   TAGS: '/tags',
   CREATE_TAG: '/tags/create',
+  TAG_DETAIL: '/tags/:id',
   BOOKMARKS: '/bookmarks',
 };
 
@@ -54,6 +56,12 @@ const routes = {
     component: CreateTag,
     showInSidebar: false,
     displayName: 'Create Tag',
+  },
+  TAG_DETAIL: {
+    path: PATHS.TAG_DETAIL,
+    component: TagDetail,
+    showInSidebar: false,
+    displayName: 'Tag Detail',
   },
 };
 

@@ -1,42 +1,95 @@
-import React, { memo, useEffect, useState } from 'react';
-import COLORS from 'config/colors/colors';
+import React, { memo } from 'react';
+import * as yup from 'yup';
+import { noop, isEmpty } from 'lodash-es';
+import { useFormik } from 'formik';
+import { NavLink } from 'react-router-dom';
 import { Button, Grid, TextField } from '@material-ui/core';
-import './TagForm.scss';
-import API from 'services/api/api';
+
+import COLORS from 'config/colors/colors';
 import tagsService from 'services/api/tags/tagsService';
+import { ITagFormProps } from 'types/components/TagForm/TagForm';
+import './TagForm.scss';
 
-function TagForm(data: any): React.FunctionComponentElement<React.ReactNode> {
-  const [state, setState] = useState({ name: '', color: '' });
+function TagForm({
+  tagData,
+  editMode,
+  tagId,
+}: ITagFormProps): React.FunctionComponentElement<React.ReactNode> {
+  const formik = useFormik({
+    initialValues: editMode
+      ? { name: tagData?.name, color: tagData?.color || '' }
+      : { name: '', color: '' },
+    onSubmit: noop,
+    validationSchema: yup.object({
+      name: yup.string().required('Required field'),
+      color: yup
+        .string()
+        .matches(
+          /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/,
+          'Is not in correct format',
+        ),
+    }),
+  });
+  const {
+    values,
+    errors,
+    touched,
+    setFieldValue,
+    setValues,
+    setFieldTouched,
+    submitForm,
+    validateForm,
+  } = formik;
+  const { name, color } = values;
 
-  useEffect(() => {
-    if (data) {
-      setState({ ...data });
-    }
-  }, []);
-
-  function onChange(e: any) {
-    setState({ ...state, [e?.target?.id]: e?.target?.value });
+  function onChange(e: React.ChangeEvent<any>) {
+    setFieldValue(e?.target?.id, e?.target?.value, true).then(() => {
+      setFieldTouched(e?.target?.id, true);
+    });
   }
 
   function onCreateButtonClick() {
-    const { name, color } = state;
-    //@ts-ignore
-    API.post(tagsService.endpoints.CREATE_TAG, { name, color }).call();
+    submitForm().then(() =>
+      validateForm(values).then(() => {
+        tagsService.createTag({ name, color }).call();
+      }),
+    );
   }
+
+  function onSaveButtonClick() {
+    submitForm().then(() =>
+      validateForm(values).then(() => {
+        tagsService.updateTag({ name, color }, tagId || '').call();
+      }),
+    );
+  }
+
+  function onColorButtonClick(color: string) {
+    setFieldValue('color', color);
+  }
+
+  function onResetButtonClick() {
+    setValues({ name: tagData?.name, color: tagData?.color || '' }, true);
+  }
+
   return (
     <Grid container spacing={1} className='TagForm'>
       <form noValidate autoComplete='off'>
         <TextField
           label='Name'
-          value={state.name}
+          value={name}
           id='name'
           onChange={onChange}
+          error={!!(touched.name && errors.name)}
+          helperText={touched.name && errors.name}
         />
         <TextField
           label='Color'
-          value={state.color}
+          value={color}
           id='color'
           onChange={onChange}
+          error={!!(touched.color && errors.color)}
+          helperText={touched.color && errors.color}
         />
         <div className='TagForm__colorBox'>
           {COLORS[0].map((color) => {
@@ -45,16 +98,23 @@ function TagForm(data: any): React.FunctionComponentElement<React.ReactNode> {
                 className='TagForm__colorBox__colorButton'
                 style={{ background: color }}
                 key={color}
-                onClick={() => {}}
+                onClick={() => onColorButtonClick(color)}
               >
                 {color}
               </Button>
             );
           })}
         </div>
-
-        <Button onClick={onCreateButtonClick}>Create</Button>
-        <Button onClick={() => {}}>Cancel</Button>
+        {editMode ? (
+          <Button onClick={onSaveButtonClick}>Save</Button>
+        ) : (
+          <Button onClick={onCreateButtonClick}>Create</Button>
+        )}
+        {editMode ? (
+          <Button onClick={onResetButtonClick}>Reset</Button>
+        ) : (
+          <NavLink to='/tags'>Cancel</NavLink>
+        )}
       </form>
     </Grid>
   );
