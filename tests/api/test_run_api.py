@@ -81,10 +81,10 @@ class TestRunApi(ApiTestBase):
         response = client.post('/api/runs/search/metric/align/', json={
             'align_by': 'accuracy',
             'runs': [{
-                'name': hash_names[0],
+                'run_id': hash_names[0],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 100, 1], 'context': {'is_training': False}}]
             }, {
-                'name': hash_names[1],
+                'run_id': hash_names[1],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 100, 1], 'context': {'is_training': True, 'subset': 'train'}}]
             }]
         })
@@ -108,10 +108,10 @@ class TestRunApi(ApiTestBase):
         response = client.post('/api/runs/search/metric/align/', json={
             'align_by': 'accuracy',
             'runs': [{
-                'name': hash_names[0],
+                'run_id': hash_names[0],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 20, 1], 'context': {'is_training': True, 'subset': 'training'}}]
             }, {
-                'name': hash_names[1],
+                'run_id': hash_names[1],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 10, 1], 'context': {'is_training': True, 'subset': 'val'}}]
             }]
         })
