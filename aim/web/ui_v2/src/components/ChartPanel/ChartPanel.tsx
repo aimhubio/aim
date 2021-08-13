@@ -1,20 +1,21 @@
 import React from 'react';
-import {
-  Grid,
-  Paper,
-  Typography,
-  Box,
-  PopoverPosition,
-} from '@material-ui/core';
+import { Grid, Paper, PopoverPosition } from '@material-ui/core';
 import { debounce } from 'lodash-es';
 
-import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { chartTypesConfig } from './config';
-import { ISyncHoverStateParams } from 'types/utils/d3/drawHoverAttributes';
 import { ChartTypeEnum } from 'utils/d3';
-import ChartPopover from './ChartPopover';
-import './chartPanelStyle.scss';
+
+import ChartPopover from './ChartPopover/ChartPopover';
+import PopoverContent from './PopoverContent/PopoverContent';
+
+import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
+import {
+  IActivePoint,
+  ISyncHoverStateParams,
+} from 'types/utils/d3/drawHoverAttributes';
+
+import './ChartPanel.scss';
 
 const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
@@ -27,11 +28,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     React.useState<PopoverPosition | null>(null);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const activePointRef = React.useRef<IActivePoint | null>(null);
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
       const { activePoint, focusedStateActive } = params;
       // on MouseHover
+      activePointRef.current = activePoint;
       if (activePoint !== null) {
         if (props.chartType !== ChartTypeEnum.HighPlot) {
           chartRefs.forEach((chartRef, index) => {
@@ -67,15 +70,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       return prevState
         ? {
             top:
-              (props.focusedState.topPos || 0) -
+              (activePointRef.current?.topPos || 0) -
               (containerRef.current?.scrollTop || 0),
             left:
-              (props.focusedState.leftPos || 0) -
+              (activePointRef.current?.leftPos || 0) -
               (containerRef.current?.scrollLeft || 0),
           }
         : null;
     });
-  }, [props.focusedState]);
+  }, []);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
@@ -89,7 +92,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     chartRefs.forEach((chartRef) => {
       chartRef.current?.setFocusedState?.(props.focusedState);
     });
-  }, [props.focusedState]);
+  }, [chartRefs, props.focusedState]);
 
   // TODO: remove setTimeout
   React.useEffect(() => {
@@ -114,7 +117,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             ref={containerRef}
             container
             spacing={1}
-            className='ChartPanel__grid'
+            className='ChartPanel__paper__grid'
           >
             {props.data.map((chartData: any, index: number) => {
               const Component = chartTypesConfig[props.chartType];
@@ -141,20 +144,21 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             })}
           </Grid>
         </Paper>
+        <ChartPopover
+          popoverPosition={popoverPosition}
+          open={props.data.length > 0}
+          containerRef={containerRef}
+        >
+          <PopoverContent
+            chartType={props.chartType}
+            tooltipContent={props.tooltipContent}
+            focusedState={props.focusedState}
+          />
+        </ChartPopover>
       </Grid>
       <Grid item>
         <Paper className='ChartPanel__paper'>{props.controls}</Paper>
       </Grid>
-      <ChartPopover
-        popoverPosition={popoverPosition}
-        open={props.data.length > 0}
-        containerRef={containerRef}
-      >
-        <Box p={1}>
-          <Typography>Value: {props.focusedState.yValue || 0}</Typography>
-          <Typography>Step: {props.focusedState.xValue || 0}</Typography>
-        </Box>
-      </ChartPopover>
     </Grid>
   );
 });

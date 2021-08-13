@@ -1,5 +1,4 @@
 import React from 'react';
-import useStyles from './highPlotStyle';
 
 import {
   drawParallelArea,
@@ -25,7 +24,6 @@ const HighPlot = React.forwardRef(function HighPlot(
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const classes = useStyles();
   // containers
   const parentRef = React.useRef<HTMLDivElement>(null);
   const visAreaRef = React.useRef<HTMLDivElement>(null);
@@ -170,10 +168,10 @@ const HighPlot = React.forwardRef(function HighPlot(
   }, [renderChart]);
 
   return (
-    <div ref={parentRef} className={`${classes.chart} HighPlot__container`}>
+    <div ref={parentRef} className='HighPlot__container'>
       <div ref={visAreaRef} />
     </div>
   );
 });
 
-export default HighPlot;
+export default React.memo(HighPlot);

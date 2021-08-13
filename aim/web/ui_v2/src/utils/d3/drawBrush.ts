@@ -10,7 +10,6 @@ function drawBrush(props: IDrawBrushProps): void {
     brushRef,
     plotBoxRef,
     plotNodeRef,
-    attributesNodeRef,
     visBoxRef,
     axesRef,
     attributesRef,
@@ -20,7 +19,6 @@ function drawBrush(props: IDrawBrushProps): void {
     axesScaleType,
     min,
     max,
-    syncHoverState,
   } = props;
 
   const brush = d3

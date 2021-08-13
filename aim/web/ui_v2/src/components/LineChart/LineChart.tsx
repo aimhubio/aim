@@ -15,8 +15,6 @@ import {
   IAttributesRef,
   ILineChartProps,
 } from 'types/components/LineChart/LineChart';
-
-import useStyles from './lineChartStyle';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 const LineChart = React.forwardRef(function LineChart(
@@ -35,7 +33,6 @@ const LineChart = React.forwardRef(function LineChart(
     curveInterpolation,
   } = props;
 
-  const classes = useStyles();
   // boxes
   const visBoxRef = React.useRef({
     margin: {
@@ -155,7 +152,6 @@ const LineChart = React.forwardRef(function LineChart(
         brushRef,
         plotBoxRef,
         plotNodeRef,
-        attributesNodeRef,
         visBoxRef,
         axesRef,
         attributesRef,
@@ -165,7 +161,6 @@ const LineChart = React.forwardRef(function LineChart(
         axesScaleType,
         min,
         max,
-        syncHoverState,
       });
     }
   }
@@ -224,7 +219,7 @@ const LineChart = React.forwardRef(function LineChart(
   return (
     <div
       ref={parentRef}
-      className={`${classes.chart} ${zoomMode ? 'zoomMode' : ''}`}
+      className={`LineChart__container ${zoomMode ? 'zoomMode' : ''}`}
     >
       <div ref={visAreaRef} />
     </div>

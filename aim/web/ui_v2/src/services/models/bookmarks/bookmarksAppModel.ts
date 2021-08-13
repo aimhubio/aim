@@ -4,7 +4,7 @@ import dashboardService from 'services/api/dashboard/dashboardService';
 const model = createModel<any>({});
 
 function getBookmarksData() {
-  const { call, abort } = dashboardService.fetchBookmarks();
+  const { call, abort } = dashboardService.fetchDashboardsList();
   return {
     call: () =>
       call().then((data: any) => {
