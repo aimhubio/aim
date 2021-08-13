@@ -1,130 +1,118 @@
 from pydantic import BaseModel
-from pydantic.main import ModelMetaclass
+from datetime import datetime
 from typing import List, Dict, Union, Tuple, Optional
 from uuid import UUID
 
 
-class AllOptional(ModelMetaclass):
-    def __new__(self, name, bases, namespaces, **kwargs):
-        annotations = namespaces.get('__annotations__', {})
-        for base in bases:
-            annotations = {**annotations, **base.__annotations__}
-        for field in annotations:
-            if not field.startswith('__'):
-                annotations[field] = Optional[annotations[field]]
-        namespaces['__annotations__'] = annotations
-        return super().__new__(self, name, bases, namespaces, **kwargs)
-
-
-class ExploreState(BaseModel, metaclass=AllOptional):
+class ExploreState(BaseModel):
     class Chart(BaseModel):
         class Focused(BaseModel):
             class Metric(BaseModel):
-                runHash: str = None
-                metricName: str = None
-                traceContext: str = None
+                runHash: Optional[str] = None
+                metricName: Optional[str] = None
+                traceContext: Optional[str] = None
 
             class Circle(BaseModel):
-                active: bool = None
-                runHash: str = None
-                metricName: str = None
-                traceContext: str = None
-                step: int = None
-                param: str = None
-                contentType: str = None
+                active: Optional[bool] = None
+                runHash: Optional[str] = None
+                metricName: Optional[str] = None
+                traceContext: Optional[str] = None
+                step: Optional[int] = None
+                param: Optional[str] = None
+                contentType: Optional[str] = None
 
-            metric: Metric = None
-            circle: Circle = None
-            step: int = None
+            metric: Optional[Metric] = None
+            circle: Optional[Circle] = None
+            step: Optional[int] = None
 
         class Settings(BaseModel):
             class Persistent(BaseModel):
-                displayOutliers: bool = None
-                zoom: Dict[str, Dict[str, Tuple[int, int]]] = None
-                interpolate: bool = None
-                indicator: bool = None
-                xAlignment: Union[str, Tuple[str]] = None
-                xScale: int = None
-                yScale: int = None
-                pointsCount: int = None
-                smoothingAlgorithm: str = None
-                smoothFactor: Union[int, float] = None
-                aggregated: bool = None
+                displayOutliers: Optional[bool] = None
+                zoom: Optional[Dict[str, Dict[str, Tuple[int, int]]]] = None
+                interpolate: Optional[bool] = None
+                indicator: Optional[bool] = None
+                xAlignment: Optional[Union[str, Tuple[str]]] = None
+                xScale: Optional[int] = None
+                yScale: Optional[int] = None
+                pointsCount: Optional[int] = None
+                smoothingAlgorithm: Optional[str] = None
+                smoothFactor: Optional[Union[int, float]] = None
+                aggregated: Optional[bool] = None
 
-            zoomMode: bool = None
-            singleZoomMode: bool = None
-            zoomHistory: List[Tuple[str, Dict[str, Tuple[int, int]]]] = None
-            highlightMode: str = None
-            persistent: Persistent = None
+            zoomMode: Optional[bool] = None
+            singleZoomMode: Optional[bool] = None
+            zoomHistory: Optional[List[Tuple[str, Dict[str, Tuple[int, int]]]]] = None
+            highlightMode: Optional[str] = None
+            persistent: Optional[Persistent] = None
 
         class TooltipOptions(BaseModel):
-            display: bool = None
-            fields: List = None
+            display: Optional[bool] = None
+            fields: Optional[List] = None
 
-        focused: Focused = None
-        settings: Settings = None
-        tooltipOptions: TooltipOptions = None
-        hiddenMetrics: List[str] = None
+        focused: Optional[Focused] = None
+        settings: Optional[Settings] = None
+        tooltipOptions: Optional[TooltipOptions] = None
+        hiddenMetrics: Optional[List[str]] = None
 
     class Search(BaseModel):
-        query: str = None
-        v: int = None
+        query: Optional[str] = None
+        v: Optional[int] = None
 
     class SearchInput(BaseModel):
-        value: str = None
-        selectInput: str = None
-        selectConditionInput: str = None
+        value: Optional[str] = None
+        selectInput: Optional[str] = None
+        selectConditionInput: Optional[str] = None
 
     class ContextFilter(BaseModel):
         class GroupAgainst(BaseModel):
-            color: bool = None
-            style: bool = None
-            chart: bool = None
+            color: Optional[bool] = None
+            style: Optional[bool] = None
+            chart: Optional[bool] = None
 
         class Seed(BaseModel):
-            color: int = None
-            style: int = None
+            color: Optional[int] = None
+            style: Optional[int] = None
 
         class Persist(BaseModel):
-            color: int = None
-            style: int = None
+            color: Optional[int] = None
+            style: Optional[int] = None
 
-        groupByColor: List[str] = None
-        groupByStyle: List[str] = None
-        groupByChart: List[str] = None
-        aggregatedArea: str = None
-        aggregatedLine: str = None
-        groupAgainst: GroupAgainst = None
-        seed: Seed = None
-        persist: Persist = None
+        groupByColor: Optional[List[str]] = None
+        groupByStyle: Optional[List[str]] = None
+        groupByChart: Optional[List[str]] = None
+        aggregatedArea: Optional[str] = None
+        aggregatedLine: Optional[str] = None
+        groupAgainst: Optional[GroupAgainst] = None
+        seed: Optional[Seed] = None
+        persist: Optional[Persist] = None
 
     class Screen(BaseModel):
-        viewMode: str = None
-        panelFlex: Union[int, float] = None
+        viewMode: Optional[str] = None
+        panelFlex: Optional[Union[int, float]] = None
 
     class Table(BaseModel):
         class ColumnsOrder(BaseModel):
-            left: List[str] = None
-            middle: List[str] = None
-            right: List[str] = None
+            left: Optional[List[str]] = None
+            middle: Optional[List[str]] = None
+            right: Optional[List[str]] = None
 
-        columnsOrder: ColumnsOrder = None
-        rowHeightMode: str = None
-        columnsWidths: Dict[str, int] = None
-        excludedFields: List[str] = None
+        columnsOrder: Optional[ColumnsOrder] = None
+        rowHeightMode: Optional[str] = None
+        columnsWidths: Optional[Dict[str, int]] = None
+        excludedFields: Optional[List[str]] = None
 
-    chart: Chart = None
-    search: Search = None
-    searchInput: SearchInput = None
-    contextFilter: ContextFilter = None
-    colorPalette: int = None
-    sortFields: List[Tuple[str, str]] = None
-    screen: Screen = None
-    table: Table = None
+    chart: Optional[Chart] = None
+    search: Optional[Search] = None
+    searchInput: Optional[SearchInput] = None
+    contextFilter: Optional[ContextFilter] = None
+    colorPalette: Optional[int] = None
+    sortFields: Optional[List[Tuple[str, str]]] = None
+    screen: Optional[Screen] = None
+    table: Optional[Table] = None
 
 
 class ExploreStateOut(BaseModel):
     id: UUID
-    updated_at: str = 'Wed, 01 Jan 2021 16:12:07 GMT'
-    created_at: str = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    updated_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    created_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
     app_state: ExploreState
