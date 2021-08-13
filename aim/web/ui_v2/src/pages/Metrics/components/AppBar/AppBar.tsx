@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Breadcrumbs, Button, Grid, Link, Typography } from '@material-ui/core';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -7,9 +8,10 @@ import { IAppBarProps } from 'types/pages/metrics/components/AppBar/AppBar';
 
 function AppBar({
   onBookmarkCreate,
+  onBookmarkUpdate,
 }: IAppBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [openBookmark, setOpenBookmark] = React.useState<boolean>(false);
-
+  const history = useHistory();
   function handleOpenChange() {
     setOpenBookmark(!openBookmark);
   }
@@ -47,7 +49,12 @@ function AppBar({
             />
           </Grid>
           <Grid item>
-            <Button size='small' variant='outlined' color='primary'>
+            <Button
+              // onClick={() => onBookmarkUpdate()}
+              size='small'
+              variant='outlined'
+              color='primary'
+            >
               U
             </Button>
           </Grid>
