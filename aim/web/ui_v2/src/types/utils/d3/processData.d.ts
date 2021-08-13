@@ -1,5 +1,5 @@
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { ILine, ILineChartProps } from '../../components/LineChart/LineChart';
+import { ILine, ILineChartProps } from 'types/components/LineChart/LineChart';
 
 export interface IProcessedData extends ILine {
   color: string;

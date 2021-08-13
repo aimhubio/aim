@@ -1,0 +1,15 @@
+.Params {
+
+  .Params__fullHeight {
+    height: 100%;
+    height: -moz-available;          /* WebKit-based browsers will ignore this. */
+    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+  }
+
+  .Params__chart__container {
+    -webkit-box-flex: 0.5;
+    -ms-flex: 0.5 1 0px;
+    flex: 0.5 1 0;
+    min-height: 372px;
+  }
+}
