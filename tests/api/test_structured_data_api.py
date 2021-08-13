@@ -37,7 +37,7 @@ class TestStructuredRunApi(StructuredApiTestBase):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')
         run = next(iter(matching_runs))
         client = self.client
-        resp = client.put(f'/api/runs/{run.hashname}', json={'archive': True})
+        resp = client.put(f'/api/runs/{run.hashname}', json={'archived': True})
         self.assertEqual(200, resp.status_code)
 
         # without archived

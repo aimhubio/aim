@@ -1,4 +1,3 @@
-from datetime import datetime
 from pydantic import BaseModel
 from pydantic.main import ModelMetaclass
 from typing import List, Dict, Union, Tuple, Optional
@@ -126,6 +125,6 @@ class ExploreState(BaseModel, metaclass=AllOptional):
 
 class ExploreStateOut(BaseModel):
     id: UUID
-    updated_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
-    created_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    updated_at: str = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    created_at: str = 'Wed, 01 Jan 2021 16:12:07 GMT'
     app_state: ExploreState

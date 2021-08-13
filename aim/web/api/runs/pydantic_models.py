@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
+from uuid import UUID
 
 
 # response models
@@ -82,3 +83,55 @@ class MetricAlignApiIn(BaseModel):
 
 
 RunTracesBatchApiIn = List[TraceBase]
+
+
+# structured run models
+class StructuredRunUpdateIn(BaseModel):
+    name: Optional[str] = ''
+    description: Optional[str] = ''
+    archived: Optional[bool] = None
+    experiment: Optional[str] = ''
+
+
+class StructuredRunUpdateOut(BaseModel):
+    id: str
+    status: str = 'OK'
+
+
+class StructuredRunBaseOut(BaseModel):
+    id: str
+    name: str
+
+
+StructuredRunListOut = List[StructuredRunBaseOut]
+
+
+class StructuredRunOut(StructuredRunBaseOut):
+    class Experiment(BaseModel):
+        experiment_id: UUID
+        name: str = ''
+
+    class Tag(BaseModel):
+        tag_id: UUID
+        name: str = ''
+
+    archived: bool = False
+    description: str = ''
+    experiment: Optional[Experiment] = ''
+    tags: Optional[List[Tag]] = []
+
+
+class StructuredRunAddTagIn(BaseModel):
+    tag_name: str
+
+
+class StructuredRunAddTagOut(BaseModel):
+    id: str
+    tag_id: UUID
+    status: str = 'OK'
+
+
+class StructuredRunRemoveTagOut(BaseModel):
+    id: str
+    removed: bool
+    status: str = 'OK'

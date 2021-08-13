@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from typing import Dict, List, Optional
+from typing import Optional
 
 from aim.storage import treeutils
 from aim.web.api.projects.project import Project
@@ -19,7 +19,14 @@ from aim.web.api.runs.pydantic_models import (
     RunMetricSearchApiOut,
     RunSearchApiOut,
     RunTracesApiOut,
-    RunTracesBatchApiOut
+    RunTracesBatchApiOut,
+    StructuredRunUpdateIn,
+    StructuredRunUpdateOut,
+    StructuredRunListOut,
+    StructuredRunOut,
+    StructuredRunAddTagIn,
+    StructuredRunAddTagOut,
+    StructuredRunRemoveTagOut
 )
 from aim.web.api.utils import object_factory
 
@@ -118,7 +125,7 @@ async def run_traces_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
 
 
 # TODO: [AT] implement model serializers (JSON) and request validators (discuss with BE team about possible solutions)
-@runs_router.get('/')
+@runs_router.get('/', response_model=StructuredRunListOut)
 async def get_runs_list_api(include_archived: bool = False, factory=Depends(object_factory)):
     # TODO: [AT] add arbitrary filters to SDK runs() method
     if include_archived:
@@ -128,7 +135,7 @@ async def get_runs_list_api(include_archived: bool = False, factory=Depends(obje
     return response
 
 
-@runs_router.get('/search/')
+@runs_router.get('/search/', response_model=StructuredRunListOut)
 async def search_runs_by_name_api(q: str = '', factory=Depends(object_factory)):
     search_term = q.strip()
 
@@ -136,7 +143,7 @@ async def search_runs_by_name_api(q: str = '', factory=Depends(object_factory)):
     return response
 
 
-@runs_router.get('/{run_id}/')
+@runs_router.get('/{run_id}/', response_model=StructuredRunOut)
 async def get_run_api(run_id: str, factory=Depends(object_factory)):
     run = factory.find_run(run_id)
     if not run:
@@ -153,35 +160,20 @@ async def get_run_api(run_id: str, factory=Depends(object_factory)):
     return response
 
 
-@runs_router.put('/{run_id}/')
-async def update_run_properties_api(run_id: str, request: Request, factory=Depends(object_factory)):
+@runs_router.put('/{run_id}/', response_model=StructuredRunUpdateOut)
+async def update_run_properties_api(run_id: str, run_in: StructuredRunUpdateIn, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
         if not run:
             raise HTTPException(status_code=404)
 
-        body = await request.json()
-        run_name = body.get('name') or ''
-        run_name = run_name.strip()
-        description = body.get('description') or ''
-        description = description.strip()
-        archive = body.get('archive')
-        if archive is not None:
-            try:
-                archive = bool(archive)
-            except TypeError:
-                raise HTTPException(status_code=400)
-        has_experiment = 'experiment' in body
-        if has_experiment:
-            experiment = body.get('experiment')
-        if archive:
-            run.archived = archive
-        if run_name:
-            run.name = run_name
-        if description:
-            run.description = description
-        if has_experiment:
-            run.experiment = experiment
+        if run_in.name:
+            run.name = run_in.name.strip()
+        if run_in.description:
+            run.description = run_in.description.strip()
+        if run_in.experiment:
+            run.experiment = run_in.experiment.strip()
+        run.archived = run_in.archived
 
     return {
         'id': run.hashname,
@@ -189,19 +181,14 @@ async def update_run_properties_api(run_id: str, request: Request, factory=Depen
     }
 
 
-@runs_router.post('/{run_id}/tags/new/')
-async def add_run_tag_api(run_id: str, request: Request, factory=Depends(object_factory)):
+@runs_router.post('/{run_id}/tags/new/', response_model=StructuredRunAddTagOut)
+async def add_run_tag_api(run_id: str, tag_in: StructuredRunAddTagIn, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
         if not run:
             raise HTTPException(status_code=404)
 
-        body = await request.json()
-        tag_name = body.get('tag_name') or ''
-        tag_name = tag_name.strip()
-        if not tag_name:
-            raise HTTPException(400)
-        tag = run.add_tag(tag_name)
+        tag = run.add_tag(tag_in.tag_name)
 
     return {
         'id': run.hashname,
@@ -210,7 +197,7 @@ async def add_run_tag_api(run_id: str, request: Request, factory=Depends(object_
     }
 
 
-@runs_router.delete('/{run_id}/tags/{tag_id}/')
+@runs_router.delete('/{run_id}/tags/{tag_id}/', response_model=StructuredRunRemoveTagOut)
 async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
