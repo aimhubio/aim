@@ -1,5 +1,4 @@
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -13,7 +12,6 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 
 export interface IMetricAppModelState {
   refs: {
@@ -27,6 +25,22 @@ export interface IMetricAppModelState {
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
   params: string[];
+  notifyData: INotification[];
+  tooltipContent: ITooltipContent;
+}
+
+export interface ITooltipData {
+  [key: string]: ITooltipContent;
+}
+
+export interface ITooltipContent {
+  group_config?: {
+    [key: string]: any;
+  };
+  params?: {
+    [key: string]: any;
+  };
+  [key: string]: any;
 }
 
 export interface IMetricsCollection {
@@ -100,8 +114,12 @@ interface IMetricAppConfig {
   };
 }
 
-export interface IFocusedState extends Partial<IActivePoint> {
+export interface IFocusedState {
   active: boolean;
+  key: string | null;
+  xValue: number | null;
+  yValue: number | null;
+  chartIndex: number | null;
 }
 
 export interface IMetricTableRowData {

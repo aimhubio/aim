@@ -10,7 +10,7 @@ import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import { CircleEnum, XAlignmentEnum } from './index';
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
-import 'components/LineChart/LineChart.css';
+import 'components/LineChart/LineChart.scss';
 import getFormattedValue from '../formattedValue';
 import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
 

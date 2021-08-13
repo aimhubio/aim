@@ -1,0 +1,22 @@
+.ChartPanel__container {
+
+  height: 100%;
+  height: -moz-available;          /* WebKit-based browsers will ignore this. */
+  height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+
+  .ChartPanel {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .ChartPanel__paper {
+    padding: 1em;
+    height: 100%;
+    user-select: none;
+  }
+
+  .ChartPanel__paper__grid{
+    height: 100%;
+    overflow: auto;
+  }
+}

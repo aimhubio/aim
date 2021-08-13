@@ -18,7 +18,7 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
     },
     getState: () => Object.assign({}, state),
     setState: (stateUpdate: StateType) => {
-      Object.assign(state, stateUpdate);
+      state = Object.assign(state || initialState, stateUpdate);
       (subscriptions.UPDATE || []).forEach((fn) => fn(stateUpdate));
     },
     subscribe: (evt: 'INIT' | 'UPDATE', fn: (data: StateType) => void) => {
