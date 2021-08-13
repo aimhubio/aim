@@ -166,7 +166,7 @@ class Run:
         return self.series_run_tree.view((context.idx, name))
 
     def iter_all_traces(self) -> Iterator[Tuple[str, Context, 'Run']]:
-        for ctx_idx, run_ctx_view in self.meta_run_tree.get('traces', {}).items():
+        for ctx_idx, run_ctx_view in self.meta_run_tree.view('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)

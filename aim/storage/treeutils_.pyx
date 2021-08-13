@@ -2,15 +2,12 @@ from aim.storage.encoding import encode as E_encode
 from aim.storage.encoding import decode as E_decode
 from aim.storage.encoding import encode_path as E_encode_path
 from aim.storage.encoding.encoding_native cimport decode_path
-# print(encoding_native.decode_path)
+
 from aim.storage.types import AimObject, AimObjectPath
 from aim.storage.utils import ArrayFlag, ObjectFlag
 
 from typing import Any, Iterator, List, Tuple, Union
 
-
-def version():
-    return 5
 
 def unfold_tree(
     obj: AimObject,
@@ -45,10 +42,10 @@ def unfold_tree(
         raise NotImplementedError
 
 
-def val_to_node(
+cpdef val_to_node(
     val: Any,
     strict: bool = True
-) -> Any:
+):
     if not strict:
         node = dict()
         if val == ArrayFlag:
@@ -73,15 +70,13 @@ def fold_tree(
     # TODO raise KeyError here
     return val
 
-import cython
 
-@cython.locals(idx=cython.int)
 def iter_fold_tree(
     paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
-    *,
     level: int = 0,
     strict: bool = True
-) -> Iterator[Tuple[AimObjectPath, AimObject]]:
+):
+    cdef int idx
     stack = []
     path = []
 

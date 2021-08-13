@@ -39,7 +39,18 @@ class Container(ContainerView):
             paranoid_checks=False,
             keep_log_file_num=10,
             skip_stats_update_on_db_open=True,
-            skip_checking_sst_file_sizes_on_db_open=True
+            skip_checking_sst_file_sizes_on_db_open=True,
+            max_open_files=-1,
+            write_buffer_size = 67108864, # 64MB
+            max_write_buffer_number = 3,
+            target_file_size_base = 67108864, # 64MB
+            max_background_compactions = 4,
+            level0_file_num_compaction_trigger = 8,
+            level0_slowdown_writes_trigger = 17,
+            level0_stop_writes_trigger = 24,
+            num_levels = 4,
+            max_bytes_for_level_base = 536870912, # 512MB
+            max_bytes_for_level_multiplier = 8,
         )
         # opts.allow_concurrent_memtable_write = False
         # opts.memtable_factory = aimrocks.VectorMemtableFactory()
@@ -162,28 +173,22 @@ class Container(ContainerView):
 
     def items(
         self,
-        prefix: bytes = None
+        prefix: bytes = b''
     ) -> Iterator[Tuple[bytes, bytes]]:
         # TODO return ValuesView, not iterator
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        if prefix is not None:
-            it.seek(prefix)
-        else:
-            it.seek_to_first()
+        it.seek(prefix)
         for key, val in it:
-            if prefix is not None and not key.startswith(prefix):
+            if not key.startswith(prefix):
                 break
             yield key, val
 
     def walk(
         self,
-        prefix: bytes = None
+        prefix: bytes = b''
     ):
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        if prefix is not None:
-            it.seek(prefix)
-        else:
-            it.seek_to_first()
+        it.seek(prefix)
 
         while True:
             try:
@@ -196,15 +201,12 @@ class Container(ContainerView):
 
     def iterlevel(
         self,
-        prefix: bytes = None
+        prefix: bytes = b''
     ) -> Iterator[Tuple[bytes, bytes]]:
         # TODO return ValuesView, not iterator
         # TODO broken right now
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        if prefix is not None:
-            it.seek(prefix)
-        else:
-            it.seek_to_first()
+        it.seek(prefix)
 
         key, val = next(it)
 
@@ -214,7 +216,7 @@ class Container(ContainerView):
             except StopIteration:
                 break
 
-            if prefix is not None and not key.startswith(prefix):
+            if not key.startswith(prefix):
                 break
 
             next_range = key[:-1] + bytes([key[-1] + 1])
@@ -224,16 +226,13 @@ class Container(ContainerView):
 
     def keys(
         self,
-        prefix: bytes = None
+        prefix: bytes = b''
     ):
         # TODO return KeyView, not iterator
         it: Iterator[Tuple[bytes, bytes]] = self.db.iterkeys()
-        if prefix is not None:
-            it.seek(prefix)
-        else:
-            it.seek_to_first()
+        it.seek(prefix)
         for key in it:
-            if prefix is not None and not key.startswith(prefix):
+            if not key.startswith(prefix):
                 break
             yield key
 
@@ -271,11 +270,7 @@ class Container(ContainerView):
         prefix: bytes = b''
     ) -> bytes:
         it: Iterator[bytes] = self.db.iterkeys()
-        if prefix is not None:
-            it.seek(prefix + b'\x00')
-        else:
-            it.seek_to_first()
-
+        it.seek(prefix + b'\x00')
         key = next(it)
 
         if not key.startswith(prefix):
@@ -295,10 +290,7 @@ class Container(ContainerView):
         prefix: bytes = b''
     ) -> Tuple[bytes, bytes]:
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        if prefix is not None:
-            it.seek(prefix + b'\x00')
-        else:
-            it.seek_to_first()
+        it.seek(prefix + b'\x00')
 
         key, value = next(it)
 
@@ -323,13 +315,10 @@ class Container(ContainerView):
 
     def prev_key_value(
         self,
-        prefix: bytes = b''
+        prefix: bytes
     ) -> Tuple[bytes, bytes]:
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        if prefix is not None:
-            it.seek_for_prev(prefix + b'\xff')
-        else:
-            it.seek_to_last()
+        it.seek_for_prev(prefix + b'\xff')
 
         key, value = it.get()
 
