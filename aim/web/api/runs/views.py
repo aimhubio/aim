@@ -1,8 +1,7 @@
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-
-from typing import Optional
+from typing import Dict, List, Optional
 
 from aim.storage import treeutils
 from aim.web.api.projects.project import Project
@@ -13,12 +12,21 @@ from aim.web.api.runs.utils import (
     query_traces_dict_constructor,
     encoded_tree_streamer
 )
+from aim.web.api.runs.pydantic_models import (
+    MetricAlignApiIn,
+    RunTracesBatchApiIn,
+    RunMetricCustomAlignApiOut,
+    RunMetricSearchApiOut,
+    RunSearchApiOut,
+    RunTracesApiOut,
+    RunTracesBatchApiOut
+)
 from aim.web.api.utils import object_factory
 
 runs_router = APIRouter()
 
 
-@runs_router.get('/search/run/')
+@runs_router.get('/search/run/', response_model=RunSearchApiOut)
 async def run_search_api(q: Optional[str] = ''):
     # Get project
     project = Project()
@@ -33,19 +41,15 @@ async def run_search_api(q: Optional[str] = ''):
     return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
-@runs_router.post('/search/metric/align/')
-async def run_metric_custom_align_api(request: Request):
+@runs_router.post('/search/metric/align/', response_model=RunMetricCustomAlignApiOut)
+async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     # Get project
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    request_data = await request.json()
-
-    x_axis_metric_name = request_data.get('align_by')
-    requested_runs = request_data.get('runs')
-    if not (x_axis_metric_name and requested_runs):
-        HTTPException(status_code=403)
+    x_axis_metric_name = request_data.align_by
+    requested_runs = request_data.runs
 
     processed_runs = aligned_traces_dict_constructor(requested_runs, x_axis_metric_name)
     encoded_runs_tree = treeutils.encode_tree(processed_runs)
@@ -53,7 +57,7 @@ async def run_metric_custom_align_api(request: Request):
     return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
-@runs_router.get('/search/metric/')
+@runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut)
 async def run_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None):
     steps_num = p
 
@@ -74,7 +78,7 @@ async def run_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = No
     return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
 
 
-@runs_router.get('/{run_id}/params/')
+@runs_router.get('/{run_id}/params/', response_model=dict)
 async def run_params_api(run_id: str):
     # Get project
     project = Project()
@@ -86,7 +90,7 @@ async def run_params_api(run_id: str):
     return JSONResponse(run[...])
 
 
-@runs_router.get('/{run_id}/traces/')
+@runs_router.get('/{run_id}/traces/', response_model=RunTracesApiOut)
 async def run_traces_api(run_id: str):
     # Get project
     project = Project()
@@ -98,8 +102,8 @@ async def run_traces_api(run_id: str):
     return JSONResponse(run.get_traces_overview())
 
 
-@runs_router.post('/{run_id}/traces/get-batch/')
-async def run_traces_batch(run_id: str, request: Request):
+@runs_router.post('/{run_id}/traces/get-batch/', response_model=RunTracesBatchApiOut)
+async def run_traces_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
     # Get project
     project = Project()
     if not project.exists():
@@ -108,7 +112,6 @@ async def run_traces_batch(run_id: str, request: Request):
     if not run:
         raise HTTPException(status_code=404)
 
-    requested_traces = await request.json()
     traces_data = collect_requested_traces(run, requested_traces)
 
     return JSONResponse(traces_data)
@@ -116,15 +119,7 @@ async def run_traces_batch(run_id: str, request: Request):
 
 # TODO: [AT] implement model serializers (JSON) and request validators (discuss with BE team about possible solutions)
 @runs_router.get('/')
-async def get_runs_list_api(request: Request, factory=Depends(object_factory)):
-    params = request.query_params
-    include_archived = False
-    if params.get('include_archived'):
-        try:
-            include_archived = bool(params.get('include_archived'))
-        except TypeError:
-            raise HTTPException(status_code=400)
-
+async def get_runs_list_api(include_archived: bool = False, factory=Depends(object_factory)):
     # TODO: [AT] add arbitrary filters to SDK runs() method
     if include_archived:
         response = [{'id': run.hashname, 'name': run.name} for run in factory.runs()]
@@ -134,10 +129,8 @@ async def get_runs_list_api(request: Request, factory=Depends(object_factory)):
 
 
 @runs_router.get('/search/')
-async def search_runs_by_name_api(request: Request, factory=Depends(object_factory)):
-    params = request.query_params
-    search_term = params.get('q') or ''
-    search_term.strip()
+async def search_runs_by_name_api(q: str = '', factory=Depends(object_factory)):
+    search_term = q.strip()
 
     response = [{'id': run.hashname, 'name': run.name} for run in factory.search_runs(search_term)]
     return response

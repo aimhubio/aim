@@ -1,18 +1,27 @@
 from fastapi import Request, HTTPException, Depends
+from typing import List
 
 from aim.web.api.utils import APIRouter
 from aim.web.api.utils import object_factory
+from aim.web.api.experiments.pydantic_models import(
+    ExperimentGetOut,
+    ExperimentUpdateOut,
+    ExperimentGetRunsOut,
+    ExperimentListOut,
+    ExperimentCreateIn,
+    ExperimentUpdateIn
+)
 
 experiment_router = APIRouter()
 
 
-@experiment_router.get('/')
+@experiment_router.get('/', response_model=ExperimentListOut)
 async def get_experiments_list_api(factory=Depends(object_factory)):
     response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()]
     return response
 
 
-@experiment_router.get('/search/')
+@experiment_router.get('/search/', response_model=ExperimentListOut)
 async def search_experiments_by_name_api(request: Request, factory=Depends(object_factory)):
     params = request.query_params
     search_term = params.get('q') or ''
@@ -23,15 +32,11 @@ async def search_experiments_by_name_api(request: Request, factory=Depends(objec
     return response
 
 
-@experiment_router.post('/')
-async def create_experiment_api(request: Request, factory=Depends(object_factory)):
-    body = await request.json()
-    exp_name = body.get('name') or ''
-    if not exp_name:
-        raise HTTPException(400)
+@experiment_router.post('/', response_model=ExperimentUpdateOut)
+async def create_experiment_api(exp_in: ExperimentCreateIn, factory=Depends(object_factory)):
     with factory:
         try:
-            exp = factory.create_experiment(exp_name)
+            exp = factory.create_experiment(exp_in.name.strip())
         except ValueError as e:
             raise HTTPException(400, detail=str(e))
 
@@ -41,7 +46,7 @@ async def create_experiment_api(request: Request, factory=Depends(object_factory
     }
 
 
-@experiment_router.get('/{exp_id}/')
+@experiment_router.get('/{exp_id}/', response_model=ExperimentGetOut)
 async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
     exp = factory.find_experiment(exp_id)
     if not exp:
@@ -49,22 +54,21 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
 
     response = {
         'id': exp.uuid,
-        'name': exp.name
+        'name': exp.name,
+        'run_count': len(exp.runs)
     }
     return response
 
 
-@experiment_router.put('/{exp_id}/')
-async def update_experiment_properties_api(exp_id: str, request: Request, factory=Depends(object_factory)):
+@experiment_router.put('/{exp_id}/', response_model=ExperimentUpdateOut)
+async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdateIn, factory=Depends(object_factory)):
     with factory:
         exp = factory.find_experiment(exp_id)
         if not exp:
             raise HTTPException(status_code=404)
-        body = await request.json()
-        exp_name = body.get('name') or ''
-        exp_name = exp_name.strip()
-        if exp_name:
-            exp.name = exp_name
+
+        if exp_in.name:
+            exp.name = exp_in.name.strip()
 
     return {
         'id': exp.uuid,
@@ -72,7 +76,7 @@ async def update_experiment_properties_api(exp_id: str, request: Request, factor
     }
 
 
-@experiment_router.get('/{exp_id}/runs/')
+@experiment_router.get('/{exp_id}/runs/', response_model=ExperimentGetRunsOut)
 async def get_experiment_runs_api(exp_id: str, factory=Depends(object_factory)):
     exp = factory.find_experiment(exp_id)
     if not exp:
