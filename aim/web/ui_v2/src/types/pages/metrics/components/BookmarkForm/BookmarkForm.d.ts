@@ -1,4 +1,4 @@
-import { IMetricProps } from '../../Metrics';
+import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 export interface IBookmarkFormProps {
   open: boolean;
