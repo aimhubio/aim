@@ -23,7 +23,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                   {Object.values(routes).map((route, index) => {
                     const { component: Component, path } = route;
                     return (
-                      <Route path={path} key={index}>
+                      <Route path={path} key={index} exact>
                         <Component />
                       </Route>
                     );

@@ -25,6 +25,7 @@ export interface IMetricAppModelState {
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
   params: string[];
+  notifyData: INotification[];
   tooltipContent: ITooltipContent;
 }
 

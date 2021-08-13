@@ -12,6 +12,7 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   IFocusedState,
+  IMetricAppModelState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
@@ -38,6 +39,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   focusedState: IFocusedState;
   highlightMode: HighlightEnum;
   groupingData: IMetricAppConfig['grouping'];
+  notifyData: IMetricAppModelState['notifyData'];
   tooltipContent: ITooltipContent;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
@@ -57,6 +59,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onGroupingApplyChange: (groupName: GroupNameType) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'style') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
+  onNotificationAdd: (notification: INotification) => void;
+  onNotificationDelete: (id: number) => void;
 }
 
 export interface IOnSmoothingChange {
