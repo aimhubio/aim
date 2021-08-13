@@ -15,6 +15,7 @@ import {
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
+  ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -57,7 +58,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();
-      appRequestRef.abort();
+      if (appRequestRef) {
+        appRequestRef.abort();
+      }
     };
   }, []);
 
@@ -104,6 +107,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
+      tooltipContent={metricsData?.tooltipContent as ITooltipContent}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
