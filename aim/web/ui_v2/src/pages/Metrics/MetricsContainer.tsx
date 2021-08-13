@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useRouteMatch } from 'react-router-dom';
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -11,8 +11,11 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
+  IAppData,
   IMetricAppConfig,
+  IMetricAppModelState,
   IMetricTableRowData,
+  ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -25,7 +28,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-
+  const route = useRouteMatch();
   const metricsData = useModel(metricAppModel);
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
@@ -41,9 +44,23 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     metricAppModel.initialize();
     const metricsRequestRef = metricAppModel.getMetricsData();
+    let appRequestRef: {
+      call: () => Promise<IAppData | void>;
+      abort: () => void;
+    };
+    if ((route.params as any).appId) {
+      appRequestRef = metricAppModel.getAppConfigData(
+        (route.params as any).appId,
+      );
+      appRequestRef.call();
+    }
+    metricAppModel.setDefaultAppConfigData();
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();
+      if (appRequestRef) {
+        appRequestRef.abort();
+      }
     };
   }, []);
 
@@ -89,6 +106,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.grouping as IMetricAppConfig['grouping']
       }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
+      notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
+      tooltipContent={metricsData?.tooltipContent as ITooltipContent}
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -105,6 +124,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
       onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
       onBookmarkCreate={metricAppModel.onBookmarkCreate}
+      onNotificationAdd={metricAppModel.onNotificationAdd}
+      onNotificationDelete={metricAppModel.onNotificationDelete}
     />
   );
 }

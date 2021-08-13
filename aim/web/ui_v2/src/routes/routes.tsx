@@ -10,6 +10,7 @@ const Bookmarks = React.lazy(
 const PATHS = {
   RUNS: '/runs',
   METRICS: '/metrics',
+  METRICS_ID: '/metrics/:appId',
   PARAMS: '/params',
   TAGS: '/tags',
   BOOKMARKS: '/bookmarks',
@@ -27,6 +28,12 @@ const routes = {
     component: Metrics,
     showInSidebar: true,
     displayName: 'Metrics',
+  },
+  METRICS_ID: {
+    path: PATHS.METRICS_ID,
+    component: Metrics,
+    showInSidebar: false,
+    displayName: 'MetricsId',
   },
   PARAMS: {
     path: PATHS.PARAMS,
