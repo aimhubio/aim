@@ -19,11 +19,11 @@
     }
   }
 
-  .backgroundRect {
+  &.backgroundRect {
     cursor: crosshair
   }
 
-  .zoomMode rect {
+  &.zoomMode rect {
     cursor: zoom-in;
   }
 

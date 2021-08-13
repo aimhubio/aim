@@ -8,11 +8,11 @@
     min-width: 100px;
     min-height: 100px;
 
-    .backgroundRect {
+    &.backgroundRect {
         cursor: crosshair
     }
 
-    .zoomMode rect {
+    &.zoomMode rect {
         cursor: zoom-in;
     }
 
