@@ -106,9 +106,15 @@ class Trace(Generic[T]):
             epochs = [self.epochs[last_step]]
             timestamps = [self.timestamps[last_step]]
         else:
-            steps, values = self.values.sparse_list()
-            epochs = self.epochs.values_list()
-            timestamps = self.timestamps.values_list()
+            try:
+                steps, values = self.values.sparse_list()
+                epochs = self.epochs.values_list()
+                timestamps = self.timestamps.values_list()
+            except ValueError:
+                steps = []
+                values = []
+                epochs = []
+                timestamps = []
         indices = [i for i, _ in enumerate(steps)]
         timestamps = [datetime.datetime.fromtimestamp(t) for t in timestamps]
         data = {
