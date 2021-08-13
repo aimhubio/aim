@@ -1,6 +1,7 @@
 # The module is heavily based on `wrapt` package sources
 # See: https://github.com/GrahamDumpleton/wrapt/blob/develop/src/wrapt/wrappers.py
 
+from functools import lru_cache
 import operator
 
 
@@ -66,7 +67,7 @@ class _ObjectProxyMetaType(type):
 
 class Eager1:
     def __init__(self, wrapped, name):
-        self.wrapped = wrapped
+        self.wrapped = lru_cache()(wrapped)
         self.name = name
 
     def __call__(self):
@@ -108,7 +109,7 @@ class Eager2:
 
 class Eager3:
     def __init__(self, wrapped, key):
-        self.wrapped = wrapped
+        self.wrapped = lru_cache()(wrapped)
         self.key = key
 
     def __call__(self):
