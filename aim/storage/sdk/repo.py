@@ -34,13 +34,14 @@ class Repo:
         self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
 
         os.makedirs(self.path, exist_ok=True)
-        # os.makedirs(os.path.join(self.path, 'chunks'), exist_ok=True)
-        # os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
-        # os.makedirs(os.path.join(self.path, 'progress'), exist_ok=True)
 
-        self.meta_tree = self.request('meta', read_only=True, from_union=True).tree().view('meta')
+        self._meta_tree = None
 
         self.structured_db = DB.from_path(path)
+
+    @property
+    def meta_tree(self):
+        return self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
