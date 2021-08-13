@@ -50,12 +50,13 @@ def safer_getattr(object, name, default=None, getattr=getattr):
     if name == 'format' and isinstance(object, str):
         raise NotImplementedError(
             'Using format() on a %s is not safe.' % object.__class__.__name__)
-    if name.startswith('_'):
+    if name[0] == '_':
         raise AttributeError(
             '"{name}" is an invalid attribute name because it '
             'starts with "_"'.format(name=name)
         )
-    return getattr(object, name, default)
+    val = getattr(object, name, default)
+    return val
 
 
 
@@ -154,7 +155,10 @@ class RestrictedPythonQuery(Query):
         metric_name: str = None
     ) -> bool:
 
-        context_proxy = AimObjectProxy(lambda: context.to_dict())
+        if context is not None:
+            context_proxy = AimObjectProxy(lambda: context.to_dict())
+        else:
+            context_proxy = None
 
         # TODO enforce immutable
         try:

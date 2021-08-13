@@ -223,11 +223,14 @@ class RunTraceCollection(TraceCollection):
     def __init__(
         self,
         run: 'Run',
-        query_traces: str = ''  # query traces of a given run
+        query_traces: str = None
     ):
         self.run: 'Run'
         self.repo: 'Repo'
-        self.query_traces = RestrictedPythonQuery(query_traces)
+        if query_traces is not None:
+            self.query_traces = RestrictedPythonQuery(query_traces)
+        else:
+            self.query_traces = None
         super().__init__(run=run, repo=run.repo)
 
     def iter(
