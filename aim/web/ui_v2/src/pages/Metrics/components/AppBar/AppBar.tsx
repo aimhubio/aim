@@ -1,6 +1,16 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Breadcrumbs, Button, Grid, Link, Typography } from '@material-ui/core';
+import { useRouteMatch } from 'react-router-dom';
+import {
+  Breadcrumbs,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Link,
+  Typography,
+} from '@material-ui/core';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
@@ -10,11 +20,13 @@ function AppBar({
   onBookmarkCreate,
   onBookmarkUpdate,
 }: IAppBarProps): React.FunctionComponentElement<React.ReactNode> {
-  const [openBookmark, setOpenBookmark] = React.useState<boolean>(false);
-  const history = useHistory();
-  function handleOpenChange() {
-    setOpenBookmark(!openBookmark);
+  const [popover, setPopover] = React.useState<string>('');
+  const route = useRouteMatch<any>();
+
+  function handlePopoverChange(value: string) {
+    setPopover(value);
   }
+
   return (
     <Grid container justifyContent='space-between' alignItems='center'>
       <Grid item>
@@ -25,7 +37,7 @@ function AppBar({
           <Link color='inherit' href='/'>
             Aim
           </Link>
-          <Link color='inherit' href='/getting-started/installation/'>
+          <Link color='inherit' href='/'>
             Apps
           </Link>
           <Typography color='textPrimary'>Metrics</Typography>
@@ -35,7 +47,7 @@ function AppBar({
         <Grid container spacing={1}>
           <Grid item>
             <Button
-              onClick={handleOpenChange}
+              onClick={() => handlePopoverChange('save')}
               size='small'
               variant='outlined'
               color='primary'
@@ -44,19 +56,41 @@ function AppBar({
             </Button>
             <BookmarkForm
               onBookmarkCreate={onBookmarkCreate}
-              onClose={handleOpenChange}
-              open={openBookmark}
+              onClose={() => handlePopoverChange('')}
+              open={popover === 'save'}
             />
           </Grid>
           <Grid item>
             <Button
-              // onClick={() => onBookmarkUpdate()}
+              onClick={() => handlePopoverChange('update')}
               size='small'
+              disabled={!route.params.appId}
               variant='outlined'
               color='primary'
             >
               U
             </Button>
+            <Dialog
+              open={popover === 'update'}
+              onClose={() => handlePopoverChange('')}
+              aria-labelledby='form-dialog-title'
+            >
+              <DialogTitle id='form-dialog-title'>Update Bookmark</DialogTitle>
+              <DialogContent>
+                <Typography>Do you want to update bookmark?</Typography>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => handlePopoverChange('')} color='primary'>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => onBookmarkUpdate(route.params.appId)}
+                  color='primary'
+                >
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
           <Grid item>
             <Button size='small' variant='outlined' color='primary'>
