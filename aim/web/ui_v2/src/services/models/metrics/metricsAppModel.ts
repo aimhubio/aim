@@ -236,6 +236,24 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   }
 }
 
+function onBookmarkUpdate(id: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, configData)
+      .call()
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.UPDATE,
+          });
+        }
+      });
+  }
+}
+
 function getGroupingSelectOptions(
   params: string[],
 ): GroupingSelectOptionType[] {
@@ -920,6 +938,7 @@ const metricAppModel = {
   updateChartStateUrl,
   onNotificationDelete,
   onNotificationAdd,
+  onBookmarkUpdate,
 };
 
 export default metricAppModel;

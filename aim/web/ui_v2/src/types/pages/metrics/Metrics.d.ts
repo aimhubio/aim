@@ -59,6 +59,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onGroupingApplyChange: (groupName: GroupNameType) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'style') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
+  onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
 }
