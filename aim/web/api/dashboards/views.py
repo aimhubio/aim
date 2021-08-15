@@ -37,7 +37,7 @@ async def dashboards_post_api(request_data: DashboardCreateIn, session: Session 
     session.add(dashboard)
 
     # update the app object's foreign key relation
-    app_id = request_data.app_id
+    app_id = str(request_data.app_id)
     app = session.query(ExploreState).filter(ExploreState.uuid == app_id).first()
     if app:
         app.dashboard_id = dashboard.uuid
