@@ -14,6 +14,7 @@ import { ChartTypeEnum } from 'utils/d3';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import './Metrics.scss';
+import metricAppModel from '../../services/models/metrics/metricsAppModel';
 
 function Metrics(
   props: IMetricProps,
@@ -39,6 +40,7 @@ function Metrics(
               <AppBar
                 onBookmarkCreate={props.onBookmarkCreate}
                 onBookmarkUpdate={props.onBookmarkUpdate}
+                onResetConfigData={props.onResetConfigData}
               />
             </Paper>
           </Grid>
