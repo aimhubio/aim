@@ -27,12 +27,13 @@ async def search_tags_by_name_api(q: Optional[str] = '', factory=Depends(object_
     return response
 
 
-# TODO: [MV, AT] take into account tag color
 @tags_router.post('/', response_model=TagUpdateOut)
 async def create_tag_api(tag_in: TagCreateIn, factory=Depends(object_factory)):
     with factory:
         try:
             tag = factory.create_tag(tag_in.name.strip())
+            if tag_in.color is not None:
+                tag.color = tag_in.color.strip()
         except ValueError as e:
             raise HTTPException(400, detail=str(e))
 

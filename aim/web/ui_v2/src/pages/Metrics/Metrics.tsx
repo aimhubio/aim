@@ -36,7 +36,11 @@ function Metrics(
         >
           <Grid item>
             <Paper className='Metrics__paper'>
-              <AppBar onBookmarkCreate={props.onBookmarkCreate} />
+              <AppBar
+                onBookmarkCreate={props.onBookmarkCreate}
+                onBookmarkUpdate={props.onBookmarkUpdate}
+                onResetConfigData={props.onResetConfigData}
+              />
             </Paper>
           </Grid>
           <Grid item>
@@ -85,6 +89,7 @@ function Metrics(
                     displayOutliers: props.displayOutliers,
                     zoomMode: props.zoomMode,
                     highlightMode: props.highlightMode,
+                    aggregation: props.aggregation,
                   },
                 ]}
                 controls={
@@ -95,12 +100,14 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     highlightMode={props.highlightMode}
+                    aggregation={props.aggregation}
                     axesScaleType={props.axesScaleType}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
-                    onChangeHighlightMode={props.onChangeHighlightMode}
+                    onHighlightModeChange={props.onHighlightModeChange}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
+                    onAggregationChange={props.onAggregationChange}
                   />
                 }
               />

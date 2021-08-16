@@ -13,12 +13,12 @@ import {
   calculateExponentialMovingAverage,
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
   GroupingSelectOptionType,
   GroupNameType,
+  IAggregation,
   IAppData,
   IDashboardData,
   IGetGroupingPersistIndex,
@@ -57,6 +57,7 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
@@ -233,6 +234,24 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
           });
         });
     }
+  }
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, configData)
+      .call()
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.UPDATE,
+          });
+        }
+      });
   }
 }
 
@@ -629,7 +648,7 @@ function setTooltipData(
 
 //Chart Methods
 
-function onChangeHighlightMode(mode: HighlightEnum): void {
+function onHighlightModeChange(mode: HighlightEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     model.setState({
@@ -653,6 +672,24 @@ function onZoomModeChange(): void {
         chart: {
           ...configData.chart,
           zoomMode: !configData.chart.zoomMode,
+        },
+      },
+    });
+  }
+}
+
+function onAggregationChange(aggregation: Partial<IAggregation>): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart && !_.isEmpty(aggregation)) {
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          aggregation: {
+            ...configData.chart.aggregation,
+            ...aggregation,
+          },
         },
       },
     });
@@ -893,6 +930,12 @@ function onNotificationAdd(notification: INotification) {
   }, 3000);
 }
 
+function onResetConfigData(): void {
+  model.setState({
+    config: getConfig(),
+  });
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -901,11 +944,12 @@ const metricAppModel = {
   getDataAsTableRows,
   setComponentRefs,
   setDefaultAppConfigData,
-  onChangeHighlightMode,
+  onHighlightModeChange,
   onZoomModeChange,
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
+  onAggregationChange,
   onActivePointChange,
   onTableRowHover,
   onTableRowClick,
@@ -920,6 +964,8 @@ const metricAppModel = {
   updateChartStateUrl,
   onNotificationDelete,
   onNotificationAdd,
+  onBookmarkUpdate,
+  onResetConfigData,
 };
 
 export default metricAppModel;
