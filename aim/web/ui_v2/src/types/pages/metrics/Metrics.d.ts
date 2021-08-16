@@ -65,6 +65,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
+  onResetConfigData: () => void;
 }
 
 export interface IOnSmoothingChange {
