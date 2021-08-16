@@ -7,7 +7,7 @@ import './Tags.scss';
 function CreateTag(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Tags'>
-      <Grid container justify='center'>
+      <Grid container justifyContent='center'>
         <Grid xs={6} item>
           <h3 className='Tags__title'>Create Tag</h3>
           <Divider />

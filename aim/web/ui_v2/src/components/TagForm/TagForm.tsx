@@ -106,14 +106,15 @@ function TagForm({
           })}
         </div>
         {editMode ? (
-          <Button onClick={onSaveButtonClick}>Save</Button>
+          <>
+            <Button onClick={onSaveButtonClick}>Save</Button>
+            <Button onClick={onResetButtonClick}>Reset</Button>
+          </>
         ) : (
-          <Button onClick={onCreateButtonClick}>Create</Button>
-        )}
-        {editMode ? (
-          <Button onClick={onResetButtonClick}>Reset</Button>
-        ) : (
-          <NavLink to='/tags'>Cancel</NavLink>
+          <>
+            <Button onClick={onCreateButtonClick}>Create</Button>
+            <NavLink to='/tags'>Cancel</NavLink>
+          </>
         )}
       </form>
     </Grid>
