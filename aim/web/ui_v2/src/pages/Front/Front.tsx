@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 
 import './frontStyle.scss';
+import HeatMap from '../../components/HeatMap/HeatMap';
 
 function Front(): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -22,6 +23,7 @@ function Front(): React.FunctionComponentElement<React.ReactNode> {
         </Grid>
         <Grid xs item>
           Activity
+          {/*<HeatMap endDate={new Date()} />*/}
         </Grid>
       </Grid>
     </section>
