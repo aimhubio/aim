@@ -1,12 +1,15 @@
 import { CurveEnum } from 'utils/d3';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import {
   IActivePoint,
   ISyncHoverStateParams,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IAggregation,
+  IFocusedState,
+} from 'types/services/models/metrics/metricsAppModel';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface ILine {
   key: string;
@@ -29,6 +32,7 @@ export interface ILineChartProps {
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
+  aggregation: IAggregation;
 }
 
 export interface IUpdateFocusedChartProps {

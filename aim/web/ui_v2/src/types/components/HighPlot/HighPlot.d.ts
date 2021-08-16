@@ -6,6 +6,6 @@ export interface IHighPlotProps {
   index: number;
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
-  syncHoverState: (params: ISyncHoverStateParams | null) => void;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
   data: any;
 }
