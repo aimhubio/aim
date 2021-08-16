@@ -58,6 +58,7 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -112,6 +113,7 @@ function getConfig() {
         yValue: null,
         chartIndex: null,
       },
+      xAxisAlignment: AlignmentOptions.RELATIVEE_TIME,
     },
   };
 }
@@ -316,9 +318,11 @@ function processData(data: IRun[]): {
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           data: {
             values: new Float64Array(trace.values.blob),
-            iterations: new Float64Array(trace.iters.blob),
+            steps: new Float64Array(trace.iters.blob),
             epochs: new Float64Array(trace.epochs.blob),
-            timestamps: new Float64Array(trace.timestamps.blob),
+            timestamps: new Float64Array(trace.timestamps.blob).map(
+              (timestamp) => Math.round(timestamp * 1000),
+            ),
             xValues: [...new Float64Array(trace.iters.blob)],
             yValues: [...new Float64Array(trace.values.blob)],
           },
@@ -387,7 +391,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     groupByStyle.length === 0 &&
     groupByChart.length === 0
   ) {
-    return [
+    return alignData([
       {
         config: null,
         color: null,
@@ -395,7 +399,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
         chartIndex: 0,
         data: data,
       },
-    ];
+    ]);
   }
 
   const groupValues: {
@@ -497,7 +501,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
     }
   }
 
-  const groups = Object.values(groupValues);
+  const groups = alignData(Object.values(groupValues));
 
   return aggregateGroupData({
     groupData: groups,
@@ -509,7 +513,62 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
   });
 }
 
-function alignData() {}
+function alignData(data: IMetricsCollection[]): IMetricsCollection[] {
+  const alignment = model.getState()!.config!.chart.xAxisAlignment;
+  switch (alignment) {
+    case AlignmentOptions.STEP:
+      for (let i = 0; i < data.length; i++) {
+        const metricCollection = data[i];
+        for (let j = 0; j < metricCollection.data.length; j++) {
+          const metric = metricCollection.data[j];
+          metric.data = {
+            ...metric.data,
+            xValues: [...metric.data.steps],
+            yValues: [...metric.data.values],
+          };
+        }
+      }
+      break;
+    case AlignmentOptions.EPOCH:
+      break;
+    case AlignmentOptions.RELATIVEE_TIME:
+      for (let i = 0; i < data.length; i++) {
+        const metricCollection = data[i];
+        const firstDate = _.min(
+          metricCollection.data.map((metric) => metric.data.timestamps[0]),
+        )!;
+        for (let j = 0; j < metricCollection.data.length; j++) {
+          const metric = metricCollection.data[j];
+          metric.data = {
+            ...metric.data,
+            xValues: [
+              ...metric.data.timestamps.map(
+                (timestamp) => timestamp - firstDate,
+              ),
+            ],
+            yValues: [...metric.data.values],
+          };
+        }
+      }
+      break;
+    case AlignmentOptions.ABSOLUTE_TIME:
+      for (let i = 0; i < data.length; i++) {
+        const metricCollection = data[i];
+        for (let j = 0; j < metricCollection.data.length; j++) {
+          const metric = metricCollection.data[j];
+          metric.data = {
+            ...metric.data,
+            xValues: [...metric.data.timestamps],
+            yValues: [...metric.data.values],
+          };
+        }
+      }
+      break;
+    default:
+      throw new Error('Unknown value for X axis alignment');
+  }
+  return data;
+}
 
 function getDataAsLines(
   processedData: IMetricsCollection[],
@@ -570,7 +629,7 @@ function getDataAsTableRows(
       const closestIndex =
         xValue === null
           ? null
-          : getClosestValue(metric.data.iterations as any, xValue).index;
+          : getClosestValue(metric.data.steps as any, xValue).index;
       const rowValues: { [key: string]: unknown } = {
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
@@ -582,8 +641,8 @@ function getDataAsTableRows(
         value: `${
           closestIndex === null ? '-' : metric.data.values[closestIndex]
         }`,
-        iteration: `${
-          closestIndex === null ? '-' : metric.data.iterations[closestIndex]
+        step: `${
+          closestIndex === null ? '-' : metric.data.steps[closestIndex]
         }`,
       };
       paramKeys.forEach((paramKey) => {

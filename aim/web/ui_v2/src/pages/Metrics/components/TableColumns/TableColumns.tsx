@@ -51,9 +51,9 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
       width: 150,
     },
     {
-      dataKey: 'iteration',
-      key: 'iteration',
-      title: 'Iteration',
+      dataKey: 'step',
+      key: 'step',
+      title: 'Step',
       width: 150,
     },
   ].concat(

@@ -1,4 +1,5 @@
 import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -111,6 +112,7 @@ interface IMetricAppConfig {
       };
       isApplied: boolean;
     };
+    xAxisAlignment: AlignmentOptions;
   };
 }
 
