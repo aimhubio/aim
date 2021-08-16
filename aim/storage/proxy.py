@@ -381,7 +381,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
 
         return AimObjectProxy(
             Eager2(self.__view__, name),
-            self.__view__.view((name,))
+            self.__view__.view(name)
         )
 
     def __getitem__(self, key):
@@ -391,7 +391,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
 
         return AimObjectProxy(
             Eager4(self.__view__, key),
-            self.__view__.view((key,))
+            self.__view__.view(key)
         )
 
     def __call__(self, *args, **kwargs):

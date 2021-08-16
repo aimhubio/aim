@@ -9,12 +9,16 @@ from urllib import parse
 
 from aim.engine.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.api.projects.project import Project
+from aim.web.api.projects.pydantic_models import (
+    ProjectActivityApiOut,
+    ProjectApiOut,
+    ProjectParamsOut,
+)
 from aim.web.api.utils import object_factory
-
 projects_router = APIRouter()
 
 
-@projects_router.get('/')
+@projects_router.get('/', response_model=ProjectApiOut)
 async def project_api(factory=Depends(object_factory)):
     project = Project()
 
@@ -30,7 +34,7 @@ async def project_api(factory=Depends(object_factory)):
     }
 
 
-@projects_router.get('/activity/')
+@projects_router.get('/activity/', response_model=ProjectActivityApiOut)
 async def project_activity_api(request: Request, factory=Depends(object_factory)):
     project = Project()
 
@@ -60,7 +64,7 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
     }
 
 
-@projects_router.get('/params/')
+@projects_router.get('/params/', response_model=ProjectParamsOut)
 async def project_params_api():
     project = Project()
 

@@ -35,7 +35,7 @@ function Controls(
     <Grid
       container
       direction='column'
-      justify='center'
+      justifyContent='center'
       spacing={1}
       alignItems='center'
     >
@@ -63,12 +63,30 @@ function Controls(
       </Grid>
       <Grid item>
         <ControlPopover
-          anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className={classes.anchor}>
-              <GroupWorkOutlined />
+          anchor={({ onAnchorClick, opened }) => (
+            <Box className={classes.anchor} position='relative'>
+              <span
+                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                onClick={onAnchorClick}
+              >
+                <KeyboardArrowLeft className='arrowLeft' />
+              </span>
+              <GroupWorkOutlined
+                color={props.aggregation?.isApplied ? 'primary' : 'inherit'}
+                onClick={() =>
+                  props.onAggregationChange({
+                    isApplied: !props.aggregation?.isApplied,
+                  })
+                }
+              />
             </Box>
           )}
-          component={<AggregationPopup />}
+          component={
+            <AggregationPopup
+              aggregation={props.aggregation}
+              onChange={props.onAggregationChange}
+            />
+          }
         />
       </Grid>
       <Grid item>
@@ -108,7 +126,7 @@ function Controls(
           component={
             <HighlightModePopup
               mode={props.highlightMode}
-              onChange={props.onChangeHighlightMode}
+              onChange={props.onHighlightModeChange}
             />
           }
         />
