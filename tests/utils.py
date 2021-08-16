@@ -32,9 +32,7 @@ def truncate_structured_db(db):
 
 def truncate_api_db():
     with get_contexted_session() as session:
-        print(session)
         meta = ApiBase.metadata
         for table in reversed(meta.sorted_tables):
-            print(table.name)
             session.execute(sa_text(f'DELETE FROM {table.name};'))
             session.commit()

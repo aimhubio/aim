@@ -75,8 +75,6 @@ class TestDashboardsApi(ApiTestBase):
         self.assertEqual(200, response.status_code)
         data = response.json()
         self.assertEqual(5, len(data))
-        dashboard_names = [f'dashboard_{i}' for i in range(5)]
-        print(dashboard_names)
 
     def test_get_dashboard_api(self):
         list_response = self.client.get('/api/dashboards/')
