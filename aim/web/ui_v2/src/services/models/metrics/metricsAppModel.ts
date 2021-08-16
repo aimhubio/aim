@@ -930,6 +930,12 @@ function onNotificationAdd(notification: INotification) {
   }, 3000);
 }
 
+function onResetConfigData(): void {
+  model.setState({
+    config: getConfig(),
+  });
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -959,6 +965,7 @@ const metricAppModel = {
   onNotificationDelete,
   onNotificationAdd,
   onBookmarkUpdate,
+  onResetConfigData,
 };
 
 export default metricAppModel;
