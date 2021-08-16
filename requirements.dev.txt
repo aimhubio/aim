@@ -1,0 +1,6 @@
+pytest
+wheel
+twine
+flake8
+parameterized==0.8.1
+pytest-cov==2.12.1

@@ -112,14 +112,14 @@ function SmoothingPopover(
           selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
           onClick={handleAlgorithmChange}
         >
-          Exponential Moving area
+          Exponential Moving Average
         </MenuItem>
         <MenuItem
           id={SmoothingAlgorithmEnum.CMA}
           selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
           onClick={handleAlgorithmChange}
         >
-          Central Moving area
+          Centred Moving Average
         </MenuItem>
       </MenuList>
       <Divider />

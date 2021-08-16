@@ -13,12 +13,14 @@ import {
   calculateExponentialMovingAverage,
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
   GroupingSelectOptionType,
   GroupNameType,
+  IAggregation,
+  IAppData,
+  IDashboardData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -26,6 +28,7 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
+  ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IRun } from 'types/services/models/metrics/runModel';
@@ -37,20 +40,35 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import getStateFromUrl from 'utils/getStateFromUrl';
 import {
   aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  adjustable_reader,
+  decodePathsVals,
+  decode_buffer_pairs,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
+let tooltipData: ITooltipData = {};
 
 function getConfig() {
   return {
     grouping: {
       color: [],
       style: [],
-      chart: ['run.params.hparams.lr'],
+      chart: [],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -90,10 +108,19 @@ function getConfig() {
       },
       focusedState: {
         active: false,
+        key: null,
+        xValue: null,
+        yValue: null,
+        chartIndex: null,
       },
     },
   };
 }
+
+let appRequestRef: {
+  call: () => Promise<IAppData>;
+  abort: () => void;
+};
 
 function initialize() {
   model.init();
@@ -102,34 +129,130 @@ function initialize() {
       tableRef: { current: null },
       chartPanelRef: { current: null },
     },
-    config: getConfig(),
   });
 }
 
-function getMetricsData() {
-  const { call, abort } = metricsService.getMetricsData();
+function setDefaultAppConfigData() {
+  const grouping: IMetricAppConfig['grouping'] =
+    getStateFromUrl('grouping') || getConfig().grouping;
+  const chart: IMetricAppConfig['chart'] =
+    getStateFromUrl('chart') || getConfig().chart;
+  const configData: IMetricAppConfig = _.merge(getConfig(), {
+    chart,
+    grouping,
+  });
+  model.setState({
+    config: configData,
+  });
+}
+
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
   return {
-    call: () =>
-      call().then((runData: IRun[]) => {
-        const { data, params } = processData(runData);
-        const configData = model.getState()?.config;
-        if (configData) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions(params),
-          ];
-        }
-        model.setState({
-          rawData: runData,
-          config: configData,
-          params,
-          data,
-          lineChartData: getDataAsLines(data),
-          tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params),
-        });
-      }),
-    abort,
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData);
+      model.setState({
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
   };
+}
+
+let metricsRequestRef: {
+  call: () => Promise<ReadableStream<IRun[]>>;
+  abort: () => void;
+};
+
+function getMetricsData() {
+  if (metricsRequestRef) {
+    metricsRequestRef.abort();
+  }
+  metricsRequestRef = metricsService.getMetricsData({
+    q: 'metric_name == "bleu"',
+  });
+  return {
+    call: async () => {
+      const stream = await metricsRequestRef.call();
+      let gen = adjustable_reader(stream);
+      let buffer_pairs = decode_buffer_pairs(gen);
+      let decodedPairs = decodePathsVals(buffer_pairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+
+      const runData: IRun[] = [];
+      for await (let [keys, val] of objects) {
+        runData.push(val as any);
+      }
+
+      const { data, params } = processData(runData);
+      const configData = model.getState()?.config;
+      if (configData) {
+        configData.grouping.selectOptions = [
+          ...getGroupingSelectOptions(params),
+        ];
+      }
+      model.setState({
+        rawData: runData,
+        config: configData,
+        params,
+        data,
+        lineChartData: getDataAsLines(data),
+        tableData: getDataAsTableRows(data, null, params),
+        tableColumns: getTableColumns(params),
+      });
+    },
+    abort: metricsRequestRef.abort,
+  };
+}
+
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    const data: IAppData | any = await appsService.createApp(configData).call();
+    if (data.id) {
+      dashboardService
+        .createDashboard({ app_id: data.id, name, description })
+        .call()
+        .then((res: IDashboardData | any) => {
+          if (res.id) {
+            onNotificationAdd({
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.CREATE,
+            });
+          }
+        })
+        .catch((err) => {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          });
+        });
+    }
+  }
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, configData)
+      .call()
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.UPDATE,
+          });
+        }
+      });
+  }
 }
 
 function getGroupingSelectOptions(
@@ -140,6 +263,7 @@ function getGroupingSelectOptions(
     group: 'params',
     label: param,
   }));
+
   return [
     ...paramsOptions,
     {
@@ -149,8 +273,8 @@ function getGroupingSelectOptions(
     },
     {
       group: 'Other',
-      label: 'run_hash',
-      value: 'run.run_hash',
+      label: 'run.hash',
+      value: 'run.params.status.hash',
     },
     {
       group: 'Other',
@@ -174,47 +298,44 @@ function processData(data: IRun[]): {
   let index: number = -1;
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
-  data.forEach((run: any) => {
-    params = params.concat(getObjectPaths(run.params));
+  data.forEach((run: IRun) => {
+    params = params.concat(
+      getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
+    );
     metrics = metrics.concat(
-      run.metrics.map((metric: IMetric) => {
+      run.traces.map((trace) => {
         index++;
         return createMetricModel({
-          ...metric,
-          run: createRunModel(_.omit(run, 'metrics') as IRun),
-          selectors: [
-            encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
-            }),
-            encode({
-              runHash: run.run_hash,
-              metricName: metric.metric_name,
-              metricContext: metric.context,
-            }),
-            run.run_hash,
-          ],
+          ...trace,
+          run: createRunModel(_.omit(run, 'traces') as IRun),
           key: encode({
-            runHash: run.run_hash,
-            metricName: metric.metric_name,
-            traceContext: metric.context,
+            runHash: run.params.status.hash,
+            metricName: trace.metric_name,
+            traceContext: trace.context,
           }),
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           data: {
-            ...metric.data,
-            xValues: [...metric.data.iterations],
-            yValues: [...metric.data.values],
+            values: new Float64Array(trace.values.blob),
+            iterations: new Float64Array(trace.iters.blob),
+            epochs: new Float64Array(trace.epochs.blob),
+            timestamps: new Float64Array(trace.timestamps.blob),
+            xValues: [...new Float64Array(trace.iters.blob)],
+            yValues: [...new Float64Array(trace.values.blob)],
           },
         } as IMetric);
       }),
     );
   });
 
+  const processedData = groupData(metrics);
+  const uniqParams = _.uniq(params);
+
+  setTooltipData(processedData, uniqParams);
+
   return {
-    data: groupData(metrics),
-    params: _.uniq(params),
+    data: processedData,
+    params: uniqParams,
   };
 }
 
@@ -368,8 +489,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
       const chartIndexConfig = _.pick(groupValue.config, groupByChart);
       const chartIndexKey = encode(chartIndexConfig);
       if (chartIndexConfigsMap.hasOwnProperty(chartIndexKey)) {
-        groupValue.dasharray =
-          DASH_ARRAYS[chartIndexConfigsMap[chartIndexKey] % DASH_ARRAYS.length];
+        groupValue.chartIndex = chartIndexConfigsMap[chartIndexKey];
       } else {
         chartIndexConfigsMap[chartIndexKey] = chartIndex;
         groupValue.chartIndex = chartIndex;
@@ -424,7 +544,7 @@ function getDataAsLines(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.run_hash],
+          selectors: [metric.key, metric.key, metric.run.params.status.hash],
           data: {
             xValues: metric.data.xValues,
             yValues,
@@ -456,8 +576,8 @@ function getDataAsTableRows(
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.color,
-        experiment: metric.run.experiment_name,
-        run: metric.run.name,
+        experiment: metric.run.params.experiment_name,
+        run: metric.run.params.status.name,
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         value: `${
@@ -483,14 +603,62 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
   }
 }
 
+function setTooltipData(
+  processedData: IMetricsCollection[],
+  paramKeys: string[],
+): void {
+  const data: { [key: string]: any } = {};
+
+  function getGroupConfig(metric: IMetric) {
+    const configData = model.getState()?.config;
+    const groupingItems: GroupNameType[] = ['color', 'style', 'chart'];
+    let groupConfig: { [key: string]: {} } = {};
+    for (let groupItemKey of groupingItems) {
+      const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+      if (groupItem.length) {
+        groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+          Object.assign(acc, {
+            [paramKey.replace('run.params.', '')]: _.get(metric, paramKey),
+          });
+          return acc;
+        }, {});
+      }
+    }
+    return groupConfig;
+  }
+
+  for (let metricsCollection of processedData) {
+    for (let metric of metricsCollection.data) {
+      data[metric.key] = {
+        metricName: metric.metric_name,
+        metricContext: metric.context,
+        group_config: getGroupConfig(metric),
+        params: paramKeys.reduce((acc, paramKey) => {
+          Object.assign(acc, {
+            [paramKey]: _.get(metric, `run.params.${paramKey}`),
+          });
+          return acc;
+        }, {}),
+      };
+    }
+  }
+
+  tooltipData = data;
+}
+
 //Chart Methods
 
-function onChangeHighlightMode(mode: HighlightEnum): void {
+function onHighlightModeChange(mode: HighlightEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.highlightMode = mode;
     model.setState({
-      config: configData,
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          highlightMode: mode,
+        },
+      },
     });
   }
 }
@@ -498,8 +666,33 @@ function onChangeHighlightMode(mode: HighlightEnum): void {
 function onZoomModeChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.zoomMode = !configData.chart.zoomMode;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          zoomMode: !configData.chart.zoomMode,
+        },
+      },
+    });
+  }
+}
+
+function onAggregationChange(aggregation: Partial<IAggregation>): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart && !_.isEmpty(aggregation)) {
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          aggregation: {
+            ...configData.chart.aggregation,
+            ...aggregation,
+          },
+        },
+      },
+    });
   }
 }
 
@@ -526,8 +719,15 @@ function onDisplayOutliersChange(): void {
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.axesScaleType = params;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          axesScaleType: params,
+        },
+      },
+    });
   }
 }
 
@@ -626,7 +826,6 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
   }
 }
 
-//Table Methods
 function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
@@ -641,27 +840,32 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    // tableRef.current?.updateData({ newData: tableData.flat() });
+    tableRef.current?.updateData({ newData: tableData.flat() });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
     );
-
     if (focusedStateActive) {
-      tableRef.current?.scrollToRow(activePoint.key);
+      tableRef.current?.scrollToRow?.(activePoint.key);
     }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
       active: focusedStateActive,
-      ...activePoint,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
     };
     stateUpdate.config = configData;
+    stateUpdate.tooltipContent = tooltipData[activePoint.key] || {};
   }
 
   model.setState(stateUpdate);
 }
+
+//Table Methods
 
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
@@ -688,17 +892,58 @@ function onTableRowClick(rowKey: string | null): void {
   }
 }
 
+function updateGroupingStateUrl(): void {
+  const groupingData = model.getState()?.config?.grouping;
+  if (groupingData) {
+    updateUrlParam('grouping', groupingData);
+  }
+}
+
+function updateChartStateUrl(): void {
+  const chartData = model.getState()?.config?.chart;
+  if (chartData) {
+    updateUrlParam('chart', chartData);
+  }
+}
+
+function updateUrlParam(
+  paramName: string,
+  data: Record<string, unknown>,
+): void {
+  const encodedUrl: string = encode(data);
+  const url: string = getUrlWithParam(paramName, encodedUrl);
+  window.history.pushState(null, '', url);
+}
+
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
+}
+
 const metricAppModel = {
   ...model,
   initialize,
   getMetricsData,
+  getAppConfigData,
   getDataAsTableRows,
   setComponentRefs,
-  onChangeHighlightMode,
+  setDefaultAppConfigData,
+  onHighlightModeChange,
   onZoomModeChange,
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
+  onAggregationChange,
   onActivePointChange,
   onTableRowHover,
   onTableRowClick,
@@ -708,6 +953,12 @@ const metricAppModel = {
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
+  onBookmarkCreate,
+  updateGroupingStateUrl,
+  updateChartStateUrl,
+  onNotificationDelete,
+  onNotificationAdd,
+  onBookmarkUpdate,
 };
 
 export default metricAppModel;

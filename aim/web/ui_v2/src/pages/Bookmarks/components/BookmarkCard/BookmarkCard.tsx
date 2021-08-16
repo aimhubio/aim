@@ -7,22 +7,20 @@ import './bookmarkCardStyle.scss';
 
 function BookmarkCard({
   name,
-  ifLabel,
-  selectLabel,
-  path,
+  app_id,
 }: IBookmarkCardProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <NavLink to={path} className='BookMarkCard'>
+    <NavLink to={`/metrics/${app_id}`} className='BookMarkCard'>
       <div className='BookMarkCard__top'>
         <span>{name}</span>
       </div>
 
       <div className='BookMarkCard__bottom'>
         <div>
-          <strong>select</strong> {selectLabel}
+          <strong>select</strong>
         </div>
         <div>
-          <strong>if</strong> {ifLabel}
+          <strong>if</strong>
         </div>
       </div>
     </NavLink>

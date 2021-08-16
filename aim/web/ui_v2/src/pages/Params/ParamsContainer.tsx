@@ -4,6 +4,7 @@ import Params from './Params';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import useModel from 'hooks/model/useModel';
+import { ITooltipContent } from 'types/services/models/metrics/metricsAppModel';
 
 const paramsRequestRef = paramsAppModel.getParamsData();
 
@@ -30,6 +31,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         paramsData?.config?.chart?.isVisibleColorIndicator
       }
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
+      tooltipContent={paramsData?.tooltipContent as ITooltipContent}
       onColorIndicatorChange={paramsAppModel?.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel?.onCurveInterpolationChange}
       onActivePointChange={paramsAppModel?.onActivePointChange}

@@ -1,9 +1,14 @@
-import { IGetAxisScale } from './getAxisScale';
-import { ILineDataType, ILinesDataType } from './drawParallelLines';
-import { DimensionsType } from './drawParallelAxes';
-import { ISyncHoverStateParams } from './drawHoverAttributes';
 import React from 'react';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { IGetAxisScale } from './getAxisScale';
+import { ILineValuesDataType } from './drawParallelLines';
+import { DimensionsType } from './drawParallelAxes';
+import {
+  ISyncHoverStateParams,
+  INearestCircle,
+  IActivePoint,
+} from './drawHoverAttributes';
+import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawParallelHoverAttributesProps {
   index: number;
@@ -11,6 +16,8 @@ export interface IDrawParallelHoverAttributesProps {
   visAreaRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
+  bgRectNodeRef: React.MutableRefObject<>;
+  axesNodeRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{
     xScale?: IGetAxisScale;
@@ -22,24 +29,16 @@ export interface IDrawParallelHoverAttributesProps {
     setActiveLine: (lineKey: string) => void;
     yColorIndicatorScale: d3.ScaleSequential;
     mousePosition: number[];
+    activePoint?: IActivePoint;
+    lineKey?: string;
+    focusedState?: IFocusedState;
+    updateFocusedChart: (params: IUpdateParallelFocusedChartProps) => void;
   }>;
-  syncHoverState: (params: ISyncHoverStateParams | null) => void;
-  closestCircleRef: React.MutableRefObject<>;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
   linesNodeRef: React.MutableRefObject<>;
   index: number;
   highlightedNodeRef: React.MutableRefObject<>;
-  highlightMode: HighlightEnum;
   isVisibleColorIndicator: boolean;
-}
-
-export interface IGetParallelNearestCirclesProps {
-  data: ILinesDataType[];
-  xScale: IGetAxisScale;
-  yScale: IGetAxisScale;
-  mouseX: number;
-  mouseY: number;
-  keysOfDimensions: string[];
-  isVisibleColorIndicator?: boolean;
 }
 
 export interface IParallelClosestCircle {
@@ -47,13 +46,16 @@ export interface IParallelClosestCircle {
   r: number | null;
   x: number;
   y: number;
-  values: ILineDataType;
+  values: ILineValuesDataType;
   color: string;
 }
+export interface IUpdateParallelFocusedChartProps {
+  mouse: [number, number];
+  focusedStateActive?: boolean;
+  force?: boolean;
+}
 
-export interface IParallelNearestCircle {
-  x: number;
-  y: number;
-  key: string;
-  color: string;
+export interface IParallelNearestCircle extends INearestCircle {
+  lastYScalePos?: number;
+  values?: ILineValuesDataType;
 }

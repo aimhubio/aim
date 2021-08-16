@@ -1,5 +1,3 @@
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
-import React from 'react';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -13,7 +11,7 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
-import { IActivePoint } from 'utils/d3/drawHoverAttributes';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface IMetricAppModelState {
   refs: {
@@ -27,6 +25,22 @@ export interface IMetricAppModelState {
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
   params: string[];
+  notifyData: INotification[];
+  tooltipContent: ITooltipContent;
+}
+
+export interface ITooltipData {
+  [key: string]: ITooltipContent;
+}
+
+export interface ITooltipContent {
+  group_config?: {
+    [key: string]: any;
+  };
+  params?: {
+    [key: string]: any;
+  };
+  [key: string]: any;
 }
 
 export interface IMetricsCollection {
@@ -90,18 +104,24 @@ interface IMetricAppConfig {
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
     focusedState: IFocusedState;
-    aggregation: {
-      methods: {
-        area: AggregationAreaMethods;
-        line: AggregationLineMethods;
-      };
-      isApplied: boolean;
-    };
+    aggregation: IAggregation;
   };
 }
 
-export interface IFocusedState extends Partial<IActivePoint> {
+export interface IAggregation {
+  methods: {
+    area: AggregationAreaMethods;
+    line: AggregationLineMethods;
+  };
+  isApplied: boolean;
+}
+
+export interface IFocusedState {
   active: boolean;
+  key: string | null;
+  xValue: number | null;
+  yValue: number | null;
+  chartIndex: number | null;
 }
 
 export interface IMetricTableRowData {
@@ -147,3 +167,24 @@ export type GroupingSelectOptionType = {
   group: string;
   value: string;
 };
+
+export interface IAppData extends Partial<IMetricAppConfig> {
+  created_at?: string;
+  id?: string;
+  updated_at?: string;
+}
+
+export interface IDashboardRequestBody {
+  name: string;
+  description: string;
+  app_id: string;
+}
+
+export interface IDashboardData {
+  app_id: string;
+  created_at: string;
+  id: string;
+  name: string;
+  description: string;
+  updated_at: string;
+}
