@@ -5,7 +5,6 @@ import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
 import Controls from './components/Controls/Controls';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
-
 import './Params.scss';
 
 const Params = ({
