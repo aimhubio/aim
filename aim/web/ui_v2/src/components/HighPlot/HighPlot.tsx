@@ -1,5 +1,4 @@
 import React from 'react';
-import useStyles from './highPlotStyle';
 
 import {
   drawParallelArea,
@@ -25,7 +24,6 @@ const HighPlot = React.forwardRef(function HighPlot(
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const classes = useStyles();
   // containers
   const parentRef = React.useRef<HTMLDivElement>(null);
   const visAreaRef = React.useRef<HTMLDivElement>(null);
@@ -56,7 +54,6 @@ const HighPlot = React.forwardRef(function HighPlot(
   const attributesRef = React.useRef<any>({});
   const axesRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
-  const closestCircleRef = React.useRef(null);
   const brushRef = React.useRef<any>({});
 
   const draw = React.useCallback((): void => {
@@ -106,12 +103,12 @@ const HighPlot = React.forwardRef(function HighPlot(
       linesRef,
       attributesRef,
       visBoxRef,
-      closestCircleRef,
+      bgRectNodeRef,
       attributesNodeRef,
       linesNodeRef,
       highlightedNodeRef,
       isVisibleColorIndicator,
-      highlightMode: 0,
+      axesNodeRef,
       syncHoverState,
     });
 
@@ -124,22 +121,12 @@ const HighPlot = React.forwardRef(function HighPlot(
       dimensions: data.dimensions,
       data: data.data,
     });
-    if (isVisibleColorIndicator) {
-      attributesRef.current.mousePosition &&
-        attributesRef.current.updateHoverAttributes(
-          attributesRef.current.mousePosition,
-          true,
-        );
-    }
   }, [curveInterpolation, index, isVisibleColorIndicator, data]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {
       attributesRef.current.setActiveLine?.(lineKey);
     },
-    // updateHoverAttributes: (xValue: number) => {
-    //   attributesRef.current.updateHoverAttributes?.(xValue);
-    // },
     clearHoverAttributes: () => {
       attributesRef.current.clearHoverAttributes?.();
     },
@@ -152,9 +139,6 @@ const HighPlot = React.forwardRef(function HighPlot(
     setActiveLine: (lineKey: string) => {
       attributesRef.current.setActiveLine?.(lineKey);
     },
-    // updateHoverAttributes: (xValue: number) => {
-    //   attributesRef.current.updateHoverAttributes?.(xValue);
-    // },
     clearHoverAttributes: () => {
       attributesRef.current.clearHoverAttributes?.();
     },
@@ -181,14 +165,13 @@ const HighPlot = React.forwardRef(function HighPlot(
 
   React.useEffect(() => {
     requestAnimationFrame(renderChart);
-    //   }, [props.data, renderChart, displayOutliers, highlightMode]);
   }, [renderChart]);
 
   return (
-    <div ref={parentRef} className={`${classes.chart} HighPlot__container`}>
+    <div ref={parentRef} className='HighPlot__container'>
       <div ref={visAreaRef} />
     </div>
   );
 });
 
-export default HighPlot;
+export default React.memo(HighPlot);

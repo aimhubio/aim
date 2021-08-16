@@ -114,3 +114,5 @@ aim.sublime-*
 data
 examples/.aim
 examples/.git
+
+coverage_html_report/

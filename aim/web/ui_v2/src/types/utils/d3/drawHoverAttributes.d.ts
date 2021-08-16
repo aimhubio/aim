@@ -1,9 +1,9 @@
 import React from 'react';
 import { ILineChartProps } from 'components/LineChart/LineChart';
 import { IProcessedData } from './processData';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { IGetAxisScale } from './getAxisScale';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface IDrawHoverAttributesProps {
   index: number;
@@ -48,7 +48,6 @@ export interface INearestCircle {
   y: number;
   key: string;
   color: string;
-  lastYScalePos?: number;
 }
 
 export interface IActivePoint {

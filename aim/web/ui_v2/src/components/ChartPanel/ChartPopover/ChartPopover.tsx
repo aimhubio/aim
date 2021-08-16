@@ -2,7 +2,7 @@ import React from 'react';
 import { Popover, PopoverPosition } from '@material-ui/core';
 import { isEqual } from 'lodash-es';
 
-import './chartPopoverStyle.scss';
+import './ChartPopover.scss';
 import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
 
 function ChartPopover({

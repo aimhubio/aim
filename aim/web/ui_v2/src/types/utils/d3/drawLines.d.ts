@@ -2,7 +2,7 @@ import React from 'react';
 import { IDrawAxesProps } from './drawAxes';
 import { IProcessedData } from './processData';
 import { CurveEnum } from 'utils/d3';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface IDrawLinesProps {
   linesRef: React.MutableRefObject<>;

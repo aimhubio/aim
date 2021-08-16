@@ -169,7 +169,7 @@ export function aggregateGroupData({
       case AggregationAreaMethods.STD_DEV:
       case AggregationAreaMethods.STD_ERR:
       case AggregationAreaMethods.CONF_INT:
-        let setpValues: { [key: number]: { min: number; max: number } } = {};
+        let stepValues: { [key: number]: { min: number; max: number } } = {};
         xValues.forEach((x) => {
           const mean = _.sum(yValuesPerX[x]) / yValuesPerX[x].length;
 
@@ -180,13 +180,13 @@ export function aggregateGroupData({
           const stdDevValue = Math.sqrt(sum / (yValuesPerX[x].length - 1 || 1));
 
           if (methods.area === AggregationAreaMethods.STD_DEV) {
-            setpValues[x] = {
+            stepValues[x] = {
               min: mean - stdDevValue,
               max: mean + stdDevValue,
             };
           } else if (methods.area === AggregationAreaMethods.STD_ERR) {
             const stdErrValue = stdDevValue / Math.sqrt(yValuesPerX[x].length);
-            setpValues[x] = {
+            stepValues[x] = {
               min: mean - stdErrValue,
               max: mean + stdErrValue,
             };
@@ -194,7 +194,7 @@ export function aggregateGroupData({
             const zValue = 1.96; // for 95% confidence level
             const CI =
               zValue * (stdDevValue / Math.sqrt(yValuesPerX[x].length));
-            setpValues[x] = {
+            stepValues[x] = {
               min: mean - CI,
               max: mean + CI,
             };
@@ -203,11 +203,11 @@ export function aggregateGroupData({
 
         area.min = {
           xValues: xValues,
-          yValues: xValues.map((x) => setpValues[x].min) as number[],
+          yValues: xValues.map((x) => stepValues[x].min) as number[],
         };
         area.max = {
           xValues: xValues,
-          yValues: xValues.map((x) => setpValues[x].max) as number[],
+          yValues: xValues.map((x) => stepValues[x].max) as number[],
         };
         break;
       default:

@@ -23,6 +23,7 @@ class ContainerConfig(NamedTuple):
 class Repo:
 
     _pool = WeakValueDictionary()  # TODO: take read only into account
+    _default_path = None  # for unit-tests
 
     def __init__(self, path: str, *, read_only: bool = None):
         if read_only is not None:
@@ -52,12 +53,17 @@ class Repo:
     def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
 
+    @staticmethod
+    def set_default_path(path: str):
+        Repo._default_path = path
+
     @classmethod
     def default_repo(cls):
-        return cls.from_path('.aim')
+        return cls.from_path(cls._default_path or '.aim')
 
     @classmethod
     def from_path(cls, path: str, read_only: bool = None):
+        path = os.path.abspath(path)
         repo = cls._pool.get(path)
         if repo is None:
             repo = Repo(path, read_only=read_only)

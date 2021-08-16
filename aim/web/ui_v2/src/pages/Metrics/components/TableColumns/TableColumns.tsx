@@ -6,19 +6,21 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 
 function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
   return [
-    {
-      dataKey: 'experiment',
-      frozen: 'left',
-      key: 'experiment',
-      title: 'Experiment',
-      width: 150,
-      resizable: true,
-    },
+    // {
+    //   dataKey: 'experiment',
+    //   key: 'experiment',
+    //   title: 'Experiment',
+    //   width: 150,
+    //   resizable: true,
+    //   frozen: 'left',
+    // },
     {
       dataKey: 'run',
       key: 'run',
       title: 'Run',
       width: 150,
+      resizable: true,
+      frozen: 'left',
     },
     {
       dataKey: 'metric',

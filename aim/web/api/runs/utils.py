@@ -8,11 +8,12 @@ from aim.storage.context import Context
 from aim.storage.sdk.run import Run
 from aim.storage.sdk.trace import Trace
 from aim.storage.sdk.trace import QueryTraceCollection, QueryRunTraceCollection
+from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 
 
 def numpy_to_encodable(array: np.ndarray) -> dict:
     encoded_numpy = {
-        '_type': 'numpy',
+        'type': 'numpy',
         'shape': array.shape[0],
     }
 
@@ -42,9 +43,10 @@ def sliced_array(array: list, _slice: slice) -> list:
     last_step_needed = (_slice.stop - 1) % _slice.step != 0
     if last_step_needed:
         last_value = array[-1]
-        return array[_slice].append(last_value)
+        return array[_slice] + [last_value]
     else:
         return array[_slice]
+
 
 def collect_x_axis_data(x_trace: Trace, iters: np.ndarray) -> Tuple[Optional[dict], Optional[dict]]:
     if not x_trace:
@@ -65,24 +67,24 @@ def collect_x_axis_data(x_trace: Trace, iters: np.ndarray) -> Tuple[Optional[dic
         numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
 
 
-def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
+def aligned_traces_dict_constructor(requested_runs: List[AlignedRunIn], x_axis: str) -> dict:
     processed_runs_dict = {}
     for run_data in requested_runs:
-        run_name = run_data.get('name')
-        requested_traces = run_data.get('traces')
-        run = Run(hashname=run_name)
+        run_hashname = run_data.run_id
+        requested_traces = run_data.traces
+        run = Run(hashname=run_hashname)
 
         traces_list = []
         for trace_data in requested_traces:
-            context = Context(trace_data.get('context'))
-            trace = run.get_trace(metric_name=trace_data.get('metric_name'),
+            context = Context(trace_data.context)
+            trace = run.get_trace(metric_name=trace_data.metric_name,
                                   context=context)
             x_axis_trace = run.get_trace(metric_name=x_axis,
                                          context=context)
             if not (trace and x_axis_trace):
                 continue
 
-            _slice = slice(*trace_data.get('slice'))
+            _slice = slice(*trace_data.slice)
             iters = trace.values.sparse_numpy()[0]
             sliced_iters = sliced_np_array(iters, _slice)
             x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
@@ -93,7 +95,7 @@ def aligned_traces_dict_constructor(requested_runs: list, x_axis: str) -> dict:
                 'x_axis_iters': x_axis_iters,
             })
 
-        processed_runs_dict[run_name] = traces_list
+        processed_runs_dict[run_hashname] = traces_list
 
     return processed_runs_dict
 
@@ -151,11 +153,11 @@ def query_runs_dict_constructor(runs: QueryRunTraceCollection) -> dict:
     return runs_dict
 
 
-def collect_requested_traces(run: Run, requested_traces: dict, steps_num: int = 200) -> List[dict]:
+def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
     processed_traces_list = []
     for requested_trace in requested_traces:
-        metric_name = requested_trace.get('metric_name')
-        context = Context(requested_trace.get('context'))
+        metric_name = requested_trace.metric_name
+        context = Context(requested_trace.context)
         trace = run.get_trace(metric_name=metric_name, context=context)
         if not trace:
             continue
@@ -169,8 +171,8 @@ def collect_requested_traces(run: Run, requested_traces: dict, steps_num: int = 
         processed_traces_list.append({
             'metric_name': trace.name,
             'context': trace.context.to_dict(),
-            'values': values[_slice],
-            'iters': iters[_slice],
+            'values': sliced_array(values, _slice),
+            'iters': sliced_array(iters, _slice),
         })
 
     return processed_traces_list
