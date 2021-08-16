@@ -1,20 +1,27 @@
 import React from 'react';
 
-import { ILine, ILineChartProps } from '../LineChart/LineChart';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { ChartTypeEnum } from 'utils/d3';
+import { ILine, ILineChartProps } from 'types/components/LineChart/LineChart';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IProcessedData } from 'types/utils/d3/processData';
-import { IFocusedState } from 'services/models/metrics/metricsAppModel';
+import {
+  IFocusedState,
+  ITooltipContent,
+} from 'types/services/models/metrics/metricsAppModel';
+import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
 export interface IChartPanelProps {
   chartType: ChartTypeEnum;
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
   focusedState: IFocusedState;
-  chartProps: Omit<
-    ILineChartProps | IHighPlotProps,
-    'data' | 'index' | 'syncHoverState'
-  >[];
+  tooltipContent: ITooltipContent;
+  // chartProps: Omit<
+  //   ILineChartProps | IHighPlotProps,
+  //   'data' | 'index' | 'syncHoverState'
+  // >[];
+  // TODO need to fix type later
+  chartProps: any[];
   controls: React.ReactNode;
   onActivePointChange?: (
     activePoint: IActivePoint,
@@ -28,5 +35,19 @@ export interface IChartPanelRef {
 }
 
 interface IChartTypeConfig {
-  [key: string]: React.LazyExoticComponent<any>;
+  [key: string]:
+    | React.LazyExoticComponent<
+        React.MemoExoticComponent<
+          React.ForwardRefExoticComponent<
+            ILineChartProps & React.RefAttributes<unknown>
+          >
+        >
+      >
+    | React.LazyExoticComponent<
+        React.MemoExoticComponent<
+          React.ForwardRefExoticComponent<
+            IHighPlotProps & React.RefAttributes<unknown>
+          >
+        >
+      >;
 }

@@ -20,6 +20,7 @@ import {
   GroupingSelectOptionType,
   GroupNameType,
   IAppData,
+  IDashboardData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -27,6 +28,7 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
+  ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IRun } from 'types/services/models/metrics/runModel';
@@ -43,20 +45,22 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
-
 import {
   aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import {
   adjustable_reader,
   decodePathsVals,
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
+let tooltipData: ITooltipData = {};
 
 function getConfig() {
   return {
@@ -103,13 +107,31 @@ function getConfig() {
       },
       focusedState: {
         active: false,
+        key: null,
+        xValue: null,
+        yValue: null,
+        chartIndex: null,
       },
     },
   };
 }
 
+let appRequestRef: {
+  call: () => Promise<IAppData>;
+  abort: () => void;
+};
+
 function initialize() {
   model.init();
+  model.setState({
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
+  });
+}
+
+function setDefaultAppConfigData() {
   const grouping: IMetricAppConfig['grouping'] =
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
@@ -119,12 +141,25 @@ function initialize() {
     grouping,
   });
   model.setState({
-    refs: {
-      tableRef: { current: null },
-      chartPanelRef: { current: null },
-    },
     config: configData,
   });
+}
+
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
+  return {
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData);
+      model.setState({
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
+  };
 }
 
 let metricsRequestRef: {
@@ -179,9 +214,43 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
     const data: IAppData | any = await appsService.createApp(configData).call();
     if (data.id) {
       dashboardService
-        .createBookmark({ app_id: data.id, name, description })
-        .call();
+        .createDashboard({ app_id: data.id, name, description })
+        .call()
+        .then((res: IDashboardData | any) => {
+          if (res.id) {
+            onNotificationAdd({
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.CREATE,
+            });
+          }
+        })
+        .catch((err) => {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          });
+        });
     }
+  }
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, configData)
+      .call()
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.UPDATE,
+          });
+        }
+      });
   }
 }
 
@@ -193,6 +262,7 @@ function getGroupingSelectOptions(
     group: 'params',
     label: param,
   }));
+
   return [
     ...paramsOptions,
     {
@@ -257,9 +327,14 @@ function processData(data: IRun[]): {
     );
   });
 
+  const processedData = groupData(metrics);
+  const uniqParams = _.uniq(params);
+
+  setTooltipData(processedData, uniqParams);
+
   return {
-    data: groupData(metrics),
-    params: _.uniq(params),
+    data: processedData,
+    params: uniqParams,
   };
 }
 
@@ -527,6 +602,49 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
   }
 }
 
+function setTooltipData(
+  processedData: IMetricsCollection[],
+  paramKeys: string[],
+): void {
+  const data: { [key: string]: any } = {};
+
+  function getGroupConfig(metric: IMetric) {
+    const configData = model.getState()?.config;
+    const groupingItems: GroupNameType[] = ['color', 'style', 'chart'];
+    let groupConfig: { [key: string]: {} } = {};
+    for (let groupItemKey of groupingItems) {
+      const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+      if (groupItem.length) {
+        groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+          Object.assign(acc, {
+            [paramKey.replace('run.params.', '')]: _.get(metric, paramKey),
+          });
+          return acc;
+        }, {});
+      }
+    }
+    return groupConfig;
+  }
+
+  for (let metricsCollection of processedData) {
+    for (let metric of metricsCollection.data) {
+      data[metric.key] = {
+        metricName: metric.metric_name,
+        metricContext: metric.context,
+        group_config: getGroupConfig(metric),
+        params: paramKeys.reduce((acc, paramKey) => {
+          Object.assign(acc, {
+            [paramKey]: _.get(metric, `run.params.${paramKey}`),
+          });
+          return acc;
+        }, {}),
+      };
+    }
+  }
+
+  tooltipData = data;
+}
+
 //Chart Methods
 
 function onChangeHighlightMode(mode: HighlightEnum): void {
@@ -689,7 +807,6 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
   }
 }
 
-//Table Methods
 function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
@@ -709,22 +826,27 @@ function onActivePointChange(
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
     );
-
     if (focusedStateActive) {
-      tableRef.current?.scrollToRow(activePoint.key);
+      tableRef.current?.scrollToRow?.(activePoint.key);
     }
   }
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
       active: focusedStateActive,
-      ...activePoint,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
     };
     stateUpdate.config = configData;
+    stateUpdate.tooltipContent = tooltipData[activePoint.key] || {};
   }
 
   model.setState(stateUpdate);
 }
+
+//Table Methods
 
 function onTableRowHover(rowKey: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
@@ -774,12 +896,29 @@ function updateUrlParam(
   window.history.pushState(null, '', url);
 }
 
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
+}
+
 const metricAppModel = {
   ...model,
   initialize,
   getMetricsData,
+  getAppConfigData,
   getDataAsTableRows,
   setComponentRefs,
+  setDefaultAppConfigData,
   onChangeHighlightMode,
   onZoomModeChange,
   onSmoothingChange,
@@ -797,6 +936,9 @@ const metricAppModel = {
   onBookmarkCreate,
   updateGroupingStateUrl,
   updateChartStateUrl,
+  onNotificationDelete,
+  onNotificationAdd,
+  onBookmarkUpdate,
 };
 
 export default metricAppModel;

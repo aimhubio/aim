@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import { isNil, isEmpty } from 'lodash-es';
 
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import {
   IActivePoint,
   INearestCircle,

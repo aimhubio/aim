@@ -1,22 +1,46 @@
 import API from '../api';
-import { IBookmarkRequestBody } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IAppData,
+  IDashboardRequestBody,
+} from 'types/services/models/metrics/metricsAppModel';
+import { IApiRequest } from 'types/services/services';
 
 const endpoints = {
-  CREATE_DASHBOARD: 'dashboards',
+  DASHBOARD: 'dashboards',
 };
 
-function createBookmark(reqBody: IBookmarkRequestBody) {
-  return API.post(endpoints.CREATE_DASHBOARD, reqBody);
+function fetchDashboardsList(): IApiRequest<any> {
+  return API.get(endpoints.DASHBOARD);
 }
 
-function fetchBookmarks() {
-  return API.get(endpoints.CREATE_DASHBOARD);
+function fetchDashboard(id: string): IApiRequest<any> {
+  return API.get(`${endpoints.DASHBOARD}/${id}`);
+}
+
+function createDashboard(
+  reqBody: IDashboardRequestBody,
+): IApiRequest<IAppData> {
+  return API.post(endpoints.DASHBOARD, reqBody);
+}
+
+function updateDashboard(
+  id: string,
+  reqBody: IDashboardRequestBody,
+): IApiRequest<any> {
+  return API.put(`${endpoints.DASHBOARD}/${id}`, reqBody);
+}
+
+function deleteDashboard(id: string): IApiRequest<any> {
+  return API.delete(`${endpoints.DASHBOARD}/${id}`);
 }
 
 const dashboardService = {
   endpoints,
-  createBookmark,
-  fetchBookmarks,
+  createDashboard,
+  fetchDashboardsList,
+  fetchDashboard,
+  updateDashboard,
+  deleteDashboard,
 };
 
 export default dashboardService;
