@@ -2,6 +2,10 @@ import heapq
 import logging
 import os
 import aimrocks
+
+import cachetools
+import cachetools.func
+
 from pathlib import Path
 
 from aim.storage.encoding import encode_path
@@ -94,9 +98,7 @@ class ItemsIterator:
 
         return key, value
 
-
-    def _init_heap(self
-                   ):
+    def _init_heap(self):
         self._heap = []
         max_key = b''
         for prefix, iterator in self._iterators.items():
@@ -124,13 +126,12 @@ class KeysIterator(ItemsIterator):
         key, value = super().get()
         return key
 
-    def __next__(self) ->  bytes:
+    def __next__(self) -> bytes:
         key, value = super().__next__()
         return key
 
 
 class ValuesIterator(ItemsIterator):
-
     def get(self) -> bytes:
         key, value = super().get()
         return value
@@ -142,20 +143,37 @@ class ValuesIterator(ItemsIterator):
 
 class DB(object):
     def __init__(self, db_path: str, db_name: str, opts, read_only: bool = False):
+        assert read_only
         self.db_path = db_path
         self.db_name = db_name
-        self.paths: List[str]
-        self.dbs: Dict[bytes, aimrocks.DB]
         self.opts = opts
-        self._get_dbs()
+        self._dbs: Dict[bytes, aimrocks.DB] = dict()
 
-    def _get_dbs(self):
-        self.paths: Dict[str, str] = dict()
+    def _get_db(
+        self,
+        prefix: bytes,
+        path: str,
+        cache: Dict[bytes, aimrocks.DB],
+        store: Dict[bytes, aimrocks.DB] = None,
+    ):
+        db = cache.get(prefix)
+        if db is None:
+            db = aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
+        if store is not None:
+            store[prefix] = db
+        return db
 
+    @cachetools.func.ttl_cache(maxsize=None, ttl=0.1)
+    def _list_dir(self, path: str):
+        return os.listdir(path)
+
+    @property
+    @cachetools.func.ttl_cache(maxsize=None, ttl=0.1)
+    def dbs(self):
+        index_prefix = encode_path((self.db_name, "chunks"))
+        index_path = os.path.join(self.db_path, self.db_name, "index")
         try:
-            index_db = aimrocks.DB(os.path.join(self.db_path, self.db_name, 'index'),
-                                   opts=aimrocks.Options(**self.opts),
-                                   read_only=True)
+            index_db = self._get_db(index_prefix, index_path, self._dbs)
         except Exception as e:
             index_db = None
             logger.warning('No index was detected')
@@ -163,21 +181,17 @@ class DB(object):
         # If index exists -- only load those in progress
         selector = 'progress' if index_db is not None else 'chunks'
 
-        self.paths.update({
-            prefix: os.path.join(self.db_path, self.db_name, 'chunks', prefix)
-            for prefix in
-            os.listdir(os.path.join(self.db_path, self.db_name, selector))
-        })
+        new_dbs: Dict[bytes, aimrocks.DB] = {}
+        db_dir = os.path.join(self.db_path, self.db_name, selector)
+        for prefix in self._list_dir(db_dir):
+            path = os.path.join(self.db_path, self.db_name, "chunks", prefix)
+            prefix = encode_path((self.db_name, "chunks", prefix))
+            self._get_db(prefix, path, self._dbs, new_dbs)
 
-        self.dbs: Dict[bytes, aimrocks.DB] = {
-            encode_path((self.db_name, 'chunks', prefix)):
-                aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
-            for prefix, path in self.paths.items()
-        }
-        self.prefixes = set(self.dbs)
         if index_db is not None:
-            self.dbs[encode_path((self.db_name, 'chunks'))] = index_db
-        return self.dbs
+            new_dbs[index_prefix] = index_db
+        self._dbs = new_dbs
+        return new_dbs
 
     def close(self):
         ...
