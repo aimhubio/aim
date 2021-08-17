@@ -57,7 +57,7 @@ function drawParallelAxesBrush({
   }
 
   function updateLinesAndHoverAttributes(
-    brushRef: any,
+    brushRef: React.MutableRefObject<any>,
     keyOfDimension: string,
     extent: d3.BrushSelection | any,
   ) {
