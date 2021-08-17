@@ -72,10 +72,12 @@ function Controls(
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
               <GroupWorkOutlined
-                color={props.aggregation?.isApplied ? 'primary' : 'inherit'}
+                color={
+                  props.aggregationConfig?.isApplied ? 'primary' : 'inherit'
+                }
                 onClick={() =>
-                  props.onAggregationChange({
-                    isApplied: !props.aggregation?.isApplied,
+                  props.onAggregationConfigChange({
+                    isApplied: !props.aggregationConfig?.isApplied,
                   })
                 }
               />
@@ -83,8 +85,8 @@ function Controls(
           )}
           component={
             <AggregationPopup
-              aggregation={props.aggregation}
-              onChange={props.onAggregationChange}
+              aggregationConfig={props.aggregationConfig}
+              onChange={props.onAggregationConfigChange}
             />
           }
         />

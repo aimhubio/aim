@@ -121,6 +121,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           >
             {props.data.map((chartData: any, index: number) => {
               const Component = chartTypesConfig[props.chartType];
+              const aggregatedData = props.aggregatedData?.filter(
+                (data) => data.chartIndex === index,
+              );
               return (
                 <Grid
                   key={index}
@@ -137,6 +140,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     {...props.chartProps[0]}
                     index={index}
                     data={chartData}
+                    aggregatedData={aggregatedData}
+                    aggregationConfig={props.aggregationConfig}
                     syncHoverState={syncHoverState}
                   />
                 </Grid>

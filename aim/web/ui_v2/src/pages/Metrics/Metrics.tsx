@@ -81,6 +81,8 @@ function Metrics(
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
                 tooltipContent={props.tooltipContent}
+                aggregatedData={props.aggregatedData}
+                aggregationConfig={props.aggregationConfig}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,
@@ -88,7 +90,6 @@ function Metrics(
                     displayOutliers: props.displayOutliers,
                     zoomMode: props.zoomMode,
                     highlightMode: props.highlightMode,
-                    aggregation: props.aggregation,
                   },
                 ]}
                 controls={
@@ -99,14 +100,14 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     highlightMode={props.highlightMode}
-                    aggregation={props.aggregation}
+                    aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
                     onHighlightModeChange={props.onHighlightModeChange}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
-                    onAggregationChange={props.onAggregationChange}
+                    onAggregationConfigChange={props.onAggregationConfigChange}
                   />
                 }
               />

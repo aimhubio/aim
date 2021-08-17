@@ -6,7 +6,8 @@ import {
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import {
-  IAggregation,
+  IAggregatedData,
+  IAggregationConfig,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -25,6 +26,7 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
+  aggregatedData: IAggregatedData[];
   xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
@@ -32,7 +34,7 @@ export interface ILineChartProps {
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
-  aggregation: IAggregation;
+  aggregationConfig: IAggregationConfig;
 }
 
 export interface IUpdateFocusedChartProps {

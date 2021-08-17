@@ -18,7 +18,8 @@ import {
 import {
   GroupingSelectOptionType,
   GroupNameType,
-  IAggregation,
+  IAggregatedData,
+  IAggregationConfig,
   IAppData,
   IDashboardData,
   IGetGroupingPersistIndex,
@@ -99,7 +100,7 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
-      aggregation: {
+      aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
           line: AggregationLineMethods.MEAN,
@@ -195,12 +196,14 @@ function getMetricsData() {
           ...getGroupingSelectOptions(params),
         ];
       }
+
       model.setState({
         rawData: runData,
         config: configData,
         params,
         data,
         lineChartData: getDataAsLines(data),
+        aggregatedData: getAggregatedData(data),
         tableData: getDataAsTableRows(data, null, params),
         tableColumns: getTableColumns(params),
       });
@@ -378,7 +381,8 @@ function getGroupingPersistIndex({
 }
 
 function groupData(data: IMetric[]): IMetricsCollection[] {
-  const grouping = model.getState()!.config!.grouping;
+  const configData = model.getState()!.config;
+  const grouping = configData!.grouping;
   const { paletteIndex } = grouping;
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
   const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
@@ -500,17 +504,56 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
 
   const groups = Object.values(groupValues);
 
+  const chartConfig = configData!.chart;
+
   return aggregateGroupData({
     groupData: groups,
     methods: {
-      area: AggregationAreaMethods.MIN_MAX,
-      line: AggregationLineMethods.MEAN,
+      area: chartConfig.aggregationConfig.methods.area,
+      line: chartConfig.aggregationConfig.methods.line,
     },
-    scale: model.getState()!.config!.chart.axesScaleType,
+    scale: chartConfig.axesScaleType,
   });
 }
 
 function alignData() {}
+
+function getAggregatedData(
+  processedData: IMetricsCollection[],
+): IAggregatedData[] {
+  if (!processedData) {
+    return [];
+  }
+  const configData: IMetricAppConfig | any = model.getState()?.config;
+  const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
+
+  let aggregatedData: IAggregatedData[] = [];
+
+  console.log(processedData);
+
+  processedData.forEach((data, index) => {
+    aggregatedData.push({
+      key: encode(data.config as {}),
+      // TODO need to check key for highlight mode
+      // metricKey: encode({
+      //   runHash: run.params.status.hash,
+      //   metricName: trace.metric_name,
+      //   traceContext: trace.context,
+      // }),
+      area: {
+        min: data.aggregation?.area.min || null,
+        max: data.aggregation?.area.max || null,
+      },
+      line: data.aggregation?.line || null,
+      chartIndex: data.chartIndex || 0,
+      color:
+        data.color || COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+      dasharray: data.dasharray || '0',
+    });
+  });
+
+  return aggregatedData;
+}
 
 function getDataAsLines(
   processedData: IMetricsCollection[],
@@ -678,21 +721,19 @@ function onZoomModeChange(): void {
   }
 }
 
-function onAggregationChange(aggregation: Partial<IAggregation>): void {
+function onAggregationConfigChange(
+  aggregationConfig: Partial<IAggregationConfig>,
+): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart && !_.isEmpty(aggregation)) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          aggregation: {
-            ...configData.chart.aggregation,
-            ...aggregation,
-          },
-        },
+  if (configData?.chart && !_.isEmpty(aggregationConfig)) {
+    configData.chart = {
+      ...configData.chart,
+      aggregationConfig: {
+        ...configData.chart.aggregationConfig,
+        ...aggregationConfig,
       },
-    });
+    };
+    updateModelData(configData);
   }
 }
 
@@ -790,6 +831,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     config: configData,
     data: processedData.data,
     lineChartData: getDataAsLines(processedData.data),
+    aggregatedData: getAggregatedData(processedData.data),
     tableData: getDataAsTableRows(
       processedData.data,
       null,
@@ -943,7 +985,7 @@ const metricAppModel = {
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
-  onAggregationChange,
+  onAggregationConfigChange,
   onActivePointChange,
   onTableRowHover,
   onTableRowClick,
