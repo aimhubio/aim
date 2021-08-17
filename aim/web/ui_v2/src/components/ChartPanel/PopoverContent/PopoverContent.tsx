@@ -6,7 +6,7 @@ import { ChartTypeEnum } from 'utils/d3';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 
 import './PopoverContent.scss';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 function PopoverContent({
   tooltipContent,

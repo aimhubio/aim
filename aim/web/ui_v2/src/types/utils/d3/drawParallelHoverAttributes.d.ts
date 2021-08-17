@@ -34,7 +34,7 @@ export interface IDrawParallelHoverAttributesProps {
     focusedState?: IFocusedState;
     updateFocusedChart: (params: IUpdateParallelFocusedChartProps) => void;
   }>;
-  syncHoverState: (params: ISyncHoverStateParams | null) => void;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
   linesNodeRef: React.MutableRefObject<>;
   index: number;
   highlightedNodeRef: React.MutableRefObject<>;

@@ -1,5 +1,5 @@
 import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
-import { IMetricProps } from 'Metrics';
+import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 export interface IGroupingProps {
   groupingData: IMetricAppConfig['grouping'];

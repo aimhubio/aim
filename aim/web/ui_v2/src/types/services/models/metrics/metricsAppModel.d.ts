@@ -1,4 +1,3 @@
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -13,6 +12,7 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface IMetricAppModelState {
   refs: {
@@ -105,15 +105,17 @@ interface IMetricAppConfig {
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
     focusedState: IFocusedState;
-    aggregation: {
-      methods: {
-        area: AggregationAreaMethods;
-        line: AggregationLineMethods;
-      };
-      isApplied: boolean;
-    };
+    aggregation: IAggregation;
     xAxisAlignment: AlignmentOptions;
   };
+}
+
+export interface IAggregation {
+  methods: {
+    area: AggregationAreaMethods;
+    line: AggregationLineMethods;
+  };
+  isApplied: boolean;
 }
 
 export interface IFocusedState {
