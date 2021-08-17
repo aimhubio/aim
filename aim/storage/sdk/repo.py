@@ -1,6 +1,7 @@
 import os
 
-from typing import Dict, Iterator, NamedTuple, Optional, List
+from collections import defaultdict
+from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
 from aim.storage.sdk.run import Run
@@ -149,14 +150,15 @@ class Repo:
             'meta', read_only=True, from_union=True
         ).tree().view('meta')
 
-    def collect_metrics(self) -> List[str]:
+    def collect_metrics(self) -> Dict[str, list]:
         meta_tree = self.get_meta_tree()
         traces = meta_tree.collect('traces')
-        metrics = set()
-        for trace_metrics in traces.values():
-            metrics.update(trace_metrics.keys())
+        metrics = defaultdict(list)
+        for ctx_id, trace_metrics in traces.items():
+            for metric in trace_metrics.keys():
+                metrics[metric].append(meta_tree['contexts', ctx_id])
 
-        return list(metrics)
+        return metrics
 
     def collect_params(self):
         meta_tree = self.get_meta_tree()
