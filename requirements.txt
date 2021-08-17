@@ -15,6 +15,7 @@ cython
 tqdm
 filelock
 cachetools
+RestrictedPython
 # pandas # optional
 # server
 aiofiles>=0.5.0
