@@ -76,6 +76,7 @@ function Metrics(
           >
             {!!props.lineChartData?.[0]?.length ? (
               <ChartPanel
+                key={props.lineChartData?.length}
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData as any}

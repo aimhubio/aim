@@ -114,7 +114,7 @@ function getConfig() {
         yValue: null,
         chartIndex: null,
       },
-      xAxisAlignment: AlignmentOptions.RELATIVEE_TIME,
+      xAxisAlignment: AlignmentOptions.RELATIVE_TIME,
     },
   };
 }
@@ -532,7 +532,7 @@ function alignData(data: IMetricsCollection[]): IMetricsCollection[] {
       break;
     case AlignmentOptions.EPOCH:
       break;
-    case AlignmentOptions.RELATIVEE_TIME:
+    case AlignmentOptions.RELATIVE_TIME:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
         const firstDate = _.min(
