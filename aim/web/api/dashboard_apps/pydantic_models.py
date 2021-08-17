@@ -36,7 +36,7 @@ class ExploreState(BaseModel):
                 yScale: Optional[int] = None
                 pointsCount: Optional[int] = None
                 smoothingAlgorithm: Optional[str] = None
-                smoothFactor: Optional[Union[int, float]] = None
+                smoothFactor: Optional[Union[float, int]] = None
                 aggregated: Optional[bool] = None
 
             zoomMode: Optional[bool] = None
@@ -88,7 +88,7 @@ class ExploreState(BaseModel):
 
     class Screen(BaseModel):
         viewMode: Optional[str] = None
-        panelFlex: Optional[Union[int, float]] = None
+        panelFlex: Optional[Union[float, int]] = None
 
     class Table(BaseModel):
         class ColumnsOrder(BaseModel):
