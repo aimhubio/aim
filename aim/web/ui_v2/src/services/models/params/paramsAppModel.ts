@@ -398,8 +398,8 @@ function getDataAsLines(
         dimensions[key] = {
           scaleType: dimensionsObject[keyOfDimension][key].scaleType,
           domainData: [
-            Math.max(...dimensionsObject[keyOfDimension][key].values),
             Math.min(...dimensionsObject[keyOfDimension][key].values),
+            Math.max(...dimensionsObject[keyOfDimension][key].values),
           ],
           displayName: dimensionsObject[keyOfDimension][key].displayName,
         };
