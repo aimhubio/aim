@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
@@ -7,10 +8,10 @@ from uuid import UUID
 class DashboardOut(BaseModel):
     id: UUID
     name: str
-    description: str = ''
+    description: str = None
     app_id: Optional[UUID] = None
-    updated_at: str = 'Wed, 01 Jan 2021 16:12:07 GMT'
-    created_at: str = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    updated_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    created_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
 
 
 # request models
@@ -22,4 +23,4 @@ class DashboardUpdateIn(BaseModel):
 class DashboardCreateIn(BaseModel):
     name: str
     description: Optional[str] = None
-    app_id: Optional[UUID]
+    app_id: Optional[UUID] = None
