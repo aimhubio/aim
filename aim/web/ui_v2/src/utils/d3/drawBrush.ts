@@ -148,7 +148,7 @@ function drawBrush(props: IDrawBrushProps): void {
     // setting scales and lines to initial state
     brushRef.current.updateScales(xScale, yScale);
     linesRef.current.updateLinesScales(xScale, yScale);
-    linesRef.current.updateAreasScales(xScale, yScale);
+    linesRef.current.updateAggregatedAreasScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
     attributesRef.current.updateFocusedChart();

@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 import { CurveEnum } from './';
-import { IGetAxisScale } from '../../types/utils/d3/getAxisScale';
+import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 export default function areaGenerator(
   xScale: IGetAxisScale,

@@ -529,8 +529,6 @@ function getAggregatedData(
 
   let aggregatedData: IAggregatedData[] = [];
 
-  console.log(processedData);
-
   processedData.forEach((data, index) => {
     aggregatedData.push({
       key: encode(data.config as {}),

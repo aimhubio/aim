@@ -5,7 +5,7 @@ import lineGenerator from './lineGenerator';
 import { IProcessedData } from 'types/utils/d3/processData';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import areaGenerator from './areaGenerator';
-import { IAggregatedData } from '../../types/services/models/metrics/metricsAppModel';
+import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
 import { AggregationAreaMethods } from '../aggregateGroupData';
 import { ILine } from 'types/components/LineChart/LineChart';
 
@@ -61,7 +61,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
   };
 
-  linesRef.current.updateAreasScales = function (
+  linesRef.current.updateAggregatedAreasScales = function (
     xScale: IGetAxisScale,
     yScale: IGetAxisScale,
   ): void {
@@ -72,15 +72,17 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', areaGenerator(xScale, yScale));
   };
 
-  linesRef.current.updateAreas = function (data: IAggregatedData[]): void {
+  linesRef.current.updateAggregatedAreas = function (
+    data: IAggregatedData[],
+  ): void {
     linesNodeRef.current
       .selectAll('.Area')
       .data(data)
       .join('path')
       .attr('class', 'Area')
-      .attr('id', (area: IAggregatedData) => `Area-${area.key}`)
-      .attr('clip-path', 'url(#lines-rect-clip-' + index + ')')
-      .attr('fill', (area: IAggregatedData) => area.color)
+      .attr('id', (aggrData: IAggregatedData) => `Area-${aggrData.key}`)
+      .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('fill', (aggrData: IAggregatedData) => aggrData.color)
       .attr('fill-opacity', '0.3')
       .data(
         data.map((aggrData: IAggregatedData) =>
@@ -95,11 +97,44 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', areaGenerator(xScale, yScale));
   };
 
-  if (
-    aggregationConfig.isApplied &&
-    aggregationConfig.methods.area !== AggregationAreaMethods.NONE
-  ) {
-    linesRef.current.updateAreas(props.aggregatedData);
+  linesRef.current.updateAggregatedLines = function (
+    data: IAggregatedData[],
+  ): void {
+    linesNodeRef.current
+      .selectAll('.Line')
+      .data(data)
+      .join('path')
+      .attr('class', 'Line')
+      .attr('id', (aggrData: IAggregatedData) => `Line-${aggrData.key}`)
+      .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      // TODO implement highlight mode
+      // .attr(
+      //     'data-selector',
+      //     (line: IAggregatedData) =>
+      //         `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
+      // )
+      .style('fill', 'none')
+      .style('stroke', (aggrData: IAggregatedData) => aggrData.color)
+      .style(
+        'stroke-dasharray',
+        (aggrData: IAggregatedData) => aggrData.dasharray,
+      )
+      .data(
+        data.map((aggrData: IAggregatedData) =>
+          toTupleData(
+            aggrData.line?.xValues || [],
+            aggrData.line?.yValues || [],
+          ),
+        ),
+      )
+      .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
+  };
+
+  if (aggregationConfig.isApplied) {
+    if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
+      linesRef.current.updateAggregatedAreas(props.aggregatedData);
+    }
+    linesRef.current.updateAggregatedLines(props.aggregatedData);
   } else {
     linesRef.current.updateLines(props.data);
   }

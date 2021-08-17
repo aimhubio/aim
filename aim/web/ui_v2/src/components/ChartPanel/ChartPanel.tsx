@@ -103,9 +103,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   React.useEffect(() => {
     const debouncedScroll = debounce(onScroll, 100);
-    containerRef.current?.addEventListener('scroll', debouncedScroll);
+    const containerNode = containerRef.current;
+    containerNode?.addEventListener('scroll', debouncedScroll);
     return () => {
-      containerRef.current?.removeEventListener('scroll', debouncedScroll);
+      containerNode?.removeEventListener('scroll', debouncedScroll);
     };
   }, [onScroll]);
 
