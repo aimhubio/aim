@@ -30,6 +30,7 @@ class Run:
 
     contexts: Dict[Context, int] = dict()
     _idx_to_ctx: Dict[int, Context] = dict()
+    _props_cache_hint: str = None
 
     def __init__(self, hashname: str, *, repo: 'Repo' = None, read_only: bool = False):
         self._instance_creation_time = time()
@@ -152,10 +153,17 @@ class Run:
         val_view[step] = value
         epoch_view[step] = epoch
 
+    @classmethod
+    def set_props_cache_hint(cls, cache: str):
+        cls._props_cache_hint = cache
+
     @property
     def props(self):
         if self._props is None:
-            self._props = self.repo.structured_db.find_run(self.hashname)
+            if self._props_cache_hint:
+                self._props = self.repo.structured_db.caches[self._props_cache_hint][self.hashname]
+            else:
+                self._props = self.repo.structured_db.find_run(self.hashname)
         return self._props
 
     def proxy(self):
