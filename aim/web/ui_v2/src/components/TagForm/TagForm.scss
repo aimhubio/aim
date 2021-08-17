@@ -1,0 +1,17 @@
+.TagForm {
+  &__colorBox {
+    display: flex;
+    width: 100%;
+    padding: 10px 0;
+    &__colorButton {
+      margin-right: 5px;
+      cursor: pointer;
+      &:last-child {
+        margin-right: 0;
+      }
+      &.active {
+        border: 1px solid black;
+      }
+    }
+  }
+}

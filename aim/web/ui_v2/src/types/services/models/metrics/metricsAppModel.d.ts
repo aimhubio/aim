@@ -49,7 +49,7 @@ export interface IMetricsCollection {
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
-  data: IMetric[];
+  data: IMetric[] | IParam[];
   aggregation?: IAggregationData;
 }
 

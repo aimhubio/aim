@@ -57,7 +57,7 @@ function drawParallelAxesBrush({
   }
 
   function updateLinesAndHoverAttributes(
-    brushRef: any,
+    brushRef: React.MutableRefObject<any>,
     keyOfDimension: string,
     extent: d3.BrushSelection | any,
   ) {
@@ -134,7 +134,7 @@ function filterDataByBrushedScale({
       value !== null &&
       ((scaleType === 'point' && !domainData.includes(value)) ||
         (scaleType !== 'point' &&
-          (domainData[0] >= value || domainData[1] <= value)))
+          (domainData[0] > value || domainData[1] < value)))
     ) {
       return false;
     }

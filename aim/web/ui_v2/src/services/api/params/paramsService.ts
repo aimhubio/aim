@@ -1,21 +1,11 @@
-import { mockData, mockData2 } from './paramsMock';
+import API from '../api';
 
 const endpoints = {
-  GET_PARAMS: '/params',
+  GET_PARAMS: 'runs/search/run',
 };
 
 function getParamsData() {
-  // return API.get<unknown>(endpoints.SEARCH_METRICS);
-  return {
-    call: () => ({
-      then: (resolve: (data: any) => void, reject?: unknown) => {
-        setTimeout(() => {
-          resolve([mockData, mockData2]);
-        }, 1000);
-      },
-    }),
-    abort: () => null,
-  };
+  return API.getStream<ReadableStream>(endpoints.GET_PARAMS);
 }
 
 const paramsService = {
