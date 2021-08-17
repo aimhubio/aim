@@ -2,10 +2,14 @@ import random
 import shutil
 import itertools
 import datetime
+import os
 
 from aim.storage.sdk.repo import Repo
 from aim.storage.sdk.run import Run
 from aim.web.api.projects.project import Project
+from aim.web.utils import exec_cmd
+from aim.cli.up.utils import build_db_upgrade_command
+from aim.engine.configs import AIM_WEB_ENV_KEY
 
 TEST_REPO_PATH = '.aim-test-repo'
 
@@ -54,12 +58,19 @@ def cleanup_test_repo(path):
     shutil.rmtree(path)
 
 
+def upgrade_api_db():
+    db_cmd = build_db_upgrade_command()
+    exec_cmd(db_cmd, stream_output=True)
+
+
 def pytest_sessionstart(session):
     Repo.set_default_path(TEST_REPO_PATH)
     Project.set_repo_path(TEST_REPO_PATH)
 
     repo = Repo.default_repo()
     repo.structured_db.run_upgrades()
+    os.environ[AIM_WEB_ENV_KEY] = 'test'
+    upgrade_api_db()
     init_test_repo(repo)
 
 
