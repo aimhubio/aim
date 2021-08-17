@@ -535,16 +535,28 @@ function alignData(data: IMetricsCollection[]): IMetricsCollection[] {
     case AlignmentOptions.RELATIVE_TIME:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
-        const firstDate = _.min(
-          metricCollection.data.map((metric) => metric.data.timestamps[0]),
-        )!;
         for (let j = 0; j < metricCollection.data.length; j++) {
           const metric = metricCollection.data[j];
+          const firstDate = metric.data.timestamps[0];
+          const timestamps: { [key: number]: number[] } = {};
+          metric.data.timestamps.forEach((timestamp, i) => {
+            if (timestamps.hasOwnProperty(timestamp)) {
+              timestamps[timestamp].push(metric.data.steps[i]);
+            } else {
+              timestamps[timestamp] = [metric.data.steps[i]];
+            }
+          });
           metric.data = {
             ...metric.data,
             xValues: [
               ...metric.data.timestamps.map(
-                (timestamp) => timestamp - firstDate,
+                (timestamp, i) =>
+                  timestamp -
+                  firstDate +
+                  (timestamps[timestamp].length > 1
+                    ? (0.99 / timestamps[timestamp].length) *
+                      timestamps[timestamp].indexOf(metric.data.steps[i])
+                    : 0),
               ),
             ],
             yValues: [...metric.data.values],
