@@ -19,7 +19,7 @@ import {
 } from 'utils/encoder/streamEncoding';
 import { IRun } from 'types/services/models/metrics/runModel';
 import COLORS from 'config/colors/colors';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IParam, ITrace } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
