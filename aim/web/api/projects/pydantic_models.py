@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import Dict
 from aim.web.api.experiments.pydantic_models import ExperimentListOut
 
 

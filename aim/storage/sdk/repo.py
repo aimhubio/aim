@@ -1,7 +1,7 @@
 import os
 
 from collections import defaultdict
-from typing import Dict, Iterator, NamedTuple, Optional, List
+from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
 from aim.storage.sdk.run import Run
