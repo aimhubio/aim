@@ -39,6 +39,7 @@ function Metrics(
               <AppBar
                 onBookmarkCreate={props.onBookmarkCreate}
                 onBookmarkUpdate={props.onBookmarkUpdate}
+                onResetConfigData={props.onResetConfigData}
               />
             </Paper>
           </Grid>

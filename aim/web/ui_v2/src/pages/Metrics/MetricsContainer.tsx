@@ -134,6 +134,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onBookmarkUpdate={metricAppModel.onBookmarkUpdate}
       onNotificationAdd={metricAppModel.onNotificationAdd}
       onNotificationDelete={metricAppModel.onNotificationDelete}
+      onResetConfigData={metricAppModel.onResetConfigData}
     />
   );
 }

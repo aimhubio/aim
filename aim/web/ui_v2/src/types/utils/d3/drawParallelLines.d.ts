@@ -1,6 +1,6 @@
 import React from 'react';
 import { CurveEnum } from 'utils/d3';
-import { DimensionsType } from './drawParallelAxes';
+import { IDimensionsType } from './drawParallelAxes';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 interface ILineValuesDataType {
@@ -27,7 +27,7 @@ export interface IDrawParallelLinesProps {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   linesRef: React.MutableRefObject<>;
-  dimensions: DimensionsType;
+  dimensions: IDimensionsType;
   data: ILineDataType[];
 }
 

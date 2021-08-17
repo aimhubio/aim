@@ -8,6 +8,7 @@ from aim.cli.init import commands as init_commands
 from aim.cli.experiment import commands as experiment_commands
 from aim.cli.version import commands as version_commands
 from aim.cli.up import commands as up_commands
+from aim.cli.upgrade import commands as upgrade_commands
 
 core._verify_python3_env = lambda: None
 
@@ -28,3 +29,4 @@ cli_entry_point.add_command(experiment_commands.exp_entry_point,
                             EXPERIMENT_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 cli_entry_point.add_command(up_commands.up, UP_NAME)
+cli_entry_point.add_command(upgrade_commands.upgrade, UPGRADE_NAME)
