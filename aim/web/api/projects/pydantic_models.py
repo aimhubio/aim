@@ -13,7 +13,7 @@ class ProjectApiOut(BaseModel):
 
 class ProjectParamsOut(BaseModel):
     params: Dict
-    metrics: List[str]
+    metrics: Dict[str, list]
 
 
 class ProjectActivityApiOut(BaseModel):
