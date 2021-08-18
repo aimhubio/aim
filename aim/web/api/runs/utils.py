@@ -5,9 +5,9 @@ from collections import defaultdict
 from typing import Iterator, Tuple, Optional, List
 
 from aim.storage.context import Context
-from aim.storage.sdk.run import Run
-from aim.storage.sdk.trace import Trace
-from aim.storage.sdk.trace import QueryTraceCollection, QueryRunTraceCollection
+from aim.sdk.run import Run
+from aim.sdk.trace import Trace
+from aim.sdk.trace import QueryTraceCollection, QueryRunTraceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 
 

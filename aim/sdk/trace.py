@@ -15,8 +15,8 @@ from typing import Generic, Iterator, TypeVar, List
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aim.storage.sdk.run import Run
-    from aim.storage.sdk.repo import Repo
+    from aim.sdk.run import Run
+    from aim.sdk.repo import Repo
     from pandas import DataFrame
 
 logger = logging.getLogger(__name__)

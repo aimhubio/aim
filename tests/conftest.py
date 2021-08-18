@@ -3,8 +3,8 @@ import shutil
 import itertools
 import datetime
 
-from aim.storage.sdk.repo import Repo
-from aim.storage.sdk.run import Run
+from aim.sdk.repo import Repo
+from aim.sdk.run import Run
 from aim.web.api.projects.project import Project
 
 TEST_REPO_PATH = '.aim-test-repo'

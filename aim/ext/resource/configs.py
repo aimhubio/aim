@@ -1,0 +1,3 @@
+# Aim Resource Collector
+AIM_RESOURCE_METRIC_PREFIX = '__system__'
+DEFAULT_SYSTEM_TRACKING_INT = 10

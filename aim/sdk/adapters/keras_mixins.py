@@ -1,7 +1,7 @@
 from typing import Optional, List
 from aim.sdk.track import track
-from aim.sdk.flush import flush
-from aim.sdk.session.session import Session
+from aim.sdk.legacy.flush import flush
+from aim.sdk.legacy.session import Session
 
 
 class TrackerKerasCallbackMetricsEpochEndMixin(object):

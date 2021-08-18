@@ -1,13 +1,16 @@
 import click
 import shutil
 
-from aim.engine.repo import AimRepo as LegacyRepo
-from aim.engine.repo.run import Run as LegacyRun
-from aim.engine.metric_artifact import deserialize_pb
+from aim.cli.upgrade._legacy_repo import (
+    AimRepo as LegacyRepo,
+    Run as LegacyRun,
+    deserialize_pb,
+    AIM_MAP_METRICS_KEYWORD
+)
 
-from aim.storage.sdk.utils import clean_repo_path
-from aim.storage.sdk.run import Run
-from aim.storage.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path
+from aim.sdk.run import Run
+from aim.sdk.repo import Repo
 
 
 class RepoIntegrityError(Exception):
@@ -38,8 +41,8 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
         run = Run(hashname=get_legacy_run_hash(lrun), repo=repo)
 
         lrun.open_storage()
-        if lrun.params.get('__METRICS__'):
-            del lrun.params['__METRICS__']  # set internally. no need to copy
+        if lrun.params.get(AIM_MAP_METRICS_KEYWORD):
+            del lrun.params[AIM_MAP_METRICS_KEYWORD]  # set internally. no need to copy
         run[...] = lrun.params
         run['v2_params'] = {'run_hash': lrun.run_hash}
         if 'process' in lrun.config:

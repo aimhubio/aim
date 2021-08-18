@@ -2,7 +2,7 @@ import unittest
 from fastapi.testclient import TestClient
 
 from tests.utils import truncate_structured_db
-from aim.storage.sdk.repo import Repo
+from aim.sdk.repo import Repo
 from aim.web.run import app
 
 TEST_REPO_PATH = '.aim-test-repo'

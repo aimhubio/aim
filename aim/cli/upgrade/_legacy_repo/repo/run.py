@@ -1,19 +1,17 @@
 import os
 from typing import Optional, Dict
 import json
-from copy import deepcopy
 
-from aim.engine.configs import (
+from aim.cli.upgrade._legacy_repo.configs import (
     AIM_OBJECTS_DIR_NAME,
     AIM_MAP_DIR_NAME,
     AIM_COMMIT_CONFIG_FILE_NAME,
-    AIM_MAP_METRICS_KEYWORD,
 )
-from aim.engine.repo.utils import (
+from aim.cli.upgrade._legacy_repo.repo.utils import (
     get_run_objects_dir_path,
     get_run_objects_meta_file_path,
 )
-from aim.engine.repo.metric import Metric
+from aim.cli.upgrade._legacy_repo.repo.metric import Metric
 
 
 class Run(object):

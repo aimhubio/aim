@@ -1,4 +1,4 @@
-from aim.version_control.git import GitAdapter
+from aim.ext.version_control.git import GitAdapter
 
 
 class Factory:

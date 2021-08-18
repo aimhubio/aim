@@ -3,9 +3,9 @@ import json
 import re
 import hashlib
 
-from aim.engine.configs import *
-from aim.storage.sdk.utils import clean_repo_path
-from aim.engine.repo.utils import get_experiment_run_path
+from aim.sdk.configs import AIM_REPO_NAME
+from aim.sdk.utils import clean_repo_path
+from aim.cli.upgrade._legacy_repo.repo.utils import get_experiment_run_path
 
 
 class AimRepo:

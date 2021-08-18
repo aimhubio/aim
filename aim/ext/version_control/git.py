@@ -1,4 +1,4 @@
-from aim.version_control.base import Base
+from aim.ext.version_control.base import Base
 import os
 
 from git import Repo, InvalidGitRepositoryError, GitCommandError

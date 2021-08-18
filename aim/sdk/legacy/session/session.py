@@ -4,13 +4,13 @@ import signal
 import threading
 from typing import Optional
 
-from aim.sdk.session.utils import exception_resistant
-from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
-from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.resource.tracker import ResourceTracker
+from aim.sdk.legacy.session.utils import exception_resistant
+from aim.sdk.legacy.deprecation_warning import deprecated
+from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.resource.tracker import ResourceTracker
 
-from aim.storage.sdk.repo import Repo
-from aim.storage.sdk.run import Run
+from aim.sdk.repo import Repo
+from aim.sdk.run import Run
 
 
 class Session:
@@ -20,9 +20,10 @@ class Session:
     _original_sigint_handler = None
     _original_sigterm_handler = None
 
+    @deprecated
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,  # unused
+                 flush_frequency: int = 0,  # unused
                  block_termination: bool = True,  # unused
                  run: Optional[str] = None,
                  system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
@@ -137,3 +138,13 @@ class Session:
 
 
 DefaultSession = Session
+
+
+def get_default_session() -> Session:
+    if len(Session.sessions.keys()) > 0:
+        default_sess_key = list(Session.sessions.keys())[0]
+        if len(Session.sessions[default_sess_key]) > 0:
+            return Session.sessions[default_sess_key][0]
+
+    # Create and return default session otherwise
+    return DefaultSession()

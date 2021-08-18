@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from aim.engine.configs import AIM_WEB_ENV_KEY
+from aim.web.configs import AIM_WEB_ENV_KEY
 from aim.web.api.config import config
 
 env = os.environ.get(AIM_WEB_ENV_KEY, 'prod')

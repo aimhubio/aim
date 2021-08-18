@@ -2,7 +2,7 @@ import psutil
 import json
 from typing import List
 
-from aim.resource.utils import round10e5
+from aim.ext.resource.utils import round10e5
 
 try:
     # Import python wrapper for the NVIDIA Management Library

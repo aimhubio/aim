@@ -1,6 +1,6 @@
 import os
 
-from aim.engine.configs import AIM_WEB_ENV_KEY
+from aim.web.configs import AIM_WEB_ENV_KEY
 
 
 def build_db_upgrade_command():

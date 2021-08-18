@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional, Union
 
-from aim.sdk.session.session import Session
-from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
+from aim.sdk.legacy.session import Session
+from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.legacy.session import DEFAULT_FLUSH_FREQUENCY
 
 
 class AimLogger(object):

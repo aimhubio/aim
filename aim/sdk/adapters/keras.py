@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aim.sdk.session.session import Session
+from aim.sdk.legacy.session import Session
 from aim.sdk.adapters.keras_mixins import (
     get_keras_tracker_callback,
     TrackerKerasCallbackMetricsEpochEndMixin,

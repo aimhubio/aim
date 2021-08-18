@@ -1,7 +1,7 @@
 from typing import Optional
 
-from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.session.session import Session
+from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.legacy.session import Session
 
 
 class AimCallback(object):

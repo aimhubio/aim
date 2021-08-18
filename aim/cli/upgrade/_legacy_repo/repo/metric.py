@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from aim.engine.repo.trace import Trace
+from aim.cli.upgrade._legacy_repo.repo.trace import Trace
 
 
 class Metric(object):

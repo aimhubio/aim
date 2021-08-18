@@ -2,8 +2,8 @@ from psutil import Process, cpu_percent
 from threading import Thread
 import time
 
-from aim.resource.stat import Stat
-from aim.engine.configs import AIM_RESOURCE_METRIC_PREFIX
+from aim.ext.resource.stat import Stat
+from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 
 
 class ResourceTracker(object):

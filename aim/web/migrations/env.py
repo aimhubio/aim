@@ -7,7 +7,7 @@ from logging.config import fileConfig
 from alembic import context
 from alembic.config import Config
 
-from aim.engine.configs import AIM_WEB_ENV_KEY
+from aim.web.configs import AIM_WEB_ENV_KEY
 from aim.web.api.db import Base, engine, config as sql_config
 
 # this is the Alembic Config object, which provides

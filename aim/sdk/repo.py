@@ -4,11 +4,12 @@ import shutil
 from typing import Dict, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
-from aim.engine.configs import AIM_REPO_NAME
-from aim.storage.sdk.run import Run
-from aim.storage.sdk.utils import search_aim_repo, clean_repo_path
+from aim.sdk.configs import AIM_REPO_NAME
+from aim.sdk.run import Run
+from aim.sdk.utils import search_aim_repo, clean_repo_path
+from aim.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
+
 from aim.storage.union import UnionContainer
-from aim.storage.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
 from aim.storage.singlecontainerview import SingleContainerView

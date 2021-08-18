@@ -1,7 +1,7 @@
 import click
 import os
 
-from aim.storage.sdk.repo import Repo
+from aim.sdk.repo import Repo
 
 
 @click.command()

@@ -4,14 +4,13 @@ from time import time
 from typing import Union
 from collections import Counter
 
-from aim.storage.sdk.types import AimObjectKey, AimObjectPath, AimObject
-from aim.storage.sdk.utils import generate_run_hash
+from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
+from aim.sdk.utils import generate_run_hash
 
-from aim.storage.sdk.trace import RunTraceCollection
+from aim.sdk.trace import RunTraceCollection
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
-from aim.storage.containerview import ContainerView
 from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
 
@@ -19,9 +18,9 @@ from typing import Any, Dict, Iterator, Optional, Tuple
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aim.storage.sdk.trace import Trace
-    from aim.storage.sdk.trace import TraceCollection
-    from aim.storage.sdk.repo import Repo
+    from aim.sdk.trace import Trace
+    from aim.sdk.trace import TraceCollection
+    from aim.sdk.repo import Repo
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ class Run:
 
         self._instance_creation_time = time()
         if repo is None:
-            from aim.storage.sdk.repo import Repo
+            from aim.sdk.repo import Repo
             repo = Repo.default_repo()
 
         self.repo = repo
@@ -191,7 +190,7 @@ class Run:
             metric_name: str,
             context: Context
     ) -> Optional['Trace']:
-        from aim.storage.sdk.trace import Trace
+        from aim.sdk.trace import Trace
         trace = Trace(metric_name, context, self)
         return trace if bool(trace) else None
 

@@ -1,7 +1,5 @@
 import os
 
-from aim.engine.configs import *
-
 
 def get_experiment_path(repo_path: str, experiment_name: str) -> str:
     return os.path.join(repo_path, experiment_name)

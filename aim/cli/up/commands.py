@@ -1,16 +1,10 @@
 import os
 import click
 
-from aim.engine.configs import (
-    AIM_UI_DEFAULT_PORT,
-    AIM_UI_DEFAULT_HOST,
-    AIM_TF_LOGS_PATH_KEY,
-    AIM_UI_TELEMETRY_KEY,
-    AIM_WEB_ENV_KEY,
-    AIM_UI_MOUNTED_REPO_PATH,
-)
-from aim.storage.sdk.repo import Repo
-from aim.storage.sdk.utils import clean_repo_path
+from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_WEB_ENV_KEY, \
+    AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY
+from aim.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path
 from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
 
 from aim.web.utils import exec_cmd
