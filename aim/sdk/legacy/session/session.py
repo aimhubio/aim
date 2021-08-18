@@ -30,34 +30,16 @@ class Session:
 
         self._repo = Repo.from_path(repo) if repo else Repo.default_repo()
         self._repo_path = self._repo.path
-        self._run = self._repo.get_run(run) or Run(repo=self._repo)
+        self._run = Run(hasname=run, repo=self._repo, experiment=experiment,
+                        system_tracking_interval=system_tracking_interval)
         self._run_hash = self._run.hashname
         self.active = True
-        if experiment:
-            with self._repo.structured_db:
-                self._run.props.experiment = experiment
 
         Session.sessions.setdefault(self._repo_path, [])
         Session.sessions[self._repo_path].append(self)
 
         # Bind signal listeners
         self._set_exit_handlers()
-
-        # Collect resource usage stats
-        self._resource_usage_tracker = None
-        if system_tracking_interval \
-                and isinstance(system_tracking_interval, int) \
-                and system_tracking_interval > 0:
-            try:
-                self._resource_usage_tracker = ResourceTracker(
-                    self.track, system_tracking_interval
-                )
-            except ValueError:
-                print('To track system resource usage '
-                      'please set `system_tracking_interval` greater than 0 '
-                      'and less than 1 day')
-            else:
-                self._resource_usage_tracker.start()
 
     @property
     def run_hash(self):
@@ -93,8 +75,9 @@ class Session:
     def close(self):
         if not self.active:
             raise Exception('session is closed')
-        if self._resource_usage_tracker is not None:
-            self._resource_usage_tracker.stop()
+        if self._run:
+            del self._run
+            sef._run = None
         if self._repo_path in Session.sessions \
                 and self in Session.sessions[self._repo_path]:
             Session.sessions[self._repo_path].remove(self)

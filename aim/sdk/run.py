@@ -1,20 +1,21 @@
 import logging
 
 from time import time
-from typing import Union
 from collections import Counter
 
-from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
-from aim.sdk.utils import generate_run_hash
-
 from aim.sdk.trace import RunTraceCollection
+from aim.sdk.utils import generate_run_hash
+from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
+
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
 from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
 
-from typing import Any, Dict, Iterator, Optional, Tuple
+from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
+
+from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -31,13 +32,20 @@ class Run:
     contexts: Dict[Context, int] = dict()
     _idx_to_ctx: Dict[int, Context] = dict()
 
-    def __init__(self, hashname: Optional[str] = None, *, repo: 'Repo' = None, read_only: bool = False):
+    def __init__(self, hashname: Optional[str] = None, *,
+                 repo: Optional[Union[str, 'Repo']] = None,
+                 read_only: bool = False,
+                 experiment: Optional[str] = None,
+                 system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
         hashname = hashname or generate_run_hash()
 
         self._instance_creation_time = time()
         if repo is None:
             from aim.sdk.repo import Repo
             repo = Repo.default_repo()
+        elif isinstance(repo, str):
+            from aim.sdk.repo import Repo
+            repo = Repo.from_path(repo)
 
         self.repo = repo
         self.read_only = read_only
@@ -45,7 +53,9 @@ class Run:
             logger.debug(f'Opening Run {hashname} in write mode')
 
         self.hashname = hashname
-
+        if experiment:
+            with self.repo.structured_db:
+                self.props.experiment = experiment
         self._hash = None
         self._props = None
 
@@ -64,7 +74,9 @@ class Run:
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
         self._creation_time = None
+        self._system_resource_tracker: ResourceTracker = None
         if not read_only:
+            self._prepare_resource_tracker(system_tracking_interval)
             self.creation_time
 
     @property
@@ -107,6 +119,17 @@ class Run:
 
     def _collect(self, key, strict: bool = True):
         return self.meta_run_attrs_tree.collect(key, strict=strict)
+
+    def _prepare_resource_tracker(self, tracking_interval: int):
+        if tracking_interval and isinstance(tracking_interval, int) and tracking_interval > 0:
+            try:
+                self._system_resource_tracker = ResourceTracker(self.track, tracking_interval)
+            except ValueError:
+                print('To track system resource usage '
+                      'please set `system_tracking_interval` greater than 0 '
+                      'and less than 1 day')
+            else:
+                self._system_resource_tracker.start()
 
     def __delitem__(self, key: str):
         del self.meta_attrs_tree[key]
@@ -215,6 +238,11 @@ class Run:
         if self._hash is None:
             self._hash = self._calc_hash()
         return self._hash
+
+    def __del__(self):
+        # TODO [AT] possible conflict with Mahnerak's changes on Run.finalize()
+        if self._system_resource_tracker:
+            self._system_resource_tracker.stop()
 
 
 class RunPropsView:
