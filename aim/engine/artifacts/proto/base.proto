@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package artifacts.proto;
+
+message BaseRecord {
+  int32 step = 1;
+  int64 timestamp = 2;
+  bytes artifact = 3;
+  int32 epoch = 4;
+  bool has_epoch = 5;
+}
