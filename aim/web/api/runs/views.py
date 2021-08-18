@@ -1,16 +1,14 @@
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional
 
-from aim.storage import treeutils
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.utils import (
-    aligned_traces_dict_constructor,
     collect_requested_traces,
-    query_runs_dict_constructor,
-    query_traces_dict_constructor,
-    encoded_tree_streamer
+    custom_aligned_metrics_streamer,
+    metric_search_result_streamer,
+    run_search_result_streamer
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -42,10 +40,9 @@ async def run_search_api(q: Optional[str] = ''):
 
     query = q.strip()
     runs = project.repo.query_runs(query=query)
-    runs_dict = query_runs_dict_constructor(runs)
-    encoded_runs_tree = treeutils.encode_tree(runs_dict)
 
-    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
+    streamer = run_search_result_streamer(runs)
+    return StreamingResponse(streamer)
 
 
 @runs_router.post('/search/metric/align/', response_model=RunMetricCustomAlignApiOut)
@@ -58,14 +55,12 @@ async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     x_axis_metric_name = request_data.align_by
     requested_runs = request_data.runs
 
-    processed_runs = aligned_traces_dict_constructor(requested_runs, x_axis_metric_name)
-    encoded_runs_tree = treeutils.encode_tree(processed_runs)
-
-    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
+    streamer = custom_aligned_metrics_streamer(requested_runs, x_axis_metric_name)
+    return StreamingResponse(streamer)
 
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut)
-async def run_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = None):
+async def run_metric_search_api(q: Optional[str] = '', p: int = 50,  x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:
@@ -77,12 +72,10 @@ async def run_metric_search_api(q: str, p: int = 50,  x_axis: Optional[str] = No
         raise HTTPException(status_code=404)
 
     search_statement = q.strip()
-
     traces = project.repo.traces(query=search_statement)
-    runs_dict = query_traces_dict_constructor(traces, steps_num, x_axis)
-    encoded_runs_tree = treeutils.encode_tree(runs_dict)
 
-    return StreamingResponse(encoded_tree_streamer(encoded_runs_tree))
+    streamer = metric_search_result_streamer(traces, steps_num, x_axis)
+    return StreamingResponse(streamer)
 
 
 @runs_router.get('/{run_id}/params/', response_model=dict)
