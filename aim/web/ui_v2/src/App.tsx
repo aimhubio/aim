@@ -7,7 +7,7 @@ import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 import { routes } from 'routes/routes';
 
-import styles from './appStyles.module.scss';
+import './App.scss';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -17,7 +17,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         <Theme>
           <Box display='flex'>
             <SideBar />
-            <Box className={styles.mainContainer}>
+            <Box className='mainContainer'>
               <React.Suspense fallback={null}>
                 <Switch>
                   {Object.values(routes).map((route, index) => {

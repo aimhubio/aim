@@ -20,17 +20,15 @@ import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
 
-import useStyles from './controlsStyles';
-import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
+import './Controls.scss';
 
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const classes = useStyles();
-
   return (
     <Grid
       container
@@ -41,15 +39,15 @@ function Controls(
     >
       <Grid onClick={props.onDisplayOutliersChange} item>
         {props.displayOutliers ? (
-          <BlurOn className={classes.anchor} />
+          <BlurOn className='Controls__anchor' />
         ) : (
-          <BlurCircular color='primary' className={classes.anchor} />
+          <BlurCircular color='primary' className='Controls__anchor' />
         )}
       </Grid>
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className={classes.anchor}>
+            <Box onClick={onAnchorClick} className='Controls__anchor'>
               <ShowChart />
             </Box>
           )}
@@ -64,9 +62,9 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className={classes.anchor} position='relative'>
+            <Box className='Controls__anchor' position='relative'>
               <span
-                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                className={`Controls__anchor__arrow ${opened ? 'opened' : ''}`}
                 onClick={onAnchorClick}
               >
                 <KeyboardArrowLeft className='arrowLeft' />
@@ -94,7 +92,7 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className={classes.anchor}>
+            <Box onClick={onAnchorClick} className='Controls__anchor'>
               <ScatterPlot />
             </Box>
           )}
@@ -104,7 +102,7 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className={classes.anchor}>
+            <Box onClick={onAnchorClick} className='Controls__anchor'>
               <MultilineChart />
             </Box>
           )}
@@ -121,7 +119,7 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box className={classes.anchor} onClick={onAnchorClick}>
+            <Box className='Controls__anchor' onClick={onAnchorClick}>
               <CenterFocusWeak />
             </Box>
           )}
@@ -136,9 +134,11 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className={classes.anchor} position='relative'>
+            <Box className='Controls__anchor' position='relative'>
               <span
-                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                className={`Controls__anchor__arrow ${
+                  opened ? 'Controls__anchor__arrow__opened' : ''
+                }`}
                 onClick={onAnchorClick}
               >
                 <KeyboardArrowLeft className='arrowLeft' />
@@ -155,9 +155,11 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className={classes.anchor} position='relative'>
+            <Box className='Controls__anchor' position='relative'>
               <span
-                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                className={`Controls__anchor__arrow ${
+                  opened ? 'Controls__anchor__arrow__opened' : ''
+                }`}
                 onClick={onAnchorClick}
               >
                 <KeyboardArrowLeft className='arrowLeft' />
