@@ -1,51 +1,47 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { routes } from 'routes/routes';
+import { Drawer } from '@material-ui/core';
+import TimelineOutlinedIcon from '@material-ui/icons/TimelineOutlined';
+
 import { ThemeContext } from 'components/Theme/Theme';
 import { IThemeContextValues } from 'types/components/Theme/Theme';
-
-import { routes } from 'routes/routes';
-import { ListItem, List, Drawer, ListItemText } from '@material-ui/core';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
-import Brightness7Icon from '@material-ui/icons/Brightness7';
-import TimelineOutlinedIcon from '@material-ui/icons/TimelineOutlined';
-import useStyles from './sidebarStyle';
-
 import logoImg from 'assets/logo-white.png';
 
+import './Sidebar.scss';
+
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
-  const classes = useStyles();
   const { dark, handleTheme } = React.useContext(
     ThemeContext,
   ) as IThemeContextValues;
 
   return (
     <Drawer
-      PaperProps={{ className: classes.paper }}
+      PaperProps={{ className: 'Sidebar__container' }}
       variant='permanent'
       anchor='left'
     >
-      <List className={classes.list}>
-        <ListItem className={classes.listItem}>
-          <img className={classes.logo} src={logoImg} alt='logo' />
-        </ListItem>
+      <ul className='Sidebar__List'>
+        <li className='Sidebar__List__item'>
+          <img src={logoImg} alt='logo' />
+        </li>
         {Object.values(routes).map((route, index) => {
           const { showInSidebar, path, displayName } = route;
 
           return (
             showInSidebar && (
               <NavLink
-                activeClassName={classes.anchorActive}
-                className={classes.anchor}
+                activeClassName={'Sidebar__anchor__active'}
+                className='Sidebar__anchor'
                 to={path}
                 key={index}
               >
-                <ListItem className={classes.listItem} button>
-                  <TimelineOutlinedIcon className={classes.listItemIcon} />
-                  <ListItemText
-                    primaryTypographyProps={{ className: classes.listItemText }}
-                    primary={displayName}
-                  />
-                </ListItem>
+                <li className='Sidebar__List__item'>
+                  <TimelineOutlinedIcon className='Sidebar__List__item__icon' />
+                  <span className='Sidebar__List__item__text'>
+                    {displayName}
+                  </span>
+                </li>
               </NavLink>
             )
           );
@@ -53,7 +49,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
         {/* <ListItem className={classes.listItem} onClick={handleTheme}>
           {dark ? <Brightness7Icon /> : <Brightness4Icon />}
         </ListItem> */}
-      </List>
+      </ul>
     </Drawer>
   );
 }
