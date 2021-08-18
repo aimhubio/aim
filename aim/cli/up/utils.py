@@ -1,12 +1,6 @@
 import os
-import click
 
 from aim.engine.configs import AIM_WEB_ENV_KEY
-
-
-def repo_init_alert():
-    click.echo('Repository not found')
-    click.echo('    (use "aim init" to initialize a new repository)')
 
 
 def build_db_upgrade_command():

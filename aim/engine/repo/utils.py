@@ -31,32 +31,3 @@ def get_run_objects_meta_file_path(repo_path: str, experiment_name: str,
                                                  run_hash),
                         AIM_COMMIT_META_FILE_NAME)
     return path
-
-
-def cat_to_dir(cat):
-    """
-    Finds file directory by it's  category
-    """
-    if cat[0] == 'metrics':
-        return AIM_METRICS_DIR_NAME
-    elif cat[0] == 'metric_groups':
-        return AIM_METRIC_GR_DIR_NAME
-    elif cat[0] == 'media':
-        if cat[1] == 'images':
-            return os.path.join(AIM_MEDIA_DIR_NAME, AIM_IMAGES_DIR_NAME)
-    elif cat[0] == 'misclassification':
-        return AIM_ANNOT_DIR_NAME
-    elif cat[0] == 'segmentation':
-        return AIM_SEG_DIR_NAME
-    elif cat[0] == 'models':
-        return AIM_MODELS_DIR_NAME
-    elif cat[0] == 'correlation':
-        return AIM_CORR_DIR_NAME
-    elif cat[0] == 'hyperparameters':
-        return AIM_PARAMS_DIR_NAME
-    elif cat[0] == 'map':
-        return AIM_MAP_DIR_NAME
-    elif cat[0] == 'stats':
-        return AIM_STATS_DIR_NAME
-    elif cat[0] == 'text':
-        return AIM_TEXT_DIR_NAME

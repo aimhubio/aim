@@ -22,10 +22,6 @@ class Metric(object):
     def __eq__(self, other):
         return hash(self) == hash(other)
 
-    @property
-    def traces(self):
-        return self._traces
-
     def get_storage(self):
         return self.run.storage
 
@@ -38,9 +34,6 @@ class Metric(object):
         if self._artifact_storage_opened is True:
             self._artifact_storage_opened = False
             self.get_storage().close(self.name)
-
-    def append(self, trace: Trace):
-        self._traces.append(trace)
 
     def get_all_traces(self, ignore_empty_context=False) -> list:
         if self._tmp_all_traces:
@@ -56,18 +49,3 @@ class Metric(object):
                 traces.append(trace)
         self._tmp_all_traces = traces
         return traces
-
-    def get_trace(self, context) -> Trace or None:
-        for trace in self.get_all_traces():
-            if trace.eq_context(context):
-                return trace
-        return None
-
-    def to_dict(self) -> dict:
-        traces_list = []
-        for trace in self._traces:
-            traces_list.append(trace.to_dict())
-        return {
-            'name': self.name,
-            'traces': traces_list,
-        }

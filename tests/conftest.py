@@ -58,7 +58,7 @@ def pytest_sessionstart(session):
     Repo.set_default_path(TEST_REPO_PATH)
     Project.set_repo_path(TEST_REPO_PATH)
 
-    repo = Repo.default_repo()
+    repo = Repo.default_repo(init=True)
     repo.structured_db.run_upgrades()
     init_test_repo(repo)
 

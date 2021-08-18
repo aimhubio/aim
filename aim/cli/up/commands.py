@@ -9,16 +9,12 @@ from aim.engine.configs import (
     AIM_WEB_ENV_KEY,
     AIM_UI_MOUNTED_REPO_PATH,
 )
-from aim.engine.utils import clean_repo_path
-from aim.engine.repo import AimRepo
-from aim.cli.up.utils import (
-    repo_init_alert,
-    build_db_upgrade_command,
-    build_uvicorn_command,
-)
+from aim.storage.sdk.repo import Repo
+from aim.storage.sdk.utils import clean_repo_path
+from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
+
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
-from aim.web.api.projects.project import Project
 
 
 @click.command()
@@ -34,17 +30,10 @@ from aim.web.api.projects.project import Project
 def up(repo_inst, dev, host, port, repo, tf_logs):
     repo_path = clean_repo_path(repo)
     if repo_path:
-        repo_inst = AimRepo(repo_path)
-    if repo_inst is None or not repo_inst.exists():
-        repo_init_alert()
-        return
+        repo_inst = Repo.from_path(repo_path)
+    repo_inst.structured_db.run_upgrades()
 
-    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.root_path
-
-    # TODO: [AT] find better way to access run_metadata_db
-    project = Project()
-    run_metadata_db = project.repo.structured_db
-    run_metadata_db.run_upgrades()
+    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
 
     if dev:
         os.environ[AIM_WEB_ENV_KEY] = 'dev'

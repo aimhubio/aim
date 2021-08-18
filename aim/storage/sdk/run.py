@@ -5,6 +5,7 @@ from typing import Union
 from collections import Counter
 
 from aim.storage.sdk.types import AimObjectKey, AimObjectPath, AimObject
+from aim.storage.sdk.utils import generate_run_hash
 
 from aim.storage.sdk.trace import RunTraceCollection
 from aim.storage.hashing import hash_auto
@@ -31,7 +32,9 @@ class Run:
     contexts: Dict[Context, int] = dict()
     _idx_to_ctx: Dict[int, Context] = dict()
 
-    def __init__(self, hashname: str, *, repo: 'Repo' = None, read_only: bool = False):
+    def __init__(self, hashname: Optional[str] = None, *, repo: 'Repo' = None, read_only: bool = False):
+        hashname = hashname or generate_run_hash()
+
         self._instance_creation_time = time()
         if repo is None:
             from aim.storage.sdk.repo import Repo
@@ -114,20 +117,18 @@ class Run:
         self,
         value,
         name: str,
-        step: int,
+        step: int = None,
         epoch: int = None,
         *,
         context: AimObject = None,
     ):
+        track_time = time()
         # TODO move to Trace
         if context is None:
             context = {}
 
         ctx = Context(context)
         metric = Metric(name, ctx)
-
-        time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
-        time_view[step] = time()
 
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = ctx.to_dict()
@@ -137,6 +138,7 @@ class Run:
 
         val_view = self.series_run_tree.view(metric.selector).array('val').allocate()
         epoch_view = self.series_run_tree.view(metric.selector).array('epoch').allocate()
+        time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
 
         max_idx = self.series_counters.get((ctx, name), None)
         if max_idx == None:
@@ -149,8 +151,11 @@ class Run:
 
         # TODO perform assignments in an atomic way
 
+        if step is None:
+            step = max_idx
         val_view[step] = value
         epoch_view[step] = epoch
+        time_view[step] = track_time
 
     @property
     def props(self):

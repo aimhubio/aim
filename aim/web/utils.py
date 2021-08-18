@@ -3,7 +3,7 @@ import os
 import subprocess
 
 from aim.engine.configs import AIM_UI_MOUNTED_REPO_PATH
-from aim.engine.utils import clean_repo_path
+from aim.storage.sdk.utils import clean_repo_path
 
 
 class ShellCommandException(Exception):

@@ -1,5 +1,5 @@
-from aim.engine.artifacts.proto.base_pb2 import BaseRecord
-from aim.engine.artifacts.proto.metric_pb2 import MetricRecord
+from aim.engine.proto.base_pb2 import BaseRecord
+from aim.engine.proto.metric_pb2 import MetricRecord
 
 
 def deserialize_pb_object(data) -> BaseRecord:

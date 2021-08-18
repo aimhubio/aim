@@ -1,9 +1,12 @@
 import os
+import shutil
 
 from typing import Dict, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
+from aim.engine.configs import AIM_REPO_NAME
 from aim.storage.sdk.run import Run
+from aim.storage.sdk.utils import search_aim_repo, clean_repo_path
 from aim.storage.union import UnionContainer
 from aim.storage.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.container import Container
@@ -25,23 +28,28 @@ class Repo:
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
-    def __init__(self, path: str, *, read_only: bool = None):
+    def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
             raise NotImplementedError
         self.read_only = read_only
-        self.path = path
+        self.root_path = path
+        self.path = os.path.join(path, AIM_REPO_NAME)
+        if init:
+            os.makedirs(self.path, exist_ok=True)
+        if not os.path.exists(self.path):
+            raise RuntimeError(f'Cannot find database \'{path}\'. Please init first.')
+
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
         self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
 
-        os.makedirs(self.path, exist_ok=True)
         # os.makedirs(os.path.join(self.path, 'chunks'), exist_ok=True)
         # os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
         # os.makedirs(os.path.join(self.path, 'progress'), exist_ok=True)
 
         self.meta_tree = self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
-        self.structured_db = DB.from_path(path)
+        self.structured_db = DB.from_path(self.path)
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -57,17 +65,39 @@ class Repo:
         Repo._default_path = path
 
     @classmethod
-    def default_repo(cls):
-        return cls.from_path(cls._default_path or '.aim')
+    def default_repo(cls, init: bool = False):
+        if cls._default_path:
+            repo_path = cls._default_path
+        else:
+            repo_path, found = search_aim_repo(os.path.curdir)
+            if not found:
+                repo_path = os.getcwd()
+
+        return cls.from_path(repo_path, init=init)
 
     @classmethod
-    def from_path(cls, path: str, read_only: bool = None):
-        path = os.path.abspath(path)
+    def from_path(cls, path: str, read_only: bool = None, init: bool = False):
+        path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
-            repo = Repo(path, read_only=read_only)
+            repo = Repo(path, read_only=read_only, init=init)
             cls._pool[path] = repo
         return repo
+
+    @classmethod
+    def exists(cls, path: str) -> bool:
+        path = clean_repo_path(path)
+        aim_repo_path = os.path.join(path, AIM_REPO_NAME)
+        return os.path.exists(aim_repo_path)
+
+    @classmethod
+    def rm(cls, path: str):
+        path = clean_repo_path(path)
+        repo = cls._pool.get(path)
+        if repo is not None:
+            del cls._pool[path]
+        aim_repo_path = os.path.join(path, AIM_REPO_NAME)
+        shutil.rmtree(aim_repo_path)
 
     def _get_container(
         self, name: str, read_only: bool, from_union: bool = False
@@ -126,7 +156,7 @@ class Repo:
             yield Run(run_name, repo=self, read_only=True)
 
     def get_run(self, hashname: str) -> Optional['Run']:
-        if hashname not in self.meta_tree.view('chunks').keys():
+        if hashname is None or hashname not in self.meta_tree.view('chunks').keys():
             return None
         else:
             return Run(hashname, repo=self, read_only=True)
