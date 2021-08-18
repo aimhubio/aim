@@ -31,7 +31,7 @@ class Session:
         self._repo_path = self._repo.path
         self._run = self._repo.get_run(run) or Run(repo=self._repo)
         self._run_hash = self._run.hashname
-
+        self.active = True
         if experiment:
             with self._repo.structured_db:
                 self._run.props.experiment = experiment
@@ -90,6 +90,8 @@ class Session:
 
     @exception_resistant
     def close(self):
+        if not self.active:
+            raise Exception('session is closed')
         if self._resource_usage_tracker is not None:
             self._resource_usage_tracker.stop()
         if self._repo_path in Session.sessions \
@@ -97,6 +99,7 @@ class Session:
             Session.sessions[self._repo_path].remove(self)
             if len(Session.sessions[self._repo_path]) == 0:
                 del Session.sessions[self._repo_path]
+        self.active = False
 
     @classmethod
     def _close_sessions(cls, *args, **kwargs):
