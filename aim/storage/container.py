@@ -41,7 +41,7 @@ class Container(ContainerView):
             skip_stats_update_on_db_open=True,
             skip_checking_sst_file_sizes_on_db_open=True,
             max_open_files=-1,
-            write_buffer_size = 67108864, # 64MB
+            write_buffer_size = 64*1024*1024, # 64MB
             max_write_buffer_number = 3,
             target_file_size_base = 67108864, # 64MB
             max_background_compactions = 4,
