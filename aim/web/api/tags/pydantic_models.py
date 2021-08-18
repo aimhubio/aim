@@ -11,7 +11,7 @@ class TagCreateIn(BaseModel):
 class TagUpdateIn(BaseModel):
     name: Optional[str] = ''
     color: Optional[str] = ''
-    archive: Optional[bool] = None
+    archived: Optional[bool] = False
 
 
 class TagUpdateOut(BaseModel):
@@ -34,6 +34,8 @@ class TagGetRunsOut(BaseModel):
     class Run(BaseModel):
         run_id: str
         name: str
+        experiment: Optional[str] = None
+        creation_time: float
 
     id: UUID
     runs: List[Run]
