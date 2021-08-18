@@ -87,13 +87,13 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
     from aim.storage.sdk.run import Run
 
     tag_runs = []
-    for run in tag.runs:
-        aimrocks_run = Run(hashname=run.hashname, read_only=True)
+    for tagged_run in tag.runs:
+        run = Run(hashname=run.hashname, read_only=True)
         tag_runs.append({
-            'run_id': run.hashname,
-            'name': run.name,
-            'creation_time': aimrocks_run.creation_time,
-            'experiment': run.experiment.name if run.experiment else None
+            'run_id': tagged_run.hashname,
+            'name': tagged_run.name,
+            'creation_time': run.creation_time,
+            'experiment': tagged_run.experiment.name if tagged_run.experiment else None
         })
     response = {
         'id': tag.uuid,

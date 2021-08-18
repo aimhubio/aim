@@ -11,7 +11,7 @@ class TagCreateIn(BaseModel):
 class TagUpdateIn(BaseModel):
     name: Optional[str] = ''
     color: Optional[str] = ''
-    archived: Optional[bool] = False
+    archived: Optional[bool] = None
 
 
 class TagUpdateOut(BaseModel):

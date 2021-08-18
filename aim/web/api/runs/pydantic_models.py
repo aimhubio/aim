@@ -111,7 +111,7 @@ RunTracesBatchApiIn = List[TraceBase]
 class StructuredRunUpdateIn(BaseModel):
     name: Optional[str] = ''
     description: Optional[str] = ''
-    archived: Optional[bool] = False
+    archived: Optional[bool] = None
     experiment: Optional[str] = ''
 
 

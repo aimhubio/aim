@@ -99,7 +99,6 @@ async def run_params_api(run_id: str):
         'traces': run.get_traces_overview(),
         'props': get_run_props(run)
     }
-    print(response)
     return JSONResponse(response)
 
 

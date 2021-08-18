@@ -9,7 +9,7 @@ class ExperimentCreateIn(BaseModel):
 
 class ExperimentUpdateIn(BaseModel):
     name: Optional[str] = ''
-    archived: Optional[bool] = False
+    archived: Optional[bool] = None
 
 
 class ExperimentGetOut(BaseModel):
