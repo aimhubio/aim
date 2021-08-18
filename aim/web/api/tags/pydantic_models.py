@@ -11,6 +11,7 @@ class TagCreateIn(BaseModel):
 class TagUpdateIn(BaseModel):
     name: Optional[str] = ''
     color: Optional[str] = ''
+    archive: Optional[bool] = None
 
 
 class TagUpdateOut(BaseModel):
@@ -23,6 +24,7 @@ class TagGetOut(BaseModel):
     name: str
     color: Optional[str] = None
     run_count: int = 0
+    archived: bool
 
 
 TagListOut = List[TagGetOut]

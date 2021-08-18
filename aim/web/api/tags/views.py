@@ -16,15 +16,14 @@ tags_router = APIRouter()
 
 @tags_router.get('/', response_model=TagListOut)
 async def get_tags_list_api(factory=Depends(object_factory)):
-    return [{'id': tag.uuid, 'name': tag.name, 'color': tag.color, 'run_count': len(tag.runs)}
+    return [{'id': tag.uuid, 'name': tag.name, 'color': tag.color, 'run_count': len(tag.runs), 'archived': tag.archived}
             for tag in factory.tags()]
 
 
 @tags_router.get('/search/', response_model=TagListOut)
 async def search_tags_by_name_api(q: Optional[str] = '', factory=Depends(object_factory)):
-    response = [{'id': tag.uuid, 'name': tag.name, 'color': tag.color, 'run_count': len(tag.runs)}
-                for tag in factory.search_tags(q.strip())]
-    return response
+    return [{'id': tag.uuid, 'name': tag.name, 'color': tag.color, 'run_count': len(tag.runs), 'archived': tag.archived}
+            for tag in factory.search_tags(q.strip())]
 
 
 @tags_router.post('/', response_model=TagUpdateOut)
@@ -53,6 +52,7 @@ async def get_tag_api(tag_id: str, factory=Depends(object_factory)):
         'id': tag.uuid,
         'name': tag.name,
         'color': tag.color,
+        'archived': tag.archived,
         'run_count': len(tag.runs)
     }
     return response
@@ -69,6 +69,8 @@ async def update_tag_properties_api(tag_id: str, tag_in: TagUpdateIn, factory=De
             tag.name = tag_in.name.strip()
         if tag_in.color:
             tag.color = tag_in.color.strip()
+        if tag_in.archive is not None:
+            tag.archived = tag_in.archive
 
     return {
         'id': tag.uuid,
