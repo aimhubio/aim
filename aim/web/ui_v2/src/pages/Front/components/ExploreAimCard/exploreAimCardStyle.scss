@@ -1,0 +1,56 @@
+.ExploreAimCard__container {
+  width: 15.5em;
+  background-color: transparent;
+  border-radius: 0.5em;
+  border: 0.0625em solid #E8F1FC;
+  transition: background-color .3s ease-out;
+  padding: 1.5em 1.5em 0.875em 1.5em;
+  margin-bottom: 0.5em;
+  text-decoration: none;
+  color: #031123;
+  &:hover {
+    background-color: #1473E6;
+    color: #FFFFFF;
+    .ExploreAimCard__icon {
+      color: #1473E6;
+      background-color: #FFFFFF;
+    }
+  }
+}
+
+
+.ExploreAimCard__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 2.75em;
+  height: 2.75em;
+  background: #1473E6;
+  color: #FFFFFF;
+  margin-bottom: 0.875em;
+  i {
+    font-size: 1.5em;
+  }
+}
+
+.ExploreAimCard__title {
+  font-weight: 500;
+  font-size: 0.875em;
+  line-height: 1.0625em;
+  margin: 0
+}
+
+.ExploreAimCard__desc {
+  font-weight: 400;
+  font-size: 0.75em;
+  margin-top: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.ExploreAim_card__arrowIcon__container {
+  display: flex;
+  justify-content: flex-end;
+  color: #FFFFFF;
+  font-size: 0.5em;
+}

@@ -9,8 +9,8 @@ function HeatMap({
   data,
   startDate,
   endDate,
-  cellSize = 11,
-  cellSpacing = 3,
+  cellSize = 12,
+  cellSpacing = 4,
   scaleRange = 4,
   onCellClick,
 }: any) {
@@ -120,30 +120,29 @@ function HeatMap({
     const tooltip = ` ${dataItem ? dataItem[1] : 0} tracked run${
       dataItem?.[1] !== 1 ? 's' : ''
     } on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-
     return (
       <div className='CalendarHeatmap__cell__wrapper' key={index}>
         {+endDate < +indexToDate(index) ? (
           <div className='CalendarHeatmap__cell CalendarHeatmap__cell--dummy' />
         ) : (
-          <div>ss</div>
-          // <Tooltip tooltip={tooltip} delay={0}>
-          //   <div
-          //     className={classNames({
-          //       CalendarHeatmap__cell: true,
-          //       [`CalendarHeatmap__cell--scale-${scale}`]:
-          //         Number.isInteger(scale),
-          //     })}
-          //     onClick={
-          //       !!onCellClick ? () => onCellClick(dataItem, date, index) : null
-          //     }
-          //   />
-          // </Tooltip>
+          <div
+            title={tooltip}
+            className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+            // className={classNames({
+            //   CalendarHeatmap__cell: true,
+            //   [`CalendarHeatmap__cell--scale-${scale}`]:
+            //     Number.isInteger(scale),
+            // })}
+            // onClick={
+            //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
+            // }
+          />
         )}
       </div>
     );
   }
 
+  console.log(diffDays, [...Array(diffDays).keys()], orderedMonths);
   return (
     <div className='CalendarHeatmap'>
       <div className='CalendarHeatmap__map'>

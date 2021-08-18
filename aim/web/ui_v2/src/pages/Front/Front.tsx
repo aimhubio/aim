@@ -1,31 +1,24 @@
 import React from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
+
+import ExploreAim from './components/ExploreAim/ExploreAim';
+import SetupGuide from './components/SetupGuide/SetupGuide';
+import Activity from './components/Activity/Activity';
+import { IFrontProps } from 'types/pages/front/Front';
 
 import './frontStyle.scss';
-import HeatMap from '../../components/HeatMap/HeatMap';
 
-function Front(): React.FunctionComponentElement<React.ReactNode> {
+function Front({
+  activityData,
+}: IFrontProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Front__container'>
-      <Grid container spacing={1}>
-        <Grid item>
-          <Box>
-            <Typography>Statistics</Typography>
-            <div className='Front__Statistics__card'>
-              <Typography>Experiments</Typography>
-              <Typography>Runs</Typography>
-            </div>
-            <div className='Front__Statistics__card'>
-              <Typography>Experiments</Typography>
-              <Typography>Runs</Typography>
-            </div>
-          </Box>
-        </Grid>
-        <Grid xs item>
-          Activity
-          {/*<HeatMap endDate={new Date()} />*/}
-        </Grid>
-      </Grid>
+      <div className='Front__Activity__container'>
+        <Activity activityData={activityData} />
+      </div>
+      <div className='Front__Explore__container'>
+        <SetupGuide />
+        <ExploreAim />
+      </div>
     </section>
   );
 }
