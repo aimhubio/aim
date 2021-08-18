@@ -5,16 +5,14 @@
     font-size: 18px;
     margin: 0 0 0.5em;
   }
+
+  h2 {
+    margin: 0;
+  }
 }
 
 .SetupGuide__code {
   margin-top: 2em;
-  >div {
-    padding: 1em 2.5em 1em 1em;
-  }
-  button {
-    right: 2em;
-  }
 }
 
 .StyleGuide__resources__container {

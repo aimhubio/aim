@@ -5,6 +5,7 @@ import React from 'react';
 
 import './HeatMapStyle.scss';
 
+const cellScales: number[] = [0, 1, 2, 3, 4];
 function HeatMap({
   data,
   startDate,
@@ -167,6 +168,22 @@ function HeatMap({
         <div className='CalendarHeatmap__map__grid' style={gridStyles}>
           {[...Array(diffDays).keys()].map((index) => renderCell(index))}
         </div>
+      </div>
+      <div className='CalendarHeatmap__cell__info'>
+        <span>Less</span>
+        {cellScales.map((scale) => (
+          <div
+            key={scale}
+            style={{ width: cellSize, height: cellSize }}
+            className='CalendarHeatmap__cell__wrapper'
+          >
+            <div
+              className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+            />
+          </div>
+        ))}
+
+        <span>More</span>
       </div>
     </div>
   );

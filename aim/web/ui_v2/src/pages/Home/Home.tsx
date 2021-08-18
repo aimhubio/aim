@@ -6,6 +6,7 @@ import Activity from './components/Activity/Activity';
 import { IFrontProps } from 'types/pages/home/Home';
 
 import './Home.scss';
+import { Grid } from '@material-ui/core';
 
 function Home({
   activityData,
@@ -16,8 +17,14 @@ function Home({
         <Activity activityData={activityData} />
       </div>
       <div className='Home__Explore__container'>
-        <SetupGuide />
-        <ExploreAim />
+        <Grid container>
+          <Grid xs={7} item>
+            <SetupGuide />
+          </Grid>
+          <Grid xs={5} item>
+            <ExploreAim />
+          </Grid>
+        </Grid>
       </div>
     </section>
   );
