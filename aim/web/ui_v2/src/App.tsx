@@ -7,7 +7,7 @@ import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 import { routes } from 'routes/routes';
 
-import './appStyles.scss';
+import './App.scss';
 import 'fonts/icomoon/icomoonIcons.css';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {

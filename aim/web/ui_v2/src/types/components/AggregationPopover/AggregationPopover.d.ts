@@ -1,6 +1,6 @@
-import { IAggregation } from 'types/services/models/metrics/metricsAppModel';
+import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IAggregationPopoverProps {
-  aggregation: IAggregation;
-  onChange: (aggregation: Partial<IAggregation>) => void;
+  aggregationConfig: IAggregationConfig;
+  onChange: (aggregationConfig: Partial<IAggregationConfig>) => void;
 }

@@ -24,7 +24,7 @@ const PATHS = {
 };
 
 const routes = {
-  FRONT: {
+  HOME: {
     path: PATHS.HOME,
     component: Home,
     showInSidebar: false,
