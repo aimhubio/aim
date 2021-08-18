@@ -19,10 +19,10 @@ function getActivityData() {
 function initialize() {
   model.init();
 }
-const frontAppModel = {
+const homeAppModel = {
   ...model,
   initialize,
   getActivityData,
 };
 
-export default frontAppModel;
+export default homeAppModel;

@@ -2,7 +2,7 @@ import React from 'react';
 
 import CodeBlock from '../CodeBlock/CodeBlock';
 
-import './setupGuideStyle.scss';
+import './SetupGuide.scss';
 
 function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
   return (

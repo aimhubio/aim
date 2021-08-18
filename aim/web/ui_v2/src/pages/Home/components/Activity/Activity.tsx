@@ -2,9 +2,9 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 
 import HeatMap from 'components/HeatMap/HeatMap';
-import { IActivityProps } from 'types/pages/front/components/Activity/Activity';
+import { IActivityProps } from 'types/pages/home/components/Activity/Activity';
 
-import './activityStyle.scss';
+import './Activity.scss';
 
 function Activity({
   activityData,

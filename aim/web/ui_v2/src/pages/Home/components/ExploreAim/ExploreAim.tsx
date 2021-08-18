@@ -3,7 +3,7 @@ import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
 import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
 
-import './exploreAimStyle.scss';
+import './ExploreAim.scss';
 
 export interface IExploreCard {
   title: string;

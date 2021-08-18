@@ -1,7 +1,7 @@
 import React from 'react';
 import copyIcon from 'assets/icons/copy.svg';
 
-import './codeBlockStyle.scss';
+import './CodeBlock.scss';
 
 function CodeBlock({
   rowList,

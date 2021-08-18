@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 import { IExploreCard } from '../ExploreAim/ExploreAim';
 
-import './exploreAimCardStyle.scss';
+import './ExploreAimCard.scss';
 
 function ExploreAimCard({
   title,
