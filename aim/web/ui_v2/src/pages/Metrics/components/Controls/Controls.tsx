@@ -64,22 +64,31 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className={classes.anchor} position='relative'>
-              <span
-                className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
-                onClick={onAnchorClick}
-              >
-                <KeyboardArrowLeft className='arrowLeft' />
-              </span>
+            <Box
+              className={`${classes.anchor} ${
+                props.aggregationConfig.isEnabled ? '' : 'disabled'
+              }`}
+              position='relative'
+            >
+              {props.aggregationConfig.isEnabled && (
+                <span
+                  className={`${classes.anchorArrow} ${opened ? 'opened' : ''}`}
+                  onClick={onAnchorClick}
+                >
+                  <KeyboardArrowLeft className='arrowLeft' />
+                </span>
+              )}
               <GroupWorkOutlined
                 color={
                   props.aggregationConfig?.isApplied ? 'primary' : 'inherit'
                 }
-                onClick={() =>
-                  props.onAggregationConfigChange({
-                    isApplied: !props.aggregationConfig?.isApplied,
-                  })
-                }
+                onClick={() => {
+                  if (props.aggregationConfig.isEnabled) {
+                    props.onAggregationConfigChange({
+                      isApplied: !props.aggregationConfig?.isApplied,
+                    });
+                  }
+                }}
               />
             </Box>
           )}

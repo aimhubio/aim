@@ -106,6 +106,7 @@ function getConfig() {
           line: AggregationLineMethods.MEAN,
         },
         isApplied: false,
+        isEnabled: false,
       },
       focusedState: {
         active: false,
@@ -195,6 +196,7 @@ function getMetricsData() {
         configData.grouping.selectOptions = [
           ...getGroupingSelectOptions(params),
         ];
+        setAggregationEnabled(configData);
       }
 
       model.setState({
@@ -378,6 +380,20 @@ function getGroupingPersistIndex({
     }
   }
   return index;
+}
+
+function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
+  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
+  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
+  if (
+    groupByColor.length === 0 &&
+    groupByStyle.length === 0 &&
+    groupByChart.length === 0
+  ) {
+    return false;
+  }
+  return true;
 }
 
 function groupData(data: IMetric[]): IMetricsCollection[] {
@@ -770,6 +786,14 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
   }
 }
 
+function setAggregationEnabled(configData: IMetricAppConfig): void {
+  const isAppliedGrouping = isGroupingApplied(configData.grouping);
+  configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
+  if (!isAppliedGrouping) {
+    configData.chart.aggregationConfig.isApplied = false;
+  }
+}
+
 function onGroupingSelectChange({
   groupName,
   list,
@@ -777,6 +801,7 @@ function onGroupingSelectChange({
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -791,6 +816,7 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -802,6 +828,7 @@ function onGroupingPaletteChange(index: number): void {
       ...configData.grouping,
       paletteIndex: index,
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -819,6 +846,7 @@ function onGroupingReset(groupName: GroupNameType) {
       persistence: { ...persistence, [groupName]: false },
       isApplied: { ...isApplied, [groupName]: true },
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -848,6 +876,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
         [groupName]: !configData.grouping.isApplied[groupName],
       },
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -862,6 +891,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
         [groupName]: !configData.grouping.persistence[groupName],
       },
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
