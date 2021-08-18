@@ -7,11 +7,16 @@ import { IApiRequest } from 'types/services/services';
 
 const endpoints = {
   GET_PROJECTS: 'projects',
+  GET_ACTIVITIES: 'projects/activity',
   GET_PARAMS_METRICS: 'projects/params',
 };
 
 function getProjectsData(): IApiRequest<IProject> {
   return API.get<IProject>(endpoints.GET_PROJECTS);
+}
+
+function fetchActivityData(): IApiRequest<any> {
+  return API.get(endpoints.GET_ACTIVITIES);
 }
 
 function getParamsAndMetrics(): IApiRequest<IProjectParamsMetrics> {
@@ -21,6 +26,7 @@ function getParamsAndMetrics(): IApiRequest<IProjectParamsMetrics> {
 const projectsService = {
   endpoints,
   getProjectsData,
+  fetchActivityData,
   getParamsAndMetrics,
 };
 
