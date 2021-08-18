@@ -8,13 +8,13 @@ from alembic import context
 from alembic.config import Config
 
 from aim.engine.configs import AIM_WEB_ENV_KEY
-from aim.web.api.db import Base, engine, config as sql_config
+from aim.web.api.db import Base, engine, config as api_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-if os.getenv(AIM_WEB_ENV_KEY) == 'dev':
+if os.getenv(AIM_WEB_ENV_KEY) != 'prod':
     here = os.path.abspath(os.path.dirname(__file__))
     config = Config(os.path.join(here, 'alembic_dev.ini'))
 
@@ -45,7 +45,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = sql_config.SQLALCHEMY_DATABASE_URI
+    url = api_config.SQLALCHEMY_DATABASE_URI
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True
     )

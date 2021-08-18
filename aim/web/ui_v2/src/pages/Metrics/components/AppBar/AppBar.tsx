@@ -19,6 +19,7 @@ import { IAppBarProps } from 'types/pages/metrics/components/AppBar/AppBar';
 function AppBar({
   onBookmarkCreate,
   onBookmarkUpdate,
+  onResetConfigData,
 }: IAppBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
