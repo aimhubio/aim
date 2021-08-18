@@ -11,23 +11,19 @@ from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
 
 
-def numpy_to_encodable(array: np.ndarray) -> dict:
+def numpy_to_encodable(array: np.ndarray) -> Optional[dict]:
     encoded_numpy = {
         'type': 'numpy',
         'shape': array.shape[0],
+        'dtype': 'float64',  # hardcoded for now
     }
 
-    if array.dtype == 'int64':
-        encoded_numpy.update({
-            'dtype': 'float64',
-            'blob': array.astype('float64').tobytes()
-        })
+    if array.dtype == 'float64':
+        encoded_numpy['blob'] = array.tobytes()
+    elif array.dtype == 'object':
+        return None
     else:
-        encoded_numpy.update({
-            'dtype': str(array.dtype),
-            'blob': array.tobytes()
-        })
-
+        encoded_numpy['blob'] = array.astype('float64').tobytes()
     return encoded_numpy
 
 
