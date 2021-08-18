@@ -69,8 +69,8 @@ async def update_tag_properties_api(tag_id: str, tag_in: TagUpdateIn, factory=De
             tag.name = tag_in.name.strip()
         if tag_in.color:
             tag.color = tag_in.color.strip()
-        if tag_in.archive is not None:
-            tag.archived = tag_in.archive
+        if tag_in.archived is not None:
+            tag.archived = tag_in.archived
 
     return {
         'id': tag.uuid,
@@ -84,8 +84,19 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
     if not tag:
         raise HTTPException
 
+    from aim.storage.sdk.run import Run
+
+    tag_runs = []
+    for tagged_run in tag.runs:
+        run = Run(hashname=run.hashname, read_only=True)
+        tag_runs.append({
+            'run_id': tagged_run.hashname,
+            'name': tagged_run.name,
+            'creation_time': run.creation_time,
+            'experiment': tagged_run.experiment.name if tagged_run.experiment else None
+        })
     response = {
         'id': tag.uuid,
-        'runs': [{'run_id': run.hashname, 'name': run.name} for run in tag.runs]
+        'runs': tag_runs
     }
     return response

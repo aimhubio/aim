@@ -55,6 +55,12 @@ class SafeNone(metaclass=Singleton):
     def __eq__(self, other):
         return other is None or isinstance(other, SafeNone)
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration
+
 
 __all__ = [
     'NoneType',
