@@ -103,9 +103,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   React.useEffect(() => {
     const debouncedScroll = debounce(onScroll, 100);
-    containerRef.current?.addEventListener('scroll', debouncedScroll);
+    const containerNode = containerRef.current;
+    containerNode?.addEventListener('scroll', debouncedScroll);
     return () => {
-      containerRef.current?.removeEventListener('scroll', debouncedScroll);
+      containerNode?.removeEventListener('scroll', debouncedScroll);
     };
   }, [onScroll]);
 
@@ -121,6 +122,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           >
             {props.data.map((chartData: any, index: number) => {
               const Component = chartTypesConfig[props.chartType];
+              const aggregatedData = props.aggregatedData?.filter(
+                (data) => data.chartIndex === index,
+              );
               return (
                 <Grid
                   key={index}
@@ -137,6 +141,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     {...props.chartProps[0]}
                     index={index}
                     data={chartData}
+                    aggregatedData={aggregatedData}
+                    aggregationConfig={props.aggregationConfig}
                     syncHoverState={syncHoverState}
                   />
                 </Grid>

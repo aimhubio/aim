@@ -10,7 +10,8 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
-  IAggregation,
+  IAggregatedData,
+  IAggregationConfig,
   IAppData,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -91,6 +92,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[][]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
+      aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum
@@ -109,7 +111,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
       tooltipContent={metricsData?.tooltipContent as ITooltipContent}
-      aggregation={metricsData?.config?.chart.aggregation as IAggregation}
+      aggregationConfig={
+        metricsData?.config?.chart.aggregationConfig as IAggregationConfig
+      }
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -118,7 +122,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableRowHover={metricAppModel.onTableRowHover}
       onTableRowClick={metricAppModel.onTableRowClick}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
-      onAggregationChange={metricAppModel.onAggregationChange}
+      onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
       onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
       onGroupingModeChange={metricAppModel.onGroupingModeChange}
       onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}

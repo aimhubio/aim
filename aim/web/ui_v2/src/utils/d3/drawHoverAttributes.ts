@@ -199,7 +199,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function drawActiveLine(key: string): void {
-    // new line
     const newActiveLine = linesNodeRef.current.select(`[id=Line-${key}]`);
 
     if (!newActiveLine.empty()) {
@@ -214,6 +213,25 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       newActiveLine.classed('active', true).raise();
 
       attributesRef.current.lineKey = key;
+    }
+  }
+
+  // TODO need to implement highlight mode
+  function clearActiveArea(key?: string): void {
+    // previous line
+    if (key) {
+      linesNodeRef.current.select(`[id=Area-${key}]`).classed('active', false);
+      // highlightedNodeRef.current?.classed('highlighted', false);
+    }
+  }
+
+  // TODO need to implement highlight mode
+  function drawActiveArea(key: string): void {
+    const newActiveArea = linesNodeRef.current.select(`[id=Area-${key}]`);
+
+    if (!newActiveArea.empty()) {
+      newActiveArea.classed('active', true).raise();
+      // attributesRef.current.aggregationKey = key;
     }
   }
 
@@ -489,8 +507,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         });
       }
     } else {
-      const xMax = xScale.range()[1];
-      updateHoverAttributes(xStep ?? xMax);
+      const xValue = xStep ?? xScale.range()[1];
+      updateHoverAttributes(xValue);
     }
   }
 
@@ -595,24 +613,17 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function init(): void {
-    const { focusedState, activePoint, xScale, yScale, xStep } =
-      attributesRef.current;
+    const { focusedState, activePoint, xScale, xStep } = attributesRef.current;
 
     if (
       focusedState?.chartIndex === index &&
       activePoint?.xValue &&
       activePoint.yValue
     ) {
-      const mousePos: [number, number] = [
-        xScale(activePoint?.xValue),
-        yScale(activePoint?.yValue),
-      ];
-      if (isMouseInVisArea(mousePos[0], mousePos[1])) {
-        updateFocusedChart({ mousePos, force: true });
-      }
+      updateFocusedChart();
     } else {
-      const xMax = xScale.range()[1];
-      updateHoverAttributes(xStep ?? xMax);
+      const xValue = xStep ?? xScale.range()[1];
+      updateHoverAttributes(xValue);
     }
   }
 
@@ -621,6 +632,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   attributesRef.current.updateHoverAttributes = updateHoverAttributes;
   attributesRef.current.updateFocusedChart = updateFocusedChart;
   attributesRef.current.clearHoverAttributes = clearHoverAttributes;
+
   svgNodeRef.current?.on('mousemove', handleMouseMove);
   svgNodeRef.current?.on('mouseleave', handleMouseLeave);
   bgRectNodeRef.current?.on('click', handleLeaveFocusedPoint);

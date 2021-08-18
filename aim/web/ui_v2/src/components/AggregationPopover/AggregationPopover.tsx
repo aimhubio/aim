@@ -7,7 +7,7 @@ import {
 } from 'utils/aggregateGroupData';
 
 function AggregationPopover({
-  aggregation,
+  aggregationConfig,
   onChange,
 }: IAggregationPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   function handleClick(e: React.ChangeEvent<any>): void {
@@ -16,12 +16,12 @@ function AggregationPopover({
     if (
       methodKey &&
       value &&
-      aggregation.methods[methodKey] !== parseInt(value) &&
+      aggregationConfig.methods[methodKey] !== parseInt(value) &&
       typeof onChange === 'function'
     ) {
       onChange({
         methods: {
-          ...aggregation.methods,
+          ...aggregationConfig.methods,
           [methodKey]: parseInt(value),
         },
       });
@@ -37,7 +37,9 @@ function AggregationPopover({
         <MenuItem
           property='line'
           data-name={AggregationLineMethods.MEAN}
-          selected={aggregation.methods.line === AggregationLineMethods.MEAN}
+          selected={
+            aggregationConfig.methods.line === AggregationLineMethods.MEAN
+          }
           onClick={handleClick}
         >
           Mean
@@ -45,7 +47,9 @@ function AggregationPopover({
         <MenuItem
           property='line'
           data-name={AggregationLineMethods.MEDIAN}
-          selected={aggregation.methods.line === AggregationLineMethods.MEDIAN}
+          selected={
+            aggregationConfig.methods.line === AggregationLineMethods.MEDIAN
+          }
           onClick={handleClick}
         >
           Median
@@ -53,7 +57,9 @@ function AggregationPopover({
         <MenuItem
           property='line'
           data-name={AggregationLineMethods.MIN}
-          selected={aggregation.methods.line === AggregationLineMethods.MIN}
+          selected={
+            aggregationConfig.methods.line === AggregationLineMethods.MIN
+          }
           onClick={handleClick}
         >
           Min
@@ -61,7 +67,9 @@ function AggregationPopover({
         <MenuItem
           property='line'
           data-name={AggregationLineMethods.MAX}
-          selected={aggregation.methods.line === AggregationLineMethods.MAX}
+          selected={
+            aggregationConfig.methods.line === AggregationLineMethods.MAX
+          }
           onClick={handleClick}
         >
           Max
@@ -73,7 +81,9 @@ function AggregationPopover({
         <MenuItem
           property='area'
           data-name={AggregationAreaMethods.NONE}
-          selected={aggregation.methods.area === AggregationAreaMethods.NONE}
+          selected={
+            aggregationConfig.methods.area === AggregationAreaMethods.NONE
+          }
           onClick={handleClick}
         >
           None
@@ -81,7 +91,9 @@ function AggregationPopover({
         <MenuItem
           property='area'
           data-name={AggregationAreaMethods.MIN_MAX}
-          selected={aggregation.methods.area === AggregationAreaMethods.MIN_MAX}
+          selected={
+            aggregationConfig.methods.area === AggregationAreaMethods.MIN_MAX
+          }
           onClick={handleClick}
         >
           Min/Max
@@ -89,7 +101,9 @@ function AggregationPopover({
         <MenuItem
           property='area'
           data-name={AggregationAreaMethods.STD_DEV}
-          selected={aggregation.methods.area === AggregationAreaMethods.STD_DEV}
+          selected={
+            aggregationConfig.methods.area === AggregationAreaMethods.STD_DEV
+          }
           onClick={handleClick}
         >
           Mean ± Standard Deviation
@@ -97,7 +111,9 @@ function AggregationPopover({
         <MenuItem
           property='area'
           data-name={AggregationAreaMethods.STD_ERR}
-          selected={aggregation.methods.area === AggregationAreaMethods.STD_ERR}
+          selected={
+            aggregationConfig.methods.area === AggregationAreaMethods.STD_ERR
+          }
           onClick={handleClick}
         >
           Mean ± Standard Error
@@ -106,7 +122,7 @@ function AggregationPopover({
           property='area'
           data-name={AggregationAreaMethods.CONF_INT}
           selected={
-            aggregation.methods.area === AggregationAreaMethods.CONF_INT
+            aggregationConfig.methods.area === AggregationAreaMethods.CONF_INT
           }
           onClick={handleClick}
         >
