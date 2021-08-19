@@ -6,7 +6,7 @@ import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { encode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import {
   calculateCentralMovingAverage,
@@ -545,24 +545,19 @@ function getAggregatedData(
 
   let aggregatedData: IAggregatedData[] = [];
 
-  processedData.forEach((data, index) => {
+  processedData.forEach((metricsCollection, index) => {
     aggregatedData.push({
-      key: encode(data.config as {}),
-      // TODO need to check key for highlight mode
-      // metricKey: encode({
-      //   runHash: run.params.status.hash,
-      //   metricName: trace.metric_name,
-      //   traceContext: trace.context,
-      // }),
+      key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
       area: {
-        min: data.aggregation?.area.min || null,
-        max: data.aggregation?.area.max || null,
+        min: metricsCollection.aggregation?.area.min || null,
+        max: metricsCollection.aggregation?.area.max || null,
       },
-      line: data.aggregation?.line || null,
-      chartIndex: data.chartIndex || 0,
+      line: metricsCollection.aggregation?.line || null,
+      chartIndex: metricsCollection.chartIndex || 0,
       color:
-        data.color || COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-      dasharray: data.dasharray || '0',
+        metricsCollection.color ||
+        COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+      dasharray: metricsCollection.dasharray || '0',
     });
   });
 

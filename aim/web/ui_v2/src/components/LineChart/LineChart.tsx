@@ -147,6 +147,7 @@ const LineChart = React.forwardRef(function LineChart(
       yAxisLabelNodeRef,
       linesNodeRef,
       highlightedNodeRef,
+      aggregationConfig,
     });
 
     if (zoomMode) {
