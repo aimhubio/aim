@@ -1,4 +1,4 @@
-import paramsService from 'services/api/params/paramsService';
+import runsService from 'services/api/runs/runsService';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import createModel from '../model';
@@ -23,6 +23,7 @@ import _ from 'lodash-es';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IParam, ITrace } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
+import objectToString from 'utils/objectToString';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -281,7 +282,7 @@ function groupData(data: IParam[]): IMetricsCollection[] {
 }
 
 function getParamsData() {
-  const { call, abort } = paramsService.getParamsData();
+  const { call, abort } = runsService.getRunsData();
   return {
     call: async () => {
       const stream = await call();
@@ -337,19 +338,23 @@ function getDataAsLines(
               values[key + 'train'] = null;
               run.run.traces.forEach((trace: ITrace) => {
                 if (trace.metric_name === key) {
-                  values[key + trace.context.subset] = trace.last_value.last;
-                  if (dimension[key + trace.context.subset]) {
-                    dimension[key + trace.context.subset].values.add(
+                  values[key + objectToString(trace.context)] =
+                    trace.last_value.last;
+                  if (dimension[key + objectToString(trace.context)]) {
+                    dimension[key + objectToString(trace.context)].values.add(
                       trace.last_value.last,
                     );
                     if (typeof trace.last_value.last === 'string') {
-                      dimension[key + trace.context.subset].scaleType = 'point';
+                      dimension[key + objectToString(trace.context)].scaleType =
+                        'point';
                     }
                   } else {
-                    dimension[key + trace.context.subset] = {
+                    dimension[key + objectToString(trace.context)] = {
                       values: new Set().add(trace.last_value.last),
                       scaleType: 'linear',
-                      displayName: `<p>${key}</p><p>subset="${trace.context.subset}"</p>`,
+                      displayName: `<p>${key}</p><p>${objectToString(
+                        trace.context,
+                      )}</p>`,
                     };
                   }
                 }
@@ -458,7 +463,7 @@ function onActivePointChange(
   }
 }
 
-const metricAppModel = {
+const paramsAppModel = {
   ...model,
   initialize,
   getParamsData,
@@ -467,4 +472,4 @@ const metricAppModel = {
   onActivePointChange,
 };
 
-export default metricAppModel;
+export default paramsAppModel;
