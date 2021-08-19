@@ -1,4 +1,5 @@
 import runsService from 'services/api/runs/runsService';
+import { IRunBatch } from 'types/pages/runs/Runs';
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({});
@@ -42,9 +43,9 @@ function getRunBatch(body: any, runHash: string) {
   return {
     call: async () => {
       const data = await getRunsBatchRequestRef.call();
-      const runMetricsBatch: any[] = [];
-      const runSystemBatch: any[] = [];
-      data.forEach((run: any) => {
+      const runMetricsBatch: IRunBatch[] = [];
+      const runSystemBatch: IRunBatch[] = [];
+      data.forEach((run: IRunBatch) => {
         if (run.metric_name.startsWith('__system__')) {
           runSystemBatch.push(run);
         } else {

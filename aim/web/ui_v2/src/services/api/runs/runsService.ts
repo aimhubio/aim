@@ -15,7 +15,7 @@ function getRunInfo(id: string) {
   return API.get(endpoints.GET_RUN_INFO(id));
 }
 
-function getRunBatch(body: { [key: string]: string }, id: string) {
+function getRunBatch(body: any, id: string) {
   return API.post(endpoints.GET_RUN_BATCH_BY_TRACES(id), body, {
     headers: {
       'Content-Type': 'application/json',

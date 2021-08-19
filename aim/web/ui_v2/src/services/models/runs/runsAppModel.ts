@@ -10,62 +10,8 @@ import { IRun } from 'types/services/models/metrics/runModel';
 
 const model = createModel<Partial<any>>({});
 
-function getConfig() {
-  return {
-    // grouping: {
-    //   color: ['run.params.hparams.seed'],
-    //   style: ['run.params.hparams.max_k'],
-    //   chart: [],
-    //   // TODO refactor boolean value types objects into one
-    //   reverseMode: {
-    //     color: false,
-    //     style: false,
-    //     chart: false,
-    //   },
-    //   isApplied: {
-    //     color: true,
-    //     style: true,
-    //     chart: true,
-    //   },
-    //   persistence: {
-    //     color: false,
-    //     style: false,
-    //   },
-    //   seed: {
-    //     color: 10,
-    //     style: 10,
-    //   },
-    //   paletteIndex: 0,
-    //   selectOptions: [],
-    // },
-    // chart: {
-    //   curveInterpolation: CurveEnum.Linear,
-    //   isVisibleColorIndicator: false,
-    //   focusedState: {
-    //     key: null,
-    //     xValue: null,
-    //     yValue: null,
-    //     active: false,
-    //     chartIndex: null,
-    //   },
-    // },
-    // select: {
-    //   params: [
-    //     { key: 'hparams.align', type: 'params' },
-    //     { key: 'dataset.preproc', type: 'params' },
-    //     { key: 'loss_scale', type: 'metric' },
-    //     { key: 'nll_loss', type: 'metric' },
-    //   ],
-    //   query: '',
-    // },
-  };
-}
-
 function initialize() {
   model.init();
-  //   model.setState({
-  //     config: getConfig(),
-  //   });
 }
 
 function getRunsData() {

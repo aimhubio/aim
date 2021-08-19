@@ -6,18 +6,18 @@ import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import useModel from 'hooks/model/useModel';
 import TabPanel from 'components/TabPanel/TabPanel';
 import RunDetailParamsTab from './RunDetailParamsTab';
-import RunDetailMetricsTab from './RunDetailMetricsTab';
+import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailSettingsTab from './RunDetailSettingsTab';
 
 import './RunDetail.scss';
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
+  const runsData = useModel(runDetailAppModel);
   const [value, setValue] = useState(0);
   const { runHash } = useParams<{ runHash: string }>();
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
-  const runsData = useModel(runDetailAppModel);
 
   React.useEffect(() => {
     runDetailAppModel.initialize();
@@ -52,14 +52,14 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             <RunDetailParamsTab runParams={runsData?.runParams} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <RunDetailMetricsTab
+            <RunDetailMetricsAndSystemTab
               runHash={runHash}
               runTraces={runsData?.runTraces}
               runBatch={runsData?.runMetricsBatch}
             />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <RunDetailMetricsTab
+            <RunDetailMetricsAndSystemTab
               runHash={runHash}
               runTraces={runsData?.runTraces}
               runBatch={runsData?.runSystemBatch}

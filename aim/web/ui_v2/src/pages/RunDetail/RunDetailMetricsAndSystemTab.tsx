@@ -43,6 +43,7 @@ function RunDetailMetricsAndSystemTab({
                   key={i}
                   className='RunDetailMetricsTab__container__chartBox'
                 >
+                  {console.log({ batch })}
                   <LineChart
                     data={[
                       {
