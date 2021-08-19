@@ -5,6 +5,7 @@ from collections import Counter
 
 from aim.sdk.trace import RunTraceCollection
 from aim.sdk.utils import generate_run_hash
+from aim.sdk.num_utils import convert_to_py_number
 from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
 
 from aim.storage.hashing import hash_auto
@@ -54,11 +55,12 @@ class Run:
             logger.debug(f'Opening Run {hashname} in write mode')
 
         self.hashname = hashname
+        self._hash = None
+        self._props = None
+
         if experiment:
             with self.repo.structured_db:
                 self.props.experiment = experiment
-        self._hash = None
-        self._props = None
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
@@ -72,6 +74,7 @@ class Run:
             'trcs', hashname, read_only=read_only
         ).tree().view('trcs').view(['chunks', hashname])
         if not read_only:
+            # TODO: [AT] check this once Container db open locking is added
             self.series_run_tree.preload()
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
@@ -151,6 +154,8 @@ class Run:
         # TODO move to Trace
         if context is None:
             context = {}
+
+        value = convert_to_py_number(value)
 
         ctx = Context(context)
         metric = Metric(name, ctx)

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aim.sdk.utils import get_default_session
+from aim.sdk.legacy.session.session import get_default_session
 from aim.sdk.legacy.deprecation_warning import deprecated
 
 

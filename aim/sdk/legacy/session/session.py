@@ -30,7 +30,7 @@ class Session:
 
         self._repo = Repo.from_path(repo) if repo else Repo.default_repo()
         self._repo_path = self._repo.path
-        self._run = Run(hasname=run, repo=self._repo, experiment=experiment,
+        self._run = Run(run, repo=self._repo, experiment=experiment,
                         system_tracking_interval=system_tracking_interval)
         self._run_hash = self._run.hashname
         self.active = True
@@ -77,7 +77,7 @@ class Session:
             raise Exception('session is closed')
         if self._run:
             del self._run
-            sef._run = None
+            self._run = None
         if self._repo_path in Session.sessions \
                 and self in Session.sessions[self._repo_path]:
             Session.sessions[self._repo_path].remove(self)

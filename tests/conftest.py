@@ -9,7 +9,7 @@ from aim.sdk.run import Run
 from aim.web.api.projects.project import Project
 from aim.web.utils import exec_cmd
 from aim.cli.up.utils import build_db_upgrade_command
-from aim.engine.configs import AIM_WEB_ENV_KEY
+from aim.web.configs import AIM_WEB_ENV_KEY
 
 TEST_REPO_PATH = '.aim-test-repo'
 
@@ -33,7 +33,7 @@ def init_test_repo(repo):
     with repo.structured_db:
         for idx, hash_name in enumerate(run_hashes):
             try:
-                run = Run(hashname=hash_name, repo=repo)
+                run = Run(hashname=hash_name, repo=repo, system_tracking_interval=None)
                 run['hparams'] = create_run_params()
                 run['run_index'] = idx
                 run['start_time'] = datetime.datetime.utcnow().isoformat()

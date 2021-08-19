@@ -21,6 +21,7 @@ class TestBase(unittest.TestCase):
         truncate_structured_db(cls.repo.structured_db)
 
     def tearDown(self) -> None:
+        self.repo.structured_db.invalidate_caches()
         Run.set_props_cache_hint(None)
 
 

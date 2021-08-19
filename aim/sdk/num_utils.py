@@ -20,6 +20,18 @@ def get_inst_type_str(inst):
     return obj_full, obj_cls_full
 
 
+def get_inst_base_types(inst):
+    """
+    Get instance and it's base classes types
+    """
+    bases_types = []
+    for b in inst.__class__.__bases__:
+        b_type, b_cls_type = get_inst_type_str(b)
+        bases_types.append(b_type)
+        bases_types.append(b_cls_type)
+    return bases_types
+
+
 def inst_has_typename(inst, types):
     """
     Return `True` if the instance is created from class
