@@ -9,10 +9,6 @@ import {
   IRunBatch,
   IRunDetailMetricsAndSystemTabProps,
 } from 'types/pages/runs/Runs';
-import {
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
 
 function RunDetailMetricsAndSystemTab({
@@ -43,7 +39,6 @@ function RunDetailMetricsAndSystemTab({
                   key={i}
                   className='RunDetailMetricsTab__container__chartBox'
                 >
-                  {console.log({ batch })}
                   <LineChart
                     data={[
                       {
