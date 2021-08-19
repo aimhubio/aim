@@ -109,23 +109,19 @@ function drawBrush(props: IDrawBrushProps): void {
 
     attributesRef.current.updateFocusedChart();
 
-    linesNodeRef.current
-      .selectAll('.Line')
-      .transition()
-      .duration(500)
-      .attr(
-        'd',
-        lineGenerator(brushRef.current.xScale, brushRef.current.yScale),
-      );
+    linesRef.current.updateLinesScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
 
-    linesNodeRef.current
-      .selectAll('.Area')
-      .transition()
-      .duration(500)
-      .attr(
-        'd',
-        areaGenerator(brushRef.current.xScale, brushRef.current.yScale),
-      );
+    linesRef.current.updateAggregatedAreasScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
+    linesRef.current.updateAggregatedLinesScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
   }
 
   function handleZoomOut(event: Event): void {
@@ -149,6 +145,7 @@ function drawBrush(props: IDrawBrushProps): void {
     brushRef.current.updateScales(xScale, yScale);
     linesRef.current.updateLinesScales(xScale, yScale);
     linesRef.current.updateAggregatedAreasScales(xScale, yScale);
+    linesRef.current.updateAggregatedLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
     attributesRef.current.updateFocusedChart();

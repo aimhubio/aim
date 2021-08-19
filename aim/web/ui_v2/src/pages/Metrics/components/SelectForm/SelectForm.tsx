@@ -21,7 +21,6 @@ import projectsModel from 'services/models/projects/projectsModel';
 
 function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
-  console.log(projectsData);
 
   const [fields, setFields] = React.useState<any>([]);
   const [editMode, setEditMode] = React.useState<boolean>(false);

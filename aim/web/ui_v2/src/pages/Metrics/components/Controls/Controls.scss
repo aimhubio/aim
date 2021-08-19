@@ -1,9 +1,12 @@
-
 .Controls__anchor {
   cursor: pointer;
 
   &:hover .arrowLeft {
     opacity: 1
+  }
+   &.disabled {
+    opacity: 0.2;
+    cursor: unset;
   }
 }
 

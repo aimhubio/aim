@@ -20,9 +20,8 @@ import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
-
 import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 import './Controls.scss';
 
@@ -62,22 +61,33 @@ function Controls(
       <Grid item>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className='Controls__anchor' position='relative'>
-              <span
-                className={`Controls__anchor__arrow ${opened ? 'opened' : ''}`}
-                onClick={onAnchorClick}
-              >
-                <KeyboardArrowLeft className='arrowLeft' />
-              </span>
+            <Box
+              className={`Controls__anchor ${
+                props.aggregationConfig.isEnabled ? '' : 'disabled'
+              }`}
+              position='relative'
+            >
+              {props.aggregationConfig.isEnabled && (
+                <span
+                  className={`Controls__anchor__arrow ${
+                    opened ? 'Controls__anchor__arrow__opened' : ''
+                  }`}
+                  onClick={onAnchorClick}
+                >
+                  <KeyboardArrowLeft className='arrowLeft' />
+                </span>
+              )}
               <GroupWorkOutlined
                 color={
                   props.aggregationConfig?.isApplied ? 'primary' : 'inherit'
                 }
-                onClick={() =>
-                  props.onAggregationConfigChange({
-                    isApplied: !props.aggregationConfig?.isApplied,
-                  })
-                }
+                onClick={() => {
+                  if (props.aggregationConfig.isEnabled) {
+                    props.onAggregationConfigChange({
+                      isApplied: !props.aggregationConfig?.isApplied,
+                    });
+                  }
+                }}
               />
             </Box>
           )}
