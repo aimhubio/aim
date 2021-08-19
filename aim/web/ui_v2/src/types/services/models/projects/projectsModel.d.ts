@@ -6,12 +6,13 @@ export interface IProject {
   telemetry_enabled?: string | boolean;
 }
 
-export interface IParams {
-  metrics: string[];
-  params: unknown;
+export interface IProjectParamsMetrics {
+  metrics: { [key: string]: { [key: string]: string }[] };
+  params: { [key: string]: any };
 }
 
 export interface IProjectsModelState {
   project?: IProject;
-  params?: IParams;
+  params?: IProjectParamsMetrics['params'];
+  metrics?: IProjectParamsMetrics['metrics'];
 }

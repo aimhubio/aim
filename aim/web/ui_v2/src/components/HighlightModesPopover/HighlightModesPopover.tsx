@@ -2,13 +2,23 @@ import React from 'react';
 import { Box, Divider, MenuItem, MenuList } from '@material-ui/core';
 
 import { IHighlightModesPopoverProps } from 'types/components/HighlightModesPopover/HighlightModesPopover';
-import HighlightEnum from './HighlightEnum';
 
-function HighlightModesPopover(
-  props: IHighlightModesPopoverProps,
-): React.FunctionComponentElement<React.ReactNode> {
+export enum HighlightEnum {
+  Off = 0,
+  Run = 1,
+  Metric = 2,
+  Custom = 3,
+}
+
+function HighlightModesPopover({
+  mode,
+  onChange,
+}: IHighlightModesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   function handleClick(e: React.ChangeEvent<any>): void {
-    props.onChange(+e.target.getAttribute('data-name'));
+    const value = e.target?.getAttribute('data-name');
+    if (value && mode !== parseInt(value) && typeof onChange === 'function') {
+      onChange(parseInt(value));
+    }
   }
 
   return (
@@ -18,21 +28,21 @@ function HighlightModesPopover(
       <MenuList>
         <MenuItem
           data-name={HighlightEnum.Off}
-          selected={props.mode === HighlightEnum.Off}
+          selected={mode === HighlightEnum.Off}
           onClick={handleClick}
         >
           Highlight Off
         </MenuItem>
         <MenuItem
           data-name={HighlightEnum.Run}
-          selected={props.mode === HighlightEnum.Run}
+          selected={mode === HighlightEnum.Run}
           onClick={handleClick}
         >
           Highlight Metric on Hover
         </MenuItem>
         <MenuItem
           data-name={HighlightEnum.Metric}
-          selected={props.mode === HighlightEnum.Metric}
+          selected={mode === HighlightEnum.Metric}
           onClick={handleClick}
         >
           Highlight Run On Hover

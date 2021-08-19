@@ -9,12 +9,14 @@ class ExperimentCreateIn(BaseModel):
 
 class ExperimentUpdateIn(BaseModel):
     name: Optional[str] = ''
+    archived: Optional[bool] = None
 
 
 class ExperimentGetOut(BaseModel):
     id: UUID
     name: str
     run_count: int
+    archived: bool
 
 
 ExperimentListOut = List[ExperimentGetOut]

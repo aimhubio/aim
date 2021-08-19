@@ -18,6 +18,11 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 
+class TestConfig(Config):
+    # SQLALCHEMY_ECHO = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/.aim-test-repo/aim_db'.format(get_root_path())
+
+
 class ProductionConfig(Config):
     """
     Production Configuration
@@ -28,5 +33,6 @@ class ProductionConfig(Config):
 
 config = {
     'dev': DevelopmentConfig,
+    'test': TestConfig,
     'prod': ProductionConfig,
 }

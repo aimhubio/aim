@@ -1,4 +1,3 @@
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -12,6 +11,8 @@ import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IRun } from './runModel';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
 export interface IMetricAppModelState {
   refs: {
@@ -22,11 +23,19 @@ export interface IMetricAppModelState {
   config: IMetricAppConfig;
   data: IMetricsCollection[];
   lineChartData: ILine[][];
+  aggregatedData: IAggregatedData[];
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
   tooltipContent: ITooltipContent;
+}
+
+export interface IAggregatedData extends IAggregationData {
+  key: string;
+  color: string;
+  dasharray: string;
+  chartIndex: number;
 }
 
 export interface ITooltipData {
@@ -48,7 +57,7 @@ export interface IMetricsCollection {
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
-  data: IMetric[];
+  data: IMetric[] | IParam[];
   aggregation?: IAggregationData;
 }
 
@@ -104,14 +113,17 @@ interface IMetricAppConfig {
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
     focusedState: IFocusedState;
-    aggregation: {
-      methods: {
-        area: AggregationAreaMethods;
-        line: AggregationLineMethods;
-      };
-      isApplied: boolean;
-    };
+    aggregationConfig: IAggregationConfig;
   };
+}
+
+export interface IAggregationConfig {
+  methods: {
+    area: AggregationAreaMethods;
+    line: AggregationLineMethods;
+  };
+  isApplied: boolean;
+  isEnabled: boolean;
 }
 
 export interface IFocusedState {

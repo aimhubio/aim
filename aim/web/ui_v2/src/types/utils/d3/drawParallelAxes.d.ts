@@ -1,23 +1,24 @@
 import { ScaleType } from 'types/components/LineChart/LineChart';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
-export type DimensionType = {
+export interface IDimensionType {
   scaleType: ScaleType;
   domainData: number[] | string[];
-};
+  displayName: string;
+}
 
-export type YScaleType = {
+export interface YScaleType {
   [key: string]: IGetAxisScale;
-};
+}
 
-export type DimensionsType = {
-  [key: string]: DimensionType;
-};
+export interface IDimensionsType {
+  [key: string]: IDimensionType;
+}
 
 export interface IDrawParallelAxesProps {
   axesNodeRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   axesRef: React.MutableRefObject<>;
-  dimensions: DimensionsType;
+  dimensions: IDimensionsType;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { IGetAxisScale } from './getAxisScale';
 import { ILineValuesDataType } from './drawParallelLines';
-import { DimensionsType } from './drawParallelAxes';
+import { IDimensionsType } from './drawParallelAxes';
 import {
   ISyncHoverStateParams,
   INearestCircle,
@@ -12,7 +12,7 @@ import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawParallelHoverAttributesProps {
   index: number;
-  dimensions: DimensionsType;
+  dimensions: IDimensionsType;
   visAreaRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;
@@ -34,7 +34,7 @@ export interface IDrawParallelHoverAttributesProps {
     focusedState?: IFocusedState;
     updateFocusedChart: (params: IUpdateParallelFocusedChartProps) => void;
   }>;
-  syncHoverState: (params: ISyncHoverStateParams | null) => void;
+  syncHoverState: (params: ISyncHoverStateParams) => void;
   linesNodeRef: React.MutableRefObject<>;
   index: number;
   highlightedNodeRef: React.MutableRefObject<>;

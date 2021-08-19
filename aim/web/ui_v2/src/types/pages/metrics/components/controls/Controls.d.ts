@@ -1,7 +1,9 @@
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IOnSmoothingChange } from 'Metrics';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { CurveEnum } from 'utils/d3';
+import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface IControlProps {
   onDisplayOutliersChange: () => void;
@@ -9,9 +11,13 @@ export interface IControlProps {
   onZoomModeChange: () => void;
   zoomMode: boolean;
   highlightMode: HighlightEnum;
-  onChangeHighlightMode: (mode: number) => void;
+  aggregationConfig: IAggregationConfig;
+  onHighlightModeChange: (mode: number) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
+  onAggregationConfigChange: (
+    aggregationConfig: Partial<IAggregationConfig>,
+  ) => void;
   axesScaleType: IAxesScaleState;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;

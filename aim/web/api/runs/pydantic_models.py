@@ -47,10 +47,32 @@ class TraceFullView(TraceAlignedView):
     timestamps: Optional[EncodedNumpyArray] = None
 
 
+class PropsView(BaseModel):
+    class Tag(BaseModel):
+        id: UUID
+        name: str
+        color: str
+
+    class Experiment(BaseModel):
+        id: UUID
+        name: str
+
+    name: Optional[str] = None
+    experiment: Optional[Experiment] = None
+    tags: Optional[List[Tag]] = []
+    creation_time: float
+
+
 class MetricSearchRunView(BaseModel):
     params: dict
     traces: List[TraceFullView]
-    created_at: float = 0.1
+    props: PropsView
+
+
+class RunInfoOut(BaseModel):
+    params: dict
+    traces: List[TraceOverview]
+    props: PropsView
 
 
 RunMetricSearchApiOut = Dict[str, MetricSearchRunView]
@@ -59,7 +81,7 @@ RunMetricSearchApiOut = Dict[str, MetricSearchRunView]
 class RunSearchRunView(BaseModel):
     params: dict
     traces: List[TraceOverview]
-    created_at: float = 0.1
+    props: PropsView
 
 
 RunSearchApiOut = Dict[str, RunSearchRunView]
@@ -96,29 +118,6 @@ class StructuredRunUpdateIn(BaseModel):
 class StructuredRunUpdateOut(BaseModel):
     id: str
     status: str = 'OK'
-
-
-class StructuredRunBaseOut(BaseModel):
-    id: str
-    name: str
-
-
-StructuredRunListOut = List[StructuredRunBaseOut]
-
-
-class StructuredRunOut(StructuredRunBaseOut):
-    class Experiment(BaseModel):
-        experiment_id: UUID
-        name: str = ''
-
-    class Tag(BaseModel):
-        tag_id: UUID
-        name: str = ''
-
-    archived: bool = False
-    description: str = ''
-    experiment: Optional[Experiment] = ''
-    tags: Optional[List[Tag]] = []
 
 
 class StructuredRunAddTagIn(BaseModel):

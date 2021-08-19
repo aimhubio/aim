@@ -15,8 +15,13 @@ import {
 
 import styles from './selectFormStyle.module.scss';
 import { metricOptions } from 'utils/mockOptions';
+import useModel from 'hooks/model/useModel';
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
+import projectsModel from 'services/models/projects/projectsModel';
 
 function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
+  const projectsData = useModel<IProjectsModelState>(projectsModel);
+
   const [fields, setFields] = React.useState<any>([]);
   const [editMode, setEditMode] = React.useState<boolean>(false);
 
@@ -32,6 +37,15 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
   function toggleEditMode(): void {
     setEditMode(!editMode);
   }
+
+  React.useEffect(() => {
+    const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
+    paramsMetricsRequestRef.call();
+
+    return () => {
+      paramsMetricsRequestRef.abort();
+    };
+  }, []);
 
   return (
     <Grid

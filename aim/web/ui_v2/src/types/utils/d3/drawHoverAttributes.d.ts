@@ -1,9 +1,10 @@
 import React from 'react';
 import { ILineChartProps } from 'components/LineChart/LineChart';
 import { IProcessedData } from './processData';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { IGetAxisScale } from './getAxisScale';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawHoverAttributesProps {
   index: number;
@@ -22,6 +23,7 @@ export interface IDrawHoverAttributesProps {
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface ISyncHoverStateParams {

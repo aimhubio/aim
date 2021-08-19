@@ -7,6 +7,7 @@ from aim.web.api.projects.project import Project
 from aim.web.api.runs.utils import (
     collect_requested_traces,
     custom_aligned_metrics_streamer,
+    get_run_props,
     metric_search_result_streamer,
     run_search_result_streamer
 )
@@ -15,13 +16,11 @@ from aim.web.api.runs.pydantic_models import (
     RunTracesBatchApiIn,
     RunMetricCustomAlignApiOut,
     RunMetricSearchApiOut,
+    RunInfoOut,
     RunSearchApiOut,
-    RunTracesApiOut,
     RunTracesBatchApiOut,
     StructuredRunUpdateIn,
     StructuredRunUpdateOut,
-    StructuredRunListOut,
-    StructuredRunOut,
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut
@@ -78,7 +77,7 @@ async def run_metric_search_api(q: Optional[str] = '', p: int = 50,  x_axis: Opt
     return StreamingResponse(streamer)
 
 
-@runs_router.get('/{run_id}/params/', response_model=dict)
+@runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
 async def run_params_api(run_id: str):
     # Get project
     project = Project()
@@ -87,19 +86,13 @@ async def run_params_api(run_id: str):
     run = project.repo.get_run(hashname=run_id)
     if not run:
         raise HTTPException(status_code=404)
-    return JSONResponse(run[...])
 
-
-@runs_router.get('/{run_id}/traces/', response_model=RunTracesApiOut)
-async def run_traces_api(run_id: str):
-    # Get project
-    project = Project()
-    if not project.exists():
-        raise HTTPException(status_code=404)
-    run = project.repo.get_run(hashname=run_id)
-    if not run:
-        raise HTTPException(status_code=404)
-    return JSONResponse(run.get_traces_overview())
+    response = {
+        'params': run[...],
+        'traces': run.get_traces_overview(),
+        'props': get_run_props(run)
+    }
+    return JSONResponse(response)
 
 
 @runs_router.post('/{run_id}/traces/get-batch/', response_model=RunTracesBatchApiOut)
@@ -115,42 +108,6 @@ async def run_traces_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
     traces_data = collect_requested_traces(run, requested_traces)
 
     return JSONResponse(traces_data)
-
-
-# TODO: [AT] implement model serializers (JSON) and request validators (discuss with BE team about possible solutions)
-@runs_router.get('/', response_model=StructuredRunListOut)
-async def get_runs_list_api(include_archived: bool = False, factory=Depends(object_factory)):
-    # TODO: [AT] add arbitrary filters to SDK runs() method
-    if include_archived:
-        response = [{'id': run.hashname, 'name': run.name} for run in factory.runs()]
-    else:
-        response = [{'id': run.hashname, 'name': run.name} for run in factory.runs() if not run.archived]
-    return response
-
-
-@runs_router.get('/search/', response_model=StructuredRunListOut)
-async def search_runs_by_name_api(q: str = '', factory=Depends(object_factory)):
-    search_term = q.strip()
-
-    response = [{'id': run.hashname, 'name': run.name} for run in factory.search_runs(search_term)]
-    return response
-
-
-@runs_router.get('/{run_id}/', response_model=StructuredRunOut)
-async def get_run_api(run_id: str, factory=Depends(object_factory)):
-    run = factory.find_run(run_id)
-    if not run:
-        raise HTTPException(status_code=404)
-
-    response = {
-        'id': run.hashname,
-        'name': run.name,
-        'archived': run.archived,
-        'description': run.description or '',
-        'experiment': {'experiment_id': run.experiment.uuid, 'name': run.experiment.name} if run.experiment else '',
-        'tags': [{'tag_id': tag.uuid, 'name': tag.name} for tag in run.tags]
-    }
-    return response
 
 
 @runs_router.put('/{run_id}/', response_model=StructuredRunUpdateOut)

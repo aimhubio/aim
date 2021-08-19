@@ -4,13 +4,14 @@ import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import { ITableRef } from 'types/components/Table/Table';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
+  IAggregatedData,
+  IAggregationConfig,
   IAppData,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -20,6 +21,7 @@ import {
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -90,6 +92,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[][]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
+      aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum
@@ -108,14 +111,18 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
       tooltipContent={metricsData?.tooltipContent as ITooltipContent}
+      aggregationConfig={
+        metricsData?.config?.chart.aggregationConfig as IAggregationConfig
+      }
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
-      onChangeHighlightMode={metricAppModel.onChangeHighlightMode}
+      onHighlightModeChange={metricAppModel.onHighlightModeChange}
       onSmoothingChange={metricAppModel.onSmoothingChange}
       onTableRowHover={metricAppModel.onTableRowHover}
       onTableRowClick={metricAppModel.onTableRowClick}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
+      onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
       onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
       onGroupingModeChange={metricAppModel.onGroupingModeChange}
       onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
@@ -127,6 +134,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onBookmarkUpdate={metricAppModel.onBookmarkUpdate}
       onNotificationAdd={metricAppModel.onNotificationAdd}
       onNotificationDelete={metricAppModel.onNotificationDelete}
+      onResetConfigData={metricAppModel.onResetConfigData}
     />
   );
 }

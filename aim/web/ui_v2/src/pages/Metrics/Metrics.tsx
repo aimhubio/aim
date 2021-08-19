@@ -39,6 +39,7 @@ function Metrics(
               <AppBar
                 onBookmarkCreate={props.onBookmarkCreate}
                 onBookmarkUpdate={props.onBookmarkUpdate}
+                onResetConfigData={props.onResetConfigData}
               />
             </Paper>
           </Grid>
@@ -81,6 +82,8 @@ function Metrics(
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
                 tooltipContent={props.tooltipContent}
+                aggregatedData={props.aggregatedData}
+                aggregationConfig={props.aggregationConfig}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,
@@ -98,12 +101,14 @@ function Metrics(
                     displayOutliers={props.displayOutliers}
                     zoomMode={props.zoomMode}
                     highlightMode={props.highlightMode}
+                    aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
-                    onChangeHighlightMode={props.onChangeHighlightMode}
+                    onHighlightModeChange={props.onHighlightModeChange}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
+                    onAggregationConfigChange={props.onAggregationConfigChange}
                   />
                 }
               />

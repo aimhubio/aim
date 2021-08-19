@@ -6,19 +6,20 @@ import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { encode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import {
   calculateCentralMovingAverage,
   calculateExponentialMovingAverage,
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
-import HighlightEnum from 'components/HighlightModesPopover/HighlightEnum';
 
 //Types
 import {
   GroupingSelectOptionType,
   GroupNameType,
+  IAggregatedData,
+  IAggregationConfig,
   IAppData,
   IDashboardData,
   IGetGroupingPersistIndex,
@@ -57,6 +58,7 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
@@ -98,12 +100,13 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
-      aggregation: {
+      aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
           line: AggregationLineMethods.MEAN,
         },
         isApplied: false,
+        isEnabled: false,
       },
       focusedState: {
         active: false,
@@ -193,13 +196,16 @@ function getMetricsData() {
         configData.grouping.selectOptions = [
           ...getGroupingSelectOptions(params),
         ];
+        setAggregationEnabled(configData);
       }
+
       model.setState({
         rawData: runData,
         config: configData,
         params,
         data,
         lineChartData: getDataAsLines(data),
+        aggregatedData: getAggregatedData(data),
         tableData: getDataAsTableRows(data, null, params),
         tableColumns: getTableColumns(params),
       });
@@ -376,8 +382,23 @@ function getGroupingPersistIndex({
   return index;
 }
 
+function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
+  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
+  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
+  if (
+    groupByColor.length === 0 &&
+    groupByStyle.length === 0 &&
+    groupByChart.length === 0
+  ) {
+    return false;
+  }
+  return true;
+}
+
 function groupData(data: IMetric[]): IMetricsCollection[] {
-  const grouping = model.getState()!.config!.grouping;
+  const configData = model.getState()!.config;
+  const grouping = configData!.grouping;
   const { paletteIndex } = grouping;
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
   const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
@@ -499,17 +520,49 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
 
   const groups = Object.values(groupValues);
 
+  const chartConfig = configData!.chart;
+
   return aggregateGroupData({
     groupData: groups,
     methods: {
-      area: AggregationAreaMethods.MIN_MAX,
-      line: AggregationLineMethods.MEAN,
+      area: chartConfig.aggregationConfig.methods.area,
+      line: chartConfig.aggregationConfig.methods.line,
     },
-    scale: model.getState()!.config!.chart.axesScaleType,
+    scale: chartConfig.axesScaleType,
   });
 }
 
 function alignData() {}
+
+function getAggregatedData(
+  processedData: IMetricsCollection[],
+): IAggregatedData[] {
+  if (!processedData) {
+    return [];
+  }
+  const configData: IMetricAppConfig | any = model.getState()?.config;
+  const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
+
+  let aggregatedData: IAggregatedData[] = [];
+
+  processedData.forEach((metricsCollection, index) => {
+    aggregatedData.push({
+      key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
+      area: {
+        min: metricsCollection.aggregation?.area.min || null,
+        max: metricsCollection.aggregation?.area.max || null,
+      },
+      line: metricsCollection.aggregation?.line || null,
+      chartIndex: metricsCollection.chartIndex || 0,
+      color:
+        metricsCollection.color ||
+        COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+      dasharray: metricsCollection.dasharray || '0',
+    });
+  });
+
+  return aggregatedData;
+}
 
 function getDataAsLines(
   processedData: IMetricsCollection[],
@@ -647,7 +700,7 @@ function setTooltipData(
 
 //Chart Methods
 
-function onChangeHighlightMode(mode: HighlightEnum): void {
+function onHighlightModeChange(mode: HighlightEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     model.setState({
@@ -674,6 +727,22 @@ function onZoomModeChange(): void {
         },
       },
     });
+  }
+}
+
+function onAggregationConfigChange(
+  aggregationConfig: Partial<IAggregationConfig>,
+): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart && !_.isEmpty(aggregationConfig)) {
+    configData.chart = {
+      ...configData.chart,
+      aggregationConfig: {
+        ...configData.chart.aggregationConfig,
+        ...aggregationConfig,
+      },
+    };
+    updateModelData(configData);
   }
 }
 
@@ -712,6 +781,14 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
   }
 }
 
+function setAggregationEnabled(configData: IMetricAppConfig): void {
+  const isAppliedGrouping = isGroupingApplied(configData.grouping);
+  configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
+  if (!isAppliedGrouping) {
+    configData.chart.aggregationConfig.isApplied = false;
+  }
+}
+
 function onGroupingSelectChange({
   groupName,
   list,
@@ -719,6 +796,7 @@ function onGroupingSelectChange({
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -733,6 +811,7 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -744,6 +823,7 @@ function onGroupingPaletteChange(index: number): void {
       ...configData.grouping,
       paletteIndex: index,
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -761,6 +841,7 @@ function onGroupingReset(groupName: GroupNameType) {
       persistence: { ...persistence, [groupName]: false },
       isApplied: { ...isApplied, [groupName]: true },
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -771,6 +852,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     config: configData,
     data: processedData.data,
     lineChartData: getDataAsLines(processedData.data),
+    aggregatedData: getAggregatedData(processedData.data),
     tableData: getDataAsTableRows(
       processedData.data,
       null,
@@ -789,6 +871,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
         [groupName]: !configData.grouping.isApplied[groupName],
       },
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -803,6 +886,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
         [groupName]: !configData.grouping.persistence[groupName],
       },
     };
+    setAggregationEnabled(configData);
     updateModelData(configData);
   }
 }
@@ -911,6 +995,12 @@ function onNotificationAdd(notification: INotification) {
   }, 3000);
 }
 
+function onResetConfigData(): void {
+  model.setState({
+    config: getConfig(),
+  });
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -919,11 +1009,12 @@ const metricAppModel = {
   getDataAsTableRows,
   setComponentRefs,
   setDefaultAppConfigData,
-  onChangeHighlightMode,
+  onHighlightModeChange,
   onZoomModeChange,
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
+  onAggregationConfigChange,
   onActivePointChange,
   onTableRowHover,
   onTableRowClick,
@@ -939,6 +1030,7 @@ const metricAppModel = {
   onNotificationDelete,
   onNotificationAdd,
   onBookmarkUpdate,
+  onResetConfigData,
 };
 
 export default metricAppModel;

@@ -1,7 +1,9 @@
 from typing import Iterator
 import struct
 from sqlalchemy import text as sa_text
-from aim.storage.structured.sql_engine.models import Base
+from aim.storage.structured.sql_engine.models import Base as StructuredBase
+from aim.web.api.db import get_contexted_session
+from aim.web.api.dashboards.models import Base as ApiBase
 
 
 def decode_encoded_tree_stream(stream: Iterator[bytes]) -> bytes:
@@ -23,6 +25,14 @@ def decode_encoded_tree_stream(stream: Iterator[bytes]) -> bytes:
 def truncate_structured_db(db):
     with db:
         session = db.get_session()
-        meta = Base.metadata
+        meta = StructuredBase.metadata
         for table in reversed(meta.sorted_tables):
             session.execute(sa_text(f'DELETE FROM {table.name};'))
+
+
+def truncate_api_db():
+    with get_contexted_session() as session:
+        meta = ApiBase.metadata
+        for table in reversed(meta.sorted_tables):
+            session.execute(sa_text(f'DELETE FROM {table.name};'))
+            session.commit()
