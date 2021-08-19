@@ -36,8 +36,6 @@ class Repo:
 
         os.makedirs(self.path, exist_ok=True)
 
-        self._meta_tree = None
-
         self.structured_db = DB.from_path(path)
 
     @property
