@@ -5,6 +5,8 @@ import { ILine, ILineChartProps } from 'types/components/LineChart/LineChart';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IProcessedData } from 'types/utils/d3/processData';
 import {
+  IAggregatedData,
+  IAggregationConfig,
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -16,6 +18,8 @@ export interface IChartPanelProps {
   data: ILine[][] | any;
   focusedState: IFocusedState;
   tooltipContent: ITooltipContent;
+  aggregatedData?: IAggregatedData[];
+  aggregationConfig?: IAggregationConfig;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,
   //   'data' | 'index' | 'syncHoverState'

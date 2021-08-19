@@ -4,6 +4,7 @@ import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
 import getAxisScale from './getAxisScale';
 import lineGenerator from './lineGenerator';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import areaGenerator from './areaGenerator';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
@@ -108,14 +109,19 @@ function drawBrush(props: IDrawBrushProps): void {
 
     attributesRef.current.updateFocusedChart();
 
-    linesNodeRef.current
-      .selectAll('.Line')
-      .transition()
-      .duration(500)
-      .attr(
-        'd',
-        lineGenerator(brushRef.current.xScale, brushRef.current.yScale),
-      );
+    linesRef.current.updateLinesScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
+
+    linesRef.current.updateAggregatedAreasScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
+    linesRef.current.updateAggregatedLinesScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
   }
 
   function handleZoomOut(event: Event): void {
@@ -138,6 +144,8 @@ function drawBrush(props: IDrawBrushProps): void {
     // setting scales and lines to initial state
     brushRef.current.updateScales(xScale, yScale);
     linesRef.current.updateLinesScales(xScale, yScale);
+    linesRef.current.updateAggregatedAreasScales(xScale, yScale);
+    linesRef.current.updateAggregatedLinesScales(xScale, yScale);
 
     attributesRef.current.updateScales(xScale, yScale);
     attributesRef.current.updateFocusedChart();

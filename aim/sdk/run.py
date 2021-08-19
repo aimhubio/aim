@@ -31,6 +31,7 @@ class Run:
 
     contexts: Dict[Context, int] = dict()
     _idx_to_ctx: Dict[int, Context] = dict()
+    _props_cache_hint: str = None
 
     def __init__(self, hashname: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
@@ -70,14 +71,16 @@ class Run:
         self.series_run_tree: TreeView = self.repo.request(
             'trcs', hashname, read_only=read_only
         ).tree().view('trcs').view(['chunks', hashname])
+        if not read_only:
+            self.series_run_tree.preload()
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
         self._creation_time = None
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
-            self._prepare_resource_tracker(system_tracking_interval)
             self.creation_time
+            self._prepare_resource_tracker(system_tracking_interval)
 
     @property
     def creation_time(self):
@@ -179,10 +182,17 @@ class Run:
         epoch_view[step] = epoch
         time_view[step] = track_time
 
+    @classmethod
+    def set_props_cache_hint(cls, cache: str):
+        cls._props_cache_hint = cache
+
     @property
     def props(self):
         if self._props is None:
-            self._props = self.repo.structured_db.find_run(self.hashname)
+            if self._props_cache_hint:
+                self._props = self.repo.structured_db.caches[self._props_cache_hint][self.hashname]
+            else:
+                self._props = self.repo.structured_db.find_run(self.hashname)
         return self._props
 
     def proxy(self):

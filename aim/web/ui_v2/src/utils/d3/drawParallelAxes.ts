@@ -62,12 +62,7 @@ function drawParallelAxes({
       .attr('width', 160)
       .attr('height', 160)
       .attr('transform', 'translate(0, -30)')
-      .html(() => {
-        return `
-        <div>
-          <p>${keyOfDimension}</p>
-        </div>`;
-      });
+      .html(() => `<div>${dimensions[keyOfDimension].displayName}</div>`);
     axesRef.current.yAxes[keyOfDimension] = axes;
   });
 

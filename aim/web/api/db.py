@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from aim.web.configs import AIM_WEB_ENV_KEY
 from aim.web.api.config import config
+from contextlib import contextmanager
 
 env = os.environ.get(AIM_WEB_ENV_KEY, 'prod')
 config = config[env]
@@ -18,6 +19,15 @@ Base = declarative_base()
 
 
 def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+@contextmanager
+def get_contexted_session():
     session = SessionLocal()
     try:
         yield session

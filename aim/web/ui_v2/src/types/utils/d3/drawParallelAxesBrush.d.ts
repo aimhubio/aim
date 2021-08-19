@@ -1,7 +1,7 @@
 import React from 'react';
 import { IGetAxisScale } from './getAxisScale';
 import { ILineDataType } from './drawParallelLines';
-import { DimensionsType } from './drawParallelAxes';
+import { IDimensionsType } from './drawParallelAxes';
 
 export interface IDrawParallelAxesBrushBrushProps {
   plotBoxRef: React.MutableRefObject<>;
@@ -10,7 +10,7 @@ export interface IDrawParallelAxesBrushBrushProps {
   attributesRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;
   data: ILineDataType[];
-  dimensions: DimensionsType;
+  dimensions: IDimensionsType;
 }
 
 export interface IHandleBrushChange {
@@ -26,5 +26,5 @@ export type DomainsDataType = {
 export interface IFilterDataByBrushedScaleProps {
   line: ILineDataType;
   domainsData: DomainsDataType;
-  dimensions: DimensionsType;
+  dimensions: IDimensionsType;
 }
