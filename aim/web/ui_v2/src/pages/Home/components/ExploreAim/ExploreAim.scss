@@ -1,0 +1,55 @@
+.ExploreAim__container {
+  display: flex;
+  flex-direction: column;
+  width: 36.5em;
+  min-width: 36.5em;
+  border-left: 0.0625em solid #E8F1FC;
+  padding: 1.5em 1.5em 1.5em 2.5em;
+}
+
+.ExploreAim_card__container {
+  margin-top: 2em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.ExploreAim__social__item {
+  border: 0.0625em solid #E8F1FC;
+  box-sizing: border-box;
+  border-radius: 0.5em;
+  display: flex;
+  align-items: center;
+  padding: 0.5em;
+  span {
+    font-size: 1em;
+    line-height: 1.1875em;
+    color: #031123;
+    flex: 1;
+  }
+
+  img {
+    margin-right: 1em;
+    width: 2em;
+  }
+
+  i {
+    font-size: 0.5em;
+  }
+}
+
+.ExploreAim__social__container {
+  margin-top: 2em;
+}
+
+.ExploreAim__block__item {
+  margin-top: 3em;
+}
+
+.ExploreAim__social__item {
+  margin-bottom: 0.5em;
+  text-decoration: none;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

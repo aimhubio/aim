@@ -121,7 +121,8 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
     @property
     def tags(self) -> TagCollection:
         if self._model:
-            return ModelMappedTagCollection(self._session, collection=self._model.tags)
+            return ModelMappedTagCollection(self._session,
+                                            collection=[t for t in self._model.tags if t.is_archived is not True])
         else:
             return []
 
@@ -158,6 +159,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
     __mapped_properties__ = [
         Property('name'),
         Property('uuid', with_setter=False),
+        Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
         Property('updated_at', with_setter=False),
     ]
@@ -232,6 +234,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
     __mapped_properties__ = [
         Property('name'),
         Property('color'),
+        Property('archived', 'is_archived'),
         Property('uuid', with_setter=False),
         Property('created_at', with_setter=False),
         Property('updated_at', with_setter=False),

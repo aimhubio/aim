@@ -11,6 +11,16 @@ from aim.storage.sdk.trace import QueryTraceCollection, QueryRunTraceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 
 
+def get_run_props(run: Run):
+    return {
+        'name': run.props.name if run.props.name else None,
+        'experiment': run.props.experiment.name if run.props.experiment else None,
+        'tags': [{'id': tag.uuid, 'name': tag.name, 'color': tag.color} for tag in run.props.tags],
+        'archived': run.props.archived if run.props.archived else False,
+        'creation_time': run.creation_time,
+    }
+
+
 def numpy_to_encodable(array: np.ndarray) -> dict:
     encoded_numpy = {
         'type': 'numpy',
@@ -134,7 +144,7 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
         runs_dict[run.hashname] = {
             'params': run[...],
             'traces': traces_list,
-            'created_at': run.creation_time,
+            'props': get_run_props(run)
         }
 
     return runs_dict
@@ -147,7 +157,7 @@ def query_runs_dict_constructor(runs: QueryRunTraceCollection) -> dict:
         runs_dict[run.hashname] = {
             'params': run[...],
             'traces': run.get_traces_overview(),
-            'created_at': run.creation_time,
+            'props': get_run_props(run)
         }
 
     return runs_dict

@@ -3,6 +3,8 @@ from fastapi.testclient import TestClient
 
 from tests.utils import truncate_structured_db, truncate_api_db
 from aim.storage.sdk.repo import Repo
+from aim.storage.sdk.run import Run
+
 from aim.web.run import app
 
 
@@ -17,6 +19,9 @@ class TestBase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         truncate_structured_db(cls.repo.structured_db)
+
+    def tearDown(self) -> None:
+        Run.set_props_cache_hint(None)
 
 
 class ApiTestBase(TestBase):

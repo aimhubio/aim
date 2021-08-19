@@ -6,11 +6,13 @@ const Params = React.lazy(() => import('pages/Params/ParamsContainer'));
 const Bookmarks = React.lazy(
   () => import('pages/Bookmarks/BookmarksContainer'),
 );
+const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
 const CreateTag = React.lazy(() => import('pages/Tags/CreateTag'));
 const TagDetail = React.lazy(() => import('pages/Tags/TagDetail'));
 
 const PATHS = {
+  HOME: '/',
   RUNS: '/runs',
   METRICS: '/metrics',
   METRICS_ID: '/metrics/:appId',
@@ -22,6 +24,12 @@ const PATHS = {
 };
 
 const routes = {
+  HOME: {
+    path: PATHS.HOME,
+    component: Home,
+    showInSidebar: false,
+    displayName: null,
+  },
   RUNS: {
     path: PATHS.RUNS,
     component: Runs,

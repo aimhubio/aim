@@ -1,0 +1,42 @@
+.Activity__container {
+  h2 {
+    margin-bottom: 1em;
+  }
+}
+
+.Activity__Statistics__card {
+  background: linear-gradient(97.73deg, #8C32AF 0%, #6BACE5 100%);
+  opacity: 0.8;
+  border-radius: 6px;
+  width: 13.125em;
+  height: 80px;
+  color: #FFFFFF;
+  padding: 0.5em 1em;
+  position: relative;
+  span {
+   font-size: 16px;
+    display: block;
+    line-height: 19px;
+  }
+
+  strong {
+   font-size: 36px;
+   line-height: 44px;
+  }
+
+  :after {
+    content: url('../../../../../src/assets/experiments.svg');
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0.4;
+  }
+
+  &:last-child {
+    margin-top: 6px;
+    background: linear-gradient(98.46deg, #1473E6 0%, #09C6F9 100%);
+    :after {
+      content: url('../../../../../src/assets/runs.svg');
+    }
+  }
+}
