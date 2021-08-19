@@ -34,7 +34,7 @@ export interface ILineChartProps {
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
-  aggregationConfig: IAggregationConfig;
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface IUpdateFocusedChartProps {

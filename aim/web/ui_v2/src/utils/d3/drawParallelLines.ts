@@ -78,7 +78,6 @@ function drawParallelLine({
         attributesRef.current.xScale,
         attributesRef.current.yScale,
         curveInterpolation,
-        true,
       ),
     )
     .attr('class', 'Line')

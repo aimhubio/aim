@@ -123,6 +123,7 @@ export interface IAggregationConfig {
     line: AggregationLineMethods;
   };
   isApplied: boolean;
+  isEnabled: boolean;
 }
 
 export interface IFocusedState {

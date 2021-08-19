@@ -71,13 +71,6 @@ function RunDetailMetricsAndSystemTab({
                     zoomMode={false}
                     highlightMode={0}
                     curveInterpolation={CurveEnum.Linear}
-                    aggregationConfig={{
-                      methods: {
-                        area: AggregationAreaMethods.MIN_MAX,
-                        line: AggregationLineMethods.MEAN,
-                      },
-                      isApplied: false,
-                    }}
                   />
                 </div>
               );
