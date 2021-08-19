@@ -1,7 +1,7 @@
 from typing import Optional
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.legacy.session import Session
+from aim.sdk.run import Run
 
 
 class AimCallback(object):
@@ -31,24 +31,24 @@ class AimCallback(object):
                 self._system_tracking_interval = system_tracking_interval
                 self._initialized = False
                 self._current_shift = None
-                self._aim_session = None
+                self._run = None
 
             def setup(self, args, state, model):
                 self._initialized = True
 
-                self._aim_session = Session(
+                self._run = Run(
                     repo=self._repo_path,
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
                 )
 
                 combined_dict = {**args.to_sanitized_dict()}
-                self._aim_session.set_params(combined_dict, name='hparams')
+                self._run['hparams'] = combined_dict
 
                 # Store model configs as well
                 # if hasattr(model, 'config') and model.config is not None:
                 #     model_config = model.config.to_dict()
-                #     self._aim_session.set_params(model_config, name='model')
+                #     self._run['model'] = model_config
 
             def on_train_begin(self, args, state, control,
                                model=None, **kwargs):
@@ -71,16 +71,15 @@ class AimCallback(object):
                     'subset': self._current_shift,
                 }
                 for log_name, log_value in logs.items():
-                    self._aim_session.track(log_value,
-                                            name=log_name,
-                                            **context)
+                    self._run.track(log_value, name=log_name, context=context)
             
             def on_epoch_end(self, args, state, control, **kwargs):
-                self._aim_session.flush()
+                pass
 
             def __del__(self):
-                if self._initialized and self._aim_session.active:
-                    self._aim_session.close()
+                if self._initialized and self._run:
+                    del self._run
+                    self._run = None
 
         cls.__hf_callback_cls = _HuggingFaceCallback
         return cls.__hf_callback_cls

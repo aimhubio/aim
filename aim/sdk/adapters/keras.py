@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aim.sdk.legacy.session import Session
+from aim.sdk.run import Run
 from aim.sdk.adapters.keras_mixins import (
     get_keras_tracker_callback,
     TrackerKerasCallbackMetricsEpochEndMixin,
@@ -29,13 +29,13 @@ class AimCallback(object):
     @classmethod
     def metrics(cls, repo: Optional[str] = None,
                 experiment: Optional[str] = None,
-                session: Optional[Session] = None):
+                run: Optional[Run] = None):
         # Keep `metrics` method for backward compatibility
-        return cls(repo, experiment, session)
+        return cls(repo, experiment, run)
 
     def __init__(self, repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 session: Optional[Session] = None):
+                 run: Optional[Run] = None):
         pass
 
 
