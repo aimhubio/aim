@@ -18,5 +18,5 @@ export interface IDrawLinesProps {
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   aggregationConfig: IAggregationConfig;
-  aggregatedData: IAggregatedData[];
+  aggregatedData?: IAggregatedData[];
 }

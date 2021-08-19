@@ -26,7 +26,7 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
-  aggregatedData: IAggregatedData[];
+  aggregatedData?: IAggregatedData[];
   xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
