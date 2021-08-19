@@ -5,13 +5,13 @@ function objectToString(
   return Object.keys(obj)
     .map((key) => {
       switch (mode) {
-        case 'keyHush':
+        case 'keyHash':
           return `${key}-${obj[key]}`;
         default:
           return `${key}="${obj[key]}"`;
       }
     })
-    .join(mode === 'keyHush' ? '' : ' ');
+    .join(mode === 'keyHash' ? '' : ' ');
 }
 
 export default objectToString;

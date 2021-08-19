@@ -48,7 +48,7 @@ function RunDetailMetricsAndSystemTab({
                       {
                         key:
                           batch.metric_name +
-                          objectToString(batch.context, 'keyHush'),
+                          objectToString(batch.context, 'keyHash'),
                         data: {
                           xValues: [...batch.iters],
                           yValues: [...batch.values],
@@ -57,7 +57,7 @@ function RunDetailMetricsAndSystemTab({
                         dasharray: '0',
                         selectors: [
                           batch.metric_name +
-                            objectToString(batch.context, 'keyHush'),
+                            objectToString(batch.context, 'keyHash'),
                         ],
                       },
                     ]}

@@ -16,11 +16,11 @@ function initialize() {
   model.init();
 }
 
-function getRunInfo(runHush: string) {
+function getRunInfo(runHash: string) {
   if (getRunsInfoRequestRef) {
     getRunsInfoRequestRef.abort();
   }
-  getRunsInfoRequestRef = runsService.getRunInfo(runHush);
+  getRunsInfoRequestRef = runsService.getRunInfo(runHash);
   return {
     call: async () => {
       const data = await getRunsInfoRequestRef.call();
@@ -34,11 +34,11 @@ function getRunInfo(runHush: string) {
   };
 }
 
-function getRunBatch(body: any, runHush: string) {
+function getRunBatch(body: any, runHash: string) {
   if (getRunsBatchRequestRef) {
     getRunsBatchRequestRef.abort();
   }
-  getRunsBatchRequestRef = runsService.getRunBatch(body, runHush);
+  getRunsBatchRequestRef = runsService.getRunBatch(body, runHash);
   return {
     call: async () => {
       const data = await getRunsBatchRequestRef.call();
