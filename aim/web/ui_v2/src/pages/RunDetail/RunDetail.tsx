@@ -30,7 +30,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <section className='RunDetail'>
-      <Grid container justify='center'>
+      <Grid container justifyContent='center'>
         <Grid xs={6} item>
           <h3 className='RunDetail__title'>RunDetail</h3>
           <Divider />

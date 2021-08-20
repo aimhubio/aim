@@ -1,9 +1,22 @@
+import _ from 'lodash-es';
+
 import runsService from 'services/api/runs/runsService';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum } from 'utils/d3';
 import createModel from '../model';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
+import contextToString from 'utils/contextToString';
+import {
+  adjustable_reader,
+  decodePathsVals,
+  decode_buffer_pairs,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
+import COLORS from 'config/colors/colors';
+import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+
+// Types
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
+import { CurveEnum } from 'utils/d3';
 import {
   GroupNameType,
   IGetGroupingPersistIndex,
@@ -11,19 +24,9 @@ import {
   IMetricsCollection,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
-import {
-  adjustable_reader,
-  decodePathsVals,
-  decode_buffer_pairs,
-  iterFoldTree,
-} from 'utils/encoder/streamEncoding';
-import { IRun } from 'types/services/models/metrics/runModel';
-import COLORS from 'config/colors/colors';
-import _ from 'lodash-es';
-import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { IParam, ITrace } from 'types/services/models/params/paramsAppModel';
+import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
+import { IParam } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
-import objectToString from 'utils/objectToString';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -86,15 +89,15 @@ function initialize() {
   });
 }
 
-function processData(data: IRun[]): {
-  data: IMetricsCollection[];
+function processData(data: IRun<IParamTrace>[]): {
+  data: IMetricsCollection<IParam>[];
   params: string[];
 } {
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
-  data.forEach((run: IRun, index) => {
+  data.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(
       getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
     );
@@ -112,12 +115,53 @@ function processData(data: IRun[]): {
   const processedData = groupData(runs);
   const uniqParams = _.uniq(params);
 
-  // setTooltipData(processedData, uniqParams);
+  setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
     params: uniqParams,
   };
+}
+
+function setTooltipData(
+  processedData: IMetricsCollection<IParam>[],
+  paramKeys: string[],
+): void {
+  const data: { [key: string]: any } = {};
+
+  function getGroupConfig(param: IParam) {
+    const configData = model.getState()?.config;
+    const groupingItems: GroupNameType[] = ['color', 'style', 'chart'];
+    let groupConfig: { [key: string]: {} } = {};
+    for (let groupItemKey of groupingItems) {
+      const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+      if (groupItem.length) {
+        groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+          Object.assign(acc, {
+            [paramKey.replace('run.params.', '')]: _.get(param, paramKey),
+          });
+          return acc;
+        }, {});
+      }
+    }
+    return groupConfig;
+  }
+
+  for (let metricsCollection of processedData) {
+    for (let param of metricsCollection.data) {
+      data[param.key] = {
+        group_config: getGroupConfig(param),
+        params: paramKeys.reduce((acc, paramKey) => {
+          Object.assign(acc, {
+            [paramKey]: _.get(param, `run.params.${paramKey}`),
+          });
+          return acc;
+        }, {}),
+      };
+    }
+  }
+
+  tooltipData = data;
 }
 
 function getGroupingPersistIndex({
@@ -158,7 +202,7 @@ function getFilteredGroupingOptions(
     : [];
 }
 
-function groupData(data: IParam[]): IMetricsCollection[] {
+function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
   const grouping = model.getState()!.config!.grouping;
   const { paletteIndex } = grouping;
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
@@ -181,7 +225,7 @@ function groupData(data: IParam[]): IMetricsCollection[] {
   }
 
   const groupValues: {
-    [key: string]: IMetricsCollection | any;
+    [key: string]: IMetricsCollection<IParam> | any;
   } = {};
 
   const groupingFields = _.uniq(
@@ -291,7 +335,7 @@ function getParamsData() {
       let decodedPairs = decodePathsVals(buffer_pairs);
       let objects = iterFoldTree(decodedPairs, 1);
 
-      const runData: IRun[] = [];
+      const runData: IRun<IParamTrace>[] = [];
       for await (let [keys, val] of objects) {
         runData.push(val as any);
       }
@@ -307,7 +351,7 @@ function getParamsData() {
 }
 
 function getDataAsLines(
-  processedData: IMetricsCollection[],
+  processedData: IMetricsCollection<IParam>[],
   configData: any = model.getState()?.config,
 ): { dimensions: IDimensionsType; data: any }[] {
   if (!processedData) {
@@ -315,12 +359,12 @@ function getDataAsLines(
   }
   const dimensionsObject: any = {};
   const lines = processedData.map(
-    ({ chartIndex, color, data, dasharray }: IMetricsCollection) => {
+    ({ chartIndex, color, data, dasharray }: IMetricsCollection<IParam>) => {
       if (!dimensionsObject[chartIndex]) {
         dimensionsObject[chartIndex] = {};
       }
 
-      return data.map((run) => {
+      return data.map((run: IParam) => {
         const values: { [key: string]: string | number | null } = {};
         configData.select.params.forEach(
           ({ type, key }: { type: string; key: string }) => {
@@ -333,26 +377,24 @@ function getDataAsLines(
               };
             }
             if (type === 'metric') {
-              values[key + 'val'] = null;
-              values[key + 'test'] = null;
-              values[key + 'train'] = null;
-              run.run.traces.forEach((trace: ITrace) => {
+              run.run.traces.forEach((trace: IParamTrace) => {
+                const formattedContext = `${key}-${contextToString(
+                  trace.context,
+                )}`;
                 if (trace.metric_name === key) {
-                  values[key + objectToString(trace.context)] =
-                    trace.last_value.last;
-                  if (dimension[key + objectToString(trace.context)]) {
-                    dimension[key + objectToString(trace.context)].values.add(
+                  values[formattedContext] = trace.last_value.last;
+                  if (dimension[formattedContext]) {
+                    dimension[formattedContext].values.add(
                       trace.last_value.last,
                     );
                     if (typeof trace.last_value.last === 'string') {
-                      dimension[key + objectToString(trace.context)].scaleType =
-                        'point';
+                      dimension[formattedContext].scaleType = 'point';
                     }
                   } else {
-                    dimension[key + objectToString(trace.context)] = {
+                    dimension[formattedContext] = {
                       values: new Set().add(trace.last_value.last),
                       scaleType: 'linear',
-                      displayName: `<p>${key}</p><p>${objectToString(
+                      displayName: `<p>${key}</p><p>${contextToString(
                         trace.context,
                       )}</p>`,
                     };
@@ -368,7 +410,8 @@ function getDataAsLines(
               } else if (typeof value === 'string') {
                 values[key] = `"${value}"`;
               } else {
-                values[key] = value;
+                // TODO need to fix type
+                values[key] = value as any;
               }
               if (values[key] !== null) {
                 if (typeof values[key] === 'string') {
@@ -384,7 +427,7 @@ function getDataAsLines(
           values,
           color: color ?? run.color,
           dasharray: dasharray ?? run.dasharray,
-          chartIndex: chartIndex ?? run.chartIndex,
+          chartIndex: chartIndex,
           key: run.key,
         };
       });

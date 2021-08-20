@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Iterator, Tuple
+from typing import Iterable, Iterator, List, Tuple
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -8,19 +8,22 @@ if TYPE_CHECKING:
 
 class ContainerView:
 
-    def preload(self):
+    @abstractmethod
+    def close(self):
         ...
 
-    @property
-    def repo(
-        self
-    ) -> 'Repo':
+    @abstractmethod
+    def finalize(self, *, index: 'ContainerView'):
+        ...
+
+    @abstractmethod
+    def preload(self):
         ...
 
     @classmethod
     def path_join(
-        self,
-        *args: Iterable[bytes],
+        cls,
+        *args: bytes,
         prefix: bytes = b''
     ) -> bytes:
         return prefix + b'.'.join(args)

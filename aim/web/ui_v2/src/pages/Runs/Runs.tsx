@@ -1,7 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
-import { IRun } from 'types/services/models/metrics/runModel';
+import {
+  IMetricTrace,
+  IParamTrace,
+  IRun,
+} from 'types/services/models/metrics/runModel';
 import { IRunsProps } from 'types/pages/runs/Runs';
 
 function Runs({
@@ -23,7 +27,7 @@ function Runs({
         spacing={1}
       >
         <Grid item>
-          {runsData?.map((run: IRun) => (
+          {runsData?.map((run: IRun<IMetricTrace | IParamTrace>) => (
             <NavLink key={run.runHash} to={`runs/${run.runHash}`}>
               <p>{run.runHash}</p>
             </NavLink>
