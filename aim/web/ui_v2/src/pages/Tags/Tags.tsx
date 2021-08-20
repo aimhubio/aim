@@ -10,7 +10,7 @@ function Tags({
 }: ITagsProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Tags'>
-      <Grid container justify='center'>
+      <Grid container justifyContent='center'>
         <Grid xs={6} item>
           <div className='Tags__header'>
             <h3 className='Tags__title'>Tags List</h3>

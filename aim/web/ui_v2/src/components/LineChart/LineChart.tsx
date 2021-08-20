@@ -161,7 +161,6 @@ const LineChart = React.forwardRef(function LineChart(
         axesRef,
         attributesRef,
         linesRef,
-        linesNodeRef,
         svgNodeRef,
         axesScaleType,
         min,
