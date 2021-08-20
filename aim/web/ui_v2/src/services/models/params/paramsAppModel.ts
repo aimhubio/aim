@@ -1,9 +1,22 @@
+import _ from 'lodash-es';
+
 import runsService from 'services/api/runs/runsService';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum } from 'utils/d3';
 import createModel from '../model';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
+import contextToString from 'utils/contextToString';
+import {
+  adjustable_reader,
+  decodePathsVals,
+  decode_buffer_pairs,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
+import COLORS from 'config/colors/colors';
+import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+
+// Types
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
+import { CurveEnum } from 'utils/d3';
 import {
   GroupNameType,
   IGetGroupingPersistIndex,
@@ -11,19 +24,9 @@ import {
   IMetricsCollection,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
-import {
-  adjustable_reader,
-  decodePathsVals,
-  decode_buffer_pairs,
-  iterFoldTree,
-} from 'utils/encoder/streamEncoding';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
-import COLORS from 'config/colors/colors';
-import _ from 'lodash-es';
-import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IParam } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
-import contextToString from 'utils/contextToString';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};

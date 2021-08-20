@@ -13,8 +13,26 @@ import {
   calculateExponentialMovingAverage,
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
+import getObjectPaths from 'utils/getObjectPaths';
+import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
+import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import getStateFromUrl from 'utils/getStateFromUrl';
+import {
+  aggregateGroupData,
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
+import {
+  adjustable_reader,
+  decodePathsVals,
+  decode_buffer_pairs,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
 
-//Types
+// Types
 import {
   GroupingSelectOptionType,
   GroupNameType,
@@ -38,26 +56,8 @@ import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
-import getObjectPaths from 'utils/getObjectPaths';
-import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
-import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
-import appsService from 'services/api/apps/appsService';
-import dashboardService from 'services/api/dashboard/dashboardService';
-import getUrlWithParam from 'utils/getUrlWithParam';
-import getStateFromUrl from 'utils/getStateFromUrl';
-import {
-  aggregateGroupData,
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import {
-  adjustable_reader,
-  decodePathsVals,
-  decode_buffer_pairs,
-  iterFoldTree,
-} from 'utils/encoder/streamEncoding';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
