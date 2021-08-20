@@ -177,6 +177,7 @@ class Run:
                     raise RepoIntegrityError(f'Missing props for Run {self.hashname}')
                 else:
                     self._props = sdb.create_run(self.hashname)
+                    self._props.experiment = 'default'
 
     def proxy(self):
         run = RunView(self)
