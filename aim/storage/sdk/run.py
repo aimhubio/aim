@@ -48,17 +48,18 @@ class Run:
         self._hash = None
         self._props = None
 
+
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
         ).tree().view('meta')
-        self.meta_run_tree: TreeView = self.meta_tree.view(['chunks', hashname])
+        self.meta_run_tree: TreeView = self.meta_tree.view('chunks').view(hashname)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.view('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
             'trcs', hashname, read_only=read_only
-        ).tree().view('trcs').view(['chunks', hashname])
+        ).tree().view('trcs').view('chunks').view(hashname)
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
@@ -174,11 +175,10 @@ class Run:
         return self.series_run_tree.view((context.idx, name))
 
     def iter_all_traces(self) -> Iterator[Tuple[str, Context, 'Run']]:
-        run_meta_traces = self.meta_run_tree.view('traces')
-        for ctx_idx in run_meta_traces.keys():
+        for ctx_idx, run_ctx_view in self.meta_run_tree.view('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
-            run_ctx_view = run_meta_traces.view(ctx_idx)
+            # run_ctx_view = run_meta_traces.view(ctx_idx)
             for metric_name in run_ctx_view.keys():
                 assert isinstance(metric_name, str)
                 yield metric_name, ctx, self
@@ -220,6 +220,17 @@ class Run:
             self._hash = self._calc_hash()
         return self._hash
 
+    def __del__(self):
+        if self.read_only:
+            return
+        logger.warning(f'finalizing {self}')
+        self.finalize()
+
+    def finalize(self):
+        index = self.repo._get_container('meta/index',
+                                         read_only=False,
+                                         from_union=False).view(b'')
+        self.meta_run_tree.finalize(index=index)
 
 class RunPropsView:
     def __init__(self, run: Run):
@@ -268,7 +279,7 @@ class RunView:
 
     def view(self, path: Union[AimObjectKey, AimObjectPath]):
         if isinstance(path, (int, str)):
-            path = [path]
+            path = (path,)
 
         if path[0] == 'props':
             return self.props_view
