@@ -216,7 +216,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       // set active line
       newActiveLine.classed('active', true).raise();
 
-      if (aggregationConfig.isApplied) {
+      if (aggregationConfig?.isApplied) {
         if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
           drawActiveArea(key);
         }

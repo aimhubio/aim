@@ -1,7 +1,6 @@
 import numpy as np
 import struct
 
-from collections import defaultdict
 from typing import Iterator, Tuple, Optional, List
 
 from aim.storage.context import Context
@@ -9,6 +8,7 @@ from aim.sdk.run import Run
 from aim.sdk.trace import Trace
 from aim.sdk.trace import QueryTraceCollection, QueryRunTraceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
+from aim.storage.treeutils import encode_tree
 
 
 def get_run_props(run: Run):
@@ -21,23 +21,19 @@ def get_run_props(run: Run):
     }
 
 
-def numpy_to_encodable(array: np.ndarray) -> dict:
+def numpy_to_encodable(array: np.ndarray) -> Optional[dict]:
     encoded_numpy = {
         'type': 'numpy',
         'shape': array.shape[0],
+        'dtype': 'float64',  # hardcoded for now
     }
 
-    if array.dtype == 'int64':
-        encoded_numpy.update({
-            'dtype': 'float64',
-            'blob': array.astype('float64').tobytes()
-        })
+    if array.dtype == 'float64':
+        encoded_numpy['blob'] = array.tobytes()
+    elif array.dtype == 'object':
+        return None
     else:
-        encoded_numpy.update({
-            'dtype': str(array.dtype),
-            'blob': array.tobytes()
-        })
-
+        encoded_numpy['blob'] = array.astype('float64').tobytes()
     return encoded_numpy
 
 
@@ -77,8 +73,14 @@ def collect_x_axis_data(x_trace: Trace, iters: np.ndarray) -> Tuple[Optional[dic
         numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
 
 
-def aligned_traces_dict_constructor(requested_runs: List[AlignedRunIn], x_axis: str) -> dict:
-    processed_runs_dict = {}
+def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
+    result = bytes()
+    for key, val in encoded_tree:
+        result += struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val
+    return result
+
+
+async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str) -> bytes:
     for run_data in requested_runs:
         run_hashname = run_data.run_id
         requested_traces = run_data.traces
@@ -104,23 +106,20 @@ def aligned_traces_dict_constructor(requested_runs: List[AlignedRunIn], x_axis: 
                 'x_axis_values': x_axis_values,
                 'x_axis_iters': x_axis_iters,
             })
+        run_dict = {
+            run_hashname: traces_list
+        }
+        encoded_tree = encode_tree(run_dict)
+        yield collect_run_streamable_data(encoded_tree)
 
-        processed_runs_dict[run_hashname] = traces_list
 
-    return processed_runs_dict
-
-
-def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, x_axis: Optional[str]) -> dict:
-    query_runs_collection = defaultdict(list)
-    for trace in traces.iter():
-        query_runs_collection[trace.run.hashname].append(trace)
-
-    runs_dict = {}
-    for run_name in query_runs_collection.keys():
-        run = Run(hashname=run_name)
-        query_run_traces = query_runs_collection[run_name]
+async def metric_search_result_streamer(traces: QueryTraceCollection, steps_num: int, x_axis: Optional[str]) -> bytes:
+    for run_trace_collection in traces.iter_runs():
+        run = None
         traces_list = []
-        for trace in query_run_traces:
+        for trace in run_trace_collection.iter():
+            if not run:
+                run = run_trace_collection.run
             iters, values = trace.values.sparse_numpy()
             num_records = len(values)
             step = (num_records // steps_num) or 1
@@ -141,26 +140,32 @@ def query_traces_dict_constructor(traces: QueryTraceCollection, steps_num: int, 
                     'x_axis_iters': x_axis_iters,
                 })
 
-        runs_dict[run.hashname] = {
-            'params': run[...],
-            'traces': traces_list,
-            'props': get_run_props(run)
-        }
+        if run:
+            run_dict = {
+                run.hashname: {
+                    'params': run[...],
+                    'traces': traces_list,
+                    'props': get_run_props(run)
+                }
+            }
 
-    return runs_dict
+            encoded_tree = encode_tree(run_dict)
+            yield collect_run_streamable_data(encoded_tree)
 
 
-def query_runs_dict_constructor(runs: QueryRunTraceCollection) -> dict:
-    runs_dict = {}
+async def run_search_result_streamer(runs: QueryRunTraceCollection) -> bytes:
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
-        runs_dict[run.hashname] = {
-            'params': run[...],
-            'traces': run.get_traces_overview(),
-            'props': get_run_props(run)
+        run_dict = {
+            run.hashname: {
+                'params': run[...],
+                'traces': run.get_traces_overview(),
+                'props': get_run_props(run)
+            }
         }
 
-    return runs_dict
+        encoded_tree = encode_tree(run_dict)
+        yield collect_run_streamable_data(encoded_tree)
 
 
 def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
@@ -186,8 +191,3 @@ def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_
         })
 
     return processed_traces_list
-
-
-async def encoded_tree_streamer(encoded_runs_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    for key, val in encoded_runs_tree:
-        yield struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val

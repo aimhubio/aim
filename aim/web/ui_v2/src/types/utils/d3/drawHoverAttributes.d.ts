@@ -23,7 +23,7 @@ export interface IDrawHoverAttributesProps {
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
-  aggregationConfig: IAggregationConfig;
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface ISyncHoverStateParams {

@@ -1,6 +1,7 @@
 import React from 'react';
 
-const Runs = React.lazy(() => import('pages/Runs/Runs'));
+const Runs = React.lazy(() => import('pages/Runs/RunsContainer'));
+const RunDetail = React.lazy(() => import('pages/RunDetail/RunDetail'));
 const Metrics = React.lazy(() => import('pages/Metrics/MetricsContainer'));
 const Params = React.lazy(() => import('pages/Params/ParamsContainer'));
 const Bookmarks = React.lazy(
@@ -21,6 +22,7 @@ const PATHS = {
   CREATE_TAG: '/tags/create',
   TAG_DETAIL: '/tags/:id',
   BOOKMARKS: '/bookmarks',
+  RUN_DETAIL: '/runs/:runHash',
 };
 
 const routes = {
@@ -77,6 +79,12 @@ const routes = {
     component: TagDetail,
     showInSidebar: false,
     displayName: 'Tag Detail',
+  },
+  RUN_DETAIL: {
+    path: PATHS.RUN_DETAIL,
+    component: RunDetail,
+    showInSidebar: false,
+    displayName: 'Run Detail',
   },
 };
 

@@ -1,0 +1,19 @@
+.RunDetailParamsTab {
+  padding: 10px;
+  border: 1px solid #dfe6f7;
+  background-color: #ffffff;
+}
+
+.RunDetailMetricsTab {
+  height: 100%;
+  &__container {
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    background: #ffffff;
+    &__chartBox {
+      width: 50%;
+      height: 300px;
+    }
+  }
+}

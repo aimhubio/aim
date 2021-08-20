@@ -26,7 +26,7 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
-  aggregatedData: IAggregatedData[];
+  aggregatedData?: IAggregatedData[];
   xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
   displayOutliers: boolean;
   zoomMode: boolean;
@@ -34,7 +34,7 @@ export interface ILineChartProps {
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
-  aggregationConfig: IAggregationConfig;
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface IUpdateFocusedChartProps {

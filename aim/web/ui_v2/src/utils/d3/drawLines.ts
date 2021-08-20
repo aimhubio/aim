@@ -43,7 +43,7 @@ function drawLines(props: IDrawLinesProps): void {
       .selectAll('.Line')
       .data(data)
       .join('path')
-      .attr('class', `Line ${aggregationConfig.isApplied ? 'aggregated' : ''}`)
+      .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
       .attr('id', (line: ILine) => `Line-${line.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr(
@@ -137,7 +137,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
   };
 
-  if (aggregationConfig.isApplied) {
+  if (aggregationConfig?.isApplied) {
     if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
       linesRef.current.updateAggregatedAreas(props.aggregatedData);
     }

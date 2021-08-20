@@ -22,6 +22,7 @@ export interface IRun {
     epochs: ITraceData;
     timestamps: ITraceData;
   }[];
+  runHash?: string;
 }
 
 export interface IRunParam {

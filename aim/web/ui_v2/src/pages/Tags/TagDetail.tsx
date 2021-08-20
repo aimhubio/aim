@@ -40,8 +40,8 @@ function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
               indicatorColor='primary'
               textColor='primary'
             >
-              <Tab label='Item One' />
-              <Tab label='Item Two' />
+              <Tab label='Related Runs' />
+              <Tab label='Settings' />
             </Tabs>
           </Paper>
           <TabPanel value={value} index={0}>
