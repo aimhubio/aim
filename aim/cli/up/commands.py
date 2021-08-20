@@ -20,11 +20,12 @@ from aim.web.utils import ShellCommandException
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
-@click.pass_obj
-def up(repo_inst, dev, host, port, repo, tf_logs):
+def up(dev, host, port, repo, tf_logs):
     repo_path = clean_repo_path(repo)
     if repo_path:
         repo_inst = Repo.from_path(repo_path)
+    else:
+        repo_inst = Repo.default_repo()
     repo_inst.structured_db.run_upgrades()
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path

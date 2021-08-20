@@ -12,8 +12,7 @@ core._verify_python3_env = lambda: None
 
 @click.group()
 @click.option('-v', '--verbose', is_flag=True)
-@click.pass_context
-def cli_entry_point(ctx, verbose):
+def cli_entry_point(verbose):
     if verbose:
         click.echo('Verbose mode is on')
 
