@@ -24,6 +24,13 @@ class TreeView:  # TODO implement (MutableMapping):
     ):
         self.container.preload()
 
+    def finalize(
+        self,
+        *,
+        index: 'ContainerView'
+    ):
+        self.container.finalize(index=index)
+
     def view(
         self,
         path: Union[AimObjectKey, AimObjectPath]
