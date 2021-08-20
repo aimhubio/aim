@@ -60,6 +60,7 @@ import {
 } from 'utils/encoder/streamEncoding';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -115,6 +116,10 @@ function getConfig() {
         chartIndex: null,
       },
     },
+    select: {
+      metrics: [],
+      query: '',
+    },
   };
 }
 
@@ -138,10 +143,14 @@ function setDefaultAppConfigData() {
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
     getStateFromUrl('chart') || getConfig().chart;
+  const select: IMetricAppConfig['select'] =
+    getStateFromUrl('select') || getConfig().select;
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart,
     grouping,
+    select,
   });
+
   model.setState({
     config: configData,
   });
@@ -946,11 +955,20 @@ function updateChartStateUrl(): void {
   }
 }
 
+function updateSelectStateUrl(): void {
+  const selectData = model.getState()?.config?.select;
+  if (selectData) {
+    updateUrlParam('select', selectData);
+  }
+}
+
 function updateUrlParam(
   paramName: string,
   data: Record<string, unknown>,
 ): void {
   const encodedUrl: string = encode(data);
+  console.log(data);
+
   const url: string = getUrlWithParam(paramName, encodedUrl);
   window.history.pushState(null, '', url);
 }
@@ -974,6 +992,18 @@ function onResetConfigData(): void {
   model.setState({
     config: getConfig(),
   });
+}
+
+function onMetricsSelectChange(data: ISelectMetricsOption[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, metrics: data },
+      },
+    });
+  }
 }
 
 const metricAppModel = {
@@ -1006,6 +1036,8 @@ const metricAppModel = {
   onNotificationAdd,
   onBookmarkUpdate,
   onResetConfigData,
+  onMetricsSelectChange,
+  updateSelectStateUrl,
 };
 
 export default metricAppModel;
