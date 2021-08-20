@@ -515,7 +515,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         });
       }
     } else {
-      const xValue = xStep ?? xScale.range()[1];
+      const xValue = xStep ?? xScale.domain()[1];
       updateHoverAttributes(xValue);
     }
   }
@@ -527,9 +527,6 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     ) {
       const { xScale, xStep } = attributesRef.current;
       const mouseX = xScale(xStep);
-      // TODO remove if no need
-      // const [xMin, xMax] = xScale.range();
-      // const mouseX = x < xMin ? xMin : x > xMax ? xMax : x;
       const nearestCircles = getNearestCircles(mouseX);
       const closestCircle = nearestCircles.find((c) => c.key === lineKey);
 
@@ -630,7 +627,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     ) {
       updateFocusedChart();
     } else {
-      const xValue = xStep ?? xScale.range()[1];
+      const xValue = xStep ?? xScale.domain()[1];
       updateHoverAttributes(xValue);
     }
   }

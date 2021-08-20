@@ -56,20 +56,20 @@ const LineChart = React.forwardRef(function LineChart(
   const visAreaRef = React.useRef<HTMLDivElement>(null);
 
   // d3 node elements
-  const svgNodeRef = React.useRef<any>(null);
+  const svgNodeRef = React.useRef(null);
   const bgRectNodeRef = React.useRef(null);
   const plotNodeRef = React.useRef(null);
-  const axesNodeRef = React.useRef<any>(null);
-  const linesNodeRef = React.useRef<any>(null);
+  const axesNodeRef = React.useRef(null);
+  const linesNodeRef = React.useRef(null);
   const attributesNodeRef = React.useRef(null);
   const xAxisLabelNodeRef = React.useRef(null);
   const yAxisLabelNodeRef = React.useRef(null);
   const highlightedNodeRef = React.useRef(null);
 
   // methods and values refs
-  const axesRef = React.useRef<any>({});
+  const axesRef = React.useRef({});
   const brushRef = React.useRef<any>({});
-  const linesRef = React.useRef<any>({});
+  const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
 
   function draw() {

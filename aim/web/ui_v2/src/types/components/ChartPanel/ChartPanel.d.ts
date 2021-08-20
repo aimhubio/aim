@@ -38,20 +38,12 @@ export interface IChartPanelRef {
   updateLines: (data: IProcessedData[]) => void;
 }
 
-interface IChartTypeConfig {
+export type IMemoizedForwardRefComponent<T> = React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<T & React.RefAttributes<unknown>>
+>;
+
+export interface IChartTypeConfig {
   [key: string]:
-    | React.LazyExoticComponent<
-        React.MemoExoticComponent<
-          React.ForwardRefExoticComponent<
-            ILineChartProps & React.RefAttributes<unknown>
-          >
-        >
-      >
-    | React.LazyExoticComponent<
-        React.MemoExoticComponent<
-          React.ForwardRefExoticComponent<
-            IHighPlotProps & React.RefAttributes<unknown>
-          >
-        >
-      >;
+    | React.LazyExoticComponent<IMemoizedForwardRefComponent<ILineChartProps>>
+    | React.LazyExoticComponent<IMemoizedForwardRefComponent<IHighPlotProps>>;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Paper, PopoverPosition } from '@material-ui/core';
+import { Grid, Paper, PopoverPosition, GridSize } from '@material-ui/core';
 import { debounce } from 'lodash-es';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
@@ -132,7 +132,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   xs={
                     props.data.length > 9
                       ? 4
-                      : (chartGridPattern[props.data.length][index] as any)
+                      : (chartGridPattern[props.data.length][index] as GridSize)
                   }
                 >
                   <Component

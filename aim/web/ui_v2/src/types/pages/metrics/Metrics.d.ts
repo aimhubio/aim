@@ -23,6 +23,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ILine } from 'types/components/LineChart/LineChart';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
