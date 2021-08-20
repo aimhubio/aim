@@ -9,7 +9,7 @@ from typing import Iterable, Iterator, Tuple, Union
 
 
 
-class SingleContainerView(ContainerView):
+class PrefixView(ContainerView):
     """
     View to Container given by key prefix
     """
@@ -35,9 +35,15 @@ class SingleContainerView(ContainerView):
         except:
             pass
 
+    def finalize(self, *, index: ContainerView):
+        prefix = self.absolute_path()
+        # Shadowing
+        index.batch_delete(prefix)
+        self.container.finalize(index=index)
+
     def absolute_path(
         self,
-        *args: Iterable[bytes]
+        *args: bytes
     ) -> bytes:
         return ContainerView.path_join(prefix=self.prefix, *args)
 
@@ -186,8 +192,7 @@ class SingleContainerView(ContainerView):
         prefix: bytes = b''
     ) -> ContainerView:
         # TODO *args instead?
-        return SingleContainerView(prefix=self.prefix + prefix,
-                                   container=self.container)
+        return self.container.view(self.prefix + prefix)
 
     def tree(
         self
