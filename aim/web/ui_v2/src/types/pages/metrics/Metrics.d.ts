@@ -23,6 +23,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -47,6 +48,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   notifyData: IMetricAppModelState['notifyData'];
   tooltipContent: ITooltipContent;
   aggregationConfig: IAggregationConfig;
+  selectedMetricsData: ISelectMetricsOption[];
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (
@@ -72,6 +74,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
+  onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
 }
 
 export interface IOnSmoothingChange {

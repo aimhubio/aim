@@ -63,6 +63,8 @@ function GroupingPopover({
     });
   }
 
+  console.log(groupingData);
+
   return (
     <Box className='GroupingPopover__container'>
       <Box p={0.5}>

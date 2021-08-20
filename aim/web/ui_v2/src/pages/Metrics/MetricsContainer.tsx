@@ -22,6 +22,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -30,7 +31,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const route = useRouteMatch();
+  const route = useRouteMatch<any>();
   const metricsData = useModel(metricAppModel);
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
@@ -50,10 +51,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       call: () => Promise<IAppData | void>;
       abort: () => void;
     };
-    if ((route.params as any).appId) {
-      appRequestRef = metricAppModel.getAppConfigData(
-        (route.params as any).appId,
-      );
+    if (route.params.appId) {
+      appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call();
     }
     metricAppModel.setDefaultAppConfigData();
@@ -77,6 +76,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       metricAppModel.updateChartStateUrl();
     }
   }, [metricsData?.config?.chart]);
+
+  React.useEffect(() => {
+    if (metricsData?.config?.select) {
+      metricAppModel.updateSelectStateUrl();
+    }
+  }, [metricsData?.config?.select]);
 
   return (
     <Metrics
@@ -114,6 +119,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       aggregationConfig={
         metricsData?.config?.chart.aggregationConfig as IAggregationConfig
       }
+      selectedMetricsData={
+        metricsData?.config?.select.metrics as ISelectMetricsOption[]
+      }
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -135,6 +143,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationAdd={metricAppModel.onNotificationAdd}
       onNotificationDelete={metricAppModel.onNotificationDelete}
       onResetConfigData={metricAppModel.onResetConfigData}
+      onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
     />
   );
 }
