@@ -43,13 +43,13 @@ class Container(ContainerView):
             max_open_files=-1,
             write_buffer_size = 64*1024*1024, # 64MB
             max_write_buffer_number = 3,
-            target_file_size_base = 67108864, # 64MB
+            target_file_size_base = 64*1024*1024, # 64MB
             max_background_compactions = 4,
             level0_file_num_compaction_trigger = 8,
             level0_slowdown_writes_trigger = 17,
             level0_stop_writes_trigger = 24,
             num_levels = 4,
-            max_bytes_for_level_base = 536870912, # 512MB
+            max_bytes_for_level_base = 512*1024*1024, # 512MB
             max_bytes_for_level_multiplier = 8,
         )
         # opts.allow_concurrent_memtable_write = False
