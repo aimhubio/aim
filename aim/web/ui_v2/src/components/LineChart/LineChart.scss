@@ -80,7 +80,11 @@
         opacity: 1;
     }
 
-    .Lines.highlight > .Line:not(.active):not(.highlighted) {
+    .Line.aggregated {
+        opacity: 0;
+    }
+
+    .Lines.highlight > .Line:not(.active):not(.highlighted):not(.aggregated) {
         stroke-width: 1;
         opacity: 0.2;
     }
@@ -93,5 +97,18 @@
     .Line.active {
         opacity: 1;
         stroke-width: 3px;
+    }
+
+    .AggrLine {
+        opacity: 1;
+        stroke-width: 2px;
+    }
+
+    .Lines.highlight > .AggrArea:not(.highlighted){
+        opacity: 0.2;
+    }
+
+    .AggrArea.highlighted {
+        opacity: 1;
     }
 }

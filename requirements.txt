@@ -1,5 +1,5 @@
 # sdk
-aimrocks==0.0.5
+aimrocks==0.0.6rc2
 aimrecords==0.0.7 # to delete
 anytree>=2.8.0 # to delete
 click>=7.0
@@ -13,6 +13,9 @@ numpy
 wrapt
 cython
 tqdm
+filelock
+cachetools
+RestrictedPython
 # pandas # optional
 # server
 aiofiles>=0.5.0

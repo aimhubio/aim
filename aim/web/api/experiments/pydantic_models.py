@@ -9,7 +9,7 @@ class ExperimentCreateIn(BaseModel):
 
 class ExperimentUpdateIn(BaseModel):
     name: Optional[str] = ''
-    archive: Optional[bool] = None
+    archived: Optional[bool] = None
 
 
 class ExperimentGetOut(BaseModel):
@@ -17,6 +17,7 @@ class ExperimentGetOut(BaseModel):
     name: str
     run_count: int
     archived: bool
+
 
 ExperimentListOut = List[ExperimentGetOut]
 

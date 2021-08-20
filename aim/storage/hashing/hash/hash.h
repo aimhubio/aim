@@ -10,7 +10,6 @@
 
 Py_hash_t
 le_Py_HashDouble(
-    PyObject *inst,
     double v
 ) {
     int e, sign;

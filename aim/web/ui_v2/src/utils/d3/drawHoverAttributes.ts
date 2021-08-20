@@ -13,6 +13,8 @@ import 'components/LineChart/LineChart.scss';
 import getFormattedValue from '../formattedValue';
 import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { AggregationAreaMethods } from '../aggregateGroupData';
+import { decode } from '../encoder/encoder';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
@@ -32,6 +34,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     attributesRef,
     highlightMode,
     syncHoverState,
+    aggregationConfig,
   } = props;
 
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
@@ -209,30 +212,35 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         .selectAll(`[data-selector=${linesSelectorToHighlight}]`)
         .classed('highlighted', true)
         .raise();
+
       // set active line
       newActiveLine.classed('active', true).raise();
+
+      if (aggregationConfig?.isApplied) {
+        if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
+          drawActiveArea(key);
+        }
+      }
 
       attributesRef.current.lineKey = key;
     }
   }
 
-  // TODO need to implement highlight mode
-  function clearActiveArea(key?: string): void {
-    // previous line
-    if (key) {
-      linesNodeRef.current.select(`[id=Area-${key}]`).classed('active', false);
-      // highlightedNodeRef.current?.classed('highlighted', false);
-    }
-  }
-
-  // TODO need to implement highlight mode
-  function drawActiveArea(key: string): void {
-    const newActiveArea = linesNodeRef.current.select(`[id=Area-${key}]`);
-
-    if (!newActiveArea.empty()) {
-      newActiveArea.classed('active', true).raise();
-      // attributesRef.current.aggregationKey = key;
-    }
+  function drawActiveArea(lineKey: string): void {
+    //TODO need to optimize performance
+    linesNodeRef.current.selectAll('.AggrArea').each(function (this: any) {
+      const area = d3.select(this);
+      const areaNode = area.node();
+      if (areaNode) {
+        const key = areaNode.id.split('AggrArea-')[1];
+        const lineKeyArray = decode(key);
+        if (lineKeyArray.includes(lineKey)) {
+          area.classed('highlighted', true).raise();
+        } else {
+          area.classed('highlighted', false);
+        }
+      }
+    });
   }
 
   function clearVerticalAxisLine(): void {

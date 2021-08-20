@@ -13,7 +13,7 @@ import { IMetric } from './metricModel';
 import { IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { ISelectMetricsOption } from 'pages/metrics/components/SelectForm/SelectForm';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 export interface IMetricAppModelState {
   refs: {
@@ -128,6 +128,7 @@ export interface IAggregationConfig {
     line: AggregationLineMethods;
   };
   isApplied: boolean;
+  isEnabled: boolean;
 }
 
 export interface IFocusedState {
