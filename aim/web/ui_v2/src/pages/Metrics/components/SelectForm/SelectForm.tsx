@@ -89,14 +89,18 @@ function SelectForm({
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
         for (let val of projectsData.metrics[key]) {
-          let name: string = Object.keys(val)
-            .map((item) => `${item}="${val[item]}"`)
+          let label: string = Object.keys(val)
+            .map((item) => `${item}=${val[item]}`)
             .join(', ');
           let index: number = data.length;
           data.push({
-            name: `${key} ${name}`,
+            label: `${key} ${label}`,
             group: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
+            value: {
+              metric_name: key,
+              context: val,
+            },
           });
         }
       }
@@ -156,7 +160,7 @@ function SelectForm({
                       value={selectedMetricsData}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={(option) => option.label}
                       renderTags={() => null}
                       disableClearable={true}
                       ListboxProps={{
@@ -175,8 +179,8 @@ function SelectForm({
                       renderOption={(option) => {
                         let selected: boolean = !!selectedMetricsData.find(
                           (item: ISelectMetricsOption) =>
-                            item.name === option.name,
-                        )?.name;
+                            item.label === option.label,
+                        )?.label;
                         return (
                           <React.Fragment>
                             <Checkbox
@@ -185,7 +189,7 @@ function SelectForm({
                               style={{ marginRight: 4 }}
                               checked={selected}
                             />
-                            {option.name}
+                            {option.label}
                           </React.Fragment>
                         );
                       }}
@@ -200,15 +204,15 @@ function SelectForm({
                     {selectedMetricsData?.map((tag: ISelectMetricsOption) => {
                       return (
                         <Chip
-                          key={tag.name}
+                          key={tag.label}
                           style={{
                             backgroundColor: `${tag.color}1a`,
                             color: tag.color,
                           }}
                           size='small'
                           className='SelectForm__tags__item'
-                          label={tag.name}
-                          data-name={tag.name}
+                          label={tag.label}
+                          data-name={tag.label}
                           deleteIcon={
                             <i
                               style={{
@@ -217,7 +221,7 @@ function SelectForm({
                               className='icon-delete'
                             />
                           }
-                          onDelete={() => handleDelete(tag.name)}
+                          onDelete={() => handleDelete(tag.label)}
                         />
                       );
                     })}

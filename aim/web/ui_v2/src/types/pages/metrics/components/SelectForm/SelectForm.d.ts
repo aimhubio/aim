@@ -5,7 +5,11 @@ export interface ISelectFormProps {
   selectedMetricsData: ISelectMetricsOption[];
 }
 export interface ISelectMetricsOption {
-  name: string;
+  label: string;
   group: string;
   color: string;
+  value: {
+    metric_name: string;
+    context: object;
+  };
 }
