@@ -28,10 +28,12 @@ class Racer(NamedTuple):
 
 
 class ItemsIterator:
-    def __init__(self, dbs: Dict[bytes, "aimrocks.DB"]):
+    def __init__(self, dbs: Dict[bytes, "aimrocks.DB"], *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
         self._iterators = {}
         for key, value in dbs.items():
-            self._iterators[key] = value.iteritems()
+            self._iterators[key] = value.iteritems(*args, **kwargs)
         self._priority: Dict[bytes, int] = {
             prefix: idx
             for idx, prefix in enumerate(self._iterators)
@@ -204,22 +206,25 @@ class DB(object):
         raise ValueError
 
     def iteritems(
-        self
+        self, *args, **kwargs
     ) -> "ItemsIterator":
-        return ItemsIterator(self.dbs)
+        return ItemsIterator(self.dbs, *args, **kwargs)
 
     def iterkeys(
-        self
+        self, *args, **kwargs
     ) -> "KeysIterator":
-        return KeysIterator(self.dbs)
+        return KeysIterator(self.dbs, *args, **kwargs)
 
     def itervalues(
-        self
+        self, *args, **kwargs
     ) -> "ValuesIterator":
-        return ValuesIterator(self.dbs)
+        return ValuesIterator(self.dbs, *args, **kwargs)
 
 
 class UnionContainer(Container):
+
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
 
     @property
     def writable_db(self) -> aimrocks.DB:
