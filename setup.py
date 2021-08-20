@@ -151,6 +151,11 @@ setup(
             'aim.storage.encoding.encoding_native',
             ['aim/storage/encoding/encoding_native.pyx'],
             language='c++'
+        ),
+        Extension(
+            'aim.storage.treeutils_',
+            ['aim/storage/treeutils_.pyx'],
+            language='c++'
         )
     ],
     entry_points={
