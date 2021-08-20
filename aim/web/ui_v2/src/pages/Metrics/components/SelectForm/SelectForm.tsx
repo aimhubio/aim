@@ -27,6 +27,7 @@ import {
   ISelectMetricsOption,
   ISelectFormProps,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import metricAppModel from 'services/models/metrics/metricsAppModel';
 
 import './SelectForm.scss';
 
@@ -37,6 +38,22 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [editMode, setEditMode] = React.useState<boolean>(false);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
+  const searchMetricsRef = React.useRef<any>(null);
+
+  React.useEffect(() => {
+    const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
+    searchMetricsRef.current = metricAppModel.getMetricsData();
+
+    paramsMetricsRequestRef.call();
+    return () => {
+      paramsMetricsRequestRef.abort();
+      searchMetricsRef.current.abort();
+    };
+  }, []);
+
+  function handleMetricSearch() {
+    searchMetricsRef.current.call();
+  }
 
   function onSelect(event: object, value: any): void {
     onMetricsSelectChange(value);
@@ -53,14 +70,19 @@ function SelectForm({
     setEditMode(!editMode);
   }
 
-  React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    paramsMetricsRequestRef.call();
+  function handleClick(event: React.ChangeEvent<any>) {
+    setAnchorEl(event.currentTarget);
+  }
 
-    return () => {
-      paramsMetricsRequestRef.abort();
-    };
-  }, []);
+  function handleClose(event: any, reason: any) {
+    if (reason === 'toggleInput') {
+      return;
+    }
+    if (anchorEl) {
+      anchorEl.focus();
+    }
+    setAnchorEl(null);
+  }
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
@@ -68,7 +90,7 @@ function SelectForm({
       for (let key in projectsData.metrics) {
         for (let val of projectsData.metrics[key]) {
           let name: string = Object.keys(val)
-            .map((item) => `${item}=${val[item]}`)
+            .map((item) => `${item}="${val[item]}"`)
             .join(', ');
           let index: number = data.length;
           data.push({
@@ -82,21 +104,7 @@ function SelectForm({
     return data;
   }, [projectsData]);
 
-  const handleClick = (event: React.ChangeEvent<any>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = (event: any, reason: any) => {
-    if (reason === 'toggleInput') {
-      return;
-    }
-    if (anchorEl) {
-      anchorEl.focus();
-    }
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
+  const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
   return (
     <div className='SelectForm__container'>
@@ -243,6 +251,7 @@ function SelectForm({
           variant='contained'
           startIcon={<SearchOutlined />}
           className='SelectForm__search__button'
+          onClick={handleMetricSearch}
         >
           Search
         </Button>
