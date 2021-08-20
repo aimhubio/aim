@@ -2,16 +2,15 @@ import React, { memo, useEffect, useState } from 'react';
 import { Divider, Grid, Paper, Tab, Tabs } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 
-import tagsService from 'services/api/tags/tagsService';
+import useModel from 'hooks/model/useModel';
 import TabPanel from 'components/TabPanel/TabPanel';
-import TagForm from 'components/TagForm/TagForm';
+import TagSettings from './TagSettings';
+import tagsDetailAppModel from 'services/models/tags/tagDetailAppModel';
+import TagRuns from './TagRuns';
 import './Tags.scss';
 
 function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
-  const [state, setState] = useState<{ name: string; color: string | null }>({
-    name: '',
-    color: '',
-  });
+  const tagsData = useModel(tagsDetailAppModel);
   const { id }: { id: string } = useParams();
   const [value, setValue] = useState(0);
 
@@ -19,18 +18,20 @@ function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
     setValue(newValue);
   };
 
-  useEffect(() => {
-    tagsService
-      .getTagById(id)
-      .call()
-      .then((res: any): void => setState({ name: res.name, color: res.color }));
+  React.useEffect(() => {
+    tagsDetailAppModel.initialize();
+    const tagRequestRef = tagsDetailAppModel.getTagById(id);
+    tagRequestRef.call();
+    return () => {
+      tagRequestRef.abort();
+    };
   }, [id]);
 
   return (
     <section className='Tags'>
       <Grid container justify='center'>
         <Grid xs={6} item>
-          <h3 className='Tags__title'>{`Tag/${state?.name}`}</h3>
+          <h3 className='Tags__title'>{`Tag/${tagsData?.tagInfo?.name}`}</h3>
           <Divider />
           <Paper>
             <Tabs
@@ -45,10 +46,10 @@ function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
             </Tabs>
           </Paper>
           <TabPanel value={value} index={0}>
-            Empty
+            <TagRuns tagHash={id} tagRuns={tagsData?.tagRuns} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TagForm tagData={state} editMode tagId={id} />
+            <TagSettings tagHash={id} tagInfo={tagsData?.tagInfo} />
           </TabPanel>
         </Grid>
       </Grid>

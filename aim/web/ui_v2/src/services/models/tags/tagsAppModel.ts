@@ -20,10 +20,10 @@ function getTagsData() {
   };
 }
 
-const metricAppModel = {
+const tagsAppModel = {
   ...model,
   initialize,
   getTagsData,
 };
 
-export default metricAppModel;
+export default tagsAppModel;
