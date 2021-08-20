@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, Divider, Paper, Typography } from '@material-ui/core';
+import _ from 'lodash-es';
 
 import { ChartTypeEnum } from 'utils/d3';
 
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 
 import './PopoverContent.scss';
-import _ from 'lodash-es';
+import contextToString from 'utils/contextToString';
 
 function PopoverContent({
   tooltipContent,
@@ -21,14 +22,20 @@ function PopoverContent({
             <Typography>
               {tooltipContent.metricName}: {focusedState?.yValue ?? '--'}
             </Typography>
-            <Typography>Step: {focusedState?.xValue ?? '--'}</Typography>
+            <Typography>
+              Step: {focusedState?.xValue ?? '--'}{' '}
+              {contextToString(tooltipContent.metricContext)}
+            </Typography>
           </>
         );
       case ChartTypeEnum.HighPlot:
+        const [metric, context] = (focusedState?.xValue as string)?.split('-');
         return (
           <>
-            <Typography>yValue: {focusedState?.yValue ?? '--'}</Typography>
-            <Typography>Step: {focusedState?.xValue ?? '--'}</Typography>
+            <Typography>Value: {focusedState?.yValue ?? '--'}</Typography>
+            <Typography>
+              Metric: <strong>{metric ?? '--'}</strong> {context || null}
+            </Typography>
           </>
         );
       default:

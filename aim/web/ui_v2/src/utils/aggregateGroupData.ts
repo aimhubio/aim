@@ -6,6 +6,7 @@ import {
 
 import { IAggregateGroupDataParams } from 'types/utils/aggregateGroupData';
 import { ScaleEnum } from './d3';
+import { IMetric } from 'types/services/models/metrics/metricModel';
 
 export enum AggregationAreaMethods {
   NONE,
@@ -26,7 +27,7 @@ export function aggregateGroupData({
   groupData,
   methods,
   scale = { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
-}: IAggregateGroupDataParams): IMetricsCollection[] {
+}: IAggregateGroupDataParams): IMetricsCollection<IMetric>[] {
   const groupsWithAggregation = [];
 
   const groupedByChart = _.groupBy(groupData, 'chartIndex');

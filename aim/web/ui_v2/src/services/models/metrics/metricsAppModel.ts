@@ -32,7 +32,7 @@ import {
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
-import { IRun } from 'types/services/models/metrics/runModel';
+import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
@@ -166,7 +166,7 @@ function getAppConfigData(appId: string) {
 }
 
 let metricsRequestRef: {
-  call: () => Promise<ReadableStream<IRun[]>>;
+  call: () => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
 };
 
@@ -185,7 +185,7 @@ function getMetricsData() {
       let decodedPairs = decodePathsVals(buffer_pairs);
       let objects = iterFoldTree(decodedPairs, 1);
 
-      const runData: IRun[] = [];
+      const runData: IRun<IMetricTrace>[] = [];
       for await (let [keys, val] of objects) {
         runData.push(val as any);
       }
@@ -294,8 +294,8 @@ function getGroupingSelectOptions(
   ];
 }
 
-function processData(data: IRun[]): {
-  data: IMetricsCollection[];
+function processData(data: IRun<IMetricTrace>[]): {
+  data: IMetricsCollection<IMetric>[];
   params: string[];
 } {
   const grouping = model.getState()?.config?.grouping;
@@ -303,7 +303,7 @@ function processData(data: IRun[]): {
   let index: number = -1;
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
-  data.forEach((run: IRun) => {
+  data.forEach((run: IRun<IMetricTrace>) => {
     params = params.concat(
       getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
     );
@@ -312,7 +312,7 @@ function processData(data: IRun[]): {
         index++;
         return createMetricModel({
           ...trace,
-          run: createRunModel(_.omit(run, 'traces') as IRun),
+          run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
           key: encode({
             runHash: run.params.status.hash,
             metricName: trace.metric_name,
@@ -396,7 +396,7 @@ function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
   return true;
 }
 
-function groupData(data: IMetric[]): IMetricsCollection[] {
+function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   const configData = model.getState()!.config;
   const grouping = configData!.grouping;
   const { paletteIndex } = grouping;
@@ -420,7 +420,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
   }
 
   const groupValues: {
-    [key: string]: IMetricsCollection;
+    [key: string]: IMetricsCollection<IMetric>;
   } = {};
 
   const groupingFields = _.uniq(
@@ -535,7 +535,7 @@ function groupData(data: IMetric[]): IMetricsCollection[] {
 function alignData() {}
 
 function getAggregatedData(
-  processedData: IMetricsCollection[],
+  processedData: IMetricsCollection<IMetric>[],
 ): IAggregatedData[] {
   if (!processedData) {
     return [];
@@ -565,7 +565,7 @@ function getAggregatedData(
 }
 
 function getDataAsLines(
-  processedData: IMetricsCollection[],
+  processedData: IMetricsCollection<IMetric>[],
   configData: IMetricAppConfig | any = model.getState()?.config,
 ): ILine[][] {
   if (!processedData) {
@@ -573,8 +573,9 @@ function getDataAsLines(
   }
 
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
+
   const lines = processedData
-    .map((metricsCollection: IMetricsCollection) =>
+    .map((metricsCollection: IMetricsCollection<IMetric>) =>
       metricsCollection.data.map((metric: IMetric) => {
         let yValues;
         if (smoothingAlgorithm && smoothingFactor) {
@@ -610,20 +611,21 @@ function getDataAsLines(
 }
 
 function getDataAsTableRows(
-  processedData: IMetricsCollection[],
-  xValue: number | null = null,
+  processedData: IMetricsCollection<IMetric>[],
+  xValue: number | string | null = null,
   paramKeys: string[],
 ): IMetricTableRowData[][] | any {
   if (!processedData) {
     return [];
   }
 
-  return processedData.map((metricsCollection: IMetricsCollection) =>
+  return processedData.map((metricsCollection: IMetricsCollection<IMetric>) =>
     metricsCollection.data.map((metric: IMetric) => {
       const closestIndex =
         xValue === null
           ? null
-          : getClosestValue(metric.data.iterations as any, xValue).index;
+          : getClosestValue(metric.data.iterations as any, xValue as number)
+              .index;
       const rowValues: { [key: string]: unknown } = {
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
@@ -656,7 +658,7 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
 }
 
 function setTooltipData(
-  processedData: IMetricsCollection[],
+  processedData: IMetricsCollection<IMetric>[],
   paramKeys: string[],
 ): void {
   const data: { [key: string]: any } = {};
@@ -847,7 +849,9 @@ function onGroupingReset(groupName: GroupNameType) {
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
-  const processedData = processData(model.getState()?.rawData as IRun[]);
+  const processedData = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
   model.setState({
     config: configData,
     data: processedData.data,

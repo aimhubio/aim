@@ -54,7 +54,7 @@ export interface INearestCircle {
 
 export interface IActivePoint {
   key: string;
-  xValue: number;
+  xValue: number | string;
   yValue: number;
   xPos: number;
   yPos: number;

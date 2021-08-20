@@ -1,14 +1,8 @@
-import { IRun } from 'types/services/models/metrics/runModel';
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 
 export interface IParam {
-  run: IRun;
+  run: IRun<IParamTrace>;
   color: string;
   key: string;
   dasharray: string;
-}
-
-export interface ITrace {
-  metric_name: string;
-  context: { subset: string };
-  last_value: { last: number | string };
 }

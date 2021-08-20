@@ -4,12 +4,12 @@ import { isEmpty, noop } from 'lodash-es';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import LineChart from 'components/LineChart/LineChart';
 import COLORS from 'config/colors/colors';
-import objectToString from 'utils/objectToString';
 import {
   IRunBatch,
   IRunDetailMetricsAndSystemTabProps,
 } from 'types/pages/runs/Runs';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
+import contextToString from 'utils/contextToString';
 
 function RunDetailMetricsAndSystemTab({
   runHash,
@@ -44,7 +44,7 @@ function RunDetailMetricsAndSystemTab({
                       {
                         key:
                           batch.metric_name +
-                          objectToString(batch.context, 'keyHash'),
+                          contextToString(batch.context, 'keyHash'),
                         data: {
                           xValues: [...batch.iters],
                           yValues: [...batch.values],
@@ -53,7 +53,7 @@ function RunDetailMetricsAndSystemTab({
                         dasharray: '0',
                         selectors: [
                           batch.metric_name +
-                            objectToString(batch.context, 'keyHash'),
+                            contextToString(batch.context, 'keyHash'),
                         ],
                       },
                     ]}
