@@ -1,7 +1,7 @@
-import { IRun } from './runModel';
+import { IMetricTrace, IRun, ITraceData } from './runModel';
 
 export interface IMetric {
-  run: IRun;
+  run: IRun<IMetricTrace>;
   key: string;
   metric_name: string;
   context: { [key: string]: unknown };

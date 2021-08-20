@@ -3,8 +3,9 @@ import { isEmpty, noop } from 'lodash-es';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import LineChart from 'components/LineChart/LineChart';
+import contextToString from 'utils/contextToString';
 import COLORS from 'config/colors/colors';
-import objectToString from 'utils/objectToString';
+
 import {
   IRunBatch,
   IRunDetailMetricsAndSystemTabProps,
@@ -44,7 +45,7 @@ function RunDetailMetricsAndSystemTab({
                       {
                         key:
                           batch.metric_name +
-                          objectToString(batch.context, 'keyHash'),
+                          contextToString(batch.context, 'keyHash'),
                         data: {
                           xValues: [...batch.iters],
                           yValues: [...batch.values],
@@ -53,7 +54,7 @@ function RunDetailMetricsAndSystemTab({
                         dasharray: '0',
                         selectors: [
                           batch.metric_name +
-                            objectToString(batch.context, 'keyHash'),
+                            contextToString(batch.context, 'keyHash'),
                         ],
                       },
                     ]}

@@ -15,7 +15,7 @@ function getMetricsData(params: {}): IApiRequest<ReadableStream> {
 
   // return {
   //   call: () => ({
-  //     then: (resolve: (data: IRun[]) => void, reject?: unknown) => {
+  //     then: (resolve: (data: IRun<IMetricTrace | IParamTrace>[]) => void, reject?: unknown) => {
   //       setTimeout(() => {
   //         const mock = generateMetrics(200, 100);
   //         resolve(mock);

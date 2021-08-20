@@ -6,7 +6,11 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import { IRun } from 'types/services/models/metrics/runModel';
+import {
+  IMetricTrace,
+  IParamTrace,
+  IRun,
+} from 'types/services/models/metrics/runModel';
 
 const model = createModel<Partial<any>>({});
 
@@ -24,7 +28,7 @@ function getRunsData() {
       let decodedPairs = decodePathsVals(buffer_pairs);
       let objects = iterFoldTree(decodedPairs, 1);
 
-      const runsData: IRun[] = [];
+      const runsData: IRun<IMetricTrace | IParamTrace>[] = [];
       for await (let [keys, val] of objects) {
         const runData: any = val;
         runsData.push({ ...runData, runHash: keys[0] } as any);

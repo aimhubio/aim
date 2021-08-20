@@ -1,16 +1,20 @@
-import { IRun } from 'types/services/models/metrics/runModel';
+import {
+  IMetricTrace,
+  IParamTrace,
+  IRun,
+} from 'types/services/models/metrics/runModel';
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
 }
 
 export interface IRunsProps {
-  runsData: IRun[];
+  runsData: IRun<IMetricTrace | IParamTrace>[];
 }
 export interface IRunDetailMetricsAndSystemTabProps {
   runHash: string;
   runTraces: any;
   runBatch: any;
-  isSystem?: boolean = false;
+  isSystem?: boolean;
 }
 export interface IRunDetailSettingsTabProps {
   runHash: string;
