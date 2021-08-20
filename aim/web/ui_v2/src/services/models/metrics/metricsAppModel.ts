@@ -323,7 +323,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           data: {
             values: new Float64Array(trace.values.blob),
             iterations: new Float64Array(trace.iters.blob),
-            epochs: new Float64Array(trace.epochs.blob),
+            epochs: new Float64Array(trace.epochs?.blob),
             timestamps: new Float64Array(trace.timestamps.blob),
             xValues: [...new Float64Array(trace.iters.blob)],
             yValues: [...new Float64Array(trace.values.blob)],

@@ -3,13 +3,14 @@ import { isEmpty, noop } from 'lodash-es';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import LineChart from 'components/LineChart/LineChart';
+import contextToString from 'utils/contextToString';
 import COLORS from 'config/colors/colors';
+
 import {
   IRunBatch,
   IRunDetailMetricsAndSystemTabProps,
 } from 'types/pages/runs/Runs';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
-import contextToString from 'utils/contextToString';
 
 function RunDetailMetricsAndSystemTab({
   runHash,

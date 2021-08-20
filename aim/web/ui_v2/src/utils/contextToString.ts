@@ -12,7 +12,7 @@ function contextToString(
               return `${key}="${obj[key]}"`;
           }
         })
-        .join(mode === 'keyHash' ? '' : ' ')
+        .join(mode === 'keyHash' ? '' : ', ')
     : null;
 }
 

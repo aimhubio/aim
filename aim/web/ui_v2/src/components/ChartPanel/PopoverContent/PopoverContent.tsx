@@ -2,12 +2,12 @@ import React from 'react';
 import { Box, Divider, Paper, Typography } from '@material-ui/core';
 import _ from 'lodash-es';
 
-import { ChartTypeEnum } from 'utils/d3';
+import contextToString from 'utils/contextToString';
 
+import { ChartTypeEnum } from 'utils/d3';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 
 import './PopoverContent.scss';
-import contextToString from 'utils/contextToString';
 
 function PopoverContent({
   tooltipContent,

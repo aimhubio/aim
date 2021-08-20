@@ -32,8 +32,8 @@ RunTracesBatchApiOut = List[TraceBaseView]
 
 
 class TraceAlignedView(TraceBase):
-    x_axis_values: EncodedNumpyArray
-    x_axis_iters: EncodedNumpyArray
+    x_axis_values: Optional[EncodedNumpyArray] = None
+    x_axis_iters: Optional[EncodedNumpyArray] = None
 
 
 RunMetricCustomAlignApiOut = Dict[str, List[TraceAlignedView]]
@@ -41,10 +41,10 @@ RunMetricCustomAlignApiOut = Dict[str, List[TraceAlignedView]]
 
 class TraceFullView(TraceAlignedView):
     slice: Tuple[int, int, int]
-    values: EncodedNumpyArray
-    iters: EncodedNumpyArray
-    epochs: EncodedNumpyArray
-    timestamps: EncodedNumpyArray
+    values: Optional[EncodedNumpyArray] = None
+    iters: Optional[EncodedNumpyArray] = None
+    epochs: Optional[EncodedNumpyArray] = None
+    timestamps: Optional[EncodedNumpyArray] = None
 
 
 class PropsView(BaseModel):
