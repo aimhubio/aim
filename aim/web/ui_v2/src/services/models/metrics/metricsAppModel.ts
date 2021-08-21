@@ -8,11 +8,7 @@ import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
-import {
-  calculateCentralMovingAverage,
-  calculateExponentialMovingAverage,
-  SmoothingAlgorithmEnum,
-} from 'utils/smoothingData';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -61,6 +57,7 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import getSmoothenedData from 'utils/getSmoothenedData';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -543,19 +540,6 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
 
 function alignData() {}
 
-function getSmoothenedData({
-  smoothingAlgorithm,
-  smoothingFactor,
-  data,
-}: any): number[] {
-  return smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
-    ? (calculateExponentialMovingAverage(
-        data as number[],
-        smoothingFactor,
-      ) as any)
-    : calculateCentralMovingAverage(data as number[], smoothingFactor);
-}
-
 function getAggregatedData(
   processedData: IMetricsCollection<IMetric>[],
   configData = model.getState()?.config as IMetricAppConfig,
@@ -567,6 +551,7 @@ function getAggregatedData(
 
   let aggregatedData: IAggregatedData[] = [];
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
+
   processedData.forEach((metricsCollection, index) => {
     let lineY: number[];
     let areaMinY: number[];
@@ -575,17 +560,17 @@ function getAggregatedData(
       lineY = getSmoothenedData({
         smoothingAlgorithm,
         smoothingFactor,
-        data: metricsCollection.aggregation?.line?.yValues,
+        data: metricsCollection.aggregation?.line?.yValues || [],
       });
       areaMinY = getSmoothenedData({
         smoothingAlgorithm,
         smoothingFactor,
-        data: metricsCollection.aggregation?.area.min?.yValues,
+        data: metricsCollection.aggregation?.area.min?.yValues || [],
       });
       areaMaxY = getSmoothenedData({
         smoothingAlgorithm,
         smoothingFactor,
-        data: metricsCollection.aggregation?.area.max?.yValues,
+        data: metricsCollection.aggregation?.area.max?.yValues || [],
       });
     } else {
       lineY = metricsCollection.aggregation?.line?.yValues as number[];
@@ -803,15 +788,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...props };
-    model.setState({
-      config: { ...configData },
-      lineChartData: getDataAsLines(model.getState()!.data!, configData),
-    });
-    if (configData.chart.aggregationConfig.isApplied) {
-      model.setState({
-        aggregatedData: getAggregatedData(model.getState()!.data!),
-      });
-    }
+    updateModelData(configData);
   }
 }
 
