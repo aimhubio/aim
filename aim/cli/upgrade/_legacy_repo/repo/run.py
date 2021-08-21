@@ -2,11 +2,7 @@ import os
 from typing import Optional, Dict
 import json
 
-from aim.cli.upgrade._legacy_repo.configs import (
-    AIM_OBJECTS_DIR_NAME,
-    AIM_MAP_DIR_NAME,
-    AIM_COMMIT_CONFIG_FILE_NAME,
-)
+from aim.cli.upgrade._legacy_repo.configs import AIM_OBJECTS_DIR_NAME, AIM_MAP_DIR_NAME, AIM_COMMIT_CONFIG_FILE_NAME
 from aim.cli.upgrade._legacy_repo.repo.utils import (
     get_run_objects_dir_path,
     get_run_objects_meta_file_path,

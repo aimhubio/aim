@@ -38,7 +38,8 @@ def collect_runs(lrepo: LegacyRepo):
 
 def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
     try:
-        run = Run(hashname=get_legacy_run_hash(lrun), repo=repo)
+        run = Run(hashname=get_legacy_run_hash(lrun), repo=repo,
+                  system_tracking_interval=None)  # do not track system metrics as they already logged if needed
 
         lrun.open_storage()
         if lrun.params.get(AIM_MAP_METRICS_KEYWORD):

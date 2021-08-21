@@ -1,5 +1,7 @@
 import os
 
+from aim.cli.upgrade._legacy_repo.configs import AIM_OBJECTS_DIR_NAME, AIM_COMMIT_META_FILE_NAME
+
 
 def get_experiment_path(repo_path: str, experiment_name: str) -> str:
     return os.path.join(repo_path, experiment_name)

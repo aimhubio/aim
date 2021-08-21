@@ -6,6 +6,7 @@ import hashlib
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.utils import clean_repo_path
 from aim.cli.upgrade._legacy_repo.repo.utils import get_experiment_run_path
+from aim.cli.upgrade._legacy_repo.configs import AIM_CONFIG_FILE_NAME, AIM_COMMIT_INDEX_DIR_NAME
 
 
 class AimRepo:
