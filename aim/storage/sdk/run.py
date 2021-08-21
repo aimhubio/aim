@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 class Run:
 
-    contexts: Dict[Context, int] = dict()
     _idx_to_ctx: Dict[int, Context] = dict()
     _props_cache_hint: str = None
 
@@ -49,6 +48,7 @@ class Run:
         self._hash = None
         self._props = None
 
+        self.contexts: Dict[Context, int] = dict()
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
@@ -91,7 +91,7 @@ class Run:
             return ctx
         ctx = Context(self.meta_tree['contexts', idx])
         Run._idx_to_ctx[idx] = ctx
-        Run.contexts[ctx] = idx
+        self.contexts[ctx] = idx
         return ctx
 
     def __setitem__(self, key: str, val: Any):
