@@ -1,4 +1,4 @@
-export interface IRun {
+export interface IRun<T> {
   params: {
     experiment_name: string;
     status: {
@@ -14,14 +14,23 @@ export interface IRun {
     [key: string]: IRunParam;
   };
   created_at: number;
-  traces: {
-    metric_name: string;
-    context: { [key: string]: any };
-    values: ITraceData;
-    iters: ITraceData;
-    epochs: ITraceData;
-    timestamps: ITraceData;
-  }[];
+  traces: T[];
+  runHash?: string;
+}
+
+export interface IParamTrace {
+  metric_name: string;
+  context: { [key: string]: unknown };
+  last_value: { last: number | string };
+}
+
+export interface IMetricTrace {
+  metric_name: string;
+  context: { [key: string]: unknown };
+  values: ITraceData;
+  iters: ITraceData;
+  epochs: ITraceData;
+  timestamps: ITraceData;
 }
 
 export interface IRunParam {

@@ -1,0 +1,29 @@
+.Controls__anchor {
+  cursor: pointer;
+
+  &:hover .arrowLeft {
+    opacity: 1
+  }
+   &.disabled {
+    opacity: 0.2;
+    cursor: unset;
+  }
+}
+
+.Controls__anchor__arrow {
+  position: absolute;
+  left: -18px;
+
+  .arrowLeft {
+    opacity: 0;
+    width: 18px;
+    transition: all .3s ease-out
+  }
+}
+
+.Controls__anchor__arrow__opened {
+  .arrowLeft {
+    opacity: 1;
+    transform: rotate(180deg);
+  }
+}

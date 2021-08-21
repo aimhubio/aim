@@ -10,23 +10,33 @@ import {
 import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
-import { IRun } from './runModel';
+import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { IParam } from 'types/services/models/params/paramsAppModel';
 
 export interface IMetricAppModelState {
   refs: {
     tableRef: { current: ITableRef | null };
     chartPanelRef: { current: IChartPanelRef | null };
   };
-  rawData: IRun[];
+  rawData: IRun<IMetricTrace>[];
   config: IMetricAppConfig;
-  data: IMetricsCollection[];
+  data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
+  aggregatedData: IAggregatedData[];
   tableData: IMetricTableRowData[][];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
   tooltipContent: ITooltipContent;
+}
+
+export interface IAggregatedData extends IAggregationData {
+  key: string;
+  color: string;
+  dasharray: string;
+  chartIndex: number;
 }
 
 export interface ITooltipData {
@@ -43,12 +53,12 @@ export interface ITooltipContent {
   [key: string]: any;
 }
 
-export interface IMetricsCollection {
+export interface IMetricsCollection<T> {
   config: unknown;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
-  data: IMetric[];
+  data: T[];
   aggregation?: IAggregationData;
 }
 
@@ -104,22 +114,23 @@ interface IMetricAppConfig {
     smoothingAlgorithm: SmoothingAlgorithmEnum;
     smoothingFactor: number;
     focusedState: IFocusedState;
-    aggregation: IAggregation;
+    aggregationConfig: IAggregationConfig;
   };
 }
 
-export interface IAggregation {
+export interface IAggregationConfig {
   methods: {
     area: AggregationAreaMethods;
     line: AggregationLineMethods;
   };
   isApplied: boolean;
+  isEnabled: boolean;
 }
 
 export interface IFocusedState {
   active: boolean;
   key: string | null;
-  xValue: number | null;
+  xValue: number | string | null;
   yValue: number | null;
   chartIndex: number | null;
 }
@@ -155,7 +166,7 @@ export interface IOnGroupingModeChangeParams {
 
 export interface IGetGroupingPersistIndex {
   groupValues: {
-    [key: string]: IMetricsCollection;
+    [key: string]: IMetricsCollection<IMetric>;
   };
   groupKey: string;
   grouping: IMetricAppConfig['grouping'];

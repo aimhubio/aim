@@ -24,6 +24,8 @@ const LineChart = React.forwardRef(function LineChart(
   const {
     data,
     index,
+    aggregatedData,
+    aggregationConfig,
     syncHoverState,
     axesScaleType,
     displayOutliers,
@@ -124,6 +126,8 @@ const LineChart = React.forwardRef(function LineChart(
       yScale,
       index,
       highlightMode,
+      aggregationConfig,
+      aggregatedData,
     });
 
     drawHoverAttributes({
@@ -143,6 +147,7 @@ const LineChart = React.forwardRef(function LineChart(
       yAxisLabelNodeRef,
       linesNodeRef,
       highlightedNodeRef,
+      aggregationConfig,
     });
 
     if (zoomMode) {
@@ -156,7 +161,6 @@ const LineChart = React.forwardRef(function LineChart(
         axesRef,
         attributesRef,
         linesRef,
-        linesNodeRef,
         svgNodeRef,
         axesScaleType,
         min,
@@ -184,6 +188,7 @@ const LineChart = React.forwardRef(function LineChart(
       axesScaleType,
       curveInterpolation,
       zoomMode,
+      aggregationConfig,
     ],
   );
 
@@ -199,6 +204,7 @@ const LineChart = React.forwardRef(function LineChart(
     axesScaleType,
     curveInterpolation,
     zoomMode,
+    aggregationConfig,
   ]);
 
   React.useImperativeHandle(ref, () => ({

@@ -10,7 +10,6 @@ export interface IDrawBrushProps extends IGetAxesScaleProps {
   axesRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;
-  linesNodeRef: React.MutableRefObject<>;
   svgNodeRef: React.MutableRefObject<>;
 }
 

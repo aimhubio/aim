@@ -47,7 +47,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.5',
+    'aimrocks==0.0.6rc2',
     'anytree>=2.8.0',
     'click>=7.0',
     'GitPython>=3.0.4',
@@ -66,7 +66,10 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'tensorboard>=2.0.0',
-    'RestrictedPython==5.1',
+    'RestrictedPython>=5.1',
+    'wrapt>=1.12.1',
+    'filelock>=3.0.0',
+    'cachetools>=4.0.0'
 ]
 
 
@@ -147,6 +150,11 @@ setup(
         Extension(
             'aim.storage.encoding.encoding_native',
             ['aim/storage/encoding/encoding_native.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.treeutils_',
+            ['aim/storage/treeutils_.pyx'],
             language='c++'
         )
     ],

@@ -42,11 +42,12 @@ function Theme(
   props: IThemeProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const [dark, setDark] = React.useState<boolean>(false);
-  const fontSize = useFontSize();
+  // const fontSize = useFontSize();
+  //
+  // React.useEffect(() => {
+  //   document.getElementsByTagName('html')[0].style.fontSize = fontSize + 'px';
+  // }, [fontSize]);
 
-  React.useEffect(() => {
-    document.getElementsByTagName('html')[0].style.fontSize = fontSize + 'px';
-  }, [fontSize]);
   const handleTheme = React.useCallback((): void => {
     setDark(!dark);
   }, [dark]);

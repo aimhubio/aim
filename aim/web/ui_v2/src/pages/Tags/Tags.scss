@@ -1,0 +1,21 @@
+.Tags {
+  height: 100vh;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__title {
+    font-size: 2em;
+    margin: 0.5em 0;
+    padding: 0;
+    color: #3b5896;
+  }
+  &__tagListBox {
+    margin-top: 1em;
+    flex-direction: column;
+    &__tagBox {
+      margin-bottom: 5px;
+    }
+  }
+}

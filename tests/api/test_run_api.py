@@ -121,28 +121,29 @@ class TestRunApi(ApiTestBase):
         for run in decoded_response.values():
             self.assertEqual([], run)
 
-    def test_run_params_api(self):
+    def test_run_info_api(self):
         run = self._find_run_by_name('Run # 1')
 
         self.assertEqual('Run # 1', run.props.name)
         client = self.client
-        response = client.get(f'/api/runs/{run.hashname}/params/')
+        response = client.get(f'/api/runs/{run.hashname}/info/')
         self.assertEqual(200, response.status_code)
 
-        run_params = response.json()
+        data = response.json()
+        run_params = data['params']
         self.assertEqual(1, run_params['run_index'])
         self.assertEqual(0.001, run_params['hparams']['lr'])
 
-    def test_run_traces_overview_api(self):
-        run = self._find_run_by_name('Run # 1')
-        client = self.client
-        response = client.get(f'/api/runs/{run.hashname}/traces/')
-        self.assertEqual(200, response.status_code)
-
-        run_traces_overview = response.json()
+        run_traces_overview = data['traces']
         self.assertEqual(4, len(run_traces_overview))
         for trc_overview in run_traces_overview:
             self.assertAlmostEqual(0.99, trc_overview['last_value']['last'])
+
+        run_props = data['props']
+
+        self.assertEqual('Run # 1', run_props['name'])
+        self.assertEqual(None, run_props['experiment'])
+        self.assertEqual(0, len(run_props['tags']))
 
     def test_run_traces_batch_api(self):
         run = self._find_run_by_name('Run # 1')

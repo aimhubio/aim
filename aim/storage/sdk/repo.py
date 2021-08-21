@@ -1,6 +1,7 @@
 import os
 
-from typing import Dict, Iterator, NamedTuple, Optional, List
+from collections import defaultdict
+from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
 from aim.storage.sdk.run import Run
@@ -8,7 +9,7 @@ from aim.storage.union import UnionContainer
 from aim.storage.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
-from aim.storage.singlecontainerview import SingleContainerView
+from aim.storage.prefixview import PrefixView
 
 from aim.storage.structured.db import DB
 
@@ -35,13 +36,12 @@ class Repo:
         self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
 
         os.makedirs(self.path, exist_ok=True)
-        # os.makedirs(os.path.join(self.path, 'chunks'), exist_ok=True)
-        # os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
-        # os.makedirs(os.path.join(self.path, 'progress'), exist_ok=True)
-
-        self.meta_tree = self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
         self.structured_db = DB.from_path(path)
+
+    @property
+    def meta_tree(self):
+        return self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -112,17 +112,14 @@ class Repo:
                 path = os.path.join(name, 'chunks', sub)
                 container = self._get_container(path, read_only=False, from_union=False)
 
-            prefix = b''
-
-            container_view = SingleContainerView(container=container, read_only=read_only, prefix=prefix)
+            container_view = container
             self.container_view_pool[container_config] = container_view
 
         return container_view
 
-    def iter_runs(self) -> Iterator['Run']:
+    def iter_runs(self) -> Iterator["Run"]:
+        self.meta_tree.preload()
         for run_name in self.meta_tree.view('chunks').keys():
-            # if run_name == '_':
-            #     continue
             yield Run(run_name, repo=self, read_only=True)
 
     def get_run(self, hashname: str) -> Optional['Run']:
@@ -134,11 +131,13 @@ class Repo:
     def query_runs(self, query: str = '') -> QueryRunTraceCollection:
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
+        Run.set_props_cache_hint('runs_cache')
         return QueryRunTraceCollection(self, query)
 
     def traces(self, query: str = '') -> QueryTraceCollection:
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
+        Run.set_props_cache_hint('runs_cache')
         return QueryTraceCollection(repo=self, query=query)
 
     def iter_traces(self, query: str = '') -> QueryTraceCollection:
@@ -149,14 +148,15 @@ class Repo:
             'meta', read_only=True, from_union=True
         ).tree().view('meta')
 
-    def collect_metrics(self) -> List[str]:
+    def collect_metrics(self) -> Dict[str, list]:
         meta_tree = self.get_meta_tree()
         traces = meta_tree.collect('traces')
-        metrics = set()
-        for trace_metrics in traces.values():
-            metrics.update(trace_metrics.keys())
+        metrics = defaultdict(list)
+        for ctx_id, trace_metrics in traces.items():
+            for metric in trace_metrics.keys():
+                metrics[metric].append(meta_tree['contexts', ctx_id])
 
-        return list(metrics)
+        return metrics
 
     def collect_params(self):
         meta_tree = self.get_meta_tree()

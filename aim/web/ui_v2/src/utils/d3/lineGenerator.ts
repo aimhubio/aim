@@ -4,14 +4,17 @@ import { CurveEnum } from './';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
 export default function lineGenerator(
-  xValues: IGetAxisScale,
-  yValues: IGetAxisScale,
+  xScaleValues: IGetAxisScale,
+  yScaleValues: IGetAxisScale | { [key: string]: IGetAxisScale },
   curve: CurveEnum = CurveEnum.Linear,
-  isYValuesAnObject: boolean = false,
 ) {
   return d3
     .line()
-    .x((d) => xValues(d[0]))
-    .y((d) => (isYValuesAnObject ? yValues[d[0]](d[1]) : yValues(d[1])))
+    .x((d) => xScaleValues(d[0]))
+    .y((d) =>
+      typeof yScaleValues === 'object'
+        ? yScaleValues[d[0]](d[1])
+        : yScaleValues(d[1]),
+    )
     .curve(d3[curve]);
 }

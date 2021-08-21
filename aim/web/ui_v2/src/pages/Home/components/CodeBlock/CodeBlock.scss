@@ -1,0 +1,21 @@
+.CodeBlock__container {
+  background: #F2F3F4;
+  border-radius: 6px;
+  padding: 1em 3em 1em 1em;
+  position: relative;
+  pre {
+    margin: 0;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.875em;
+    line-height: 1.3125em;
+    color: #031123;
+  }
+}
+
+.CodeBlock__copy__span {
+  cursor: pointer;
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+}
