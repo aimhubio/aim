@@ -15,7 +15,7 @@ class TestRunApi(ApiTestBase):
         response = client.get('/api/runs/search/run/', params={'q': 'run["name"] == "Run # 3"'})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_lines()))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
         self.assertEqual(1, len(decoded_response))
         for hashname, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']))
@@ -142,7 +142,7 @@ class TestRunApi(ApiTestBase):
         run_props = data['props']
 
         self.assertEqual('Run # 1', run_props['name'])
-        self.assertEqual(None, run_props['experiment'])
+        self.assertEqual('default', run_props['experiment'])
         self.assertEqual(0, len(run_props['tags']))
 
     def test_run_traces_batch_api(self):
