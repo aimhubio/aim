@@ -35,6 +35,7 @@ def unfold_tree(
             for idx, val in enumerate(obj):
                 yield from unfold_tree(val, path=path + (idx,), unfold_array=unfold_array, depth=depth)
     elif isinstance(obj, dict):
+        # TODO: set ObjectFlag for all dicts?
         if obj == {}:
             yield path, ObjectFlag
         for key, val in obj.items():
