@@ -227,7 +227,7 @@ class RunTraceCollection(TraceCollection):
     ):
         self.run: 'Run'
         self.repo: 'Repo'
-        if query_traces is not None:
+        if query_traces:
             self.query_traces = RestrictedPythonQuery(query_traces)
         else:
             self.query_traces = None
@@ -279,7 +279,8 @@ class QueryRunTraceCollection(TraceCollection):
         self.repo: 'Repo'
         super().__init__(repo=repo)
         self.query = query
-        self._query = RestrictedPythonQuery(query)
+        if query:
+            self._query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
         for run_traces in self.iter_runs():
