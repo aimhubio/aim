@@ -1,7 +1,5 @@
 from typing import Optional, List
-from aim.sdk.track import track
-from aim.sdk.flush import flush
-from aim.sdk.session.session import Session
+from aim.sdk.run import Run
 
 
 class TrackerKerasCallbackMetricsEpochEndMixin(object):
@@ -20,54 +18,47 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         if not logs:
             return
 
-        track_func = self.session.track \
-            if self.session is not None \
-            else track
+        track_func = self.run.track
 
         train_logs = {k: v for k, v in logs.items() if
                       not k.startswith('val_')}
         for name, value in train_logs.items():
-            track_func(value, name=name, epoch=epoch, subset='train')
+            track_func(value, name=name, epoch=epoch, context={'subset': 'train'})
 
         val_logs = {k: v for k, v in logs.items() if
                     k.startswith('val_')}
         for name, value in val_logs.items():
-            track_func(value, name=name[4:], epoch=epoch, subset='val')
+            track_func(value, name=name[4:], epoch=epoch, context={'subset': 'val'})
 
         lr = self._get_learning_rate()
         if lr is not None:
-            track_func(lr, name='lr', epoch=epoch, subset='train')
-
-        flush_func = self.session.flush \
-            if self.session is not None \
-            else flush
-        flush_func()
+            track_func(lr, name='lr', epoch=epoch, context={'subset': 'train'})
 
 
 def get_keras_tracker_callback(keras_callback_cls, mixins: List):
     class KerasTrackerCallback(keras_callback_cls, *mixins):
         def __init__(self, repo: Optional[str] = None,
                      experiment: Optional[str] = None,
-                     session: Optional[Session] = None):
+                     run: Optional[Run] = None):
             super(KerasTrackerCallback, self).__init__()
 
-            if session is None:
+            if run is None:
                 if repo is None and experiment is None:
-                    self._session = Session()
+                    self._run = Run()
                 else:
-                    self._session = Session(
+                    self._run = Run(
                             repo=repo,
                             experiment=experiment
                         )
             else:
-                print('Passing Session instance to AimCallback will be ' +
+                print('Passing Run instance to AimCallback will be ' +
                       'deprecated in future versions, ' +
                       'pass the callback arguments explicitly')
-                self._session = session
+                self._run = run
 
         @property
-        def session(self) -> Session:
-            return self._session
+        def run(self) -> Run:
+            return self._run
 
         def on_epoch_end(self, *args, **kwargs):
             for mixin_cls in mixins:
