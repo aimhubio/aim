@@ -24,8 +24,7 @@ class ModelMappedProperty:
         setter = None
         if self.with_setter:
             def setter(object_, value):
-                if not object_._model:
-                    object_.create_model_instance()
+                assert object_._model
                 setattr(object_._model, self.mapped_name, value)
                 object_._session.add(object_._model)
         return property(getter, setter)
