@@ -7,7 +7,7 @@ import {
   IActivePoint,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import { CircleEnum, XAlignmentEnum } from './index';
+import { CircleEnum } from './index';
 
 import 'components/LineChart/LineChart.scss';
 import getFormattedValue from '../formattedValue';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { CurveEnum, XAlignmentEnum } from 'utils/d3';
+import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ITableRef } from 'types/components/Table/Table';
 import {
@@ -25,6 +25,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -77,7 +78,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
   onAlignmentMetricChange: (metric: string) => void;
-  onAlignmentTypeChange: (type: XAlignmentEnum) => void;
+  onAlignmentTypeChange: (type: AlignmentOptions) => void;
   onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
 }
 

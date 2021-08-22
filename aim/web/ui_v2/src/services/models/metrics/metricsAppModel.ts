@@ -547,9 +547,10 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
 
 function alignData(
   data: IMetricsCollection<IMetric>[],
+  type: AlignmentOptions = model.getState()!.config!.chart.alignmentConfig
+    .type!,
 ): IMetricsCollection<IMetric>[] {
-  const alignment = model.getState()!.config!.chart.alignmentConfig;
-  switch (alignment.type) {
+  switch (type) {
     case AlignmentOptions.STEP:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
@@ -1142,15 +1143,11 @@ function onAlignmentMetricChange(metric: string): void {
 function onAlignmentTypeChange(type: AlignmentOptions): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          alignmentConfig: { ...configData.chart.alignmentConfig, type: type },
-        },
-      },
-    });
+    configData.chart = {
+      ...configData.chart,
+      alignmentConfig: { ...configData.chart.alignmentConfig, type: type },
+    };
+    updateModelData(configData);
   }
 }
 
