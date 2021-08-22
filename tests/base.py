@@ -18,6 +18,7 @@ class TestBase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
+        # TODO [AT]: find a way to run this without breaking run.props in readonly mode
         truncate_structured_db(cls.repo.structured_db)
 
     def tearDown(self) -> None:

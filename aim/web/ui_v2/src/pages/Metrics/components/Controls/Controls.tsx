@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box, Grid } from '@material-ui/core';
 import {
   BlurCircular,
   BlurOn,
@@ -29,26 +28,20 @@ function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Grid
-      container
-      direction='column'
-      justifyContent='center'
-      spacing={1}
-      alignItems='center'
-    >
-      <Grid onClick={props.onDisplayOutliersChange} item>
+    <div className='Controls__container'>
+      <div onClick={props.onDisplayOutliersChange}>
         {props.displayOutliers ? (
           <BlurOn className='Controls__anchor' />
         ) : (
           <BlurCircular color='primary' className='Controls__anchor' />
         )}
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className='Controls__anchor'>
+            <div onClick={onAnchorClick} className='Controls__anchor'>
               <ShowChart />
-            </Box>
+            </div>
           )}
           component={
             <AxesScalePopover
@@ -57,15 +50,14 @@ function Controls(
             />
           }
         />
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box
+            <div
               className={`Controls__anchor ${
                 props.aggregationConfig.isEnabled ? '' : 'disabled'
               }`}
-              position='relative'
             >
               {props.aggregationConfig.isEnabled && (
                 <span
@@ -89,7 +81,7 @@ function Controls(
                   }
                 }}
               />
-            </Box>
+            </div>
           )}
           component={
             <AggregationPopup
@@ -98,23 +90,23 @@ function Controls(
             />
           }
         />
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className='Controls__anchor'>
+            <div onClick={onAnchorClick} className='Controls__anchor'>
               <ScatterPlot />
-            </Box>
+            </div>
           )}
           component={<StepsDensityPopup />}
         />
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box onClick={onAnchorClick} className='Controls__anchor'>
+            <div onClick={onAnchorClick} className='Controls__anchor'>
               <MultilineChart />
-            </Box>
+            </div>
           )}
           component={
             <SmootheningPopup
@@ -125,13 +117,13 @@ function Controls(
             />
           }
         />
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick }) => (
-            <Box className='Controls__anchor' onClick={onAnchorClick}>
+            <div className='Controls__anchor' onClick={onAnchorClick}>
               <CenterFocusWeak />
-            </Box>
+            </div>
           )}
           component={
             <HighlightModePopup
@@ -140,11 +132,11 @@ function Controls(
             />
           }
         />
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className='Controls__anchor' position='relative'>
+            <div className='Controls__anchor'>
               <span
                 className={`Controls__anchor__arrow ${
                   opened ? 'Controls__anchor__arrow__opened' : ''
@@ -157,15 +149,15 @@ function Controls(
                 color={props.zoomMode ? 'primary' : 'inherit'}
                 onClick={props.onZoomModeChange}
               />
-            </Box>
+            </div>
           )}
           component={<ZoomInPopup />}
         />
-      </Grid>
-      <Grid item>
+      </div>
+      <div>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <Box className='Controls__anchor' position='relative'>
+            <div className='Controls__anchor'>
               <span
                 className={`Controls__anchor__arrow ${
                   opened ? 'Controls__anchor__arrow__opened' : ''
@@ -175,12 +167,12 @@ function Controls(
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
               <ZoomOut onClick={props.onZoomModeChange} />
-            </Box>
+            </div>
           )}
           component={<ZoomOutPopup />}
         />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }
 

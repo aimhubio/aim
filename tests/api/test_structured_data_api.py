@@ -161,7 +161,7 @@ class TestExperimentsApi(StructuredApiTestBase):
         response = client.get('/api/experiments')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        self.assertEqual(2, len(data))
+        self.assertEqual(3, len(data))  # count default experiment
 
     def test_search_experiments_api(self):
         client = self.client

@@ -14,7 +14,7 @@ import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IParam } from 'types/services/models/params/paramsAppModel';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 export interface IMetricAppModelState {
   refs: {
@@ -118,6 +118,10 @@ interface IMetricAppConfig {
     xAxisAlignment: AlignmentOptions;
     aggregationConfig: IAggregationConfig;
   };
+  select: {
+    metrics: ISelectMetricsOption[];
+    query: string;
+  };
 }
 
 export interface IAggregationConfig {
@@ -190,7 +194,7 @@ export interface IAppData extends Partial<IMetricAppConfig> {
 export interface IDashboardRequestBody {
   name: string;
   description: string;
-  app_id: string;
+  app_id?: string;
 }
 
 export interface IDashboardData {
