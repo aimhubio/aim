@@ -12,6 +12,7 @@ import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IAlignmentConfig,
   IAppData,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -114,6 +115,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       aggregationConfig={
         metricsData?.config?.chart.aggregationConfig as IAggregationConfig
       }
+      alignmentConfig={
+        metricsData?.config?.chart.alignmentConfig as IAlignmentConfig
+      }
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -135,6 +139,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationAdd={metricAppModel.onNotificationAdd}
       onNotificationDelete={metricAppModel.onNotificationDelete}
       onResetConfigData={metricAppModel.onResetConfigData}
+      onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
+      onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
     />
   );
 }

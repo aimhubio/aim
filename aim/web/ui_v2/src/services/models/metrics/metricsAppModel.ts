@@ -55,7 +55,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { CurveEnum, ScaleEnum, XAlignmentEnum } from 'utils/d3';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -100,6 +100,10 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
+      alignmentConfig: {
+        metric: '',
+        type: XAlignmentEnum.Step,
+      },
       aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
@@ -531,8 +535,6 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
     scale: chartConfig.axesScaleType,
   });
 }
-
-function alignData() {}
 
 function getAggregatedData(
   processedData: IMetricsCollection<IMetric>[],
@@ -1005,6 +1007,24 @@ function onResetConfigData(): void {
   });
 }
 
+function alignData() {}
+
+function onAlignmentMetricChange(metric: string): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    configData.chart.alignmentConfig.metric = metric;
+    model.setState({ config: configData });
+  }
+}
+
+function onAlignmentTypeChange(type: XAlignmentEnum): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    configData.chart.alignmentConfig.type = type;
+    model.setState({ config: configData });
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1035,6 +1055,8 @@ const metricAppModel = {
   onNotificationAdd,
   onBookmarkUpdate,
   onResetConfigData,
+  onAlignmentMetricChange,
+  onAlignmentTypeChange,
 };
 
 export default metricAppModel;

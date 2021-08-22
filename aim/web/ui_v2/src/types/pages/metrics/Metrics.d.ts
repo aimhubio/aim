@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ITableRef } from 'types/components/Table/Table';
 import {
@@ -15,6 +15,7 @@ import {
   ITooltipContent,
   IAggregationConfig,
   IAggregatedData,
+  IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -47,6 +48,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   notifyData: IMetricAppModelState['notifyData'];
   tooltipContent: ITooltipContent;
   aggregationConfig: IAggregationConfig;
+  alignmentConfig: IAlignmentConfig;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (
@@ -72,6 +74,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
+  onAlignmentMetricChange: (metric: string) => void;
+  onAlignmentTypeChange: (type: XAlignmentEnum) => void;
 }
 
 export interface IOnSmoothingChange {

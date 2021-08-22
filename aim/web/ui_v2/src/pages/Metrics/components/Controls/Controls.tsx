@@ -15,7 +15,6 @@ import {
 
 import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
-import StepsDensityPopup from 'components/StepsDensityPopover/StepsDensityPopover';
 import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -24,6 +23,7 @@ import { IControlProps } from 'types/pages/metrics/components/controls/Controls'
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 import './Controls.scss';
+import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 
 function Controls(
   props: IControlProps,
@@ -106,7 +106,13 @@ function Controls(
               <ScatterPlot />
             </Box>
           )}
-          component={<StepsDensityPopup />}
+          component={
+            <AlignmentPopover
+              alignmentConfig={props.alignmentConfig}
+              onAlignmentMetricChange={props.onAlignmentMetricChange}
+              onAlignmentTypeChange={props.onAlignmentTypeChange}
+            />
+          }
         />
       </Grid>
       <Grid item>

@@ -7,7 +7,7 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
@@ -115,7 +115,13 @@ interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    alignmentConfig: IAlignmentConfig;
   };
+}
+
+export interface IAlignmentConfig {
+  metric: string;
+  type: XAlignmentEnum;
 }
 
 export interface IAggregationConfig {
