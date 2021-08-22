@@ -14,7 +14,7 @@ class TestProjectApi(ApiTestBase):
         today = datetime.date.today().isoformat()
         self.assertEqual(10, data['num_runs'])
         self.assertEqual(10, data['activity_map'][today])
-        self.assertEqual(1, data['num_experiments'])
+        self.assertEqual(2, data['num_experiments'])  # count 'default' experiment
 
     def test_project_params_api(self):
         client = self.client

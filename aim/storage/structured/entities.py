@@ -180,6 +180,10 @@ class ObjectFactory:
         ...
 
     @abstractmethod
+    def create_run(self, runhash: str) -> Run:
+        ...
+
+    @abstractmethod
     def experiments(self) -> ExperimentCollection:
         ...
 

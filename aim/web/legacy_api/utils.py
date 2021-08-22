@@ -1,5 +1,5 @@
-from aim.artifacts.metric import Metric as MetricArtifact
-from aim.web.api.utils import normalize_type, unsupported_float_type
+from engine.metric_artifact import Metric as MetricArtifact
+from aim.web.api.utils import unsupported_float_type
 
 
 def separate_select_statement(select: list) -> tuple:

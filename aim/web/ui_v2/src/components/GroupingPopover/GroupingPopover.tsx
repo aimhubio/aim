@@ -62,7 +62,6 @@ function GroupingPopover({
         : null,
     });
   }
-
   return (
     <Box className='GroupingPopover__container'>
       <Box p={0.5}>
