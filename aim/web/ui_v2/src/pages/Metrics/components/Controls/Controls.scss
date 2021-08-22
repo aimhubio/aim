@@ -1,6 +1,21 @@
+.Controls__container {
+  width: 3.125em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+   &>div {
+    margin-bottom: 1em;
+     &:last-child {
+       margin-bottom: 0;
+     }
+  }
+}
+
 .Controls__anchor {
   cursor: pointer;
-
+  position: relative;
   &:hover .arrowLeft {
     opacity: 1
   }
@@ -23,7 +38,7 @@
 
 .Controls__anchor__arrow__opened {
   .arrowLeft {
-    opacity: 1;
+    //opacity: 1;
     transform: rotate(180deg);
   }
 }
