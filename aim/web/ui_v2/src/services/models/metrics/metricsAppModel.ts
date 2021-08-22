@@ -60,6 +60,7 @@ import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -120,6 +121,10 @@ function getConfig() {
         chartIndex: null,
       },
     },
+    select: {
+      metrics: [],
+      query: '',
+    },
   };
 }
 
@@ -143,10 +148,14 @@ function setDefaultAppConfigData() {
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
     getStateFromUrl('chart') || getConfig().chart;
+  const select: IMetricAppConfig['select'] =
+    getStateFromUrl('select') || getConfig().select;
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart,
     grouping,
+    select,
   });
+
   model.setState({
     config: configData,
   });
@@ -329,8 +338,8 @@ function processData(data: IRun<IMetricTrace>[]): {
             iterations: new Float64Array(trace.iters.blob),
             epochs: new Float64Array(trace.epochs?.blob),
             timestamps: new Float64Array(trace.timestamps.blob),
-            xValues: [...new Float64Array(trace.iters.blob)],
-            yValues: [...new Float64Array(trace.values.blob)],
+            xValues: [...new Float64Array(trace.iters?.blob)],
+            yValues: [...new Float64Array(trace.values?.blob)],
           },
         } as IMetric);
       }),
@@ -977,11 +986,20 @@ function updateChartStateUrl(): void {
   }
 }
 
+function updateSelectStateUrl(): void {
+  const selectData = model.getState()?.config?.select;
+  if (selectData) {
+    updateUrlParam('select', selectData);
+  }
+}
+
 function updateUrlParam(
   paramName: string,
   data: Record<string, unknown>,
 ): void {
   const encodedUrl: string = encode(data);
+  console.log(data);
+
   const url: string = getUrlWithParam(paramName, encodedUrl);
   window.history.pushState(null, '', url);
 }
@@ -1025,6 +1043,18 @@ function onAlignmentTypeChange(type: XAlignmentEnum): void {
   }
 }
 
+function onMetricsSelectChange(data: ISelectMetricsOption[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, metrics: data },
+      },
+    });
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1057,6 +1087,8 @@ const metricAppModel = {
   onResetConfigData,
   onAlignmentMetricChange,
   onAlignmentTypeChange,
+  onMetricsSelectChange,
+  updateSelectStateUrl,
 };
 
 export default metricAppModel;

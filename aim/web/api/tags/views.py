@@ -84,7 +84,7 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
     if not tag:
         raise HTTPException
 
-    from aim.storage.sdk.run import Run
+    from aim.sdk.run import Run
 
     tag_runs = []
     for tagged_run in tag.runs:
