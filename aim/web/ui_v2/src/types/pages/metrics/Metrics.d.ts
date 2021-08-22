@@ -32,7 +32,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   displayOutliers: boolean;

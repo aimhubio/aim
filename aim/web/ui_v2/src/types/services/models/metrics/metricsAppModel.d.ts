@@ -25,7 +25,7 @@ export interface IMetricAppModelState {
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   aggregatedData: IAggregatedData[];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
@@ -54,6 +54,7 @@ export interface ITooltipContent {
 }
 
 export interface IMetricsCollection<T> {
+  key?: string;
   config: unknown;
   color: string | null;
   dasharray: string | null;
@@ -144,7 +145,10 @@ export interface IMetricTableRowData {
   metric: metric.metric_name;
   context: string[];
   value: string;
-  iteration: string;
+  step: string;
+  epoch: string;
+  timestamp: string;
+  [key: string]: unknonw;
 }
 
 export interface IGetDataAsLinesProps {

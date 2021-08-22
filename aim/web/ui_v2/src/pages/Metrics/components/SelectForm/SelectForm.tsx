@@ -70,7 +70,7 @@ function SelectForm(): React.FunctionComponentElement<React.ReactNode> {
                 size='small'
                 rows={4}
                 variant='outlined'
-                placeholder='Select statement e.g. select m:Metric if m.name in [“loss”, “accuract”] and m.run.lr > 10 return m'
+                placeholder='Select statement e.g. select m:Metric if m.name in [“loss”, “accuracy”] and m.run.lr > 10 return m'
               />
             </Box>
           ) : (

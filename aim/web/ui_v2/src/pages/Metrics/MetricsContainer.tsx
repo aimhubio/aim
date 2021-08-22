@@ -90,7 +90,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       //options
       lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}

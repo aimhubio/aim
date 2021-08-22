@@ -123,6 +123,8 @@ const Table = React.forwardRef(function Table(
               rowHeight={30}
               footerHeight={0}
               defaultExpandedRowKeys={[]}
+              expandColumnKey='#'
+              rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
               sortBy={{}}
               useIsScrolling={false}
               overscanRowCount={1}
