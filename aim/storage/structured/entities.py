@@ -110,6 +110,16 @@ class Experiment(StructuredObject, Searchable['Experiment']):
 
     @property
     @abstractmethod
+    def archived(self) -> bool:
+        ...
+
+    @archived.setter
+    @abstractmethod
+    def archived(self, value: bool):
+        ...
+
+    @property
+    @abstractmethod
     def runs(self) -> RunCollection:
         ...
 
@@ -138,6 +148,16 @@ class Tag(StructuredObject, Searchable['Tag']):
     @color.setter
     @abstractmethod
     def color(self, value: str):
+        ...
+
+    @property
+    @abstractmethod
+    def archived(self) -> bool:
+        ...
+
+    @archived.setter
+    @abstractmethod
+    def archived(self, value: bool):
         ...
 
     @property

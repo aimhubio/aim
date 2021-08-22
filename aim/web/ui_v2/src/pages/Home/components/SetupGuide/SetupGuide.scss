@@ -1,0 +1,58 @@
+.SetupGuide__container {
+  padding: 1.5em 2.5em 1.5em 1.5em;
+  flex: 1 100%;
+  h3 {
+    font-size: 18px;
+    margin: 0 0 0.5em;
+  }
+}
+
+.SetupGuide__code {
+  margin-top: 2em;
+  >div {
+    padding: 1em 2.5em 1em 1em;
+  }
+  button {
+    right: 2em;
+  }
+}
+
+.StyleGuide__resources__container {
+  margin-top: 2.75em;
+  display: flex;
+}
+
+.SetupGuide__resource__item {
+  margin-right: 2.375em;
+
+  span {
+    display: inline-block;
+    margin-top: 0.5em;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #031123;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.StyleGuide__resource__item__icon {
+  margin: 0 auto;
+  width: 2.75em;
+  height: 2.75em;
+  border: 2px solid #1473E6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #1473E6;
+    font-size: 1.5em;
+  }
+
+}

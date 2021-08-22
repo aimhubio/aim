@@ -1,5 +1,4 @@
 import tagsService from 'services/api/tags/tagsService';
-import { ITagsProps } from 'types/pages/tags/Tags';
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({});

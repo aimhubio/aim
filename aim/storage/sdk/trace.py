@@ -106,9 +106,15 @@ class Trace(Generic[T]):
             epochs = [self.epochs[last_step]]
             timestamps = [self.timestamps[last_step]]
         else:
-            steps, values = self.values.sparse_list()
-            epochs = self.epochs.values_list()
-            timestamps = self.timestamps.values_list()
+            try:
+                steps, values = self.values.sparse_list()
+                epochs = self.epochs.values_list()
+                timestamps = self.timestamps.values_list()
+            except ValueError:
+                steps = []
+                values = []
+                epochs = []
+                timestamps = []
         indices = [i for i, _ in enumerate(steps)]
         timestamps = [datetime.datetime.fromtimestamp(t) for t in timestamps]
         data = {
@@ -217,11 +223,14 @@ class RunTraceCollection(TraceCollection):
     def __init__(
         self,
         run: 'Run',
-        query_traces: str = ''  # query traces of a given run
+        query_traces: str = None
     ):
         self.run: 'Run'
         self.repo: 'Repo'
-        self.query_traces = RestrictedPythonQuery(query_traces)
+        if query_traces:
+            self.query_traces = RestrictedPythonQuery(query_traces)
+        else:
+            self.query_traces = None
         super().__init__(run=run, repo=run.repo)
 
     def iter(
@@ -270,7 +279,8 @@ class QueryRunTraceCollection(TraceCollection):
         self.repo: 'Repo'
         super().__init__(repo=repo)
         self.query = query
-        self._query = RestrictedPythonQuery(query)
+        if query:
+            self._query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Trace]:
         for run_traces in self.iter_runs():

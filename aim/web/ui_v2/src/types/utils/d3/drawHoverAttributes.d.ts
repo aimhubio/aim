@@ -4,6 +4,7 @@ import { IProcessedData } from './processData';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { IGetAxisScale } from './getAxisScale';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawHoverAttributesProps {
   index: number;
@@ -22,6 +23,7 @@ export interface IDrawHoverAttributesProps {
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface ISyncHoverStateParams {
@@ -52,7 +54,7 @@ export interface INearestCircle {
 
 export interface IActivePoint {
   key: string;
-  xValue: number;
+  xValue: number | string;
   yValue: number;
   xPos: number;
   yPos: number;

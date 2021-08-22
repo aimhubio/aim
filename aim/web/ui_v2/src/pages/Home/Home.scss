@@ -1,0 +1,29 @@
+.Home__container {
+  background-color: #FFFFFF;
+  overflow: hidden;
+  h2 {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 29px;
+    color: #031123;
+    margin: 0;
+  }
+}
+
+.Front__Grid__heading {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 29px;
+  color: #031123;
+  margin: 0;
+}
+
+.Home__Explore__container {
+  border-top: 1px solid #E8F1FC;
+  display: flex;
+}
+
+.Home__Activity__container {
+  padding: 1.5em;
+}

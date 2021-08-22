@@ -1,6 +1,7 @@
 # The module is heavily based on `wrapt` package sources
 # See: https://github.com/GrahamDumpleton/wrapt/blob/develop/src/wrapt/wrappers.py
 
+from functools import lru_cache
 import operator
 
 
@@ -63,6 +64,81 @@ class _ObjectProxyMetaType(type):
         dictionary.update(vars(_ObjectProxyMethods))
 
         return type.__new__(cls, name, bases, dictionary)
+
+class Eager1:
+    def __init__(self, wrapped, name):
+        self.wrapped = lru_cache()(wrapped)
+        self.name = name
+
+    def __call__(self):
+        w = self.wrapped()
+        attr = getattr(w, self.name, Undefined())
+
+        if not isinstance(attr, Undefined):
+            return attr
+
+        try:
+            item = w[self.name]
+            return item
+        except KeyError as e:
+            pass
+
+        return Undefined()
+
+
+class Eager2:
+    def __init__(self, view, name):
+        self.view = view
+        self.name = name
+
+    def __call__(self):
+        w = self.view
+        attr = getattr(w, self.name, Undefined())
+
+        if not isinstance(attr, Undefined):
+            return attr
+
+        try:
+            item = w[self.name]
+            return item
+        except KeyError as e:
+            pass
+
+        return Undefined()
+
+
+class Eager3:
+    def __init__(self, wrapped, key):
+        self.wrapped = lru_cache()(wrapped)
+        self.key = key
+
+    def __call__(self):
+        w = self.wrapped()
+
+        try:
+            item = w[self.key]
+            return item
+        except KeyError as e:
+            pass
+
+        return Undefined()
+
+
+class Eager4:
+    def __init__(self, view, key):
+        self.view = view
+        self.key = key
+
+    def __call__(self):
+        w = self.view
+
+        try:
+            item = w[self.key]
+            return item
+        except KeyError as e:
+            pass
+
+        return Undefined()
 
 
 class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
@@ -300,74 +376,22 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         if name == '__wrapped__':
             raise ValueError('wrapper has not been initialised')
 
-        def eager_1():
-            w = self.__wrapped__()
-            attr = getattr(w, name, Undefined())
-
-            if not isinstance(attr, Undefined):
-                return attr
-
-            try:
-                item = w[name]
-                return item
-            except KeyError as e:
-                pass
-
-            return Undefined()
-
         if self.__view__ is None:
-            return AimObjectProxy(eager_1)
-
-        def eager_2():
-            w = self.__view__
-            attr = getattr(w, name, Undefined())
-
-            if not isinstance(attr, Undefined):
-                return attr
-
-            try:
-                item = w[name]
-                return item
-            except KeyError as e:
-                pass
-
-            return Undefined()
+            return AimObjectProxy(Eager1(self.__wrapped__, name))
 
         return AimObjectProxy(
-            eager_2,
-            self.__view__.view(name,)
+            Eager2(self.__view__, name),
+            self.__view__.view(name)
         )
 
     def __getitem__(self, key):
 
-        def eager_1():
-            w = self.__wrapped__()
-
-            try:
-                item = w[key]
-                return item
-            except KeyError as e:
-                pass
-
-            return Undefined()
-
         if self.__view__ is None:
-            return AimObjectProxy(eager_1)
-
-        def eager_2():
-            w = self.__view__
-
-            try:
-                item = w[key]
-                return item
-            except KeyError as e:
-                pass
-
-            return Undefined()
+            return AimObjectProxy(Eager3(self.__wrapped__, key))
 
         return AimObjectProxy(
-            eager_2,
-            self.__view__.view(key,)
+            Eager4(self.__view__, key),
+            self.__view__.view(key)
         )
 
     def __call__(self, *args, **kwargs):

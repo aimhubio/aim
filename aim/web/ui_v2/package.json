@@ -27,12 +27,15 @@
     "lint-staged": "^11.0.0",
     "lodash-es": "^4.17.21",
     "memoize-one": "^5.2.1",
+    "node-sass": "^4.14.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-json-view": "^1.21.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
+    "sass-loader": "^12.1.0",
     "typeface-roboto": "^1.1.13",
     "typescript": "^4.3.4",
     "web-vitals": "^1.0.1",
@@ -116,7 +119,6 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jss-plugin-template": "^10.7.1",
-    "node-sass": "^6.0.1",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0"
   }

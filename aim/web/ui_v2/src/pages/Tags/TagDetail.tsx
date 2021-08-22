@@ -28,7 +28,7 @@ function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <section className='Tags'>
-      <Grid container justify='center'>
+      <Grid container justifyContent='center'>
         <Grid xs={6} item>
           <h3 className='Tags__title'>{`Tag/${state?.name}`}</h3>
           <Divider />
@@ -40,8 +40,8 @@ function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
               indicatorColor='primary'
               textColor='primary'
             >
-              <Tab label='Item One' />
-              <Tab label='Item Two' />
+              <Tab label='Related Runs' />
+              <Tab label='Settings' />
             </Tabs>
           </Paper>
           <TabPanel value={value} index={0}>
