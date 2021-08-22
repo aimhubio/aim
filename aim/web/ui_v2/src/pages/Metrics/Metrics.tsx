@@ -85,12 +85,15 @@ function Metrics(
                     highlightMode={props.highlightMode}
                     aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
+                    alignmentConfig={props.alignmentConfig}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
                     onHighlightModeChange={props.onHighlightModeChange}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
                     onAggregationConfigChange={props.onAggregationConfigChange}
+                    onAlignmentTypeChange={props.onAlignmentTypeChange}
+                    onAlignmentMetricChange={props.onAlignmentMetricChange}
                   />
                 }
               />
