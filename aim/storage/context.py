@@ -1,9 +1,9 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Iterator, Tuple
+from typing import Any, Iterator, Tuple, Union
 
 from aim.storage.hashing import hash_auto
-from aim.storage.types import AimObject, AimObjectKey
+from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
 
 class Context:

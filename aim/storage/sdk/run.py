@@ -10,8 +10,6 @@ from aim.storage.sdk.trace import RunTraceCollection
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
-from aim.storage.containerview import ContainerView
-from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
 
 from typing import Any, Dict, Iterator, Optional, Tuple
@@ -167,9 +165,8 @@ class Run:
                 self._props = self.repo.structured_db.find_run(self.hashname)
         return self._props
 
-    def proxy(self):
-        run = RunView(self)
-        return AimObjectProxy(lambda: run, view=run)
+    def view(self):
+        return RunView(self)
 
     def trace_tree(self, name: str, context: Context) -> TreeView:
         return self.series_run_tree.view((context.idx, name))

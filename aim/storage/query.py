@@ -88,20 +88,17 @@ class Query:
     def match(
         self,
         run,
-        context: 'Context' = None,
-        metric_name: str = None
+        metric=None
     ) -> bool:
         ...
 
     def __call__(
         self,
         run,
-        context: 'Context' = None,
-        metric_name: str = None
+        metric=None
     ):
         return self.match(run=run,
-                          context=context,
-                          metric_name=metric_name)
+                          metric=metric)
 
 
 @lru_cache(maxsize=100)
@@ -121,7 +118,6 @@ class LazyLocals(dict):
 
 
 class RestrictedPythonQuery(Query):
-
     def __init__(
         self,
         expr: str
@@ -133,13 +129,11 @@ class RestrictedPythonQuery(Query):
     def eval(
         self,
         run,
-        context,
-        metric_name
+        metric
     ):
+        #TODO: [MV] discuss if run params are needed as a fallback
         namespace = LazyLocals(run=run,
-                               context=context,
-                               ctx=context,
-                               metric_name=metric_name,
+                               metric=metric,
                                fallback=run, **restricted_globals)
         return eval(self._checker, restricted_globals, namespace)
 
@@ -151,20 +145,12 @@ class RestrictedPythonQuery(Query):
     def match(
         self,
         run,
-        context: 'Context' = None,
-        metric_name: str = None
+        metric=None
     ) -> bool:
-
-        if context is not None:
-            context_proxy = AimObjectProxy(lambda: context.to_dict())
-        else:
-            context_proxy = None
 
         # TODO enforce immutable
         try:
-            return self.eval(run=run,
-                             context=context_proxy,
-                             metric_name=metric_name)
+            return self.eval(run=run, metric=metric)
         except BaseException as e:
             logger.warning('query failed, %s', e)
             return False

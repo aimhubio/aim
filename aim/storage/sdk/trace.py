@@ -1,21 +1,23 @@
-from abc import abstractmethod
-
+import datetime
 import json
 import logging
-import datetime
 from tqdm import tqdm
 
+from abc import abstractmethod
+
 from aim.storage import treeutils
-from aim.storage.query import RestrictedPythonQuery
+from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
-from aim.storage.arrayview import ArrayView
+from aim.storage.proxy import AimObjectProxy
+from aim.storage.sdk.types import AimObjectKey, AimObjectPath, AimObject
+from aim.storage.query import RestrictedPythonQuery
 
-from typing import Generic, Iterator, TypeVar, List
+from typing import Any, Generic, Iterator, List, TypeVar, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aim.storage.sdk.run import Run
+    from aim.storage.sdk.run import Run, RunView
     from aim.storage.sdk.repo import Repo
     from pandas import DataFrame
 
@@ -61,7 +63,6 @@ class Trace(Generic[T]):
     def values(self) -> ArrayView[T]:
         array_view = self.tree.array('val')
         return array_view
-
 
     @property
     def indices(self) -> List[int]:
@@ -163,6 +164,59 @@ class Trace(Generic[T]):
         return df
 
 
+class ContextView:
+    def __init__(self, context: dict):
+        self.context = context
+
+    def __getitem__(self, key):
+        return self.context[key]
+
+    def get(
+            self,
+            key,
+            default: Any = None
+    ) -> AimObject:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
+    def view(self, path: Union[AimObjectKey, AimObjectPath]):
+        if isinstance(path, (int, str)):
+            path = (path,)
+
+        return ContextView(self.context[path[0]])
+
+
+class MetricView:
+    def __init__(self, name: str, context: dict, run_view: 'RunView'):
+        self.name = name
+        self.run_view = run_view
+        self.context = context
+
+    def __getitem__(self, key):
+        return self.context[key]
+
+    def get(
+        self,
+        key,
+        default: Any = None
+    ) -> AimObject:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
+    def view(self, path: Union[AimObjectKey, AimObjectPath]):
+        if isinstance(path, (int, str)):
+            path = (path,)
+
+        if path[0] == 'run':
+            return self.run_view
+        else:
+            return ContextView(self.context)
+
+
 class TraceCollection:
     def __init__(
         self,
@@ -240,10 +294,11 @@ class RunTraceCollection(TraceCollection):
             if not self.query_traces:
                 statement = True
             else:
+                run_view = run.view()
+                metric_view = MetricView(metric_name, ctx.to_dict(), run_view)
                 statement = self.query_traces.match(
-                    run=run.proxy(),
-                    context=ctx,
-                    metric_name=metric_name
+                    run=AimObjectProxy(lambda: run_view, view=run_view),
+                    metric=AimObjectProxy(lambda: metric_view, view=metric_view)
                 )
             if not statement:
                 continue
@@ -291,7 +346,8 @@ class QueryRunTraceCollection(TraceCollection):
             if not self.query:
                 statement = True
             else:
-                statement = self._query.match(run=run.proxy())
+                run_view = run.view()
+                statement = self._query.match(run=AimObjectProxy(lambda: run_view, view=run_view))
             if not statement:
                 continue
             yield RunTraceCollection(run)
