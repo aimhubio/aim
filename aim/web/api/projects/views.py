@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException, Request
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from urllib import parse
 
-from aim.engine.configs import AIM_UI_TELEMETRY_KEY
+from aim.web.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,

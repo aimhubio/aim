@@ -1,4 +1,4 @@
-from typing import Optional, Collection
+from typing import Optional, Collection, Union
 from sqlalchemy.orm import joinedload
 
 from aim.storage.types import SafeNone
@@ -23,54 +23,43 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
         Property('updated_at', with_setter=False),
-        Property('hashname', autogenerate=False),
+        Property('hashname', 'hash', with_setter=False),
         Property('experiment', autogenerate=False),
         Property('tags', autogenerate=False),
     ]
 
-    def __init__(self, _hash: str, session):
-        self._hash = _hash
-        self._model = None
+    def __init__(self, model: RunModel, session):
+        self._model = model
         self._session = session
 
     def __repr__(self) -> str:
         return f'<ModelMappedRun id={self.hashname}, name=\'{self.name}\'>'
 
-    @property
-    def hashname(self) -> str:
-        return self._hash
+    @classmethod
+    def from_model(cls, model_obj, session) -> 'ModelMappedRun':
+        return ModelMappedRun(model_obj, session)
 
     @classmethod
-    def from_model(cls, model_obj, session):
-        _hash = model_obj.hash
-        run = ModelMappedRun(_hash, session)
-        run._model = model_obj
-        return run
-
-    def create_model_instance(self):
-        if self._model:
-            # TODO: [AT] provide error message
-            raise ValueError()
-        session = self._session
-        model_inst = session.query(RunModel).filter(RunModel.hash == self.hashname).first()
-        if not model_inst:
-            model_inst = RunModel(self._hash)
-            session.add(model_inst)
-            session.flush()
-        self._model = model_inst
+    def from_hash(cls, runhash: str, session) -> 'ModelMappedRun':
+        if session.query(RunModel).filter(RunModel.hash == runhash).scalar():
+            raise ValueError(f'Run with hash \'{runhash}\' already exists.')
+        run = RunModel(runhash)
+        session.add(run)
+        session.flush()
+        return ModelMappedRun(run, session)
 
     @classmethod
-    def find(cls, _id: str, **kwargs) -> Optional[IRun]:
+    def find(cls, _id: str, **kwargs) -> Union[IRun, SafeNone]:
         session = kwargs.get('session')
         if not session:
-            return None
+            return SafeNone()
         model_obj = session.query(RunModel).options([
             joinedload(RunModel.experiment),
             joinedload(RunModel.tags),
         ]).filter(RunModel.hash == _id).first()
         if model_obj:
             return ModelMappedRun.from_model(model_obj, session)
-        return ModelMappedRun(_id, session)
+        return SafeNone()
 
     @classmethod
     def all(cls, **kwargs) -> Collection[IRun]:
@@ -96,7 +85,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedRunCollection(session, query=q)
 
     @property
-    def experiment(self) -> Optional[IExperiment]:
+    def experiment(self) -> Union[IExperiment, SafeNone]:
         if self._model and self._model.experiment:
             return ModelMappedExperiment(self._model.experiment, self._session)
         else:
@@ -105,8 +94,6 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
     @experiment.setter
     def experiment(self, value: str):
         session = self._session
-        if not self._model:
-            self.create_model_instance()
         if value is None:
             exp = None
         else:
@@ -127,8 +114,6 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             return []
 
     def add_tag(self, value: str) -> ITag:
-        if not self._model:
-            self.create_model_instance()
         session = self._session
         tag = session.query(TagModel).filter(TagModel.name == value).first()
         if not tag:
@@ -140,8 +125,6 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedTag.from_model(tag, session)
 
     def remove_tag(self, tag_id: str) -> bool:
-        if not self._model:
-            self.create_model_instance()
         session = self._session
         tag_removed = False
         for tag in self._model.tags:
@@ -196,16 +179,16 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         return ModelMappedRunCollection(self._session, collection=self._model.runs)
 
     @classmethod
-    def find(cls, _id: str, **kwargs) -> Optional[IExperiment]:
+    def find(cls, _id: str, **kwargs) -> Union[IExperiment, SafeNone]:
         session = kwargs.get('session')
         if not session:
-            return None
+            return SafeNone()
         model_obj = session.query(ExperimentModel).options([
             joinedload(ExperimentModel.runs),
         ]).filter(ExperimentModel.uuid == _id).first()
         if model_obj:
             return ModelMappedExperiment(model_obj, session)
-        return None
+        return SafeNone()
 
     @classmethod
     def all(cls, **kwargs) -> Collection[IExperiment]:
@@ -268,16 +251,16 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         return ModelMappedTag(tag, session)
 
     @classmethod
-    def find(cls, _id: str, **kwargs) -> Optional[ITag]:
+    def find(cls, _id: str, **kwargs) -> Union[ITag, SafeNone]:
         session = kwargs.get('session')
         if not session:
-            return None
+            return SafeNone()
         model_obj = session.query(TagModel).options([
             joinedload(TagModel.runs),
         ]).filter(TagModel.uuid == _id).first()
         if model_obj:
             return ModelMappedTag(model_obj, session)
-        return None
+        return SafeNone()
 
     @classmethod
     def all(cls, **kwargs) -> Collection[ITag]:

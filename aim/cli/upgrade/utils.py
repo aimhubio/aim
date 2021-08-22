@@ -1,15 +1,16 @@
-import sys
-
 import click
 import shutil
 
-from aim.engine.repo import AimRepo as LegacyRepo
-from aim.engine.repo.run import Run as LegacyRun
-from aim.engine.utils import clean_repo_path
-from aim.artifacts import Metric as MetricArtifact
+from aim.cli.upgrade._legacy_repo import (
+    AimRepo as LegacyRepo,
+    Run as LegacyRun,
+    deserialize_pb,
+    AIM_MAP_METRICS_KEYWORD
+)
 
-from aim.storage.sdk.run import Run
-from aim.storage.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path
+from aim.sdk.run import Run
+from aim.sdk.repo import Repo
 
 
 class RepoIntegrityError(Exception):
@@ -37,11 +38,12 @@ def collect_runs(lrepo: LegacyRepo):
 
 def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
     try:
-        run = Run(hashname=get_legacy_run_hash(lrun), repo=repo)
+        run = Run(hashname=get_legacy_run_hash(lrun), repo=repo,
+                  system_tracking_interval=None)  # do not track system metrics as they already logged if needed
 
         lrun.open_storage()
-        if lrun.params.get('__METRICS__'):
-            del lrun.params['__METRICS__']  # set internally. no need to copy
+        if lrun.params.get(AIM_MAP_METRICS_KEYWORD):
+            del lrun.params[AIM_MAP_METRICS_KEYWORD]  # set internally. no need to copy
         run[...] = lrun.params
         run['v2_params'] = {'run_hash': lrun.run_hash}
         if 'process' in lrun.config:
@@ -63,7 +65,7 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
                     context = trace.context
                     run_metrics[metric.name].append(context)
                     for r in trace.read_records(slice(0, None, 1)):
-                        step_record, metric_record = MetricArtifact.deserialize_pb(r)
+                        step_record, metric_record = deserialize_pb(r)
                         val = (metric_record.value, step_record.step, step_record.epoch, step_record.timestamp)
                         _track_legacy_run_step(run, metric_name, context, val)
             except Exception:
@@ -109,14 +111,14 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
     lrepo_path, repo_path = setup_directories(path)
 
     def _rollback():
-        shutil.rmtree(repo_path)
+        shutil.rmtree(repo_path, ignore_errors=True)
         shutil.move(lrepo_path, repo_path)
 
     try:
         click.echo('Preparing new repository...')
         shutil.move(repo_path, lrepo_path)
         lrepo = LegacyRepo(mode=LegacyRepo.READING_MODE, repo_full_path=lrepo_path)
-        repo = Repo.from_path(repo_path)
+        repo = Repo.from_path(repo_path, init=True)
         repo.structured_db.run_upgrades()
 
         click.echo('Analyzing legacy repository...')

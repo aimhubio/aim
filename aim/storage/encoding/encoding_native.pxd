@@ -14,7 +14,7 @@ ctypedef long long ll
 
 cdef ll q(const unsigned char* b) nogil
 cdef vector[pair[ll, ll]] split_path(const unsigned char* buffer, ll N) nogil
-cpdef decode_path(const unsigned char* buffer)
+cpdef decode_path(bytes buffer)
 cpdef bytes encode_int(long long value)
 cpdef long decode_int(const unsigned char* buffer) nogil
 cpdef bytes encode_float(double value)
