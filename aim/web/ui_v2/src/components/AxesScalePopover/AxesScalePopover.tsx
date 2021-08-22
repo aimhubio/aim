@@ -25,7 +25,7 @@ function AxesScalePopover(
   }
 
   return (
-    <Box>
+    <div>
       <Box p={0.5}>Select Axes Scale:</Box>
       <Divider />
       <MenuList>
@@ -50,7 +50,7 @@ function AxesScalePopover(
           />
         </Box>
       </MenuList>
-    </Box>
+    </div>
   );
 }
 

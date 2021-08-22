@@ -1,8 +1,7 @@
 from typing import Any, Dict, Optional, Union
 
-from aim.sdk.session.session import Session
-from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
+from aim.sdk.run import Run
+from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger(object):
@@ -32,7 +31,6 @@ class AimLogger(object):
                          train_metric_prefix: Optional[str] = 'train_',
                          val_metric_prefix: Optional[str] = 'val_',
                          test_metric_prefix: Optional[str] = 'test_',
-                         flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                          system_tracking_interval: Optional[int]
                          = DEFAULT_SYSTEM_TRACKING_INT,
                          ):
@@ -44,27 +42,25 @@ class AimLogger(object):
                 self._train_metric_prefix = train_metric_prefix
                 self._val_metric_prefix = val_metric_prefix
                 self._test_metric_prefix = test_metric_prefix
-                self._flush_frequency = flush_frequency
                 self._system_tracking_interval = system_tracking_interval
 
-                self._aim_session = None
+                self._run = None
 
             @property
             @rank_zero_experiment
-            def experiment(self) -> Session:
-                if self._aim_session is None:
-                    self._aim_session = Session(
+            def experiment(self) -> Run:
+                if self._run is None:
+                    self._run = Run(
                         repo=self._repo_path,
                         experiment=self._experiment_name,
-                        flush_frequency=self._flush_frequency,
                         system_tracking_interval=self._system_tracking_interval
                     )
-                return self._aim_session
+                return self._run
 
             @rank_zero_only
             def log_hyperparams(self, params: Union[Dict[str, Any], Namespace]):
                 params = self._convert_params(params)
-                self.experiment.set_params(params, name='hparams')
+                self.experiment['hparams'] = params
 
             @rank_zero_only
             def log_metrics(self, metrics: Dict[str, float],
@@ -87,16 +83,15 @@ class AimLogger(object):
                             and name.startswith(self._val_metric_prefix):
                         name = name[len(self._val_metric_prefix):]
                         context['subset'] = 'val'
-                    self.experiment.track(v, name=name, **context)
+                    self.experiment.track(v, name=name, context=context)
 
             @rank_zero_only
             def close(self) -> None:
                 super().close()
-                self.experiment.close()
 
             @property
             def save_dir(self) -> str:
-                return self.experiment.repo_path
+                return self.experiment.repo.path
 
             @property
             def name(self) -> str:
@@ -104,7 +99,7 @@ class AimLogger(object):
 
             @property
             def version(self) -> str:
-                return self.experiment.run_hash
+                return self.experiment.hashname
 
         cls.__pl_logger_cls = _PytorchLightningLogger
         return cls.__pl_logger_cls
@@ -115,7 +110,6 @@ class AimLogger(object):
                  train_metric_prefix: Optional[str] = 'train_',
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
-                 flush_frequency: int = DEFAULT_FLUSH_FREQUENCY,
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
                  ):

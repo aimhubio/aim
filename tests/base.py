@@ -2,8 +2,8 @@ import unittest
 from fastapi.testclient import TestClient
 
 from tests.utils import truncate_structured_db, truncate_api_db
-from aim.storage.sdk.repo import Repo
-from aim.storage.sdk.run import Run
+from aim.sdk.repo import Repo
+from aim.sdk.run import Run
 
 from aim.web.run import app
 
@@ -22,6 +22,7 @@ class TestBase(unittest.TestCase):
         truncate_structured_db(cls.repo.structured_db)
 
     def tearDown(self) -> None:
+        self.repo.structured_db.invalidate_caches()
         Run.set_props_cache_hint(None)
 
 

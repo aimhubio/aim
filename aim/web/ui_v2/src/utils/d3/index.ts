@@ -18,6 +18,7 @@ const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
 
 enum XAlignmentEnum {
+  Step = 'step',
   Epoch = 'epoch',
   RelativeTime = 'relative_time',
   AbsoluteTime = 'absolute_time',
