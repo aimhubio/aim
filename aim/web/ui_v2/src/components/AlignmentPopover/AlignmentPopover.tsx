@@ -1,9 +1,16 @@
 import React from 'react';
-import { Box, MenuList, MenuItem, Select, Divider } from '@material-ui/core';
+
+import { MenuList, MenuItem, Select, Divider } from '@material-ui/core';
+
 import { XAlignmentEnum } from 'utils/d3';
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
+import projectsModel from 'services/models/projects/projectsModel';
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
+import useModel from 'hooks/model/useModel';
 
-const alignmentList = [
+import './AlignmentPopover.scss';
+
+const alignmentList: { type: XAlignmentEnum; name: string }[] = [
   {
     type: XAlignmentEnum.Step,
     name: 'Step',
@@ -21,20 +28,36 @@ const alignmentList = [
     name: 'Absolute Time',
   },
 ];
+
 function AlignmentPopover({
   onAlignmentTypeChange,
   onAlignmentMetricChange,
   alignmentConfig,
 }: IAlignmentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  const projectsData = useModel<IProjectsModelState>(projectsModel);
   function handleTypeChange(e: React.ChangeEvent<any>) {
     const { id } = e.target;
     onAlignmentTypeChange(id);
   }
 
-  function onMetricChange() {}
+  function onMetricChange(e: React.ChangeEvent<any>) {
+    const value = e.target.value;
+    onAlignmentMetricChange(value);
+  }
+
+  const metricOptions: string[] = React.useMemo(() => {
+    let data: string[] = [];
+    if (projectsData?.metrics) {
+      for (let key in projectsData?.metrics) {
+        data.push(key);
+      }
+    }
+    return data;
+  }, [projectsData]);
+
   return (
-    <Box>
-      <Box p={0.5}>Align X axis by:</Box>
+    <div className='AlignmentPopover__container'>
+      <div className='AlignmentPopover__title'>Align X-Axis by:</div>
       <Divider />
       <MenuList>
         {alignmentList.map(({ name, type }) => (
@@ -47,11 +70,22 @@ function AlignmentPopover({
             {name}
           </MenuItem>
         ))}
-        <MenuItem>
-          Metric: <Select />
-        </MenuItem>
       </MenuList>
-    </Box>
+      <div className='AlignmentPopover__select'>
+        <span>Metric:</span>
+        <Select
+          fullWidth
+          value={alignmentConfig.metric}
+          onChange={onMetricChange}
+        >
+          {metricOptions.map((metric) => (
+            <MenuItem key={metric} value={metric}>
+              {metric}
+            </MenuItem>
+          ))}
+        </Select>
+      </div>
+    </div>
   );
 }
 

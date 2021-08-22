@@ -1030,16 +1030,33 @@ function alignData() {}
 function onAlignmentMetricChange(metric: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.alignmentConfig.metric = metric;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          alignmentConfig: {
+            ...configData.chart.alignmentConfig,
+            metric: metric,
+          },
+        },
+      },
+    });
   }
 }
 
 function onAlignmentTypeChange(type: XAlignmentEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.alignmentConfig.type = type;
-    model.setState({ config: configData });
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          alignmentConfig: { ...configData.chart.alignmentConfig, type: type },
+        },
+      },
+    });
   }
 }
 
