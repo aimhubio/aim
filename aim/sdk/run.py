@@ -3,6 +3,7 @@ import logging
 from time import time
 from collections import Counter
 
+from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.trace import RunTraceCollection
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.num_utils import convert_to_py_number
@@ -83,6 +84,7 @@ class Run:
         self._creation_time = None
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
+            self.props
             self.creation_time
             self._prepare_resource_tracker(system_tracking_interval)
 
@@ -195,11 +197,21 @@ class Run:
     @property
     def props(self):
         if self._props is None:
-            if self._props_cache_hint:
-                self._props = self.repo.structured_db.caches[self._props_cache_hint][self.hashname]
-            else:
-                self._props = self.repo.structured_db.find_run(self.hashname)
+            self._init_props()
         return self._props
+
+    def _init_props(self):
+        sdb = self.repo.structured_db
+        if self._props_cache_hint:
+            self._props = sdb.caches[self._props_cache_hint][self.hashname]
+        else:
+            self._props = sdb.find_run(self.hashname)
+            if not self._props:
+                if self.read_only:
+                    raise RepoIntegrityError(f'Missing props for Run {self.hashname}')
+                else:
+                    self._props = sdb.create_run(self.hashname)
+                    self._props.experiment = 'default'
 
     def proxy(self):
         run = RunView(self)
