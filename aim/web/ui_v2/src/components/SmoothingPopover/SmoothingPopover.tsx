@@ -21,7 +21,7 @@ const emaProps = {
     { value: 0.99, label: '0.99' },
   ],
   step: 0.01,
-  min: 0.1,
+  min: 0,
   max: 0.99,
 };
 
