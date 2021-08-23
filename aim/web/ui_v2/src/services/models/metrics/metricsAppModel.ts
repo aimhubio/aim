@@ -335,7 +335,7 @@ function processData(data: IRun<IMetricTrace>[]): {
             values: new Float64Array(trace.values.blob),
             steps: new Float64Array(trace.iters.blob),
             epochs: new Float64Array(trace.epochs?.blob),
-            timestamps: new Float64Array(trace.timestamps.blob).map(
+            timestamps: new Float64Array(trace.timestamps?.blob).map(
               (timestamp) => Math.round(timestamp * 1000),
             ),
             xValues: [...new Float64Array(trace.iters?.blob)],
@@ -565,6 +565,35 @@ function alignData(
       }
       break;
     case AlignmentOptions.EPOCH:
+      for (let i = 0; i < data.length; i++) {
+        const metricCollection = data[i];
+        for (let j = 0; j < metricCollection.data.length; j++) {
+          const metric = metricCollection.data[j];
+          const epochs: { [key: number]: number[] } = {};
+          metric.data.epochs.forEach((epoch, i) => {
+            if (epochs.hasOwnProperty(epoch)) {
+              epochs[epoch].push(metric.data.steps[i]);
+            } else {
+              epochs[epoch] = [metric.data.steps[i]];
+            }
+          });
+
+          metric.data = {
+            ...metric.data,
+            xValues: [
+              ...metric.data.epochs.map(
+                (epoch, i) =>
+                  epoch -
+                  (epochs[epoch].length > 1
+                    ? (0.99 / epochs[epoch].length) *
+                      epochs[epoch].indexOf(metric.data.steps[i])
+                    : 0),
+              ),
+            ],
+            yValues: [...metric.data.values],
+          };
+        }
+      }
       break;
     case AlignmentOptions.RELATIVE_TIME:
       for (let i = 0; i < data.length; i++) {
@@ -1095,7 +1124,6 @@ function updateUrlParam(
   data: Record<string, unknown>,
 ): void {
   const encodedUrl: string = encode(data);
-  console.log(data);
 
   const url: string = getUrlWithParam(paramName, encodedUrl);
   window.history.pushState(null, '', url);
