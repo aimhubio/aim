@@ -8,7 +8,7 @@ const endpoints = {
 };
 
 function getRunsData() {
-  return API.getStream<ReadableStream>(endpoints.GET_RUNS);
+  return API.getStream<ReadableStream>(endpoints.GET_RUNS, { q: 'True' });
 }
 
 function getRunInfo(id: string) {
