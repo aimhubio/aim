@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Paper } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -20,54 +20,36 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div ref={props.wrapperElemRef} className='Metrics__container'>
-      <Box
-        bgcolor='grey.200'
-        component='section'
-        height='100vh'
-        overflow='hidden'
-        className='Metrics'
-      >
+      <section className='Metrics__section'>
         <Grid
           container
           direction='column'
           justifyContent='center'
           className='Metrics__fullHeight'
-          spacing={1}
         >
           <Grid item>
-            <Paper className='Metrics__paper'>
-              <AppBar
-                onBookmarkCreate={props.onBookmarkCreate}
-                onBookmarkUpdate={props.onBookmarkUpdate}
-                onResetConfigData={props.onResetConfigData}
-              />
-            </Paper>
+            <AppBar
+              onBookmarkCreate={props.onBookmarkCreate}
+              onBookmarkUpdate={props.onBookmarkUpdate}
+              onResetConfigData={props.onResetConfigData}
+            />
           </Grid>
           <Grid item>
-            <Grid container alignItems='stretch' spacing={1}>
-              <Grid xs item>
-                <Paper className='Metrics__paper'>
-                  <SelectForm />
-                </Paper>
-              </Grid>
-              <Grid item>
-                <Paper className='Metrics__paper'>
-                  <Box height='100%' display='flex'>
-                    <Grouping
-                      groupingData={props.groupingData}
-                      onGroupingSelectChange={props.onGroupingSelectChange}
-                      onGroupingModeChange={props.onGroupingModeChange}
-                      onGroupingPaletteChange={props.onGroupingPaletteChange}
-                      onGroupingReset={props.onGroupingReset}
-                      onGroupingApplyChange={props.onGroupingApplyChange}
-                      onGroupingPersistenceChange={
-                        props.onGroupingPersistenceChange
-                      }
-                    />
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
+            <div className='Metrics__SelectForm__Grouping__container'>
+              <SelectForm
+                selectedMetricsData={props.selectedMetricsData}
+                onMetricsSelectChange={props.onMetricsSelectChange}
+              />
+              <Grouping
+                groupingData={props.groupingData}
+                onGroupingSelectChange={props.onGroupingSelectChange}
+                onGroupingModeChange={props.onGroupingModeChange}
+                onGroupingPaletteChange={props.onGroupingPaletteChange}
+                onGroupingReset={props.onGroupingReset}
+                onGroupingApplyChange={props.onGroupingApplyChange}
+                onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+              />
+            </div>
           </Grid>
           <Grid
             ref={props.chartElemRef}
@@ -103,27 +85,24 @@ function Metrics(
                     highlightMode={props.highlightMode}
                     aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
+                    alignmentConfig={props.alignmentConfig}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
                     onHighlightModeChange={props.onHighlightModeChange}
                     onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                     onSmoothingChange={props.onSmoothingChange}
                     onAggregationConfigChange={props.onAggregationConfigChange}
+                    onAlignmentTypeChange={props.onAlignmentTypeChange}
+                    onAlignmentMetricChange={props.onAlignmentMetricChange}
                   />
                 }
               />
             ) : null}
           </Grid>
           <div ref={props.resizeElemRef}>
-            <Box
-              justifyContent='center'
-              display='flex'
-              alignItems='center'
-              className='Metrics__resize'
-              height='6px'
-            >
+            <div className='Metrics__resize'>
               <MoreHorizIcon />
-            </Box>
+            </div>
           </div>
           <Grid
             item
@@ -131,22 +110,20 @@ function Metrics(
             ref={props.tableElemRef}
             className='Metrics__table__container'
           >
-            <Paper className='Metrics__paper'>
-              {props.tableData?.length > 0 ? (
-                <Table
-                  ref={props.tableRef}
-                  onSort={() => null}
-                  onExport={() => null}
-                  data={props.tableData}
-                  columns={props.tableColumns}
-                  onRowHover={props.onTableRowHover}
-                  onRowClick={props.onTableRowClick}
-                />
-              ) : null}
-            </Paper>
+            {props.tableData?.length > 0 ? (
+              <Table
+                ref={props.tableRef}
+                onSort={() => null}
+                onExport={() => null}
+                data={props.tableData}
+                columns={props.tableColumns}
+                onRowHover={props.onTableRowHover}
+                onRowClick={props.onTableRowClick}
+              />
+            ) : null}
           </Grid>
         </Grid>
-      </Box>
+      </section>
       {props.notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={props.onNotificationDelete}

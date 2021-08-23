@@ -7,13 +7,13 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IParam } from 'types/services/models/params/paramsAppModel';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 export interface IMetricAppModelState {
   refs: {
@@ -116,7 +116,17 @@ interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    alignmentConfig: IAlignmentConfig;
   };
+  select: {
+    metrics: ISelectMetricsOption[];
+    query: string;
+  };
+}
+
+export interface IAlignmentConfig {
+  metric: string;
+  type: XAlignmentEnum;
 }
 
 export interface IAggregationConfig {
@@ -192,7 +202,7 @@ export interface IAppData extends Partial<IMetricAppConfig> {
 export interface IDashboardRequestBody {
   name: string;
   description: string;
-  app_id: string;
+  app_id?: string;
 }
 
 export interface IDashboardData {
