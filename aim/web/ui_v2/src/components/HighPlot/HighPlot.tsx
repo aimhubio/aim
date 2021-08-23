@@ -12,7 +12,7 @@ import {
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
-import './highPlot.scss';
+import './HighPlot.scss';
 
 const HighPlot = React.forwardRef(function HighPlot(
   {
@@ -30,7 +30,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   // boxes
   const visBoxRef = React.useRef({
     margin: {
-      top: 24,
+      top: 64,
       right: 60,
       bottom: 30,
       left: 60,
@@ -121,6 +121,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       dimensions: data.dimensions,
       data: data.data,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curveInterpolation, index, isVisibleColorIndicator, data]);
 
   React.useImperativeHandle(ref, () => ({

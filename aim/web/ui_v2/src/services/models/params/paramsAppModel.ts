@@ -36,7 +36,7 @@ function getConfig() {
     grouping: {
       color: ['run.params.hparams.seed'],
       style: ['run.params.hparams.max_k'],
-      chart: [],
+      chart: ['run.params.hparams.max_k'],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -89,6 +89,31 @@ function initialize() {
   });
 }
 
+function getParamsData() {
+  const { call, abort } = runsService.getRunsData();
+  return {
+    call: async () => {
+      const stream = await call();
+      let gen = adjustable_reader(stream);
+      let buffer_pairs = decode_buffer_pairs(gen);
+      let decodedPairs = decodePathsVals(buffer_pairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+
+      const runData: IRun<IParamTrace>[] = [];
+      for await (let [keys, val] of objects) {
+        runData.push(val as any);
+      }
+      const { data, params } = processData(runData);
+      model.setState({
+        data,
+        highPlotData: getDataAsLines(data),
+        params,
+      });
+    },
+    abort,
+  };
+}
+
 function processData(data: IRun<IParamTrace>[]): {
   data: IMetricsCollection<IParam>[];
   params: string[];
@@ -119,6 +144,126 @@ function processData(data: IRun<IParamTrace>[]): {
     data: processedData,
     params: uniqParams,
   };
+}
+
+function getDataAsLines(
+  processedData: IMetricsCollection<IParam>[],
+  configData: any = model.getState()?.config,
+): { dimensions: IDimensionsType; data: any }[] {
+  if (!processedData) {
+    return [];
+  }
+  const dimensionsObject: any = {};
+  const lines = processedData.map(
+    ({ chartIndex, color, data, dasharray }: IMetricsCollection<IParam>) => {
+      if (!dimensionsObject[chartIndex]) {
+        dimensionsObject[chartIndex] = {};
+      }
+
+      return data.map((run: IParam) => {
+        const values: { [key: string]: string | number | null } = {};
+        configData.select.params.forEach(
+          ({ type, key }: { type: string; key: string }) => {
+            const dimension = dimensionsObject[chartIndex];
+            if (!dimension[key] && type === 'params') {
+              dimension[key] = {
+                values: new Set(),
+                scaleType: 'linear',
+                displayName: `<span>${key}</span>`,
+                dimensionType: 'param',
+              };
+            }
+            if (type === 'metric') {
+              run.run.traces.forEach((trace: IParamTrace) => {
+                const formattedContext = `${key}-${contextToString(
+                  trace.context,
+                )}`;
+                if (trace.metric_name === key) {
+                  values[formattedContext] = trace.last_value.last;
+                  if (dimension[formattedContext]) {
+                    dimension[formattedContext].values.add(
+                      trace.last_value.last,
+                    );
+                    if (typeof trace.last_value.last === 'string') {
+                      dimension[formattedContext].scaleType = 'point';
+                    }
+                  } else {
+                    dimension[formattedContext] = {
+                      values: new Set().add(trace.last_value.last),
+                      scaleType: 'linear',
+                      displayName: `<span>${key}</span><span>${contextToString(
+                        trace.context,
+                      )}</span>`,
+                      dimensionType: 'metric',
+                    };
+                  }
+                }
+              });
+            } else {
+              const value = _.get(run.run.params, key);
+              if (value === undefined) {
+                values[key] = null;
+              } else if (value === null) {
+                values[key] = 'None';
+              } else if (typeof value === 'string') {
+                values[key] = `"${value}"`;
+              } else {
+                // TODO need to fix type
+                values[key] = value as any;
+              }
+              if (values[key] !== null) {
+                if (typeof values[key] === 'string') {
+                  dimension[key].scaleType = 'point';
+                }
+                dimension[key].values.add(values[key]);
+              }
+            }
+          },
+        );
+
+        return {
+          values,
+          color: color ?? run.color,
+          dasharray: dasharray ?? run.dasharray,
+          chartIndex: chartIndex,
+          key: run.key,
+        };
+      });
+    },
+  );
+
+  const flattedLines = lines.flat();
+  const groupedByChartIndex = Object.values(
+    _.groupBy(flattedLines, 'chartIndex'),
+  );
+
+  return Object.keys(dimensionsObject).map((keyOfDimension, i) => {
+    const dimensions: IDimensionsType = {};
+    Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
+      if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
+        dimensions[key] = {
+          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+          domainData: [
+            Math.min(...dimensionsObject[keyOfDimension][key].values),
+            Math.max(...dimensionsObject[keyOfDimension][key].values),
+          ],
+          displayName: dimensionsObject[keyOfDimension][key].displayName,
+          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+        };
+      } else {
+        dimensions[key] = {
+          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+          domainData: [...dimensionsObject[keyOfDimension][key].values],
+          displayName: dimensionsObject[keyOfDimension][key].displayName,
+          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+        };
+      }
+    });
+    return {
+      dimensions,
+      data: groupedByChartIndex[i],
+    };
+  });
 }
 
 function setTooltipData(
@@ -321,147 +466,6 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
     }
   }
   return Object.values(groupValues);
-}
-
-function getParamsData() {
-  const { call, abort } = runsService.getRunsData();
-  return {
-    call: async () => {
-      const stream = await call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
-
-      const runData: IRun<IParamTrace>[] = [];
-      for await (let [keys, val] of objects) {
-        runData.push(val as any);
-      }
-      const { data, params } = processData(runData);
-      model.setState({
-        data,
-        highPlotData: getDataAsLines(data),
-        params,
-      });
-    },
-    abort,
-  };
-}
-
-function getDataAsLines(
-  processedData: IMetricsCollection<IParam>[],
-  configData: any = model.getState()?.config,
-): { dimensions: IDimensionsType; data: any }[] {
-  if (!processedData) {
-    return [];
-  }
-  const dimensionsObject: any = {};
-  const lines = processedData.map(
-    ({ chartIndex, color, data, dasharray }: IMetricsCollection<IParam>) => {
-      if (!dimensionsObject[chartIndex]) {
-        dimensionsObject[chartIndex] = {};
-      }
-
-      return data.map((run: IParam) => {
-        const values: { [key: string]: string | number | null } = {};
-        configData.select.params.forEach(
-          ({ type, key }: { type: string; key: string }) => {
-            const dimension = dimensionsObject[chartIndex];
-            if (!dimension[key] && type === 'params') {
-              dimension[key] = {
-                values: new Set(),
-                scaleType: 'linear',
-                displayName: `<p>${key}</p>`,
-              };
-            }
-            if (type === 'metric') {
-              run.run.traces.forEach((trace: IParamTrace) => {
-                const formattedContext = `${key}-${contextToString(
-                  trace.context,
-                )}`;
-                if (trace.metric_name === key) {
-                  values[formattedContext] = trace.last_value.last;
-                  if (dimension[formattedContext]) {
-                    dimension[formattedContext].values.add(
-                      trace.last_value.last,
-                    );
-                    if (typeof trace.last_value.last === 'string') {
-                      dimension[formattedContext].scaleType = 'point';
-                    }
-                  } else {
-                    dimension[formattedContext] = {
-                      values: new Set().add(trace.last_value.last),
-                      scaleType: 'linear',
-                      displayName: `<p>${key}</p><p>${contextToString(
-                        trace.context,
-                      )}</p>`,
-                    };
-                  }
-                }
-              });
-            } else {
-              const value = _.get(run.run.params, key);
-              if (value === undefined) {
-                values[key] = null;
-              } else if (value === null) {
-                values[key] = 'None';
-              } else if (typeof value === 'string') {
-                values[key] = `"${value}"`;
-              } else {
-                // TODO need to fix type
-                values[key] = value as any;
-              }
-              if (values[key] !== null) {
-                if (typeof values[key] === 'string') {
-                  dimension[key].scaleType = 'point';
-                }
-                dimension[key].values.add(values[key]);
-              }
-            }
-          },
-        );
-
-        return {
-          values,
-          color: color ?? run.color,
-          dasharray: dasharray ?? run.dasharray,
-          chartIndex: chartIndex,
-          key: run.key,
-        };
-      });
-    },
-  );
-
-  const flattedLines = lines.flat();
-  const groupedByChartIndex = Object.values(
-    _.groupBy(flattedLines, 'chartIndex'),
-  );
-
-  return Object.keys(dimensionsObject).map((keyOfDimension, i) => {
-    const dimensions: IDimensionsType = {};
-    Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
-      if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [
-            Math.min(...dimensionsObject[keyOfDimension][key].values),
-            Math.max(...dimensionsObject[keyOfDimension][key].values),
-          ],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-        };
-      } else {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [...dimensionsObject[keyOfDimension][key].values],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-        };
-      }
-    });
-    return {
-      dimensions,
-      data: groupedByChartIndex[i],
-    };
-  });
 }
 
 function onColorIndicatorChange(): void {
