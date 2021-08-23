@@ -704,16 +704,18 @@ function getDataAsTableRows(
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         value: `${
-          closestIndex === null ? '-' : metric.data.values[closestIndex]
+          closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
         }`,
         step: `${
-          closestIndex === null ? '-' : metric.data.steps[closestIndex]
+          closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
         }`,
         epoch: `${
-          closestIndex === null ? '-' : metric.data.epochs[closestIndex]
+          closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
         }`,
         timestamp: `${
-          closestIndex === null ? '-' : metric.data.timestamps[closestIndex]
+          closestIndex === null
+            ? '-'
+            : metric.data.timestamps[closestIndex] ?? '-'
         }`,
         parentId: groupKey,
         rowProps: {
@@ -734,7 +736,7 @@ function getDataAsTableRows(
         'timestamp',
       ].forEach((key) => {
         if (columnsValues.hasOwnProperty(key)) {
-          if (!columnsValues[key].includes(rowValues[key])) {
+          if (!_.some(columnsValues[key], rowValues[key])) {
             columnsValues[key].push(rowValues[key]);
           }
         } else {
