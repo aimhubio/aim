@@ -55,7 +55,7 @@ cdef inline vector[pair[ll, ll]] split_path(const unsigned char* buffer, ll N) n
 
 
 
-cpdef inline decode_path(const unsigned char* buffer):
+cpdef inline decode_path(bytes buffer):
     path = []
     cdef vector[pair[ll, ll]] p = split_path(buffer, len(buffer))
     for si in p:

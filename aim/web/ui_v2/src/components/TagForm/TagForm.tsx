@@ -14,10 +14,11 @@ function TagForm({
   tagData,
   editMode,
   tagId,
+  updateTagName = () => {},
 }: ITagFormProps): React.FunctionComponentElement<React.ReactNode> {
   const formik = useFormik({
     initialValues: editMode
-      ? { name: tagData?.name, color: tagData?.color || '' }
+      ? { name: tagData?.name || '', color: tagData?.color || '' }
       : { name: '', color: '' },
     onSubmit: noop,
     validationSchema: yup.object({
@@ -50,16 +51,23 @@ function TagForm({
 
   function onCreateButtonClick() {
     submitForm().then(() =>
-      validateForm(values).then(() => {
-        tagsService.createTag({ name, color }).call();
+      validateForm(values).then((errors) => {
+        if (isEmpty(errors)) {
+          tagsService.createTag({ name, color }).call();
+        }
       }),
     );
   }
 
   function onSaveButtonClick() {
     submitForm().then(() =>
-      validateForm(values).then(() => {
-        tagsService.updateTag({ name, color }, tagId || '').call();
+      validateForm(values).then((errors) => {
+        if (isEmpty(errors)) {
+          tagsService
+            .updateTag({ name, color }, tagId || '')
+            .call()
+            .then(() => updateTagName && updateTagName(name));
+        }
       }),
     );
   }
@@ -69,7 +77,7 @@ function TagForm({
   }
 
   function onResetButtonClick() {
-    setValues({ name: tagData?.name, color: tagData?.color || '' }, true);
+    setValues({ name: tagData?.name || '', color: tagData?.color || '' }, true);
   }
 
   return (

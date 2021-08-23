@@ -29,6 +29,9 @@ class ModelMappedFactory(ObjectFactory):
     def find_run(self, _id: str) -> Run:
         return ModelMappedRun.find(_id, session=self._session or self.get_session())
 
+    def create_run(self, runhash: str) -> Run:
+        return ModelMappedRun.from_hash(runhash, session=self._session or self.get_session())
+
     def experiments(self) -> ExperimentCollection:
         return ModelMappedExperiment.all(session=self._session or self.get_session())
 
