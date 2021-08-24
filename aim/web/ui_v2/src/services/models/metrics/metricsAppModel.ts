@@ -121,6 +121,8 @@ function getConfig() {
     select: {
       metrics: [],
       query: '',
+      advancedMode: false,
+      advancedQuery: '',
     },
   };
 }
@@ -184,8 +186,32 @@ function getMetricsData() {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
+  const selectData = model.getState()?.config?.select;
+  let query = '';
+  if (selectData !== undefined) {
+    if (selectData.advancedMode) {
+      query = selectData.advancedQuery;
+    } else {
+      query = `${selectData.metrics
+        .map((metric) =>
+          metric.value.context === null
+            ? `metric_name == "${metric.value.metric_name}"`
+            : `${Object.keys(metric.value.context).map(
+                (item) =>
+                  `metric_name == "${
+                    metric.value.metric_name
+                  }" and context.${item} == "${
+                    (metric.value.context as any)[item]
+                  }"`,
+              )}`,
+        )
+        .join(' or ')}${
+        selectData.query ? `and ${selectData.query}` : ''
+      }`.trim();
+    }
+  }
   metricsRequestRef = metricsService.getMetricsData({
-    q: 'metric_name == "bleu"',
+    q: query,
   });
   return {
     call: async () => {
@@ -1021,8 +1047,6 @@ function updateUrlParam(
   data: Record<string, unknown>,
 ): void {
   const encodedUrl: string = encode(data);
-  console.log(data);
-
   const url: string = getUrlWithParam(paramName, encodedUrl);
   window.history.pushState(null, '', url);
 }
@@ -1095,6 +1119,45 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
   }
 }
 
+function onSelectRunQueryChange(query: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, query },
+      },
+    });
+  }
+}
+
+function onSelectAdvancedQueryChange(query: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, advancedQuery: query },
+      },
+    });
+  }
+}
+
+function toggleSelectAdvancedMode() {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: {
+          ...configData.select,
+          advancedMode: !configData.select.advancedMode,
+        },
+      },
+    });
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1128,6 +1191,9 @@ const metricAppModel = {
   onAlignmentMetricChange,
   onAlignmentTypeChange,
   onMetricsSelectChange,
+  onSelectRunQueryChange,
+  onSelectAdvancedQueryChange,
+  toggleSelectAdvancedMode,
   updateSelectStateUrl,
 };
 
