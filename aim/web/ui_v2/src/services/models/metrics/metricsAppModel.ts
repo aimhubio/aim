@@ -177,6 +177,36 @@ function getAppConfigData(appId: string) {
   };
 }
 
+function getQueryStringFromSelect(
+  selectData: IMetricAppConfig['select'] | undefined,
+) {
+  let query = '';
+  if (selectData !== undefined) {
+    if (selectData.advancedMode) {
+      query = selectData.advancedQuery;
+    } else {
+      query = `(${selectData.metrics
+        .map((metric) =>
+          metric.value.context === null
+            ? `(metric_name == "${metric.value.metric_name}")`
+            : `${Object.keys(metric.value.context).map(
+                (item) =>
+                  `(metric_name == "${
+                    metric.value.metric_name
+                  }" and context.${item} == "${
+                    (metric.value.context as any)[item]
+                  }")`,
+              )}`,
+        )
+        .join(' or ')})${
+        selectData.query ? `and ${selectData.query}` : ''
+      }`.trim();
+    }
+  }
+
+  return query;
+}
+
 let metricsRequestRef: {
   call: () => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
@@ -187,64 +217,53 @@ function getMetricsData() {
     metricsRequestRef.abort();
   }
   const selectData = model.getState()?.config?.select;
-  let query = '';
-  if (selectData !== undefined) {
-    if (selectData.advancedMode) {
-      query = selectData.advancedQuery;
-    } else {
-      query = `${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `metric_name == "${metric.value.metric_name}"`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `metric_name == "${
-                    metric.value.metric_name
-                  }" and context.${item} == "${
-                    (metric.value.context as any)[item]
-                  }"`,
-              )}`,
-        )
-        .join(' or ')}${
-        selectData.query ? `and ${selectData.query}` : ''
-      }`.trim();
-    }
-  }
+  let query = getQueryStringFromSelect(selectData);
   metricsRequestRef = metricsService.getMetricsData({
     q: query,
   });
   return {
     call: async () => {
-      const stream = await metricsRequestRef.call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
+      if (query === '') {
+        model.setState({
+          queryIsEmpty: true,
+        });
+      } else {
+        model.setState({
+          requestIsPending: true,
+          queryIsEmpty: false,
+        });
+        const stream = await metricsRequestRef.call();
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
 
-      const runData: IRun<IMetricTrace>[] = [];
-      for await (let [keys, val] of objects) {
-        runData.push(val as any);
+        const runData: IRun<IMetricTrace>[] = [];
+        for await (let [keys, val] of objects) {
+          runData.push(val as any);
+        }
+
+        const { data, params } = processData(runData);
+        const configData = model.getState()?.config;
+        if (configData) {
+          configData.grouping.selectOptions = [
+            ...getGroupingSelectOptions(params),
+          ];
+          setAggregationEnabled(configData);
+        }
+
+        model.setState({
+          requestIsPending: false,
+          rawData: runData,
+          config: configData,
+          params,
+          data,
+          lineChartData: getDataAsLines(data),
+          aggregatedData: getAggregatedData(data),
+          tableData: getDataAsTableRows(data, null, params),
+          tableColumns: getTableColumns(params),
+        });
       }
-
-      const { data, params } = processData(runData);
-      const configData = model.getState()?.config;
-      if (configData) {
-        configData.grouping.selectOptions = [
-          ...getGroupingSelectOptions(params),
-        ];
-        setAggregationEnabled(configData);
-      }
-
-      model.setState({
-        rawData: runData,
-        config: configData,
-        params,
-        data,
-        lineChartData: getDataAsLines(data),
-        aggregatedData: getAggregatedData(data),
-        tableData: getDataAsTableRows(data, null, params),
-        tableColumns: getTableColumns(params),
-      });
     },
     abort: metricsRequestRef.abort,
   };
@@ -706,7 +725,9 @@ function getDataAsTableRows(
         }`,
       };
       paramKeys.forEach((paramKey) => {
-        rowValues[paramKey] = _.get(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = JSON.stringify(
+          _.get(metric.run.params, paramKey, '-'),
+        );
       });
       return rowValues;
     }),
@@ -736,7 +757,9 @@ function setTooltipData(
       if (groupItem.length) {
         groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey.replace('run.params.', '')]: _.get(metric, paramKey),
+            [paramKey.replace('run.params.', '')]: JSON.stringify(
+              _.get(metric, paramKey, '-'),
+            ),
           });
           return acc;
         }, {});
@@ -753,7 +776,9 @@ function setTooltipData(
         group_config: getGroupConfig(metric),
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: _.get(metric, `run.params.${paramKey}`),
+            [paramKey]: JSON.stringify(
+              _.get(metric, `run.params.${paramKey}`, '-'),
+            ),
           });
           return acc;
         }, {}),
