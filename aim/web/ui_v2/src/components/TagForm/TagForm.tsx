@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import * as yup from 'yup';
-import { noop, isEmpty } from 'lodash-es';
+import { isEmpty, noop } from 'lodash-es';
 import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 import { Button, Grid, TextField } from '@material-ui/core';
@@ -8,6 +8,7 @@ import { Button, Grid, TextField } from '@material-ui/core';
 import COLORS from 'config/colors/colors';
 import tagsService from 'services/api/tags/tagsService';
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
+
 import './TagForm.scss';
 
 function TagForm({

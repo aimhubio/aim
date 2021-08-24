@@ -47,6 +47,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onColorIndicatorChange={paramsAppModel?.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel?.onCurveInterpolationChange}
       onActivePointChange={paramsAppModel?.onActivePointChange}
+      selectedParamsData={paramsData?.config?.select?.params}
     />
   );
 }

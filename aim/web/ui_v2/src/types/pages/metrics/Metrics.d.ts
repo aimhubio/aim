@@ -50,7 +50,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   tooltipContent: ITooltipContent;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
-  selectedMetricsData: ISelectMetricsOption[];
+  selectedMetricsData: IMetricAppConfig['select'];
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (
@@ -78,7 +78,10 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onAlignmentMetricChange: (metric: string) => void;
   onAlignmentTypeChange: (type: XAlignmentEnum) => void;
-  onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
+  onMetricsSelectChange: (metrics: ISelectMetricsOption[]) => void;
+  onSelectRunQueryChange: (query: string) => void;
+  onSelectAdvancedQueryChange: (query: string) => void;
+  toggleSelectAdvancedMode: () => void;
 }
 
 export interface IOnSmoothingChange {

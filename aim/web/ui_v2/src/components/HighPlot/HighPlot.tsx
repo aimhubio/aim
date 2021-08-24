@@ -12,6 +12,7 @@ import {
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
+
 import './HighPlot.scss';
 
 const HighPlot = React.forwardRef(function HighPlot(

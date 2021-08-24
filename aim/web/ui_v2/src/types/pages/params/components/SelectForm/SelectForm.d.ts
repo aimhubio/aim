@@ -8,6 +8,7 @@ export interface ISelectParamsOption {
   label: string;
   group: string;
   color: string;
+  type: string;
   value: {
     param_name: string;
     context: object;

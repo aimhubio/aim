@@ -23,26 +23,27 @@ import COLORS from 'config/colors/colors';
 import resetImg from 'assets/icons/reset.svg';
 import visibleImg from 'assets/icons/visible.svg';
 import editImg from 'assets/icons/edit.svg';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import {
-  ISelectMetricsOption,
   ISelectFormProps,
-} from 'types/pages/metrics/components/SelectForm/SelectForm';
+  ISelectParamsOption,
+} from 'types/pages/params/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 
 import '../../../Metrics/components/SelectForm/SelectForm.scss';
+import paramsAppModel from 'services/models/params/paramsAppModel';
 
 function SelectForm({
-  onMetricsSelectChange,
-  selectedMetricsData,
+  onParamsSelectChange,
+  selectedParamsData,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
-  const [editMode, setEditMode] = React.useState<boolean>(false);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchRef.current = metricAppModel.getMetricsData();
+    searchRef.current = paramsAppModel.getParamsData();
 
     paramsMetricsRequestRef.call();
     return () => {
@@ -51,23 +52,19 @@ function SelectForm({
     };
   }, []);
 
-  function handleMetricSearch() {
+  function handleParamsSearch() {
     searchRef.current.call();
   }
 
   function onSelect(event: object, value: any): void {
-    onMetricsSelectChange(value);
+    onParamsSelectChange(value);
   }
 
   function handleDelete(field: any): void {
-    let fieldData = [...selectedMetricsData].filter(
+    let fieldData = [...selectedParamsData].filter(
       (opt: any) => opt.name !== field,
     );
-    onMetricsSelectChange(fieldData);
-  }
-
-  function toggleEditMode(): void {
-    setEditMode(!editMode);
+    onParamsSelectChange(fieldData);
   }
 
   function handleClick(event: React.ChangeEvent<any>) {
@@ -84,8 +81,8 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const paramsOptions: ISelectMetricsOption[] = React.useMemo(() => {
-    let data: ISelectMetricsOption[] = [];
+  const paramsOptions: ISelectParamsOption[] = React.useMemo(() => {
+    let data: ISelectParamsOption[] = [];
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
         for (let val of projectsData.metrics[key]) {
@@ -96,9 +93,10 @@ function SelectForm({
           data.push({
             label: `${key} ${label}`,
             group: 'metrics',
+            type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
             value: {
-              metric_name: key,
+              param_name: key,
               context: val,
             },
           });
@@ -107,16 +105,15 @@ function SelectForm({
     }
     if (projectsData?.params) {
       for (let key in projectsData.params) {
-        console.log(key);
-        console.log(projectsData.params[key]);
         for (let val in projectsData.params[key]) {
           let index: number = data.length;
           data.push({
             label: `${key}.${val}`,
             group: key,
+            type: 'params',
             color: COLORS[0][index % COLORS[0].length],
             value: {
-              metric_name: key,
+              param_name: key,
               context: projectsData.params[key][val],
             },
           });
@@ -138,133 +135,119 @@ function SelectForm({
             justifyContent='space-between'
             alignItems='center'
           >
-            {editMode ? (
-              <Box flex={1} flexWrap='nowrap'>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  rows={3}
-                  variant='outlined'
-                  placeholder='Select statement e.g. select m:Metric if m.name in [“loss”, “accuract”] and m.run.lr > 10 return m'
-                />
-              </Box>
-            ) : (
-              <>
-                <Box display='flex' alignItems='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleClick}
-                    aria-describedby={id}
-                  >
-                    + Metrics
-                  </Button>
-                  <Popper
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    placement='bottom-start'
-                    className='SelectForm__Popper'
-                  >
-                    <Autocomplete
-                      open
-                      onClose={handleClose}
-                      multiple
-                      size='small'
-                      disablePortal
-                      disableCloseOnSelect
-                      options={paramsOptions}
-                      value={selectedMetricsData}
-                      onChange={onSelect}
-                      groupBy={(option) => option.group}
-                      getOptionLabel={(option) => option.label}
-                      renderTags={() => null}
-                      disableClearable={true}
-                      ListboxProps={{
-                        style: {
-                          height: 400,
-                        },
-                      }}
-                      renderInput={(params) => (
-                        <InputBase
-                          ref={params.InputProps.ref}
-                          inputProps={params.inputProps}
-                          autoFocus={true}
-                          className='SelectForm__metric__select'
-                        />
-                      )}
-                      renderOption={(option) => {
-                        let selected: boolean = !!selectedMetricsData.find(
-                          (item: ISelectMetricsOption) =>
-                            item.label === option.label,
-                        )?.label;
-                        return (
-                          <React.Fragment>
-                            <Checkbox
-                              icon={<CheckBoxOutlineBlank />}
-                              checkedIcon={<CheckBoxIcon />}
-                              style={{ marginRight: 4 }}
-                              checked={selected}
-                            />
-                            {option.label}
-                          </React.Fragment>
-                        );
-                      }}
-                    />
-                  </Popper>
-                  <Divider
-                    style={{ margin: '0 1em' }}
-                    orientation='vertical'
-                    flexItem
-                  />
-                  <Box className='SelectForm__tags'>
-                    {selectedMetricsData?.map((tag: ISelectMetricsOption) => {
-                      return (
-                        <Chip
-                          key={tag.label}
-                          style={{
-                            backgroundColor: `${tag.color}1a`,
-                            color: tag.color,
-                          }}
-                          size='small'
-                          className='SelectForm__tags__item'
-                          label={tag.label}
-                          data-name={tag.label}
-                          deleteIcon={
-                            <i
-                              style={{
-                                color: tag.color,
-                              }}
-                              className='icon-delete'
-                            />
-                          }
-                          onDelete={() => handleDelete(tag.label)}
-                        />
-                      );
-                    })}
-                  </Box>
-                </Box>
-                <span
-                  onClick={() => onMetricsSelectChange([])}
-                  className='SelectForm__clearAll'
+            <>
+              <Box display='flex' alignItems='center'>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={handleClick}
+                  aria-describedby={id}
                 >
-                  <i className='icon-delete' />
-                </span>
-              </>
-            )}
+                  + Params
+                </Button>
+                <Popper
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  placement='bottom-start'
+                  className='SelectForm__Popper'
+                >
+                  <Autocomplete
+                    open
+                    onClose={handleClose}
+                    multiple
+                    size='small'
+                    disablePortal
+                    disableCloseOnSelect
+                    options={paramsOptions}
+                    value={selectedParamsData}
+                    onChange={onSelect}
+                    groupBy={(option) => option.group}
+                    getOptionLabel={(option) => option.label}
+                    renderTags={() => null}
+                    disableClearable={true}
+                    ListboxProps={{
+                      style: {
+                        height: 400,
+                      },
+                    }}
+                    renderInput={(params) => (
+                      <InputBase
+                        ref={params.InputProps.ref}
+                        inputProps={params.inputProps}
+                        autoFocus={true}
+                        className='SelectForm__metric__select'
+                      />
+                    )}
+                    renderOption={(option) => {
+                      let selected: boolean = !!selectedParamsData.find(
+                        (item: ISelectParamsOption) =>
+                          item.label === option.label,
+                      )?.label;
+                      return (
+                        <React.Fragment>
+                          <Checkbox
+                            icon={<CheckBoxOutlineBlank />}
+                            checkedIcon={<CheckBoxIcon />}
+                            style={{ marginRight: 4 }}
+                            checked={selected}
+                          />
+                          {option.label}
+                        </React.Fragment>
+                      );
+                    }}
+                  />
+                </Popper>
+                <Divider
+                  style={{ margin: '0 1em' }}
+                  orientation='vertical'
+                  flexItem
+                />
+                <Box className='SelectForm__tags'>
+                  {selectedParamsData?.map((tag: ISelectParamsOption) => {
+                    return (
+                      <Chip
+                        key={tag.label}
+                        style={{
+                          backgroundColor: `${tag.color}1a`,
+                          color: tag.color,
+                        }}
+                        size='small'
+                        className='SelectForm__tags__item'
+                        label={tag.label}
+                        data-name={tag.label}
+                        deleteIcon={
+                          <i
+                            style={{
+                              color: tag.color,
+                            }}
+                            className='icon-delete'
+                          />
+                        }
+                        onDelete={() => handleDelete(tag.label)}
+                      />
+                    );
+                  })}
+                </Box>
+              </Box>
+              <span
+                onClick={() => onParamsSelectChange([])}
+                className='SelectForm__clearAll'
+              >
+                <i className='icon-delete' />
+              </span>
+            </>
           </Box>
         </Box>
-        {editMode ? null : (
-          <Box mt={0.875}>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              placeholder='Run expression'
-            />
-          </Box>
-        )}
+
+        <Box mt={0.875}>
+          <TextField
+            fullWidth
+            size='small'
+            variant='outlined'
+            placeholder='Run expression'
+          />
+        </Box>
       </div>
       <Divider style={{ margin: '0 1.5em' }} orientation='vertical' flexItem />
       <div className='SelectForm__search__container'>
@@ -273,7 +256,7 @@ function SelectForm({
           variant='contained'
           startIcon={<SearchOutlined />}
           className='SelectForm__search__button'
-          onClick={handleMetricSearch}
+          onClick={handleParamsSearch}
         >
           Search
         </Button>
@@ -281,7 +264,7 @@ function SelectForm({
           <span>
             <img src={resetImg} alt='reset' />
           </span>
-          <span onClick={toggleEditMode}>
+          <span>
             <img src={editImg} alt='edit' />
           </span>
           <span>

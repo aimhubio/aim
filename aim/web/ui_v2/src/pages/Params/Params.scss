@@ -1,18 +1,3 @@
-.Params {
-  .Params__fullHeight {
-    height: 100%;
-    height: -moz-available; /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-  }
-
-  .Params__chart__container {
-    -webkit-box-flex: 0.5;
-    -ms-flex: 0.5 1 0px;
-    flex: 0.5 1 0;
-    min-height: 372px;
-  }
-}
-
 .Params__section {
   height: 100vh;
   overflow: hidden;
@@ -46,6 +31,13 @@
     flex: 0.5 1 0;
     min-height: 372px;
     border-bottom: 1px solid #e8f1fc;
+    &__emptyBox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .Params__table__container {

@@ -32,18 +32,18 @@ import metricAppModel from 'services/models/metrics/metricsAppModel';
 import './SelectForm.scss';
 
 function SelectForm({
-  onMetricsSelectChange,
   selectedMetricsData,
+  onMetricsSelectChange,
+  onSelectRunQueryChange,
+  onSelectAdvancedQueryChange,
+  toggleSelectAdvancedMode,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
-
-  const [editMode, setEditMode] = React.useState<boolean>(false);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchMetricsRef.current = metricAppModel.getMetricsData();
 
     paramsMetricsRequestRef.call();
     return () => {
@@ -53,6 +53,7 @@ function SelectForm({
   }, []);
 
   function handleMetricSearch() {
+    searchMetricsRef.current = metricAppModel.getMetricsData();
     searchMetricsRef.current.call();
   }
 
@@ -61,14 +62,14 @@ function SelectForm({
   }
 
   function handleDelete(field: any): void {
-    let fieldData = [...selectedMetricsData].filter(
+    let fieldData = [...selectedMetricsData?.metrics].filter(
       (opt: any) => opt.name !== field,
     );
     onMetricsSelectChange(fieldData);
   }
 
   function toggleEditMode(): void {
-    setEditMode(!editMode);
+    toggleSelectAdvancedMode();
   }
 
   function handleClick(event: React.ChangeEvent<any>) {
@@ -87,22 +88,34 @@ function SelectForm({
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
+    let index: number = 0;
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
+        data.push({
+          label: key,
+          group: key,
+          color: COLORS[0][index % COLORS[0].length],
+          value: {
+            metric_name: key,
+            context: null,
+          },
+        });
+        index++;
+
         for (let val of projectsData.metrics[key]) {
           let label: string = Object.keys(val)
-            .map((item) => `${item}=${val[item]}`)
+            .map((item) => `${item}="${val[item]}"`)
             .join(', ');
-          let index: number = data.length;
           data.push({
             label: `${key} ${label}`,
-            group: 'metrics',
+            group: key,
             color: COLORS[0][index % COLORS[0].length],
             value: {
               metric_name: key,
               context: val,
             },
           });
+          index++;
         }
       }
     }
@@ -121,7 +134,7 @@ function SelectForm({
             justifyContent='space-between'
             alignItems='center'
           >
-            {editMode ? (
+            {selectedMetricsData?.advancedMode ? (
               <Box flex={1} flexWrap='nowrap'>
                 <TextField
                   fullWidth
@@ -129,7 +142,13 @@ function SelectForm({
                   size='small'
                   rows={3}
                   variant='outlined'
-                  placeholder='Select statement e.g. select m:Metric if m.name in [“loss”, “accuract”] and m.run.lr > 10 return m'
+                  placeholder={
+                    'Select statement e.g. select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10 return metric'
+                  }
+                  value={selectedMetricsData?.advancedQuery}
+                  onChange={({ target }) =>
+                    onSelectAdvancedQueryChange(target.value)
+                  }
                 />
               </Box>
             ) : (
@@ -158,7 +177,7 @@ function SelectForm({
                       disablePortal
                       disableCloseOnSelect
                       options={metricsOptions}
-                      value={selectedMetricsData}
+                      value={selectedMetricsData?.metrics}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
                       getOptionLabel={(option) => option.label}
@@ -178,10 +197,11 @@ function SelectForm({
                         />
                       )}
                       renderOption={(option) => {
-                        let selected: boolean = !!selectedMetricsData.find(
-                          (item: ISelectMetricsOption) =>
-                            item.label === option.label,
-                        )?.label;
+                        let selected: boolean =
+                          !!selectedMetricsData?.metrics.find(
+                            (item: ISelectMetricsOption) =>
+                              item.label === option.label,
+                          )?.label;
                         return (
                           <React.Fragment>
                             <Checkbox
@@ -202,30 +222,32 @@ function SelectForm({
                     flexItem
                   />
                   <Box className='SelectForm__tags'>
-                    {selectedMetricsData?.map((tag: ISelectMetricsOption) => {
-                      return (
-                        <Chip
-                          key={tag.label}
-                          style={{
-                            backgroundColor: `${tag.color}1a`,
-                            color: tag.color,
-                          }}
-                          size='small'
-                          className='SelectForm__tags__item'
-                          label={tag.label}
-                          data-name={tag.label}
-                          deleteIcon={
-                            <i
-                              style={{
-                                color: tag.color,
-                              }}
-                              className='icon-delete'
-                            />
-                          }
-                          onDelete={() => handleDelete(tag.label)}
-                        />
-                      );
-                    })}
+                    {selectedMetricsData?.metrics?.map(
+                      (tag: ISelectMetricsOption) => {
+                        return (
+                          <Chip
+                            key={tag.label}
+                            style={{
+                              backgroundColor: `${tag.color}1a`,
+                              color: tag.color,
+                            }}
+                            size='small'
+                            className='SelectForm__tags__item'
+                            label={tag.label}
+                            data-name={tag.label}
+                            deleteIcon={
+                              <i
+                                style={{
+                                  color: tag.color,
+                                }}
+                                className='icon-delete'
+                              />
+                            }
+                            onDelete={() => handleDelete(tag.label)}
+                          />
+                        );
+                      },
+                    )}
                   </Box>
                 </Box>
                 <span
@@ -238,13 +260,15 @@ function SelectForm({
             )}
           </Box>
         </Box>
-        {editMode ? null : (
+        {selectedMetricsData?.advancedMode ? null : (
           <Box mt={0.875}>
             <TextField
               fullWidth
               size='small'
               variant='outlined'
               placeholder='Run expression'
+              value={selectedMetricsData?.query}
+              onChange={({ target }) => onSelectRunQueryChange(target.value)}
             />
           </Box>
         )}

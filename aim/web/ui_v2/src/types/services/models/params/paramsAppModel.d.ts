@@ -41,5 +41,5 @@ interface IParamsAppConfig {
     params: ISelectMetricsOption[];
     query: string;
   };
-  onParamsSelectChange: (data) => {};
+  onParamsSelectChange: (data) => void;
 }

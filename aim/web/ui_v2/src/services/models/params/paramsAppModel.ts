@@ -29,6 +29,7 @@ import {
   IParamsAppConfig,
 } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
+import { ISelectParamsOption } from 'types/pages/params/components/SelectForm/SelectForm';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -36,9 +37,9 @@ let tooltipData: ITooltipData = {};
 function getConfig() {
   return {
     grouping: {
-      color: ['run.params.hparams.seed'],
-      style: ['run.params.hparams.max_k'],
-      chart: ['run.params.hparams.max_k'],
+      color: [],
+      style: [],
+      chart: [],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
@@ -73,12 +74,7 @@ function getConfig() {
       },
     },
     select: {
-      params: [
-        { key: 'hparams.align', type: 'params' },
-        { key: 'dataset.preproc', type: 'params' },
-        { key: 'loss_scale', type: 'metric' },
-        { key: 'nll_loss', type: 'metric' },
-      ],
+      params: [],
       query: '',
     },
   };
@@ -154,7 +150,7 @@ function getDataAsLines(
   processedData: IMetricsCollection<IParam>[],
   configData: any = model.getState()?.config,
 ): { dimensions: IDimensionsType; data: any }[] {
-  if (!processedData) {
+  if (!processedData || _.isEmpty(configData.select.params)) {
     return [];
   }
   const dimensionsObject: any = {};
@@ -167,22 +163,25 @@ function getDataAsLines(
       return data.map((run: IParam) => {
         const values: { [key: string]: string | number | null } = {};
         configData.select.params.forEach(
-          ({ type, key }: { type: string; key: string }) => {
+          ({ type, label, value }: ISelectParamsOption) => {
             const dimension = dimensionsObject[chartIndex];
-            if (!dimension[key] && type === 'params') {
-              dimension[key] = {
+            if (!dimension[label] && type === 'params') {
+              dimension[label] = {
                 values: new Set(),
                 scaleType: 'linear',
-                displayName: `<span>${key}</span>`,
+                displayName: `<span>${label}</span>`,
                 dimensionType: 'param',
               };
             }
-            if (type === 'metric') {
+            if (type === 'metrics') {
               run.run.traces.forEach((trace: IParamTrace) => {
-                const formattedContext = `${key}-${contextToString(
+                const formattedContext = `${value.param_name}-${contextToString(
                   trace.context,
                 )}`;
-                if (trace.metric_name === key) {
+                if (
+                  trace.metric_name === value.param_name &&
+                  _.isEqual(trace.context, value.context)
+                ) {
                   values[formattedContext] = trace.last_value.last;
                   if (dimension[formattedContext]) {
                     dimension[formattedContext].values.add(
@@ -195,36 +194,35 @@ function getDataAsLines(
                     dimension[formattedContext] = {
                       values: new Set().add(trace.last_value.last),
                       scaleType: 'linear',
-                      displayName: `<span>${key}</span><span>${contextToString(
-                        trace.context,
-                      )}</span>`,
+                      displayName: `<span>${
+                        value.param_name
+                      }</span><span>${contextToString(trace.context)}</span>`,
                       dimensionType: 'metric',
                     };
                   }
                 }
               });
             } else {
-              const value = _.get(run.run.params, key);
-              if (value === undefined) {
-                values[key] = null;
-              } else if (value === null) {
-                values[key] = 'None';
-              } else if (typeof value === 'string') {
-                values[key] = `"${value}"`;
+              const paramValue = _.get(run.run.params, label);
+              if (paramValue === undefined) {
+                values[label] = null;
+              } else if (paramValue === null) {
+                values[label] = 'None';
+              } else if (typeof paramValue === 'string') {
+                values[label] = `"${paramValue}"`;
               } else {
                 // TODO need to fix type
-                values[key] = value as any;
+                values[label] = paramValue as any;
               }
-              if (values[key] !== null) {
-                if (typeof values[key] === 'string') {
-                  dimension[key].scaleType = 'point';
+              if (values[label] !== null) {
+                if (typeof values[label] === 'string') {
+                  dimension[label].scaleType = 'point';
                 }
-                dimension[key].values.add(values[key]);
+                dimension[label].values.add(values[label]);
               }
             }
           },
         );
-
         return {
           values,
           color: color ?? run.color,
@@ -518,7 +516,7 @@ function onParamsSelectChange(data: any[]) {
     model.setState({
       config: {
         ...configData,
-        select: { ...configData.select, metrics: data },
+        select: { ...configData.select, params: data },
       },
     });
   }

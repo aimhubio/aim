@@ -8,6 +8,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
+import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -27,4 +28,6 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onColorIndicatorChange: () => void;
   isVisibleColorIndicator: boolean;
   tooltipContent: ITooltipContent;
+  onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
+  selectedParamsData: IParamsAppConfig['select']['params'];
 }

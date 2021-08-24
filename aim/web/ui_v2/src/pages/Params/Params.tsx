@@ -20,8 +20,11 @@ const Params = ({
   isVisibleColorIndicator,
   tooltipContent,
   onColorIndicatorChange,
+  selectedParamsData,
+  onParamsSelectChange,
   wrapperElemRef,
   resizeElemRef,
+  tableElemRef,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   return (
     <div ref={wrapperElemRef} className='Params__container'>
@@ -42,8 +45,8 @@ const Params = ({
           <Grid item>
             <div className='Params__SelectForm__Grouping__container'>
               <SelectForm
-                selectedMetricsData={[]}
-                onMetricsSelectChange={() => {}}
+                selectedParamsData={selectedParamsData}
+                onParamsSelectChange={onParamsSelectChange}
               />
               {/* <Grouping
               groupingData={props.groupingData}
@@ -52,12 +55,12 @@ const Params = ({
               onGroupingPaletteChange={props.onGroupingPaletteChange}
               onGroupingReset={props.onGroupingReset}
               onGroupingApplyChange={props.onGroupingApplyChange}
-              onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+              onGroupingPersistenceChange={props.onGroupingPersistenceChange} 
             /> */}
             </div>
           </Grid>
           <Grid ref={chartElemRef} className='Params__chart__container' item>
-            {!!highPlotData?.[0]?.data?.length && (
+            {!!highPlotData?.[0]?.data?.length ? (
               <ChartPanel
                 ref={chartPanelRef}
                 chartType={ChartTypeEnum.HighPlot}
@@ -80,13 +83,20 @@ const Params = ({
                   />
                 }
               />
+            ) : (
+              <div className='Params__chart__container__emptyBox'>
+                Choose Params
+              </div>
             )}
           </Grid>
           <div ref={resizeElemRef}>
-            <div className='Metrics__resize'>
+            <div className='Params__resize'>
               <MoreHorizIcon />
             </div>
           </div>
+          <Grid item xs ref={tableElemRef} className='Params__table__container'>
+            <div>asdasd</div>
+          </Grid>
         </Grid>
       </section>
     </div>
