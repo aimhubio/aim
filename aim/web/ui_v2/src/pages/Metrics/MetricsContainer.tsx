@@ -23,7 +23,6 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -47,7 +46,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     metricAppModel.initialize();
-    const metricsRequestRef = metricAppModel.getMetricsData();
     let appRequestRef: {
       call: () => Promise<IAppData | void>;
       abort: () => void;
@@ -57,6 +55,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef.call();
     }
     metricAppModel.setDefaultAppConfigData();
+
+    const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();
@@ -124,7 +124,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.alignmentConfig as IAlignmentConfig
       }
       selectedMetricsData={
-        metricsData?.config?.select.metrics as ISelectMetricsOption[]
+        metricsData?.config?.select as IMetricAppConfig['select']
       }
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
@@ -150,6 +150,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
       onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
       onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
+      onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
+      onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
+      toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
     />
   );
 }

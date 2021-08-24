@@ -56,11 +56,11 @@ class ModelMappedFactory(ObjectFactory):
     def create_tag(self, name: str) -> Tag:
         return ModelMappedTag.from_name(name, session=self._session or self.get_session())
 
-    def get_session(self):
+    def get_session(self, autocommit=True):
         raise NotImplementedError
 
     def __enter__(self):
-        self._session = self.get_session()
+        self._session = self.get_session(autocommit=False)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

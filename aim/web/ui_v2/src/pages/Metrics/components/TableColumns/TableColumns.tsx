@@ -31,6 +31,7 @@ function getTableColumns(
       key: 'metric',
       title: 'Metric',
       width: 150,
+      resizable: true,
     },
     {
       dataKey: 'context',
@@ -49,12 +50,14 @@ function getTableColumns(
               />
             )),
       width: 150,
+      resizable: true,
     },
     {
       dataKey: 'value',
       key: 'value',
       title: 'Value',
       width: 150,
+      resizable: true,
     },
     {
       dataKey: 'step',
@@ -73,6 +76,7 @@ function getTableColumns(
       key: 'timestamp',
       title: 'Time',
       width: 150,
+      resizable: true,
     },
   ].concat(
     paramColumns.map((param) => ({
@@ -84,6 +88,7 @@ function getTableColumns(
           ? JSON.stringify(rowData[param])
           : rowData[param],
       width: 150,
+      resizable: true,
     })),
   );
 
