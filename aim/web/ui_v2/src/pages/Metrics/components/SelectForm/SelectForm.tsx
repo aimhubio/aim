@@ -15,6 +15,7 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
+
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
@@ -47,8 +48,8 @@ function SelectForm({
 
     paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef.abort();
-      searchMetricsRef.current.abort();
+      paramsMetricsRequestRef?.abort();
+      searchMetricsRef.current?.abort();
     };
   }, []);
 
@@ -57,13 +58,20 @@ function SelectForm({
     searchMetricsRef.current.call();
   }
 
-  function onSelect(event: object, value: any): void {
-    onMetricsSelectChange(value);
+  function onSelect(event: object, value: ISelectMetricsOption[]): void {
+    const lookup = value.reduce(
+      (acc: { [key: string]: number }, curr: ISelectMetricsOption) => {
+        acc[curr.label] = ++acc[curr.label] || 0;
+        return acc;
+      },
+      {},
+    );
+    onMetricsSelectChange(value.filter((option) => lookup[option.label] === 0));
   }
 
-  function handleDelete(field: any): void {
+  function handleDelete(field: string): void {
     let fieldData = [...selectedMetricsData?.metrics].filter(
-      (opt: any) => opt.name !== field,
+      (opt: ISelectMetricsOption) => opt.label !== field,
     );
     onMetricsSelectChange(fieldData);
   }
@@ -145,7 +153,7 @@ function SelectForm({
                   placeholder={
                     'Select statement e.g. select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10 return metric'
                   }
-                  value={selectedMetricsData?.advancedQuery}
+                  value={selectedMetricsData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
                     onSelectAdvancedQueryChange(target.value)
                   }
@@ -177,7 +185,7 @@ function SelectForm({
                       disablePortal
                       disableCloseOnSelect
                       options={metricsOptions}
-                      value={selectedMetricsData?.metrics}
+                      value={selectedMetricsData?.metrics ?? ''}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
                       getOptionLabel={(option) => option.label}
@@ -267,7 +275,7 @@ function SelectForm({
               size='small'
               variant='outlined'
               placeholder='Run expression'
-              value={selectedMetricsData?.query}
+              value={selectedMetricsData?.query ?? ''}
               onChange={({ target }) => onSelectRunQueryChange(target.value)}
             />
           </Box>
