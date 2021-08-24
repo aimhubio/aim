@@ -31,11 +31,10 @@ def decode_encoded_tree_stream(stream: Iterator[bytes]) -> bytes:
 
 
 def truncate_structured_db(db):
-    with db:
-        session = db.get_session()
-        meta = StructuredBase.metadata
-        for table in reversed(meta.sorted_tables):
-            session.execute(sa_text(f'DELETE FROM {table.name};'))
+    session = db.get_session()
+    meta = StructuredBase.metadata
+    for table in reversed(meta.sorted_tables):
+        session.execute(sa_text(f'DELETE FROM {table.name};'))
 
 
 def truncate_api_db():

@@ -120,6 +120,8 @@ interface IMetricAppConfig {
   select: {
     metrics: ISelectMetricsOption[];
     query: string;
+    advancedMode: boolean;
+    advancedQuery: string;
   };
 }
 
