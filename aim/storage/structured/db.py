@@ -68,8 +68,10 @@ class DB(ObjectFactory):
     def caches(self):
         return self._caches
 
-    def get_session(self):
-        return self.session_cls()
+    def get_session(self, autocommit=True):
+        session = self.session_cls()
+        session.autocommit = autocommit
+        return session
 
     def run_upgrades(self):
         if self._upgraded:
