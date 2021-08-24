@@ -20,12 +20,14 @@ import { CurveEnum } from 'utils/d3';
 import {
   GroupNameType,
   IGetGroupingPersistIndex,
-  IMetricAppConfig,
   IMetricsCollection,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
-import { IParam } from 'types/services/models/params/paramsAppModel';
+import {
+  IParam,
+  IParamsAppConfig,
+} from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
 
 const model = createModel<Partial<any>>({});
@@ -332,7 +334,7 @@ function getGroupingPersistIndex({
 }
 
 function getFilteredGroupingOptions(
-  grouping: IMetricAppConfig['grouping'],
+  grouping: IParamsAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
   const { selectOptions, reverseMode, isApplied } = grouping;
@@ -471,7 +473,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
 }
 
 function onColorIndicatorChange(): void {
-  const configData: any = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.isVisibleColorIndicator =
       !configData.chart.isVisibleColorIndicator;
@@ -480,7 +482,7 @@ function onColorIndicatorChange(): void {
 }
 
 function onCurveInterpolationChange(): void {
-  const configData: any = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.curveInterpolation =
       configData.chart.curveInterpolation === CurveEnum.Linear
@@ -494,7 +496,7 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const configData: any = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.focusedState = {
       active: !!focusedStateActive,
@@ -510,6 +512,18 @@ function onActivePointChange(
   }
 }
 
+function onParamsSelectChange(data: any[]) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, metrics: data },
+      },
+    });
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -517,6 +531,7 @@ const paramsAppModel = {
   onColorIndicatorChange,
   onCurveInterpolationChange,
   onActivePointChange,
+  onParamsSelectChange,
 };
 
 export default paramsAppModel;

@@ -1,10 +1,12 @@
 import React from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
+import Controls from './components/Controls/Controls';
+import SelectForm from './components/SelectForm/SelectForm';
+import ChartPanel from 'components/ChartPanel/ChartPanel';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
-import Controls from './components/Controls/Controls';
-import ChartPanel from 'components/ChartPanel/ChartPanel';
 import './Params.scss';
 
 const Params = ({
@@ -18,50 +20,76 @@ const Params = ({
   isVisibleColorIndicator,
   tooltipContent,
   onColorIndicatorChange,
+  wrapperElemRef,
+  resizeElemRef,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   return (
-    <Box
-      bgcolor='grey.200'
-      component='section'
-      height='100vh'
-      overflow='hidden'
-      className='Params'
-    >
-      <Grid
-        container
-        direction='column'
-        justifyContent='center'
-        className='Params__fullHeight'
-        spacing={1}
-      >
-        <Grid ref={chartElemRef} className='Params__chart__container' item>
-          {!!highPlotData?.[0]?.data?.length && (
-            <ChartPanel
-              ref={chartPanelRef}
-              chartType={ChartTypeEnum.HighPlot}
-              data={highPlotData}
-              focusedState={focusedState}
-              onActivePointChange={onActivePointChange}
-              tooltipContent={tooltipContent}
-              chartProps={[
-                {
-                  curveInterpolation,
-                  isVisibleColorIndicator,
-                },
-              ]}
-              controls={
-                <Controls
-                  onCurveInterpolationChange={onCurveInterpolationChange}
-                  curveInterpolation={curveInterpolation}
-                  isVisibleColorIndicator={isVisibleColorIndicator}
-                  onColorIndicatorChange={onColorIndicatorChange}
-                />
-              }
+    <div ref={wrapperElemRef} className='Params__container'>
+      <section className='Params__section'>
+        <Grid
+          container
+          direction='column'
+          justifyContent='center'
+          className='Params__fullHeight'
+        >
+          {/* <Grid item>
+            <AppBar
+              onBookmarkCreate={props.onBookmarkCreate}
+              onBookmarkUpdate={props.onBookmarkUpdate}
+              onResetConfigData={props.onResetConfigData}
             />
-          )}
+          </Grid> */}
+          <Grid item>
+            <div className='Params__SelectForm__Grouping__container'>
+              <SelectForm
+                selectedMetricsData={[]}
+                onMetricsSelectChange={() => {}}
+              />
+              {/* <Grouping
+              groupingData={props.groupingData}
+              onGroupingSelectChange={props.onGroupingSelectChange}
+              onGroupingModeChange={props.onGroupingModeChange}
+              onGroupingPaletteChange={props.onGroupingPaletteChange}
+              onGroupingReset={props.onGroupingReset}
+              onGroupingApplyChange={props.onGroupingApplyChange}
+              onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+            /> */}
+            </div>
+          </Grid>
+          <Grid ref={chartElemRef} className='Params__chart__container' item>
+            {!!highPlotData?.[0]?.data?.length && (
+              <ChartPanel
+                ref={chartPanelRef}
+                chartType={ChartTypeEnum.HighPlot}
+                data={highPlotData}
+                focusedState={focusedState}
+                onActivePointChange={onActivePointChange}
+                tooltipContent={tooltipContent}
+                chartProps={[
+                  {
+                    curveInterpolation,
+                    isVisibleColorIndicator,
+                  },
+                ]}
+                controls={
+                  <Controls
+                    onCurveInterpolationChange={onCurveInterpolationChange}
+                    curveInterpolation={curveInterpolation}
+                    isVisibleColorIndicator={isVisibleColorIndicator}
+                    onColorIndicatorChange={onColorIndicatorChange}
+                  />
+                }
+              />
+            )}
+          </Grid>
+          <div ref={resizeElemRef}>
+            <div className='Metrics__resize'>
+              <MoreHorizIcon />
+            </div>
+          </div>
         </Grid>
-      </Grid>
-    </Box>
+      </section>
+    </div>
   );
 };
 

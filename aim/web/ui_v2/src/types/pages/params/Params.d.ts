@@ -12,6 +12,10 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
   chartPanelRef: React.RefObject<IChartPanelRef>;
+  tableRef: React.RefObject<ITableRef>;
+  tableElemRef: React.RefObject<HTMLDivElement>;
+  wrapperElemRef: React.RefObject<HTMLDivElement>;
+  resizeElemRef: React.RefObject<HTMLDivElement>;
   curveInterpolation: CurveEnum;
   highPlotData: any;
   onCurveInterpolationChange: () => void;

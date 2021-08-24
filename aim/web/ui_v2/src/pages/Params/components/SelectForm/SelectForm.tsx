@@ -29,31 +29,30 @@ import {
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 
-import './SelectForm.scss';
+import '../../../Metrics/components/SelectForm/SelectForm.scss';
 
 function SelectForm({
   onMetricsSelectChange,
   selectedMetricsData,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
-
   const [editMode, setEditMode] = React.useState<boolean>(false);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const searchMetricsRef = React.useRef<any>(null);
+  const searchRef = React.useRef<any>(null);
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchMetricsRef.current = metricAppModel.getMetricsData();
+    searchRef.current = metricAppModel.getMetricsData();
 
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef.abort();
-      searchMetricsRef.current.abort();
+      searchRef.current.abort();
     };
   }, []);
 
   function handleMetricSearch() {
-    searchMetricsRef.current.call();
+    searchRef.current.call();
   }
 
   function onSelect(event: object, value: any): void {
@@ -85,7 +84,7 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
+  const paramsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
@@ -101,6 +100,24 @@ function SelectForm({
             value: {
               metric_name: key,
               context: val,
+            },
+          });
+        }
+      }
+    }
+    if (projectsData?.params) {
+      for (let key in projectsData.params) {
+        console.log(key);
+        console.log(projectsData.params[key]);
+        for (let val in projectsData.params[key]) {
+          let index: number = data.length;
+          data.push({
+            label: `${key}.${val}`,
+            group: key,
+            color: COLORS[0][index % COLORS[0].length],
+            value: {
+              metric_name: key,
+              context: projectsData.params[key][val],
             },
           });
         }
@@ -157,7 +174,7 @@ function SelectForm({
                       size='small'
                       disablePortal
                       disableCloseOnSelect
-                      options={metricsOptions}
+                      options={paramsOptions}
                       value={selectedMetricsData}
                       onChange={onSelect}
                       groupBy={(option) => option.group}

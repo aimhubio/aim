@@ -1021,7 +1021,6 @@ function updateUrlParam(
   data: Record<string, unknown>,
 ): void {
   const encodedUrl: string = encode(data);
-  console.log(data);
 
   const url: string = getUrlWithParam(paramName, encodedUrl);
   window.history.pushState(null, '', url);
