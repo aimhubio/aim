@@ -132,7 +132,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawHoverAttributes({
       index,
-      data,
+      data: processedData,
       xAlignment,
       highlightMode,
       syncHoverState,
@@ -208,11 +208,19 @@ const LineChart = React.forwardRef(function LineChart(
   ]);
 
   React.useImperativeHandle(ref, () => ({
-    setActiveLine: (lineKey: string) => {
-      attributesRef.current.setActiveLine?.(lineKey);
+    setActiveLineAndCircle: (
+      lineKey?: string,
+      focusedStateActive: boolean = false,
+      force: boolean = false,
+    ) => {
+      attributesRef.current.setActiveLineAndCircle?.(
+        lineKey,
+        focusedStateActive,
+        force,
+      );
     },
-    updateHoverAttributes: (xValue: number) => {
-      attributesRef.current.updateHoverAttributes?.(xValue);
+    updateHoverAttributes: (xValue: number, dataSelector?: string) => {
+      attributesRef.current.updateHoverAttributes?.(xValue, dataSelector);
     },
     clearHoverAttributes: () => {
       attributesRef.current.clearHoverAttributes?.();

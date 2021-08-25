@@ -32,7 +32,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
-      const { activePoint, focusedStateActive } = params;
+      const { activePoint, focusedStateActive, dataSelector } = params;
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {
@@ -41,7 +41,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             if (index === activePoint.chartIndex) {
               return;
             }
-            chartRef.current?.updateHoverAttributes?.(activePoint.xValue);
+            chartRef.current?.updateHoverAttributes?.(
+              activePoint.xValue,
+              dataSelector,
+            );
           });
         }
 
@@ -62,7 +65,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setPopoverPosition(null);
       }
     },
-    [chartRefs, props],
+    [chartRefs, props.chartType, props.onActivePointChange],
   );
 
   const onScroll = React.useCallback((): void => {
@@ -81,9 +84,17 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, []);
 
   React.useImperativeHandle(ref, () => ({
-    setActiveLine: (lineKey: string) => {
+    setActiveLineAndCircle: (
+      lineKey?: string,
+      focusedStateActive: boolean = false,
+      force: boolean = false,
+    ) => {
       chartRefs.forEach((chartRef) => {
-        chartRef.current?.setActiveLine?.(lineKey);
+        chartRef.current?.setActiveLineAndCircle?.(
+          lineKey,
+          focusedStateActive,
+          force,
+        );
       });
     },
   }));

@@ -34,8 +34,8 @@ function AxesScalePopover(
           <ToggleButton
             checked={props.axesScaleType.xAxis === ScaleEnum.Log}
             id='xAxis'
-            rightLabel='Linear'
-            leftLabel='Log'
+            leftLabel='Linear'
+            rightLabel='Log'
             onChange={handleScaleChange}
           />
         </Box>

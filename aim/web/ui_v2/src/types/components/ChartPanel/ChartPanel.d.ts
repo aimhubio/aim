@@ -34,7 +34,11 @@ export interface IChartPanelProps {
 }
 
 export interface IChartPanelRef {
-  setActiveLine: (rowKey: string) => void;
+  setActiveLineAndCircle?: (
+    lineKey?: string,
+    focusedStateActive: boolean = false,
+    force: boolean = false,
+  ) => void;
   updateLines: (data: IProcessedData[]) => void;
 }
 
