@@ -20,6 +20,8 @@ export interface IMetricAppModelState {
     tableRef: { current: ITableRef | null };
     chartPanelRef: { current: IChartPanelRef | null };
   };
+  requestIsPending: boolean;
+  queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IMetricAppConfig;
   data: IMetricsCollection<IMetric>[];
@@ -120,6 +122,8 @@ interface IMetricAppConfig {
   select: {
     metrics: ISelectMetricsOption[];
     query: string;
+    advancedMode: boolean;
+    advancedQuery: string;
   };
 }
 

@@ -27,6 +27,7 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
       key: 'metric',
       title: 'Metric',
       width: 150,
+      resizable: true,
     },
     {
       dataKey: 'context',
@@ -43,18 +44,21 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
           />
         )),
       width: 150,
+      resizable: true,
     },
     {
       dataKey: 'value',
       key: 'value',
       title: 'Value',
       width: 150,
+      resizable: true,
     },
     {
       dataKey: 'iteration',
       key: 'iteration',
       title: 'Iteration',
       width: 150,
+      resizable: true,
     },
   ].concat(
     paramColumns.map((param) => ({
@@ -63,6 +67,7 @@ function getTableColumns(paramColumns: string[] = []): ITableColumn[] {
       title: param,
       cellRenderer: ({ rowData }: any) => rowData[param],
       width: 150,
+      resizable: true,
     })),
   );
 }

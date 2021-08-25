@@ -14,7 +14,7 @@ export interface ITableProps {
   }[];
   sortOptions: GroupingSelectOptionType[];
   onRowHover: (rowKey: string) => void;
-  onRowClick: (rowKey: string) => void;
+  onRowClick: (rowKey?: string) => void;
 }
 
 export interface ITableRef {

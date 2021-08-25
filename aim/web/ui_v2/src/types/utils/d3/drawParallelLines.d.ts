@@ -11,6 +11,7 @@ export interface ILineDataType {
   values: ILineValuesDataType;
   key: string;
   color: string;
+  dasharray: string;
 }
 
 export type InitialPathDataType = {
@@ -34,6 +35,7 @@ export interface IDrawParallelLinesProps {
 export interface IDrawParallelLineProps {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
+  dasharray: string;
   dimensionList: string[];
   curveInterpolation: CurveEnum;
   lineData: ILineValuesDataType;

@@ -39,6 +39,9 @@ function Metrics(
               <SelectForm
                 selectedMetricsData={props.selectedMetricsData}
                 onMetricsSelectChange={props.onMetricsSelectChange}
+                onSelectRunQueryChange={props.onSelectRunQueryChange}
+                onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
+                toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
               />
               <Grouping
                 groupingData={props.groupingData}
@@ -58,9 +61,10 @@ function Metrics(
           >
             {!!props.lineChartData?.[0]?.length ? (
               <ChartPanel
+                key={props.lineChartData.length}
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
-                data={props.lineChartData as any}
+                data={props.lineChartData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
                 tooltipContent={props.tooltipContent}

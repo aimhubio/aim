@@ -1,8 +1,11 @@
 import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface ISelectFormProps {
-  onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
-  selectedMetricsData: ISelectMetricsOption[];
+  selectedMetricsData: IMetricAppConfig['select'];
+  onMetricsSelectChange: (metrics: ISelectMetricsOption[]) => void;
+  onSelectRunQueryChange: (query: string) => void;
+  onSelectAdvancedQueryChange: (query: string) => void;
+  toggleSelectAdvancedMode: () => void;
 }
 export interface ISelectMetricsOption {
   label: string;
@@ -10,6 +13,6 @@ export interface ISelectMetricsOption {
   color: string;
   value: {
     metric_name: string;
-    context: object;
+    context: object | null;
   };
 }
