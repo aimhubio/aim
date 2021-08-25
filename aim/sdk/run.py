@@ -61,8 +61,7 @@ class Run:
         self.contexts: Dict[Context, int] = dict()
 
         if experiment:
-            with self.repo.structured_db:
-                self.props.experiment = experiment
+            self.props.experiment = experiment
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True

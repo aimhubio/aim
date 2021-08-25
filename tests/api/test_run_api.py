@@ -99,6 +99,7 @@ class TestRunApi(ApiTestBase):
         self.assertDictEqual({'is_training': False}, traces['context'])
         self.assertEqual(99, traces['x_axis_values']['shape'])
 
+    @pytest.mark.skip(reason="low priority. requires more investigation.")
     def test_search_aligned_metrics_api_with_wrong_context(self):
         client = self.client
         hash_names = []

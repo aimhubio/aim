@@ -1,9 +1,11 @@
 from tests.base import ApiTestBase
-from tests.utils import truncate_structured_db
+from tests.utils import fill_up_test_data, remove_test_data
 
 
 class StructuredApiTestBase(ApiTestBase):
     def setUp(self) -> None:
+        super().setUp()
+        fill_up_test_data()
         with self.repo.structured_db:
             for idx, run in enumerate(self.repo.iter_runs()):
                 exp_name = 'Experiment 1' if idx < 5 else 'Experiment 2'
@@ -19,7 +21,8 @@ class StructuredApiTestBase(ApiTestBase):
                     run.props.add_tag('last runs')
 
     def tearDown(self) -> None:
-        truncate_structured_db(self.repo.structured_db)
+        remove_test_data()
+        super().tearDown()
 
 
 class TestStructuredRunApi(StructuredApiTestBase):
@@ -135,9 +138,9 @@ class TestTagsApi(StructuredApiTestBase):
         response = client.get(f'/api/tags/{tag_uuid}/runs/')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        run_names = [run['name'] for run in data['runs']]
-        expected_run_names = [f'Run number {i}' for i in range(4, 11)]
-        self.assertListEqual(expected_run_names, run_names)
+        run_names = {run['name'] for run in data['runs']}
+        expected_run_names = {f'Run number {i}' for i in range(4, 11)}
+        self.assertSetEqual(expected_run_names, run_names)
 
     def test_archive_tag_api(self):
         tag = next(iter(self.repo.structured_db.tags()))
@@ -213,9 +216,9 @@ class TestExperimentsApi(StructuredApiTestBase):
         response = client.get(f'/api/experiments/{exp_uuid}/runs/')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        run_names = [run['name'] for run in data['runs']]
-        expected_run_names = [f'Run number {i}' for i in range(6, 11)]
-        self.assertListEqual(expected_run_names, run_names)
+        run_names = {run['name'] for run in data['runs']}
+        expected_run_names = {f'Run number {i}' for i in range(6, 11)}
+        self.assertSetEqual(expected_run_names, run_names)
 
     def test_archive_experiment_with_runs(self):
         client = self.client

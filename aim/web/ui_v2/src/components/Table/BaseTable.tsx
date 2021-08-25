@@ -1149,13 +1149,14 @@ class BaseTable extends React.PureComponent {
     }
   }
 
-  _handleRowHover({ rowKey }) {
+  _handleRowHover({ rowKey, hovered }) {
     if (this.state.activeRowKey !== null) {
       return;
     }
-    this.setHoveredRow(rowKey);
+
+    this.setHoveredRow(hovered ? rowKey : null);
     if (typeof this.props.onRowHover === 'function') {
-      this.props.onRowHover(rowKey);
+      this.props.onRowHover(hovered ? rowKey : undefined);
     }
   }
 
@@ -1166,7 +1167,7 @@ class BaseTable extends React.PureComponent {
       activeRowKey: clickedOnSameRow ? null : rowKey,
     });
     if (typeof this.props.onRowClick === 'function') {
-      this.props.onRowClick(clickedOnSameRow ? null : rowKey);
+      this.props.onRowClick(clickedOnSameRow ? undefined : rowKey);
     }
   }
 

@@ -5,6 +5,7 @@ export interface IDimensionType {
   scaleType: ScaleType;
   domainData: number[] | string[];
   displayName: string;
+  dimensionType: string;
 }
 
 export interface YScaleType {

@@ -40,7 +40,7 @@ def run_migrations_offline():
     script output.
 
     """
-    sqlalchemy_url = os.environ.get('AIM_RUN_META_DATA_DB_URL', DB.get_default_url())
+    sqlalchemy_url = os.environ.get('AIM_RUN_META_DATA_DB_URL')
     context.configure(
         url=sqlalchemy_url,
         target_metadata=target_metadata,
@@ -59,7 +59,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    sqlalchemy_url = os.environ.get('AIM_RUN_META_DATA_DB_URL', DB.get_default_url())
+    sqlalchemy_url = os.environ.get('AIM_RUN_META_DATA_DB_URL')
     connectable = create_engine(sqlalchemy_url)
 
     with connectable.connect() as connection:
