@@ -48,14 +48,14 @@ function drawParallelAxes({
     axes
       .selectAll('.tick')
       .append('foreignObject')
-      .attr('x', -tickWidth + 10)
+      .attr('x', -tickWidth - 20)
       .attr('y', -8)
       .attr('height', 12)
-      .attr('width', tickWidth)
+      .attr('width', tickWidth + 30)
       .html(
         (d: string) =>
           `<div style='width: ${
-            tickWidth - 20
+            tickWidth + 10
           }px' class='yAxisLabel' title='${d}'>${d}</div>`,
       );
     axes

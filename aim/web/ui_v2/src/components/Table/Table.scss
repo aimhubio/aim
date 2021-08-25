@@ -1,0 +1,12 @@
+.Table__header__item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  span {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #09003f;
+  }
+}
