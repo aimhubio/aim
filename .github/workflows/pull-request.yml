@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - aim/sdk
-      - aim/web/api
-      - aim/storage
+      - 'aim/sdk/**'
+      - 'aim/web/api/**'
+      - 'aim/storage/**'
     types:
       - edited
       - opened
