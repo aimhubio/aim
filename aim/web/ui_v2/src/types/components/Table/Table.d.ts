@@ -1,3 +1,5 @@
+import { GroupingSelectOptionType } from 'types/services/models/metrics/metricsAppModel';
+
 export interface ITableProps {
   onManageColumns?: () => void;
   onSort?: () => void;
@@ -10,6 +12,7 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
+  sortOptions: GroupingSelectOptionType[];
   onRowHover: (rowKey: string) => void;
   onRowClick: (rowKey: string) => void;
 }

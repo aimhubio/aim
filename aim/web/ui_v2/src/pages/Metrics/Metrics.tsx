@@ -115,6 +115,10 @@ function Metrics(
                 ref={props.tableRef}
                 onSort={() => null}
                 onExport={() => null}
+                onManageColumns={() => null}
+                onRowHeightChange={() => null}
+                onRowsChange={() => null}
+                sortOptions={props.groupingData.selectOptions}
                 data={props.tableData.flat()}
                 columns={props.tableColumns}
                 onRowHover={props.onTableRowHover}
