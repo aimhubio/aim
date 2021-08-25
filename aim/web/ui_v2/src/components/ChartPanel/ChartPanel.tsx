@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Paper, PopoverPosition, GridSize } from '@material-ui/core';
+import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
 import { debounce } from 'lodash-es';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
@@ -122,45 +122,43 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, [onScroll]);
 
   return (
-    <Grid container spacing={1} className='ChartPanel__container'>
+    <Grid container className='ChartPanel__container'>
       <Grid item xs className='ChartPanel'>
-        <Paper className='ChartPanel__paper'>
-          <Grid
-            ref={containerRef}
-            container
-            spacing={1}
-            className='ChartPanel__paper__grid'
-          >
-            {props.data.map((chartData: any, index: number) => {
-              const Component = chartTypesConfig[props.chartType];
-              const aggregatedData = props.aggregatedData?.filter(
-                (data) => data.chartIndex === index,
-              );
-              return (
-                <Grid
-                  key={index}
-                  item
-                  xs={
-                    props.data.length > 9
-                      ? 4
-                      : (chartGridPattern[props.data.length][index] as GridSize)
-                  }
-                >
-                  <Component
-                    ref={chartRefs[index]}
-                    // TODO change props.chartProps[0] to props.chartProps
-                    {...props.chartProps[0]}
-                    index={index}
-                    data={chartData}
-                    aggregatedData={aggregatedData}
-                    aggregationConfig={props.aggregationConfig}
-                    syncHoverState={syncHoverState}
-                  />
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Paper>
+        <Grid
+          ref={containerRef}
+          container
+          spacing={1}
+          className='ChartPanel__paper__grid'
+        >
+          {props.data.map((chartData: any, index: number) => {
+            const Component = chartTypesConfig[props.chartType];
+            const aggregatedData = props.aggregatedData?.filter(
+              (data) => data.chartIndex === index,
+            );
+            return (
+              <Grid
+                key={index}
+                item
+                xs={
+                  props.data.length > 9
+                    ? 4
+                    : (chartGridPattern[props.data.length][index] as GridSize)
+                }
+              >
+                <Component
+                  ref={chartRefs[index]}
+                  // TODO change props.chartProps[0] to props.chartProps
+                  {...props.chartProps[0]}
+                  index={index}
+                  data={chartData}
+                  aggregatedData={aggregatedData}
+                  aggregationConfig={props.aggregationConfig}
+                  syncHoverState={syncHoverState}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
         <ChartPopover
           popoverPosition={popoverPosition}
           open={props.data.length > 0}
@@ -173,8 +171,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           />
         </ChartPopover>
       </Grid>
-      <Grid item>
-        <Paper className='ChartPanel__paper'>{props.controls}</Paper>
+      <Grid className='Metrics__controls__container' item>
+        {props.controls}
       </Grid>
     </Grid>
   );
