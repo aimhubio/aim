@@ -15,7 +15,7 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
