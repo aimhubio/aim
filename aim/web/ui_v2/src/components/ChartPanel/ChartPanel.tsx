@@ -139,6 +139,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               <Grid
                 key={index}
                 item
+                className='ChartPanel__paper__grid__chartBox'
                 xs={
                   props.data.length > 9
                     ? 4

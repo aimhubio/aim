@@ -360,7 +360,10 @@ function processData(data: IRun<IMetricTrace>[]): {
   const paletteIndex: number = grouping?.paletteIndex || 0;
   data.forEach((run: IRun<IMetricTrace>) => {
     params = params.concat(
-      getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
+      getObjectPaths(
+        _.omit(run.params, 'experiment_name', 'status'),
+        _.omit(run.params, 'experiment_name', 'status'),
+      ),
     );
     metrics = metrics.concat(
       run.traces.map((trace) => {
