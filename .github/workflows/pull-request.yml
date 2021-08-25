@@ -2,10 +2,16 @@ name: sanity checks on opened pull requests
 
 on:
   pull_request:
-    branches: main
-    paths: [aim/sdk aim/web/api aim/storage]
-    types: [opened, synchronize, reopened]
-
+    branches:
+      - main
+    paths:
+      - aim/sdk
+      - aim/web/api
+      - aim/storage
+    types:
+      - edited
+      - opened
+      - reopened
 jobs:
   run-checks:
     runs-on: ubuntu-latest
