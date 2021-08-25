@@ -1,0 +1,2 @@
+class RepoIntegrityError(RuntimeError):
+    pass

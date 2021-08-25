@@ -12,6 +12,7 @@ import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IAlignmentConfig,
   IAppData,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -30,7 +31,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const route = useRouteMatch();
+  const route = useRouteMatch<any>();
   const metricsData = useModel(metricAppModel);
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
@@ -45,18 +46,17 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     metricAppModel.initialize();
-    const metricsRequestRef = metricAppModel.getMetricsData();
     let appRequestRef: {
       call: () => Promise<IAppData | void>;
       abort: () => void;
     };
-    if ((route.params as any).appId) {
-      appRequestRef = metricAppModel.getAppConfigData(
-        (route.params as any).appId,
-      );
+    if (route.params.appId) {
+      appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call();
     }
     metricAppModel.setDefaultAppConfigData();
+
+    const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();
@@ -77,6 +77,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       metricAppModel.updateChartStateUrl();
     }
   }, [metricsData?.config?.chart]);
+
+  React.useEffect(() => {
+    if (metricsData?.config?.select) {
+      metricAppModel.updateSelectStateUrl();
+    }
+  }, [metricsData?.config?.select]);
 
   return (
     <Metrics
@@ -114,6 +120,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       aggregationConfig={
         metricsData?.config?.chart.aggregationConfig as IAggregationConfig
       }
+      alignmentConfig={
+        metricsData?.config?.chart.alignmentConfig as IAlignmentConfig
+      }
+      selectedMetricsData={
+        metricsData?.config?.select as IMetricAppConfig['select']
+      }
       //methods
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
@@ -135,6 +147,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationAdd={metricAppModel.onNotificationAdd}
       onNotificationDelete={metricAppModel.onNotificationDelete}
       onResetConfigData={metricAppModel.onResetConfigData}
+      onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
+      onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
+      onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
+      onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
+      onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
+      toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
     />
   );
 }

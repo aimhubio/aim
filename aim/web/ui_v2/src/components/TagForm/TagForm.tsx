@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import * as yup from 'yup';
-import { noop, isEmpty } from 'lodash-es';
+import { isEmpty, noop } from 'lodash-es';
 import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 import { Button, Grid, TextField } from '@material-ui/core';
@@ -8,16 +8,18 @@ import { Button, Grid, TextField } from '@material-ui/core';
 import COLORS from 'config/colors/colors';
 import tagsService from 'services/api/tags/tagsService';
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
+
 import './TagForm.scss';
 
 function TagForm({
   tagData,
   editMode,
   tagId,
+  updateTagName = () => {},
 }: ITagFormProps): React.FunctionComponentElement<React.ReactNode> {
   const formik = useFormik({
     initialValues: editMode
-      ? { name: tagData?.name, color: tagData?.color || '' }
+      ? { name: tagData?.name || '', color: tagData?.color || '' }
       : { name: '', color: '' },
     onSubmit: noop,
     validationSchema: yup.object({
@@ -50,16 +52,23 @@ function TagForm({
 
   function onCreateButtonClick() {
     submitForm().then(() =>
-      validateForm(values).then(() => {
-        tagsService.createTag({ name, color }).call();
+      validateForm(values).then((errors) => {
+        if (isEmpty(errors)) {
+          tagsService.createTag({ name, color }).call();
+        }
       }),
     );
   }
 
   function onSaveButtonClick() {
     submitForm().then(() =>
-      validateForm(values).then(() => {
-        tagsService.updateTag({ name, color }, tagId || '').call();
+      validateForm(values).then((errors) => {
+        if (isEmpty(errors)) {
+          tagsService
+            .updateTag({ name, color }, tagId || '')
+            .call()
+            .then(() => updateTagName && updateTagName(name));
+        }
       }),
     );
   }
@@ -69,7 +78,7 @@ function TagForm({
   }
 
   function onResetButtonClick() {
-    setValues({ name: tagData?.name, color: tagData?.color || '' }, true);
+    setValues({ name: tagData?.name || '', color: tagData?.color || '' }, true);
   }
 
   return (

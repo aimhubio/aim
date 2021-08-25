@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ITableRef } from 'types/components/Table/Table';
 import {
@@ -15,6 +15,7 @@ import {
   ITooltipContent,
   IAggregationConfig,
   IAggregatedData,
+  IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -24,6 +25,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
+import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -48,6 +50,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   notifyData: IMetricAppModelState['notifyData'];
   tooltipContent: ITooltipContent;
   aggregationConfig: IAggregationConfig;
+  alignmentConfig: IAlignmentConfig;
+  selectedMetricsData: IMetricAppConfig['select'];
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (
@@ -73,6 +77,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
+  onAlignmentMetricChange: (metric: string) => void;
+  onAlignmentTypeChange: (type: XAlignmentEnum) => void;
+  onMetricsSelectChange: (metrics: ISelectMetricsOption[]) => void;
+  onSelectRunQueryChange: (query: string) => void;
+  onSelectAdvancedQueryChange: (query: string) => void;
+  toggleSelectAdvancedMode: () => void;
 }
 
 export interface IOnSmoothingChange {

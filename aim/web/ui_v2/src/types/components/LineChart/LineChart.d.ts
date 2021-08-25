@@ -1,4 +1,4 @@
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import {
   IActivePoint,
   ISyncHoverStateParams,
@@ -27,7 +27,7 @@ export interface ILineChartProps {
   index: number;
   data: ILine[];
   aggregatedData?: IAggregatedData[];
-  xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
+  xAlignment?: XAlignmentEnum;
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;

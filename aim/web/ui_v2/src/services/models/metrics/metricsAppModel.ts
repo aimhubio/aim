@@ -8,11 +8,7 @@ import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
 import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
-import {
-  calculateCentralMovingAverage,
-  calculateExponentialMovingAverage,
-  SmoothingAlgorithmEnum,
-} from 'utils/smoothingData';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
 import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -55,11 +51,13 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { CurveEnum, ScaleEnum, XAlignmentEnum } from 'utils/d3';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import getSmoothenedData from 'utils/getSmoothenedData';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -100,6 +98,10 @@ function getConfig() {
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
       smoothingFactor: 0,
+      alignmentConfig: {
+        metric: '',
+        type: XAlignmentEnum.Step,
+      },
       aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
@@ -115,6 +117,12 @@ function getConfig() {
         yValue: null,
         chartIndex: null,
       },
+    },
+    select: {
+      metrics: [],
+      query: '',
+      advancedMode: false,
+      advancedQuery: '',
     },
   };
 }
@@ -139,10 +147,14 @@ function setDefaultAppConfigData() {
     getStateFromUrl('grouping') || getConfig().grouping;
   const chart: IMetricAppConfig['chart'] =
     getStateFromUrl('chart') || getConfig().chart;
+  const select: IMetricAppConfig['select'] =
+    getStateFromUrl('select') || getConfig().select;
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart,
     grouping,
+    select,
   });
+
   model.setState({
     config: configData,
   });
@@ -165,6 +177,36 @@ function getAppConfigData(appId: string) {
   };
 }
 
+function getQueryStringFromSelect(
+  selectData: IMetricAppConfig['select'] | undefined,
+) {
+  let query = '';
+  if (selectData !== undefined) {
+    if (selectData.advancedMode) {
+      query = selectData.advancedQuery;
+    } else {
+      query = `(${selectData.metrics
+        .map((metric) =>
+          metric.value.context === null
+            ? `(metric_name == "${metric.value.metric_name}")`
+            : `${Object.keys(metric.value.context).map(
+                (item) =>
+                  `(metric_name == "${
+                    metric.value.metric_name
+                  }" and context.${item} == "${
+                    (metric.value.context as any)[item]
+                  }")`,
+              )}`,
+        )
+        .join(' or ')})${
+        selectData.query ? `and ${selectData.query}` : ''
+      }`.trim();
+    }
+  }
+
+  return query;
+}
+
 let metricsRequestRef: {
   call: () => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
@@ -174,41 +216,54 @@ function getMetricsData() {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
+  const selectData = model.getState()?.config?.select;
+  let query = getQueryStringFromSelect(selectData);
   metricsRequestRef = metricsService.getMetricsData({
-    q: 'metric_name == "bleu"',
+    q: query,
   });
   return {
     call: async () => {
-      const stream = await metricsRequestRef.call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
+      if (query === '') {
+        model.setState({
+          queryIsEmpty: true,
+        });
+      } else {
+        model.setState({
+          requestIsPending: true,
+          queryIsEmpty: false,
+        });
+        const stream = await metricsRequestRef.call();
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
 
-      const runData: IRun<IMetricTrace>[] = [];
-      for await (let [keys, val] of objects) {
-        runData.push(val as any);
+        const runData: IRun<IMetricTrace>[] = [];
+        for await (let [keys, val] of objects) {
+          runData.push(val as any);
+        }
+
+        const { data, params } = processData(runData);
+        const configData = model.getState()?.config;
+        if (configData) {
+          configData.grouping.selectOptions = [
+            ...getGroupingSelectOptions(params),
+          ];
+          setAggregationEnabled(configData);
+        }
+
+        model.setState({
+          requestIsPending: false,
+          rawData: runData,
+          config: configData,
+          params,
+          data,
+          lineChartData: getDataAsLines(data),
+          aggregatedData: getAggregatedData(data),
+          tableData: getDataAsTableRows(data, null, params),
+          tableColumns: getTableColumns(params),
+        });
       }
-
-      const { data, params } = processData(runData);
-      const configData = model.getState()?.config;
-      if (configData) {
-        configData.grouping.selectOptions = [
-          ...getGroupingSelectOptions(params),
-        ];
-        setAggregationEnabled(configData);
-      }
-
-      model.setState({
-        rawData: runData,
-        config: configData,
-        params,
-        data,
-        lineChartData: getDataAsLines(data),
-        aggregatedData: getAggregatedData(data),
-        tableData: getDataAsTableRows(data, null, params),
-        tableColumns: getTableColumns(params),
-      });
     },
     abort: metricsRequestRef.abort,
   };
@@ -325,8 +380,8 @@ function processData(data: IRun<IMetricTrace>[]): {
             iterations: new Float64Array(trace.iters.blob),
             epochs: new Float64Array(trace.epochs?.blob),
             timestamps: new Float64Array(trace.timestamps.blob),
-            xValues: [...new Float64Array(trace.iters.blob)],
-            yValues: [...new Float64Array(trace.values.blob)],
+            xValues: [...new Float64Array(trace.iters?.blob)],
+            yValues: [...new Float64Array(trace.values?.blob)],
           },
         } as IMetric);
       }),
@@ -532,27 +587,62 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   });
 }
 
-function alignData() {}
-
 function getAggregatedData(
   processedData: IMetricsCollection<IMetric>[],
+  configData = model.getState()?.config as IMetricAppConfig,
 ): IAggregatedData[] {
   if (!processedData) {
     return [];
   }
-  const configData: IMetricAppConfig | any = model.getState()?.config;
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
   let aggregatedData: IAggregatedData[] = [];
+  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
 
   processedData.forEach((metricsCollection, index) => {
+    let lineY: number[];
+    let areaMinY: number[];
+    let areaMaxY: number[];
+    if (smoothingAlgorithm && smoothingFactor) {
+      lineY = getSmoothenedData({
+        smoothingAlgorithm,
+        smoothingFactor,
+        data: metricsCollection.aggregation?.line?.yValues || [],
+      });
+      areaMinY = getSmoothenedData({
+        smoothingAlgorithm,
+        smoothingFactor,
+        data: metricsCollection.aggregation?.area.min?.yValues || [],
+      });
+      areaMaxY = getSmoothenedData({
+        smoothingAlgorithm,
+        smoothingFactor,
+        data: metricsCollection.aggregation?.area.max?.yValues || [],
+      });
+    } else {
+      lineY = metricsCollection.aggregation?.line?.yValues as number[];
+      areaMinY = metricsCollection.aggregation?.area.min?.yValues as number[];
+      areaMaxY = metricsCollection.aggregation?.area.max?.yValues as number[];
+    }
+
+    const line = {
+      xValues: metricsCollection.aggregation?.line?.xValues as number[],
+      yValues: lineY,
+    };
+    const area: any = {
+      min: {
+        xValues: metricsCollection.aggregation?.area.min?.xValues,
+        yValues: areaMinY,
+      },
+      max: {
+        xValues: metricsCollection.aggregation?.area.max?.xValues,
+        yValues: areaMaxY,
+      },
+    };
     aggregatedData.push({
       key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
-      area: {
-        min: metricsCollection.aggregation?.area.min || null,
-        max: metricsCollection.aggregation?.area.max || null,
-      },
-      line: metricsCollection.aggregation?.line || null,
+      area,
+      line,
       chartIndex: metricsCollection.chartIndex || 0,
       color:
         metricsCollection.color ||
@@ -571,24 +661,17 @@ function getDataAsLines(
   if (!processedData) {
     return [];
   }
-
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
-
   const lines = processedData
     .map((metricsCollection: IMetricsCollection<IMetric>) =>
       metricsCollection.data.map((metric: IMetric) => {
         let yValues;
         if (smoothingAlgorithm && smoothingFactor) {
-          yValues =
-            smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
-              ? calculateExponentialMovingAverage(
-                  metric.data.yValues,
-                  smoothingFactor,
-                )
-              : calculateCentralMovingAverage(
-                  metric.data.yValues,
-                  smoothingFactor,
-                );
+          yValues = getSmoothenedData({
+            smoothingAlgorithm,
+            smoothingFactor,
+            data: metric.data.yValues,
+          });
         } else {
           yValues = metric.data.yValues;
         }
@@ -642,7 +725,9 @@ function getDataAsTableRows(
         }`,
       };
       paramKeys.forEach((paramKey) => {
-        rowValues[paramKey] = _.get(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = JSON.stringify(
+          _.get(metric.run.params, paramKey, '-'),
+        );
       });
       return rowValues;
     }),
@@ -672,7 +757,9 @@ function setTooltipData(
       if (groupItem.length) {
         groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey.replace('run.params.', '')]: _.get(metric, paramKey),
+            [paramKey.replace('run.params.', '')]: JSON.stringify(
+              _.get(metric, paramKey, '-'),
+            ),
           });
           return acc;
         }, {});
@@ -689,7 +776,9 @@ function setTooltipData(
         group_config: getGroupConfig(metric),
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: _.get(metric, `run.params.${paramKey}`),
+            [paramKey]: JSON.stringify(
+              _.get(metric, `run.params.${paramKey}`, '-'),
+            ),
           });
           return acc;
         }, {}),
@@ -752,11 +841,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...props };
-
-    model.setState({
-      config: { ...configData },
-      lineChartData: getDataAsLines(model.getState()!.data!, configData),
-    });
+    updateModelData(configData);
   }
 }
 
@@ -970,6 +1055,13 @@ function updateChartStateUrl(): void {
   }
 }
 
+function updateSelectStateUrl(): void {
+  const selectData = model.getState()?.config?.select;
+  if (selectData) {
+    updateUrlParam('select', selectData);
+  }
+}
+
 function updateUrlParam(
   paramName: string,
   data: Record<string, unknown>,
@@ -998,6 +1090,92 @@ function onResetConfigData(): void {
   model.setState({
     config: getConfig(),
   });
+}
+
+function alignData() {}
+
+function onAlignmentMetricChange(metric: string): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          alignmentConfig: {
+            ...configData.chart.alignmentConfig,
+            metric: metric,
+          },
+        },
+      },
+    });
+  }
+}
+
+function onAlignmentTypeChange(type: XAlignmentEnum): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          alignmentConfig: { ...configData.chart.alignmentConfig, type: type },
+        },
+      },
+    });
+  }
+}
+
+function onMetricsSelectChange(data: ISelectMetricsOption[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, metrics: data },
+      },
+    });
+  }
+}
+
+function onSelectRunQueryChange(query: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, query },
+      },
+    });
+  }
+}
+
+function onSelectAdvancedQueryChange(query: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, advancedQuery: query },
+      },
+    });
+  }
+}
+
+function toggleSelectAdvancedMode() {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: {
+          ...configData.select,
+          advancedMode: !configData.select.advancedMode,
+        },
+      },
+    });
+  }
 }
 
 const metricAppModel = {
@@ -1030,6 +1208,13 @@ const metricAppModel = {
   onNotificationAdd,
   onBookmarkUpdate,
   onResetConfigData,
+  onAlignmentMetricChange,
+  onAlignmentTypeChange,
+  onMetricsSelectChange,
+  onSelectRunQueryChange,
+  onSelectAdvancedQueryChange,
+  toggleSelectAdvancedMode,
+  updateSelectStateUrl,
 };
 
 export default metricAppModel;
