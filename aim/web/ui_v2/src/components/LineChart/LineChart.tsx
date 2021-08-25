@@ -56,20 +56,20 @@ const LineChart = React.forwardRef(function LineChart(
   const visAreaRef = React.useRef<HTMLDivElement>(null);
 
   // d3 node elements
-  const svgNodeRef = React.useRef<any>(null);
+  const svgNodeRef = React.useRef(null);
   const bgRectNodeRef = React.useRef(null);
   const plotNodeRef = React.useRef(null);
-  const axesNodeRef = React.useRef<any>(null);
-  const linesNodeRef = React.useRef<any>(null);
+  const axesNodeRef = React.useRef(null);
+  const linesNodeRef = React.useRef(null);
   const attributesNodeRef = React.useRef(null);
   const xAxisLabelNodeRef = React.useRef(null);
   const yAxisLabelNodeRef = React.useRef(null);
   const highlightedNodeRef = React.useRef(null);
 
   // methods and values refs
-  const axesRef = React.useRef<any>({});
+  const axesRef = React.useRef({});
   const brushRef = React.useRef<any>({});
-  const linesRef = React.useRef<any>({});
+  const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
 
   function draw() {
@@ -132,7 +132,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawHoverAttributes({
       index,
-      data,
+      data: processedData,
       xAlignment,
       highlightMode,
       syncHoverState,
@@ -208,11 +208,19 @@ const LineChart = React.forwardRef(function LineChart(
   ]);
 
   React.useImperativeHandle(ref, () => ({
-    setActiveLine: (lineKey: string) => {
-      attributesRef.current.setActiveLine?.(lineKey);
+    setActiveLineAndCircle: (
+      lineKey?: string,
+      focusedStateActive: boolean = false,
+      force: boolean = false,
+    ) => {
+      attributesRef.current.setActiveLineAndCircle?.(
+        lineKey,
+        focusedStateActive,
+        force,
+      );
     },
-    updateHoverAttributes: (xValue: number) => {
-      attributesRef.current.updateHoverAttributes?.(xValue);
+    updateHoverAttributes: (xValue: number, dataSelector?: string) => {
+      attributesRef.current.updateHoverAttributes?.(xValue, dataSelector);
     },
     clearHoverAttributes: () => {
       attributesRef.current.clearHoverAttributes?.();

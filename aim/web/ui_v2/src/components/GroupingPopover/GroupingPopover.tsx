@@ -81,7 +81,7 @@ function GroupingPopover({
               <TextField
                 {...params}
                 variant='outlined'
-                label='Select Metrics'
+                label='Select Params'
                 placeholder='Select'
               />
             )}

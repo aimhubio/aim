@@ -15,32 +15,30 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
+import _ from 'lodash';
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
-
+import getObjectPaths from 'utils/getObjectPaths';
 import resetImg from 'assets/icons/reset.svg';
 import visibleImg from 'assets/icons/visible.svg';
 import editImg from 'assets/icons/edit.svg';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import {
   ISelectFormProps,
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
-import metricAppModel from 'services/models/metrics/metricsAppModel';
-
-import '../../../Metrics/components/SelectForm/SelectForm.scss';
 import paramsAppModel from 'services/models/params/paramsAppModel';
+import 'pages/Metrics/components/SelectForm/SelectForm.scss';
 
 function SelectForm({
   onParamsSelectChange,
   selectedParamsData,
+  onSelectRunQueryChange,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
-
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
     searchRef.current = paramsAppModel.getParamsData();
@@ -61,7 +59,7 @@ function SelectForm({
   }
 
   function handleDelete(field: any): void {
-    let fieldData = [...selectedParamsData].filter(
+    let fieldData = [...selectedParamsData?.params].filter(
       (opt: any) => opt.name !== field,
     );
     onParamsSelectChange(fieldData);
@@ -104,21 +102,18 @@ function SelectForm({
       }
     }
     if (projectsData?.params) {
-      for (let key in projectsData.params) {
-        for (let val in projectsData.params[key]) {
-          let index: number = data.length;
-          data.push({
-            label: `${key}.${val}`,
-            group: key,
-            type: 'params',
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              param_name: key,
-              context: projectsData.params[key][val],
-            },
-          });
-        }
-      }
+      const paramPaths = getObjectPaths(
+        projectsData.params,
+        projectsData.params,
+      );
+      paramPaths.forEach((paramPath, index) => {
+        data.push({
+          label: paramPath,
+          group: paramPath.slice(0, paramPath.indexOf('.')),
+          type: 'params',
+          color: COLORS[0][index % COLORS[0].length],
+        });
+      });
     }
     return data;
   }, [projectsData]);
@@ -160,7 +155,7 @@ function SelectForm({
                     disablePortal
                     disableCloseOnSelect
                     options={paramsOptions}
-                    value={selectedParamsData}
+                    value={selectedParamsData?.params}
                     onChange={onSelect}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.label}
@@ -180,7 +175,7 @@ function SelectForm({
                       />
                     )}
                     renderOption={(option) => {
-                      let selected: boolean = !!selectedParamsData.find(
+                      let selected: boolean = !!selectedParamsData?.params.find(
                         (item: ISelectParamsOption) =>
                           item.label === option.label,
                       )?.label;
@@ -204,30 +199,32 @@ function SelectForm({
                   flexItem
                 />
                 <Box className='SelectForm__tags'>
-                  {selectedParamsData?.map((tag: ISelectParamsOption) => {
-                    return (
-                      <Chip
-                        key={tag.label}
-                        style={{
-                          backgroundColor: `${tag.color}1a`,
-                          color: tag.color,
-                        }}
-                        size='small'
-                        className='SelectForm__tags__item'
-                        label={tag.label}
-                        data-name={tag.label}
-                        deleteIcon={
-                          <i
-                            style={{
-                              color: tag.color,
-                            }}
-                            className='icon-delete'
-                          />
-                        }
-                        onDelete={() => handleDelete(tag.label)}
-                      />
-                    );
-                  })}
+                  {selectedParamsData?.params?.map(
+                    (tag: ISelectParamsOption) => {
+                      return (
+                        <Chip
+                          key={tag.label}
+                          style={{
+                            backgroundColor: `${tag.color}1a`,
+                            color: tag.color,
+                          }}
+                          size='small'
+                          className='SelectForm__tags__item'
+                          label={tag.label}
+                          data-name={tag.label}
+                          deleteIcon={
+                            <i
+                              style={{
+                                color: tag.color,
+                              }}
+                              className='icon-delete'
+                            />
+                          }
+                          onDelete={() => handleDelete(tag.label)}
+                        />
+                      );
+                    },
+                  )}
                 </Box>
               </Box>
               <span
@@ -246,6 +243,8 @@ function SelectForm({
             size='small'
             variant='outlined'
             placeholder='Run expression'
+            value={selectedParamsData?.query}
+            onChange={({ target }) => onSelectRunQueryChange(target.value)}
           />
         </Box>
       </div>

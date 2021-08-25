@@ -1,18 +1,21 @@
+import _ from 'lodash';
+
 function getObjectPaths(
   obj: { [key: string]: unknown },
+  rootObject: { [key: string]: unknown },
   prefix: string = '',
   includeRoot: boolean = false,
 ): string[] {
-  let rootKeys = Object.getOwnPropertyNames(obj).map((key) =>
-    prefix ? `${prefix}.${key}` : key,
-  );
-  let paths: string[] = includeRoot ? rootKeys : [];
-  rootKeys.forEach((key) => {
-    const val: any = obj[key];
-    if (typeof val === 'object' && !Array.isArray(val)) {
-      paths = paths.concat(
-        getObjectPaths(val, prefix ? `${prefix}.${key}` : `${key}`, true),
-      );
+  let rootKeys = Object.keys(obj).map((key) => {
+    return { prefixedKey: prefix ? `${prefix}.${key}` : key, key };
+  });
+  let paths: string[] = includeRoot
+    ? rootKeys.map(({ prefixedKey }) => prefixedKey)
+    : [];
+  rootKeys.forEach(({ prefixedKey }) => {
+    const val: any = _.get(rootObject, prefixedKey);
+    if (typeof val === 'object' && !_.isNil(val) && !Array.isArray(val)) {
+      paths = paths.concat(getObjectPaths(val, rootObject, prefixedKey, true));
     }
   });
   return paths;

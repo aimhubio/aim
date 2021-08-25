@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import _, { isEmpty } from 'lodash-es';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
@@ -18,9 +18,15 @@ import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
+  GroupingSelectOptionType,
   GroupNameType,
+  IAppData,
+  IDashboardData,
   IGetGroupingPersistIndex,
+  IMetricAppConfig,
   IMetricsCollection,
+  IOnGroupingModeChangeParams,
+  IOnGroupingSelectChangeParams,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
@@ -30,6 +36,11 @@ import {
 } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
 import { ISelectParamsOption } from 'types/pages/params/components/SelectForm/SelectForm';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -80,6 +91,11 @@ function getConfig() {
   };
 }
 
+let getRunsRequestRef: {
+  call: () => Promise<any>;
+  abort: () => void;
+};
+
 function initialize() {
   model.init();
   model.setState({
@@ -88,27 +104,39 @@ function initialize() {
 }
 
 function getParamsData() {
-  const { call, abort } = runsService.getRunsData();
   return {
     call: async () => {
-      const stream = await call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
+      const select = model.getState()?.config?.select;
+      getRunsRequestRef = runsService.getRunsData(select?.query);
+      if (!isEmpty(select?.params)) {
+        const stream = await getRunsRequestRef.call();
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
 
-      const runData: IRun<IParamTrace>[] = [];
-      for await (let [keys, val] of objects) {
-        runData.push(val as any);
+        const runData: IRun<IParamTrace>[] = [];
+        for await (let [keys, val] of objects) {
+          runData.push({ ...(val as any), hash: keys[0] });
+        }
+        const { data, params } = processData(runData);
+        const configData = model.getState()?.config;
+        if (configData) {
+          configData.grouping.selectOptions = [
+            ...getGroupingSelectOptions(params),
+          ];
+        }
+
+        model.setState({
+          data,
+          highPlotData: getDataAsLines(data),
+          params,
+          rawData: runData,
+          config: configData,
+        });
       }
-      const { data, params } = processData(runData);
-      model.setState({
-        data,
-        highPlotData: getDataAsLines(data),
-        params,
-      });
     },
-    abort,
+    abort: () => getRunsRequestRef.abort(),
   };
 }
 
@@ -122,16 +150,16 @@ function processData(data: IRun<IParamTrace>[]): {
   const paletteIndex: number = grouping?.paletteIndex || 0;
   data.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(
-      getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
+      getObjectPaths(
+        _.omit(run.params, 'experiment_name', 'status'),
+        _.omit(run.params, 'experiment_name', 'status'),
+      ),
     );
 
     runs.push({
       run,
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-      key: encode({
-        runHash: run.params.status.hash,
-        metricName: run.params.dataset.preproc,
-      }),
+      key: run.hash,
       dasharray: DASH_ARRAYS[0],
     });
   });
@@ -175,12 +203,12 @@ function getDataAsLines(
             }
             if (type === 'metrics') {
               run.run.traces.forEach((trace: IParamTrace) => {
-                const formattedContext = `${value.param_name}-${contextToString(
-                  trace.context,
-                )}`;
+                const formattedContext = `${
+                  value?.param_name
+                }-${contextToString(trace.context)}`;
                 if (
-                  trace.metric_name === value.param_name &&
-                  _.isEqual(trace.context, value.context)
+                  trace.metric_name === value?.param_name &&
+                  _.isEqual(trace.context, value?.context)
                 ) {
                   values[formattedContext] = trace.last_value.last;
                   if (dimension[formattedContext]) {
@@ -283,7 +311,9 @@ function setTooltipData(
       if (groupItem.length) {
         groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey.replace('run.params.', '')]: _.get(param, paramKey),
+            [paramKey.replace('run.params.', '')]: JSON.stringify(
+              _.get(param, paramKey, '-'),
+            ),
           });
           return acc;
         }, {});
@@ -298,7 +328,9 @@ function setTooltipData(
         group_config: getGroupConfig(param),
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: _.get(param, `run.params.${paramKey}`),
+            [paramKey]: JSON.stringify(
+              _.get(param, `run.params.${paramKey}`, '-'),
+            ),
           });
           return acc;
         }, {}),
@@ -522,6 +554,214 @@ function onParamsSelectChange(data: any[]) {
   }
 }
 
+function onSelectRunQueryChange(query: string) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, query },
+      },
+    });
+  }
+}
+
+function getGroupingSelectOptions(
+  params: string[],
+): GroupingSelectOptionType[] {
+  const paramsOptions: GroupingSelectOptionType[] = params.map((param) => ({
+    value: `run.params.${param}`,
+    group: 'params',
+    label: param,
+  }));
+
+  return [
+    ...paramsOptions,
+    {
+      group: 'Other',
+      label: 'experiment_name',
+      value: 'run.experiment_name',
+    },
+    {
+      group: 'Other',
+      label: 'run.hash',
+      value: 'run.params.status.hash',
+    },
+    {
+      group: 'Other',
+      label: 'metric_name',
+      value: 'metric_name',
+    },
+    {
+      group: 'context',
+      label: 'subset',
+      value: 'context.subset',
+    },
+  ];
+}
+
+function onGroupingSelectChange({
+  groupName,
+  list,
+}: IOnGroupingSelectChangeParams) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = { ...configData.grouping, [groupName]: list };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingModeChange({
+  groupName,
+  value,
+}: IOnGroupingModeChangeParams): void {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping.reverseMode = {
+      ...configData.grouping.reverseMode,
+      [groupName]: value,
+    };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingPaletteChange(index: number): void {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      paletteIndex: index,
+    };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingReset(groupName: GroupNameType) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    const { reverseMode, paletteIndex, isApplied, persistence } =
+      configData.grouping;
+    configData.grouping = {
+      ...configData.grouping,
+      reverseMode: { ...reverseMode, [groupName]: false },
+      [groupName]: [],
+      paletteIndex: groupName === 'color' ? 0 : paletteIndex,
+      persistence: { ...persistence, [groupName]: false },
+      isApplied: { ...isApplied, [groupName]: true },
+    };
+    updateModelData(configData);
+  }
+}
+
+function updateModelData(configData: IParamsAppConfig): void {
+  const processedData = processData(
+    model.getState()?.rawData as IRun<IParamTrace>[],
+  );
+  model.setState({
+    config: configData,
+    data: processedData.data,
+    highPlotData: getDataAsLines(processedData.data),
+    // tableData: getDataAsTableRows(
+    //   processedData.data,
+    //   null,
+    //   processedData.params,
+    // ),
+  });
+}
+
+function onGroupingApplyChange(groupName: GroupNameType): void {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      isApplied: {
+        ...configData.grouping.isApplied,
+        [groupName]: !configData.grouping.isApplied[groupName],
+      },
+    };
+    updateModelData(configData);
+  }
+}
+
+function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      persistence: {
+        ...configData.grouping.persistence,
+        [groupName]: !configData.grouping.persistence[groupName],
+      },
+    };
+    updateModelData(configData);
+  }
+}
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    const data: IAppData | any = await appsService.createApp(configData).call();
+    if (data.id) {
+      dashboardService
+        .createDashboard({ app_id: data.id, name, description })
+        .call()
+        .then((res: IDashboardData | any) => {
+          if (res.id) {
+            onNotificationAdd({
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.CREATE,
+            });
+          }
+        })
+        .catch((err) => {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          });
+        });
+    }
+  }
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, configData)
+      .call()
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.UPDATE,
+          });
+        }
+      });
+  }
+}
+
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
+}
+
+function onResetConfigData(): void {
+  model.setState({
+    config: getConfig(),
+  });
+}
 const paramsAppModel = {
   ...model,
   initialize,
@@ -530,6 +770,18 @@ const paramsAppModel = {
   onCurveInterpolationChange,
   onActivePointChange,
   onParamsSelectChange,
+  onSelectRunQueryChange,
+  onGroupingSelectChange,
+  onGroupingModeChange,
+  onGroupingPaletteChange,
+  onGroupingReset,
+  onGroupingApplyChange,
+  onGroupingPersistenceChange,
+  onBookmarkCreate,
+  onBookmarkUpdate,
+  onResetConfigData,
+  onNotificationAdd,
+  onNotificationDelete,
 };
 
 export default paramsAppModel;

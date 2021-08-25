@@ -5,6 +5,8 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
+import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import AppBar from 'pages/Metrics/components/AppBar/AppBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
 import './Params.scss';
@@ -22,9 +24,20 @@ const Params = ({
   onColorIndicatorChange,
   selectedParamsData,
   onParamsSelectChange,
+  onSelectRunQueryChange,
   wrapperElemRef,
   resizeElemRef,
   tableElemRef,
+  groupingData,
+  onGroupingSelectChange,
+  onGroupingModeChange,
+  onGroupingPaletteChange,
+  onGroupingReset,
+  onGroupingApplyChange,
+  onGroupingPersistenceChange,
+  onBookmarkCreate,
+  onBookmarkUpdate,
+  onResetConfigData,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   return (
     <div ref={wrapperElemRef} className='Params__container'>
@@ -35,28 +48,29 @@ const Params = ({
           justifyContent='center'
           className='Params__fullHeight'
         >
-          {/* <Grid item>
+          <Grid item>
             <AppBar
-              onBookmarkCreate={props.onBookmarkCreate}
-              onBookmarkUpdate={props.onBookmarkUpdate}
-              onResetConfigData={props.onResetConfigData}
+              onBookmarkCreate={onBookmarkCreate}
+              onBookmarkUpdate={onBookmarkUpdate}
+              onResetConfigData={onResetConfigData}
             />
-          </Grid> */}
+          </Grid>
           <Grid item>
             <div className='Params__SelectForm__Grouping__container'>
               <SelectForm
                 selectedParamsData={selectedParamsData}
                 onParamsSelectChange={onParamsSelectChange}
+                onSelectRunQueryChange={onSelectRunQueryChange}
               />
-              {/* <Grouping
-              groupingData={props.groupingData}
-              onGroupingSelectChange={props.onGroupingSelectChange}
-              onGroupingModeChange={props.onGroupingModeChange}
-              onGroupingPaletteChange={props.onGroupingPaletteChange}
-              onGroupingReset={props.onGroupingReset}
-              onGroupingApplyChange={props.onGroupingApplyChange}
-              onGroupingPersistenceChange={props.onGroupingPersistenceChange} 
-            /> */}
+              <Grouping
+                groupingData={groupingData}
+                onGroupingSelectChange={onGroupingSelectChange}
+                onGroupingModeChange={onGroupingModeChange}
+                onGroupingPaletteChange={onGroupingPaletteChange}
+                onGroupingReset={onGroupingReset}
+                onGroupingApplyChange={onGroupingApplyChange}
+                onGroupingPersistenceChange={onGroupingPersistenceChange}
+              />
             </div>
           </Grid>
           <Grid ref={chartElemRef} className='Params__chart__container' item>

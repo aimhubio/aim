@@ -7,6 +7,7 @@ import useModel from 'hooks/model/useModel';
 import { ITooltipContent } from 'types/services/models/metrics/metricsAppModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import { ITableRef } from 'types/components/Table/Table';
+import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 
 const paramsRequestRef = paramsAppModel.getParamsData();
 
@@ -41,13 +42,30 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator
       }
-      onParamsSelectChange={paramsAppModel?.onParamsSelectChange}
+      groupingData={
+        paramsData?.config?.grouping as IParamsAppConfig['grouping']
+      }
+      selectedParamsData={
+        paramsData?.config?.select as IParamsAppConfig['select']
+      }
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
       tooltipContent={paramsData?.tooltipContent as ITooltipContent}
-      onColorIndicatorChange={paramsAppModel?.onColorIndicatorChange}
-      onCurveInterpolationChange={paramsAppModel?.onCurveInterpolationChange}
-      onActivePointChange={paramsAppModel?.onActivePointChange}
-      selectedParamsData={paramsData?.config?.select?.params}
+      onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
+      onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
+      onParamsSelectChange={paramsAppModel.onParamsSelectChange}
+      onGroupingSelectChange={paramsAppModel.onGroupingSelectChange}
+      onGroupingModeChange={paramsAppModel.onGroupingModeChange}
+      onGroupingPaletteChange={paramsAppModel.onGroupingPaletteChange}
+      onGroupingReset={paramsAppModel.onGroupingReset}
+      onActivePointChange={paramsAppModel.onActivePointChange}
+      onGroupingApplyChange={paramsAppModel.onGroupingApplyChange}
+      onGroupingPersistenceChange={paramsAppModel.onGroupingPersistenceChange}
+      onSelectRunQueryChange={paramsAppModel.onSelectRunQueryChange}
+      onBookmarkCreate={paramsAppModel.onBookmarkCreate}
+      onBookmarkUpdate={paramsAppModel.onBookmarkUpdate}
+      onNotificationAdd={paramsAppModel.onNotificationAdd}
+      onNotificationDelete={paramsAppModel.onNotificationDelete}
+      onResetConfigData={paramsAppModel.onResetConfigData}
     />
   );
 }
