@@ -1021,29 +1021,24 @@ function onActivePointChange(
 
 //Table Methods
 
-function onTableRowHover(rowKey: string): void {
+function onTableRowHover(rowKey?: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
     if (chartPanelRef && !configData.chart.focusedState.active) {
-      chartPanelRef.current?.setActiveLine(rowKey);
+      chartPanelRef.current?.setActiveLineAndCircle(rowKey);
     }
   }
 }
 
-function onTableRowClick(rowKey: string | null): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+function onTableRowClick(rowKey?: string): void {
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
-  if (chartPanelRef && rowKey) {
-    chartPanelRef.current?.setActiveLine(rowKey, true);
-  }
-  if (configData?.chart) {
-    configData.chart.focusedState = {
-      ...configData.chart.focusedState,
-      active: !!rowKey,
-    };
-    updateModelData(configData);
-  }
+  const focusedStateActive = !!rowKey;
+  chartPanelRef?.current?.setActiveLineAndCircle(
+    rowKey,
+    focusedStateActive,
+    true,
+  );
 }
 
 function updateGroupingStateUrl(): void {
