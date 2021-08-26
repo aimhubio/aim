@@ -68,10 +68,10 @@ def fill_up_test_data():
         try:
             for idx, hash_name in enumerate(run_hashes):
                 run = Run(hashname=hash_name, repo=repo, system_tracking_interval=None)
-                run['hparams'] = create_run_params()
-                run['run_index'] = idx
-                run['start_time'] = datetime.datetime.utcnow().isoformat()
-                run['name'] = f'Run # {idx}'
+                run.set_params('hparams', create_run_params())
+                run.set_params('run_index', idx)
+                run.set_params('start_time', datetime.datetime.utcnow().isoformat())
+                run.set_params('name', f'Run # {idx}')
                 run.name = run['name']
 
                 metric_contexts = itertools.product(metrics, contexts)

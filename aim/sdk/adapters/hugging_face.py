@@ -43,7 +43,7 @@ class AimCallback(object):
                 )
 
                 combined_dict = {**args.to_sanitized_dict()}
-                self._run['hparams'] = combined_dict
+                self._run.set_params('hparams', combined_dict)
 
                 # Store model configs as well
                 # if hasattr(model, 'config') and model.config is not None:

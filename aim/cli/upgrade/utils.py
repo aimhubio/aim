@@ -44,11 +44,11 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
         lrun.open_storage()
         if lrun.params.get(AIM_MAP_METRICS_KEYWORD):
             del lrun.params[AIM_MAP_METRICS_KEYWORD]  # set internally. no need to copy
-        run[...] = lrun.params
-        run['v2_params'] = {'run_hash': lrun.run_hash}
+        run.set_params(..., lrun.params)
+        run.set_params('v2_params', {'run_hash': lrun.run_hash})
         if 'process' in lrun.config:
-            run['v2_params']['start_date'] = lrun.config['process']['start_date']
-            run['v2_params']['finish_date'] = lrun.config['process']['finish_date']
+            run.set_params(('v2_params', 'start_date'), lrun.config['process']['start_date'])
+            run.set_params(('v2_params', 'finish_date'), lrun.config['process']['finish_date'])
 
         run.experiment = lrun.experiment_name
         if lrun.config.get('archived'):

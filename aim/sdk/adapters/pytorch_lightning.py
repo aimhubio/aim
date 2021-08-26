@@ -60,7 +60,7 @@ class AimLogger(object):
             @rank_zero_only
             def log_hyperparams(self, params: Union[Dict[str, Any], Namespace]):
                 params = self._convert_params(params)
-                self.experiment['hparams'] = params
+                self.experiment.set_params('hparams', params)
 
             @rank_zero_only
             def log_metrics(self, metrics: Dict[str, float],
