@@ -1,13 +1,11 @@
 from pydantic import BaseModel
 from typing import Dict
-from aim.web.api.experiments.pydantic_models import ExperimentListOut
 
 
 class ProjectApiOut(BaseModel):
     name: str
     path: str
     description: str
-    branches: ExperimentListOut = []
     telemetry_enabled: int
 
 
