@@ -13,9 +13,9 @@ function useModel<StateType>(model: IModel<StateType>): StateType | null {
     );
 
     return () => {
-      model.destroy();
       initSubscription.unsubscribe();
       updateSubscription.unsubscribe();
+      model.destroy();
     };
   }, []);
 

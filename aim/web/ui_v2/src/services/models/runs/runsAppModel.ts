@@ -31,7 +31,7 @@ function getRunsData() {
       const runsData: IRun<IMetricTrace | IParamTrace>[] = [];
       for await (let [keys, val] of objects) {
         const runData: any = val;
-        runsData.push({ ...runData, runHash: keys[0] } as any);
+        runsData.push({ ...runData, hash: keys[0] } as any);
       }
 
       model.setState({

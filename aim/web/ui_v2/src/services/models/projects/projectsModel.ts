@@ -34,9 +34,7 @@ function getParamsAndMetrics() {
       call().then((data: IProjectParamsMetrics) => {
         model.setState({
           metrics: data.metrics,
-          params: removeExampleTypes(
-            omit(data.params, 'experiment_name', 'status'),
-          ),
+          params: removeExampleTypes(data.params),
         });
       }),
     abort,
