@@ -191,30 +191,12 @@ class ContextView:
 class MetricView:
     def __init__(self, name: str, context: dict, run_view: 'RunView'):
         self.name = name
-        self.run_view = run_view
-        self.context = context
+        self.run = run_view
+        self._context = context
 
-    def __getitem__(self, key):
-        return self.context[key]
-
-    def get(
-        self,
-        key,
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
-
-    def view(self, path: Union[AimObjectKey, AimObjectPath]):
-        if isinstance(path, (int, str)):
-            path = (path,)
-
-        if path[0] == 'run':
-            return self.run_view
-        else:
-            return ContextView(self.context)
+    @property
+    def context(self):
+        return AimObjectProxy(lambda: self._context, view=ContextView(self._context))
 
 
 class TraceCollection:
@@ -298,7 +280,7 @@ class RunTraceCollection(TraceCollection):
                 metric_view = MetricView(metric_name, ctx.to_dict(), run_view)
                 statement = self.query_traces.match(
                     run=run_view,
-                    metric=AimObjectProxy(lambda: metric_view, view=metric_view)
+                    metric=metric_view
                 )
             if not statement:
                 continue
