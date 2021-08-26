@@ -64,9 +64,9 @@ class Session:
     @exception_resistant
     def set_params(self, params: dict, name: Optional[str] = None):
         if name is None:
-            self._run[...] = params
+            self._run.set_params(..., params)
         else:
-            self._run[name] = params
+            self._run.set_params(name, params)
 
     def flush(self):
         pass
