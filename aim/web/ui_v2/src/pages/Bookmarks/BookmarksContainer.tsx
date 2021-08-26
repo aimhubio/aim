@@ -16,7 +16,12 @@ function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  return <Bookmarks data={bookmarksData.listData} />;
+  return (
+    <Bookmarks
+      data={bookmarksData.listData}
+      onBookmarkDelete={bookmarkAppModel.onBookmarkDelete}
+    />
+  );
 }
 
 export default BookmarksContainer;
