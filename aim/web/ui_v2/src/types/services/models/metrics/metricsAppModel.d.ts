@@ -57,7 +57,7 @@ export interface ITooltipContent {
 
 export interface IMetricsCollection<T> {
   key?: string;
-  config: unknown;
+  config: { [key: string]: string } | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;

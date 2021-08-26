@@ -3,10 +3,18 @@ import { Chip } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import {
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
 
 function getTableColumns(
   paramColumns: string[] = [],
-  grouped = false,
+  groupFields?: { [key: string]: string } | null,
+  aggregationMethods?: {
+    area: AggregationAreaMethods;
+    line: AggregationLineMethods;
+  },
 ): ITableColumn[] {
   const columns = [
     {
@@ -31,6 +39,7 @@ function getTableColumns(
       key: 'metric',
       title: 'Metric',
       width: 150,
+      minWidth: 90,
       resizable: true,
     },
     {
@@ -50,6 +59,7 @@ function getTableColumns(
               />
             )),
       width: 150,
+      minWidth: 90,
       resizable: true,
     },
     {
@@ -57,6 +67,7 @@ function getTableColumns(
       key: 'value',
       title: 'Value',
       width: 150,
+      minWidth: 90,
       resizable: true,
     },
     {
@@ -64,18 +75,21 @@ function getTableColumns(
       key: 'step',
       title: 'Step',
       width: 150,
+      minWidth: 90,
     },
     {
       dataKey: 'epoch',
       key: 'epoch',
       title: 'Epoch',
       width: 150,
+      minWidth: 90,
     },
     {
       dataKey: 'timestamp',
       key: 'timestamp',
       title: 'Time',
       width: 150,
+      minWidth: 90,
       resizable: true,
     },
   ].concat(
@@ -88,11 +102,33 @@ function getTableColumns(
           ? JSON.stringify(rowData[param])
           : rowData[param],
       width: 150,
+      minWidth: 90,
       resizable: true,
     })),
   );
 
-  return grouped
+  if (groupFields) {
+    Object.keys(groupFields).forEach((field) => {
+      const key = field.replace('run.params.', '');
+      const column = columns.find((col) => col.key === key);
+      if (!!column) {
+        column.frozen = 'left';
+      }
+    });
+    columns.sort((a, b) => {
+      if (a.key === '#') {
+        return -1;
+      } else if (
+        groupFields.hasOwnProperty(a.key) ||
+        groupFields.hasOwnProperty(`run.params.${a.key}`)
+      ) {
+        return -1;
+      }
+      return 0;
+    });
+  }
+
+  return !!groupFields
     ? [
         {
           dataKey: '#',

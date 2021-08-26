@@ -435,7 +435,10 @@ class BaseTable extends React.PureComponent {
       key: `row-${rowKey}`,
       isScrolling,
       className,
-      style,
+      style: {
+        ...style,
+        ...rowData?.rowProps?.style,
+      },
       columns,
       rowIndex,
       rowData,

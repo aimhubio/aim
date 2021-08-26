@@ -264,7 +264,7 @@ function getMetricsData() {
           lineChartData: getDataAsLines(data),
           aggregatedData: getAggregatedData(data),
           tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params, data[0].config !== null),
+          tableColumns: getTableColumns(params, data[0].config),
         });
       }
     },
@@ -484,7 +484,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   );
 
   for (let i = 0; i < data.length; i++) {
-    const groupValue: { [key: string]: unknown } = {};
+    const groupValue: { [key: string]: string } = {};
     groupingFields.forEach((field) => {
       groupValue[field] = _.get(data[i], field);
     });
@@ -711,8 +711,8 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
-      rows.push({
-        '#': '',
+      const groupHeaderRow = {
+        '#': metricsCollection.chartIndex + 1,
         key: groupKey!,
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
@@ -731,7 +731,9 @@ function getDataAsTableRows(
             borderLeft: `3px solid ${metricsCollection.color ?? COLORS[0][0]}`,
           },
         },
-      });
+      };
+
+      rows.push(groupHeaderRow);
     }
 
     metricsCollection.data.forEach((metric: IMetric) => {
@@ -775,7 +777,6 @@ function getDataAsTableRows(
         'run',
         'metric',
         'context',
-        'value',
         'step',
         'epoch',
         'timestamp',
@@ -1031,7 +1032,7 @@ function updateModelData(configData: IMetricAppConfig): void {
   );
   const tableColumns = getTableColumns(
     processedData.params,
-    processedData.data[0].config !== null,
+    processedData.data[0].config,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
