@@ -1,4 +1,4 @@
-import { IMetricTrace, IRun, ITraceData } from './runModel';
+import { IMetricTrace, IRun } from './runModel';
 
 export interface IMetric {
   run: IRun<IMetricTrace>;
@@ -6,10 +6,10 @@ export interface IMetric {
   metric_name: string;
   context: { [key: string]: unknown };
   data: {
-    values: Float64Array;
-    epochs: Float64Array;
-    steps: Float64Array;
-    timestamps: Float64Array;
+    values: number[];
+    steps: number[];
+    epochs: number[];
+    timestamps: number[];
     xValues: number[];
     yValues: number[];
   };
