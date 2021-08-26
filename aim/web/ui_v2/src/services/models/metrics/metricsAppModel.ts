@@ -34,6 +34,7 @@ import {
   GroupNameType,
   IAggregatedData,
   IAggregationConfig,
+  IAlignMetricsDataParams,
   IAppData,
   IDashboardData,
   IGetGroupingPersistIndex,
@@ -285,13 +286,13 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         .createDashboard({ app_id: data.id, name, description })
         .call()
         .then((res: IDashboardData | any) => {
-          if (res.id) {
-            onNotificationAdd({
-              id: Date.now(),
-              severity: 'success',
-              message: BookmarkNotificationsEnum.CREATE,
-            });
-          }
+          onNotificationAdd({
+            id: Date.now(),
+            severity: res.id ? 'success' : 'error',
+            message: res.id
+              ? BookmarkNotificationsEnum.CREATE
+              : BookmarkNotificationsEnum.ERROR,
+          });
         })
         .catch((err) => {
           onNotificationAdd({
@@ -1217,15 +1218,35 @@ function onResetConfigData(): void {
 function alignData() {}
 
 function onAlignmentMetricChange(metric: string): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
+  const modelState = model.getState();
+
+  const runs: any = modelState?.rawData?.map((item) => {
+    const traces = item.traces.map(({ context, metric_name, slice }) => ({
+      context,
+      metric_name,
+      slice,
+    }));
+    return {
+      run_id: item.hash,
+      traces,
+    };
+  });
+
+  const reqBody: IAlignMetricsDataParams = {
+    align_by: metric,
+    runs,
+  };
+
+  const { call, abort } = metricsService.fetchAlignedMetricsData(reqBody);
+  call();
+  if (modelState?.config?.chart) {
     model.setState({
       config: {
-        ...configData,
+        ...modelState?.config,
         chart: {
-          ...configData.chart,
+          ...modelState?.config.chart,
           alignmentConfig: {
-            ...configData.chart.alignmentConfig,
+            ...modelState?.config.chart.alignmentConfig,
             metric: metric,
           },
         },

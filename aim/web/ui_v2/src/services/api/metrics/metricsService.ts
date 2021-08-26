@@ -1,10 +1,12 @@
 import API from '../api';
 import { IApiRequest } from 'types/services/services';
+import { IAlignMetricsDataParams } from 'types/services/models/metrics/metricsAppModel';
 // import generateMetrics from './metricsMock';
 // import { IRun } from 'types/services/models/metrics/runModel';
 
 const endpoints = {
   GET_METRICS: 'runs/search/metric',
+  GET_ALIGNED_METRICS: 'runs/search/metric/align',
 };
 
 function getMetricsData(params: {}): IApiRequest<ReadableStream> {
@@ -26,9 +28,16 @@ function getMetricsData(params: {}): IApiRequest<ReadableStream> {
   // };
 }
 
+function fetchAlignedMetricsData(
+  params: IAlignMetricsDataParams,
+): IApiRequest<any> {
+  return API.post<IApiRequest<any>>(endpoints.GET_ALIGNED_METRICS, params);
+}
+
 const metricsService = {
   endpoints,
   getMetricsData,
+  fetchAlignedMetricsData,
 };
 
 export default metricsService;

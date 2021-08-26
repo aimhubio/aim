@@ -63,6 +63,9 @@ function post<ResponseDataType>(
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'POST',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   });
 }

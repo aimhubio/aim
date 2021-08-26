@@ -19,6 +19,7 @@ export interface IParamTrace {
 export interface IMetricTrace {
   metric_name: string;
   context: { [key: string]: unknown };
+  slice: number[];
   values: ITraceData;
   iters: ITraceData;
   epochs: ITraceData;

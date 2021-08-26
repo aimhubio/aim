@@ -10,7 +10,7 @@ import {
 import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
-import { IMetricTrace, IRun } from './runModel';
+import { IMetricTrace, IRun, ITraceData } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
@@ -220,4 +220,16 @@ export interface IDashboardData {
   name: string;
   description: string;
   updated_at: string;
+}
+
+export interface IAlignMetricsDataParams {
+  align_by: string;
+  runs: Array<{
+    run_id: string;
+    traces: Array<{
+      context: IMetricTrace['context'];
+      metric_name: 'string';
+      slice: number[];
+    }>;
+  }>;
 }
