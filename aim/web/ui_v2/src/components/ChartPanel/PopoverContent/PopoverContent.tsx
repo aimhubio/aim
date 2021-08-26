@@ -84,7 +84,7 @@ function PopoverContent({
             </Typography>
             {Object.keys(params).map((paramKey) => (
               <Typography key={paramKey} color='textSecondary'>
-                {paramKey}: {params[paramKey] ?? '--'}
+                {paramKey}: {JSON.stringify(params[paramKey]) ?? '--'}
               </Typography>
             ))}
           </Box>

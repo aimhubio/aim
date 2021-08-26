@@ -8,7 +8,7 @@ export interface IMetric {
   data: {
     values: Float64Array;
     epochs: Float64Array;
-    iterations: Float64Array;
+    steps: Float64Array;
     timestamps: Float64Array;
     xValues: number[];
     yValues: number[];
