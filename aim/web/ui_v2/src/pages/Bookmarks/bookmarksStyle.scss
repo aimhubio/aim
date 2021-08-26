@@ -1,3 +1,6 @@
+@import 'src/styles/abstracts/_variables';
+@import 'src/styles/abstracts/functions';
+
 .Bookmarks {
   height: 100vh;
 }
@@ -6,7 +9,7 @@
   font-size: 2em;
   margin: 0.5em 0;
   padding: 0;
-  color: #3b5896;
+  color: $primary-color;
 }
 
 .Bookmarks__list {
