@@ -27,6 +27,9 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import getSmoothenedData from 'utils/getSmoothenedData';
+import filterMetricData from 'utils/filterMetricData';
+import { RowHeight } from 'config/table/tableConfigs';
 
 // Types
 import {
@@ -58,8 +61,6 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import getSmoothenedData from 'utils/getSmoothenedData';
-import { RowHeight } from 'config/table/tableConfigs';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -372,7 +373,15 @@ function processData(data: IRun<IMetricTrace>[]): {
     metrics = metrics.concat(
       run.traces.map((trace) => {
         index++;
-        let yValues = [...new Float64Array(trace.values?.blob)];
+        const { values, steps, epochs, timestamps } = filterMetricData(
+          [...new Float64Array(trace.values.blob)],
+          [...new Float64Array(trace.iters.blob)],
+          [...new Float64Array(trace.epochs?.blob)],
+          [...new Float64Array(trace.timestamps.blob)],
+          configData?.chart?.axesScaleType,
+        );
+
+        let yValues = values;
         if (
           configData?.chart.smoothingAlgorithm &&
           configData.chart.smoothingFactor
@@ -380,7 +389,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           yValues = getSmoothenedData({
             smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
             smoothingFactor: configData.chart.smoothingFactor,
-            data: [...new Float64Array(trace.values?.blob)],
+            data: values,
           });
         }
         return createMetricModel({
@@ -394,11 +403,11 @@ function processData(data: IRun<IMetricTrace>[]): {
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           data: {
-            values: new Float64Array(trace.values.blob),
-            steps: new Float64Array(trace.iters.blob),
-            epochs: new Float64Array(trace.epochs?.blob),
-            timestamps: new Float64Array(trace.timestamps.blob),
-            xValues: [...new Float64Array(trace.iters?.blob)],
+            values,
+            steps,
+            epochs,
+            timestamps,
+            xValues: steps,
             yValues,
           },
         } as IMetric);
@@ -961,22 +970,15 @@ function onDisplayOutliersChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.displayOutliers = !configData?.chart.displayOutliers;
-    model.setState({ config: configData });
+    updateModelData(configData);
   }
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          axesScaleType: params,
-        },
-      },
-    });
+    configData.chart.axesScaleType = params;
+    updateModelData(configData);
   }
 }
 
@@ -1217,7 +1219,7 @@ function onResetConfigData(): void {
 
 function alignData() {}
 
-function onAlignmentMetricChange(metric: string): void {
+async function onAlignmentMetricChange(metric: string) {
   const modelState = model.getState();
 
   const runs: any = modelState?.rawData?.map((item) => {
@@ -1238,7 +1240,31 @@ function onAlignmentMetricChange(metric: string): void {
   };
 
   const { call, abort } = metricsService.fetchAlignedMetricsData(reqBody);
-  call();
+
+  const stream = await call();
+  let gen = adjustable_reader(stream);
+  console.log(gen);
+
+  let buffer_pairs = decode_buffer_pairs(gen);
+  console.log(buffer_pairs);
+
+  let decodedPairs = decodePathsVals(buffer_pairs);
+  console.log(decodedPairs);
+
+  let objects = iterFoldTree(decodedPairs, 1);
+  console.log(objects);
+
+  const runData: IRun<IMetricTrace>[] = [];
+  for await (let [keys, val] of objects) {
+    runData.push({
+      ...(val as any),
+      hash: keys[0],
+    });
+  }
+
+  const { data, params } = processData(runData);
+  console.log(data, params);
+
   if (modelState?.config?.chart) {
     model.setState({
       config: {

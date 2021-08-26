@@ -32,10 +32,17 @@ function getStream<ResponseDataType>(
   options?: RequestInit,
 ) {
   return createAPIRequestWrapper<ResponseDataType>(
-    `${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`,
+    `${url}${
+      options?.method === 'POST'
+        ? ''
+        : params
+        ? '?' + new URLSearchParams(params).toString()
+        : ''
+    }`,
     {
       method: 'GET',
       ...options,
+      ...(options?.method === 'POST' && { body: JSON.stringify(params) }),
     },
     true,
   );

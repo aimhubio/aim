@@ -31,7 +31,13 @@ function getMetricsData(params: {}): IApiRequest<ReadableStream> {
 function fetchAlignedMetricsData(
   params: IAlignMetricsDataParams,
 ): IApiRequest<any> {
-  return API.post<IApiRequest<any>>(endpoints.GET_ALIGNED_METRICS, params);
+  return API.getStream<IApiRequest<any>>(
+    endpoints.GET_ALIGNED_METRICS,
+    params,
+    {
+      method: 'POST',
+    },
+  );
 }
 
 const metricsService = {

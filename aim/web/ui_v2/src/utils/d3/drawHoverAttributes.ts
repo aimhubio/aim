@@ -192,10 +192,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function drawHighlightedLines(dataSelector?: string): void {
-    if (dataSelector) {
-      linesNodeRef.current
-        .selectAll('path')
-        .classed('highlighted', false)
+    if (dataSelector && highlightMode !== HighlightEnum.Off) {
+      highlightedNodeRef.current
+        ?.classed('highlighted', false)
         .classed('active', false);
 
       highlightedNodeRef.current = linesNodeRef.current
