@@ -1,69 +1,17 @@
 import _ from 'lodash-es';
 
-import {
-  IProcessData,
-  IProcessDataProps,
-  IGetFilteredValuesParams,
-} from 'types/utils/d3/processData';
+import { IProcessData } from 'types/utils/d3/processData';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
-import { ScaleEnum } from '.';
-import { removeOutliers } from '../removeOutliers';
+import { removeOutliers } from 'utils/removeOutliers';
+import { ILine } from 'types/components/LineChart/LineChart';
 
-const isInvalidValue = (v: number, scaleType: ScaleEnum): boolean =>
-  !isFinite(v) ||
-  isNaN(v) ||
-  v === null ||
-  (scaleType === ScaleEnum.Log && v <= 0);
-
-function getFilteredValues(params: IGetFilteredValuesParams): number[] {
-  const { data, invalidXIndices, invalidYIndices } = params;
-
-  return data.filter(
-    (v: number, i: number) =>
-      invalidXIndices.indexOf(i) === -1 && invalidYIndices.indexOf(i) === -1,
-  );
-}
-
-function processData(params: IProcessDataProps): IProcessData {
-  const { data, displayOutliers, axesScaleType } = params;
-
+function processData(data: ILine[], displayOutliers: boolean): IProcessData {
   let xValues: number[] = [];
   let yValues: number[] = [];
 
   const processedData = data.map((line) => {
-    const invalidXIndices: number[] = line.data.xValues.reduce(
-      (acc: number[], v: number, i: number) => {
-        if (isInvalidValue(v, axesScaleType.xAxis)) {
-          acc = acc.concat([i]);
-        }
-        return acc;
-      },
-      [],
-    );
-    const invalidYIndices: number[] = line.data.yValues.reduce(
-      (acc: number[], v: number, i: number) => {
-        if (isInvalidValue(v, axesScaleType.yAxis)) {
-          acc = acc.concat([i]);
-        }
-        return acc;
-      },
-      [],
-    );
-
-    const filteredXValues: number[] = getFilteredValues({
-      data: line.data.xValues,
-      invalidXIndices,
-      invalidYIndices,
-    });
-
-    const filteredYValues: number[] = getFilteredValues({
-      data: line.data.yValues,
-      invalidXIndices,
-      invalidYIndices,
-    });
-
-    xValues = xValues.concat(filteredXValues);
-    yValues = yValues.concat(filteredYValues);
+    xValues = xValues.concat(line.data.xValues);
+    yValues = yValues.concat(line.data.yValues);
 
     return Object.assign(
       {
@@ -73,8 +21,8 @@ function processData(params: IProcessDataProps): IProcessData {
       line,
       {
         data: {
-          xValues: filteredXValues,
-          yValues: filteredYValues,
+          xValues: line.data.xValues,
+          yValues: line.data.yValues,
         },
       },
     );

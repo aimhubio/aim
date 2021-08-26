@@ -1,6 +1,5 @@
 import React from 'react';
 import { Chip } from '@material-ui/core';
-import _ from 'lodash-es';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 

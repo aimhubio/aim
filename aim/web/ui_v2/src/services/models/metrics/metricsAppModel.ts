@@ -27,6 +27,8 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import getSmoothenedData from 'utils/getSmoothenedData';
+import filterMetricData from 'utils/filterMetricData';
 
 // Types
 import {
@@ -57,7 +59,6 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import getSmoothenedData from 'utils/getSmoothenedData';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -369,7 +370,16 @@ function processData(data: IRun<IMetricTrace>[]): {
     metrics = metrics.concat(
       run.traces.map((trace) => {
         index++;
-        let yValues = [...new Float64Array(trace.values?.blob)];
+
+        const { values, steps, epochs, timestamps } = filterMetricData(
+          [...new Float64Array(trace.values.blob)],
+          [...new Float64Array(trace.iters.blob)],
+          [...new Float64Array(trace.epochs?.blob)],
+          [...new Float64Array(trace.timestamps.blob)],
+          configData?.chart?.axesScaleType,
+        );
+
+        let yValues = values;
         if (
           configData?.chart.smoothingAlgorithm &&
           configData.chart.smoothingFactor
@@ -377,7 +387,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           yValues = getSmoothenedData({
             smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
             smoothingFactor: configData.chart.smoothingFactor,
-            data: [...new Float64Array(trace.values?.blob)],
+            data: values,
           });
         }
         return createMetricModel({
@@ -391,11 +401,11 @@ function processData(data: IRun<IMetricTrace>[]): {
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           data: {
-            values: new Float64Array(trace.values.blob),
-            iterations: new Float64Array(trace.iters.blob),
-            epochs: new Float64Array(trace.epochs?.blob),
-            timestamps: new Float64Array(trace.timestamps.blob),
-            xValues: [...new Float64Array(trace.iters?.blob)],
+            values,
+            steps,
+            epochs,
+            timestamps,
+            xValues: steps,
             yValues,
           },
         } as IMetric);
@@ -725,8 +735,7 @@ function getDataAsTableRows(
       const closestIndex =
         xValue === null
           ? null
-          : getClosestValue(metric.data.iterations as any, xValue as number)
-              .index;
+          : getClosestValue(metric.data.steps as any, xValue as number).index;
       const rowValues: { [key: string]: unknown } = {
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
@@ -739,7 +748,7 @@ function getDataAsTableRows(
           closestIndex === null ? '-' : metric.data.values[closestIndex]
         }`,
         iteration: `${
-          closestIndex === null ? '-' : metric.data.iterations[closestIndex]
+          closestIndex === null ? '-' : metric.data.steps[closestIndex]
         }`,
       };
       paramKeys.forEach((paramKey) => {
@@ -867,22 +876,15 @@ function onDisplayOutliersChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.displayOutliers = !configData?.chart.displayOutliers;
-    model.setState({ config: configData });
+    updateModelData(configData);
   }
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          axesScaleType: params,
-        },
-      },
-    });
+    configData.chart.axesScaleType = params;
+    updateModelData(configData);
   }
 }
 
@@ -892,6 +894,23 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   if (!isAppliedGrouping) {
     configData.chart.aggregationConfig.isApplied = false;
   }
+}
+
+function updateModelData(configData: IMetricAppConfig): void {
+  const processedData = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
+  model.setState({
+    config: configData,
+    data: processedData.data,
+    lineChartData: getDataAsLines(processedData.data),
+    aggregatedData: getAggregatedData(processedData.data),
+    tableData: getDataAsTableRows(
+      processedData.data,
+      null,
+      processedData.params,
+    ),
+  });
 }
 
 function onGroupingSelectChange({
@@ -949,23 +968,6 @@ function onGroupingReset(groupName: GroupNameType) {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-}
-
-function updateModelData(configData: IMetricAppConfig): void {
-  const processedData = processData(
-    model.getState()?.rawData as IRun<IMetricTrace>[],
-  );
-  model.setState({
-    config: configData,
-    data: processedData.data,
-    lineChartData: getDataAsLines(processedData.data),
-    aggregatedData: getAggregatedData(processedData.data),
-    tableData: getDataAsTableRows(
-      processedData.data,
-      null,
-      processedData.params,
-    ),
-  });
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {

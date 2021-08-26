@@ -73,11 +73,7 @@ const LineChart = React.forwardRef(function LineChart(
   const attributesRef = React.useRef<IAttributesRef>({});
 
   function draw() {
-    const { processedData, min, max } = processData({
-      data,
-      displayOutliers,
-      axesScaleType,
-    });
+    const { processedData, min, max } = processData(data, displayOutliers);
 
     drawArea({
       index,

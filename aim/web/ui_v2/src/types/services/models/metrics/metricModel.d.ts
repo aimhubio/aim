@@ -6,10 +6,10 @@ export interface IMetric {
   metric_name: string;
   context: { [key: string]: unknown };
   data: {
-    values: Float64Array;
-    epochs: Float64Array;
-    iterations: Float64Array;
-    timestamps: Float64Array;
+    values: number[];
+    steps: number[];
+    epochs: number[];
+    timestamps: number[];
     xValues: number[];
     yValues: number[];
   };
