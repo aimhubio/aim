@@ -6,7 +6,7 @@ import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { decode, encode } from 'utils/encoder/encoder';
+import { encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -29,6 +29,7 @@ import {
 } from 'utils/encoder/streamEncoding';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import filterMetricData from 'utils/filterMetricData';
+import { RowHeight } from 'config/table/tableConfigs';
 
 // Types
 import {
@@ -124,6 +125,9 @@ function getConfig() {
       query: '',
       advancedMode: false,
       advancedQuery: '',
+    },
+    table: {
+      rowHeight: RowHeight.md,
     },
   };
 }
@@ -241,7 +245,10 @@ function getMetricsData() {
 
         const runData: IRun<IMetricTrace>[] = [];
         for await (let [keys, val] of objects) {
-          runData.push(val as any);
+          runData.push({
+            ...(val as any),
+            hash: keys[0],
+          });
         }
 
         const { data, params } = processData(runData);
@@ -262,7 +269,7 @@ function getMetricsData() {
           lineChartData: getDataAsLines(data),
           aggregatedData: getAggregatedData(data),
           tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params),
+          tableColumns: getTableColumns(params, data[0].config),
         });
       }
     },
@@ -329,17 +336,17 @@ function getGroupingSelectOptions(
     ...paramsOptions,
     {
       group: 'Other',
-      label: 'experiment_name',
-      value: 'run.experiment_name',
+      label: 'experiment',
+      value: 'run.props.experiment',
     },
     {
       group: 'Other',
       label: 'run.hash',
-      value: 'run.params.status.hash',
+      value: 'run.hash',
     },
     {
       group: 'Other',
-      label: 'metric_name',
+      label: 'metric',
       value: 'metric_name',
     },
     {
@@ -361,12 +368,7 @@ function processData(data: IRun<IMetricTrace>[]): {
   let params: string[] = [];
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
   data.forEach((run: IRun<IMetricTrace>) => {
-    params = params.concat(
-      getObjectPaths(
-        _.omit(run.params, 'experiment_name', 'status'),
-        _.omit(run.params, 'experiment_name', 'status'),
-      ),
-    );
+    params = params.concat(getObjectPaths(run.params, run.params));
     metrics = metrics.concat(
       run.traces.map((trace) => {
         index++;
@@ -394,7 +396,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           ...trace,
           run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
           key: encode({
-            runHash: run.params.status.hash,
+            runHash: run.hash,
             metricName: trace.metric_name,
             traceContext: trace.context,
           }),
@@ -508,7 +510,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   );
 
   for (let i = 0; i < data.length; i++) {
-    const groupValue: { [key: string]: unknown } = {};
+    const groupValue: { [key: string]: string } = {};
     groupingFields.forEach((field) => {
       groupValue[field] = _.get(data[i], field);
     });
@@ -517,6 +519,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
       groupValues[groupKey].data.push(data[i]);
     } else {
       groupValues[groupKey] = {
+        key: groupKey,
         config: groupValue,
         color: null,
         dasharray: null,
@@ -725,40 +728,131 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
-): IMetricTableRowData[][] | any {
+): IMetricTableRowData[] | any {
   if (!processedData) {
     return [];
   }
 
-  return processedData.map((metricsCollection: IMetricsCollection<IMetric>) =>
-    metricsCollection.data.map((metric: IMetric) => {
+  const rows: IMetricTableRowData[] = [];
+
+  processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
+    const groupKey = metricsCollection.key;
+    const columnsValues: { [key: string]: string[] } = {};
+
+    if (metricsCollection.config !== null) {
+      const groupHeaderRow = {
+        '#': metricsCollection.chartIndex + 1,
+        key: groupKey!,
+        color: metricsCollection.color,
+        dasharray: metricsCollection.dasharray,
+        experiment: '',
+        run: '',
+        metric: '',
+        context: [],
+        value: '',
+        step: '',
+        epoch: '',
+        timestamp: '',
+        children: [],
+        groupHeader: true,
+        rowProps: {
+          style: {
+            boxShadow: `inset 3px 0 0 0 ${
+              metricsCollection.color ?? COLORS[0][0]
+            }`,
+          },
+        },
+      };
+
+      rows.push(groupHeaderRow);
+    }
+
+    metricsCollection.data.forEach((metric: IMetric) => {
       const closestIndex =
         xValue === null
           ? null
-          : getClosestValue(metric.data.steps as any, xValue as number).index;
-      const rowValues: { [key: string]: unknown } = {
+          : getClosestValue(metric.data.xValues as number[], xValue as number)
+              .index;
+      const rowValues: IMetricTableRowData = {
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
-        dasharray: metricsCollection.dasharray ?? metric.color,
-        experiment: metric.run.params.experiment_name,
-        run: metric.run.params.status.name,
+        dasharray: metricsCollection.dasharray ?? metric.dasharray,
+        experiment: metric.run.props.experiment ?? 'default',
+        run: metric.run.props.name ?? '-',
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         value: `${
-          closestIndex === null ? '-' : metric.data.values[closestIndex]
+          closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
         }`,
-        iteration: `${
-          closestIndex === null ? '-' : metric.data.steps[closestIndex]
+        step: `${
+          closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
         }`,
+        epoch: `${
+          closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
+        }`,
+        timestamp: `${
+          closestIndex === null
+            ? '-'
+            : metric.data.timestamps[closestIndex] ?? '-'
+        }`,
+        parentId: groupKey,
+        rowProps: {
+          style: {
+            boxShadow: `inset 3px 0 0 0 ${
+              metricsCollection.color ?? metric.color
+            }`,
+          },
+        },
       };
-      paramKeys.forEach((paramKey) => {
-        rowValues[paramKey] = JSON.stringify(
-          _.get(metric.run.params, paramKey, '-'),
-        );
+
+      [
+        'experiment',
+        'run',
+        'metric',
+        'context',
+        'step',
+        'epoch',
+        'timestamp',
+      ].forEach((key) => {
+        if (columnsValues.hasOwnProperty(key)) {
+          if (!_.some(columnsValues[key], rowValues[key])) {
+            columnsValues[key].push(rowValues[key]);
+          }
+        } else {
+          columnsValues[key] = [rowValues[key]];
+        }
       });
-      return rowValues;
-    }),
-  );
+
+      paramKeys.forEach((paramKey) => {
+        const value = _.get(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = value;
+        if (columnsValues.hasOwnProperty(paramKey)) {
+          if (!columnsValues[paramKey].includes(value)) {
+            columnsValues[paramKey].push(value);
+          }
+        } else {
+          columnsValues[paramKey] = [value];
+        }
+      });
+
+      if (metricsCollection.config !== null) {
+        rows[rows.length - 1].children.push(rowValues);
+      } else {
+        rows.push(rowValues);
+      }
+    });
+
+    if (metricsCollection.config !== null) {
+      for (let columnKey in columnsValues) {
+        rows[rows.length - 1][columnKey] =
+          columnsValues[columnKey].length > 1
+            ? 'Mix'
+            : columnsValues[columnKey][0];
+      }
+    }
+  });
+
+  return rows;
 }
 
 function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
@@ -896,23 +990,6 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   }
 }
 
-function updateModelData(configData: IMetricAppConfig): void {
-  const processedData = processData(
-    model.getState()?.rawData as IRun<IMetricTrace>[],
-  );
-  model.setState({
-    config: configData,
-    data: processedData.data,
-    lineChartData: getDataAsLines(processedData.data),
-    aggregatedData: getAggregatedData(processedData.data),
-    tableData: getDataAsTableRows(
-      processedData.data,
-      null,
-      processedData.params,
-    ),
-  });
-}
-
 function onGroupingSelectChange({
   groupName,
   list,
@@ -970,6 +1047,34 @@ function onGroupingReset(groupName: GroupNameType) {
   }
 }
 
+function updateModelData(configData: IMetricAppConfig): void {
+  const processedData = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
+  const tableData = getDataAsTableRows(
+    processedData.data,
+    null,
+    processedData.params,
+  );
+  const tableColumns = getTableColumns(
+    processedData.params,
+    processedData.data[0].config,
+  );
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
+  model.setState({
+    config: configData,
+    data: processedData.data,
+    lineChartData: getDataAsLines(processedData.data),
+    aggregatedData: getAggregatedData(processedData.data),
+    tableData,
+    tableColumns,
+  });
+}
+
 function onGroupingApplyChange(groupName: GroupNameType): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
@@ -1014,7 +1119,7 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData.flat() });
+    tableRef.current?.updateData({ newData: tableData });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,

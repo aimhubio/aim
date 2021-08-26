@@ -149,12 +149,7 @@ function processData(data: IRun<IParamTrace>[]): {
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
   data.forEach((run: IRun<IParamTrace>, index) => {
-    params = params.concat(
-      getObjectPaths(
-        _.omit(run.params, 'experiment_name', 'status'),
-        _.omit(run.params, 'experiment_name', 'status'),
-      ),
-    );
+    params = params.concat(getObjectPaths(run.params, run.params));
 
     runs.push({
       run,

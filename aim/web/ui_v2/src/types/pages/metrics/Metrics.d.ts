@@ -26,6 +26,7 @@ import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -35,7 +36,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   displayOutliers: boolean;
@@ -52,6 +53,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: IMetricAppConfig['select'];
+  tableRowHeight: RowHeight;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (

@@ -1,19 +1,11 @@
 export interface IRun<T> {
-  params: {
-    experiment_name: string;
-    status: {
-      aim: {
-        version: string;
-      };
-      archived: 0 | 1;
-      name: string;
-      date: number;
-      hash: string;
-      message: number;
-    };
-    [key: string]: IRunParam;
+  params: IRunParams;
+  props: {
+    experiment: string | null;
+    name: string;
   };
   created_at: number;
+  hash: string;
   traces: T[];
   hash: string;
 }
