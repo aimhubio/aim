@@ -166,7 +166,7 @@ const Table = React.forwardRef(function Table(
               fixed
               rowKey='key'
               headerHeight={30}
-              rowHeight={30}
+              rowHeight={props.rowHeight}
               footerHeight={0}
               defaultExpandedRowKeys={[]}
               expandColumnKey='#'

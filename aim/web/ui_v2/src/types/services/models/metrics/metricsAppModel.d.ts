@@ -14,6 +14,7 @@ import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricAppModelState {
   refs: {
@@ -125,6 +126,9 @@ interface IMetricAppConfig {
     query: string;
     advancedMode: boolean;
     advancedQuery: string;
+  };
+  table: {
+    rowHeight: RowHeight;
   };
 }
 

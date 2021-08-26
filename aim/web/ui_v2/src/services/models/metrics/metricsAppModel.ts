@@ -58,6 +58,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import getSmoothenedData from 'utils/getSmoothenedData';
+import { RowHeight } from 'config/table/tableConfigs';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -123,6 +124,9 @@ function getConfig() {
       query: '',
       advancedMode: false,
       advancedQuery: '',
+    },
+    table: {
+      rowHeight: RowHeight.md,
     },
   };
 }
@@ -743,7 +747,9 @@ function getDataAsTableRows(
         groupHeader: true,
         rowProps: {
           style: {
-            borderLeft: `3px solid ${metricsCollection.color ?? COLORS[0][0]}`,
+            boxShadow: `inset 3px 0 0 0 ${
+              metricsCollection.color ?? COLORS[0][0]
+            }`,
           },
         },
       };
@@ -782,7 +788,9 @@ function getDataAsTableRows(
         parentId: groupKey,
         rowProps: {
           style: {
-            borderLeft: `3px solid ${metricsCollection.color ?? metric.color}`,
+            boxShadow: `inset 3px 0 0 0 ${
+              metricsCollection.color ?? metric.color
+            }`,
           },
         },
       };

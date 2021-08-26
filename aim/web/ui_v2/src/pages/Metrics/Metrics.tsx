@@ -117,14 +117,17 @@ function Metrics(
             {props.tableData?.length > 0 ? (
               <Table
                 ref={props.tableRef}
+                data={props.tableData}
+                columns={props.tableColumns}
+                // Table options
+                rowHeight={props.tableRowHeight}
+                sortOptions={props.groupingData.selectOptions}
+                // Table actions
                 onSort={() => null}
                 onExport={() => null}
                 onManageColumns={() => null}
                 onRowHeightChange={() => null}
                 onRowsChange={() => null}
-                sortOptions={props.groupingData.selectOptions}
-                data={props.tableData}
-                columns={props.tableColumns}
                 onRowHover={props.onTableRowHover}
                 onRowClick={props.onTableRowClick}
               />
