@@ -1,3 +1,5 @@
+@use './functions' as *;
+
 $primary-color: #1473E6;
 $error-color: #E64E48;
 $success-color: #2BC784;
@@ -14,3 +16,10 @@ $purple: #AF78FF;
 $yellow: #FFD76E;
 $cyan: #5FC8FF;
 $indigo: #7785FF;
+
+
+
+//border
+$border-color-main: tint($primary-color, 10);
+$border-main: 0.0625em solid $border-color-main;
+$main-radius: 0.375em;
