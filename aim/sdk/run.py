@@ -29,7 +29,65 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class Run:
+# TODO: [AT] generate automatically based on ModelMappedRun
+class StructuredRunMixin:
+    @property
+    def name(self):
+        return self.props.name
+    
+    @name.setter
+    def name(self, value):
+        self.props.name = value
+
+    @property
+    def description(self):
+        return self.props.description
+
+    @description.setter
+    def description(self, value):
+        self.props.description = value
+
+    @property
+    def archived(self):
+        return self.props.archived
+
+    @archived.setter
+    def archived(self, value):
+        self.props.archived = value
+
+    @property
+    def created_at(self):
+        return self.props.created_at
+
+    @property
+    def creation_time(self):
+        return self.props.creation_time
+
+    @property
+    def updated_at(self):
+        return self.props.updated_at
+
+
+    @property
+    def experiment(self):
+        return self.props.experiment
+
+    @experiment.setter
+    def experiment(self, value):
+        self.props.experiment = value
+
+    @property
+    def tags(self):
+        return self.props.tags
+
+    def add_tag(self, value):
+        return self.props.add_tag(value)
+
+    def remove_tag(self, tag_id):
+        return self.props.remove_tag(tag_id)
+
+
+class Run(StructuredRunMixin):
 
     _idx_to_ctx: Dict[int, Context] = dict()
     _props_cache_hint: str = None

@@ -125,7 +125,7 @@ class TestRunApi(ApiTestBase):
     def test_run_info_api(self):
         run = self._find_run_by_name('Run # 1')
 
-        self.assertEqual('Run # 1', run.props.name)
+        self.assertEqual('Run # 1', run.name)
         client = self.client
         response = client.get(f'/api/runs/{run.hashname}/info/')
         self.assertEqual(200, response.status_code)
@@ -170,6 +170,6 @@ class TestRunApi(ApiTestBase):
     def _find_run_by_name(self, name: str):
         repo = self.repo
         for run in repo.iter_runs():
-            if run.props.name == name or run['name'] == name:
+            if run.name == name or run['name'] == name:
                 return run
         return None
