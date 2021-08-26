@@ -24,6 +24,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ILine } from 'types/components/LineChart/LineChart';
 import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
@@ -60,7 +61,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onHighlightModeChange: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
-  onTableRowClick: (rowKey: string) => void;
+  onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,

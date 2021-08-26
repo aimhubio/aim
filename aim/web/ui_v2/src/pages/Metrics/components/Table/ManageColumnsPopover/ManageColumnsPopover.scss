@@ -1,0 +1,48 @@
+.ManageColumns__container {
+  display: flex;
+  padding: 0.5em;
+  height: 210px;
+}
+
+.ColumnList__container {
+  border-radius: 4px;
+  width: 210px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #E8F1FC;
+  &:nth-child(2) {
+      border-left: unset;
+      border-right: unset;
+  }
+}
+
+.ColumnList__title {
+    padding: 0.5em;
+    border-bottom: 1px solid rgba(8, 46, 92, 0.1);
+    font-size: 0.875em;
+}
+
+.ColumnList__items__wrapper {
+  height: 100%;
+  overflow: auto;
+  padding: 8px;
+  transition: background-color 0.2s ease;
+
+  min-height: 100px;
+}
+
+.ColumnList__items__wrapper__dragging {
+  background: #f3f8fe;
+}
+
+
+.ManageColumns__actions__container {
+    padding: 0em 0.5em 0.5em 0.5em;
+    display: flex;
+    justify-content: flex-end;
+    button {
+        font-size: 0.625em;
+        margin-left: 0.5em;
+    }
+}

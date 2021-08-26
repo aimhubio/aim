@@ -7,7 +7,7 @@ export interface IRun<T> {
   created_at: number;
   hash: string;
   traces: T[];
-  runHash?: string;
+  hash: string;
 }
 
 export interface IParamTrace {

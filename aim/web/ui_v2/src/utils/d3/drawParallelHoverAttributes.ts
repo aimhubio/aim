@@ -456,8 +456,9 @@ function scalePointValue(
   const rangePoints = d3.range(
     range[0],
     range[1],
-    xScale.step && xScale.step(),
+    xScale.step && xScale.step() - 1,
   );
+
   return domain[d3.bisect(rangePoints, xPos) - 1];
 }
 

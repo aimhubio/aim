@@ -197,7 +197,7 @@ export type GroupingSelectOptionType = {
   value: string;
 };
 
-export interface IAppData extends Partial<IMetricAppConfig> {
+export interface IAppData extends Partial<IMetricAppConfig | IParamsAppConfig> {
   created_at?: string;
   id?: string;
   updated_at?: string;

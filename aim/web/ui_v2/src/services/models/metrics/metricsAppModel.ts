@@ -356,16 +356,28 @@ function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
 } {
-  const grouping = model.getState()?.config?.grouping;
+  const configData = model.getState()?.config;
+
   let metrics: IMetric[] = [];
   let index: number = -1;
   let params: string[] = [];
-  const paletteIndex: number = grouping?.paletteIndex || 0;
+  const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
   data.forEach((run: IRun<IMetricTrace>) => {
-    params = params.concat(getObjectPaths(run.params));
+    params = params.concat(getObjectPaths(run.params, run.params));
     metrics = metrics.concat(
       run.traces.map((trace) => {
         index++;
+        let yValues = [...new Float64Array(trace.values?.blob)];
+        if (
+          configData?.chart.smoothingAlgorithm &&
+          configData.chart.smoothingFactor
+        ) {
+          yValues = getSmoothenedData({
+            smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
+            smoothingFactor: configData.chart.smoothingFactor,
+            data: [...new Float64Array(trace.values?.blob)],
+          });
+        }
         return createMetricModel({
           ...trace,
           run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
@@ -382,7 +394,7 @@ function processData(data: IRun<IMetricTrace>[]): {
             epochs: new Float64Array(trace.epochs?.blob),
             timestamps: new Float64Array(trace.timestamps.blob),
             xValues: [...new Float64Array(trace.iters?.blob)],
-            yValues: [...new Float64Array(trace.values?.blob)],
+            yValues,
           },
         } as IMetric);
       }),
@@ -599,52 +611,55 @@ function getAggregatedData(
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
   let aggregatedData: IAggregatedData[] = [];
-  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
+  // const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
 
   processedData.forEach((metricsCollection, index) => {
-    let lineY: number[];
-    let areaMinY: number[];
-    let areaMaxY: number[];
-    if (smoothingAlgorithm && smoothingFactor) {
-      lineY = getSmoothenedData({
-        smoothingAlgorithm,
-        smoothingFactor,
-        data: metricsCollection.aggregation?.line?.yValues || [],
-      });
-      areaMinY = getSmoothenedData({
-        smoothingAlgorithm,
-        smoothingFactor,
-        data: metricsCollection.aggregation?.area.min?.yValues || [],
-      });
-      areaMaxY = getSmoothenedData({
-        smoothingAlgorithm,
-        smoothingFactor,
-        data: metricsCollection.aggregation?.area.max?.yValues || [],
-      });
-    } else {
-      lineY = metricsCollection.aggregation?.line?.yValues as number[];
-      areaMinY = metricsCollection.aggregation?.area.min?.yValues as number[];
-      areaMaxY = metricsCollection.aggregation?.area.max?.yValues as number[];
-    }
+    // let lineY: number[];
+    // let areaMinY: number[];
+    // let areaMaxY: number[];
+    // if (smoothingAlgorithm && smoothingFactor) {
+    //   lineY = getSmoothenedData({
+    //     smoothingAlgorithm,
+    //     smoothingFactor,
+    //     data: metricsCollection.aggregation?.line?.yValues || [],
+    //   });
+    //   areaMinY = getSmoothenedData({
+    //     smoothingAlgorithm,
+    //     smoothingFactor,
+    //     data: metricsCollection.aggregation?.area.min?.yValues || [],
+    //   });
+    //   areaMaxY = getSmoothenedData({
+    //     smoothingAlgorithm,
+    //     smoothingFactor,
+    //     data: metricsCollection.aggregation?.area.max?.yValues || [],
+    //   });
+    // } else {
+    //   lineY = metricsCollection.aggregation?.line?.yValues as number[];
+    //   areaMinY = metricsCollection.aggregation?.area.min?.yValues as number[];
+    //   areaMaxY = metricsCollection.aggregation?.area.max?.yValues as number[];
+    // }
 
-    const line = {
-      xValues: metricsCollection.aggregation?.line?.xValues as number[],
-      yValues: lineY,
-    };
-    const area: any = {
-      min: {
-        xValues: metricsCollection.aggregation?.area.min?.xValues,
-        yValues: areaMinY,
-      },
-      max: {
-        xValues: metricsCollection.aggregation?.area.max?.xValues,
-        yValues: areaMaxY,
-      },
-    };
+    // const line = {
+    //   xValues: metricsCollection.aggregation?.line?.xValues as number[],
+    //   yValues: lineY,
+    // };
+    // const area: any = {
+    //   min: {
+    //     xValues: metricsCollection.aggregation?.area.min?.xValues,
+    //     yValues: areaMinY,
+    //   },
+    //   max: {
+    //     xValues: metricsCollection.aggregation?.area.max?.xValues,
+    //     yValues: areaMaxY,
+    //   },
+    // };
     aggregatedData.push({
       key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
-      area,
-      line,
+      area: {
+        min: metricsCollection.aggregation?.area.min || null,
+        max: metricsCollection.aggregation?.area.max || null,
+      },
+      line: metricsCollection.aggregation?.line || null,
       chartIndex: metricsCollection.chartIndex || 0,
       color:
         metricsCollection.color ||
@@ -1120,29 +1135,24 @@ function onActivePointChange(
 
 //Table Methods
 
-function onTableRowHover(rowKey: string): void {
+function onTableRowHover(rowKey?: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
     if (chartPanelRef && !configData.chart.focusedState.active) {
-      chartPanelRef.current?.setActiveLine(rowKey);
+      chartPanelRef.current?.setActiveLineAndCircle(rowKey);
     }
   }
 }
 
-function onTableRowClick(rowKey: string | null): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+function onTableRowClick(rowKey?: string): void {
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
-  if (chartPanelRef && rowKey) {
-    chartPanelRef.current?.setActiveLine(rowKey, true);
-  }
-  if (configData?.chart) {
-    configData.chart.focusedState = {
-      ...configData.chart.focusedState,
-      active: !!rowKey,
-    };
-    updateModelData(configData);
-  }
+  const focusedStateActive = !!rowKey;
+  chartPanelRef?.current?.setActiveLineAndCircle(
+    rowKey,
+    focusedStateActive,
+    true,
+  );
 }
 
 function updateGroupingStateUrl(): void {
