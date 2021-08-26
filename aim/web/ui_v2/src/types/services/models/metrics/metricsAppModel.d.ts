@@ -166,7 +166,7 @@ export interface IMetricTableRowData {
   step: string;
   epoch: string;
   timestamp: string;
-  [key: string]: unknonw;
+  [key: string]: unknown;
 }
 
 export interface IGetDataAsLinesProps {
