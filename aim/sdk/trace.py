@@ -297,7 +297,7 @@ class RunTraceCollection(TraceCollection):
                 run_view = run.view()
                 metric_view = MetricView(metric_name, ctx.to_dict(), run_view)
                 statement = self.query_traces.match(
-                    run=AimObjectProxy(lambda: run_view, view=run_view),
+                    run=run_view,
                     metric=AimObjectProxy(lambda: metric_view, view=metric_view)
                 )
             if not statement:
@@ -347,7 +347,7 @@ class QueryRunTraceCollection(TraceCollection):
                 statement = True
             else:
                 run_view = run.view()
-                statement = self._query.match(run=AimObjectProxy(lambda: run_view, view=run_view))
+                statement = self._query.match(run=run_view)
             if not statement:
                 continue
             yield RunTraceCollection(run)

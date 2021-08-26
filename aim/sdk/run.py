@@ -41,7 +41,6 @@ class Run:
                  system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
         hashname = hashname or generate_run_hash()
 
-        self._instance_creation_time = time()
         if repo is None:
             from aim.sdk.repo import Repo
             repo = Repo.default_repo()
@@ -60,9 +59,6 @@ class Run:
 
         self.contexts: Dict[Context, int] = dict()
 
-        if experiment:
-            self.props.experiment = experiment
-
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
         ).tree().view('meta')
@@ -80,25 +76,12 @@ class Run:
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
-        self._creation_time = None
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
             self.props
-            self.creation_time
             self._prepare_resource_tracker(system_tracking_interval)
-
-    @property
-    def creation_time(self):
-        if self._creation_time is not None:
-            return self._creation_time
-
-        self._creation_time = self.meta_run_tree.get('creation_time', None)
-
-        if self._creation_time is None:
-            self._creation_time = self._instance_creation_time
-            self.meta_run_tree['creation_time'] = self._creation_time
-
-        return self._creation_time
+        if experiment:
+            self.experiment = experiment
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hashname} repo={self.repo}>'
@@ -280,40 +263,23 @@ class Run:
         self.meta_run_tree.finalize(index=index)
 
 
-class RunPropsView:
-    def __init__(self, run: Run):
-        self.meta_run_tree: TreeView = run.meta_run_tree
-        self.hashname = run.hashname
-        self.db = run.repo.structured_db
-        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
-
-    def view(self, path):
-        if isinstance(path, (int, str)):
-            path = [path]
-        if path[0] in self.structured_run_cls.fields():
-            return None
-        else:
-            return self.meta_run_tree.view(path)
-
-    def __getitem__(self, item):
-        if item in self.structured_run_cls.fields():
-            return getattr(self.db.caches['runs_cache'][self.hashname], item)
-        else:
-            return self.meta_run_tree.collect(item)
-
-
 class RunView:
 
     def __init__(self, run: Run):
+        self.db = run.repo.structured_db
+        self.hashname = run.hashname
+        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
         self.meta_run_tree: TreeView = run.meta_run_tree
         self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
-        self.props_view = RunPropsView(run)
+
+    def __getattr__(self, item):
+        if item in self.structured_run_cls.fields():
+            return getattr(self.db.caches['runs_cache'][self.hashname], item)
+        else:
+            return self[item]
 
     def __getitem__(self, key):
-        if key == 'props':
-            return None
-        else:
-            return self.meta_run_attrs_tree.collect(key)
+        return AimObjectProxy(lambda: self.meta_run_attrs_tree.collect(key), view=self.meta_run_attrs_tree.view(key))
 
     def get(
         self,
@@ -324,12 +290,3 @@ class RunView:
             return self.__getitem__(key)
         except KeyError:
             return default
-
-    def view(self, path: Union[AimObjectKey, AimObjectPath]):
-        if isinstance(path, (int, str)):
-            path = (path,)
-
-        if path[0] == 'props':
-            return self.props_view
-        else:
-            return self.meta_run_attrs_tree.view(path)

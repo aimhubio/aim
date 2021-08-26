@@ -109,13 +109,6 @@ def compile_checker(expr):
                                    mode='eval')
     return byte_code
 
-class LazyLocals(dict):
-    def __getitem__(self, key: str):
-        try:
-            return super().__getitem__(key)
-        except KeyError:
-            return self['fallback'][key]
-
 
 class RestrictedPythonQuery(Query):
     def __init__(
@@ -132,9 +125,7 @@ class RestrictedPythonQuery(Query):
         metric
     ):
         #TODO: [MV] discuss if run params are needed as a fallback
-        namespace = LazyLocals(run=run,
-                               metric=metric,
-                               fallback=run, **restricted_globals)
+        namespace = dict(run=run, metric=metric, **restricted_globals)
         return eval(self._checker, restricted_globals, namespace)
 
     def __bool__(

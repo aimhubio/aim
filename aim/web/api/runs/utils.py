@@ -17,7 +17,7 @@ def get_run_props(run: Run):
         'experiment': run.props.experiment.name if run.props.experiment else None,
         'tags': [{'id': tag.uuid, 'name': tag.name, 'color': tag.color} for tag in run.props.tags],
         'archived': run.props.archived if run.props.archived else False,
-        'creation_time': run.creation_time,
+        'creation_time': run.props.creation_time,
     }
 
 
