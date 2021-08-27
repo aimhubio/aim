@@ -17,7 +17,7 @@ from typing import Any, Generic, Iterator, List, TypeVar, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aim.sdk.run import Run
+    from aim.sdk.run import Run, RunView
     from aim.sdk.repo import Repo
     from pandas import DataFrame
 

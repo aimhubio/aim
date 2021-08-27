@@ -11,7 +11,8 @@ T = TypeVar('T')
 
 
 class ModelMappedProperty:
-    def __init__(self, name: str, mapped_name: str = None, get_modifier: Callable = None, with_setter: bool = True, autogenerate: bool = True):
+    def __init__(self, name: str, mapped_name: str = None,
+                 get_modifier: Callable = None, with_setter: bool = True, autogenerate: bool = True):
         self.name = name
         self.mapped_name = mapped_name or self.name
         self.get_modifier = get_modifier

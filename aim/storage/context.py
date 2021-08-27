@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Iterator, Tuple, Union
+from typing import Iterator, Tuple
 
 from aim.storage.hashing import hash_auto
 from aim.storage.types import AimObject, AimObjectKey

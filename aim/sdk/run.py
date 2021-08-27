@@ -7,7 +7,7 @@ from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.trace import RunTraceCollection
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.num_utils import convert_to_py_number
-from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
+from aim.sdk.types import AimObject
 
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
@@ -66,7 +66,6 @@ class StructuredRunMixin:
     @property
     def updated_at(self):
         return self.props.updated_at
-
 
     @property
     def experiment(self):

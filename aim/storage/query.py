@@ -3,7 +3,6 @@ import logging
 import datetime
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING
 
 from RestrictedPython import (
     safe_builtins,
@@ -17,11 +16,6 @@ from RestrictedPython.Guards import (
     guarded_iter_unpack_sequence,
     guarded_unpack_sequence
 )
-
-from aim.storage.proxy import AimObjectProxy
-
-if TYPE_CHECKING:
-    from aim.storage.context import Context
 
 
 extra_builtins = {
@@ -122,7 +116,7 @@ class RestrictedPythonQuery(Query):
         run,
         metric
     ):
-        #TODO: [MV] discuss if run params are needed as a fallback
+        # TODO: [MV] discuss if run params are needed as a fallback
         namespace = dict(run=run, metric=metric, **restricted_globals)
         return eval(self._checker, restricted_globals, namespace)
 
