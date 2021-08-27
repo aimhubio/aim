@@ -173,7 +173,7 @@ class Run:
         time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
 
         max_idx = self.series_counters.get((ctx, name), None)
-        if max_idx == None:
+        if max_idx is None:
             max_idx = len(val_view)
         if max_idx == 0:
             self.meta_tree['traces', ctx.idx, name] = 1
@@ -279,6 +279,7 @@ class Run:
                                          read_only=False,
                                          from_union=False).view(b'')
         self.meta_run_tree.finalize(index=index)
+
 
 class RunPropsView:
     def __init__(self, run: Run):

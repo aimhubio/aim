@@ -12,10 +12,11 @@ on:
     types:
       - opened
       - synchronize
+      - unlabeled
       - reopened
-      - edited
 jobs:
   run-checks:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
     runs-on: ubuntu-latest
     name: Run Unit-tests, Code-style checks & Performance tests
     steps:
@@ -32,6 +33,6 @@ jobs:
       - name: unit-tests
         run: |
           pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
-#      - name: code style checks
-#        run: |
-#          flake8
+      - name: code style checks
+        run: |
+          flake8 aim

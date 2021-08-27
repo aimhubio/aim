@@ -13,7 +13,7 @@ from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
 from aim.storage.containerview import ContainerView
 
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -84,10 +84,9 @@ class ItemsIterator:
             alt = self._heap[0]
 
             if (
-                alt.key != key and
-                (alt.prefix == prefix or not alt.key.startswith(prefix))
+                alt.key != key and (alt.prefix == prefix or not alt.key.startswith(prefix))
             ):
-               break
+                break
 
             heapq.heappop(self._heap)
             try:
@@ -138,7 +137,7 @@ class ValuesIterator(ItemsIterator):
         key, value = super().get()
         return value
 
-    def __next__(self) ->  bytes:
+    def __next__(self) -> bytes:
         key, value = super().__next__()
         return value
 
@@ -176,7 +175,7 @@ class DB(object):
         index_path = os.path.join(self.db_path, self.db_name, "index")
         try:
             index_db = self._get_db(index_prefix, index_path, self._dbs)
-        except Exception as e:
+        except Exception:
             index_db = None
             logger.warning('No index was detected')
 

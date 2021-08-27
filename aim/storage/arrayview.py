@@ -1,7 +1,7 @@
 import numpy as np
 
 from typing import Any, Generic, Iterator, List, TYPE_CHECKING, Tuple, TypeVar, Union
-if  TYPE_CHECKING:
+if TYPE_CHECKING:
     from .treeview import TreeView
 
 
@@ -64,7 +64,6 @@ class ArrayView(Generic[T]):
     def tolist(self) -> List[T]:
         ...
 
-
     def first(self) -> Tuple[int, T]:
         ...
 
@@ -73,7 +72,6 @@ class ArrayView(Generic[T]):
 
     def first_value(self) -> T:
         ...
-
 
     def last(self) -> Tuple[int, T]:
         ...
@@ -84,12 +82,12 @@ class ArrayView(Generic[T]):
     def last_value(self) -> T:
         ...
 
-
     def min_idx(self) -> int:
         ...
 
     def max_idx(self) -> int:
         ...
+
 
 class ContainerArrayView(ArrayView[T]):
     def __init__(
@@ -193,7 +191,6 @@ class ContainerArrayView(ArrayView[T]):
 
     def first_value(self) -> T:
         return self[self.min_idx()]
-
 
     def last(self) -> Tuple[int, T]:
         idx = self.max_idx()

@@ -1,15 +1,13 @@
-import numpy as np
-
 import aimrocks
 
 from aim.storage import encoding as E
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.utils import ArrayFlag, ObjectFlag
+from aim.storage.utils import ArrayFlag
 from aim.storage.containerview import ContainerView
 from aim.storage import treeutils
 from aim.storage.arrayview import ContainerArrayView
 
-from typing import Any, Iterable, Iterator, MutableMapping, Tuple, Type, Union
+from typing import Any, Iterator, Tuple, Union
 
 
 class TreeView:  # TODO implement (MutableMapping):
@@ -76,7 +74,7 @@ class TreeView:  # TODO implement (MutableMapping):
     ) -> AimObject:
         try:
             return self.__getitem__(path)
-        except KeyError as e:
+        except KeyError:
             return default
 
     def __delitem__(

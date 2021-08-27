@@ -1,5 +1,5 @@
 from fastapi import HTTPException, Depends
-from typing import List, Optional
+from typing import Optional
 
 from aim.web.api.utils import APIRouter
 from aim.web.api.utils import object_factory
