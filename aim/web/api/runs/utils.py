@@ -15,7 +15,11 @@ def get_run_props(run: Run):
     return {
         'name': run.name if run.name else None,
         'experiment': run.experiment.name if run.experiment else None,
-        'tags': [{'id': tag.uuid, 'name': tag.name, 'color': tag.color} for tag in run.tags],
+        'tags': [{'id': tag.uuid,
+                  'name': tag.name,
+                  'color': tag.color,
+                  'description': tag.description}
+                 for tag in run.props.tags],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
     }
@@ -84,7 +88,7 @@ async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_
     for run_data in requested_runs:
         run_hashname = run_data.run_id
         requested_traces = run_data.traces
-        run = Run(hashname=run_hashname)
+        run = Run(hashname=run_hashname, read_only=True)
 
         traces_list = []
         for trace_data in requested_traces:

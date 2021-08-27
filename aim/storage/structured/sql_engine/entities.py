@@ -219,6 +219,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
     __mapped_properties__ = [
         Property('name'),
         Property('color'),
+        Property('description'),
         Property('archived', 'is_archived'),
         Property('uuid', with_setter=False),
         Property('created_at', with_setter=False),
