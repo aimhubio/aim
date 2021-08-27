@@ -1,5 +1,6 @@
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IGetFilteredValuesParams } from 'types/utils/d3/processData';
+import { IFilterMetricDataParams } from 'types/utils/filterMetricData';
 import { ScaleEnum } from './d3';
 
 const isInvalidValue = (
@@ -23,13 +24,16 @@ const getFilteredValues = (params: IGetFilteredValuesParams): number[] => {
   );
 };
 
-function filterMetricData(
-  values: number[] = [],
-  steps: number[] = [],
-  epochs: number[] = [],
-  timestamps: number[] = [],
-  axesScaleType?: IAxesScaleState,
-) {
+function filterMetricData({
+  values = [],
+  steps = [],
+  epochs = [],
+  timestamps = [],
+  axesScaleType,
+  xAxisValues = null,
+  xAxisIters = null,
+  alignMetric = null,
+}: IFilterMetricDataParams) {
   const invalidXIndices: number[] = steps.reduce(
     (acc: number[], v: number, i: number) => {
       if (isInvalidValue(v, axesScaleType?.xAxis)) {

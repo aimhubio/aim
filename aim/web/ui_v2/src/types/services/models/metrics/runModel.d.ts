@@ -24,6 +24,8 @@ export interface IMetricTrace {
   iters: ITraceData;
   epochs: ITraceData;
   timestamps: ITraceData;
+  x_axis_values?: ITraceData;
+  x_axis_iters?: ITraceData;
 }
 
 export interface IRunParam {

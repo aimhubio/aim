@@ -61,6 +61,7 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { trace } from 'console';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -223,9 +224,11 @@ function getMetricsData() {
     metricsRequestRef.abort();
   }
   const selectData = model.getState()?.config?.select;
+  const metric = model.getState()?.config?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(selectData);
   metricsRequestRef = metricsService.getMetricsData({
     q: query,
+    ...(metric && { x_axis: metric }),
   });
   return {
     call: async () => {
@@ -363,23 +366,27 @@ function processData(data: IRun<IMetricTrace>[]): {
   params: string[];
 } {
   const configData = model.getState()?.config;
-
+  const alignMetric = configData?.chart.alignmentConfig.metric;
   let metrics: IMetric[] = [];
   let index: number = -1;
   let params: string[] = [];
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
+
   data.forEach((run: IRun<IMetricTrace>) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     metrics = metrics.concat(
-      run.traces.map((trace) => {
+      run.traces.map((trace: any) => {
         index++;
-        const { values, steps, epochs, timestamps } = filterMetricData(
-          [...new Float64Array(trace.values.blob)],
-          [...new Float64Array(trace.iters.blob)],
-          [...new Float64Array(trace.epochs?.blob)],
-          [...new Float64Array(trace.timestamps.blob)],
-          configData?.chart?.axesScaleType,
-        );
+        const { values, steps, epochs, timestamps } = filterMetricData({
+          values: [...new Float64Array(trace.values.blob)],
+          steps: [...new Float64Array(trace.iters.blob)],
+          epochs: [...new Float64Array(trace.epochs?.blob)],
+          timestamps: [...new Float64Array(trace.timestamps.blob)],
+          axesScaleType: configData?.chart?.axesScaleType,
+          // xAxisValues: [...new Float64Array(trace.x_axis_values.blob)],
+          // xAxisIters: [...new Float64Array(trace.x_axis_iters.blob)],
+          // alignMetric,
+        });
 
         let yValues = values;
         if (
@@ -1238,23 +1245,15 @@ async function onAlignmentMetricChange(metric: string) {
     align_by: metric,
     runs,
   };
-
   const { call, abort } = metricsService.fetchAlignedMetricsData(reqBody);
 
   const stream = await call();
   let gen = adjustable_reader(stream);
-  console.log(gen);
-
   let buffer_pairs = decode_buffer_pairs(gen);
-  console.log(buffer_pairs);
-
   let decodedPairs = decodePathsVals(buffer_pairs);
-  console.log(decodedPairs);
-
   let objects = iterFoldTree(decodedPairs, 1);
-  console.log(objects);
 
-  const runData: IRun<IMetricTrace>[] = [];
+  const runData: any = [];
   for await (let [keys, val] of objects) {
     runData.push({
       ...(val as any),
@@ -1262,11 +1261,27 @@ async function onAlignmentMetricChange(metric: string) {
     });
   }
 
-  const { data, params } = processData(runData);
-  console.log(data, params);
+  const rawData: any = model.getState()?.rawData?.map((item, index) => {
+    return {
+      ...item,
+      traces: item.traces.map((trace, ind) => {
+        return { ...trace, ...runData[index][ind] };
+      }),
+    };
+  });
+
+  const { data, params } = processData(rawData);
 
   if (modelState?.config?.chart) {
     model.setState({
+      requestIsPending: false,
+      rawData,
+      params,
+      data,
+      lineChartData: getDataAsLines(data),
+      aggregatedData: getAggregatedData(data),
+      tableData: getDataAsTableRows(data, null, params),
+      tableColumns: getTableColumns(params, data[0].config),
       config: {
         ...modelState?.config,
         chart: {
