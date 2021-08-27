@@ -59,8 +59,6 @@ def safer_getattr(object, name, default=None, getattr=getattr):
     return val
 
 
-
-
 restricted_globals = {
     "__builtins__": builtins,
     "_getattr_": safer_getattr,
@@ -111,6 +109,7 @@ def compile_checker(expr):
                                    filename='<inline code>',
                                    mode='eval')
     return byte_code
+
 
 class LazyLocals(dict):
     def __getitem__(self, key: str):

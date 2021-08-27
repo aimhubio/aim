@@ -13,7 +13,6 @@ from aim.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.union import UnionContainer
 from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
-from aim.storage.prefixview import PrefixView
 
 from aim.storage.structured.db import DB
 

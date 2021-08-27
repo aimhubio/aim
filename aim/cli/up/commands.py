@@ -42,12 +42,11 @@ def up(dev, host, port, repo, tf_logs):
         db_cmd = build_db_upgrade_command()
         exec_cmd(db_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to initialize Aim DB. ' +
+        click.echo('Failed to initialize Aim DB. '
                    'Please see the logs above for details.')
         return
 
-    if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None
-               and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
+    if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
         os.environ[AIM_UI_TELEMETRY_KEY] = '0'
     else:
         os.environ[AIM_UI_TELEMETRY_KEY] = '1'
@@ -78,6 +77,6 @@ def up(dev, host, port, repo, tf_logs):
         server_cmd = build_uvicorn_command(host, port, 1)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to run Aim UI. ' +
+        click.echo('Failed to run Aim UI. '
                    'Please see the logs above for details.')
         return

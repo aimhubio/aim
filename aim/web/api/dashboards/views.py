@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from sqlalchemy.orm import Session
 from typing import List

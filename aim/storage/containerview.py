@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Iterator, List, Tuple
+from typing import Iterator, Tuple
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -144,7 +144,7 @@ class ContainerView:
     def batch_delete(
         self,
         prefix: bytes,
-        store_batch = None
+        store_batch=None
     ):
         ...
 
@@ -154,6 +154,6 @@ class ContainerView:
         key: bytes,
         value: bytes,
         *,
-        store_batch = None
+        store_batch=None
     ):
         ...

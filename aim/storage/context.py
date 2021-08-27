@@ -1,5 +1,4 @@
 from copy import deepcopy
-from dataclasses import dataclass
 from typing import Iterator, Tuple
 
 from aim.storage.hashing import hash_auto
@@ -87,5 +86,4 @@ class Metric:
     def __eq__(self, other: 'Metric') -> bool:
         if hash(self) != hash(other):
             return False
-        return (self._name == other.name and
-                self._context == other._context)
+        return (self._name == other.name and self._context == other._context)
