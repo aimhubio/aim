@@ -1,4 +1,4 @@
-from typing import Optional, Collection, Union
+from typing import Collection, Union
 from sqlalchemy.orm import joinedload
 import datetime
 

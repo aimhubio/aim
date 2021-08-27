@@ -34,7 +34,7 @@ class StructuredRunMixin:
     @property
     def name(self):
         return self.props.name
-    
+
     @name.setter
     def name(self, value):
         self.props.name = value
@@ -215,7 +215,7 @@ class Run(StructuredRunMixin):
         time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
 
         max_idx = self.series_counters.get((ctx, name), None)
-        if max_idx == None:
+        if max_idx is None:
             max_idx = len(val_view)
         if max_idx == 0:
             self.meta_tree['traces', ctx.idx, name] = 1

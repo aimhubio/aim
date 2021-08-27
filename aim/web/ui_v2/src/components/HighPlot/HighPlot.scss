@@ -115,8 +115,8 @@
   }
 
   .Line {
-    stroke-width: 1;
-    opacity: 1;
+    stroke-width: 2;
+    opacity: 0.3;
   }
 
   .Lines.highlight > .Line:not(.active):not(.highlighted) {

@@ -65,6 +65,7 @@ class _ObjectProxyMetaType(type):
 
         return type.__new__(cls, name, bases, dictionary)
 
+
 class Eager1:
     def __init__(self, wrapped, name):
         self.wrapped = lru_cache()(wrapped)
@@ -80,7 +81,7 @@ class Eager1:
         try:
             item = w[self.name]
             return item
-        except KeyError as e:
+        except KeyError:
             pass
 
         return Undefined()
@@ -101,7 +102,7 @@ class Eager2:
         try:
             item = w[self.name]
             return item
-        except KeyError as e:
+        except KeyError:
             pass
 
         return Undefined()
@@ -118,7 +119,7 @@ class Eager3:
         try:
             item = w[self.key]
             return item
-        except KeyError as e:
+        except KeyError:
             pass
 
         return Undefined()
@@ -135,7 +136,7 @@ class Eager4:
         try:
             item = w[self.key]
             return item
-        except KeyError as e:
+        except KeyError:
             pass
 
         return Undefined()
@@ -156,7 +157,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         return self.__wrapped__().__class__
 
     @__class__.setter
-    def __class__(self, value):
+    def __class__(self, value):  # noqa
         self.__wrapped__().__class__ = value
 
     @property
@@ -178,9 +179,9 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
 
     def __repr__(self):
         return '<{} at 0x{:x} for {} at 0x{:x}>'.format(
-                type(self).__name__, id(self),
-                type(self.__wrapped__()).__name__,
-                id(self.__wrapped__()))
+            type(self).__name__, id(self),
+            type(self.__wrapped__()).__name__,
+            id(self.__wrapped__()))
 
     def __reversed__(self):
         return reversed(self.__wrapped__())
@@ -396,6 +397,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
 
     def __call__(self, *args, **kwargs):
         return self.__wrapped__()(*args, **kwargs)
+
 
 class Undefined:
     def __bool__(self) -> bool:

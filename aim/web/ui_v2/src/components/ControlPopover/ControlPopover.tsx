@@ -1,12 +1,16 @@
 import React from 'react';
-import { Box, Popover } from '@material-ui/core';
+import { Popover } from '@material-ui/core';
 
 import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
+
+import './ControlPopover.scss';
 
 function ControlPopover({
   component,
   title,
   anchor,
+  anchorOrigin,
+  transformOrigin,
 }: IControlPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
@@ -29,30 +33,23 @@ function ControlPopover({
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorPosition={{ left: 20, top: 0 }}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
+        anchorOrigin={
+          anchorOrigin || {
+            vertical: 'top',
+            horizontal: 'left',
+          }
+        }
+        transformOrigin={
+          transformOrigin || {
+            vertical: 'top',
+            horizontal: 'right',
+          }
+        }
       >
-        <Box>
-          {title && (
-            <Box
-              padding='0.5em 1em'
-              borderBottom='1px solid #dfe6f7'
-              color='#243969'
-              bgcolor='#f7faff'
-              fontWeight={700}
-              style={{ textTransform: 'uppercase' }}
-            >
-              {title}
-            </Box>
-          )}
+        <div className='ControlPopover__container'>
+          {title && <div className='ControlPopover__title'>{title}</div>}
           {component}
-        </Box>
+        </div>
       </Popover>
     </>
   );

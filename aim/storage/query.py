@@ -59,8 +59,6 @@ def safer_getattr(object, name, default=None, getattr=getattr):
     return val
 
 
-
-
 restricted_globals = {
     "__builtins__": builtins,
     "_getattr_": safer_getattr,

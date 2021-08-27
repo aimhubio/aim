@@ -127,8 +127,9 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
 
         legacy_run_map = {}
         with repo.structured_db:
-            with click.progressbar(lruns, show_pos=True,
-                                   item_show_func=lambda r: (f'Converting run {r.run_hash}' if r else '')) as legacy_runs:
+            with click.progressbar(
+                    lruns, show_pos=True, item_show_func=lambda r: (f'Converting run {r.run_hash}' if r else '')
+            ) as legacy_runs:
                 for lrun in legacy_runs:
                     convert_run(lrun, repo, legacy_run_map, skip_failed=skip_failed_runs)
 
@@ -182,7 +183,7 @@ def _track_legacy_run_step(run: Run, metric_name: str, context: dict, val):
     epoch_view = run.series_run_tree.view(metric.selector).array('epoch').allocate()
 
     max_idx = run.series_counters.get((ctx, metric_name), None)
-    if max_idx == None:
+    if max_idx is None:
         max_idx = len(val_view)
     if max_idx == 0:
         run.meta_tree['traces', ctx.idx, metric_name] = 1

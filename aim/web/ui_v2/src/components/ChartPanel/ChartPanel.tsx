@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
-import { debounce } from 'lodash-es';
+import _ from 'lodash-es';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { chartTypesConfig } from './config';
@@ -113,7 +113,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, []);
 
   React.useEffect(() => {
-    const debouncedScroll = debounce(onScroll, 100);
+    const debouncedScroll = _.debounce(onScroll, 100);
     const containerNode = containerRef.current;
     containerNode?.addEventListener('scroll', debouncedScroll);
     return () => {
@@ -139,6 +139,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               <Grid
                 key={index}
                 item
+                className='ChartPanel__paper__grid__chartBox'
                 xs={
                   props.data.length > 9
                     ? 4

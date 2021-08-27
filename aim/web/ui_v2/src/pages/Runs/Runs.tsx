@@ -28,8 +28,8 @@ function Runs({
       >
         <Grid item>
           {runsData?.map((run: IRun<IMetricTrace | IParamTrace>) => (
-            <NavLink key={run.runHash} to={`runs/${run.runHash}`}>
-              <p>{run.runHash}</p>
+            <NavLink key={run.hash} to={`runs/${run.hash}`}>
+              <p>{run.hash}</p>
             </NavLink>
           ))}
         </Grid>

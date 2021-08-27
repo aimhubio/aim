@@ -1,9 +1,8 @@
 from copy import deepcopy
-from dataclasses import dataclass
-from typing import Any, Iterator, Tuple, Union
+from typing import Iterator, Tuple, Union
 
 from aim.storage.hashing import hash_auto
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.storage.types import AimObject, AimObjectKey
 
 
 class Context:
@@ -87,5 +86,4 @@ class Metric:
     def __eq__(self, other: 'Metric') -> bool:
         if hash(self) != hash(other):
             return False
-        return (self._name == other.name and
-                self._context == other._context)
+        return (self._name == other.name and self._context == other._context)

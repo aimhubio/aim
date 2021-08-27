@@ -1,0 +1,33 @@
+.ColumnItem__container {
+  border: 1px solid rgba(8, 46, 92, 0.1);
+  margin-bottom: 0.25em;
+  border-radius: 0.25em;
+  padding: 0.25em 0.5em;
+  background-color: #fff;
+  display: flex;
+  div {
+    display: flex;
+    justify-content: space-between;
+    flex: 1;
+  }
+}
+
+.ColumnItem__toggle {
+  //   margin-right: 0.5em;
+}
+
+.ColumnItem__name {
+  display: inline-block;
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.785em;
+  flex: 1;
+}
+
+.ColumnItem__drag__icon {
+  i {
+    font-size: 10px;
+  }
+}

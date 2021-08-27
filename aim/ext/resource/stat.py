@@ -136,8 +136,7 @@ class Stat(object):
 
             # Whole system memory usage
             # 'memory_used': round10e5(memory_usage.used / 1024 / 1024),
-            'memory_percent': round10e5(memory_usage.used * 100
-                                        / memory_usage.total),
+            'memory_percent': round10e5(memory_usage.used * 100 / memory_usage.total),
 
             # Get the portion of memory occupied by a process
             # 'p_memory_rss': round10e5(self._process.memory_info().rss
@@ -166,7 +165,7 @@ class Stat(object):
                 power_watts = nvml.nvmlDeviceGetPowerUsage(handle) / 1000
                 power_cap = nvml.nvmlDeviceGetEnforcedPowerLimit(handle)
                 power_cap_watts = power_cap / 1000
-                power_usage = power_watts / power_cap_watts * 100
+                power_watts / power_cap_watts * 100
 
                 gpus.append({
                     # GPU utilization percent
@@ -174,8 +173,7 @@ class Stat(object):
 
                     # Device memory usage
                     # 'memory_used': round10e5(memory.used / 1024 / 1024),
-                    'gpu_memory_percent': round10e5(memory.used * 100
-                                                / memory.total),
+                    'gpu_memory_percent': round10e5(memory.used * 100 / memory.total),
 
                     # Power usage in watts and percent
                     'gpu_power_watts': round10e5(power_watts),

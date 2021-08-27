@@ -6,7 +6,7 @@ import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { decode, encode } from 'utils/encoder/encoder';
+import { encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -27,6 +27,9 @@ import {
   decode_buffer_pairs,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
+import getSmoothenedData from 'utils/getSmoothenedData';
+import filterMetricData from 'utils/filterMetricData';
+import { RowHeight } from 'config/table/tableConfigs';
 
 // Types
 import {
@@ -57,7 +60,6 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import getSmoothenedData from 'utils/getSmoothenedData';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -123,6 +125,9 @@ function getConfig() {
       query: '',
       advancedMode: false,
       advancedQuery: '',
+    },
+    table: {
+      rowHeight: RowHeight.md,
     },
   };
 }
@@ -240,7 +245,10 @@ function getMetricsData() {
 
         const runData: IRun<IMetricTrace>[] = [];
         for await (let [keys, val] of objects) {
-          runData.push(val as any);
+          runData.push({
+            ...(val as any),
+            hash: keys[0],
+          });
         }
 
         const { data, params } = processData(runData);
@@ -261,7 +269,7 @@ function getMetricsData() {
           lineChartData: getDataAsLines(data),
           aggregatedData: getAggregatedData(data),
           tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params),
+          tableColumns: getTableColumns(params, data[0].config),
         });
       }
     },
@@ -328,17 +336,17 @@ function getGroupingSelectOptions(
     ...paramsOptions,
     {
       group: 'Other',
-      label: 'experiment_name',
-      value: 'run.experiment_name',
+      label: 'experiment',
+      value: 'run.props.experiment',
     },
     {
       group: 'Other',
       label: 'run.hash',
-      value: 'run.params.status.hash',
+      value: 'run.hash',
     },
     {
       group: 'Other',
-      label: 'metric_name',
+      label: 'metric',
       value: 'metric_name',
     },
     {
@@ -353,35 +361,54 @@ function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
 } {
-  const grouping = model.getState()?.config?.grouping;
+  const configData = model.getState()?.config;
+
   let metrics: IMetric[] = [];
   let index: number = -1;
   let params: string[] = [];
-  const paletteIndex: number = grouping?.paletteIndex || 0;
+  const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
   data.forEach((run: IRun<IMetricTrace>) => {
-    params = params.concat(
-      getObjectPaths(_.omit(run.params, 'experiment_name', 'status')),
-    );
+    params = params.concat(getObjectPaths(run.params, run.params));
     metrics = metrics.concat(
       run.traces.map((trace) => {
         index++;
+
+        const { values, steps, epochs, timestamps } = filterMetricData(
+          [...new Float64Array(trace.values.blob)],
+          [...new Float64Array(trace.iters.blob)],
+          [...new Float64Array(trace.epochs?.blob)],
+          [...new Float64Array(trace.timestamps.blob)],
+          configData?.chart?.axesScaleType,
+        );
+
+        let yValues = values;
+        if (
+          configData?.chart.smoothingAlgorithm &&
+          configData.chart.smoothingFactor
+        ) {
+          yValues = getSmoothenedData({
+            smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
+            smoothingFactor: configData.chart.smoothingFactor,
+            data: values,
+          });
+        }
         return createMetricModel({
           ...trace,
           run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
           key: encode({
-            runHash: run.params.status.hash,
+            runHash: run.hash,
             metricName: trace.metric_name,
             traceContext: trace.context,
           }),
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           data: {
-            values: new Float64Array(trace.values.blob),
-            iterations: new Float64Array(trace.iters.blob),
-            epochs: new Float64Array(trace.epochs?.blob),
-            timestamps: new Float64Array(trace.timestamps.blob),
-            xValues: [...new Float64Array(trace.iters?.blob)],
-            yValues: [...new Float64Array(trace.values?.blob)],
+            values,
+            steps,
+            epochs,
+            timestamps,
+            xValues: steps,
+            yValues,
           },
         } as IMetric);
       }),
@@ -483,7 +510,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   );
 
   for (let i = 0; i < data.length; i++) {
-    const groupValue: { [key: string]: unknown } = {};
+    const groupValue: { [key: string]: string } = {};
     groupingFields.forEach((field) => {
       groupValue[field] = _.get(data[i], field);
     });
@@ -492,6 +519,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
       groupValues[groupKey].data.push(data[i]);
     } else {
       groupValues[groupKey] = {
+        key: groupKey,
         config: groupValue,
         color: null,
         dasharray: null,
@@ -597,52 +625,55 @@ function getAggregatedData(
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
   let aggregatedData: IAggregatedData[] = [];
-  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
+  // const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
 
   processedData.forEach((metricsCollection, index) => {
-    let lineY: number[];
-    let areaMinY: number[];
-    let areaMaxY: number[];
-    if (smoothingAlgorithm && smoothingFactor) {
-      lineY = getSmoothenedData({
-        smoothingAlgorithm,
-        smoothingFactor,
-        data: metricsCollection.aggregation?.line?.yValues || [],
-      });
-      areaMinY = getSmoothenedData({
-        smoothingAlgorithm,
-        smoothingFactor,
-        data: metricsCollection.aggregation?.area.min?.yValues || [],
-      });
-      areaMaxY = getSmoothenedData({
-        smoothingAlgorithm,
-        smoothingFactor,
-        data: metricsCollection.aggregation?.area.max?.yValues || [],
-      });
-    } else {
-      lineY = metricsCollection.aggregation?.line?.yValues as number[];
-      areaMinY = metricsCollection.aggregation?.area.min?.yValues as number[];
-      areaMaxY = metricsCollection.aggregation?.area.max?.yValues as number[];
-    }
+    // let lineY: number[];
+    // let areaMinY: number[];
+    // let areaMaxY: number[];
+    // if (smoothingAlgorithm && smoothingFactor) {
+    //   lineY = getSmoothenedData({
+    //     smoothingAlgorithm,
+    //     smoothingFactor,
+    //     data: metricsCollection.aggregation?.line?.yValues || [],
+    //   });
+    //   areaMinY = getSmoothenedData({
+    //     smoothingAlgorithm,
+    //     smoothingFactor,
+    //     data: metricsCollection.aggregation?.area.min?.yValues || [],
+    //   });
+    //   areaMaxY = getSmoothenedData({
+    //     smoothingAlgorithm,
+    //     smoothingFactor,
+    //     data: metricsCollection.aggregation?.area.max?.yValues || [],
+    //   });
+    // } else {
+    //   lineY = metricsCollection.aggregation?.line?.yValues as number[];
+    //   areaMinY = metricsCollection.aggregation?.area.min?.yValues as number[];
+    //   areaMaxY = metricsCollection.aggregation?.area.max?.yValues as number[];
+    // }
 
-    const line = {
-      xValues: metricsCollection.aggregation?.line?.xValues as number[],
-      yValues: lineY,
-    };
-    const area: any = {
-      min: {
-        xValues: metricsCollection.aggregation?.area.min?.xValues,
-        yValues: areaMinY,
-      },
-      max: {
-        xValues: metricsCollection.aggregation?.area.max?.xValues,
-        yValues: areaMaxY,
-      },
-    };
+    // const line = {
+    //   xValues: metricsCollection.aggregation?.line?.xValues as number[],
+    //   yValues: lineY,
+    // };
+    // const area: any = {
+    //   min: {
+    //     xValues: metricsCollection.aggregation?.area.min?.xValues,
+    //     yValues: areaMinY,
+    //   },
+    //   max: {
+    //     xValues: metricsCollection.aggregation?.area.max?.xValues,
+    //     yValues: areaMaxY,
+    //   },
+    // };
     aggregatedData.push({
       key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
-      area,
-      line,
+      area: {
+        min: metricsCollection.aggregation?.area.min || null,
+        max: metricsCollection.aggregation?.area.max || null,
+      },
+      line: metricsCollection.aggregation?.line || null,
       chartIndex: metricsCollection.chartIndex || 0,
       color:
         metricsCollection.color ||
@@ -697,41 +728,131 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
-): IMetricTableRowData[][] | any {
+): IMetricTableRowData[] | any {
   if (!processedData) {
     return [];
   }
 
-  return processedData.map((metricsCollection: IMetricsCollection<IMetric>) =>
-    metricsCollection.data.map((metric: IMetric) => {
+  const rows: IMetricTableRowData[] = [];
+
+  processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
+    const groupKey = metricsCollection.key;
+    const columnsValues: { [key: string]: string[] } = {};
+
+    if (metricsCollection.config !== null) {
+      const groupHeaderRow = {
+        '#': metricsCollection.chartIndex + 1,
+        key: groupKey!,
+        color: metricsCollection.color,
+        dasharray: metricsCollection.dasharray,
+        experiment: '',
+        run: '',
+        metric: '',
+        context: [],
+        value: '',
+        step: '',
+        epoch: '',
+        timestamp: '',
+        children: [],
+        groupHeader: true,
+        rowProps: {
+          style: {
+            boxShadow: `inset 3px 0 0 0 ${
+              metricsCollection.color ?? COLORS[0][0]
+            }`,
+          },
+        },
+      };
+
+      rows.push(groupHeaderRow);
+    }
+
+    metricsCollection.data.forEach((metric: IMetric) => {
       const closestIndex =
         xValue === null
           ? null
-          : getClosestValue(metric.data.iterations as any, xValue as number)
+          : getClosestValue(metric.data.xValues as number[], xValue as number)
               .index;
-      const rowValues: { [key: string]: unknown } = {
+      const rowValues: IMetricTableRowData = {
         key: metric.key,
         color: metricsCollection.color ?? metric.color,
-        dasharray: metricsCollection.dasharray ?? metric.color,
-        experiment: metric.run.params.experiment_name,
-        run: metric.run.params.status.name,
+        dasharray: metricsCollection.dasharray ?? metric.dasharray,
+        experiment: metric.run.props.experiment ?? 'default',
+        run: metric.run.props.name ?? '-',
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         value: `${
-          closestIndex === null ? '-' : metric.data.values[closestIndex]
+          closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
         }`,
-        iteration: `${
-          closestIndex === null ? '-' : metric.data.iterations[closestIndex]
+        step: `${
+          closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
         }`,
+        epoch: `${
+          closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
+        }`,
+        timestamp: `${
+          closestIndex === null
+            ? '-'
+            : metric.data.timestamps[closestIndex] ?? '-'
+        }`,
+        parentId: groupKey,
+        rowProps: {
+          style: {
+            boxShadow: `inset 3px 0 0 0 ${
+              metricsCollection.color ?? metric.color
+            }`,
+          },
+        },
       };
-      paramKeys.forEach((paramKey) => {
-        rowValues[paramKey] = JSON.stringify(
-          _.get(metric.run.params, paramKey, '-'),
-        );
+
+      [
+        'experiment',
+        'run',
+        'metric',
+        'context',
+        'step',
+        'epoch',
+        'timestamp',
+      ].forEach((key) => {
+        if (columnsValues.hasOwnProperty(key)) {
+          if (!_.some(columnsValues[key], rowValues[key])) {
+            columnsValues[key].push(rowValues[key]);
+          }
+        } else {
+          columnsValues[key] = [rowValues[key]];
+        }
       });
-      return rowValues;
-    }),
-  );
+
+      paramKeys.forEach((paramKey) => {
+        const value = _.get(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = value;
+        if (columnsValues.hasOwnProperty(paramKey)) {
+          if (!columnsValues[paramKey].includes(value)) {
+            columnsValues[paramKey].push(value);
+          }
+        } else {
+          columnsValues[paramKey] = [value];
+        }
+      });
+
+      if (metricsCollection.config !== null) {
+        rows[rows.length - 1].children.push(rowValues);
+      } else {
+        rows.push(rowValues);
+      }
+    });
+
+    if (metricsCollection.config !== null) {
+      for (let columnKey in columnsValues) {
+        rows[rows.length - 1][columnKey] =
+          columnsValues[columnKey].length > 1
+            ? 'Mix'
+            : columnsValues[columnKey][0];
+      }
+    }
+  });
+
+  return rows;
 }
 
 function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
@@ -849,22 +970,15 @@ function onDisplayOutliersChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.displayOutliers = !configData?.chart.displayOutliers;
-    model.setState({ config: configData });
+    updateModelData(configData);
   }
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          axesScaleType: params,
-        },
-      },
-    });
+    configData.chart.axesScaleType = params;
+    updateModelData(configData);
   }
 }
 
@@ -937,16 +1051,27 @@ function updateModelData(configData: IMetricAppConfig): void {
   const processedData = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
+  const tableData = getDataAsTableRows(
+    processedData.data,
+    null,
+    processedData.params,
+  );
+  const tableColumns = getTableColumns(
+    processedData.params,
+    processedData.data[0].config,
+  );
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
   model.setState({
     config: configData,
     data: processedData.data,
     lineChartData: getDataAsLines(processedData.data),
     aggregatedData: getAggregatedData(processedData.data),
-    tableData: getDataAsTableRows(
-      processedData.data,
-      null,
-      processedData.params,
-    ),
+    tableData,
+    tableColumns,
   });
 }
 
@@ -994,7 +1119,7 @@ function onActivePointChange(
     tableData,
   };
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData.flat() });
+    tableRef.current?.updateData({ newData: tableData });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,

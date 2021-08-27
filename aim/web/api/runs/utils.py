@@ -129,16 +129,16 @@ async def metric_search_result_streamer(traces: QueryTraceCollection, steps_num:
             x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
 
             traces_list.append({
-                    'metric_name': trace.name,
-                    'context': trace.context.to_dict(),
-                    'slice': [0, num_records, step],
-                    'values': numpy_to_encodable(sliced_np_array(values, _slice)),
-                    'iters': numpy_to_encodable(sliced_iters),
-                    'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
-                    'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
-                    'x_axis_values': x_axis_values,
-                    'x_axis_iters': x_axis_iters,
-                })
+                'metric_name': trace.name,
+                'context': trace.context.to_dict(),
+                'slice': [0, num_records, step],
+                'values': numpy_to_encodable(sliced_np_array(values, _slice)),
+                'iters': numpy_to_encodable(sliced_iters),
+                'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
+                'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
+                'x_axis_values': x_axis_values,
+                'x_axis_iters': x_axis_iters,
+            })
 
         if run:
             run_dict = {
