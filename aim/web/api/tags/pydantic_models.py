@@ -6,11 +6,13 @@ from typing import List, Optional
 class TagCreateIn(BaseModel):
     name: str
     color: Optional[str] = ''
+    description: Optional[str] = ''
 
 
 class TagUpdateIn(BaseModel):
     name: Optional[str] = ''
-    color: Optional[str] = ''
+    color: Optional[str] = None
+    description: Optional[str] = None
     archived: Optional[bool] = None
 
 
@@ -23,6 +25,7 @@ class TagGetOut(BaseModel):
     id: UUID
     name: str
     color: Optional[str] = None
+    description: Optional[str] = None
     run_count: int = 0
     archived: bool
 
