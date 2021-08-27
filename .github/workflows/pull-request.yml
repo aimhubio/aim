@@ -13,7 +13,6 @@ on:
       - opened
       - synchronize
       - reopened
-      - edited
 jobs:
   run-checks:
     runs-on: ubuntu-latest
