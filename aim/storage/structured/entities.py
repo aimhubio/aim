@@ -152,6 +152,16 @@ class Tag(StructuredObject, Searchable['Tag']):
 
     @property
     @abstractmethod
+    def description(self) -> str:
+        ...
+
+    @description.setter
+    @abstractmethod
+    def description(self, value: str):
+        ...
+
+    @property
+    @abstractmethod
     def archived(self) -> bool:
         ...
 
