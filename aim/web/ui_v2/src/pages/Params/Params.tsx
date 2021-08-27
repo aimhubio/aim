@@ -6,7 +6,7 @@ import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
-import AppBar from 'pages/Metrics/components/AppBar/AppBar';
+import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
 import './Params.scss';

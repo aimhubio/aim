@@ -6,21 +6,22 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   Typography,
 } from '@material-ui/core';
-import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
-import { IAppBarProps } from 'types/pages/metrics/components/AppBar/AppBar';
 
-import './AppBar.scss';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-function AppBar({
+import AppBar from 'components/AppBar/AppBar';
+
+import './MetricsBar.scss';
+import { IMetricsBarProps } from 'types/components/AppBar/AppBar';
+
+function MetricsBar({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
-}: IAppBarProps): React.FunctionComponentElement<React.ReactNode> {
+}: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
 
@@ -33,14 +34,14 @@ function AppBar({
   }
 
   return (
-    <div className='AppBar__container'>
-      <div onClick={handleBookmarkClick} className='AppBar__item__bookmark'>
-        <span className='AppBar__item__bookmark__span'>Bookmark</span>
+    <AppBar title='Metrics'>
+      <div onClick={handleBookmarkClick} className='MetricsBar__item__bookmark'>
+        <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
         <span>
           <i className='icon-bookmark' />
         </span>
       </div>
-      <div className='AppBar__menu'>
+      <div className='MetricsBar__menu'>
         <span>
           <i className='icon-menu' />
         </span>
@@ -71,8 +72,8 @@ function AppBar({
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </AppBar>
   );
 }
 
-export default React.memo(AppBar);
+export default React.memo(MetricsBar);

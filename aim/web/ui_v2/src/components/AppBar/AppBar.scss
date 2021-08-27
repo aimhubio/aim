@@ -1,0 +1,9 @@
+@use 'src/styles/abstracts' as *;
+
+.AppBar__container {
+  display: flex;
+  align-items: center;
+  height: 2.5em;
+  border-bottom: $border-main;
+  color: #374a61;
+}
