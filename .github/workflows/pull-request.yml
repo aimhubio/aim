@@ -8,10 +8,12 @@ on:
       - 'aim/sdk/**'
       - 'aim/web/api/**'
       - 'aim/storage/**'
+      - '.github/pull-request.yml'
     types:
-      - edited
       - opened
+      - synchronize
       - reopened
+      - edited
 jobs:
   run-checks:
     runs-on: ubuntu-latest

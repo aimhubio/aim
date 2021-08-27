@@ -5,10 +5,11 @@ import BookmarkCard from './components/BookmarkCard/BookmarkCard';
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
 
-import './bookmarksStyle.scss';
+import './Bookmarks.scss';
 
 function Bookmarks({
   data,
+  onBookmarkDelete,
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Bookmarks'>
@@ -21,7 +22,10 @@ function Bookmarks({
               {data?.length > 0 &&
                 data.map((bookmark: IDashboardData) => (
                   <Grid key={bookmark.id} item xs={4}>
-                    <BookmarkCard {...bookmark} />
+                    <BookmarkCard
+                      {...bookmark}
+                      onBookmarkDelete={onBookmarkDelete}
+                    />
                   </Grid>
                 ))}
             </Grid>
