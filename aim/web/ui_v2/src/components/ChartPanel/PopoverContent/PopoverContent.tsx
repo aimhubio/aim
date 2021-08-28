@@ -67,7 +67,11 @@ function PopoverContent({
                     params
                   </Typography>
                   {Object.keys(group_config[groupConfigKey]).map((item) => (
-                    <Typography key={item} color='textSecondary'>
+                    <Typography
+                      key={item}
+                      color='textSecondary'
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
                       {item}: {group_config[groupConfigKey][item] ?? '--'}
                     </Typography>
                   ))}
@@ -83,7 +87,11 @@ function PopoverContent({
               Params
             </Typography>
             {Object.keys(params).map((paramKey) => (
-              <Typography key={paramKey} color='textSecondary'>
+              <Typography
+                key={paramKey}
+                color='textSecondary'
+                style={{ whiteSpace: 'nowrap' }}
+              >
                 {paramKey}: {JSON.stringify(params[paramKey]) ?? '--'}
               </Typography>
             ))}
@@ -94,4 +102,4 @@ function PopoverContent({
   );
 }
 
-export default PopoverContent;
+export default React.memo(PopoverContent);
