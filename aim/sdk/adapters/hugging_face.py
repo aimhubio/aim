@@ -55,10 +55,10 @@ class AimCallback(object):
                 if not self._initialized:
                     self.setup(args, state, model)
                 self._current_shift = 'train'
-            
+
             def on_evaluate(self, args, state, control, **kwargs):
                 self._current_shift = 'val'
-            
+
             def on_prediction_step(self, args, state, control, **kwargs):
                 self._current_shift = 'pred'
 
@@ -72,7 +72,7 @@ class AimCallback(object):
                 }
                 for log_name, log_value in logs.items():
                     self._run.track(log_value, name=log_name, context=context)
-            
+
             def on_epoch_end(self, args, state, control, **kwargs):
                 pass
 

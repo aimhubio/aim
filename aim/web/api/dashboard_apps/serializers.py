@@ -1,5 +1,5 @@
 from aim.web.api.dashboard_apps.models import ExploreState
-from aim.web.api.utils import BaseModelSerializer, BaseSerializer, Field, ModelField, json_loads_or_none
+from aim.web.api.utils import BaseModelSerializer, BaseSerializer, Field, ModelField
 
 
 class ExploreStateModelSerializer(BaseModelSerializer):

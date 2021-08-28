@@ -18,7 +18,7 @@ import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
-  GroupingSelectOptionType,
+  IGroupingSelectOption,
   GroupNameType,
   IAppData,
   IDashboardData,
@@ -28,6 +28,7 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
+  IChartTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
 import {
@@ -41,6 +42,7 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import filterTooltipContent from 'utils/filterTooltipContent';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -82,6 +84,11 @@ function getConfig() {
         yValue: null,
         active: false,
         chartIndex: null,
+      },
+      tooltip: {
+        content: {},
+        display: true,
+        selectedParams: [],
       },
     },
     select: {
@@ -530,9 +537,16 @@ function onActivePointChange(
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
     };
+    configData.chart.tooltip = {
+      ...configData.chart.tooltip,
+      content: filterTooltipContent(
+        tooltipData[activePoint.key],
+        configData?.chart.tooltip.selectedParams,
+      ),
+    };
+
     model.setState({
       config: configData,
-      tooltipContent: tooltipData[activePoint.key] || {},
     });
   }
 }
@@ -561,10 +575,8 @@ function onSelectRunQueryChange(query: string) {
   }
 }
 
-function getGroupingSelectOptions(
-  params: string[],
-): GroupingSelectOptionType[] {
-  const paramsOptions: GroupingSelectOptionType[] = params.map((param) => ({
+function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
+  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     value: `run.params.${param}`,
     group: 'params',
     label: param,
@@ -737,6 +749,26 @@ function onBookmarkUpdate(id: string) {
   }
 }
 
+function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    let content = configData.chart.tooltip.content;
+    if (tooltip.selectedParams && configData?.chart.focusedState.key) {
+      content = filterTooltipContent(
+        tooltipData[configData.chart.focusedState.key],
+        tooltip.selectedParams,
+      );
+    }
+    configData.chart.tooltip = {
+      ...configData.chart.tooltip,
+      ...tooltip,
+      content,
+    };
+
+    model.setState({ config: configData });
+  }
+}
+
 function onNotificationDelete(id: number) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
@@ -777,6 +809,7 @@ const paramsAppModel = {
   onResetConfigData,
   onNotificationAdd,
   onNotificationDelete,
+  onChangeTooltip,
 };
 
 export default paramsAppModel;

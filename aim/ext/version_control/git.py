@@ -79,10 +79,9 @@ class GitAdapter(Base):
             if stashed:
                 git.stash('pop')
         except BaseException:
-            raise Exception('failed to commit changes to {branch}, ' +
-                            'find your uncommitted changes in stash list ' +
-                            'to recover git index state manually' +
-                            ''.format(branch=branch))
+            raise Exception('failed to commit changes to {branch}, '
+                            'find your uncommitted changes in stash list '
+                            'to recover git index state manually'.format(branch=branch))
 
         return branch, branch_hash
 

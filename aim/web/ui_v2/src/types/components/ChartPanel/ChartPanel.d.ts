@@ -7,8 +7,8 @@ import { IProcessedData } from 'types/utils/d3/processData';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IChartTooltip,
   IFocusedState,
-  ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
@@ -17,7 +17,7 @@ export interface IChartPanelProps {
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
   focusedState: IFocusedState;
-  tooltipContent: ITooltipContent;
+  tooltip: IChartTooltip;
   aggregatedData?: IAggregatedData[];
   aggregationConfig?: IAggregationConfig;
   // chartProps: Omit<

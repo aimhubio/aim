@@ -3,8 +3,8 @@ import { RouteChildrenProps } from 'react-router-dom';
 
 import { CurveEnum } from 'utils/d3';
 import {
+  IChartTooltip,
   IFocusedState,
-  ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -28,7 +28,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   focusedState: IFocusedState;
   onColorIndicatorChange: () => void;
   isVisibleColorIndicator: boolean;
-  tooltipContent: ITooltipContent;
+  tooltip: IChartTooltip;
   onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
   selectedParamsData: IParamsAppConfig['select'];
   onSelectRunQueryChange: (query: string) => void;
@@ -43,4 +43,5 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
+  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
 }

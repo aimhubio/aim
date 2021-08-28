@@ -13,7 +13,7 @@ def init():
     repo_path = os.getcwd()
     re_init = False
     if Repo.exists(repo_path):
-        re_init = click.confirm('Aim repository is already initialized. ' +
+        re_init = click.confirm('Aim repository is already initialized. '
                                 'Do you want to re-initialize it?')
         if not re_init:
             return
@@ -26,5 +26,4 @@ def init():
         click.echo(
             'Re-initialized empty Aim repository at {}'.format(repo.root_path))
     else:
-        click.echo(('Initialized a new ' +
-                    'Aim repository at {}').format(repo.root_path))
+        click.echo('Initialized a new Aim repository at {}'.format(repo.root_path))

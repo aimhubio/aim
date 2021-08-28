@@ -67,7 +67,7 @@ function Metrics(
                 data={props.lineChartData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
-                tooltipContent={props.tooltipContent}
+                tooltip={props.tooltip}
                 aggregatedData={props.aggregatedData}
                 aggregationConfig={props.aggregationConfig}
                 chartProps={[
@@ -81,6 +81,8 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
+                    selectOptions={props.groupingData?.selectOptions}
+                    tooltip={props.tooltip}
                     smoothingAlgorithm={props.smoothingAlgorithm}
                     smoothingFactor={props.smoothingFactor}
                     curveInterpolation={props.curveInterpolation}
@@ -90,6 +92,7 @@ function Metrics(
                     aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
                     alignmentConfig={props.alignmentConfig}
+                    onChangeTooltip={props.onChangeTooltip}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
                     onHighlightModeChange={props.onHighlightModeChange}

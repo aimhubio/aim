@@ -11,7 +11,7 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         lr_schedule = getattr(self.model.optimizer, 'lr', None)
         try:
             return lr_schedule(self.model.optimizer.iterations)
-        except:
+        except Exception:
             return None
 
     def _log_epoch_metrics(self, epoch, logs):
@@ -46,13 +46,10 @@ def get_keras_tracker_callback(keras_callback_cls, mixins: List):
                 if repo is None and experiment is None:
                     self._run = Run()
                 else:
-                    self._run = Run(
-                            repo=repo,
-                            experiment=experiment
-                        )
+                    self._run = Run(repo=repo, experiment=experiment)
             else:
-                print('Passing Run instance to AimCallback will be ' +
-                      'deprecated in future versions, ' +
+                print('Passing Run instance to AimCallback will be '
+                      'deprecated in future versions, '
                       'pass the callback arguments explicitly')
                 self._run = run
 
