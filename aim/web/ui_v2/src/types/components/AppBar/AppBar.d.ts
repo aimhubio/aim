@@ -1,7 +1,7 @@
-import { IMetricProps } from 'types/pages/metrics/Metrics';
+import React from 'react';
 
-export interface IMetricsBarProps {
-  onBookmarkCreate: IMetricProps['onBookmarkCreate'];
-  onBookmarkUpdate: IMetricProps['onBookmarkUpdate'];
-  onResetConfigData: IMetricProps['onResetConfigData'];
+export interface IAppBarProps {
+  title: string;
+  className?: string;
+  children?: React.ReactChildren | any;
 }

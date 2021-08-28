@@ -1,8 +1,9 @@
+@use './src/styles/abstracts' as *;
+@import './src/styles/base/reset.scss';
+@import 'fonts/icomoon/icomoonIcons.scss';
+@import './styles/base/_fonts.scss';
+
 .mainContainer {
   padding-left: 80px;
-  flex: 1 1 0
-}
-
-body {
-  font-size: 16px !important;
+  flex: 1 1 0;
 }

@@ -8,7 +8,6 @@ import Theme from 'components/Theme/Theme';
 import { routes } from 'routes/routes';
 
 import './App.scss';
-import 'fonts/icomoon/icomoonIcons.scss';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (

@@ -1,6 +1,8 @@
+import { Button } from '@material-ui/core';
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
@@ -27,15 +29,17 @@ function BookmarkCard({
   }
 
   return (
-    <div className='BookMarkCard__container'>
-      <div className='BookMarkCard__top'>
-        <span>{name}</span>
-        <span className='BookmarkCard__delete' onClick={handleOpenModal}>
-          <i className='icon-delete'></i>
-        </span>
-        <div>
-          <span>{description}</span>
+    <div className='BookmarkCard__container'>
+      <div className='BookmarkCard__top'>
+        <div className='BookmarkCard__title__section'>
+          <span className='BookmarkCard__title'>{name}</span>
+          <NavLink to={`/metrics/${app_id}`}>
+            <Button size='small' color='primary' variant='contained'>
+              View Bookmark
+            </Button>
+          </NavLink>
         </div>
+        <p>{description}</p>
       </div>
       <div className='BookMarkCard__bottom'>
         <div>
@@ -51,6 +55,9 @@ function BookmarkCard({
         onSubmit={handleBookmarkDelete}
         text='Are you sure you want to delete this bookmark?'
       />
+      <span className='BookmarkCard__delete' onClick={handleOpenModal}>
+        <DeleteOutlinedIcon />
+      </span>
     </div>
   );
 }

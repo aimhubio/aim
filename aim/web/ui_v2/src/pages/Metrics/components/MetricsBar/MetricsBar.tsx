@@ -8,14 +8,14 @@ import {
   DialogTitle,
   Typography,
 } from '@material-ui/core';
-import BookmarkForm from '../BookmarkForm/BookmarkForm';
 
+import BookmarkForm from '../BookmarkForm/BookmarkForm';
+import AppBar from 'components/AppBar/AppBar';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import AppBar from 'components/AppBar/AppBar';
+import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
 import './MetricsBar.scss';
-import { IMetricsBarProps } from 'types/components/AppBar/AppBar';
 
 function MetricsBar({
   onBookmarkCreate,
