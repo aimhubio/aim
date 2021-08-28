@@ -30,14 +30,16 @@ import {
 import getSmoothenedData from 'utils/getSmoothenedData';
 import filterMetricData from 'utils/filterMetricData';
 import { RowHeight } from 'config/table/tableConfigs';
+import filterTooltipContent from 'utils/filterTooltipContent';
 
 // Types
 import {
-  GroupingSelectOptionType,
+  IGroupingSelectOption,
   GroupNameType,
   IAggregatedData,
   IAggregationConfig,
   IAppData,
+  IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
@@ -111,6 +113,11 @@ function getConfig() {
         },
         isApplied: false,
         isEnabled: false,
+      },
+      tooltip: {
+        content: {},
+        display: true,
+        selectedParams: [],
       },
       focusedState: {
         active: false,
@@ -323,10 +330,8 @@ function onBookmarkUpdate(id: string) {
   }
 }
 
-function getGroupingSelectOptions(
-  params: string[],
-): GroupingSelectOptionType[] {
-  const paramsOptions: GroupingSelectOptionType[] = params.map((param) => ({
+function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
+  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     value: `run.params.${param}`,
     group: 'params',
     label: param,
@@ -1105,6 +1110,26 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
   }
 }
 
+function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    let content = configData.chart.tooltip.content;
+    if (tooltip.selectedParams && configData?.chart.focusedState.key) {
+      content = filterTooltipContent(
+        tooltipData[configData.chart.focusedState.key],
+        tooltip.selectedParams,
+      );
+    }
+    configData.chart.tooltip = {
+      ...configData.chart.tooltip,
+      ...tooltip,
+      content,
+    };
+
+    model.setState({ config: configData });
+  }
+}
+
 function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
@@ -1137,8 +1162,14 @@ function onActivePointChange(
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
     };
+    configData.chart.tooltip = {
+      ...configData.chart.tooltip,
+      content: filterTooltipContent(
+        tooltipData[activePoint.key],
+        configData?.chart.tooltip.selectedParams,
+      ),
+    };
     stateUpdate.config = configData;
-    stateUpdate.tooltipContent = tooltipData[activePoint.key] || {};
   }
 
   model.setState(stateUpdate);
@@ -1340,6 +1371,7 @@ const metricAppModel = {
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
   updateSelectStateUrl,
+  onChangeTooltip,
 };
 
 export default metricAppModel;

@@ -13,22 +13,22 @@ import './Params.scss';
 
 const Params = ({
   curveInterpolation,
-  onCurveInterpolationChange,
   highPlotData,
-  onActivePointChange,
   chartPanelRef,
   chartElemRef,
   focusedState,
   isVisibleColorIndicator,
-  tooltipContent,
-  onColorIndicatorChange,
   selectedParamsData,
-  onParamsSelectChange,
-  onSelectRunQueryChange,
   wrapperElemRef,
   resizeElemRef,
   tableElemRef,
   groupingData,
+  tooltip,
+  onCurveInterpolationChange,
+  onActivePointChange,
+  onColorIndicatorChange,
+  onParamsSelectChange,
+  onSelectRunQueryChange,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
@@ -38,6 +38,7 @@ const Params = ({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
+  onChangeTooltip,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   return (
     <div ref={wrapperElemRef} className='Params__container'>
@@ -81,7 +82,7 @@ const Params = ({
                 data={highPlotData}
                 focusedState={focusedState}
                 onActivePointChange={onActivePointChange}
-                tooltipContent={tooltipContent}
+                tooltip={tooltip}
                 chartProps={[
                   {
                     curveInterpolation,
@@ -90,10 +91,13 @@ const Params = ({
                 ]}
                 controls={
                   <Controls
-                    onCurveInterpolationChange={onCurveInterpolationChange}
                     curveInterpolation={curveInterpolation}
                     isVisibleColorIndicator={isVisibleColorIndicator}
+                    selectOptions={groupingData?.selectOptions}
+                    tooltip={tooltip}
+                    onCurveInterpolationChange={onCurveInterpolationChange}
                     onColorIndicatorChange={onColorIndicatorChange}
+                    onChangeTooltip={onChangeTooltip}
                   />
                 }
               />
