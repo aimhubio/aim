@@ -1,4 +1,5 @@
-.BookMarkCard {
+.BookMarkCard__container {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 160px;
@@ -11,6 +12,15 @@
   overflow: hidden;
   &:hover {
     border: 1px solid #3b5896;
+  }
+}
+.BookmarkCard__delete {
+  position: absolute;
+  right: 0.5em;
+  top: 0;
+  cursor: pointer;
+  i {
+    font-size: 0.75em;
   }
 }
 

@@ -16,7 +16,7 @@ class AimCallback(object):
     def __get_callback_cls(cls):
         if cls.__xgboost_callback_cls is not None:
             return cls.__xgboost_callback_cls
-        
+
         from xgboost.callback import TrainingCallback, CallbackContainer
 
         class _XgboostCallback(TrainingCallback):
@@ -52,13 +52,9 @@ class AimCallback(object):
                         else:
                             score = log[-1]
 
-                        self.aim_run.track(score, step=0,
-                                               name=metric_name,
-                                               context={'stdv': False})
+                        self.aim_run.track(score, step=0, name=metric_name, context={'stdv': False})
                         if stdv is not None:
-                            self.aim_run.track(score, step=0,
-                                                   name=metric_name,
-                                                   context={'stdv': True})
+                            self.aim_run.track(score, step=0, name=metric_name, context={'stdv': True})
 
                 return False
 
@@ -70,10 +66,7 @@ class AimCallback(object):
 
         cls.__xgboost_callback_cls = _XgboostCallback
         return cls.__xgboost_callback_cls
-    
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT):
+
+    def __init__(self, repo: Optional[str] = None, experiment: Optional[str] = None,
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
         pass

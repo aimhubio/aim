@@ -1,12 +1,10 @@
 from aim.storage.types import AimObjectKey, AimObjectPath
 import struct
 
-import cython
-
-from aim.storage.encoding.encoding_native import *
+from aim.storage.encoding.encoding_native import *  # noqa
 from aim.storage.utils import ArrayFlag, ObjectFlag
 
-from typing import List, Tuple, Union, Any
+from typing import Union, Any
 
 
 _PATH_SENTINEL = b'\xfe'
@@ -29,7 +27,6 @@ _OBJECT = 7
 
 # cdef inline bytes encode_none():
 #     return b""
-
 
 
 def encode(value: Any) -> bytes:
@@ -88,7 +85,9 @@ def decode(buffer: bytes):
     else:
         return None
 
+
 _struct_q_be = struct.Struct('>q')
+
 
 def encode_key(key: Union[int, str]):
     if isinstance(key, str):
@@ -102,10 +101,8 @@ def encode_key(key: Union[int, str]):
     else:
         raise ValueError(f'Value {key} of type {type(key)} is not supported')
 
+
 def encode_path(path: Union[AimObjectKey, AimObjectPath] = ()):
     if isinstance(path, (int, str)):
         path = (path,)
-    return b''.join(
-        [encode_key(key) + _PATH_SENTINEL
-        for key in path]
-    )
+    return b''.join([encode_key(key) + _PATH_SENTINEL for key in path])
