@@ -12,7 +12,9 @@ import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IAlignmentConfig,
   IAppData,
+  IChartTooltip,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
@@ -22,6 +24,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { RowHeight } from 'config/table/tableConfigs';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -30,7 +33,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const route = useRouteMatch();
+  const route = useRouteMatch<any>();
   const metricsData = useModel(metricAppModel);
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
@@ -45,18 +48,17 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     metricAppModel.initialize();
-    const metricsRequestRef = metricAppModel.getMetricsData();
     let appRequestRef: {
       call: () => Promise<IAppData | void>;
       abort: () => void;
     };
-    if ((route.params as any).appId) {
-      appRequestRef = metricAppModel.getAppConfigData(
-        (route.params as any).appId,
-      );
+    if (route.params.appId) {
+      appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call();
     }
     metricAppModel.setDefaultAppConfigData();
+
+    const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
     return () => {
       metricsRequestRef.abort();
@@ -78,19 +80,29 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [metricsData?.config?.chart]);
 
+  React.useEffect(() => {
+    if (metricsData?.config?.select) {
+      metricAppModel.updateSelectStateUrl();
+    }
+  }, [metricsData?.config?.select]);
+
   return (
     <Metrics
-      //refs
+      // refs
       tableRef={tableRef}
       chartPanelRef={chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      //options
+      // grouping options
+      groupingData={
+        metricsData?.config?.grouping as IMetricAppConfig['grouping']
+      }
+      // chart options
       lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
@@ -105,16 +117,21 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
-      groupingData={
-        metricsData?.config?.grouping as IMetricAppConfig['grouping']
-      }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
-      tooltipContent={metricsData?.tooltipContent as ITooltipContent}
+      tooltip={metricsData?.config?.chart?.tooltip as IChartTooltip}
       aggregationConfig={
         metricsData?.config?.chart.aggregationConfig as IAggregationConfig
       }
+      alignmentConfig={
+        metricsData?.config?.chart.alignmentConfig as IAlignmentConfig
+      }
+      selectedMetricsData={
+        metricsData?.config?.select as IMetricAppConfig['select']
+      }
+      tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
       //methods
+      onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
       onHighlightModeChange={metricAppModel.onHighlightModeChange}
@@ -135,6 +152,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationAdd={metricAppModel.onNotificationAdd}
       onNotificationDelete={metricAppModel.onNotificationDelete}
       onResetConfigData={metricAppModel.onResetConfigData}
+      onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
+      onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
+      onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
+      onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
+      onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
+      toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
     />
   );
 }

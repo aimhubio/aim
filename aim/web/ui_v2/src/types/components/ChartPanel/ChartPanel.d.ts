@@ -7,8 +7,8 @@ import { IProcessedData } from 'types/utils/d3/processData';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IChartTooltip,
   IFocusedState,
-  ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
@@ -17,7 +17,7 @@ export interface IChartPanelProps {
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
   focusedState: IFocusedState;
-  tooltipContent: ITooltipContent;
+  tooltip: IChartTooltip;
   aggregatedData?: IAggregatedData[];
   aggregationConfig?: IAggregationConfig;
   // chartProps: Omit<
@@ -34,24 +34,20 @@ export interface IChartPanelProps {
 }
 
 export interface IChartPanelRef {
-  setActiveLine: (rowKey: string) => void;
+  setActiveLineAndCircle?: (
+    lineKey?: string,
+    focusedStateActive: boolean = false,
+    force: boolean = false,
+  ) => void;
   updateLines: (data: IProcessedData[]) => void;
 }
 
-interface IChartTypeConfig {
+export type IMemoizedForwardRefComponent<T> = React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<T & React.RefAttributes<unknown>>
+>;
+
+export interface IChartTypeConfig {
   [key: string]:
-    | React.LazyExoticComponent<
-        React.MemoExoticComponent<
-          React.ForwardRefExoticComponent<
-            ILineChartProps & React.RefAttributes<unknown>
-          >
-        >
-      >
-    | React.LazyExoticComponent<
-        React.MemoExoticComponent<
-          React.ForwardRefExoticComponent<
-            IHighPlotProps & React.RefAttributes<unknown>
-          >
-        >
-      >;
+    | React.LazyExoticComponent<IMemoizedForwardRefComponent<ILineChartProps>>
+    | React.LazyExoticComponent<IMemoizedForwardRefComponent<IHighPlotProps>>;
 }

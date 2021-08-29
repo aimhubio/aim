@@ -1,24 +1,14 @@
 import os
 import click
 
-from aim.engine.configs import (
-    AIM_UI_DEFAULT_PORT,
-    AIM_UI_DEFAULT_HOST,
-    AIM_TF_LOGS_PATH_KEY,
-    AIM_UI_TELEMETRY_KEY,
-    AIM_WEB_ENV_KEY,
-    AIM_UI_MOUNTED_REPO_PATH,
-)
-from aim.engine.utils import clean_repo_path
-from aim.engine.repo import AimRepo
-from aim.cli.up.utils import (
-    repo_init_alert,
-    build_db_upgrade_command,
-    build_uvicorn_command,
-)
+from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_WEB_ENV_KEY, \
+    AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY
+from aim.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path
+from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
+
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
-from aim.web.api.projects.project import Project
 
 
 @click.command()
@@ -30,21 +20,15 @@ from aim.web.api.projects.project import Project
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
-@click.pass_obj
-def up(repo_inst, dev, host, port, repo, tf_logs):
+def up(dev, host, port, repo, tf_logs):
     repo_path = clean_repo_path(repo)
     if repo_path:
-        repo_inst = AimRepo(repo_path)
-    if repo_inst is None or not repo_inst.exists():
-        repo_init_alert()
-        return
+        repo_inst = Repo.from_path(repo_path)
+    else:
+        repo_inst = Repo.default_repo()
+    repo_inst.structured_db.run_upgrades()
 
-    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.root_path
-
-    # TODO: [AT] find better way to access run_metadata_db
-    project = Project()
-    run_metadata_db = project.repo.structured_db
-    run_metadata_db.run_upgrades()
+    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
 
     if dev:
         os.environ[AIM_WEB_ENV_KEY] = 'dev'
@@ -58,12 +42,11 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
         db_cmd = build_db_upgrade_command()
         exec_cmd(db_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to initialize Aim DB. ' +
+        click.echo('Failed to initialize Aim DB. '
                    'Please see the logs above for details.')
         return
 
-    if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None
-               and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
+    if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
         os.environ[AIM_UI_TELEMETRY_KEY] = '0'
     else:
         os.environ[AIM_UI_TELEMETRY_KEY] = '1'
@@ -94,6 +77,6 @@ def up(repo_inst, dev, host, port, repo, tf_logs):
         server_cmd = build_uvicorn_command(host, port, 1)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to run Aim UI. ' +
+        click.echo('Failed to run Aim UI. '
                    'Please see the logs above for details.')
         return

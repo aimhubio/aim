@@ -1,8 +1,7 @@
 from typing import Optional
 
-from aim.sdk.session.session import Session
-from aim.engine.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.session.configs import DEFAULT_FLUSH_FREQUENCY
+from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
 
 
 class AimCallback(object):
@@ -17,31 +16,25 @@ class AimCallback(object):
     def __get_callback_cls(cls):
         if cls.__xgboost_callback_cls is not None:
             return cls.__xgboost_callback_cls
-        
+
         from xgboost.callback import TrainingCallback, CallbackContainer
 
         class _XgboostCallback(TrainingCallback):
             def __init__(self, repo: Optional[str] = None,
                          experiment: Optional[str] = None,
                          system_tracking_interval: Optional[int]
-                         = DEFAULT_SYSTEM_TRACKING_INT,
-                         flush_frequency: Optional[int]
-                         = DEFAULT_FLUSH_FREQUENCY):
+                         = DEFAULT_SYSTEM_TRACKING_INT):
                 super().__init__()
                 self.repo = repo
                 self.experiment = experiment
-                self.flush_frequency = flush_frequency
                 self.system_tracking_interval = system_tracking_interval
                 self.initialized = False
-                self.aim_session = None
+                self.aim_run = None
 
             def before_training(self, model):
-                self.aim_session = Session(
-                    repo=self.repo,
-                    experiment=self.experiment,
-                    flush_frequency=self.flush_frequency,
-                    system_tracking_interval=self.system_tracking_interval
-                )
+                self.aim_run = Run(repo=self.repo,
+                                   experiment=self.experiment,
+                                   system_tracking_interval=self.system_tracking_interval)
                 self.initialized = True
                 return model
 
@@ -59,28 +52,21 @@ class AimCallback(object):
                         else:
                             score = log[-1]
 
-                        self.aim_session.track(score,
-                                               name=metric_name,
-                                               stdv=False)
+                        self.aim_run.track(score, step=0, name=metric_name, context={'stdv': False})
                         if stdv is not None:
-                            self.aim_session.track(score,
-                                                   name=metric_name,
-                                                   stdv=True)
+                            self.aim_run.track(score, step=0, name=metric_name, context={'stdv': True})
 
                 return False
 
             def after_training(self, model):
-                if self.initialized and self.aim_session.active:
-                    self.aim_session.close()
+                if self.initialized and self.aim_run:
+                    del self.aim_run
+                    self.aim_run = None
                 return model
 
         cls.__xgboost_callback_cls = _XgboostCallback
         return cls.__xgboost_callback_cls
-    
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 flush_frequency: Optional[int] = DEFAULT_FLUSH_FREQUENCY):
+
+    def __init__(self, repo: Optional[str] = None, experiment: Optional[str] = None,
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
         pass

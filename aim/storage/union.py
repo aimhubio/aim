@@ -2,12 +2,18 @@ import heapq
 import logging
 import os
 import aimrocks
+
+import cachetools
+import cachetools.func
+
 from pathlib import Path
 
 from aim.storage.encoding import encode_path
 from aim.storage.container import Container
+from aim.storage.prefixview import PrefixView
+from aim.storage.containerview import ContainerView
 
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -22,11 +28,15 @@ class Racer(NamedTuple):
 
 
 class ItemsIterator:
-    def __init__(self, iterators: Dict[bytes, "aimrocks.ItemsIterator"]):
-        self._iterators = iterators
+    def __init__(self, dbs: Dict[bytes, "aimrocks.DB"], *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        self._iterators = {}
+        for key, value in dbs.items():
+            self._iterators[key] = value.iteritems(*args, **kwargs)
         self._priority: Dict[bytes, int] = {
             prefix: idx
-            for idx, prefix in enumerate(iterators)
+            for idx, prefix in enumerate(self._iterators)
         }
         self._heap: List[Racer] = []
 
@@ -74,10 +84,9 @@ class ItemsIterator:
             alt = self._heap[0]
 
             if (
-                alt.key != key and
-                (alt.prefix == prefix or not alt.key.startswith(prefix))
+                alt.key != key and (alt.prefix == prefix or not alt.key.startswith(prefix))
             ):
-               break
+                break
 
             heapq.heappop(self._heap)
             try:
@@ -90,9 +99,7 @@ class ItemsIterator:
 
         return key, value
 
-
-    def _init_heap(self
-                   ):
+    def _init_heap(self):
         self._heap = []
         max_key = b''
         for prefix, iterator in self._iterators.items():
@@ -120,60 +127,72 @@ class KeysIterator(ItemsIterator):
         key, value = super().get()
         return key
 
-    def __next__(self) ->  bytes:
+    def __next__(self) -> bytes:
         key, value = super().__next__()
         return key
 
 
 class ValuesIterator(ItemsIterator):
-
     def get(self) -> bytes:
         key, value = super().get()
         return value
 
-    def __next__(self) ->  bytes:
+    def __next__(self) -> bytes:
         key, value = super().__next__()
         return value
 
 
 class DB(object):
     def __init__(self, db_path: str, db_name: str, opts, read_only: bool = False):
+        assert read_only
         self.db_path = db_path
         self.db_name = db_name
-        self.paths: List[str]
-        self.dbs: List[aimrocks.DB]
         self.opts = opts
-        self._get_dbs()
+        self._dbs: Dict[bytes, aimrocks.DB] = dict()
 
-    def _get_dbs(self):
-        self.paths: Dict[str, str] = dict()
+    def _get_db(
+        self,
+        prefix: bytes,
+        path: str,
+        cache: Dict[bytes, aimrocks.DB],
+        store: Dict[bytes, aimrocks.DB] = None,
+    ):
+        db = cache.get(prefix)
+        if db is None:
+            db = aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
+        if store is not None:
+            store[prefix] = db
+        return db
 
+    @cachetools.func.ttl_cache(maxsize=None, ttl=0.1)
+    def _list_dir(self, path: str):
+        return os.listdir(path)
+
+    @property
+    @cachetools.func.ttl_cache(maxsize=None, ttl=0.1)
+    def dbs(self):
+        index_prefix = encode_path((self.db_name, "chunks"))
+        index_path = os.path.join(self.db_path, self.db_name, "index")
         try:
-            index_db = aimrocks.DB(os.path.join(self.db_path, self.db_name, 'index'),
-                                   opts=aimrocks.Options(**self.opts),
-                                   read_only=True)
-        except Exception as e:
+            index_db = self._get_db(index_prefix, index_path, self._dbs)
+        except Exception:
             index_db = None
             logger.warning('No index was detected')
 
         # If index exists -- only load those in progress
         selector = 'progress' if index_db is not None else 'chunks'
 
-        self.paths.update({
-            prefix: os.path.join(self.db_path, self.db_name, 'chunks', prefix)
-            for prefix in
-            os.listdir(os.path.join(self.db_path, self.db_name, selector))
-        })
+        new_dbs: Dict[bytes, aimrocks.DB] = {}
+        db_dir = os.path.join(self.db_path, self.db_name, selector)
+        for prefix in self._list_dir(db_dir):
+            path = os.path.join(self.db_path, self.db_name, "chunks", prefix)
+            prefix = encode_path((self.db_name, "chunks", prefix))
+            self._get_db(prefix, path, self._dbs, new_dbs)
 
-        self.dbs: Dict[bytes, aimrocks.DB] = {
-            encode_path((self.db_name, 'chunks', prefix)):
-                aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
-            for prefix, path in self.paths.items()
-        }
         if index_db is not None:
-            self.dbs[encode_path((self.db_name,))] = index_db
-        # print(self.dbs)
-        return self.dbs
+            new_dbs[index_prefix] = index_db
+        self._dbs = new_dbs
+        return new_dbs
 
     def close(self):
         ...
@@ -186,37 +205,34 @@ class DB(object):
         raise ValueError
 
     def iteritems(
-        self
+        self, *args, **kwargs
     ) -> "ItemsIterator":
-        return ItemsIterator({
-            prefix: db.iteritems()
-            for prefix, db
-            in self.dbs.items()
-        })
+        return ItemsIterator(self.dbs, *args, **kwargs)
 
     def iterkeys(
-        self
+        self, *args, **kwargs
     ) -> "KeysIterator":
-        return KeysIterator({
-            prefix: db.iteritems()
-            for prefix, db
-            in self.dbs.items()
-        })
+        return KeysIterator(self.dbs, *args, **kwargs)
 
     def itervalues(
-        self
+        self, *args, **kwargs
     ) -> "ValuesIterator":
-        return ValuesIterator({
-            prefix: db.iteritems()
-            for prefix, db
-            in self.dbs.items()
-        })
+        return ValuesIterator(self.dbs, *args, **kwargs)
 
 
 class UnionContainer(Container):
 
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @property
+    def writable_db(self) -> aimrocks.DB:
+        raise NotImplementedError
+
     @property
     def db(self) -> aimrocks.DB:
+        assert self.read_only
+
         if self._db is not None:
             return self._db
         try:
@@ -230,3 +246,39 @@ class UnionContainer(Container):
             raise e
 
         return self._db
+
+    def view(
+        self,
+        prefix: bytes = b''
+    ) -> 'ContainerView':
+        container = self
+        if prefix in self.db.dbs:
+            container = UnionSubContainer(container=self, domain=prefix)
+        return PrefixView(prefix=prefix,
+                          container=container)
+
+
+class UnionSubContainer(Container):
+    def __init__(self, container: 'UnionContainer', domain: bytes):
+        self._parent = container
+        self.domain = domain
+
+        self._db = None
+        self._lock = None
+        self._lock_path: Optional[Path] = None
+        self._progress_path: Optional[Path] = None
+
+    @property
+    def writable_db(self) -> aimrocks.DB:
+        raise NotImplementedError
+
+    @property
+    def db(self) -> aimrocks.DB:
+        db: DB = self._parent.db
+        return db.dbs.get(self.domain, db)
+
+    def view(
+        self,
+        prefix: bytes = b''
+    ) -> 'ContainerView':
+        return PrefixView(prefix=prefix, container=self)

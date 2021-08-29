@@ -1,4 +1,4 @@
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import {
   IActivePoint,
   ISyncHoverStateParams,
@@ -26,19 +26,19 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
-  aggregatedData: IAggregatedData[];
-  xAlignment?: 'step' | 'absolute_time' | 'relative_time' | 'epoch';
+  aggregatedData?: IAggregatedData[];
+  xAlignment?: XAlignmentEnum;
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
-  aggregationConfig: IAggregationConfig;
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface IUpdateFocusedChartProps {
-  mousePos: [number, number];
+  mousePos?: [number, number];
   focusedStateActive?: boolean;
   force?: boolean;
 }
@@ -48,11 +48,16 @@ export interface IAttributesRef {
   activePoint?: IActivePoint;
   xStep?: number;
   lineKey?: string;
+  dataSelector?: string;
   xScale?: IGetAxisScale;
   yScale?: IGetAxisScale;
   updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
-  setActiveLine?: (lineKey: string) => void;
-  updateHoverAttributes?: (xValue: number) => void;
+  setActiveLineAndCircle?: (
+    lineKey?: string,
+    focusedStateActive: boolean = false,
+    force: boolean = false,
+  ) => void;
+  updateHoverAttributes?: (xValue: number, dataSelector?: string) => void;
   updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
   clearHoverAttributes?: () => void;
 }

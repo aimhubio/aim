@@ -8,6 +8,18 @@ import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
 
+import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
+import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
+import sortIcon from 'assets/icons/table/sort.svg';
+import visibilityOffIcon from 'assets/icons/table/visibilityOff.svg';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
+import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
+import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
+import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
+import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
+
+import './Table.scss';
+
 const Table = React.forwardRef(function Table(
   props: ITableProps,
   ref,
@@ -38,56 +50,90 @@ const Table = React.forwardRef(function Table(
           <Grid xs item>
             <Grid container spacing={1}>
               {props.onManageColumns && (
-                <Grid xs={1} item>
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                    onClick={props.onManageColumns}
-                  >
-                    Manage Columns
-                  </Button>
-                </Grid>
+                <ControlPopover
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                  title='Manage Table Columns'
+                  anchor={({ onAnchorClick, opened }) => (
+                    <Grid
+                      onClick={onAnchorClick}
+                      className='Table__header__item'
+                      item
+                    >
+                      <img src={manageColumnsIcon} alt='manage Columns' />
+                      <span onClick={props.onManageColumns}>
+                        Manage Columns
+                      </span>
+                    </Grid>
+                  )}
+                  component={<ManageColumns columnsData={columns} />}
+                />
               )}
               {props.onRowsChange && (
-                <Grid xs={1} item>
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                    onClick={props.onRowsChange}
-                  >
-                    Hide Rows
-                  </Button>
-                </Grid>
+                <ControlPopover
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                  title='Manage Rows Visibility'
+                  anchor={({ onAnchorClick, opened }) => (
+                    <Grid
+                      onClick={onAnchorClick}
+                      className='Table__header__item'
+                      item
+                    >
+                      <img src={visibilityOffIcon} alt='sort' />
+                      <span onClick={props.onSort}>Hide Rows</span>
+                    </Grid>
+                  )}
+                  component={<HideRows />}
+                />
               )}
               {props.onSort && (
-                <Grid xs={1} item>
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                    onClick={props.onSort}
-                  >
-                    Sort
-                  </Button>
-                </Grid>
+                <ControlPopover
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                  title='Sort table by:'
+                  anchor={({ onAnchorClick }) => (
+                    <Grid
+                      onClick={onAnchorClick}
+                      className='Table__header__item'
+                      item
+                    >
+                      <img src={sortIcon} alt='sort' />
+                      <span onClick={props.onSort}>Sort</span>
+                    </Grid>
+                  )}
+                  component={<SortPopover sortOptions={props.sortOptions} />}
+                />
               )}
               {props.onRowHeightChange && (
-                <Grid xs={1} item>
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                    onClick={props.onRowHeightChange}
-                  >
-                    Row Height
-                  </Button>
-                </Grid>
+                <ControlPopover
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                  title='Select Row Height'
+                  anchor={({ onAnchorClick }) => (
+                    <Grid
+                      onClick={onAnchorClick}
+                      className='Table__header__item'
+                      item
+                    >
+                      <img src={rowHeightIcon} alt='rowHeight' />
+                      <span onClick={props.onRowHeightChange}>Row Height</span>
+                    </Grid>
+                  )}
+                  component={<RowHeight />}
+                />
               )}
               <Grid item xs />
               {props.onExport && (
@@ -120,9 +166,11 @@ const Table = React.forwardRef(function Table(
               fixed
               rowKey='key'
               headerHeight={30}
-              rowHeight={30}
+              rowHeight={props.rowHeight}
               footerHeight={0}
               defaultExpandedRowKeys={[]}
+              expandColumnKey='#'
+              rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
               sortBy={{}}
               useIsScrolling={false}
               overscanRowCount={1}

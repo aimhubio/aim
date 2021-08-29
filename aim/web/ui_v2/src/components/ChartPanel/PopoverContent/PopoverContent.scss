@@ -1,6 +1,5 @@
 .PopoverContent__container {
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: auto;
   max-height: inherit;
 }

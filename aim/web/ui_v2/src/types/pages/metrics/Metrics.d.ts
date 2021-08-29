@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { ITableRef } from 'types/components/Table/Table';
 import {
@@ -15,6 +15,8 @@ import {
   ITooltipContent,
   IAggregationConfig,
   IAggregatedData,
+  IAlignmentConfig,
+  IChartTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -23,6 +25,9 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ILine } from 'types/components/LineChart/LineChart';
+import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -32,7 +37,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   displayOutliers: boolean;
@@ -45,8 +50,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   highlightMode: HighlightEnum;
   groupingData: IMetricAppConfig['grouping'];
   notifyData: IMetricAppModelState['notifyData'];
-  tooltipContent: ITooltipContent;
+  tooltip: IChartTooltip;
   aggregationConfig: IAggregationConfig;
+  alignmentConfig: IAlignmentConfig;
+  selectedMetricsData: IMetricAppConfig['select'];
+  tableRowHeight: RowHeight;
+  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (
@@ -56,7 +65,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onHighlightModeChange: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
-  onTableRowClick: (rowKey: string) => void;
+  onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,
@@ -72,6 +81,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
+  onAlignmentMetricChange: (metric: string) => void;
+  onAlignmentTypeChange: (type: XAlignmentEnum) => void;
+  onMetricsSelectChange: (metrics: ISelectMetricsOption[]) => void;
+  onSelectRunQueryChange: (query: string) => void;
+  onSelectAdvancedQueryChange: (query: string) => void;
+  toggleSelectAdvancedMode: () => void;
 }
 
 export interface IOnSmoothingChange {

@@ -1,0 +1,62 @@
+@use 'src/styles/abstracts' as *;
+
+.BookmarkCard__container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #dee6f3;
+  transition: border 0.3s ease-out;
+  border-radius: 0.5em;
+  padding: 1.5em 4em 1.5em 1.5em;
+  margin-bottom: 1em;
+  &:hover {
+    border: 1px solid $primary-color;
+  }
+}
+.BookmarkCard__delete {
+  position: absolute;
+  right: 1.5em;
+  top: 1.5em;
+  margin-bottom: 0.75em;
+  cursor: pointer;
+  i {
+    font-size: 0.75em;
+  }
+}
+
+.BookmarkCard__top {
+  flex: 1 1;
+  p {
+    margin-top: 0.25em;
+    font-weight: normal;
+    font-size: 12px;
+  }
+}
+
+.BookmarkCard__title__section {
+  display: flex;
+  justify-content: space-between;
+  a {
+    text-decoration: none;
+  }
+}
+
+.BookmarkCard__title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.BookmarkCard__bottom {
+  margin-top: 0.75em;
+  strong {
+    color: #243969;
+    margin-right: 0.5em;
+  }
+}
+
+.BookmarkCard__selected__metrics {
+  margin-top: 1em;
+  width: 100%;
+  white-space: nowrap;
+  overflow: auto; 
+}

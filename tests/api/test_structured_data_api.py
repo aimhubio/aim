@@ -1,9 +1,11 @@
 from tests.base import ApiTestBase
-from tests.utils import truncate_structured_db
+from tests.utils import fill_up_test_data, remove_test_data
 
 
 class StructuredApiTestBase(ApiTestBase):
     def setUp(self) -> None:
+        super().setUp()
+        fill_up_test_data()
         with self.repo.structured_db:
             for idx, run in enumerate(self.repo.iter_runs()):
                 exp_name = 'Experiment 1' if idx < 5 else 'Experiment 2'
@@ -19,37 +21,11 @@ class StructuredApiTestBase(ApiTestBase):
                     run.props.add_tag('last runs')
 
     def tearDown(self) -> None:
-        truncate_structured_db(self.repo.structured_db)
+        remove_test_data()
+        super().tearDown()
 
 
 class TestStructuredRunApi(StructuredApiTestBase):
-    def test_run_list_api(self):
-        client = self.client
-        response = client.get('/api/runs/')
-        self.assertEqual(200, response.status_code)
-
-        data = response.json()
-        self.assertEqual(10, len(data))
-        self.assertIn('id', data[0])
-        self.assertIn('name', data[0])
-
-    def test_run_list_include_exclude_archived(self):
-        matching_runs = self.repo.structured_db.search_runs('Run number 3')
-        run = next(iter(matching_runs))
-        client = self.client
-        resp = client.put(f'/api/runs/{run.hashname}', json={'archived': True})
-        self.assertEqual(200, resp.status_code)
-
-        # without archived
-        response = client.get('/api/runs/')
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(9, len(response.json()))
-
-        # with archived
-        response = client.get('/api/runs/', params={'include_archived': True})
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(10, len(response.json()))
-
     def test_set_run_experiment_api(self):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')
         run = next(iter(matching_runs))
@@ -89,28 +65,6 @@ class TestStructuredRunApi(StructuredApiTestBase):
         self.assertEqual(2, len(run.tags))
         tag_names = [t.name for t in run.tags]
         self.assertListEqual(['last runs', 'new tag'], tag_names)
-
-    def test_get_run_props_api(self):
-        matching_runs = self.repo.structured_db.search_runs('Run number 5')
-        run = next(iter(matching_runs))
-        client = self.client
-        response = client.get(f'/api/runs/{run.hashname}/')
-        self.assertEqual(200, response.status_code)
-        data = response.json()
-        self.assertEqual('Run number 5', data['name'])
-        self.assertEqual(run.hashname, data['id'])
-        self.assertEqual('', data['description'])
-        self.assertEqual('Experiment 1', data['experiment']['name'])
-        self.assertEqual(2, len(data['tags']))
-
-    def test_search_runs_by_name_api(self):
-        client = self.client
-        response = client.get('/api/runs/search', params={'q': 'number 1'})
-        self.assertEqual(200, response.status_code)
-        data = response.json()
-        self.assertEqual(2, len(data))
-        run_names = [run['name'] for run in data]
-        self.assertListEqual(['Run number 1', 'Run number 10'], run_names)
 
     def test_update_run_name_description(self):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')
@@ -154,6 +108,7 @@ class TestTagsApi(StructuredApiTestBase):
         data = response.json()
         self.assertEqual('last runs', data['name'])
         self.assertEqual(None, data['color'])
+        self.assertFalse(data['archived'])
 
     def test_create_tag_api(self):
         client = self.client
@@ -168,10 +123,13 @@ class TestTagsApi(StructuredApiTestBase):
         tag = next(iter(self.repo.structured_db.tags()))
         self.assertEqual(None, tag.color)
         client = self.client
-        response = client.put(f'/api/tags/{tag.uuid}/', json={'name': 'my awesome tag', 'color': '#FFFFFF'})
+        response = client.put(f'/api/tags/{tag.uuid}/', json={'name': 'my awesome tag',
+                                                              'color': '#FFFFFF',
+                                                              'description': 'new description'})
         self.assertEqual(200, response.status_code)
         self.assertEqual('my awesome tag', tag.name)
         self.assertEqual('#FFFFFF', tag.color)
+        self.assertEqual('new description', tag.description)
 
     def test_get_tag_runs_api(self):
         client = self.client
@@ -183,9 +141,24 @@ class TestTagsApi(StructuredApiTestBase):
         response = client.get(f'/api/tags/{tag_uuid}/runs/')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        run_names = [run['name'] for run in data['runs']]
-        expected_run_names = [f'Run number {i}' for i in range(4, 11)]
-        self.assertListEqual(expected_run_names, run_names)
+        run_names = {run['name'] for run in data['runs']}
+        expected_run_names = {f'Run number {i}' for i in range(4, 11)}
+        self.assertSetEqual(expected_run_names, run_names)
+
+    def test_archive_tag_api(self):
+        tag = next(iter(self.repo.structured_db.tags()))
+        client = self.client
+        response = client.put(f'/api/tags/{tag.uuid}/', json={'archived': True})
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(tag.archived)
+
+    def test_list_run_tags_with_archived_tag(self):
+        tag = next(iter(self.repo.structured_db.tags()))
+        self.assertTrue(all(tag in r.tags for r in tag.runs))
+        client = self.client
+        response = client.put(f'/api/tags/{tag.uuid}/', json={'archived': True})
+        self.assertEqual(200, response.status_code)
+        self.assertFalse(any(tag in r.tags for r in tag.runs))
 
 
 class TestExperimentsApi(StructuredApiTestBase):
@@ -194,7 +167,7 @@ class TestExperimentsApi(StructuredApiTestBase):
         response = client.get('/api/experiments')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        self.assertEqual(2, len(data))
+        self.assertEqual(3, len(data))  # count default experiment
 
     def test_search_experiments_api(self):
         client = self.client
@@ -246,6 +219,18 @@ class TestExperimentsApi(StructuredApiTestBase):
         response = client.get(f'/api/experiments/{exp_uuid}/runs/')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        run_names = [run['name'] for run in data['runs']]
-        expected_run_names = [f'Run number {i}' for i in range(6, 11)]
-        self.assertListEqual(expected_run_names, run_names)
+        run_names = {run['name'] for run in data['runs']}
+        expected_run_names = {f'Run number {i}' for i in range(6, 11)}
+        self.assertSetEqual(expected_run_names, run_names)
+
+    def test_archive_experiment_with_runs(self):
+        client = self.client
+        response = client.get('/api/experiments/search', params={'q': 'Experiment 2'})
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        exp_uuid = data[0]['id']
+
+        response = client.put(f'/api/experiments/{exp_uuid}/', json={'archived': True})
+        self.assertEqual(response.status_code, 400)
+        expected_text = '{{"detail":"Cannot archive experiment \'{}\'. Experiment has associated runs."}}'.format(exp_uuid)
+        self.assertEqual(response.text, expected_text)

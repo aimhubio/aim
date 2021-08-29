@@ -7,18 +7,39 @@ import {
 } from '@material-ui/core';
 
 import { IThemeProps } from 'types/components/Theme/Theme';
-import useFontSize from 'hooks/fontSize/useFontSize';
+// import useFontSize from 'hooks/fontSize/useFontSize';
 
 export const ThemeContext = React.createContext({});
 const { Provider } = ThemeContext;
 
 const light: ThemeOptions = {
+  overrides: {
+    MuiTextField: {},
+    MuiInputBase: {
+      input: {
+        height: '0.6875em',
+      },
+    },
+    MuiButton: {
+      root: {
+        height: 32,
+        boxShadow: 'unset',
+      },
+      contained: {
+        boxShadow: 'unset',
+      },
+    },
+  },
+  props: {
+    MuiButtonBase: {
+      disableRipple: true,
+    },
+  },
   palette: {
     type: 'light',
     primary: {
-      main: '#243969',
+      main: '#1473E6',
     },
-
     text: {
       // secondary: '#fff',
     },
@@ -55,7 +76,7 @@ function Theme(
   const theme = createMuiTheme(dark ? darkTheme : light);
   return (
     <Provider value={{ dark, handleTheme }}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
     </Provider>
   );

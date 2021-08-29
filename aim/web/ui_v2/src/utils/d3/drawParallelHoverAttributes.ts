@@ -148,7 +148,7 @@ const drawParallelHoverAttributes = ({
     //  topPos(bounded circle.y) and leftPos(bounded circle.x)
     return {
       key: circle.key,
-      xValue: attributesRef.current.xScale(dimensionLabel),
+      xValue: dimensionLabel,
       yValue,
       xPos: circle.x,
       yPos: circle.y,
@@ -415,7 +415,7 @@ const drawParallelHoverAttributes = ({
   }
 
   function init() {
-    const { focusedState, xScale, yScale } = attributesRef.current;
+    const { focusedState, xScale, yScale, activePoint } = attributesRef.current;
     if (
       focusedState?.chartIndex === index &&
       focusedState?.active &&
@@ -424,13 +424,13 @@ const drawParallelHoverAttributes = ({
       focusedState.yValue
     ) {
       const mouse: [number, number] = [
-        xScale(scalePointValue(xScale, focusedState?.xValue)),
-        yScale[scalePointValue(xScale, focusedState?.xValue)](
+        xScale(scalePointValue(xScale, activePoint?.xPos || 0)),
+        yScale[scalePointValue(xScale, activePoint?.xPos || 0)](
           focusedState?.yValue,
         ) + margin.top,
       ];
       updateFocusedChart({ mouse, force: true });
-      drawFocusedCircle(focusedState?.key);
+      drawFocusedCircle(focusedState.key);
     }
   }
 
@@ -456,8 +456,9 @@ function scalePointValue(
   const rangePoints = d3.range(
     range[0],
     range[1],
-    xScale.step && xScale.step(),
+    xScale.step && xScale.step() - 1,
   );
+
   return domain[d3.bisect(rangePoints, xPos) - 1];
 }
 

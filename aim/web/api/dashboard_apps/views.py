@@ -45,7 +45,7 @@ async def dashboard_apps_create_api(request: Request, session: Session = Depends
 async def dashboard_apps_get_api(app_id: str, session: Session = Depends(get_session)):
     explore_state = session.query(ExploreState) \
         .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
-        .first()  # noqa
+        .first()
     if not explore_state:
         raise HTTPException(status_code=404)
 
@@ -60,7 +60,7 @@ async def dashboard_apps_put_api(app_id: str, request: Request, session: Session
     """
     explore_state = session.query(ExploreState) \
         .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
-        .first()  # noqa
+        .first()
     if not explore_state:
         raise HTTPException(status_code=404)
     request_data = await request.json()

@@ -17,6 +17,6 @@ export interface IDrawLinesProps {
   yScale: IDrawAxesProps['yScale'];
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
-  aggregationConfig: IAggregationConfig;
-  aggregatedData: IAggregatedData[];
+  aggregationConfig?: IAggregationConfig;
+  aggregatedData?: IAggregatedData[];
 }

@@ -1,9 +1,8 @@
 from fastapi import Request, HTTPException, Depends
-from typing import List
 
 from aim.web.api.utils import APIRouter
 from aim.web.api.utils import object_factory
-from aim.web.api.experiments.pydantic_models import(
+from aim.web.api.experiments.pydantic_models import (
     ExperimentGetOut,
     ExperimentUpdateOut,
     ExperimentGetRunsOut,
@@ -17,8 +16,8 @@ experiment_router = APIRouter()
 
 @experiment_router.get('/', response_model=ExperimentListOut)
 async def get_experiments_list_api(factory=Depends(object_factory)):
-    response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()]
-    return response
+    return [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs), 'archived': exp.archived}
+            for exp in factory.experiments()]
 
 
 @experiment_router.get('/search/', response_model=ExperimentListOut)
@@ -27,9 +26,8 @@ async def search_experiments_by_name_api(request: Request, factory=Depends(objec
     search_term = params.get('q') or ''
     search_term.strip()
 
-    response = [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)}
-                for exp in factory.search_experiments(search_term)]
-    return response
+    return [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs), 'archived': exp.archived}
+            for exp in factory.search_experiments(search_term)]
 
 
 @experiment_router.post('/', response_model=ExperimentUpdateOut)
@@ -55,6 +53,7 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
     response = {
         'id': exp.uuid,
         'name': exp.name,
+        'archived': exp.archived,
         'run_count': len(exp.runs)
     }
     return response
@@ -69,6 +68,11 @@ async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdate
 
         if exp_in.name:
             exp.name = exp_in.name.strip()
+        if exp_in.archived is not None:
+            if exp_in.archived and len(exp.runs) > 0:
+                raise HTTPException(status_code=400,
+                                    detail=f'Cannot archive experiment \'{exp_id}\'. Experiment has associated runs.')
+            exp.archived = exp_in.archived
 
     return {
         'id': exp.uuid,
@@ -87,5 +91,3 @@ async def get_experiment_runs_api(exp_id: str, factory=Depends(object_factory)):
         'runs': [{'run_id': run.hashname, 'name': run.name} for run in exp.runs]
     }
     return response
-
-

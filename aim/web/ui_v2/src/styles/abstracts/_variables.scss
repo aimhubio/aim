@@ -1,0 +1,29 @@
+@use './functions' as *;
+
+$primary-color: #1473E6;
+$error-color: #E64E48;
+$success-color: #2BC784;
+$warning-color: #E8BB1B;
+
+//colors
+$blue: #4B9BFF;
+$orange: #FFB46E;
+$red: #FF5F5F;
+$teal: #50D2A0;
+$pink: #FF73C3;
+$green: #9BE169;
+$purple: #AF78FF;
+$yellow: #FFD76E;
+$cyan: #5FC8FF;
+$indigo: #7785FF;
+$pico: #1C2852;
+
+
+
+//border
+$border-color-main: tint($primary-color, 90);
+$border-main: 0.0625em solid $border-color-main;
+$radius-main: 0.375em;
+
+//text
+$text-color: $pico;

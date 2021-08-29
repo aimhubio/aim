@@ -6,8 +6,9 @@ import { IProcessedData } from 'types/utils/d3/processData';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import areaGenerator from './areaGenerator';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
-import { AggregationAreaMethods } from '../aggregateGroupData';
+import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import { ILine } from 'types/components/LineChart/LineChart';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 function drawLines(props: IDrawLinesProps): void {
   const {
@@ -42,7 +43,7 @@ function drawLines(props: IDrawLinesProps): void {
       .selectAll('.Line')
       .data(data)
       .join('path')
-      .attr('class', 'Line')
+      .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
       .attr('id', (line: ILine) => `Line-${line.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr(
@@ -66,7 +67,7 @@ function drawLines(props: IDrawLinesProps): void {
     yScale: IGetAxisScale,
   ): void {
     linesNodeRef.current
-      .selectAll('.Area')
+      .selectAll('.AggrArea')
       .transition()
       .duration(500)
       .attr('d', areaGenerator(xScale, yScale));
@@ -76,11 +77,11 @@ function drawLines(props: IDrawLinesProps): void {
     data: IAggregatedData[],
   ): void {
     linesNodeRef.current
-      .selectAll('.Area')
+      .selectAll('.AggrArea')
       .data(data)
       .join('path')
-      .attr('class', 'Area')
-      .attr('id', (aggrData: IAggregatedData) => `Area-${aggrData.key}`)
+      .attr('class', 'AggrArea')
+      .attr('id', (aggrData: IAggregatedData) => `AggrArea-${aggrData.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr('fill', (aggrData: IAggregatedData) => aggrData.color)
       .attr('fill-opacity', '0.3')
@@ -97,22 +98,28 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', areaGenerator(xScale, yScale));
   };
 
+  linesRef.current.updateAggregatedLinesScales = function (
+    xScale: IGetAxisScale,
+    yScale: IGetAxisScale,
+    curve?: CurveEnum,
+  ): void {
+    linesNodeRef.current
+      .selectAll('.AggrLine')
+      .transition()
+      .duration(500)
+      .attr('d', lineGenerator(xScale, yScale, curve));
+  };
+
   linesRef.current.updateAggregatedLines = function (
     data: IAggregatedData[],
   ): void {
     linesNodeRef.current
-      .selectAll('.Line')
+      .selectAll('.AggrLine')
       .data(data)
       .join('path')
-      .attr('class', 'Line')
-      .attr('id', (aggrData: IAggregatedData) => `Line-${aggrData.key}`)
+      .attr('class', 'AggrLine')
+      .attr('id', (aggrData: IAggregatedData) => `AggrLine-${aggrData.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
-      // TODO implement highlight mode
-      // .attr(
-      //     'data-selector',
-      //     (line: IAggregatedData) =>
-      //         `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
-      // )
       .style('fill', 'none')
       .style('stroke', (aggrData: IAggregatedData) => aggrData.color)
       .style(
@@ -130,11 +137,14 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
   };
 
-  if (aggregationConfig.isApplied) {
+  if (aggregationConfig?.isApplied) {
     if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
       linesRef.current.updateAggregatedAreas(props.aggregatedData);
     }
     linesRef.current.updateAggregatedLines(props.aggregatedData);
+    if (highlightMode !== HighlightEnum.Off) {
+      linesRef.current.updateLines(props.data);
+    }
   } else {
     linesRef.current.updateLines(props.data);
   }

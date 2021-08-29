@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException, Request
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from urllib import parse
 
-from aim.engine.configs import AIM_UI_TELEMETRY_KEY
+from aim.web.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
@@ -19,7 +19,7 @@ projects_router = APIRouter()
 
 
 @projects_router.get('/', response_model=ProjectApiOut)
-async def project_api(factory=Depends(object_factory)):
+async def project_api():
     project = Project()
 
     if not project.exists():
@@ -29,7 +29,6 @@ async def project_api(factory=Depends(object_factory)):
         'name': project.name,
         'path': project.path,
         'description': project.description,
-        'branches':  [{'id': exp.uuid, 'name': exp.name, 'run_count': len(exp.runs)} for exp in factory.experiments()],
         'telemetry_enabled': os.getenv(AIM_UI_TELEMETRY_KEY, '1'),
     }
 
@@ -45,7 +44,7 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
         timezone = request.cookies.get('__AIMDE__:TIMEZONE')
         if timezone:
             timezone = pytz.timezone(parse.unquote(timezone))
-    except:
+    except Exception:
         timezone = None
     if not timezone:
         timezone = pytz.timezone('gmt')

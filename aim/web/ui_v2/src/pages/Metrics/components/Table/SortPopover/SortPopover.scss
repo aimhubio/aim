@@ -1,0 +1,49 @@
+.SortPopover__container {
+  width: 300px;
+  max-height: 210px;
+  padding: 0.5em;
+}
+
+.SortPopover__chip__container {
+  margin-bottom: 0.5em;
+}
+
+.SortPopover__chip {
+  margin-bottom: 0.5em;
+  font-size: 0.875em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.SortPopover__chip__label {
+  margin-left: 0.25em;
+  display: inline-block;
+  max-width: 140px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.SortPopover__chip__left {
+    display: flex;
+    justify-content: space-between;
+}
+
+.SortPopover__chip__delete {
+    cursor: pointer;
+}
+
+.SortPopover__select__item {
+  span {
+    font-size: 0.875em;
+  }
+}
+
+.SortPopover__reset__sorting {
+    margin-top: 0.5em;
+    display: flex;
+    justify-content: center;
+}

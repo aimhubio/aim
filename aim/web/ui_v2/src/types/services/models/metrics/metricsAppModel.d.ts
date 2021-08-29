@@ -7,28 +7,31 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, XAlignmentEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
-import { IRun } from './runModel';
+import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricAppModelState {
   refs: {
     tableRef: { current: ITableRef | null };
     chartPanelRef: { current: IChartPanelRef | null };
   };
-  rawData: IRun[];
+  requestIsPending: boolean;
+  queryIsEmpty: boolean;
+  rawData: IRun<IMetricTrace>[];
   config: IMetricAppConfig;
-  data: IMetricsCollection[];
+  data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   aggregatedData: IAggregatedData[];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
-  tooltipContent: ITooltipContent;
 }
 
 export interface IAggregatedData extends IAggregationData {
@@ -52,12 +55,13 @@ export interface ITooltipContent {
   [key: string]: any;
 }
 
-export interface IMetricsCollection {
-  config: unknown;
+export interface IMetricsCollection<T> {
+  key?: string;
+  config: { [key: string]: string } | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
-  data: IMetric[] | IParam[];
+  data: T[];
   aggregation?: IAggregationData;
 }
 
@@ -102,7 +106,7 @@ interface IMetricAppConfig {
       style: number;
     };
     paletteIndex: number;
-    selectOptions: GroupingSelectOptionType[];
+    selectOptions: IGroupingSelectOption[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -114,7 +118,29 @@ interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    alignmentConfig: IAlignmentConfig;
+    tooltip: IChartTooltip;
   };
+  select: {
+    metrics: ISelectMetricsOption[];
+    query: string;
+    advancedMode: boolean;
+    advancedQuery: string;
+  };
+  table: {
+    rowHeight: RowHeight;
+  };
+}
+
+export interface IChartTooltip {
+  content: ITooltipContent;
+  display: boolean;
+  selectedParams: string[];
+}
+
+export interface IAlignmentConfig {
+  metric: string;
+  type: XAlignmentEnum;
 }
 
 export interface IAggregationConfig {
@@ -123,12 +149,13 @@ export interface IAggregationConfig {
     line: AggregationLineMethods;
   };
   isApplied: boolean;
+  isEnabled: boolean;
 }
 
 export interface IFocusedState {
   active: boolean;
   key: string | null;
-  xValue: number | null;
+  xValue: number | string | null;
   yValue: number | null;
   chartIndex: number | null;
 }
@@ -142,7 +169,10 @@ export interface IMetricTableRowData {
   metric: metric.metric_name;
   context: string[];
   value: string;
-  iteration: string;
+  step: string;
+  epoch: string;
+  timestamp: string;
+  [key: string]: any;
 }
 
 export interface IGetDataAsLinesProps {
@@ -164,20 +194,20 @@ export interface IOnGroupingModeChangeParams {
 
 export interface IGetGroupingPersistIndex {
   groupValues: {
-    [key: string]: IMetricsCollection;
+    [key: string]: IMetricsCollection<IMetric>;
   };
   groupKey: string;
   grouping: IMetricAppConfig['grouping'];
 }
 
 export type GroupNameType = 'color' | 'style' | 'chart';
-export type GroupingSelectOptionType = {
+export interface IGroupingSelectOption {
   label: string;
   group: string;
   value: string;
-};
+}
 
-export interface IAppData extends Partial<IMetricAppConfig> {
+export interface IAppData extends Partial<IMetricAppConfig | IParamsAppConfig> {
   created_at?: string;
   id?: string;
   updated_at?: string;
@@ -186,7 +216,7 @@ export interface IAppData extends Partial<IMetricAppConfig> {
 export interface IDashboardRequestBody {
   name: string;
   description: string;
-  app_id: string;
+  app_id?: string;
 }
 
 export interface IDashboardData {

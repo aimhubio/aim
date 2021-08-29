@@ -143,7 +143,6 @@ function HeatMap({
     );
   }
 
-  console.log(diffDays, [...Array(diffDays).keys()], orderedMonths);
   return (
     <div className='CalendarHeatmap'>
       <div className='CalendarHeatmap__map'>

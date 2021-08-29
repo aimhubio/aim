@@ -1,10 +1,6 @@
 import os
-from pathlib import Path
-import json
 
-from aim.engine.configs import AIM_COMMIT_CONFIG_FILE_NAME
-
-from aim.storage.sdk.repo import Repo
+from aim.sdk.repo import Repo
 from aim.web.utils import get_root_path
 
 

@@ -25,7 +25,7 @@ function AxesScalePopover(
   }
 
   return (
-    <Box>
+    <div>
       <Box p={0.5}>Select Axes Scale:</Box>
       <Divider />
       <MenuList>
@@ -34,8 +34,8 @@ function AxesScalePopover(
           <ToggleButton
             checked={props.axesScaleType.xAxis === ScaleEnum.Log}
             id='xAxis'
-            rightLabel='Linear'
-            leftLabel='Log'
+            leftLabel='Linear'
+            rightLabel='Log'
             onChange={handleScaleChange}
           />
         </Box>
@@ -50,7 +50,7 @@ function AxesScalePopover(
           />
         </Box>
       </MenuList>
-    </Box>
+    </div>
   );
 }
 

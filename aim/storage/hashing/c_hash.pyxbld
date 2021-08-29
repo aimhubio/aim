@@ -1,0 +1,5 @@
+from Cython.Build import cythonize
+
+def make_ext(modname, pyxfilename):
+    print(modname)
+    return cythonize(pyxfilename, language_level = 3, annotate = True)[0]

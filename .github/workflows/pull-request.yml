@@ -1,0 +1,38 @@
+name: sanity checks on opened pull requests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'aim/sdk/**'
+      - 'aim/web/api/**'
+      - 'aim/storage/**'
+      - '.github/pull-request.yml'
+    types:
+      - opened
+      - synchronize
+      - unlabeled
+      - reopened
+jobs:
+  run-checks:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
+    runs-on: ubuntu-latest
+    name: Run Unit-tests, Code-style checks & Performance tests
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.dev.txt
+          python -m pip install -r requirements.txt
+          python -m pip install -e .
+      - name: unit-tests
+        run: |
+          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
+      - name: code style checks
+        run: |
+          flake8 aim

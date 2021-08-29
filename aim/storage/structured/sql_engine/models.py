@@ -54,6 +54,7 @@ class Experiment(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     uuid = Column(Text, index=True, unique=True, default=get_uuid)
     name = Column(Text, nullable=False, unique=True)
+    is_archived = Column(Boolean, default=False)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
@@ -69,6 +70,8 @@ class Tag(Base):
     uuid = Column(Text, index=True, unique=True, default=get_uuid)
     name = Column(Text, nullable=False, unique=True)
     color = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)
+    is_archived = Column(Boolean, default=False)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)

@@ -29,6 +29,9 @@ class ModelMappedFactory(ObjectFactory):
     def find_run(self, _id: str) -> Run:
         return ModelMappedRun.find(_id, session=self._session or self.get_session())
 
+    def create_run(self, runhash: str) -> Run:
+        return ModelMappedRun.from_hash(runhash, session=self._session or self.get_session())
+
     def experiments(self) -> ExperimentCollection:
         return ModelMappedExperiment.all(session=self._session or self.get_session())
 
@@ -53,11 +56,11 @@ class ModelMappedFactory(ObjectFactory):
     def create_tag(self, name: str) -> Tag:
         return ModelMappedTag.from_name(name, session=self._session or self.get_session())
 
-    def get_session(self):
+    def get_session(self, autocommit=True):
         raise NotImplementedError
 
     def __enter__(self):
-        self._session = self.get_session()
+        self._session = self.get_session(autocommit=False)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -66,4 +69,3 @@ class ModelMappedFactory(ObjectFactory):
         else:
             self._session.rollback()
         self._session = None
-

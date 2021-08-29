@@ -110,6 +110,16 @@ class Experiment(StructuredObject, Searchable['Experiment']):
 
     @property
     @abstractmethod
+    def archived(self) -> bool:
+        ...
+
+    @archived.setter
+    @abstractmethod
+    def archived(self, value: bool):
+        ...
+
+    @property
+    @abstractmethod
     def runs(self) -> RunCollection:
         ...
 
@@ -142,6 +152,26 @@ class Tag(StructuredObject, Searchable['Tag']):
 
     @property
     @abstractmethod
+    def description(self) -> str:
+        ...
+
+    @description.setter
+    @abstractmethod
+    def description(self, value: str):
+        ...
+
+    @property
+    @abstractmethod
+    def archived(self) -> bool:
+        ...
+
+    @archived.setter
+    @abstractmethod
+    def archived(self, value: bool):
+        ...
+
+    @property
+    @abstractmethod
     def runs(self) -> RunCollection:
         ...
 
@@ -157,6 +187,10 @@ class ObjectFactory:
 
     @abstractmethod
     def find_run(self, _id: str) -> Run:
+        ...
+
+    @abstractmethod
+    def create_run(self, runhash: str) -> Run:
         ...
 
     @abstractmethod

@@ -18,7 +18,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
-  GroupingSelectOptionType,
+  IGroupingSelectOption,
   GroupNameType,
 } from 'types/services/models/metrics/metricsAppModel';
 
@@ -31,16 +31,16 @@ function GroupingPopover({
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  function onChange(e: object, values: GroupingSelectOptionType[]): void {
+  function onChange(e: object, values: IGroupingSelectOption[]): void {
     onSelect({
       groupName,
-      list: values.map((item: GroupingSelectOptionType) =>
+      list: values.map((item: IGroupingSelectOption) =>
         typeof item === 'string' ? item : item.value,
       ),
     });
   }
 
-  const values: GroupingSelectOptionType[] = React.useMemo(() => {
+  const values: IGroupingSelectOption[] = React.useMemo(() => {
     let data: { value: string; group: string; label: string }[] = [];
     groupingData.selectOptions.forEach((option) => {
       if (groupingData?.[groupName].indexOf(option.value) !== -1) {
@@ -82,7 +82,7 @@ function GroupingPopover({
               <TextField
                 {...params}
                 variant='outlined'
-                label='Select Metrics'
+                label='Select Params'
                 placeholder='Select'
               />
             )}
