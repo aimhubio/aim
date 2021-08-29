@@ -1,55 +1,53 @@
-import React from 'react';
-import { Box, Button, Divider, Grid } from '@material-ui/core';
+import React, { memo, useEffect, useState } from 'react';
+import { Paper, Tab, Tabs } from '@material-ui/core';
 
-import { NavLink } from 'react-router-dom';
-import { ITagProps, ITagsProps } from 'types/pages/tags/Tags';
+import { ITagsProps } from 'types/pages/tags/Tags';
+import TabPanel from 'components/TabPanel/TabPanel';
+import TagsList from './TagsList';
 import './Tags.scss';
 
 function Tags({
-  tagsList,
+  tagsListData,
 }: ITagsProps): React.FunctionComponentElement<React.ReactNode> {
+  const [value, setValue] = useState(0);
+  const [archivedTagsList, setArchivedTagsList] = useState(
+    tagsListData?.filter((tag) => tag.archived) || [],
+  );
+  const [tagsList, setTagsList] = useState(
+    tagsListData?.filter((tag) => !tag.archived) || [],
+  );
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
+
+  useEffect(() => {
+    setArchivedTagsList(tagsListData?.filter((tag) => tag.archived) || []);
+    setTagsList(tagsListData?.filter((tag) => !tag.archived) || []);
+  }, [tagsListData]);
+
   return (
     <section className='Tags'>
-      <Grid container justifyContent='center'>
-        <Grid xs={6} item>
-          <div className='Tags__header'>
-            <h3 className='Tags__title'>Tags List</h3>
-            <NavLink to={'/tags/create'}>
-              <Button
-                variant='contained'
-                size='small'
-                className='Tags__createButton'
-              >
-                Create Tag
-              </Button>
-            </NavLink>
-          </div>
-          <Divider />
-          <Grid container spacing={1} className='Tags__tagListBox'>
-            {tagsList?.map(
-              ({ name, color, id, run_count }: ITagProps, i: number) => (
-                <NavLink
-                  key={i}
-                  to={`/tags/${id}`}
-                  className={'Tags__tagListBox__tagBox'}
-                >
-                  <Box>
-                    <Button
-                      style={{ background: color || 'transparent' }}
-                      variant='contained'
-                    >
-                      {name}
-                    </Button>
-                    <span>Runs: {run_count}</span>
-                  </Box>
-                </NavLink>
-              ),
-            )}
-          </Grid>
-        </Grid>
-      </Grid>
+      <Paper className='Tags__tabsContainer'>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label='simple tabs example'
+          indicatorColor='primary'
+          className='Tags__tabsContainer__tabs'
+        >
+          <Tab label='Tags' />
+          <Tab label='Hidden Tags' />
+        </Tabs>
+      </Paper>
+      <TabPanel value={value} index={0}>
+        <TagsList tagsList={tagsList} />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <TagsList tagsList={archivedTagsList} isHiddenTagsList />
+      </TabPanel>
     </section>
   );
 }
 
-export default Tags;
+export default memo(Tags);

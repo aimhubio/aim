@@ -1,5 +1,5 @@
 export interface ITagsProps {
-  tagsList: ITagProps[];
+  tagsListData: ITagProps[];
 }
 
 export interface ITagProps {
@@ -7,6 +7,7 @@ export interface ITagProps {
   color: string | null;
   id: string;
   run_count: number;
+  archived: boolean;
 }
 
 export interface ITagRunsProps {
@@ -14,9 +15,11 @@ export interface ITagRunsProps {
   tagRuns: ITagRun[];
 }
 
-export interface ITagSettingsProps {
+export interface ITagSoftDeleteProps {
   tagHash: string;
   tagInfo: ITagInfo;
+  onSoftDeleteModalToggle: () => void;
+  onTagDetailOverlayToggle: () => void;
 }
 
 export interface ITagRun {
@@ -29,6 +32,21 @@ export interface ITagInfo {
   archived: boolean;
   color: string;
   id: string;
+  comment: string;
   name: string;
   run_count: number;
+}
+export interface ITagDetailProps {
+  id: string;
+  onSoftDeleteModalToggle: () => void;
+  onUpdateModalToggle: () => void;
+}
+
+export interface ITagRunsTableProps {
+  runList: ITagRun[];
+}
+
+export interface ITagsTableProps {
+  tagsList;
+  onTableRunClick: (e: MouseEvent, id: string) => void;
 }

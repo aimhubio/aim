@@ -13,7 +13,7 @@ function TagsContainer(): React.FunctionComponentElement<React.ReactNode> {
     tagsRequestRef.call();
   }, []);
 
-  return <Tags tagsList={tagsData?.tagsList} />;
+  return <Tags tagsListData={tagsData?.tagsList} />;
 }
 
 export default TagsContainer;

@@ -1,59 +1,93 @@
-import React, { memo, useEffect, useState } from 'react';
-import { Divider, Grid, Paper, Tab, Tabs } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import React, { memo, useEffect } from 'react';
+import CreateIcon from '@material-ui/icons/Create';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import useModel from 'hooks/model/useModel';
-import TabPanel from 'components/TabPanel/TabPanel';
-import TagSettings from './TagSettings';
-import tagsDetailAppModel from 'services/models/tags/tagDetailAppModel';
-import TagRuns from './TagRuns';
+import tagDetailAppModel from 'services/models/tags/tagDetailAppModel';
+import hexToRgbA from 'utils/haxToRgba';
+import TagRunsTable from './TagRunsTable';
+import { ITagDetailProps } from 'types/pages/tags/Tags';
 import './Tags.scss';
 
-function TagDetail(): React.FunctionComponentElement<React.ReactNode> {
-  const tagsData = useModel(tagsDetailAppModel);
-  const { id }: { id: string } = useParams();
-  const [value, setValue] = useState(0);
+function TagDetail({
+  id,
+  onSoftDeleteModalToggle,
+  onUpdateModalToggle,
+}: ITagDetailProps): React.FunctionComponentElement<React.ReactNode> {
+  const tagsDetailData = useModel(tagDetailAppModel);
+  useEffect(() => {
+    tagDetailAppModel.initialize();
+  }, []);
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
-
-  React.useEffect(() => {
-    tagsDetailAppModel.initialize();
-    const tagRequestRef = tagsDetailAppModel.getTagById(id);
+  useEffect(() => {
+    const tagRequestRef = tagDetailAppModel.getTagById(id);
+    const tagRunsRequestRef = tagDetailAppModel.getTagRuns(id);
+    tagRunsRequestRef.call();
     tagRequestRef.call();
     return () => {
+      tagRunsRequestRef.abort();
       tagRequestRef.abort();
     };
   }, [id]);
 
   return (
-    <section className='Tags'>
-      <Grid container justifyContent='center'>
-        <Grid xs={6} item>
-          <h3 className='Tags__title'>{`Tag/${tagsData?.tagInfo?.name}`}</h3>
-          <Divider />
-          <Paper>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label='simple tabs example'
-              indicatorColor='primary'
-              textColor='primary'
+    <div
+      className='TagDetail'
+      role='button'
+      aria-pressed='false'
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className='TagDetail__headerContainer'>
+        {tagsDetailData?.tagInfo && (
+          <div className='TagContainer__tagBox'>
+            <div
+              className='TagContainer__tagBox__tag'
+              style={{
+                borderColor: tagsDetailData?.tagInfo?.color,
+                background: hexToRgbA(tagsDetailData?.tagInfo?.color, 0.1),
+              }}
             >
-              <Tab label='Related Runs' />
-              <Tab label='Settings' />
-            </Tabs>
-          </Paper>
-          <TabPanel value={value} index={0}>
-            <TagRuns tagHash={id} tagRuns={tagsData?.tagRuns} />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <TagSettings tagHash={id} tagInfo={tagsData?.tagInfo} />
-          </TabPanel>
-        </Grid>
-      </Grid>
-    </section>
+              <span
+                className='TagContainer__tagBox__tag__content'
+                style={{ color: tagsDetailData?.tagInfo?.color }}
+              >
+                {tagsDetailData?.tagInfo?.name}
+              </span>
+            </div>
+          </div>
+        )}
+        <div className='TagDetail__headerContainer__headerActionsBox'>
+          <CreateIcon
+            color='primary'
+            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+            onClick={onUpdateModalToggle}
+          />
+          {tagsDetailData?.tagInfo?.archived ? (
+            <VisibilityIcon
+              color='primary'
+              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+              onClick={onSoftDeleteModalToggle}
+            />
+          ) : (
+            <VisibilityOffIcon
+              color='primary'
+              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+              onClick={onSoftDeleteModalToggle}
+            />
+          )}
+          <DeleteOutlineIcon
+            fontSize='small'
+            color='primary'
+            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+          />
+        </div>
+      </div>
+      {tagsDetailData?.tagRuns && (
+        <TagRunsTable runList={tagsDetailData?.tagRuns} />
+      )}
+    </div>
   );
 }
 

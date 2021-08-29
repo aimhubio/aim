@@ -1,6 +1,8 @@
+@import 'src/styles/abstracts/_variables.scss';
+@import 'src/styles/components/_inputs.scss';
 .mainContainer {
   padding-left: 80px;
-  flex: 1 1 0
+  flex: 1 1 0;
 }
 
 body {

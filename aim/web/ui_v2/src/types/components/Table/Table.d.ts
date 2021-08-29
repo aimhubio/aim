@@ -12,9 +12,13 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
-  sortOptions: GroupingSelectOptionType[];
-  onRowHover: (rowKey: string) => void;
-  onRowClick: (rowKey?: string) => void;
+  rowHeight?: number;
+  headerHeight?: number;
+  sortOptions?: GroupingSelectOptionType[];
+  fixed?: boolean;
+  onRowHover?: (rowKey: string) => void;
+  onRowClick?: (rowKey?: string) => void;
+  hideHeaderActions?: boolean = false;
 }
 
 export interface ITableRef {

@@ -19,7 +19,7 @@ let getTagByIdRequestRef: {
 
 function getTagById(id: string) {
   if (getTagByIdRequestRef) {
-    getTagByIdRequestRef.abort();
+    getTagByIdRequestRef?.abort();
   }
   getTagByIdRequestRef = tagsService.getTagById(id);
 
@@ -28,13 +28,13 @@ function getTagById(id: string) {
       const data = await getTagByIdRequestRef.call();
       model.setState({ tagInfo: data });
     },
-    abort: getTagRunsRequestRef.abort,
+    abort: getTagByIdRequestRef?.abort,
   };
 }
 
 function getTagRuns(id: string) {
   if (getTagRunsRequestRef) {
-    getTagRunsRequestRef.abort();
+    getTagRunsRequestRef?.abort();
   }
   getTagRunsRequestRef = tagsService.getTagRuns(id);
 
@@ -43,13 +43,13 @@ function getTagRuns(id: string) {
       const data = await getTagRunsRequestRef.call();
       model.setState({ tagRuns: data.runs });
     },
-    abort: getTagRunsRequestRef.abort,
+    abort: getTagRunsRequestRef?.abort,
   };
 }
 
 function archiveTag(id: string, archived: boolean = false) {
   const state = model.getState();
-  tagsService
+  return tagsService
     .hideTag(id, archived)
     .call()
     .then(() => {
@@ -60,12 +60,21 @@ function archiveTag(id: string, archived: boolean = false) {
     });
 }
 
+function updateTagInfo(tagInfo: any) {
+  const state = model.getState();
+  model.setState({
+    ...state,
+    tagInfo,
+  });
+}
+
 const tagsDetailAppModel = {
   ...model,
   initialize,
   getTagRuns,
   archiveTag,
   getTagById,
+  updateTagInfo,
 };
 
 export default tagsDetailAppModel;
