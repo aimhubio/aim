@@ -13,7 +13,6 @@ from aim.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
 from aim.storage.union import UnionContainer
 from aim.storage.container import Container
 from aim.storage.containerview import ContainerView
-from aim.storage.prefixview import PrefixView
 
 from aim.storage.structured.db import DB
 
@@ -153,6 +152,7 @@ class Repo:
             yield Run(run_name, repo=self, read_only=True)
 
     def get_run(self, hashname: str) -> Optional['Run']:
+        # TODO: [MV] optimize existence check for run
         if hashname is None or hashname not in self.meta_tree.view('chunks').keys():
             return None
         else:

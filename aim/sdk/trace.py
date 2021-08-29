@@ -62,7 +62,6 @@ class Trace(Generic[T]):
         array_view = self.tree.array('val')
         return array_view
 
-
     @property
     def indices(self) -> List[int]:
         array_view = [i for i, _ in enumerate(self.values)]

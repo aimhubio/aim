@@ -1,5 +1,5 @@
-import { GroupingSelectOptionType } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 export interface ISortPopoverProps {
-  sortOptions: GroupingSelectOptionType[];
+  sortOptions: IGroupingSelectOption[];
 }

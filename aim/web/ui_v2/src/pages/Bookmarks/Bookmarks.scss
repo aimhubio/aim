@@ -1,5 +1,6 @@
 @import 'src/styles/abstracts/_variables';
 @import 'src/styles/abstracts/functions';
+@use './src/styles/abstracts' as *;
 
 .Bookmarks {
   height: 100vh;

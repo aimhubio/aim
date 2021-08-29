@@ -123,10 +123,13 @@ class TestTagsApi(StructuredApiTestBase):
         tag = next(iter(self.repo.structured_db.tags()))
         self.assertEqual(None, tag.color)
         client = self.client
-        response = client.put(f'/api/tags/{tag.uuid}/', json={'name': 'my awesome tag', 'color': '#FFFFFF'})
+        response = client.put(f'/api/tags/{tag.uuid}/', json={'name': 'my awesome tag',
+                                                              'color': '#FFFFFF',
+                                                              'description': 'new description'})
         self.assertEqual(200, response.status_code)
         self.assertEqual('my awesome tag', tag.name)
         self.assertEqual('#FFFFFF', tag.color)
+        self.assertEqual('new description', tag.description)
 
     def test_get_tag_runs_api(self):
         client = self.client

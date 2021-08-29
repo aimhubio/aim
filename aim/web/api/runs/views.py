@@ -59,7 +59,7 @@ async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
 
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut)
-async def run_metric_search_api(q: Optional[str] = '', p: int = 50,  x_axis: Optional[str] = None):
+async def run_metric_search_api(q: Optional[str] = '', p: int = 50, x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:

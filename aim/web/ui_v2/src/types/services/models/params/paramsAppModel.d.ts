@@ -1,4 +1,11 @@
 import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
+import {
+  IGroupingSelectOption,
+  IChartTooltip,
+  IFocusedState,
+} from 'metrics/metricsAppModel';
+import { CurveEnum } from 'utils/d3';
+import { ISelectMetricsOption } from 'pages/metrics/components/SelectForm/SelectForm';
 
 export interface IParam {
   run: IRun<IParamTrace>;
@@ -30,12 +37,13 @@ interface IParamsAppConfig {
       style: number;
     };
     paletteIndex: number;
-    selectOptions: GroupingSelectOptionType[];
+    selectOptions: IGroupingSelectOption[];
   };
   chart: {
     curveInterpolation: CurveEnum;
     isVisibleColorIndicator: boolean;
     focusedState: IFocusedState;
+    tooltip: IChartTooltip;
   };
   select: {
     params: ISelectMetricsOption[];

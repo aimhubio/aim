@@ -14,6 +14,7 @@ import {
   IAggregationConfig,
   IAlignmentConfig,
   IAppData,
+  IChartTooltip,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
@@ -23,6 +24,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { RowHeight } from 'config/table/tableConfigs';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -86,17 +88,21 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Metrics
-      //refs
+      // refs
       tableRef={tableRef}
       chartPanelRef={chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
-      //options
+      // grouping options
+      groupingData={
+        metricsData?.config?.grouping as IMetricAppConfig['grouping']
+      }
+      // chart options
       lineChartData={metricsData?.lineChartData as ILine[][]}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
-      tableData={metricsData?.tableData as IMetricTableRowData[][]}
+      tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
       zoomMode={metricsData?.config?.chart.zoomMode as boolean}
@@ -111,12 +117,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
-      groupingData={
-        metricsData?.config?.grouping as IMetricAppConfig['grouping']
-      }
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
-      tooltipContent={metricsData?.tooltipContent as ITooltipContent}
+      tooltip={metricsData?.config?.chart?.tooltip as IChartTooltip}
       aggregationConfig={
         metricsData?.config?.chart.aggregationConfig as IAggregationConfig
       }
@@ -126,7 +129,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       selectedMetricsData={
         metricsData?.config?.select as IMetricAppConfig['select']
       }
+      tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
       //methods
+      onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
       onHighlightModeChange={metricAppModel.onHighlightModeChange}

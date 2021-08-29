@@ -23,6 +23,7 @@ import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 import './Controls.scss';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
+import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 
 function Controls(
   props: IControlProps,
@@ -87,6 +88,24 @@ function Controls(
             <AggregationPopup
               aggregationConfig={props.aggregationConfig}
               onChange={props.onAggregationConfigChange}
+            />
+          }
+        />
+      </div>
+      <div>
+        <ControlPopover
+          anchor={({ onAnchorClick }) => (
+            <div onClick={onAnchorClick} className='Controls__anchor'>
+              {/*TODO need to change icon */}
+              <ShowChart />
+            </div>
+          )}
+          component={
+            <TooltipContentPopover
+              selectOptions={props.selectOptions}
+              selectedParams={props.tooltip.selectedParams}
+              displayTooltip={props.tooltip.display}
+              onChangeTooltip={props.onChangeTooltip}
             />
           }
         />

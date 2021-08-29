@@ -1,0 +1,21 @@
+.TooltipContentPopover__container {
+
+ .TooltipContentPopover__params {
+   display: flex;
+   flex-direction: column;
+   padding: 1em;
+   width: 25em;
+   height: 100%;
+   max-height: 20em;
+   .TooltipContentPopover__toggle {
+      & > h3 {
+        color: #324480;
+        text-transform: uppercase;
+        font-size: 1em;
+        padding: 0;
+        margin: 0.5em 0;
+        font-weight: 500;
+      }
+   }
+ }
+}

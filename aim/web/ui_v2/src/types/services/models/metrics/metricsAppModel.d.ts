@@ -14,6 +14,7 @@ import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricAppModelState {
   refs: {
@@ -27,11 +28,10 @@ export interface IMetricAppModelState {
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   aggregatedData: IAggregatedData[];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
-  tooltipContent: ITooltipContent;
 }
 
 export interface IAggregatedData extends IAggregationData {
@@ -56,7 +56,8 @@ export interface ITooltipContent {
 }
 
 export interface IMetricsCollection<T> {
-  config: unknown;
+  key?: string;
+  config: { [key: string]: string } | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
@@ -105,7 +106,7 @@ interface IMetricAppConfig {
       style: number;
     };
     paletteIndex: number;
-    selectOptions: GroupingSelectOptionType[];
+    selectOptions: IGroupingSelectOption[];
   };
   chart: {
     highlightMode: HighlightEnum;
@@ -118,6 +119,7 @@ interface IMetricAppConfig {
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
     alignmentConfig: IAlignmentConfig;
+    tooltip: IChartTooltip;
   };
   select: {
     metrics: ISelectMetricsOption[];
@@ -125,6 +127,15 @@ interface IMetricAppConfig {
     advancedMode: boolean;
     advancedQuery: string;
   };
+  table: {
+    rowHeight: RowHeight;
+  };
+}
+
+export interface IChartTooltip {
+  content: ITooltipContent;
+  display: boolean;
+  selectedParams: string[];
 }
 
 export interface IAlignmentConfig {
@@ -158,7 +169,10 @@ export interface IMetricTableRowData {
   metric: metric.metric_name;
   context: string[];
   value: string;
-  iteration: string;
+  step: string;
+  epoch: string;
+  timestamp: string;
+  [key: string]: any;
 }
 
 export interface IGetDataAsLinesProps {
@@ -187,11 +201,11 @@ export interface IGetGroupingPersistIndex {
 }
 
 export type GroupNameType = 'color' | 'style' | 'chart';
-export type GroupingSelectOptionType = {
+export interface IGroupingSelectOption {
   label: string;
   group: string;
   value: string;
-};
+}
 
 export interface IAppData extends Partial<IMetricAppConfig | IParamsAppConfig> {
   created_at?: string;

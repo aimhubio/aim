@@ -67,7 +67,7 @@ function Metrics(
                 data={props.lineChartData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
-                tooltipContent={props.tooltipContent}
+                tooltip={props.tooltip}
                 aggregatedData={props.aggregatedData}
                 aggregationConfig={props.aggregationConfig}
                 chartProps={[
@@ -81,6 +81,8 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
+                    selectOptions={props.groupingData?.selectOptions}
+                    tooltip={props.tooltip}
                     smoothingAlgorithm={props.smoothingAlgorithm}
                     smoothingFactor={props.smoothingFactor}
                     curveInterpolation={props.curveInterpolation}
@@ -90,6 +92,7 @@ function Metrics(
                     aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
                     alignmentConfig={props.alignmentConfig}
+                    onChangeTooltip={props.onChangeTooltip}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
                     onHighlightModeChange={props.onHighlightModeChange}
@@ -117,14 +120,17 @@ function Metrics(
             {props.tableData?.length > 0 ? (
               <Table
                 ref={props.tableRef}
+                data={props.tableData}
+                columns={props.tableColumns}
+                // Table options
+                rowHeight={props.tableRowHeight}
+                sortOptions={props.groupingData.selectOptions}
+                // Table actions
                 onSort={() => null}
                 onExport={() => null}
                 onManageColumns={() => null}
                 onRowHeightChange={() => null}
                 onRowsChange={() => null}
-                sortOptions={props.groupingData.selectOptions}
-                data={props.tableData.flat()}
-                columns={props.tableColumns}
                 onRowHover={props.onTableRowHover}
                 onRowClick={props.onTableRowClick}
               />

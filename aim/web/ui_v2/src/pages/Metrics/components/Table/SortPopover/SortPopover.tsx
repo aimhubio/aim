@@ -7,7 +7,7 @@ import {
 } from '@material-ui/icons';
 
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
-import { GroupingSelectOptionType } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
 
 import './SortPopover.scss';
@@ -16,10 +16,10 @@ function SortPopover({
   sortOptions,
 }: ISortPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [selectedFields, setSelectedFields] = React.useState<
-    GroupingSelectOptionType[]
+    IGroupingSelectOption[]
   >([]);
 
-  function onChange(e: object, values: GroupingSelectOptionType[]): void {
+  function onChange(e: object, values: IGroupingSelectOption[]): void {
     setSelectedFields(values);
   }
 
@@ -30,8 +30,8 @@ function SortPopover({
     setSelectedFields(fieldData);
   }
 
-  const selectOptions: GroupingSelectOptionType[] = React.useMemo(() => {
-    const filtered: GroupingSelectOptionType[] = [...sortOptions].filter(
+  const selectOptions: IGroupingSelectOption[] = React.useMemo(() => {
+    const filtered: IGroupingSelectOption[] = [...sortOptions].filter(
       (options) => options.group === 'params',
     );
     return filtered;

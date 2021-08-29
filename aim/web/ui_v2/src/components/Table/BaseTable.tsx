@@ -33,7 +33,7 @@ import {
   noop,
 } from './utils';
 
-import './BaseTable.css';
+import './BaseTable.scss';
 
 const getColumns = memoize(
   (columns, children) => columns || normalizeColumns(children),
@@ -336,7 +336,7 @@ class BaseTable extends React.PureComponent {
       }
     }
 
-    this.scrollToRow(rowIndex);
+    this.scrollToRow(rowIndex, 'smart');
   };
 
   /**
@@ -435,7 +435,10 @@ class BaseTable extends React.PureComponent {
       key: `row-${rowKey}`,
       isScrolling,
       className,
-      style,
+      style: {
+        ...style,
+        ...rowData?.rowProps?.style,
+      },
       columns,
       rowIndex,
       rowData,

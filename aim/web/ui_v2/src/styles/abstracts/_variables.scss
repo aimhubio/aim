@@ -1,3 +1,5 @@
+@use './functions' as *;
+
 $primary-color: #1473E6;
 $error-color: #E64E48;
 $success-color: #2BC784;
@@ -17,3 +19,10 @@ $indigo: #7785FF;
 $white: #ffffff;
 
 $text-color: #1C2852;
+
+
+
+//border
+$border-color-main: tint($primary-color, 10);
+$border-main: 0.0625em solid $border-color-main;
+$main-radius: 0.375em;

@@ -3,12 +3,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   height: 100%;
-   &>div {
-    margin-bottom: 1em;
+   & > div {
+     margin-bottom: 0.35em;
+     padding-top: 0.35em;
      &:last-child {
        margin-bottom: 0;
+       padding-bottom: 0.35em;
      }
   }
 }

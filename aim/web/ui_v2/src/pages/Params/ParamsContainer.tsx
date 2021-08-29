@@ -4,7 +4,7 @@ import Params from './Params';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import useModel from 'hooks/model/useModel';
-import { ITooltipContent } from 'types/services/models/metrics/metricsAppModel';
+import { IChartTooltip } from 'types/services/models/metrics/metricsAppModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import { ITableRef } from 'types/components/Table/Table';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
@@ -49,7 +49,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         paramsData?.config?.select as IParamsAppConfig['select']
       }
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
-      tooltipContent={paramsData?.tooltipContent as ITooltipContent}
+      tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
@@ -66,6 +66,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationAdd={paramsAppModel.onNotificationAdd}
       onNotificationDelete={paramsAppModel.onNotificationDelete}
       onResetConfigData={paramsAppModel.onResetConfigData}
+      onChangeTooltip={paramsAppModel.onChangeTooltip}
     />
   );
 }
