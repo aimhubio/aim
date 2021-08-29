@@ -16,48 +16,50 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   ) as IThemeContextValues;
 
   return (
-    <Drawer
-      PaperProps={{ className: 'Sidebar__container' }}
-      variant='permanent'
-      anchor='left'
-    >
-      <ul className='Sidebar__List'>
-        <NavLink
-          exact={true}
-          activeClassName={'Sidebar__anchor__active'}
-          className='Sidebar__anchor'
-          to={routes.HOME.path}
-        >
-          <li className='Sidebar__List__item'>
-            <img src={logoImg} alt='logo' />
-          </li>
-        </NavLink>
-        {Object.values(routes).map((route, index) => {
-          const { showInSidebar, path, displayName } = route;
-          return (
-            showInSidebar && (
-              <NavLink
-                key={index}
-                to={path}
-                exact={true}
-                activeClassName={'Sidebar__anchor__active'}
-                className='Sidebar__anchor'
-              >
-                <li className='Sidebar__List__item'>
-                  <TimelineOutlinedIcon className='Sidebar__List__item__icon' />
-                  <span className='Sidebar__List__item__text'>
-                    {displayName}
-                  </span>
-                </li>
-              </NavLink>
-            )
-          );
-        })}
-        {/* <ListItem className={classes.listItem} onClick={handleTheme}>
+    <div className='Sidebar__container'>
+      <Drawer
+        PaperProps={{ className: 'Sidebar__Paper' }}
+        variant='permanent'
+        anchor='left'
+      >
+        <ul className='Sidebar__List'>
+          <NavLink
+            exact={true}
+            activeClassName={'Sidebar__anchor__active'}
+            className='Sidebar__anchor'
+            to={routes.HOME.path}
+          >
+            <li className='Sidebar__List__item'>
+              <img src={logoImg} alt='logo' />
+            </li>
+          </NavLink>
+          {Object.values(routes).map((route, index) => {
+            const { showInSidebar, path, displayName } = route;
+            return (
+              showInSidebar && (
+                <NavLink
+                  key={index}
+                  to={path}
+                  exact={true}
+                  activeClassName={'Sidebar__anchor__active'}
+                  className='Sidebar__anchor'
+                >
+                  <li className='Sidebar__List__item'>
+                    <TimelineOutlinedIcon className='Sidebar__List__item__icon' />
+                    <span className='Sidebar__List__item__text'>
+                      {displayName}
+                    </span>
+                  </li>
+                </NavLink>
+              )
+            );
+          })}
+          {/* <ListItem className={classes.listItem} onClick={handleTheme}>
           {dark ? <Brightness7Icon /> : <Brightness4Icon />}
         </ListItem> */}
-      </ul>
-    </Drawer>
+        </ul>
+      </Drawer>
+    </div>
   );
 }
 

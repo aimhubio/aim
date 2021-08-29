@@ -1,0 +1,19 @@
+.MetricsBar__item__bookmark {
+  margin-right: 0.75em;
+  cursor: pointer;
+}
+
+.MetricsBar__item__bookmark__span {
+  font-weight: 500;
+  font-size: 0.875em;
+  line-height: 1.0625em;
+  margin-right: 0.625em;
+}
+
+.MetricsBar__menu {
+  border-left: 1px solid #e8f1fc;
+  padding: 0 0.75em;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
