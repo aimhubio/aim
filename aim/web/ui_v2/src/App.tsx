@@ -17,7 +17,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         <Theme>
           <Box display='flex'>
             <SideBar />
-            <Box className='mainContainer'>
+            <div className='mainContainer'>
               <React.Suspense fallback={null}>
                 <Switch>
                   {Object.values(routes).map((route, index) => {
@@ -30,7 +30,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                   })}
                 </Switch>
               </React.Suspense>
-            </Box>
+            </div>
           </Box>
         </Theme>
       </BrowserRouter>

@@ -287,27 +287,24 @@ function getMetricsData() {
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
-    const data: IAppData | any = await appsService.createApp(configData).call();
-    if (data.id) {
-      dashboardService
-        .createDashboard({ app_id: data.id, name, description })
-        .call()
-        .then((res: IDashboardData | any) => {
-          if (res.id) {
-            onNotificationAdd({
-              id: Date.now(),
-              severity: 'success',
-              message: BookmarkNotificationsEnum.CREATE,
-            });
-          }
-        })
-        .catch((err) => {
-          onNotificationAdd({
-            id: Date.now(),
-            severity: 'error',
-            message: BookmarkNotificationsEnum.ERROR,
-          });
+    const app: IAppData | any = await appsService.createApp(configData).call();
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call();
+      if (bookmark.name) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: BookmarkNotificationsEnum.CREATE,
         });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: BookmarkNotificationsEnum.ERROR,
+        });
+      }
     }
   }
 }
