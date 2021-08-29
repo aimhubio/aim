@@ -1,6 +1,5 @@
 import React from 'react';
-
-import CodeBlock from '../CodeBlock/CodeBlock';
+import CodeBlock from 'components/CodeBlock/CodeBlock';
 
 import './SetupGuide.scss';
 
@@ -10,20 +9,19 @@ function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
       <h2>Quick setup</h2>
       <div className='SetupGuide__code'>
         <h3>1. Installation</h3>
-        <CodeBlock rowList={['pip install aim']} />
+        <CodeBlock code='pip install aim' />
       </div>
       <div className='SetupGuide__code'>
         <h3>2. Import Aim</h3>
-        <CodeBlock rowList={['import aim']} />
+        <CodeBlock code='import aim' />
       </div>
       <div className='SetupGuide__code'>
         <h3>3. Track Experiment</h3>
         <CodeBlock
-          rowList={[
-            'r = aim.Run(experiment=”my_exp_name”)',
-            'r.track(value, name=”loss”, subset=”train”)',
-            'r[“hparams”] = “foo”',
-          ]}
+          code={`
+r = aim.Run(experiment='my_exp_name')
+r.track(value, name='loss', subset='train')
+r['hparams'] = 'foo'`}
         />
       </div>
       <div className='StyleGuide__resources__container'>

@@ -13,6 +13,7 @@
 
 .SetupGuide__code {
   margin-top: 2em;
+  max-width: 44.5em;
 }
 
 .StyleGuide__resources__container {
@@ -42,15 +43,14 @@
   margin: 0 auto;
   width: 2.75em;
   height: 2.75em;
-  border: 2px solid #1473E6;
+  border: 2px solid #1473e6;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 
   i {
-    color: #1473E6;
+    color: #1473e6;
     font-size: 1.5em;
   }
-
 }
