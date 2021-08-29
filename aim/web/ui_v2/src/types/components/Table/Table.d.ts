@@ -1,4 +1,3 @@
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { RowHeight } from 'config/table/tableConfigs';
 
 export interface ITableProps {

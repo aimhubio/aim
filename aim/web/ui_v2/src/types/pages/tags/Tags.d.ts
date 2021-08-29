@@ -43,10 +43,15 @@ export interface ITagDetailProps {
 }
 
 export interface ITagRunsTableProps {
-  runList: ITagRun[];
+  runsList: ITagRun[];
+}
+export interface ITagsTableProps {
+  tagsList: ITagProps[];
+  onTableRunClick: (e: any, id: string) => void;
+  onSoftDeleteModalToggle: () => void;
 }
 
-export interface ITagsTableProps {
-  tagsList;
-  onTableRunClick: (e: MouseEvent, id: string) => void;
+export interface ITagsListProps {
+  tagsList: ITagProps[];
+  isHiddenTagsList?: boolean;
 }

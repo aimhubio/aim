@@ -139,7 +139,7 @@
         border-right: 1px solid #dee6f3;
         border-bottom: 1px solid #dee6f3;
         padding-left: 15px;
-        a{
+        a {
           text-decoration: none;
         }
         .MuiButton-root {
@@ -225,6 +225,7 @@
       &__actionsIcon {
         margin-right: 25px;
         cursor: pointer;
+        font-size: 16px;
         &:last-child {
           margin-right: 0;
         }

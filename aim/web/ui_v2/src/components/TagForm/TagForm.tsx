@@ -23,7 +23,7 @@ function TagForm({
       ? {
           name: tagData?.name || '',
           color: tagData?.color || COLORS[0][0],
-          comment: tagData?.comment || '',
+          comment: tagData?.description || '',
         }
       : { name: '', color: COLORS[0][0], comment: '' },
     onSubmit: noop,
@@ -81,7 +81,7 @@ function TagForm({
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
           tagsService
-            .createTag({ name, color })
+            .createTag({ name, color, description: comment })
             .call()
             .then(() => {
               onCloseModal();
@@ -97,7 +97,7 @@ function TagForm({
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
           tagsService
-            .updateTag({ name, color }, tagId || '')
+            .updateTag({ name, color, description: comment }, tagId || '')
             .call()
             .then(() => {
               tagsAppModel.getTagsData().call();
@@ -114,7 +114,7 @@ function TagForm({
       {
         name: tagData?.name || '',
         color: tagData?.color || '',
-        comment: tagData?.comment || '',
+        comment: tagData?.description || '',
       },
       true,
     );

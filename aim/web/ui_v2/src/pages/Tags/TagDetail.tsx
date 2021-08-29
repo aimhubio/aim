@@ -85,7 +85,7 @@ function TagDetail({
         </div>
       </div>
       {tagsDetailData?.tagRuns && (
-        <TagRunsTable runList={tagsDetailData?.tagRuns} />
+        <TagRunsTable runsList={tagsDetailData?.tagRuns} />
       )}
     </div>
   );

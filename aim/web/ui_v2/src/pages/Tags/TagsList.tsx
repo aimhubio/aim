@@ -8,13 +8,14 @@ import plusImg from 'assets/icons/plus.svg';
 import TagForm from 'components/TagForm/TagForm';
 import TagsTable from './TagsTable';
 import TagDetail from './TagDetail';
-import './Tags.scss';
 import TagSoftDelete from './TagSoftDelete';
+import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
+import './Tags.scss';
 
 function TagsList({
   tagsList,
   isHiddenTagsList,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: ITagsListProps): React.FunctionComponentElement<React.ReactNode> {
   const tagsDetailData = useModel(tagDetailAppModel);
   const [isCreateModalOpened, setIsCreateModalOpened] = useState(false);
   const [isUpdateModalOpened, setIsUpdateModalOpened] = useState(false);
@@ -97,10 +98,11 @@ function TagsList({
           </span>
         </div>
         <TagsTable
-          tagsList={tagsList.filter((tag: any) =>
+          tagsList={tagsList.filter((tag: ITagProps) =>
             tag.name.includes(searchValue),
           )}
           onTableRunClick={onTableRunClick}
+          onSoftDeleteModalToggle={onSoftDeleteModalToggle}
         />
       </div>
       <Dialog

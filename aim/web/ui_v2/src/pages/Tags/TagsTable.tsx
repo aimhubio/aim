@@ -3,11 +3,15 @@ import hexToRgbA from 'utils/haxToRgba';
 import { Button } from '@material-ui/core';
 
 import Table from 'components/Table/Table';
-import { ITagsTableProps } from 'types/pages/tags/Tags';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
+import tagsDetailAppModel from 'services/models/tags/tagDetailAppModel';
 
 function TagsTable({
   tagsList,
   onTableRunClick,
+  onSoftDeleteModalToggle,
 }: ITagsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = useRef<any>({});
   const tableColumns = [
@@ -67,7 +71,7 @@ function TagsTable({
       title: 'Comment',
       width: 0,
       flexGrow: 1,
-      cellRenderer: function cellRenderer({ cellData }: any, i: any) {
+      cellRenderer: function cellRenderer({ cellData }: any) {
         return <p>{cellData}</p>;
       },
     },
@@ -78,21 +82,40 @@ function TagsTable({
       width: 50,
       flexGrow: 0,
       frozen: 'right',
-      cellRenderer: function cellRenderer({ cellData }: any, i: any) {
-        return <p>fff</p>;
+      cellRenderer: function cellRenderer({ cellData }: any) {
+        return cellData.archived ? (
+          <VisibilityIcon
+            color='primary'
+            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+            onClick={() => onSoftDeleteClick(cellData)}
+          />
+        ) : (
+          <VisibilityOffIcon
+            color='primary'
+            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+            onClick={() => onSoftDeleteClick(cellData)}
+          />
+        );
       },
     },
   ];
 
+  function onSoftDeleteClick(tagData: ITagProps) {
+    tagsDetailAppModel.updateTagInfo(tagData);
+    onSoftDeleteModalToggle();
+  }
+
   useEffect(() => {
     tableRef.current?.updateData({
-      newData: tagsList.map((tagData: any) => ({
+      newData: tagsList.map((tagData: ITagProps) => ({
         name: { name: tagData.name, color: tagData.color },
-        comment: tagData.name,
+        comment: tagData.description,
         runs: { count: tagData.run_count, tagId: tagData.id },
+        actions: tagData,
       })),
       newColumns: tableColumns,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagsList, onTableRunClick]);
 
   return (

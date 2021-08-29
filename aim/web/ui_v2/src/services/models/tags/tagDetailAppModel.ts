@@ -1,4 +1,5 @@
 import tagsService from 'services/api/tags/tagsService';
+import { ITagProps } from 'types/pages/tags/Tags';
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({});
@@ -60,7 +61,8 @@ function archiveTag(id: string, archived: boolean = false) {
     });
 }
 
-function updateTagInfo(tagInfo: any) {
+function updateTagInfo(tagInfo: ITagProps) {
+  console.log(tagInfo);
   const state = model.getState();
   model.setState({
     ...state,
