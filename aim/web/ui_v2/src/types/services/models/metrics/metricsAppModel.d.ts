@@ -231,12 +231,12 @@ export interface IDashboardData {
 
 export interface IAlignMetricsDataParams {
   align_by: string;
-  runs: Array<{
+  runs: {
     run_id: string;
-    traces: Array<{
+    traces: {
       context: IMetricTrace['context'];
-      metric_name: 'string';
+      metric_name: string;
       slice: number[];
-    }>;
-  }>;
+    }[];
+  }[];
 }

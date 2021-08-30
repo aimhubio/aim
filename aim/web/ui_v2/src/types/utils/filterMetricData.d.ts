@@ -6,7 +6,4 @@ export interface IFilterMetricDataParams {
   epochs: number[];
   timestamps: number[];
   axesScaleType?: IAxesScaleState;
-  xAxisValues?: number[] | null;
-  xAxisIters?: number[] | null;
-  alignMetric?: string | null;
 }

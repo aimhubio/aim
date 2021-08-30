@@ -61,10 +61,13 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import {
+  AlignmentNotificationsEnum,
+  BookmarkNotificationsEnum,
+} from 'config/notification-messages/notificationMessages';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import { trace } from 'console';
+import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -231,9 +234,10 @@ function getMetricsData() {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
-  const selectData = model.getState()?.config?.select;
-  const metric = model.getState()?.config?.chart.alignmentConfig.metric;
-  let query = getQueryStringFromSelect(selectData);
+  const modelState = model.getState();
+  const configData = modelState?.config;
+  const metric = configData?.chart.alignmentConfig.metric;
+  let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
     q: query,
     ...(metric && { x_axis: metric }),
@@ -250,39 +254,10 @@ function getMetricsData() {
           queryIsEmpty: false,
         });
         const stream = await metricsRequestRef.call();
-        let gen = adjustable_reader(stream);
-        let buffer_pairs = decode_buffer_pairs(gen);
-        let decodedPairs = decodePathsVals(buffer_pairs);
-        let objects = iterFoldTree(decodedPairs, 1);
-
-        const runData: IRun<IMetricTrace>[] = [];
-        for await (let [keys, val] of objects) {
-          runData.push({
-            ...(val as any),
-            hash: keys[0],
-          });
-        }
-
-        const { data, params } = processData(runData);
-        const configData = model.getState()?.config;
+        const runData = await getRunData(stream);
         if (configData) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions(params),
-          ];
-          setAggregationEnabled(configData);
+          setModelData(runData, configData);
         }
-
-        model.setState({
-          requestIsPending: false,
-          rawData: runData,
-          config: configData,
-          params,
-          data,
-          lineChartData: getDataAsLines(data),
-          aggregatedData: getAggregatedData(data),
-          tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getTableColumns(params, data[0].config),
-        });
       }
     },
     abort: metricsRequestRef.abort,
@@ -369,7 +344,6 @@ function processData(data: IRun<IMetricTrace>[]): {
   params: string[];
 } {
   const configData = model.getState()?.config;
-  const alignMetric = configData?.chart.alignmentConfig.metric;
   let metrics: IMetric[] = [];
   let index: number = -1;
   let params: string[] = [];
@@ -386,9 +360,6 @@ function processData(data: IRun<IMetricTrace>[]): {
           epochs: [...new Float64Array(trace.epochs?.blob)],
           timestamps: [...new Float64Array(trace.timestamps.blob)],
           axesScaleType: configData?.chart?.axesScaleType,
-          // xAxisValues: [...new Float64Array(trace.x_axis_values.blob)],
-          // xAxisIters: [...new Float64Array(trace.x_axis_iters.blob)],
-          // alignMetric,
         });
 
         let yValues = values;
@@ -722,6 +693,74 @@ function alignData(
         }
       }
       break;
+    case AlignmentOptions.CUSTOM_METRIC:
+      let missingTraces = false;
+      for (let i = 0; i < data.length; i++) {
+        const metricCollection = data[i];
+        for (let j = 0; j < metricCollection.data.length; j++) {
+          const metric = metricCollection.data[j];
+          const missingIndexes: number[] = [];
+          if (metric.x_axis_iters && metric.x_axis_values) {
+            const xAxisIters: number[] = [
+              ...new Float64Array(metric.x_axis_iters.blob),
+            ];
+            const xAxisValues: number[] = [
+              ...new Float64Array(metric.x_axis_values.blob),
+            ];
+            if (xAxisValues.length === metric.data.values.length) {
+              metric.data = {
+                ...metric.data,
+                xValues: [...xAxisValues.sort((a, b) => a - b)],
+                yValues: [...metric.data.values],
+              };
+            } else {
+              metric.data.steps.forEach((step, index) => {
+                if (xAxisIters.indexOf(step) === -1) {
+                  missingIndexes.push(index);
+                }
+              });
+              const epochs = filterArrayByIndexes(
+                missingIndexes,
+                metric.data.epochs,
+              );
+              const steps = filterArrayByIndexes(
+                missingIndexes,
+                metric.data.steps,
+              );
+              const timestamps = filterArrayByIndexes(
+                missingIndexes,
+                metric.data.timestamps,
+              );
+              const values = filterArrayByIndexes(
+                missingIndexes,
+                metric.data.values,
+              );
+              const yValues = filterArrayByIndexes(
+                missingIndexes,
+                metric.data.yValues,
+              );
+              metric.data = {
+                epochs,
+                steps,
+                timestamps,
+                values,
+                xValues: [...xAxisValues],
+                yValues: [...yValues],
+              };
+            }
+          } else {
+            missingTraces = true;
+          }
+        }
+        if (missingTraces) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+          });
+        }
+      }
+      break;
     default:
       throw new Error('Unknown value for X axis alignment');
   }
@@ -738,48 +777,8 @@ function getAggregatedData(
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
   let aggregatedData: IAggregatedData[] = [];
-  // const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
 
   processedData.forEach((metricsCollection, index) => {
-    // let lineY: number[];
-    // let areaMinY: number[];
-    // let areaMaxY: number[];
-    // if (smoothingAlgorithm && smoothingFactor) {
-    //   lineY = getSmoothenedData({
-    //     smoothingAlgorithm,
-    //     smoothingFactor,
-    //     data: metricsCollection.aggregation?.line?.yValues || [],
-    //   });
-    //   areaMinY = getSmoothenedData({
-    //     smoothingAlgorithm,
-    //     smoothingFactor,
-    //     data: metricsCollection.aggregation?.area.min?.yValues || [],
-    //   });
-    //   areaMaxY = getSmoothenedData({
-    //     smoothingAlgorithm,
-    //     smoothingFactor,
-    //     data: metricsCollection.aggregation?.area.max?.yValues || [],
-    //   });
-    // } else {
-    //   lineY = metricsCollection.aggregation?.line?.yValues as number[];
-    //   areaMinY = metricsCollection.aggregation?.area.min?.yValues as number[];
-    //   areaMaxY = metricsCollection.aggregation?.area.max?.yValues as number[];
-    // }
-
-    // const line = {
-    //   xValues: metricsCollection.aggregation?.line?.xValues as number[],
-    //   yValues: lineY,
-    // };
-    // const area: any = {
-    //   min: {
-    //     xValues: metricsCollection.aggregation?.area.min?.xValues,
-    //     yValues: areaMinY,
-    //   },
-    //   max: {
-    //     xValues: metricsCollection.aggregation?.area.max?.xValues,
-    //     yValues: areaMaxY,
-    //   },
-    // };
     aggregatedData.push({
       key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
       area: {
@@ -1358,41 +1357,44 @@ function onResetConfigData(): void {
 
 async function onAlignmentMetricChange(metric: string) {
   const modelState = model.getState();
-  const configData = model.getState()?.config;
+  const configData = modelState?.config;
   if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData?.chart,
-          alignmentConfig: {
-            type: AlignmentOptions.CUSTOM_METRIC,
-            metric,
-          },
-        },
-      },
-    });
-  }
-
-  const runs: any = modelState?.rawData?.map((item) => {
-    const traces = item.traces.map(({ context, metric_name, slice }) => ({
-      context,
-      metric_name,
-      slice,
-    }));
-    return {
-      run_id: item.hash,
-      traces,
+    configData.chart = {
+      ...configData.chart,
+      alignmentConfig: { metric, type: AlignmentOptions.CUSTOM_METRIC },
     };
-  });
+    model.setState({ config: configData });
+  }
+  if (modelState?.rawData && configData) {
+    const runs = modelState?.rawData?.map((item) => {
+      const traces = item.traces.map(({ context, metric_name, slice }) => ({
+        context,
+        metric_name,
+        slice,
+      }));
+      return {
+        run_id: item.hash,
+        traces,
+      };
+    });
 
-  const reqBody: IAlignMetricsDataParams = {
-    align_by: metric,
-    runs,
-  };
-  const { call, abort } = metricsService.fetchAlignedMetricsData(reqBody);
+    const reqBody: IAlignMetricsDataParams = {
+      align_by: metric,
+      runs,
+    };
+    const stream = await metricsService.fetchAlignedMetricsData(reqBody).call();
+    const runData = await getRunData(stream);
+    const rawData: any = model.getState()?.rawData?.map((item, index) => ({
+      ...item,
+      traces: item.traces.map((trace, ind) => {
+        return { ...trace, ...runData[index][ind] };
+      }),
+    }));
+    setModelData(rawData, configData);
+  }
+}
 
-  const stream = await call();
+async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
   let decodedPairs = decodePathsVals(buffer_pairs);
@@ -1405,40 +1407,29 @@ async function onAlignmentMetricChange(metric: string) {
       hash: keys[0],
     });
   }
+  return runData;
+}
 
-  const rawData: any = model.getState()?.rawData?.map((item, index) => {
-    return {
-      ...item,
-      traces: item.traces.map((trace, ind) => {
-        return { ...trace, ...runData[index][ind] };
-      }),
-    };
-  });
-
+function setModelData(
+  rawData: IRun<IMetricTrace>[],
+  configData: IMetricAppConfig,
+) {
   const { data, params } = processData(rawData);
-
-  // if (modelState?.config?.chart) {
-  //   model.setState({
-  //     requestIsPending: false,
-  //     rawData,
-  //     params,
-  //     data,
-  //     lineChartData: getDataAsLines(data),
-  //     aggregatedData: getAggregatedData(data),
-  //     tableData: getDataAsTableRows(data, null, params),
-  //     tableColumns: getTableColumns(params, data[0].config),
-  //     config: {
-  //       ...modelState?.config,
-  //       chart: {
-  //         ...modelState?.config.chart,
-  //         alignmentConfig: {
-  //           ...modelState?.config.chart.alignmentConfig,
-  //           metric: metric,
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
+  if (configData) {
+    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
+    setAggregationEnabled(configData);
+  }
+  model.setState({
+    requestIsPending: false,
+    rawData,
+    config: configData,
+    params,
+    data,
+    lineChartData: getDataAsLines(data),
+    aggregatedData: getAggregatedData(data),
+    tableData: getDataAsTableRows(data, null, params),
+    tableColumns: getTableColumns(params, data[0].config),
+  });
 }
 
 function onAlignmentTypeChange(type: AlignmentOptions): void {
