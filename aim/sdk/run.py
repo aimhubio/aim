@@ -12,8 +12,6 @@ from aim.sdk.types import AimObject
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
-from aim.storage.proxy import AimObjectProxy
-from aim.storage.structured.entities import StructuredObject
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 
@@ -239,9 +237,6 @@ class Run(StructuredRunMixin):
             self._init_props()
         return self._props
 
-    def view(self):
-        return RunView(self)
-
     def _init_props(self):
         sdb = self.repo.structured_db
         if self._props_cache_hint:
@@ -318,32 +313,3 @@ class Run(StructuredRunMixin):
                                          read_only=False,
                                          from_union=False).view(b'')
         self.meta_run_tree.finalize(index=index)
-
-
-class RunView:
-
-    def __init__(self, run: Run):
-        self.db = run.repo.structured_db
-        self.hashname = run.hashname
-        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
-        self.meta_run_tree: TreeView = run.meta_run_tree
-        self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
-
-    def __getattr__(self, item):
-        if item in self.structured_run_cls.fields():
-            return getattr(self.db.caches['runs_cache'][self.hashname], item)
-        else:
-            return self[item]
-
-    def __getitem__(self, key):
-        return AimObjectProxy(lambda: self.meta_run_attrs_tree.collect(key), view=self.meta_run_attrs_tree.view(key))
-
-    def get(
-        self,
-        key,
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
