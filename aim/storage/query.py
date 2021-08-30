@@ -129,7 +129,7 @@ class RestrictedPythonQuery(Query):
 
         # add the default expression to the query if needed
         if stripped_query and 'run.archived' not in stripped_query:
-            stripped_query += 'and' + default_expression
+            stripped_query += ' and ' + default_expression
         elif 'run.archived' not in stripped_query:
             stripped_query = default_expression
 
