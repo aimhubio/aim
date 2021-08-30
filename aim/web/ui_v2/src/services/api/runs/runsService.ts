@@ -7,8 +7,10 @@ const endpoints = {
   ARCHIVE_RUN: (id: string) => `runs/${id}`,
 };
 
-function getRunsData() {
-  return API.getStream<ReadableStream>(endpoints.GET_RUNS);
+function getRunsData(query?: string) {
+  return API.getStream<ReadableStream>(endpoints.GET_RUNS, {
+    q: query || 'True',
+  });
 }
 
 function getRunInfo(id: string) {

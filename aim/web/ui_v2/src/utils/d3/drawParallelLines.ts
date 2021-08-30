@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, isNil } from 'lodash-es';
 
 import lineGenerator from './lineGenerator';
 import {
@@ -17,6 +17,80 @@ const initialPathData: InitialPathDataType = {
   isEmpty: true,
   isDotted: false,
 };
+
+function linesRenderer({
+  data,
+  keysOfDimensions,
+  curveInterpolation,
+  linesNodeRef,
+  attributesRef,
+  isVisibleColorIndicator,
+}: ILineRendererProps) {
+  data.forEach(({ values: line, key, color, dasharray }: ILineDataType) => {
+    const arrayOfPathData: InitialPathDataType[] = [cloneDeep(initialPathData)];
+    let pathDataArrayIndex: number = 0;
+    for (let i = 0; i < keysOfDimensions.length; i++) {
+      const keyOfDimension: string = keysOfDimensions[i];
+      if (isNil(line[keyOfDimension])) {
+        if (i === 0) continue;
+        let nextStep: number = 1;
+        while (
+          keysOfDimensions[i + nextStep] &&
+          isNil(line[keysOfDimensions[i + nextStep]])
+        ) {
+          nextStep++;
+        }
+        if (nextStep + i < keysOfDimensions.length) {
+          arrayOfPathData[pathDataArrayIndex + 1] = {
+            dimensionList: [
+              keysOfDimensions[i - 1],
+              keysOfDimensions[i + nextStep],
+            ],
+            lineData: {
+              [keysOfDimensions[i - 1]]: line[keysOfDimensions[i - 1]],
+              [keysOfDimensions[i + nextStep]]:
+                line[keysOfDimensions[i + nextStep]],
+            },
+            isEmpty: false,
+            isDotted: true,
+          };
+          arrayOfPathData[pathDataArrayIndex + 2] = cloneDeep(initialPathData);
+          pathDataArrayIndex = pathDataArrayIndex + 2;
+        }
+        i = i + nextStep;
+      } else {
+        arrayOfPathData[pathDataArrayIndex].isEmpty = false;
+        arrayOfPathData[pathDataArrayIndex].dimensionList.push(keyOfDimension);
+        arrayOfPathData[pathDataArrayIndex].lineData[keyOfDimension] =
+          line[keyOfDimension];
+      }
+    }
+
+    arrayOfPathData.forEach((pathData) => {
+      if (!pathData.isEmpty) {
+        drawParallelLine({
+          linesNodeRef,
+          attributesRef,
+          curveInterpolation,
+          dimensionList: pathData.dimensionList,
+          lineData: pathData.lineData,
+          isDotted: pathData.isDotted,
+          dasharray,
+          key,
+          color: isVisibleColorIndicator
+            ? getColorIndicatorScaleValue({
+                line,
+                keysOfDimensions,
+                yColorIndicatorScale:
+                  attributesRef.current.yColorIndicatorScale,
+                yScale: attributesRef.current.yScale,
+              })
+            : color,
+        });
+      }
+    });
+  });
+}
 
 function drawParallelLines({
   linesNodeRef,
@@ -57,6 +131,7 @@ function drawParallelLine({
   dimensionList,
   curveInterpolation,
   lineData,
+  dasharray,
   isDotted,
   color,
   key,
@@ -82,103 +157,9 @@ function drawParallelLine({
     )
     .attr('class', 'Line')
     .style('fill', 'none')
-    .style('stroke', color)
-    .style('stroke-opacity', isDotted ? '0.5' : '1')
-    .style('stroke-dasharray', isDotted ? '4 1' : 0);
-}
-
-function linesRenderer({
-  data,
-  keysOfDimensions,
-  curveInterpolation,
-  linesNodeRef,
-  attributesRef,
-  isVisibleColorIndicator,
-}: ILineRendererProps) {
-  data.forEach(({ values: line, key, color }: ILineDataType) => {
-    if (Object.values(line).includes(null)) {
-      const arrayOfPathData: InitialPathDataType[] = [
-        cloneDeep(initialPathData),
-      ];
-      let pathDataArrayIndex: number = 0;
-      for (let i = 0; i < keysOfDimensions.length; i++) {
-        const keyOfDimension: string = keysOfDimensions[i];
-        if (line[keyOfDimension] === null) {
-          if (i === 0) continue;
-          let nextStep: number = 1;
-          while (line[keysOfDimensions[i + nextStep]] === null) {
-            nextStep++;
-          }
-          if (nextStep + i < keysOfDimensions.length) {
-            arrayOfPathData[pathDataArrayIndex + 1] = {
-              dimensionList: [
-                keysOfDimensions[i - 1],
-                keysOfDimensions[i + nextStep],
-              ],
-              lineData: {
-                [keysOfDimensions[i - 1]]: line[keysOfDimensions[i - 1]],
-                [keysOfDimensions[i + nextStep]]:
-                  line[keysOfDimensions[i + nextStep]],
-              },
-              isEmpty: false,
-              isDotted: true,
-            };
-            arrayOfPathData[pathDataArrayIndex + 2] =
-              cloneDeep(initialPathData);
-            pathDataArrayIndex = pathDataArrayIndex + 2;
-          }
-        } else {
-          arrayOfPathData[pathDataArrayIndex].isEmpty = false;
-          arrayOfPathData[pathDataArrayIndex].dimensionList.push(
-            keyOfDimension,
-          );
-          arrayOfPathData[pathDataArrayIndex].lineData[keyOfDimension] =
-            line[keyOfDimension];
-        }
-      }
-
-      arrayOfPathData.forEach((pathData) => {
-        if (!pathData.isEmpty) {
-          drawParallelLine({
-            linesNodeRef,
-            attributesRef,
-            curveInterpolation,
-            dimensionList: pathData.dimensionList,
-            lineData: pathData.lineData,
-            isDotted: pathData.isDotted,
-            key,
-            color: isVisibleColorIndicator
-              ? getColorIndicatorScaleValue({
-                  line,
-                  keysOfDimensions,
-                  yColorIndicatorScale:
-                    attributesRef.current.yColorIndicatorScale,
-                  yScale: attributesRef.current.yScale,
-                })
-              : color,
-          });
-        }
-      });
-    } else {
-      drawParallelLine({
-        linesNodeRef,
-        attributesRef,
-        curveInterpolation,
-        dimensionList: keysOfDimensions,
-        lineData: line,
-        isDotted: false,
-        key,
-        color: isVisibleColorIndicator
-          ? getColorIndicatorScaleValue({
-              line,
-              keysOfDimensions,
-              yColorIndicatorScale: attributesRef.current.yColorIndicatorScale,
-              yScale: attributesRef.current.yScale,
-            })
-          : color,
-      });
-    }
-  });
+    .style('stroke', isDotted ? '#9c9292' : color)
+    .style('stroke-opacity', 1)
+    .style('stroke-dasharray', isDotted ? '4 1' : dasharray);
 }
 
 function getColorIndicatorScaleValue({

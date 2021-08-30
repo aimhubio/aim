@@ -10,17 +10,45 @@
     .tick text {
       display: none;
     }
-    .yAxis__text {
+    .yAxisLabel {
       text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
       text-align: right;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .xAxisLabel {
+      width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      position: relative;
+      padding-left: 10px;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 0px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #2bc784;
+      }
+      &__metric {
+        &::after {
+          background: #1473e6;
+        }
+      }
+      span {
+        &:first-child {
+          margin-right: 5px;
+        }
+      }
+    }
   }
 
   &.backgroundRect {
-    cursor: crosshair
+    cursor: crosshair;
   }
 
   &.zoomMode rect {
@@ -39,14 +67,14 @@
 
   /* on click */
   .HoverCircle.focus {
-    stroke: #3b5896;  /* var(--primary) */
+    stroke: #3b5896; /* var(--primary) */
     stroke-width: 2;
     opacity: 1;
   }
 
   /* on hover */
   .HoverCircle.active {
-    stroke: #7a94cc ;/* var(--primary-light); */
+    stroke: #7a94cc; /* var(--primary-light); */
     stroke-width: 3;
     opacity: 1;
   }
@@ -59,7 +87,7 @@
     position: absolute;
     box-sizing: border-box;
     padding: 0.375em 0.5em; /*var(--space-xxs) var(--space-xs);*/
-    background-color: #f7faff;  /*var(--primary-bg);*/
+    background-color: #f7faff; /*var(--primary-bg);*/
     border: 1px solid #7a94cc; /*var(--primary-light);*/
     color: #243969; /*var(--primary-dark);*/
     font-size: 10px;
@@ -87,8 +115,8 @@
   }
 
   .Line {
-    stroke-width: 1;
-    opacity: 1;
+    stroke-width: 2;
+    opacity: 0.3;
   }
 
   .Lines.highlight > .Line:not(.active):not(.highlighted) {

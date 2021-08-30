@@ -39,7 +39,7 @@ export interface ILineChartProps {
 }
 
 export interface IUpdateFocusedChartProps {
-  mousePos: [number, number];
+  mousePos?: [number, number];
   focusedStateActive?: boolean;
   force?: boolean;
 }
@@ -49,11 +49,16 @@ export interface IAttributesRef {
   activePoint?: IActivePoint;
   xStep?: number;
   lineKey?: string;
+  dataSelector?: string;
   xScale?: IGetAxisScale;
   yScale?: IGetAxisScale;
   updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
-  setActiveLine?: (lineKey: string) => void;
-  updateHoverAttributes?: (xValue: number) => void;
+  setActiveLineAndCircle?: (
+    lineKey?: string,
+    focusedStateActive: boolean = false,
+    force: boolean = false,
+  ) => void;
+  updateHoverAttributes?: (xValue: number, dataSelector?: string) => void;
   updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
   clearHoverAttributes?: () => void;
 }

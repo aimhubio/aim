@@ -1,21 +1,13 @@
 export interface IRun<T> {
-  params: {
-    experiment_name: string;
-    status: {
-      aim: {
-        version: string;
-      };
-      archived: 0 | 1;
-      name: string;
-      date: number;
-      hash: string;
-      message: number;
-    };
-    [key: string]: IRunParam;
+  params: IRunParams;
+  props: {
+    experiment: string | null;
+    name: string;
   };
   created_at: number;
+  hash: string;
   traces: T[];
-  runHash?: string;
+  hash: string;
 }
 
 export interface IParamTrace {
@@ -27,10 +19,13 @@ export interface IParamTrace {
 export interface IMetricTrace {
   metric_name: string;
   context: { [key: string]: unknown };
+  slice: number[];
   values: ITraceData;
   iters: ITraceData;
   epochs: ITraceData;
   timestamps: ITraceData;
+  x_axis_values?: ITraceData;
+  x_axis_iters?: ITraceData;
 }
 
 export interface IRunParam {

@@ -24,8 +24,10 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ILine } from 'types/components/LineChart/LineChart';
 import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -35,7 +37,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   displayOutliers: boolean;
@@ -51,7 +53,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   tooltipContent: ITooltipContent;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
-  selectedMetricsData: ISelectMetricsOption[];
+  selectedMetricsData: IMetricAppConfig['select'];
+  tableRowHeight: RowHeight;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (
@@ -61,7 +64,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onHighlightModeChange: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onTableRowHover: (rowKey: string) => void;
-  onTableRowClick: (rowKey: string) => void;
+  onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,
@@ -78,8 +81,11 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
   onAlignmentMetricChange: (metric: string) => void;
-  onAlignmentTypeChange: (type: AlignmentOptions) => void;
+  onAlignmentTypeChange: (type: XAlignmentEnum) => void;
   onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
+  onSelectRunQueryChange: (query: string) => void;
+  onSelectAdvancedQueryChange: (query: string) => void;
+  toggleSelectAdvancedMode: () => void;
 }
 
 export interface IOnSmoothingChange {

@@ -54,15 +54,20 @@ function PopoverContent({
         {_.isEmpty(group_config) ? null : (
           <Box mt={0.5}>
             <Divider style={{ margin: '0.5em 0' }} />
-            <Typography variant='subtitle1'>Group Config</Typography>
+            <Typography variant='subtitle1' style={{ fontWeight: 500 }}>
+              Group Config
+            </Typography>
             {Object.keys(group_config).map((groupConfigKey: string) =>
               _.isEmpty(group_config[groupConfigKey]) ? null : (
                 <React.Fragment key={groupConfigKey}>
                   <Typography variant='subtitle2'>
-                    {groupConfigKey} params
+                    <span style={{ textTransform: 'capitalize' }}>
+                      {groupConfigKey}
+                    </span>{' '}
+                    params
                   </Typography>
                   {Object.keys(group_config[groupConfigKey]).map((item) => (
-                    <Typography key={item}>
+                    <Typography key={item} color='textSecondary'>
                       {item}: {group_config[groupConfigKey][item] ?? '--'}
                     </Typography>
                   ))}
@@ -74,10 +79,12 @@ function PopoverContent({
         {_.isEmpty(params) ? null : (
           <Box mt={0.5}>
             <Divider style={{ margin: '0.5em 0' }} />
-            <Typography variant='subtitle1'>Params</Typography>
+            <Typography variant='subtitle1' style={{ fontWeight: 500 }}>
+              Params
+            </Typography>
             {Object.keys(params).map((paramKey) => (
-              <Typography key={paramKey}>
-                {paramKey}: {params[paramKey] ?? '--'}
+              <Typography key={paramKey} color='textSecondary'>
+                {paramKey}: {JSON.stringify(params[paramKey]) ?? '--'}
               </Typography>
             ))}
           </Box>

@@ -39,6 +39,9 @@ function Metrics(
               <SelectForm
                 selectedMetricsData={props.selectedMetricsData}
                 onMetricsSelectChange={props.onMetricsSelectChange}
+                onSelectRunQueryChange={props.onSelectRunQueryChange}
+                onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
+                toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
               />
               <Grouping
                 groupingData={props.groupingData}
@@ -61,7 +64,7 @@ function Metrics(
                 key={props.lineChartData?.length}
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
-                data={props.lineChartData as any}
+                data={props.lineChartData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
                 tooltipContent={props.tooltipContent}
@@ -114,10 +117,17 @@ function Metrics(
             {props.tableData?.length > 0 ? (
               <Table
                 ref={props.tableRef}
+                data={props.tableData}
+                columns={props.tableColumns}
+                // Table options
+                rowHeight={props.tableRowHeight}
+                sortOptions={props.groupingData.selectOptions}
+                // Table actions
                 onSort={() => null}
                 onExport={() => null}
-                data={props.tableData.flat()}
-                columns={props.tableColumns}
+                onManageColumns={() => null}
+                onRowHeightChange={() => null}
+                onRowsChange={() => null}
                 onRowHover={props.onTableRowHover}
                 onRowClick={props.onTableRowClick}
               />

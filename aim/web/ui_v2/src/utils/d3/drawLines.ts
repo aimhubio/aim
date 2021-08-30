@@ -6,7 +6,7 @@ import { IProcessedData } from 'types/utils/d3/processData';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import areaGenerator from './areaGenerator';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
-import { AggregationAreaMethods } from '../aggregateGroupData';
+import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 

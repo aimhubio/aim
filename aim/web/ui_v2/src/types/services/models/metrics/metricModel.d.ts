@@ -1,4 +1,4 @@
-import { IMetricTrace, IRun, ITraceData } from './runModel';
+import { IMetricTrace, IRun } from './runModel';
 
 export interface IMetric {
   run: IRun<IMetricTrace>;

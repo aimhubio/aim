@@ -33,7 +33,7 @@ import {
   noop,
 } from './utils';
 
-import './BaseTable.css';
+import './BaseTable.scss';
 
 const getColumns = memoize(
   (columns, children) => columns || normalizeColumns(children),
@@ -336,7 +336,7 @@ class BaseTable extends React.PureComponent {
       }
     }
 
-    this.scrollToRow(rowIndex);
+    this.scrollToRow(rowIndex, 'smart');
   };
 
   /**
@@ -435,7 +435,10 @@ class BaseTable extends React.PureComponent {
       key: `row-${rowKey}`,
       isScrolling,
       className,
-      style,
+      style: {
+        ...style,
+        ...rowData?.rowProps?.style,
+      },
       columns,
       rowIndex,
       rowData,
@@ -1149,13 +1152,14 @@ class BaseTable extends React.PureComponent {
     }
   }
 
-  _handleRowHover({ rowKey }) {
+  _handleRowHover({ rowKey, hovered }) {
     if (this.state.activeRowKey !== null) {
       return;
     }
-    this.setHoveredRow(rowKey);
+
+    this.setHoveredRow(hovered ? rowKey : null);
     if (typeof this.props.onRowHover === 'function') {
-      this.props.onRowHover(rowKey);
+      this.props.onRowHover(hovered ? rowKey : undefined);
     }
   }
 
@@ -1166,7 +1170,7 @@ class BaseTable extends React.PureComponent {
       activeRowKey: clickedOnSameRow ? null : rowKey,
     });
     if (typeof this.props.onRowClick === 'function') {
-      this.props.onRowClick(clickedOnSameRow ? null : rowKey);
+      this.props.onRowClick(clickedOnSameRow ? undefined : rowKey);
     }
   }
 

@@ -1,13 +1,12 @@
 .ChartPanel__container {
-
   height: 100%;
-  height: -moz-available;          /* WebKit-based browsers will ignore this. */
-  height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+  height: -moz-available; /* WebKit-based browsers will ignore this. */
+  height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
 
   .ChartPanel {
     overflow: hidden;
     height: 100%;
-    border-right: 1px solid  #E8F1FC;
+    border-right: 1px solid #e8f1fc;
   }
 
   .ChartPanel__paper {
@@ -16,8 +15,12 @@
     user-select: none;
   }
 
-  .ChartPanel__paper__grid{
+  .ChartPanel__paper__grid {
     height: 100%;
     overflow: auto;
+    margin: 0;
+    &__chartBox {
+      min-height: 50%;
+    }
   }
 }

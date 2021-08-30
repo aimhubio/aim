@@ -32,10 +32,20 @@ function getStream<ResponseDataType>(
   options?: RequestInit,
 ) {
   return createAPIRequestWrapper<ResponseDataType>(
-    `${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`,
+    `${url}${
+      options?.method === 'POST'
+        ? ''
+        : params
+        ? '?' + new URLSearchParams(params).toString()
+        : ''
+    }`,
     {
       method: 'GET',
       ...options,
+      ...(options?.method === 'POST' && {
+        body: JSON.stringify(params),
+        headers: { 'Content-Type': 'application/json' },
+      }),
     },
     true,
   );
@@ -63,6 +73,9 @@ function post<ResponseDataType>(
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'POST',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   });
 }

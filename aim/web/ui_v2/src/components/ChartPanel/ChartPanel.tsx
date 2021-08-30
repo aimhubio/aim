@@ -1,6 +1,6 @@
 import React from 'react';
-import { Grid, PopoverPosition } from '@material-ui/core';
-import { debounce } from 'lodash-es';
+import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
+import _ from 'lodash-es';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { chartTypesConfig } from './config';
@@ -32,7 +32,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
-      const { activePoint, focusedStateActive } = params;
+      const { activePoint, focusedStateActive, dataSelector } = params;
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {
@@ -41,7 +41,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             if (index === activePoint.chartIndex) {
               return;
             }
-            chartRef.current?.updateHoverAttributes?.(activePoint.xValue);
+            chartRef.current?.updateHoverAttributes?.(
+              activePoint.xValue,
+              dataSelector,
+            );
           });
         }
 
@@ -62,7 +65,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setPopoverPosition(null);
       }
     },
-    [chartRefs, props],
+    [chartRefs, props.chartType, props.onActivePointChange],
   );
 
   const onScroll = React.useCallback((): void => {
@@ -81,9 +84,17 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, []);
 
   React.useImperativeHandle(ref, () => ({
-    setActiveLine: (lineKey: string) => {
+    setActiveLineAndCircle: (
+      lineKey?: string,
+      focusedStateActive: boolean = false,
+      force: boolean = false,
+    ) => {
       chartRefs.forEach((chartRef) => {
-        chartRef.current?.setActiveLine?.(lineKey);
+        chartRef.current?.setActiveLineAndCircle?.(
+          lineKey,
+          focusedStateActive,
+          force,
+        );
       });
     },
   }));
@@ -102,7 +113,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, []);
 
   React.useEffect(() => {
-    const debouncedScroll = debounce(onScroll, 100);
+    const debouncedScroll = _.debounce(onScroll, 100);
     const containerNode = containerRef.current;
     containerNode?.addEventListener('scroll', debouncedScroll);
     return () => {
@@ -128,10 +139,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               <Grid
                 key={index}
                 item
+                className='ChartPanel__paper__grid__chartBox'
                 xs={
                   props.data.length > 9
                     ? 4
-                    : (chartGridPattern[props.data.length][index] as any)
+                    : (chartGridPattern[props.data.length][index] as GridSize)
                 }
               >
                 <Component

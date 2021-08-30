@@ -11,22 +11,25 @@ import {
 import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
-import { IMetricTrace, IRun } from './runModel';
+import { IMetricTrace, IRun, ITraceData } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricAppModelState {
   refs: {
     tableRef: { current: ITableRef | null };
     chartPanelRef: { current: IChartPanelRef | null };
   };
+  requestIsPending: boolean;
+  queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IMetricAppConfig;
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   aggregatedData: IAggregatedData[];
-  tableData: IMetricTableRowData[][];
+  tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
@@ -55,7 +58,8 @@ export interface ITooltipContent {
 }
 
 export interface IMetricsCollection<T> {
-  config: unknown;
+  key?: string;
+  config: { [key: string]: string } | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
@@ -121,6 +125,11 @@ interface IMetricAppConfig {
   select: {
     metrics: ISelectMetricsOption[];
     query: string;
+    advancedMode: boolean;
+    advancedQuery: string;
+  };
+  table: {
+    rowHeight: RowHeight;
   };
 }
 
@@ -155,7 +164,10 @@ export interface IMetricTableRowData {
   metric: metric.metric_name;
   context: string[];
   value: string;
-  iteration: string;
+  step: string;
+  epoch: string;
+  timestamp: string;
+  [key: string]: any;
 }
 
 export interface IGetDataAsLinesProps {
@@ -190,7 +202,7 @@ export type GroupingSelectOptionType = {
   value: string;
 };
 
-export interface IAppData extends Partial<IMetricAppConfig> {
+export interface IAppData extends Partial<IMetricAppConfig | IParamsAppConfig> {
   created_at?: string;
   id?: string;
   updated_at?: string;
@@ -209,4 +221,16 @@ export interface IDashboardData {
   name: string;
   description: string;
   updated_at: string;
+}
+
+export interface IAlignMetricsDataParams {
+  align_by: string;
+  runs: Array<{
+    run_id: string;
+    traces: Array<{
+      context: IMetricTrace['context'];
+      metric_name: 'string';
+      slice: number[];
+    }>;
+  }>;
 }

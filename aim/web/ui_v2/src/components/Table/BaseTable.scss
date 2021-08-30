@@ -1,0 +1,327 @@
+$table-prefix: BaseTable !default;
+
+@mixin table-edge-padding($padding-left: null, $padding-right: null) {
+  .#{$table-prefix} {
+    &__header-cell,
+    &__row-cell {
+      @if $padding-left != null {
+        &:first-child {
+          padding-left: $padding-left;
+        }
+      }
+
+      @if $padding-right != null {
+        &:last-child {
+          padding-right: $padding-right;
+        }
+      }
+    }
+  }
+}
+
+@mixin fill-layout($top: 0, $bottom: 0) {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: $top;
+  bottom: $bottom;
+  overflow: hidden;
+}
+
+.#{$table-prefix} {
+  $table-font-size: 13px !default;
+  $table-padding-left: 15px !default;
+  $table-padding-right: 15px !default;
+  $column-padding: 7.5px !default;
+
+  $background-color: #ffffff !default;
+  $box-shadow-color: #eeeeee !default;
+  $box-shadow-offset: 2px !default;
+  $box-shadow-blur: 4px !default;
+  $border: 1px solid #eeeeee !default;
+  $header-background-color: #f8f8f8 !default;
+  $header-font-weight: 700 !default;
+  $row-hovered-background-color: #e2f2ff !default;
+  $header-cell-hovered-background-color: #f3f3f3 !default;
+  $sort-indicator-hovered-color: #888888 !default;
+  $column-resizer-color: #5bb4ff !default;
+
+  $show-frozen-rows-shadow: false !default;
+  $show-frozen-columns-shadow: true !default;
+
+  box-shadow: 0 $box-shadow-offset $box-shadow-blur 0 $box-shadow-color;
+  background-color: $background-color;
+  position: relative;
+  box-sizing: border-box;
+  font-size: $table-font-size;
+
+  &--disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  &--dynamic {
+    .#{$table-prefix}__row {
+      overflow: hidden;
+      align-items: stretch;
+    }
+  }
+
+  &:not(.#{$table-prefix}--dynamic),
+  .#{$table-prefix}__row--frozen {
+    .#{$table-prefix}__row-cell-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  @if ($show-frozen-rows-shadow) {
+    &--has-frozen-rows {
+      .#{$table-prefix}__header {
+        box-shadow: 0 $box-shadow-offset $box-shadow-blur 0 $box-shadow-color;
+      }
+    }
+  }
+
+  &__table {
+    background-color: $background-color;
+    position: absolute;
+    top: 0;
+    // put header after body and reverse the display order
+    // to prevent header's shadow being covered by body
+    display: flex;
+    flex-direction: column-reverse;
+
+    &-main {
+      @include table-edge-padding($table-padding-left, $table-padding-right);
+      outline: $border;
+      left: 0;
+
+      .#{$table-prefix}__header {
+        background-color: $header-background-color;
+      }
+    }
+
+    &-frozen-left,
+    &-frozen-right {
+      .#{$table-prefix}__header,
+      .#{$table-prefix}__body {
+        overflow: hidden !important;
+      }
+    }
+
+    &-frozen-left {
+      @include table-edge-padding($table-padding-left, null);
+      @if ($show-frozen-columns-shadow) {
+        box-shadow: $box-shadow-offset 0 $box-shadow-blur 0 $box-shadow-color;
+      }
+      top: 0;
+      left: 0;
+
+      .#{$table-prefix}__header-row,
+      .#{$table-prefix}__row {
+        padding-right: 0 !important;
+      }
+
+      .#{$table-prefix}__body {
+        overflow-y: auto !important;
+      }
+    }
+
+    &-frozen-right {
+      @include table-edge-padding(null, $table-padding-right);
+      @if ($show-frozen-columns-shadow) {
+        box-shadow: -$box-shadow-offset 0 $box-shadow-blur 0 $box-shadow-color;
+      }
+      top: 0;
+      right: 0;
+
+      .#{$table-prefix}__header-row,
+      .#{$table-prefix}__row {
+        padding-left: 0 !important;
+      }
+
+      .#{$table-prefix}__body {
+        overflow-y: auto !important;
+      }
+    }
+  }
+
+  &__header {
+    overflow: hidden !important;
+  }
+
+  .#{$table-prefix}__header,
+  .#{$table-prefix}__body {
+    outline: none;
+  }
+
+  &__header-row,
+  &__row {
+    display: flex;
+    align-items: center;
+    border-bottom: $border;
+    box-sizing: border-box;
+  }
+
+  &__header-row {
+    background-color: $header-background-color;
+    font-weight: $header-font-weight;
+  }
+
+  &__row {
+    background-color: $background-color;
+    cursor: pointer;
+
+    &--hovered {
+      background-color: $row-hovered-background-color;
+    }
+  }
+
+  &__row-expanded {
+    border-bottom: $border;
+  }
+
+  &__header-cell,
+  &__row-cell {
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 $column-padding;
+    box-sizing: border-box;
+    border-right: $border;
+    white-space: nowrap;
+
+    &--align-center {
+      justify-content: center;
+      text-align: center;
+    }
+
+    &--align-right {
+      justify-content: flex-end;
+      text-align: right;
+    }
+  }
+
+  &__header-cell {
+    position: relative;
+    cursor: default;
+
+    &:hover {
+      .#{$table-prefix}__column-resizer {
+        visibility: visible;
+        opacity: 0.5;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+    .#{$table-prefix}__sort-indicator {
+      display: none;
+    }
+
+    &--sortable {
+      &:hover {
+        background-color: $header-cell-hovered-background-color;
+        cursor: pointer;
+      }
+
+      &:not(.#{$table-prefix}__header-cell--sorting):hover {
+        .#{$table-prefix}__sort-indicator {
+          display: block;
+          color: $sort-indicator-hovered-color;
+        }
+      }
+    }
+
+    &--sorting {
+      &,
+      &:hover {
+        .#{$table-prefix}__sort-indicator {
+          display: block;
+        }
+      }
+    }
+
+    &--resizing {
+      .#{$table-prefix}__column-resizer {
+        visibility: visible;
+        opacity: 1;
+        // workaround to prevent header being clicked when resizing stopped on header
+        &::after {
+          @include fill-layout();
+          content: '';
+          left: -9999px;
+        }
+      }
+    }
+
+    &-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+  }
+
+  &__header-row--resizing {
+    .#{$table-prefix}__header-cell {
+      background-color: transparent;
+      cursor: col-resize;
+
+      &:not(.#{$table-prefix}__header-cell--sorting) {
+        .#{$table-prefix}__sort-indicator {
+          display: none;
+        }
+      }
+
+      &:not(.#{$table-prefix}__header-cell--resizing) {
+        .#{$table-prefix}__column-resizer {
+          visibility: hidden;
+        }
+      }
+    }
+  }
+
+  &__column-resizer {
+    width: 3px;
+    visibility: hidden;
+    background-color: $column-resizer-color;
+
+    &:hover {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  &__footer {
+    @include fill-layout(null);
+    background-color: $background-color;
+  }
+
+  &__resizing-line {
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    background-color: $column-resizer-color;
+    width: 3px;
+    transform: translateX(-100%);
+  }
+
+  &__empty-layer {
+    @include fill-layout();
+    background-color: $background-color;
+  }
+
+  &__overlay {
+    @include fill-layout();
+    pointer-events: none;
+
+    & > * {
+      pointer-events: auto;
+    }
+  }
+}
