@@ -859,7 +859,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   // const blob = new Blob([JsonToCSV(dataToExport)], {
   //   type: 'text/csv;charset=utf-8;',
   // });
-  // saveAs(blob, `explore-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  // saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
 }
 
 function onNotificationDelete(id: number) {
