@@ -1,10 +1,13 @@
- html body .Sidebar__container {
+.Sidebar__container {
   width: 80px;
-  background-color: #09003F;
+}
+
+.Sidebar__Paper {
+  background-color: #09003f !important;
 }
 
 .Sidebar__List {
-  padding: 0
+  padding: 0;
 }
 
 .Sidebar__List__item {
@@ -16,7 +19,7 @@
   padding: 0.5em;
   img {
     width: 40px;
-    margin: auto
+    margin: auto;
   }
 }
 

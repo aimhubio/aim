@@ -14,6 +14,7 @@ import {
   IAggregationConfig,
   IAlignmentConfig,
   IAppData,
+  IChartTooltip,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
@@ -118,7 +119,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
       focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
-      tooltipContent={metricsData?.tooltipContent as ITooltipContent}
+      tooltip={metricsData?.config?.chart?.tooltip as IChartTooltip}
       aggregationConfig={
         metricsData?.config?.chart.aggregationConfig as IAggregationConfig
       }
@@ -130,6 +131,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
       //methods
+      onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomModeChange={metricAppModel.onZoomModeChange}
       onHighlightModeChange={metricAppModel.onHighlightModeChange}

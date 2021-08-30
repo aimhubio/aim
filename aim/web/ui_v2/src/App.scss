@@ -1,8 +1,8 @@
-.mainContainer {
-  padding-left: 80px;
-  flex: 1 1 0
-}
+@import './styles/global.scss';
+@import './src/styles/base/reset.scss';
+@import 'fonts/icomoon/icomoonIcons.scss';
+@import './styles/base/_fonts.scss';
 
-body {
-  font-size: 16px !important;
+.mainContainer {
+  width: calc(100% - 80px);
 }

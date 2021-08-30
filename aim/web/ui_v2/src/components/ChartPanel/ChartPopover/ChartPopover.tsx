@@ -86,4 +86,4 @@ function ChartPopover({
   ) : null;
 }
 
-export default ChartPopover;
+export default React.memo(ChartPopover);

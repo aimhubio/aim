@@ -1,11 +1,10 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
-import AppBar from './components/AppBar/AppBar';
+import AppBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
@@ -21,20 +20,15 @@ function Metrics(
   return (
     <div ref={props.wrapperElemRef} className='Metrics__container'>
       <section className='Metrics__section'>
-        <Grid
-          container
-          direction='column'
-          justifyContent='center'
-          className='Metrics__fullHeight'
-        >
-          <Grid item>
+        <div className='Metrics__section__div Metrics__fullHeight'>
+          <div>
             <AppBar
               onBookmarkCreate={props.onBookmarkCreate}
               onBookmarkUpdate={props.onBookmarkUpdate}
               onResetConfigData={props.onResetConfigData}
             />
-          </Grid>
-          <Grid item>
+          </div>
+          <div>
             <div className='Metrics__SelectForm__Grouping__container'>
               <SelectForm
                 selectedMetricsData={props.selectedMetricsData}
@@ -53,12 +47,8 @@ function Metrics(
                 onGroupingPersistenceChange={props.onGroupingPersistenceChange}
               />
             </div>
-          </Grid>
-          <Grid
-            ref={props.chartElemRef}
-            className='Metrics__chart__container'
-            item
-          >
+          </div>
+          <div ref={props.chartElemRef} className='Metrics__chart__container'>
             {!!props.lineChartData?.[0]?.length ? (
               <ChartPanel
                 key={props.lineChartData.length}
@@ -67,7 +57,7 @@ function Metrics(
                 data={props.lineChartData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
-                tooltipContent={props.tooltipContent}
+                tooltip={props.tooltip}
                 aggregatedData={props.aggregatedData}
                 aggregationConfig={props.aggregationConfig}
                 chartProps={[
@@ -81,6 +71,8 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
+                    selectOptions={props.groupingData?.selectOptions}
+                    tooltip={props.tooltip}
                     smoothingAlgorithm={props.smoothingAlgorithm}
                     smoothingFactor={props.smoothingFactor}
                     curveInterpolation={props.curveInterpolation}
@@ -90,6 +82,7 @@ function Metrics(
                     aggregationConfig={props.aggregationConfig}
                     axesScaleType={props.axesScaleType}
                     alignmentConfig={props.alignmentConfig}
+                    onChangeTooltip={props.onChangeTooltip}
                     onDisplayOutliersChange={props.onDisplayOutliersChange}
                     onZoomModeChange={props.onZoomModeChange}
                     onHighlightModeChange={props.onHighlightModeChange}
@@ -102,18 +95,13 @@ function Metrics(
                 }
               />
             ) : null}
-          </Grid>
+          </div>
           <div ref={props.resizeElemRef}>
             <div className='Metrics__resize'>
               <MoreHorizIcon />
             </div>
           </div>
-          <Grid
-            item
-            xs
-            ref={props.tableElemRef}
-            className='Metrics__table__container'
-          >
+          <div ref={props.tableElemRef} className='Metrics__table__container'>
             {props.tableData?.length > 0 ? (
               <Table
                 ref={props.tableRef}
@@ -132,8 +120,8 @@ function Metrics(
                 onRowClick={props.onTableRowClick}
               />
             ) : null}
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </section>
       {props.notifyData?.length > 0 && (
         <NotificationContainer
