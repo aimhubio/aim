@@ -13,8 +13,14 @@
 
   .Metrics__fullHeight {
     height: 100%;
-    height: -moz-available; /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    // height: -moz-available; /* WebKit-based browsers will ignore this. */
+    // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  }
+
+  .Metrics__section__div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .Metrics__resize {
@@ -47,4 +53,6 @@
 
 .Metrics__controls__container {
   width: 50px;
+  max-height: 100%;
+  overflow-y: auto;
 }

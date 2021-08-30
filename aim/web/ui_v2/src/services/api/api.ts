@@ -64,6 +64,9 @@ function post<ResponseDataType>(
     method: 'POST',
     ...options,
     body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 }
 

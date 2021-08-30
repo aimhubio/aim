@@ -1,0 +1,22 @@
+@use 'src/styles/abstracts' as *;
+
+.AppBar__container {
+  display: flex;
+  align-items: center;
+  height: 2.5em;
+  border-bottom: $border-main;
+  color: #374a61;
+  padding-left: 1.5em;
+}
+
+.AppBar__title {
+  flex: 1;
+  font-weight: 600;
+  font-size: 16px;
+  color: #000;
+}
+
+.AppBar__content {
+  display: flex;
+  align-items: center;
+}

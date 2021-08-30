@@ -1,44 +1,62 @@
-.BookMarkCard__container {
+@use 'src/styles/abstracts' as *;
+
+.BookmarkCard__container {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 160px;
-  box-sizing: border-box;
-  border-radius: 4px;
-  border: 1px solid #dfe6f7;
-  transition: border .3s ease-out;
-  text-decoration: none !important;
-  color: #3b5896;
-  overflow: hidden;
+  border: 1px solid #dee6f3;
+  transition: border 0.3s ease-out;
+  border-radius: 0.5em;
+  padding: 1.5em 4em 1.5em 1.5em;
+  margin-bottom: 1em;
   &:hover {
-    border: 1px solid #3b5896;
+    border: 1px solid $primary-color;
   }
 }
 .BookmarkCard__delete {
   position: absolute;
-  right: 0.5em;
-  top: 0;
+  right: 1.5em;
+  top: 1.5em;
+  margin-bottom: 0.75em;
   cursor: pointer;
   i {
     font-size: 0.75em;
   }
 }
 
-.BookMarkCard__top {
-  padding: 1em;
+.BookmarkCard__top {
   flex: 1 1;
-  border-bottom: 1px solid #3b5896;
-  background-color: #f7faff;
-  span {
-    font-size: 1.25em;
+  p {
+    margin-top: 0.25em;
+    font-weight: normal;
+    font-size: 12px;
   }
 }
 
-.BookMarkCard__bottom {
-  padding: 1em;
+.BookmarkCard__title__section {
+  display: flex;
+  justify-content: space-between;
+  a {
+    text-decoration: none;
+  }
+}
+
+.BookmarkCard__title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.BookmarkCard__bottom {
+  margin-top: 0.75em;
   strong {
     color: #243969;
-    text-transform: uppercase;
     margin-right: 0.5em;
   }
+}
+
+.BookmarkCard__selected__metrics {
+  margin-top: 1em;
+  width: 100%;
+  white-space: nowrap;
+  overflow: auto; 
 }

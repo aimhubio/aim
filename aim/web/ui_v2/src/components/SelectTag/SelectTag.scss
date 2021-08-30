@@ -1,0 +1,23 @@
+.SelectForm__tags__item {
+  height: 28px;
+  border-radius: 0.375em;
+  margin-right: 8px;
+  padding: 0 1em;
+  font-style: normal;
+  font-weight: 500;
+
+  i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625em;
+    width: unset;
+    height: unset;
+    margin: 0;
+  }
+
+  span {
+    padding: 0 1em 0 0;
+    font-size: 14px;
+  }
+}
