@@ -16,6 +16,7 @@ import {
   IAggregationConfig,
   IAggregatedData,
   IAlignmentConfig,
+  IChartTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -50,11 +51,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   highlightMode: HighlightEnum;
   groupingData: IMetricAppConfig['grouping'];
   notifyData: IMetricAppModelState['notifyData'];
-  tooltipContent: ITooltipContent;
+  tooltip: IChartTooltip;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: IMetricAppConfig['select'];
   tableRowHeight: RowHeight;
+  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;
   onActivePointChange?: (

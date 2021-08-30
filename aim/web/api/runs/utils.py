@@ -15,7 +15,11 @@ def get_run_props(run: Run):
     return {
         'name': run.props.name if run.props.name else None,
         'experiment': run.props.experiment.name if run.props.experiment else None,
-        'tags': [{'id': tag.uuid, 'name': tag.name, 'color': tag.color} for tag in run.props.tags],
+        'tags': [{'id': tag.uuid,
+                  'name': tag.name,
+                  'color': tag.color,
+                  'description': tag.description}
+                 for tag in run.props.tags],
         'archived': run.props.archived if run.props.archived else False,
         'creation_time': run.creation_time,
     }
@@ -84,7 +88,7 @@ async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_
     for run_data in requested_runs:
         run_hashname = run_data.run_id
         requested_traces = run_data.traces
-        run = Run(hashname=run_hashname)
+        run = Run(hashname=run_hashname, read_only=True)
 
         traces_list = []
         for trace_data in requested_traces:
@@ -129,16 +133,16 @@ async def metric_search_result_streamer(traces: QueryTraceCollection, steps_num:
             x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
 
             traces_list.append({
-                    'metric_name': trace.name,
-                    'context': trace.context.to_dict(),
-                    'slice': [0, num_records, step],
-                    'values': numpy_to_encodable(sliced_np_array(values, _slice)),
-                    'iters': numpy_to_encodable(sliced_iters),
-                    'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
-                    'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
-                    'x_axis_values': x_axis_values,
-                    'x_axis_iters': x_axis_iters,
-                })
+                'metric_name': trace.name,
+                'context': trace.context.to_dict(),
+                'slice': [0, num_records, step],
+                'values': numpy_to_encodable(sliced_np_array(values, _slice)),
+                'iters': numpy_to_encodable(sliced_iters),
+                'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
+                'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
+                'x_axis_values': x_axis_values,
+                'x_axis_iters': x_axis_iters,
+            })
 
         if run:
             run_dict = {

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Chip,
   TextField,
   Button,
   Checkbox,
@@ -29,6 +28,7 @@ import {
   ISelectFormProps,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
+import SelectTag from 'components/SelectTag/SelectTag';
 
 import './SelectForm.scss';
 
@@ -229,29 +229,15 @@ function SelectForm({
                     orientation='vertical'
                     flexItem
                   />
-                  <Box className='SelectForm__tags'>
+                  <Box className='SelectForm__tags ScrollBar__hidden'>
                     {selectedMetricsData?.metrics?.map(
                       (tag: ISelectMetricsOption) => {
                         return (
-                          <Chip
+                          <SelectTag
                             key={tag.label}
-                            style={{
-                              backgroundColor: `${tag.color}1a`,
-                              color: tag.color,
-                            }}
-                            size='small'
-                            className='SelectForm__tags__item'
+                            color={tag.color}
                             label={tag.label}
-                            data-name={tag.label}
-                            deleteIcon={
-                              <i
-                                style={{
-                                  color: tag.color,
-                                }}
-                                className='icon-delete'
-                              />
-                            }
-                            onDelete={() => handleDelete(tag.label)}
+                            onDelete={handleDelete}
                           />
                         );
                       },

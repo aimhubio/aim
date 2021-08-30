@@ -1,6 +1,6 @@
 .SelectForm__container {
   flex: 1;
-  padding: 1em 1.5em 1em 1em;
+  padding: 1em 1.5em;
   display: flex;
 }
 
@@ -13,11 +13,6 @@
   align-items: center;
   overflow: auto;
   max-width: 70em;
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .SelectForm__metric__select {
@@ -26,30 +21,6 @@
   input {
     border-radius: 6px;
     padding: 8px;
-    font-size: 14px;
-  }
-}
-
-.SelectForm__tags__item {
-  height: 28px;
-  border-radius: 0.375em;
-  margin-right: 8px;
-  padding: 0 1em;
-  font-style: normal;
-  font-weight: 500;
-
-  i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.625em;
-    width: unset;
-    height: unset;
-    margin: 0;
-  }
-
-  span {
-    padding: 0 1em 0 0;
     font-size: 14px;
   }
 }
@@ -92,7 +63,7 @@
   border: 1px solid rgba(27, 31, 35, 0.15);
   width: 300px;
   z-index: 1;
-  color: #586069; 
+  color: #586069;
 }
 
 .SelectForm__clearAll {

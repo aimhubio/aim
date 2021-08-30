@@ -1,12 +1,9 @@
-import weakref
 import aimrocks
 
-from aim.storage import encoding as E
 from aim.storage.containerview import ContainerView
 from aim.storage.treeview import TreeView
 
-from typing import Iterable, Iterator, Tuple, Union
-
+from typing import Iterator, Tuple
 
 
 class PrefixView(ContainerView):
@@ -32,7 +29,7 @@ class PrefixView(ContainerView):
     def preload(self):
         try:
             self.container.preload()
-        except:
+        except Exception:
             pass
 
     def finalize(self, *, index: ContainerView):

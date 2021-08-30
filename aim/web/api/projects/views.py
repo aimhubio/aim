@@ -44,7 +44,7 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
         timezone = request.cookies.get('__AIMDE__:TIMEZONE')
         if timezone:
             timezone = pytz.timezone(parse.unquote(timezone))
-    except:
+    except Exception:
         timezone = None
     if not timezone:
         timezone = pytz.timezone('gmt')

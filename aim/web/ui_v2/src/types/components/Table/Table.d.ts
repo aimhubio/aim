@@ -1,4 +1,4 @@
-import { GroupingSelectOptionType } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { RowHeight } from 'config/table/tableConfigs';
 
 export interface ITableProps {
@@ -16,7 +16,7 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
-  sortOptions: GroupingSelectOptionType[];
+  sortOptions: IGroupingSelectOption[];
   onRowHover: (rowKey: string) => void;
   onRowClick: (rowKey?: string) => void;
 }

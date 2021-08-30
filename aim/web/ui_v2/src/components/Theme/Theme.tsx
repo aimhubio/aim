@@ -76,7 +76,7 @@ function Theme(
   const theme = createMuiTheme(dark ? darkTheme : light);
   return (
     <Provider value={{ dark, handleTheme }}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
     </Provider>
   );

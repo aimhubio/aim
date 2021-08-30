@@ -30,15 +30,17 @@ import {
 import getSmoothenedData from 'utils/getSmoothenedData';
 import filterMetricData from 'utils/filterMetricData';
 import { RowHeight } from 'config/table/tableConfigs';
+import filterTooltipContent from 'utils/filterTooltipContent';
 
 // Types
 import {
-  GroupingSelectOptionType,
+  IGroupingSelectOption,
   GroupNameType,
   IAggregatedData,
   IAggregationConfig,
   IAlignMetricsDataParams,
   IAppData,
+  IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
@@ -114,6 +116,11 @@ function getConfig() {
         },
         isApplied: false,
         isEnabled: false,
+      },
+      tooltip: {
+        content: {},
+        display: true,
+        selectedParams: [],
       },
       focusedState: {
         active: false,
@@ -285,27 +292,24 @@ function getMetricsData() {
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
-    const data: IAppData | any = await appsService.createApp(configData).call();
-    if (data.id) {
-      dashboardService
-        .createDashboard({ app_id: data.id, name, description })
-        .call()
-        .then((res: IDashboardData | any) => {
-          onNotificationAdd({
-            id: Date.now(),
-            severity: res.id ? 'success' : 'error',
-            message: res.id
-              ? BookmarkNotificationsEnum.CREATE
-              : BookmarkNotificationsEnum.ERROR,
-          });
-        })
-        .catch((err) => {
-          onNotificationAdd({
-            id: Date.now(),
-            severity: 'error',
-            message: BookmarkNotificationsEnum.ERROR,
-          });
+    const app: IAppData | any = await appsService.createApp(configData).call();
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call();
+      if (bookmark.name) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: BookmarkNotificationsEnum.CREATE,
         });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: BookmarkNotificationsEnum.ERROR,
+        });
+      }
     }
   }
 }
@@ -328,10 +332,8 @@ function onBookmarkUpdate(id: string) {
   }
 }
 
-function getGroupingSelectOptions(
-  params: string[],
-): GroupingSelectOptionType[] {
-  const paramsOptions: GroupingSelectOptionType[] = params.map((param) => ({
+function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
+  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     value: `run.params.${param}`,
     group: 'params',
     label: param,
@@ -1216,6 +1218,26 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
   }
 }
 
+function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    let content = configData.chart.tooltip.content;
+    if (tooltip.selectedParams && configData?.chart.focusedState.key) {
+      content = filterTooltipContent(
+        tooltipData[configData.chart.focusedState.key],
+        tooltip.selectedParams,
+      );
+    }
+    configData.chart.tooltip = {
+      ...configData.chart.tooltip,
+      ...tooltip,
+      content,
+    };
+
+    model.setState({ config: configData });
+  }
+}
+
 function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
@@ -1248,8 +1270,14 @@ function onActivePointChange(
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
     };
+    configData.chart.tooltip = {
+      ...configData.chart.tooltip,
+      content: filterTooltipContent(
+        tooltipData[activePoint.key],
+        configData?.chart.tooltip.selectedParams,
+      ),
+    };
     stateUpdate.config = configData;
-    stateUpdate.tooltipContent = tooltipData[activePoint.key] || {};
   }
 
   model.setState(stateUpdate);
@@ -1512,6 +1540,7 @@ const metricAppModel = {
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
   updateSelectStateUrl,
+  onChangeTooltip,
 };
 
 export default metricAppModel;

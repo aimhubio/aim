@@ -69,4 +69,3 @@ class ModelMappedFactory(ObjectFactory):
         else:
             self._session.rollback()
         self._session = None
-

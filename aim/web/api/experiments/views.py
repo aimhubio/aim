@@ -1,9 +1,8 @@
 from fastapi import Request, HTTPException, Depends
-from typing import List
 
 from aim.web.api.utils import APIRouter
 from aim.web.api.utils import object_factory
-from aim.web.api.experiments.pydantic_models import(
+from aim.web.api.experiments.pydantic_models import (
     ExperimentGetOut,
     ExperimentUpdateOut,
     ExperimentGetRunsOut,
@@ -92,5 +91,3 @@ async def get_experiment_runs_api(exp_id: str, factory=Depends(object_factory)):
         'runs': [{'run_id': run.hashname, 'name': run.name} for run in exp.runs]
     }
     return response
-
-
