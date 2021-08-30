@@ -109,7 +109,7 @@ function TagsTable({
     tableRef.current?.updateData({
       newData: tagsList.map((tagData: ITagProps) => ({
         name: { name: tagData.name, color: tagData.color },
-        comment: tagData.description,
+        comment: tagData?.description,
         runs: { count: tagData.run_count, tagId: tagData.id },
         actions: tagData,
       })),

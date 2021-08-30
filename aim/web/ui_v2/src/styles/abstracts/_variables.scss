@@ -1,28 +1,28 @@
 @use './functions' as *;
 
-$primary-color: #1473E6;
-$error-color: #E64E48;
-$success-color: #2BC784;
-$warning-color: #E8BB1B;
+$primary-color: #1473e6;
+$error-color: #e64e48;
+$success-color: #2bc784;
+$warning-color: #e8bb1b;
 
 //colors
-$blue: #4B9BFF;
-$orange: #FFB46E;
-$red: #FF5F5F;
-$teal: #50D2A0;
-$pink: #FF73C3;
-$green: #9BE169;
-$purple: #AF78FF;
-$yellow: #FFD76E;
-$cyan: #5FC8FF;
-$indigo: #7785FF;
+$blue: #4b9bff;
+$orange: #ffb46e;
+$red: #ff5f5f;
+$teal: #50d2a0;
+$pink: #ff73c3;
+$green: #9be169;
+$purple: #af78ff;
+$yellow: #ffd76e;
+$cyan: #5fc8ff;
+$indigo: #7785ff;
 $white: #ffffff;
-
-$text-color: #1C2852;
-
-
+$pico: #1c2852;
 
 //border
-$border-color-main: tint($primary-color, 10);
+$border-color-main: tint($primary-color, 90);
 $border-main: 0.0625em solid $border-color-main;
-$main-radius: 0.375em;
+$radius-main: 0.375em;
+
+//text
+$text-color: $pico;

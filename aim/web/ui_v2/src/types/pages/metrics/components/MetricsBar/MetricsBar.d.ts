@@ -1,6 +1,6 @@
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
-export interface IAppBarProps {
+export interface IMetricsBarProps {
   onBookmarkCreate: IMetricProps['onBookmarkCreate'];
   onBookmarkUpdate: IMetricProps['onBookmarkUpdate'];
   onResetConfigData: IMetricProps['onResetConfigData'];

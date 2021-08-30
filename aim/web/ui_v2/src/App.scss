@@ -1,10 +1,10 @@
-@import 'src/styles/abstracts/_variables.scss';
-@import 'src/styles/components/_inputs.scss';
+@import './styles/global.scss';
+@import './src/styles/base/_reset.scss';
+@import 'fonts/icomoon/icomoonIcons.scss';
+@import './styles/base/_fonts.scss';
+
 .mainContainer {
+  width: calc(100% - 80px);
   padding-left: 80px;
   flex: 1 1 0;
-}
-
-body {
-  font-size: 16px !important;
 }

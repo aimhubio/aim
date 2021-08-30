@@ -6,6 +6,7 @@ export interface ITagProps {
   name: string;
   color: string | null;
   id: string;
+  description: string;
   run_count: number;
   archived: boolean;
 }

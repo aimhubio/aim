@@ -1,5 +1,3 @@
-@import 'src/styles/abstracts/_variables';
-@import 'src/styles/abstracts/functions';
 @use './src/styles/abstracts' as *;
 
 .Bookmarks {
@@ -7,12 +5,11 @@
 }
 
 .Bookmarks__title {
-  font-size: 2em;
   margin: 0.5em 0;
   padding: 0;
   color: $primary-color;
 }
 
 .Bookmarks__list {
-  margin-top: 1em;
+  padding: 1.5em;
 }
