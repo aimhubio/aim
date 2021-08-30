@@ -64,6 +64,7 @@ async def get_tag_api(tag_id: str, factory=Depends(object_factory)):
         'id': tag.uuid,
         'name': tag.name,
         'color': tag.color,
+        'description': tag.description,
         'archived': tag.archived,
         'run_count': len(tag.runs)
     }
