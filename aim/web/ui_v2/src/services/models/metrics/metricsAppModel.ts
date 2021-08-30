@@ -1330,7 +1330,21 @@ function onResetConfigData(): void {
 
 async function onAlignmentMetricChange(metric: string) {
   const modelState = model.getState();
-  model.setState({});
+  const configData = model.getState()?.config;
+  if (configData?.chart) {
+    model.setState({
+      config: {
+        ...configData,
+        chart: {
+          ...configData?.chart,
+          alignmentConfig: {
+            type: AlignmentOptions.CUSTOM_METRIC,
+            metric,
+          },
+        },
+      },
+    });
+  }
 
   const runs: any = modelState?.rawData?.map((item) => {
     const traces = item.traces.map(({ context, metric_name, slice }) => ({
