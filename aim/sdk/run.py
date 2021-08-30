@@ -152,8 +152,7 @@ class Run(StructuredRunMixin):
         self.contexts[ctx] = idx
         return ctx
 
-    # TODO: [AT] implement __setitem__
-    def set_params(self, key: str, val: Any):
+    def __setitem__(self, key: str, val: Any):
         self.meta_run_attrs_tree[key] = val
         self.meta_attrs_tree[key] = val
 
