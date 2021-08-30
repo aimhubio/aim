@@ -105,18 +105,41 @@ def compile_checker(expr):
 class RestrictedPythonQuery(Query):
     def __init__(
         self,
-        expr: str
+        query: str
     ):
+        expr = self._strip_query(query=query)
         super().__init__(expr=expr)
         self._checker = compile_checker(expr)
         self.run_metadata_cache = None
+
+    @staticmethod
+    def _strip_query(query: str) -> str:
+        import re
+        default_expression = 'run.archived == False'
+        stripped_query = query
+        # cut the hardcoded part (SELECT something IF)
+        if query.lower().startswith('select'):
+            try:
+                stripped_query = re.split('if',
+                                          query,
+                                          maxsplit=1,
+                                          flags=re.IGNORECASE)[1]
+            except IndexError:
+                stripped_query = ''
+
+        # add the default expression to the query if needed
+        if stripped_query and 'run.archived' not in stripped_query:
+            stripped_query += 'and' + default_expression
+        elif 'run.archived' not in stripped_query:
+            stripped_query = default_expression
+
+        return stripped_query
 
     def eval(
         self,
         run,
         metric
     ):
-        # TODO: [MV] discuss if run params are needed as a fallback
         namespace = dict(run=run, metric=metric, **restricted_globals)
         return eval(self._checker, restricted_globals, namespace)
 
