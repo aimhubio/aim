@@ -7,6 +7,7 @@ import { Box, Button, Grid } from '@material-ui/core';
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
+import OldTable from '../OldTable/Table';
 
 import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
 import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
@@ -155,38 +156,51 @@ const Table = React.forwardRef(function Table(
       <Box style={{ height: 'calc(100% - 44px)' }}>
         <AutoResizer>
           {({ width, height }) => (
-            <BaseTable
-              ref={tableRef}
-              classPrefix='BaseTable'
-              columns={columns}
-              data={data}
-              frozenData={[]}
-              width={width}
-              height={height}
-              fixed
-              rowKey='key'
-              headerHeight={30}
-              rowHeight={props.rowHeight}
-              footerHeight={0}
-              defaultExpandedRowKeys={[]}
-              expandColumnKey='#'
-              rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
-              sortBy={{}}
-              useIsScrolling={false}
-              overscanRowCount={1}
-              onEndReachedThreshold={500}
-              getScrollbarSize={() => null}
-              ignoreFunctionInColumnCompare={false}
-              onScroll={() => null}
-              onRowsRendered={() => null}
-              onScrollbarPresenceChange={() => null}
-              onRowExpand={() => null}
-              onExpandedRowsChange={() => null}
-              onColumnSort={() => null}
-              onColumnResize={() => null}
-              onColumnResizeEnd={() => null}
-              onRowHover={props.onRowHover}
-              onRowClick={props.onRowClick}
+            // <BaseTable
+            //   ref={tableRef}
+            //   classPrefix='BaseTable'
+            //   columns={columns}
+            //   data={data}
+            //   frozenData={[]}
+            //   width={width}
+            //   height={height}
+            //   fixed
+            //   rowKey='key'
+            //   headerHeight={30}
+            //   rowHeight={props.rowHeight}
+            //   footerHeight={0}
+            //   defaultExpandedRowKeys={[]}
+            //   expandColumnKey='#'
+            //   rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
+            //   sortBy={{}}
+            //   useIsScrolling={false}
+            //   overscanRowCount={1}
+            //   onEndReachedThreshold={500}
+            //   getScrollbarSize={() => null}
+            //   ignoreFunctionInColumnCompare={false}
+            //   onScroll={() => null}
+            //   onRowsRendered={() => null}
+            //   onScrollbarPresenceChange={() => null}
+            //   onRowExpand={() => null}
+            //   onExpandedRowsChange={() => null}
+            //   onColumnSort={() => null}
+            //   onColumnResize={() => null}
+            //   onColumnResizeEnd={() => null}
+            //   onRowHover={props.onRowHover}
+            //   onRowClick={props.onRowClick}
+            // />
+            <OldTable
+              excludedFields={props.excludedFields}
+              setExcludedFields={props.setExcludedFields}
+              alwaysVisibleColumns={props.alwaysVisibleColumns}
+              rowHeightMode={props.rowHeightMode}
+              columnsOrder={props.columnsOrder}
+              updateColumns={() => null}
+              columnsWidths={props.columnsWidths}
+              updateColumnsWidths={() => null}
+              sortFields={props.sortFields}
+              setSortFields={props.setSortFields}
+              {...props}
             />
           )}
         </AutoResizer>

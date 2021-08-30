@@ -735,7 +735,8 @@ function getDataAsTableRows(
     return [];
   }
 
-  const rows: IMetricTableRowData[] = [];
+  const rows: IMetricTableRowData[] | any =
+    processedData[0].config === null ? [] : {};
 
   processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
     const groupKey = metricsCollection.key;
@@ -766,7 +767,10 @@ function getDataAsTableRows(
         },
       };
 
-      rows.push(groupHeaderRow);
+      rows[groupKey!] = {
+        data: groupHeaderRow,
+        items: [],
+      };
     }
 
     metricsCollection.data.forEach((metric: IMetric) => {
@@ -838,7 +842,7 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[rows.length - 1].children.push(rowValues);
+        rows[groupKey!].items.push(rowValues);
       } else {
         rows.push(rowValues);
       }
@@ -846,7 +850,7 @@ function getDataAsTableRows(
 
     if (metricsCollection.config !== null) {
       for (let columnKey in columnsValues) {
-        rows[rows.length - 1][columnKey] =
+        rows[rows.length - 1].data[columnKey] =
           columnsValues[columnKey].length > 1
             ? 'Mix'
             : columnsValues[columnKey][0];
