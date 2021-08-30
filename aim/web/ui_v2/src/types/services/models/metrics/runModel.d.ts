@@ -5,7 +5,6 @@ export interface IRun<T> {
     name: string;
   };
   created_at: number;
-  hash: string;
   traces: T[];
   hash: string;
 }

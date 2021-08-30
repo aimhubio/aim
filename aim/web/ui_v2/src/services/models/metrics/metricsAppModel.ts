@@ -1,5 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash-es';
+import { saveAs } from 'file-saver';
+import moment from 'moment';
 
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
@@ -31,6 +33,7 @@ import getSmoothenedData from 'utils/getSmoothenedData';
 import filterMetricData from 'utils/filterMetricData';
 import { RowHeight } from 'config/table/tableConfigs';
 import filterTooltipContent from 'utils/filterTooltipContent';
+import JsonToCSV from 'utils/JsonToCSV';
 
 // Types
 import {
@@ -62,6 +65,7 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -1194,6 +1198,93 @@ function onTableRowClick(rowKey?: string): void {
   );
 }
 
+function getFilteredRow(
+  columnKeys: string[],
+  row: IMetricTableRowData,
+): { [key: string]: string } {
+  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
+    let value = row[column];
+    if (Array.isArray(value)) {
+      value = value.join(', ');
+    } else if (typeof value !== 'string') {
+      value = JSON.stringify(value);
+    }
+
+    if (column.startsWith('params.')) {
+      acc[column.replace('params.', '')] = value;
+    } else {
+      acc[column] = value;
+    }
+
+    return acc;
+  }, {});
+}
+
+function onExportTableData(e: React.ChangeEvent<any>): void {
+  const processedData = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
+  const tableData: IMetricTableRowData[] = getDataAsTableRows(
+    processedData.data,
+    null,
+    processedData.params,
+  );
+  const tableColumns: ITableColumn[] = getTableColumns(
+    processedData.params,
+    processedData.data[0].config,
+  );
+  // TODO need to filter excludedFields and sort column order
+  const excludedFields: string[] = ['#'];
+  const filteredHeader: string[] = tableColumns.reduce(
+    (acc: string[], column: ITableColumn) =>
+      acc.concat(
+        excludedFields.indexOf(column.dataKey) === -1 ? column.dataKey : [],
+      ),
+    [],
+  );
+  // const flattenOrders = Object.keys(columnsOrder).reduce(
+  //   (acc, key) => acc.concat(columnsOrder[key]),
+  //   [],
+  // );
+  // filteredHeader.sort(
+  //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
+  // );
+
+  let emptyRow: { [key: string]: string } = {};
+  filteredHeader.forEach((column: string) => {
+    emptyRow[column] = '--';
+  });
+
+  const dataToExport = tableData?.reduce(
+    (
+      accArray: { [key: string]: string }[],
+      rowData: IMetricTableRowData,
+      rowDataIndex: number,
+    ) => {
+      if (rowData?.children?.length > 0) {
+        rowData.children.forEach((row: IMetricTableRowData) => {
+          const filteredRow = getFilteredRow(filteredHeader, row);
+          accArray = accArray.concat(filteredRow);
+        });
+        if (tableData.length - 1 !== rowDataIndex) {
+          accArray = accArray.concat(emptyRow);
+        }
+      } else {
+        const filteredRow = getFilteredRow(filteredHeader, rowData);
+        accArray = accArray.concat(filteredRow);
+      }
+
+      return accArray;
+    },
+    [],
+  );
+
+  const blob = new Blob([JsonToCSV(dataToExport)], {
+    type: 'text/csv;charset=utf-8;',
+  });
+  saveAs(blob, `explore-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+}
+
 function updateGroupingStateUrl(): void {
   const groupingData = model.getState()?.config?.grouping;
   if (groupingData) {
@@ -1369,6 +1460,7 @@ const metricAppModel = {
   toggleSelectAdvancedMode,
   updateSelectStateUrl,
   onChangeTooltip,
+  onExportTableData,
 };
 
 export default metricAppModel;
