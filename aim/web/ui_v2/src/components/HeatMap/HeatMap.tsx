@@ -4,6 +4,8 @@ import React from 'react';
 import { Tooltip } from '@material-ui/core';
 
 import './HeatMapStyle.scss';
+import { useHistory } from 'react-router-dom';
+import { encode } from 'utils/encoder/encoder';
 
 const cellScales: number[] = [0, 1, 2, 3, 4];
 function HeatMap({
@@ -31,7 +33,7 @@ function HeatMap({
     'Nov',
     'Dec',
   ];
-
+  const history = useHistory();
   startDate = new Date(
     startDate.getFullYear(),
     startDate.getMonth(),
@@ -121,6 +123,28 @@ function HeatMap({
     const tooltip = ` ${dataItem ? dataItem[1] : 0} tracked run${
       dataItem?.[1] !== 1 ? 's' : ''
     } on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+
+    function onClickeCell(e: React.MouseEvent) {
+      e.stopPropagation();
+      if (scale) {
+        const startDate = date.getTime();
+        const endDate = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          23,
+          59,
+          59,
+        ).getTime();
+
+        const search = encode({
+          q: `run.date >= ${startDate} && run.date <= ${endDate}`,
+        });
+
+        history.push(`/runs?search=${search}`);
+      }
+    }
+
     return (
       <div className='CalendarHeatmap__cell__wrapper' key={index}>
         {+endDate < +indexToDate(index) ? (
@@ -129,6 +153,8 @@ function HeatMap({
           <Tooltip title={tooltip}>
             <div
               className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+              onClick={onClickeCell}
+              role='navigation'
               // className={classNames({
               //   CalendarHeatmap__cell: true,
               //   [`CalendarHeatmap__cell--scale-${scale}`]:
