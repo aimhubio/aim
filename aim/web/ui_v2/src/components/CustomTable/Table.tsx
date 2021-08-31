@@ -35,7 +35,7 @@ function Table(props) {
 
   let [expanded, setExpanded] = useState({});
 
-  let prevExpanded = useRef(props.expanded);
+  let prevExpanded = useRef(props.expanded ?? {});
 
   const leftPane = columns
     .filter((col) => leftCols.includes(col.key))
@@ -62,8 +62,10 @@ function Table(props) {
         }
       }
     }
-    prevExpanded.current = props.expanded;
+    prevExpanded.current = props.expanded ?? {};
   }, [props.expanded]);
+
+  console.log(props.groups);
 
   function expand(groupKey) {
     if (groupKey === 'expand_all') {

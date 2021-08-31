@@ -2,6 +2,9 @@ import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppM
 import { RowHeight } from 'config/table/tableConfigs';
 
 export interface ITableProps {
+  custom: boolean;
+  groups?: boolean;
+  topHeader?: boolean;
   data: any[];
   columns: any[];
   rowHeight: RowHeight;

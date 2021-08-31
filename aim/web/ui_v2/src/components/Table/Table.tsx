@@ -7,7 +7,7 @@ import { Box, Button, Grid } from '@material-ui/core';
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
-import OldTable from '../OldTable/Table';
+import CustomTable from '../CustomTable/Table';
 
 import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
 import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
@@ -43,6 +43,8 @@ const Table = React.forwardRef(function Table(
     setActiveRow: tableRef.current?.setActiveRow,
     scrollToRow: tableRef.current?.scrollToRowByKey,
   }));
+
+  console.log(props);
 
   return (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
@@ -153,56 +155,61 @@ const Table = React.forwardRef(function Table(
           </Grid>
         </Grid>
       </Box>
-      <Box style={{ height: 'calc(100% - 44px)' }}>
+      <Box style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}>
         <AutoResizer>
-          {({ width, height }) => (
-            // <BaseTable
-            //   ref={tableRef}
-            //   classPrefix='BaseTable'
-            //   columns={columns}
-            //   data={data}
-            //   frozenData={[]}
-            //   width={width}
-            //   height={height}
-            //   fixed
-            //   rowKey='key'
-            //   headerHeight={30}
-            //   rowHeight={props.rowHeight}
-            //   footerHeight={0}
-            //   defaultExpandedRowKeys={[]}
-            //   expandColumnKey='#'
-            //   rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
-            //   sortBy={{}}
-            //   useIsScrolling={false}
-            //   overscanRowCount={1}
-            //   onEndReachedThreshold={500}
-            //   getScrollbarSize={() => null}
-            //   ignoreFunctionInColumnCompare={false}
-            //   onScroll={() => null}
-            //   onRowsRendered={() => null}
-            //   onScrollbarPresenceChange={() => null}
-            //   onRowExpand={() => null}
-            //   onExpandedRowsChange={() => null}
-            //   onColumnSort={() => null}
-            //   onColumnResize={() => null}
-            //   onColumnResizeEnd={() => null}
-            //   onRowHover={props.onRowHover}
-            //   onRowClick={props.onRowClick}
-            // />
-            <OldTable
-              excludedFields={props.excludedFields}
-              setExcludedFields={props.setExcludedFields}
-              alwaysVisibleColumns={props.alwaysVisibleColumns}
-              rowHeightMode={props.rowHeightMode}
-              columnsOrder={props.columnsOrder}
-              updateColumns={() => null}
-              columnsWidths={props.columnsWidths}
-              updateColumnsWidths={() => null}
-              sortFields={props.sortFields}
-              setSortFields={props.setSortFields}
-              {...props}
-            />
-          )}
+          {({ width, height }) =>
+            props.custom ? (
+              <div style={{ width, height }}>
+                <CustomTable
+                  excludedFields={props.excludedFields}
+                  setExcludedFields={props.setExcludedFields}
+                  alwaysVisibleColumns={props.alwaysVisibleColumns}
+                  rowHeightMode={props.rowHeightMode}
+                  columnsOrder={props.columnsOrder}
+                  updateColumns={() => null}
+                  columnsWidths={props.columnsWidths}
+                  updateColumnsWidths={() => null}
+                  sortFields={props.sortFields}
+                  setSortFields={props.setSortFields}
+                  {...props}
+                />
+              </div>
+            ) : (
+              <BaseTable
+                ref={tableRef}
+                classPrefix='BaseTable'
+                columns={columns}
+                data={data}
+                frozenData={[]}
+                width={width}
+                height={height}
+                fixed
+                rowKey='key'
+                headerHeight={30}
+                rowHeight={props.rowHeight}
+                footerHeight={0}
+                defaultExpandedRowKeys={[]}
+                expandColumnKey='#'
+                rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
+                sortBy={{}}
+                useIsScrolling={false}
+                overscanRowCount={1}
+                onEndReachedThreshold={500}
+                getScrollbarSize={() => null}
+                ignoreFunctionInColumnCompare={false}
+                onScroll={() => null}
+                onRowsRendered={() => null}
+                onScrollbarPresenceChange={() => null}
+                onRowExpand={() => null}
+                onExpandedRowsChange={() => null}
+                onColumnSort={() => null}
+                onColumnResize={() => null}
+                onColumnResizeEnd={() => null}
+                onRowHover={props.onRowHover}
+                onRowClick={props.onRowClick}
+              />
+            )
+          }
         </AutoResizer>
       </Box>
     </Box>

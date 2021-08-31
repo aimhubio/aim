@@ -284,7 +284,7 @@ function Column({
                 col={col}
                 item={
                   typeof data[groupKey].data[col.key] === 'object' &&
-                  data[groupKey].data[col.key].hasOwnProperty('content')
+                  data[groupKey].data[col.key]?.hasOwnProperty('content')
                     ? {
                         ...data[groupKey].data[col.key],
                         props: {

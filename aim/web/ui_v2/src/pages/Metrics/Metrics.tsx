@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEmpty } from 'lodash-es';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -102,12 +103,15 @@ function Metrics(
             </div>
           </div>
           <div ref={props.tableElemRef} className='Metrics__table__container'>
-            {props.tableData?.length > 0 ? (
+            {!isEmpty(props.tableData) ? (
               <Table
+                custom
                 ref={props.tableRef}
                 data={props.tableData}
                 columns={props.tableColumns}
                 // Table options
+                topHeader
+                groups={!Array.isArray(props.tableData)}
                 rowHeight={props.tableRowHeight}
                 sortOptions={props.groupingData.selectOptions}
                 // Table actions

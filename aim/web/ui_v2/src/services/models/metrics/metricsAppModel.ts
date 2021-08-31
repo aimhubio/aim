@@ -850,7 +850,7 @@ function getDataAsTableRows(
 
     if (metricsCollection.config !== null) {
       for (let columnKey in columnsValues) {
-        rows[rows.length - 1].data[columnKey] =
+        rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length > 1
             ? 'Mix'
             : columnsValues[columnKey][0];
