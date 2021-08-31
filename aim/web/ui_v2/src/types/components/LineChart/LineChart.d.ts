@@ -1,4 +1,4 @@
-import { CurveEnum, XAlignmentEnum } from 'utils/d3';
+import { CurveEnum } from 'utils/d3';
 import {
   IActivePoint,
   ISyncHoverStateParams,
@@ -11,6 +11,7 @@ import {
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 export interface ILine {
   key: string;
@@ -27,7 +28,7 @@ export interface ILineChartProps {
   index: number;
   data: ILine[];
   aggregatedData?: IAggregatedData[];
-  xAlignment?: XAlignmentEnum;
+  xAlignment?: AlignmentOptions;
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;

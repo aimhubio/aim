@@ -1,20 +1,20 @@
 .SetupGuide__container {
+  max-width: 800px;
   padding: 1.5em 2.5em 1.5em 1.5em;
   flex: 1 100%;
   h3 {
     font-size: 18px;
     margin: 0 0 0.5em;
   }
+
+  h2 {
+    margin: 0;
+  }
 }
 
 .SetupGuide__code {
   margin-top: 2em;
-  >div {
-    padding: 1em 2.5em 1em 1em;
-  }
-  button {
-    right: 2em;
-  }
+  max-width: 44.5em;
 }
 
 .StyleGuide__resources__container {
@@ -24,7 +24,7 @@
 
 .SetupGuide__resource__item {
   margin-right: 2.375em;
-
+  text-decoration: none;
   span {
     display: inline-block;
     margin-top: 0.5em;
@@ -44,15 +44,19 @@
   margin: 0 auto;
   width: 2.75em;
   height: 2.75em;
-  border: 2px solid #1473E6;
+  border: 2px solid #1473e6;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  cursor: pointer;
+  color: #1473e6;
   i {
-    color: #1473E6;
     font-size: 1.5em;
   }
 
+  &:hover {
+    color: #FFFFFF;
+    background-color: #1473E6
+  }
 }

@@ -4,3 +4,7 @@ export enum BookmarkNotificationsEnum {
   DELETE = 'Bookmark successfully deleted',
   ERROR = 'Oops, Something went wrong',
 }
+
+export enum AlignmentNotificationsEnum {
+  NOT_ALL_ALIGNED = 'Not All Lines Are Aligned',
+}

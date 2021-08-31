@@ -1,18 +1,22 @@
-import { IMetricTrace, IRun } from './runModel';
+import { IMetricTrace, IRun, ITraceData } from './runModel';
 
 export interface IMetric {
+  x_axis_values: any;
+  x_axis_iters: any;
   run: IRun<IMetricTrace>;
   key: string;
   metric_name: string;
   context: { [key: string]: unknown };
   data: {
-    values: number[];
-    steps: number[];
-    epochs: number[];
-    timestamps: number[];
+    values: Float64Array;
+    epochs: Float64Array;
+    steps: Float64Array;
+    timestamps: Float64Array;
     xValues: number[];
     yValues: number[];
   };
   color: string;
   dasharray: string;
+  x_axis_iters?: ITraceData;
+  x_axis_values?: ITraceData;
 }
