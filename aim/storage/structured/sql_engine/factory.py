@@ -56,6 +56,9 @@ class ModelMappedFactory(ObjectFactory):
     def create_tag(self, name: str) -> Tag:
         return ModelMappedTag.from_name(name, session=self._session or self.get_session())
 
+    def delete_tag(self, _id: str) -> bool:
+        return ModelMappedTag.delete(_id, session=self._session or self.get_session())
+
     def get_session(self, autocommit=True):
         raise NotImplementedError
 
