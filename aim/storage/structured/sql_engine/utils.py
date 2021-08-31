@@ -1,5 +1,5 @@
 from abc import ABCMeta
-from typing import Iterator, Collection, TypeVar, Union
+from typing import Iterator, Collection, TypeVar, Union, Callable
 
 try:
     from typing import GenericMeta
@@ -11,15 +11,20 @@ T = TypeVar('T')
 
 
 class ModelMappedProperty:
-    def __init__(self, name: str, mapped_name: str = None, with_setter: bool = True, autogenerate: bool = True):
+    def __init__(self, name: str, mapped_name: str = None,
+                 get_modifier: Callable = None, with_setter: bool = True, autogenerate: bool = True):
         self.name = name
         self.mapped_name = mapped_name or self.name
+        self.get_modifier = get_modifier
         self.with_setter = with_setter
         self.autogenerate = autogenerate
 
     def generate_property(self):
         def getter(object_):
-            return getattr(object_._model, self.mapped_name) if object_._model else None
+            if self.get_modifier:
+                return self.get_modifier(getattr(object_._model, self.mapped_name)) if object_._model else None
+            else:
+                return getattr(object_._model, self.mapped_name) if object_._model else None
 
         setter = None
         if self.with_setter:

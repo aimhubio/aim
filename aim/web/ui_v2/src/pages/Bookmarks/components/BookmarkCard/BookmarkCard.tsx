@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
-import CodeBlock from 'pages/Home/components/CodeBlock/CodeBlock';
+import CodeBlock from 'components/CodeBlock/CodeBlock';
 import SelectTag from 'components/SelectTag/SelectTag';
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
@@ -77,11 +77,10 @@ function BookmarkCard({
       <div className='BookmarkCard__bottom'>
         <div className='BookmarkCard__run__expression'>
           <CodeBlock
-            rowList={[
-              'r = aim.Run(experiment=”my_exp_name”)',
-              'r.track(value, name=”loss”, subset=”train”)',
-              'r[“hparams”] = “foo”',
-            ]}
+            code={`
+r = aim.Run(experiment='my_exp_name')
+r.track(value, name='loss', subset='train')
+r['hparams'] = 'foo'`}
           />
         </div>
         <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>

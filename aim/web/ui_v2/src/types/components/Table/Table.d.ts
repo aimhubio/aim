@@ -1,5 +1,6 @@
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { RowHeight } from 'config/table/tableConfigs';
+import React from 'react';
 
 export interface ITableProps {
   data: any[];
@@ -8,7 +9,7 @@ export interface ITableProps {
   onManageColumns?: () => void;
   onSort?: () => void;
   onRowsChange?: () => void;
-  onExport?: () => void;
+  onExport?: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange?: () => void;
   data: any[];
   columns: any[];

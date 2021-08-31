@@ -28,7 +28,7 @@ function SelectTag({
           className='icon-delete'
         />
       }
-      onDelete={() => (onDelete ? onDelete(label) : null)}
+      {...(onDelete && { onDelete: () => onDelete(label) })}
     />
   );
 }
