@@ -27,22 +27,50 @@ function MetricsBar({
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
 
-  function handleBookmarkClick() {
-    setPopover(route.params.appId ? 'update' : 'create');
+  function handleBookmarkClick(value: string): void {
+    setPopover(value);
   }
 
-  function handleClosePopover() {
+  function handleClosePopover(): void {
     setPopover('');
   }
 
   return (
     <AppBar title='Explore'>
-      <div onClick={handleBookmarkClick} className='MetricsBar__item__bookmark'>
-        <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-        <span>
-          <i className='icon-bookmark' />
-        </span>
-      </div>
+      {route.params.appId ? (
+        <ControlPopover
+          title='Bookmark'
+          anchor={({ onAnchorClick }) => (
+            <div onClick={onAnchorClick} className='MetricsBar__item__bookmark'>
+              <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
+              <span>
+                <i className='icon-bookmark' />
+              </span>
+            </div>
+          )}
+          component={
+            <div className='MetricsBar__popover'>
+              <MenuItem onClick={() => handleBookmarkClick('create')}>
+                Create Bookmark
+              </MenuItem>
+              <MenuItem onClick={() => handleBookmarkClick('update')}>
+                Update Bookmark
+              </MenuItem>
+            </div>
+          }
+        />
+      ) : (
+        <div
+          onClick={() => handleBookmarkClick('create')}
+          className='MetricsBar__item__bookmark'
+        >
+          <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
+          <span>
+            <i className='icon-bookmark' />
+          </span>
+        </div>
+      )}
+
       <div className='MetricsBar__menu'>
         <ControlPopover
           title='Menu'
@@ -52,7 +80,7 @@ function MetricsBar({
             </span>
           )}
           component={
-            <div className='MetricsBar__menu__popover'>
+            <div className='MetricsBar__popover'>
               <MenuItem onClick={onResetConfigData}>
                 Reset Controls to System Defaults
               </MenuItem>
