@@ -1,5 +1,6 @@
 import createModel from '../model';
 import dashboardService from 'services/api/dashboard/dashboardService';
+import appsService from 'services/api/apps/appsService';
 
 const model = createModel<any>({});
 
@@ -7,7 +8,9 @@ function getBookmarksData() {
   const { call, abort } = dashboardService.fetchDashboardsList();
   return {
     call: () =>
-      call().then((data: any) => {
+      call().then(async (data: any) => {
+        const appList = await appsService.fetchAppsList().call();
+        console.log(appList);
         model.setState({
           listData: data,
         });

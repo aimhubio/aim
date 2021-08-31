@@ -3,9 +3,9 @@ import React from 'react';
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
+import AppBar from 'components/AppBar/AppBar';
 
 import './Bookmarks.scss';
-import AppBar from 'components/AppBar/AppBar';
 
 function Bookmarks({
   data,
