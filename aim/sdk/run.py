@@ -7,13 +7,11 @@ from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.trace import RunTraceCollection
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.num_utils import convert_to_py_number
-from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
+from aim.sdk.types import AimObject
 
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, Metric
 from aim.storage.treeview import TreeView
-from aim.storage.proxy import AimObjectProxy
-from aim.storage.structured.entities import StructuredObject
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 
@@ -29,7 +27,64 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class Run:
+# TODO: [AT] generate automatically based on ModelMappedRun
+class StructuredRunMixin:
+    @property
+    def name(self):
+        return self.props.name
+
+    @name.setter
+    def name(self, value):
+        self.props.name = value
+
+    @property
+    def description(self):
+        return self.props.description
+
+    @description.setter
+    def description(self, value):
+        self.props.description = value
+
+    @property
+    def archived(self):
+        return self.props.archived
+
+    @archived.setter
+    def archived(self, value):
+        self.props.archived = value
+
+    @property
+    def created_at(self):
+        return self.props.created_at
+
+    @property
+    def creation_time(self):
+        return self.props.creation_time
+
+    @property
+    def updated_at(self):
+        return self.props.updated_at
+
+    @property
+    def experiment(self):
+        return self.props.experiment
+
+    @experiment.setter
+    def experiment(self, value):
+        self.props.experiment = value
+
+    @property
+    def tags(self):
+        return self.props.tags
+
+    def add_tag(self, value):
+        return self.props.add_tag(value)
+
+    def remove_tag(self, tag_id):
+        return self.props.remove_tag(tag_id)
+
+
+class Run(StructuredRunMixin):
 
     _idx_to_ctx: Dict[int, Context] = dict()
     _props_cache_hint: str = None
@@ -41,7 +96,6 @@ class Run:
                  system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
         hashname = hashname or generate_run_hash()
 
-        self._instance_creation_time = time()
         if repo is None:
             from aim.sdk.repo import Repo
             repo = Repo.default_repo()
@@ -60,9 +114,6 @@ class Run:
 
         self.contexts: Dict[Context, int] = dict()
 
-        if experiment:
-            self.props.experiment = experiment
-
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
         ).tree().view('meta')
@@ -80,25 +131,12 @@ class Run:
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
-        self._creation_time = None
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
             self.props
-            self.creation_time
             self._prepare_resource_tracker(system_tracking_interval)
-
-    @property
-    def creation_time(self):
-        if self._creation_time is not None:
-            return self._creation_time
-
-        self._creation_time = self.meta_run_tree.get('creation_time', None)
-
-        if self._creation_time is None:
-            self._creation_time = self._instance_creation_time
-            self.meta_run_tree['creation_time'] = self._creation_time
-
-        return self._creation_time
+        if experiment:
+            self.experiment = experiment
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hashname} repo={self.repo}>'
@@ -212,10 +250,6 @@ class Run:
                     self._props = sdb.create_run(self.hashname)
                     self._props.experiment = 'default'
 
-    def proxy(self):
-        run = RunView(self)
-        return AimObjectProxy(lambda: run, view=run)
-
     def trace_tree(self, name: str, context: Context) -> TreeView:
         return self.series_run_tree.view((context.idx, name))
 
@@ -279,58 +313,3 @@ class Run:
                                          read_only=False,
                                          from_union=False).view(b'')
         self.meta_run_tree.finalize(index=index)
-
-
-class RunPropsView:
-    def __init__(self, run: Run):
-        self.meta_run_tree: TreeView = run.meta_run_tree
-        self.hashname = run.hashname
-        self.db = run.repo.structured_db
-        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
-
-    def view(self, path):
-        if isinstance(path, (int, str)):
-            path = [path]
-        if path[0] in self.structured_run_cls.fields():
-            return None
-        else:
-            return self.meta_run_tree.view(path)
-
-    def __getitem__(self, item):
-        if item in self.structured_run_cls.fields():
-            return getattr(self.db.caches['runs_cache'][self.hashname], item)
-        else:
-            return self.meta_run_tree.collect(item)
-
-
-class RunView:
-
-    def __init__(self, run: Run):
-        self.meta_run_tree: TreeView = run.meta_run_tree
-        self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
-        self.props_view = RunPropsView(run)
-
-    def __getitem__(self, key):
-        if key == 'props':
-            return None
-        else:
-            return self.meta_run_attrs_tree.collect(key)
-
-    def get(
-        self,
-        key,
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
-
-    def view(self, path: Union[AimObjectKey, AimObjectPath]):
-        if isinstance(path, (int, str)):
-            path = (path,)
-
-        if path[0] == 'props':
-            return self.props_view
-        else:
-            return self.meta_run_attrs_tree.view(path)
