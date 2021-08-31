@@ -1,5 +1,4 @@
 import React from 'react';
-import copyIcon from 'assets/icons/copy.svg';
 // import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/nightOwlLight';
@@ -14,12 +13,6 @@ function CodeBlock({
   language = 'python',
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
   const contentRef = React.createRef<HTMLPreElement>();
-  const [copied, setCopied] = React.useState<boolean>(false);
-
-  function handleCodeCopy(): void {
-    setCopied(true);
-    navigator.clipboard.writeText(code);
-  }
   return (
     <div className={`CodeBlock__container ${className}`}>
       <Highlight
