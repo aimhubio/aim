@@ -1,5 +1,6 @@
 import createModel from '../model';
 import dashboardService from 'services/api/dashboard/dashboardService';
+import appsService from 'services/api/apps/appsService';
 
 const model = createModel<any>({});
 
@@ -7,9 +8,16 @@ function getBookmarksData() {
   const { call, abort } = dashboardService.fetchDashboardsList();
   return {
     call: () =>
-      call().then((data: any) => {
+      call().then(async (data: any) => {
+        const appsList = await appsService.fetchAppsList().call();
+        const listData = data.map((item: any) => {
+          const app = appsList.find(
+            (appData: any) => appData.id === item.app_id,
+          );
+          return { ...item, select: app.state.select, type: app.type };
+        });
         model.setState({
-          listData: data,
+          listData,
         });
       }),
     abort,
