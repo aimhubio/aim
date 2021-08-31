@@ -28,10 +28,6 @@ async def dashboard_apps_list_api(session: Session = Depends(get_session)):
 
 @dashboard_apps_router.post('/', status_code=201, response_model=ExploreStateGetOut)
 async def dashboard_apps_create_api(explore_state_in: ExploreStateCreateIn, session: Session = Depends(get_session)):
-    """
-        Use response model's app_state as an example for request body \n
-        Note: every field is optional
-    """
     explore_state = ExploreState()
     explore_state.type = explore_state_in.type
     explore_state.state = json.dumps(explore_state_in.state)
@@ -54,11 +50,8 @@ async def dashboard_apps_get_api(app_id: str, session: Session = Depends(get_ses
 
 
 @dashboard_apps_router.put('/{app_id}/', response_model=ExploreStateGetOut)
-async def dashboard_apps_put_api(app_id: str, explore_state_in: ExploreStateUpdateIn, session: Session = Depends(get_session)):
-    """
-        Use response model's app_state as an example for request body \n
-        Note: every field is optional
-    """
+async def dashboard_apps_put_api(app_id: str, explore_state_in: ExploreStateUpdateIn,
+                                 session: Session = Depends(get_session)):
     explore_state = session.query(ExploreState) \
         .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
         .first() # noqa
