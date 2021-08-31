@@ -14,7 +14,7 @@ function Bookmarks({
   return (
     <section className='Bookmarks'>
       <AppBar title='Bookmarks List' />
-      <div className='Bookmarks__list'>
+      <div className='Bookmarks__list container'>
         {data?.length > 0 &&
           data.map((bookmark: IDashboardData) => (
             <BookmarkCard

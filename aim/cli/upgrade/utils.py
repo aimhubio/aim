@@ -47,12 +47,12 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
         run[...] = lrun.params
         run['v2_params'] = {'run_hash': lrun.run_hash}
         if 'process' in lrun.config:
-            run['v2_params']['start_date'] = lrun.config['process']['start_date']
-            run['v2_params']['finish_date'] = lrun.config['process']['finish_date']
+            run['v2_params', 'start_date'] = lrun.config['process']['start_date']
+            run['v2_params', 'finish_date'] = lrun.config['process']['finish_date']
 
-        run.props.experiment = lrun.experiment_name
+        run.experiment = lrun.experiment_name
         if lrun.config.get('archived'):
-            run.props.archived = True
+            run.archived = True
 
         run_metrics = {}
         legacy_run_map[lrun.run_hash] = run_metrics

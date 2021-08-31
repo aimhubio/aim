@@ -116,7 +116,7 @@ function Metrics(
                 sortOptions={props.groupingData.selectOptions}
                 // Table actions
                 onSort={() => null}
-                onExport={() => null}
+                onExport={props.onExportTableData}
                 onManageColumns={() => null}
                 onRowHeightChange={() => null}
                 onRowsChange={() => null}
