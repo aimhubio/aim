@@ -44,8 +44,6 @@ const Table = React.forwardRef(function Table(
     scrollToRow: tableRef.current?.scrollToRowByKey,
   }));
 
-  console.log(props);
-
   return (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
       <Box component='nav' p={0.5}>

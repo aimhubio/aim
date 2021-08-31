@@ -1241,9 +1241,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const excludedFields: string[] = ['#'];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
-      acc.concat(
-        excludedFields.indexOf(column.dataKey) === -1 ? column.dataKey : [],
-      ),
+      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
     [],
   );
   // const flattenOrders = Object.keys(columnsOrder).reduce(

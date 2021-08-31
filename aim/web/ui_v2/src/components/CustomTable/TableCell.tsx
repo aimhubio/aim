@@ -39,8 +39,8 @@ function Cell({
       ) : (
         <div className='Table__cell__value'>
           {typeof item === 'object' && item?.hasOwnProperty('content')
-            ? JSON.stringify(item?.content)
-            : JSON.stringify(item) ?? '-'}
+            ? JSON.stringify(item?.content ?? '')
+            : JSON.stringify(item ?? '')}
         </div>
       )}
     </div>

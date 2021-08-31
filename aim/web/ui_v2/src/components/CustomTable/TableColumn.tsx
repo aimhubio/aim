@@ -75,16 +75,6 @@ function Column({
     setMaxWidth(undefined);
   }
 
-  function calcPlaceHolderSize(configKeysLength, itemsLength) {
-    if (itemsLength > 4 || itemsLength > configKeysLength) {
-      return 0;
-    } else if (configKeysLength > 3) {
-      return 4 - itemsLength;
-    } else {
-      return configKeysLength + 1 - itemsLength;
-    }
-  }
-
   React.useEffect(() => {
     return () => {
       document.removeEventListener('mousemove', resize);
@@ -307,26 +297,9 @@ function Column({
               />
               {expanded[groupKey] && (
                 <>
-                  {data[groupKey].items.map((item, i) => (
-                    <Cell
-                      key={col.key + i}
-                      col={col}
-                      item={item[col.key]}
-                      metadata={firstColumn ? item.rowMeta : null}
-                    />
+                  {data[groupKey]?.items?.map((item, i) => (
+                    <Cell key={col.key + i} col={col} item={item[col.key]} />
                   ))}
-                  {calcPlaceHolderSize(
-                    Object.keys(data[groupKey].meta).length,
-                    data[groupKey].items.length,
-                  ) > 0 && (
-                    <Cell
-                      placeholder
-                      groupLength={calcPlaceHolderSize(
-                        Object.keys(data[groupKey].meta).length,
-                        data[groupKey].items.length,
-                      )}
-                    />
-                  )}
                 </>
               )}
             </div>

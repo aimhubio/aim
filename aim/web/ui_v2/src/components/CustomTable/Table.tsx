@@ -65,8 +65,6 @@ function Table(props) {
     prevExpanded.current = props.expanded ?? {};
   }, [props.expanded]);
 
-  console.log(props.groups);
-
   function expand(groupKey) {
     if (groupKey === 'expand_all') {
       let groupsForExpansion = {};
