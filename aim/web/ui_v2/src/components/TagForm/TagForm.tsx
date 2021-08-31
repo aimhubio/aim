@@ -7,7 +7,6 @@ import { Button, TextField } from '@material-ui/core';
 import COLORS from 'config/colors/colors';
 import tagsService from 'services/api/tags/tagsService';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
-import tagDetailAppModel from 'services/models/tags/tagDetailAppModel';
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
 
 import './TagForm.scss';
@@ -105,7 +104,7 @@ function TagForm({
             .call()
             .then(() => {
               tagsAppModel.getTagsData().call();
-              tagDetailAppModel.getTagById(tagId || '').call();
+              tagsAppModel.getTagById(tagId || '').call();
               onCloseModal();
             });
         }

@@ -1,19 +1,23 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import hexToRgbA from 'utils/haxToRgba';
 import { Button } from '@material-ui/core';
 
 import Table from 'components/Table/Table';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import CreateIcon from '@material-ui/icons/Create';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
-import tagsDetailAppModel from 'services/models/tags/tagDetailAppModel';
+import tagsAppModel from 'services/models/tags/tagsAppModel';
 
 function TagsTable({
+  tableRef,
   tagsList,
   onTableRunClick,
   onSoftDeleteModalToggle,
+  onUpdateModalToggle,
 }: ITagsTableProps): React.FunctionComponentElement<React.ReactNode> {
-  const tableRef = useRef<any>({});
+  const [hoveredRowIndex, setHoveredRowIndex] = useState('');
   const tableColumns = [
     {
       dataKey: 'name',
@@ -49,10 +53,7 @@ function TagsTable({
       width: 150,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         return (
-          <Button
-            className='TagsTable__runContainer__runBox'
-            onClick={(e) => onTableRunClick(e, cellData.tagId)}
-          >
+          <Button className='TagsTable__runContainer__runBox'>
             <div className='TagsTable__runContainer__runBox'>
               <span className='TagsTable__runContainer__runBox__runIconBox'>
                 <span className='TagsTable__runContainer__runBox__runIconBox__runIcon'></span>
@@ -73,50 +74,62 @@ function TagsTable({
       flexGrow: 1,
       cellRenderer: function cellRenderer({ cellData, i }: any) {
         return (
-          <div className='TagsTable__commentContainer'>
+          <div
+            className='TagsTable__commentContainer'
+            role='button'
+            aria-pressed='false'
+            onClick={(e) => e.stopPropagation()}
+          >
             <span>{cellData.description}</span>
-            {i === 0 && (
-              <div className='TagsTable__commentContainer'>
-                <div>asd</div>
+            {cellData.id === hoveredRowIndex && (
+              <div className='TagsTable__commentContainer__actionsContainer'>
+                {!cellData?.archived && (
+                  <CreateIcon
+                    color='primary'
+                    className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                    onClick={() => onUpdateClick(cellData)}
+                  />
+                )}
+                {cellData?.archived ? (
+                  <VisibilityIcon
+                    color='primary'
+                    className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                    onClick={() => onSoftDeleteClick(cellData)}
+                  />
+                ) : (
+                  <VisibilityOffIcon
+                    color='primary'
+                    className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                    onClick={() => onSoftDeleteClick(cellData)}
+                  />
+                )}
+                <DeleteOutlineIcon
+                  fontSize='small'
+                  color='primary'
+                  className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                />
               </div>
             )}
           </div>
         );
       },
     },
-    // {
-    //   dataKey: 'actions',
-    //   key: 'actions',
-    //   title: '',
-    //   width: 50,
-    //   flexGrow: 0,
-    //   frozen: 'right',
-    //   cellRenderer: function cellRenderer({ cellData }: any) {
-    //     return cellData.archived ? (
-    //       <VisibilityIcon
-    //         color='primary'
-    //         className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-    //         onClick={() => onSoftDeleteClick(cellData)}
-    //       />
-    //     ) : (
-    //       <VisibilityOffIcon
-    //         color='primary'
-    //         className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-    //         onClick={() => onSoftDeleteClick(cellData)}
-    //       />
-    //     );
-    //   },
-    // },
   ];
 
   function onSoftDeleteClick(tagData: ITagProps) {
-    tagsDetailAppModel.updateTagInfo(tagData);
+    tagsAppModel.updateTagInfo(tagData);
     onSoftDeleteModalToggle();
+  }
+
+  function onUpdateClick(tagData: ITagProps) {
+    tagsAppModel.updateTagInfo(tagData);
+    onUpdateModalToggle();
   }
 
   useEffect(() => {
     tableRef.current?.updateData({
-      newData: tagsList.map((tagData: ITagProps) => ({
+      newData: tagsList.map((tagData: ITagProps, i: number) => ({
+        key: tagData.id,
         name: { name: tagData.name, color: tagData.color },
         comment: tagData,
         runs: { count: tagData.run_count, tagId: tagData.id },
@@ -124,7 +137,7 @@ function TagsTable({
       newColumns: tableColumns,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tagsList, onTableRunClick]);
+  }, [tagsList, onTableRunClick, hoveredRowIndex]);
 
   return (
     <div className='TagsTable'>
@@ -136,6 +149,9 @@ function TagsTable({
         hideHeaderActions
         rowHeight={52}
         headerHeight={32}
+        onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
+        onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
+        emptyText={'No Tags'}
       />
     </div>
   );

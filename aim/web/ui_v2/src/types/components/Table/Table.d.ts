@@ -23,6 +23,7 @@ export interface ITableProps {
   onRowHover?: (rowKey: string) => void;
   onRowClick?: (rowKey?: string) => void;
   hideHeaderActions?: boolean = false;
+  emptyText?: string;
 }
 
 export interface ITableRef {

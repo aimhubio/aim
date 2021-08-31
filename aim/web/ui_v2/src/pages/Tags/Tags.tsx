@@ -4,10 +4,18 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 import { ITagsProps } from 'types/pages/tags/Tags';
 import TabPanel from 'components/TabPanel/TabPanel';
 import TagsList from './TagsList';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import './Tags.scss';
 
 function Tags({
   tagsListData,
+  isTagsDataLoading,
+  tagInfo,
+  tagRuns,
+  onNotificationDelete,
+  notifyData,
+  isRunsDataLoading,
+  isTagInfoDataLoading,
 }: ITagsProps): React.FunctionComponentElement<React.ReactNode> {
   const [value, setValue] = useState(0);
   const [archivedTagsList, setArchivedTagsList] = useState(
@@ -27,7 +35,7 @@ function Tags({
   }, [tagsListData]);
 
   return (
-    <section className='Tags'>
+    <section className='Tags container'>
       <Paper className='Tags__tabsContainer'>
         <Tabs
           value={value}
@@ -40,12 +48,33 @@ function Tags({
           <Tab label='Hidden Tags' />
         </Tabs>
       </Paper>
-      <TabPanel value={value} index={0}>
-        <TagsList tagsList={tagsList} />
+      <TabPanel value={value} index={0} className='Tags__tabPanel'>
+        <TagsList
+          tagsList={tagsList}
+          isTagsDataLoading={isTagsDataLoading}
+          tagInfo={tagInfo}
+          tagRuns={tagRuns}
+          isRunsDataLoading={isRunsDataLoading}
+          isTagInfoDataLoading={isTagInfoDataLoading}
+        />
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        <TagsList tagsList={archivedTagsList} isHiddenTagsList />
+      <TabPanel value={value} index={1} className='Tags__tabPanel'>
+        <TagsList
+          tagsList={archivedTagsList}
+          isHiddenTagsList
+          isTagsDataLoading={isTagsDataLoading}
+          tagInfo={tagInfo}
+          tagRuns={tagRuns}
+          isRunsDataLoading={isRunsDataLoading}
+          isTagInfoDataLoading={isTagInfoDataLoading}
+        />
       </TabPanel>
+      {notifyData?.length > 0 && (
+        <NotificationContainer
+          handleClose={onNotificationDelete}
+          data={notifyData}
+        />
+      )}
     </section>
   );
 }

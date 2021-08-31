@@ -1,5 +1,13 @@
 export interface ITagsProps {
   tagsListData: ITagProps[];
+  isTagsDataLoading: boolean;
+  tagInfo: any;
+  tagRuns: any;
+  onNotificationDelete: any;
+  notifyData: any;
+  isTagsDataLoading: any;
+  isRunsDataLoading: any;
+  isTagInfoDataLoading: any;
 }
 
 export interface ITagProps {
@@ -21,6 +29,7 @@ export interface ITagSoftDeleteProps {
   tagInfo: ITagInfo;
   onSoftDeleteModalToggle: () => void;
   onTagDetailOverlayToggle: () => void;
+  isTagDetailOverLayOpened: boolean;
 }
 
 export interface ITagRun {
@@ -41,18 +50,29 @@ export interface ITagDetailProps {
   id: string;
   onSoftDeleteModalToggle: () => void;
   onUpdateModalToggle: () => void;
+  isTagInfoDataLoading: any;
+  tagInfo: any;
+  isRunsDataLoading: any;
+  tagRuns: any;
 }
 
 export interface ITagRunsTableProps {
   runsList: ITagRun[];
 }
 export interface ITagsTableProps {
+  tableRef: React.RefObject<any>;
   tagsList: ITagProps[];
-  onTableRunClick: (e: any, id: string) => void;
+  onTableRunClick: (id: string) => void;
   onSoftDeleteModalToggle: () => void;
+  onUpdateModalToggle: () => void;
 }
 
 export interface ITagsListProps {
   tagsList: ITagProps[];
   isHiddenTagsList?: boolean;
+  isTagsDataLoading: boolean;
+  tagInfo: any;
+  tagRuns: any;
+  isRunsDataLoading: boolean;
+  isTagInfoDataLoading: boolean;
 }

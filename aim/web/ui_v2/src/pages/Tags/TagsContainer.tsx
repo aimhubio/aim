@@ -12,8 +12,18 @@ function TagsContainer(): React.FunctionComponentElement<React.ReactNode> {
     tagsAppModel.initialize();
     tagsRequestRef.call();
   }, []);
-
-  return <Tags tagsListData={tagsData?.tagsList} />;
+  return (
+    <Tags
+      tagsListData={tagsData?.tagsList}
+      isTagsDataLoading={tagsData?.isTagsDataLoading}
+      tagInfo={tagsData?.tagInfo}
+      tagRuns={tagsData?.tagRuns}
+      onNotificationDelete={tagsAppModel.onNotificationDelete}
+      notifyData={tagsData?.notifyData}
+      isRunsDataLoading={tagsData?.isRunsDataLoading}
+      isTagInfoDataLoading={tagsData?.isTagInfoDataLoading}
+    />
+  );
 }
 
 export default TagsContainer;

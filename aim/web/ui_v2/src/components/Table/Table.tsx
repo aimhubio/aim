@@ -3,11 +3,11 @@
 
 import React from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
+import { isEmpty } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
-
 import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
 import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
 import sortIcon from 'assets/icons/table/sort.svg';
@@ -19,6 +19,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 
 import './Table.scss';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 
 const Table = React.forwardRef(function Table(
   {
@@ -37,6 +38,7 @@ const Table = React.forwardRef(function Table(
     onRowClick,
     hideHeaderActions = false,
     fixed = true,
+    emptyText = 'No Data',
   }: ITableProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -59,10 +61,14 @@ const Table = React.forwardRef(function Table(
     scrollToRow: tableRef.current?.scrollToRowByKey,
   }));
 
-  return (
+  return !isEmpty(rowData) ? (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
       {!hideHeaderActions && (
-        <Box component='nav' p={0.5}>
+        <Box
+          component='nav'
+          p={0.5}
+          style={{ height: '100%', position: relative }}
+        >
           <Grid container justifyContent='space-between' alignItems='center'>
             <Grid xs item>
               <Grid container spacing={1}>
@@ -168,7 +174,7 @@ const Table = React.forwardRef(function Table(
           </Grid>
         </Box>
       )}
-      <Box style={{ height: 'calc(100% - 44px)' }}>
+      <Box style={{ height: '100%' }}>
         <AutoResizer>
           {({ width, height }) => (
             <BaseTable
@@ -181,6 +187,7 @@ const Table = React.forwardRef(function Table(
               height={height}
               fixed={fixed}
               rowKey='key'
+              isScrolling
               headerHeight={headerHeight}
               rowHeight={rowHeight}
               footerHeight={0}
@@ -208,6 +215,8 @@ const Table = React.forwardRef(function Table(
         </AutoResizer>
       </Box>
     </Box>
+  ) : (
+    <EmptyComponent size='big' content={emptyText} />
   );
 });
 

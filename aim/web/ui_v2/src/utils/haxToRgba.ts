@@ -1,5 +1,5 @@
 function hexToRgbA(hex: string, opacity: number) {
-  let hexCode = hex.substring(1).split('');
+  let hexCode = hex?.substring(1).split('');
   if (hexCode.length === 3) {
     hexCode = [
       hexCode[0],

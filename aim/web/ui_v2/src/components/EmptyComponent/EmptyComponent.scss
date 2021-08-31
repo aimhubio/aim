@@ -1,0 +1,59 @@
+.EmptyComponent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: calc(100% - 40px);
+  flex-direction: column;
+  &__small {
+    &__title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    &__content {
+      font-weight: 500;
+      font-size: 14px;
+    }
+    &__img {
+      padding: 10px;
+      img {
+        width: 50px;
+        height: 57px;
+      }
+    }
+  }
+  &__medium{
+    &__title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    &__content {
+      font-weight: 500;
+      font-size: 14px;
+    }
+    &__img {
+      padding: 10px;
+      img {
+        width: 70px;
+        height: 97px;
+      }
+    }
+  }
+  &__big{
+    &__title {
+      font-weight: 500;
+      font-size: 16px;
+    }
+    &__content {
+      font-weight: 500;
+      font-size: 16px;
+    }
+    &__img {
+      padding: 10px;
+      img {
+        width: 90px;
+        height: 110px;
+      }
+    }
+  }
+}

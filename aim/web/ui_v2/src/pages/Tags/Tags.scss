@@ -1,7 +1,14 @@
 @import 'src/styles/abstracts/_variables.scss';
 
 .Tags {
-  height: 100vh;
+  &__tabPanel {
+    height: calc(100% - 50px);
+    position: relative;
+    & > div {
+      height: 100%;
+      position: relative;
+    }
+  }
   &__tabsContainer {
     border-radius: 0;
     padding-left: 20px;
@@ -23,6 +30,9 @@
   }
   &__TagList {
     position: relative;
+    height: 100%;
+    border-left: 1px solid #dee6f3;
+    border-right: 1px solid #dee6f3;
     &__tagListBusyLoader {
       padding-top: 100px;
     }
@@ -67,6 +77,8 @@
       }
     }
     &__tagListBox {
+      height: calc(100% - 73px);
+      position: relative;
       &__titleBox {
         position: relative;
         margin-left: 15px;
@@ -110,16 +122,37 @@
         box-shadow: -5px 0px 10px rgba(28, 40, 82, 0.1);
         top: 50px;
       }
+      .MuiBackdrop-root {
+        background-color: transparent;
+      }
     }
   }
 }
 
 .TagsTable {
-  height: calc(100vh - 120px);
+  height: calc(100% - 40px);
   width: 100%;
+  position: relative;
   &__commentContainer {
     max-width: 600px;
     word-break: break-word;
+    &__actionsContainer {
+      right: 0;
+      top: 0;
+      height: 100%;
+      position: absolute;
+      align-items: center;
+      display: flex;
+      width: 160px;
+      justify-content: flex-end;
+      padding-right: 20px;
+      background: linear-gradient(
+        90deg,
+        rgba(236, 243, 252, 0) 0%,
+        #ecf3fc 26.41%,
+        #ecf3fc 60.3%
+      );
+    }
   }
   &__runCreatedDate {
     font-weight: 500;
@@ -131,24 +164,37 @@
     text-decoration: none;
   }
   .BaseTable {
+    &__table-main {
+      outline: none;
+    }
     &__header {
       &-row {
         background: #ebf0f8;
+        border-bottom: none;
       }
       &-cell {
         border-right: 1px solid #dee6f3;
         border-bottom: 1px solid #dee6f3;
         padding: 0 15px;
+        &:last-child {
+          border-right: none;
+        }
       }
     }
     &__row {
+      border-bottom: none;
+      &--hovered {
+        background: #e8f1fc;
+      }
       &-cell {
         border-right: 1px solid #dee6f3;
         border-bottom: 1px solid #dee6f3;
         padding-left: 15px;
+        padding-right: 15px;
         position: relative;
         &:last-child {
           white-space: unset;
+          border-right: none;
         }
         a {
           text-decoration: none;
@@ -159,9 +205,6 @@
             background: transparent;
           }
         }
-      }
-      &--hovered {
-        background: #ffffff;
       }
     }
   }
@@ -221,6 +264,7 @@
   }
 }
 .TagDetail {
+  height: 100%;
   &__headerContainer {
     display: flex;
     justify-content: space-between;
@@ -245,6 +289,41 @@
   }
 }
 .TagSoftDelete {
+  &__contentContainer {
+    padding: 25px 20px;
+    display: flex;
+    &__iconContainer {
+      margin-right: 30px;
+      .MuiSvgIcon-root {
+        width: 4.5rem;
+        height: 3.5rem;
+      }
+    }
+    &__textBox {
+      &__titleText {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      &__contentText {
+        font-weight: normal;
+        font-size: 12px;
+      }
+    }
+  }
+  &__footerBox {
+    border-top: 1px solid #dee6f3;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__cancelButton {
+      margin-right: 10px;
+    }
+  }
+}
+
+.TagDelete {
   &__contentContainer {
     padding: 20px;
     &__contentTitle {
@@ -271,22 +350,4 @@
       margin-right: 10px;
     }
   }
-}
-
-.TagsTableActionButtons {
-  top: 0;
-  position: absolute;
-  right: 0px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  width: 162px;
-  background: linear-gradient(
-    90deg,
-    rgba(236, 243, 252, 0) 0%,
-    #ecf3fc 26.41%,
-    #ecf3fc 60.3%
-  );
-  justify-content: flex-end;
-  padding-right: 15px;
 }

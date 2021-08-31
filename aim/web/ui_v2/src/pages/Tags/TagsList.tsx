@@ -1,9 +1,6 @@
-import React, { ChangeEvent, memo, useState } from 'react';
+import React, { ChangeEvent, memo, useRef, useState } from 'react';
 import { Button, TextField, Dialog, Drawer } from '@material-ui/core';
 
-import useModel from 'hooks/model/useModel';
-import tagDetailAppModel from 'services/models/tags/tagDetailAppModel';
-import tagsAppModel from 'services/models/tags/tagsAppModel';
 import searchImg from 'assets/icons/search.svg';
 import plusImg from 'assets/icons/plus.svg';
 import TagForm from 'components/TagForm/TagForm';
@@ -17,9 +14,13 @@ import './Tags.scss';
 function TagsList({
   tagsList,
   isHiddenTagsList,
+  isTagsDataLoading,
+  tagInfo,
+  tagRuns,
+  isRunsDataLoading,
+  isTagInfoDataLoading,
 }: ITagsListProps): React.FunctionComponentElement<React.ReactNode> {
-  const tagsDetailData = useModel(tagDetailAppModel);
-  const tagData = useModel(tagsAppModel);
+  const tableRef = useRef<any>({});
   const [isCreateModalOpened, setIsCreateModalOpened] = useState(false);
   const [isUpdateModalOpened, setIsUpdateModalOpened] = useState(false);
   const [isSoftDeleteModalOpened, setIsSoftDeleteModalOpened] = useState(false);
@@ -41,6 +42,9 @@ function TagsList({
   }
 
   function onTagDetailOverlayToggle() {
+    if (isTagDetailOverLayOpened) {
+      tableRef.current?.setActiveRow(null);
+    }
     setIsTagDetailOverLayOpened(!isTagDetailOverLayOpened);
   }
 
@@ -48,16 +52,11 @@ function TagsList({
     setIsTagDetailOverLayOpened(true);
   }
 
-  function closeTagDetailOverLay() {
-    setIsTagDetailOverLayOpened(false);
-  }
-
   function onSearchInputChange(e: ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
   }
 
-  function onTableRunClick(e: MouseEvent, id: string) {
-    e.stopPropagation();
+  function onTableRunClick(id: string) {
     if (!isTagDetailOverLayOpened) {
       openTagDetailOverLay();
     }
@@ -65,12 +64,7 @@ function TagsList({
   }
 
   return (
-    <div
-      role='button'
-      aria-pressed='false'
-      className='Tags__TagList'
-      onClick={closeTagDetailOverLay}
-    >
+    <div className='Tags__TagList'>
       <div className='Tags__TagList__header'>
         <TextField
           placeholder='Search'
@@ -95,7 +89,7 @@ function TagsList({
         )}
       </div>
       <BusyLoaderWrapper
-        isLoading={tagData?.isTagsDataLoading}
+        isLoading={isTagsDataLoading}
         className='Tags__TagList__tagListBusyLoader'
       >
         <div className='Tags__TagList__tagListBox'>
@@ -105,26 +99,23 @@ function TagsList({
             </span>
           </div>
           <TagsTable
+            tableRef={tableRef}
             tagsList={tagsList.filter((tag: ITagProps) =>
               tag.name.includes(searchValue),
             )}
             onTableRunClick={onTableRunClick}
             onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+            onUpdateModalToggle={onUpdateModalToggle}
           />
         </div>
       </BusyLoaderWrapper>
       <Dialog
-        key={tagsDetailData?.tagInfo?.id + '1'}
+        key={tagInfo?.id + '1'}
         onClose={onCreateModalToggle}
         aria-labelledby='customized-dialog-title'
         open={isCreateModalOpened}
       >
-        <div
-          className='Tags__TagList__modalContainer'
-          role='button'
-          aria-pressed='false'
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className='Tags__TagList__modalContainer'>
           <div className='Tags__TagList__modalContainer__titleBox'>
             <span className='Tags__TagList__modalContainer__titleBox__title'>
               Create Tag
@@ -136,17 +127,12 @@ function TagsList({
         </div>
       </Dialog>
       <Dialog
-        key={tagsDetailData?.tagInfo?.id + '2'}
+        key={tagInfo?.id + '2'}
         onClose={onUpdateModalToggle}
         aria-labelledby='customized-dialog-title'
         open={isUpdateModalOpened}
       >
-        <div
-          className='Tags__TagList__modalContainer'
-          role='button'
-          aria-pressed='false'
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className='Tags__TagList__modalContainer'>
           <div className='Tags__TagList__modalContainer__titleBox'>
             <span className='Tags__TagList__modalContainer__titleBox__title'>
               Update Tag
@@ -155,38 +141,28 @@ function TagsList({
           <div className='Tags__TagList__modalContainer__contentBox'>
             <TagForm
               onCloseModal={onUpdateModalToggle}
-              tagData={tagsDetailData?.tagInfo}
-              tagId={tagsDetailData?.tagInfo?.id}
+              tagData={tagInfo}
+              tagId={tagInfo?.id}
               editMode
             />
           </div>
         </div>
       </Dialog>
       <Dialog
-        key={tagsDetailData?.tagInfo?.id + '3'}
+        key={tagInfo?.id + '3'}
         onClose={onSoftDeleteModalToggle}
         aria-labelledby='customized-dialog-title'
         open={isSoftDeleteModalOpened}
       >
-        <div
-          className='Tags__TagList__modalContainer'
-          role='button'
-          aria-pressed='false'
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className='Tags__TagList__modalContainer__titleBox'>
-            <span className='Tags__TagList__modalContainer__titleBox__title'>
-              Tag Soft Delete
-            </span>
-          </div>
-
+        <div className='Tags__TagList__modalContainer'>
           <div className='Tags__TagList__modalContainer__contentBox'>
-            {tagsDetailData?.tagInfo && (
+            {tagInfo && (
               <TagSoftDelete
-                tagInfo={tagsDetailData?.tagInfo}
-                tagHash={tagsDetailData?.tagInfo?.id}
+                tagInfo={tagInfo}
+                tagHash={tagInfo?.id}
                 onSoftDeleteModalToggle={onSoftDeleteModalToggle}
                 onTagDetailOverlayToggle={onTagDetailOverlayToggle}
+                isTagDetailOverLayOpened={isTagDetailOverLayOpened}
               />
             )}
           </div>
@@ -194,7 +170,6 @@ function TagsList({
       </Dialog>
       <Drawer
         className='Tags__TagList__overLayContainer'
-        variant='persistent'
         anchor='right'
         open={isTagDetailOverLayOpened}
         onClose={onTagDetailOverlayToggle}
@@ -204,6 +179,10 @@ function TagsList({
             id={tagDetailId}
             onSoftDeleteModalToggle={onSoftDeleteModalToggle}
             onUpdateModalToggle={onUpdateModalToggle}
+            tagRuns={tagRuns}
+            tagInfo={tagInfo}
+            isRunsDataLoading={isRunsDataLoading}
+            isTagInfoDataLoading={isTagInfoDataLoading}
           />
         )}
       </Drawer>
