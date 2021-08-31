@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
 import { Button, TextField } from '@material-ui/core';
@@ -34,7 +34,7 @@ function TagSoftDelete({
     validateForm,
   } = formik;
   const { name } = values;
-
+  useEffect(() => console.log(tagHash), [tagHash]);
   function onChange(e: React.ChangeEvent<any>) {
     setFieldValue('name', e?.target?.value, true).then(() => {
       setFieldTouched('name', true);
@@ -64,12 +64,7 @@ function TagSoftDelete({
   }
 
   return (
-    <div
-      role='button'
-      aria-pressed='false'
-      className='TagSoftDelete'
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className='TagSoftDelete'>
       <div className='TagSoftDelete__contentContainer'>
         {tagInfo?.archived ? (
           <p className='TagSoftDelete__contentContainer__contentBox__warningText'>{`${tagInfo?.name} is hidden`}</p>

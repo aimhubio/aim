@@ -28,7 +28,11 @@ function TagForm({
       : { name: '', color: COLORS[0][0], comment: '' },
     onSubmit: noop,
     validationSchema: yup.object({
-      name: yup.string().required('Required field'),
+      name: yup
+        .string()
+        .required('Required field')
+        .max(50, 'Must be 50 characters or fewer'),
+      comment: yup.string().max(100, 'Must be 100 characters or fewer'),
     }),
   });
   const {
@@ -125,12 +129,7 @@ function TagForm({
   }
 
   return (
-    <div
-      className='TagForm'
-      role='button'
-      aria-pressed='false'
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className='TagForm'>
       <div className='TagForm__tagFormContainer'>
         <TextField
           label='Label'

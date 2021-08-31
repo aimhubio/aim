@@ -3,12 +3,14 @@ import { Button, TextField, Dialog, Drawer } from '@material-ui/core';
 
 import useModel from 'hooks/model/useModel';
 import tagDetailAppModel from 'services/models/tags/tagDetailAppModel';
+import tagsAppModel from 'services/models/tags/tagsAppModel';
 import searchImg from 'assets/icons/search.svg';
 import plusImg from 'assets/icons/plus.svg';
 import TagForm from 'components/TagForm/TagForm';
 import TagsTable from './TagsTable';
 import TagDetail from './TagDetail';
 import TagSoftDelete from './TagSoftDelete';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
 import './Tags.scss';
 
@@ -17,6 +19,7 @@ function TagsList({
   isHiddenTagsList,
 }: ITagsListProps): React.FunctionComponentElement<React.ReactNode> {
   const tagsDetailData = useModel(tagDetailAppModel);
+  const tagData = useModel(tagsAppModel);
   const [isCreateModalOpened, setIsCreateModalOpened] = useState(false);
   const [isUpdateModalOpened, setIsUpdateModalOpened] = useState(false);
   const [isSoftDeleteModalOpened, setIsSoftDeleteModalOpened] = useState(false);
@@ -91,26 +94,37 @@ function TagsList({
           </Button>
         )}
       </div>
-      <div className='Tags__TagList__tagListBox'>
-        <div className='Tags__TagList__tagListBox__titleBox'>
-          <span className='Tags__TagList__tagListBox__titleBox__title'>
-            5 Tags
-          </span>
+      <BusyLoaderWrapper
+        isLoading={tagData?.isTagsDataLoading}
+        className='Tags__TagList__tagListBusyLoader'
+      >
+        <div className='Tags__TagList__tagListBox'>
+          <div className='Tags__TagList__tagListBox__titleBox'>
+            <span className='Tags__TagList__tagListBox__titleBox__title'>
+              {tagsList.length} Tags
+            </span>
+          </div>
+          <TagsTable
+            tagsList={tagsList.filter((tag: ITagProps) =>
+              tag.name.includes(searchValue),
+            )}
+            onTableRunClick={onTableRunClick}
+            onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+          />
         </div>
-        <TagsTable
-          tagsList={tagsList.filter((tag: ITagProps) =>
-            tag.name.includes(searchValue),
-          )}
-          onTableRunClick={onTableRunClick}
-          onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-        />
-      </div>
+      </BusyLoaderWrapper>
       <Dialog
+        key={tagsDetailData?.tagInfo?.id + '1'}
         onClose={onCreateModalToggle}
         aria-labelledby='customized-dialog-title'
         open={isCreateModalOpened}
       >
-        <div className='Tags__TagList__modalContainer'>
+        <div
+          className='Tags__TagList__modalContainer'
+          role='button'
+          aria-pressed='false'
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className='Tags__TagList__modalContainer__titleBox'>
             <span className='Tags__TagList__modalContainer__titleBox__title'>
               Create Tag
@@ -122,11 +136,17 @@ function TagsList({
         </div>
       </Dialog>
       <Dialog
+        key={tagsDetailData?.tagInfo?.id + '2'}
         onClose={onUpdateModalToggle}
         aria-labelledby='customized-dialog-title'
         open={isUpdateModalOpened}
       >
-        <div className='Tags__TagList__modalContainer'>
+        <div
+          className='Tags__TagList__modalContainer'
+          role='button'
+          aria-pressed='false'
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className='Tags__TagList__modalContainer__titleBox'>
             <span className='Tags__TagList__modalContainer__titleBox__title'>
               Update Tag
@@ -143,16 +163,23 @@ function TagsList({
         </div>
       </Dialog>
       <Dialog
+        key={tagsDetailData?.tagInfo?.id + '3'}
         onClose={onSoftDeleteModalToggle}
         aria-labelledby='customized-dialog-title'
         open={isSoftDeleteModalOpened}
       >
-        <div className='Tags__TagList__modalContainer'>
+        <div
+          className='Tags__TagList__modalContainer'
+          role='button'
+          aria-pressed='false'
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className='Tags__TagList__modalContainer__titleBox'>
             <span className='Tags__TagList__modalContainer__titleBox__title'>
               Tag Soft Delete
             </span>
           </div>
+
           <div className='Tags__TagList__modalContainer__contentBox'>
             {tagsDetailData?.tagInfo && (
               <TagSoftDelete

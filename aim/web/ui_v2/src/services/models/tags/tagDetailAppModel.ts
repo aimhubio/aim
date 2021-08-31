@@ -2,7 +2,10 @@ import tagsService from 'services/api/tags/tagsService';
 import { ITagProps } from 'types/pages/tags/Tags';
 import createModel from '../model';
 
-const model = createModel<Partial<any>>({});
+const model = createModel<Partial<any>>({
+  isRunsDataLoading: false,
+  isTagInfoDataLoading: false,
+});
 
 function initialize() {
   model.init();
@@ -26,8 +29,10 @@ function getTagById(id: string) {
 
   return {
     call: async () => {
+      model.setState({ isTagInfoDataLoading: true });
+
       const data = await getTagByIdRequestRef.call();
-      model.setState({ tagInfo: data });
+      model.setState({ tagInfo: data, isTagInfoDataLoading: false });
     },
     abort: getTagByIdRequestRef?.abort,
   };
@@ -41,8 +46,9 @@ function getTagRuns(id: string) {
 
   return {
     call: async () => {
+      model.setState({ isRunsDataLoading: true });
       const data = await getTagRunsRequestRef.call();
-      model.setState({ tagRuns: data.runs });
+      model.setState({ tagRuns: data.runs, isRunsDataLoading: false });
     },
     abort: getTagRunsRequestRef?.abort,
   };
@@ -62,7 +68,6 @@ function archiveTag(id: string, archived: boolean = false) {
 }
 
 function updateTagInfo(tagInfo: ITagProps) {
-  console.log(tagInfo);
   const state = model.getState();
   model.setState({
     ...state,

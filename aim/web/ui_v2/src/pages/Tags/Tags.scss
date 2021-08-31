@@ -23,6 +23,9 @@
   }
   &__TagList {
     position: relative;
+    &__tagListBusyLoader {
+      padding-top: 100px;
+    }
     &__header {
       display: flex;
       justify-content: space-between;
@@ -114,6 +117,10 @@
 .TagsTable {
   height: calc(100vh - 120px);
   width: 100%;
+  &__commentContainer {
+    max-width: 600px;
+    word-break: break-word;
+  }
   &__runCreatedDate {
     font-weight: 500;
     color: $text-color;
@@ -139,6 +146,10 @@
         border-right: 1px solid #dee6f3;
         border-bottom: 1px solid #dee6f3;
         padding-left: 15px;
+        position: relative;
+        &:last-child {
+          white-space: unset;
+        }
         a {
           text-decoration: none;
         }
@@ -260,4 +271,22 @@
       margin-right: 10px;
     }
   }
+}
+
+.TagsTableActionButtons {
+  top: 0;
+  position: absolute;
+  right: 0px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  width: 162px;
+  background: linear-gradient(
+    90deg,
+    rgba(236, 243, 252, 0) 0%,
+    #ecf3fc 26.41%,
+    #ecf3fc 60.3%
+  );
+  justify-content: flex-end;
+  padding-right: 15px;
 }

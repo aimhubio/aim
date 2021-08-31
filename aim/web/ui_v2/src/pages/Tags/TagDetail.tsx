@@ -5,6 +5,7 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import useModel from 'hooks/model/useModel';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import tagDetailAppModel from 'services/models/tags/tagDetailAppModel';
 import hexToRgbA from 'utils/haxToRgba';
 import TagRunsTable from './TagRunsTable';
@@ -40,30 +41,39 @@ function TagDetail({
       onClick={(e) => e.stopPropagation()}
     >
       <div className='TagDetail__headerContainer'>
-        {tagsDetailData?.tagInfo && (
-          <div className='TagContainer__tagBox'>
-            <div
-              className='TagContainer__tagBox__tag'
-              style={{
-                borderColor: tagsDetailData?.tagInfo?.color,
-                background: hexToRgbA(tagsDetailData?.tagInfo?.color, 0.1),
-              }}
-            >
-              <span
-                className='TagContainer__tagBox__tag__content'
-                style={{ color: tagsDetailData?.tagInfo?.color }}
+        <BusyLoaderWrapper
+          isLoading={tagsDetailData?.isTagInfoDataLoading}
+          loaderType='skeleton'
+          loaderConfig={{ variant: 'rect', width: 100, height: 24 }}
+          width='auto'
+        >
+          {tagsDetailData?.tagInfo && (
+            <div className='TagContainer__tagBox'>
+              <div
+                className='TagContainer__tagBox__tag'
+                style={{
+                  borderColor: tagsDetailData?.tagInfo?.color,
+                  background: hexToRgbA(tagsDetailData?.tagInfo?.color, 0.1),
+                }}
               >
-                {tagsDetailData?.tagInfo?.name}
-              </span>
+                <span
+                  className='TagContainer__tagBox__tag__content'
+                  style={{ color: tagsDetailData?.tagInfo?.color }}
+                >
+                  {tagsDetailData?.tagInfo?.name}
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>
-          <CreateIcon
-            color='primary'
-            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-            onClick={onUpdateModalToggle}
-          />
+          {!tagsDetailData?.tagInfo?.archived && (
+            <CreateIcon
+              color='primary'
+              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+              onClick={onUpdateModalToggle}
+            />
+          )}
           {tagsDetailData?.tagInfo?.archived ? (
             <VisibilityIcon
               color='primary'
@@ -84,9 +94,12 @@ function TagDetail({
           />
         </div>
       </div>
-      {tagsDetailData?.tagRuns && (
+      <BusyLoaderWrapper
+        isLoading={tagsDetailData?.isRunsDataLoading}
+        className='Tags__TagList__tagListBusyLoader'
+      >
         <TagRunsTable runsList={tagsDetailData?.tagRuns} />
-      )}
+      </BusyLoaderWrapper>
     </div>
   );
 }

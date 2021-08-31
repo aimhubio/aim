@@ -71,33 +71,42 @@ function TagsTable({
       title: 'Comment',
       width: 0,
       flexGrow: 1,
-      cellRenderer: function cellRenderer({ cellData }: any) {
-        return <p>{cellData}</p>;
-      },
-    },
-    {
-      dataKey: 'actions',
-      key: 'actions',
-      title: '',
-      width: 50,
-      flexGrow: 0,
-      frozen: 'right',
-      cellRenderer: function cellRenderer({ cellData }: any) {
-        return cellData.archived ? (
-          <VisibilityIcon
-            color='primary'
-            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-            onClick={() => onSoftDeleteClick(cellData)}
-          />
-        ) : (
-          <VisibilityOffIcon
-            color='primary'
-            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-            onClick={() => onSoftDeleteClick(cellData)}
-          />
+      cellRenderer: function cellRenderer({ cellData, i }: any) {
+        return (
+          <div className='TagsTable__commentContainer'>
+            <span>{cellData.description}</span>
+            {i === 0 && (
+              <div className='TagsTable__commentContainer'>
+                <div>asd</div>
+              </div>
+            )}
+          </div>
         );
       },
     },
+    // {
+    //   dataKey: 'actions',
+    //   key: 'actions',
+    //   title: '',
+    //   width: 50,
+    //   flexGrow: 0,
+    //   frozen: 'right',
+    //   cellRenderer: function cellRenderer({ cellData }: any) {
+    //     return cellData.archived ? (
+    //       <VisibilityIcon
+    //         color='primary'
+    //         className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+    //         onClick={() => onSoftDeleteClick(cellData)}
+    //       />
+    //     ) : (
+    //       <VisibilityOffIcon
+    //         color='primary'
+    //         className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+    //         onClick={() => onSoftDeleteClick(cellData)}
+    //       />
+    //     );
+    //   },
+    // },
   ];
 
   function onSoftDeleteClick(tagData: ITagProps) {
@@ -109,9 +118,8 @@ function TagsTable({
     tableRef.current?.updateData({
       newData: tagsList.map((tagData: ITagProps) => ({
         name: { name: tagData.name, color: tagData.color },
-        comment: tagData?.description,
+        comment: tagData,
         runs: { count: tagData.run_count, tagId: tagData.id },
-        actions: tagData,
       })),
       newColumns: tableColumns,
     });
