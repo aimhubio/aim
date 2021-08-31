@@ -1,4 +1,7 @@
+import React from 'react';
 import _, { isEmpty } from 'lodash-es';
+import { saveAs } from 'file-saver';
+import moment from 'moment';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
@@ -13,6 +16,8 @@ import {
 } from 'utils/encoder/streamEncoding';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import filterTooltipContent from 'utils/filterTooltipContent';
+import JsonToCSV from 'utils/JsonToCSV';
 
 // Types
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
@@ -29,6 +34,7 @@ import {
   IOnGroupingSelectChangeParams,
   ITooltipData,
   IChartTooltip,
+  IMetricTableRowData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
 import {
@@ -42,7 +48,6 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import filterTooltipContent from 'utils/filterTooltipContent';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -769,6 +774,94 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
   }
 }
 
+function getFilteredRow(
+  columnKeys: string[],
+  row: IMetricTableRowData,
+): { [key: string]: string } {
+  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
+    let value = row[column];
+    if (Array.isArray(value)) {
+      value = value.join(', ');
+    } else if (typeof value !== 'string') {
+      value = JSON.stringify(value);
+    }
+
+    if (column.startsWith('params.')) {
+      acc[column.replace('params.', '')] = value;
+    } else {
+      acc[column] = value;
+    }
+
+    return acc;
+  }, {});
+}
+
+function onExportTableData(e: React.ChangeEvent<any>): void {
+  const processedData = processData(
+    model.getState()?.rawData as IRun<IParamTrace>[],
+  );
+  // TODO need to implement `getDataAsTableRows` and `getTableColumns` functions
+  // const tableData: IMetricTableRowData[] = getDataAsTableRows(
+  //   processedData.data,
+  //   null,
+  //   processedData.params,
+  // );
+  // const tableColumns: ITableColumn[] = getTableColumns(
+  //   processedData.params,
+  //   processedData.data[0].config,
+  // );
+  // // TODO need to filter excludedFields and sort column order
+  // const excludedFields: string[] = ['#'];
+  // const filteredHeader: string[] = tableColumns.reduce(
+  //   (acc: string[], column: ITableColumn) =>
+  //     acc.concat(
+  //       excludedFields.indexOf(column.dataKey) === -1 ? column.dataKey : [],
+  //     ),
+  //   [],
+  // );
+  // // const flattenOrders = Object.keys(columnsOrder).reduce(
+  // //   (acc, key) => acc.concat(columnsOrder[key]),
+  // //   [],
+  // // );
+  // // filteredHeader.sort(
+  // //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
+  // // );
+  //
+  // let emptyRow: { [key: string]: string } = {};
+  // filteredHeader.forEach((column: string) => {
+  //   emptyRow[column] = '--';
+  // });
+  //
+  // const dataToExport = tableData?.reduce(
+  //   (
+  //     accArray: { [key: string]: string }[],
+  //     rowData: IMetricTableRowData,
+  //     rowDataIndex: number,
+  //   ) => {
+  //     if (rowData?.children?.length > 0) {
+  //       rowData.children.forEach((row: IMetricTableRowData) => {
+  //         const filteredRow = getFilteredRow(filteredHeader, row);
+  //         accArray = accArray.concat(filteredRow);
+  //       });
+  //       if (tableData.length - 1 !== rowDataIndex) {
+  //         accArray = accArray.concat(emptyRow);
+  //       }
+  //     } else {
+  //       const filteredRow = getFilteredRow(filteredHeader, rowData);
+  //       accArray = accArray.concat(filteredRow);
+  //     }
+  //
+  //     return accArray;
+  //   },
+  //   [],
+  // );
+  //
+  // const blob = new Blob([JsonToCSV(dataToExport)], {
+  //   type: 'text/csv;charset=utf-8;',
+  // });
+  // saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+}
+
 function onNotificationDelete(id: number) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
@@ -810,6 +903,7 @@ const paramsAppModel = {
   onNotificationAdd,
   onNotificationDelete,
   onChangeTooltip,
+  onExportTableData,
 };
 
 export default paramsAppModel;
