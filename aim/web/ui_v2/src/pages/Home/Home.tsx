@@ -6,7 +6,6 @@ import Activity from './components/Activity/Activity';
 import { IFrontProps } from 'types/pages/home/Home';
 
 import './Home.scss';
-import { Grid } from '@material-ui/core';
 
 function Home({
   activityData,
