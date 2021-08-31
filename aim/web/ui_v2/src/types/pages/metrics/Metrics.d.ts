@@ -87,6 +87,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;
+  onExportTableData: (e: React.ChangeEvent<any>) => void;
 }
 
 export interface IOnSmoothingChange {

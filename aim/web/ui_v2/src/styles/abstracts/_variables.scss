@@ -26,3 +26,28 @@ $radius-main: 0.375em;
 
 //text
 $text-color: $pico;
+
+$xs: 23.5em; // 376px @media (max-width: $xs) {}
+
+$sm: 36em; // (min-width: 576px)
+$md: 48em; // (min-width: 768px)
+$lg: 62em; // (min-width: 992px)
+$gl: 64em; //! gap `lg - xl` (min-width: 1024px)
+$xl: 75em; // (min-width: 1200px)
+$xxl: 80em; // (min-width: 1280px)
+
+//- to container
+
+$col-sm: 540px; // (max-width: 540px)
+$col-md: 720px; // (max-width: 720px)
+$col-lg: 960px; // (max-width: 960px)
+$col-xl: 1140px; // (max-width: 1140px)
+$col-xxl: 1420px; // (max-width: 1420px)
+
+$breakpoints: (
+  sm: $sm,
+  md: $md,
+  lg: $lg,
+  xl: $xl,
+  xxl: $xxl,
+);
