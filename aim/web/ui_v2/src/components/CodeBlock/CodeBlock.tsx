@@ -6,12 +6,14 @@ import theme from 'prism-react-renderer/themes/nightOwlLight';
 
 import './CodeBlock.scss';
 import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
+import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 
 function CodeBlock({
   code = '',
   className = '',
   language = 'python',
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
+  const contentRef = React.createRef<HTMLPreElement>();
   const [copied, setCopied] = React.useState<boolean>(false);
 
   function handleCodeCopy(): void {
@@ -27,7 +29,7 @@ function CodeBlock({
         language={language}
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <pre className={className} style={style}>
+          <pre className={className} style={style} ref={contentRef}>
             {tokens.map((line, i) => (
               <div key={i} {...getLineProps({ line, key: i })}>
                 {line.map((token, key) => (
@@ -38,13 +40,10 @@ function CodeBlock({
           </pre>
         )}
       </Highlight>
-      <span onClick={handleCodeCopy} className={'CodeBlock__copy__span'}>
-        {/* {copied ? (
-          <AssignmentTurnedInOutlinedIcon style={{ width: 24, fontSize: 18 }} />
-        ) : ( */}
-        <img src={copyIcon} alt='copy' />
-        {/* )} */}
-      </span>
+      <CopyToClipBoard
+        className='CodeBlock__copy__span'
+        contentRef={contentRef}
+      />
     </div>
   );
 }
