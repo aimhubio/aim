@@ -57,6 +57,12 @@ function getTableColumns(
       content: <span>Time</span>,
       topHeader: 'Metrics',
     },
+    {
+      key: 'actions',
+      content: '',
+      topHeader: '',
+      pin: 'right',
+    },
   ].concat(
     paramColumns.map((param) => ({
       key: param,
