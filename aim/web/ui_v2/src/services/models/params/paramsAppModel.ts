@@ -29,6 +29,8 @@ import {
   IOnGroupingSelectChangeParams,
   ITooltipData,
   IChartTooltip,
+  IChartTitle,
+  IChartTitleData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
 import {
@@ -137,6 +139,7 @@ function getParamsData() {
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
+          chartTitleData: getChartTitleData(data),
           params,
           rawData: runData,
           config: configData,
@@ -145,6 +148,33 @@ function getParamsData() {
     },
     abort: () => getRunsRequestRef.abort(),
   };
+}
+
+function getChartTitleData(
+  processedData: IMetricsCollection<IParam>[],
+  configData: any = model.getState()?.config,
+): IChartTitleData {
+  if (!processedData) {
+    return {};
+  }
+  const groupData = configData?.grouping;
+  let chartTitleData: IChartTitleData = {};
+  processedData.forEach((metricsCollection) => {
+    if (!chartTitleData[metricsCollection.chartIndex]) {
+      chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
+        (acc: IChartTitle, groupItemKey: string) => {
+          if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
+            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
+              metricsCollection.config[groupItemKey] || 'None',
+            );
+            return acc;
+          }
+        },
+        {},
+      );
+    }
+  });
+  return chartTitleData;
 }
 
 function processData(data: IRun<IParamTrace>[]): {
@@ -298,40 +328,44 @@ function getDataAsLines(
   });
 }
 
+function getGroupConfig(
+  metricsCollection: IMetricsCollection<IParam>,
+  groupingItems: GroupNameType[] = ['color', 'style', 'chart'],
+) {
+  const configData = model.getState()?.config;
+  let groupConfig: { [key: string]: {} } = {};
+
+  for (let groupItemKey of groupingItems) {
+    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+    if (groupItem.length) {
+      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+        Object.assign(acc, {
+          [paramKey.replace('run.params.', '')]: JSON.stringify(
+            _.get(metricsCollection.config, paramKey, '-'),
+          ),
+        });
+        return acc;
+      }, {});
+    }
+  }
+  return groupConfig;
+}
+
 function setTooltipData(
   processedData: IMetricsCollection<IParam>[],
   paramKeys: string[],
 ): void {
   const data: { [key: string]: any } = {};
 
-  function getGroupConfig(param: IParam) {
-    const configData = model.getState()?.config;
-    const groupingItems: GroupNameType[] = ['color', 'style', 'chart'];
-    let groupConfig: { [key: string]: {} } = {};
-    for (let groupItemKey of groupingItems) {
-      const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
-      if (groupItem.length) {
-        groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
-          Object.assign(acc, {
-            [paramKey.replace('run.params.', '')]: JSON.stringify(
-              _.get(param, paramKey, '-'),
-            ),
-          });
-          return acc;
-        }, {});
-      }
-    }
-    return groupConfig;
-  }
-
   for (let metricsCollection of processedData) {
-    for (let param of metricsCollection.data) {
-      data[param.key] = {
-        group_config: getGroupConfig(param),
+    const groupConfig = getGroupConfig(metricsCollection);
+    for (let metric of metricsCollection.data) {
+      data[metric.key] = {
+        groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
             [paramKey]: JSON.stringify(
-              _.get(param, `run.params.${paramKey}`, '-'),
+              _.get(metric, `run.params.${paramKey}`, '-'),
             ),
           });
           return acc;
@@ -668,6 +702,7 @@ function updateModelData(configData: IParamsAppConfig): void {
     config: configData,
     data: processedData.data,
     highPlotData: getDataAsLines(processedData.data),
+    chartTitleData: getChartTitleData(processedData.data),
     // tableData: getDataAsTableRows(
     //   processedData.data,
     //   null,

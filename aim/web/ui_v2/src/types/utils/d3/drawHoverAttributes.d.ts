@@ -4,10 +4,7 @@ import { IProcessedData } from './processData';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { IGetAxisScale } from './getAxisScale';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import {
-  IAggregationConfig,
-  IFocusedState,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawHoverAttributesProps {
   index: number;

@@ -3,12 +3,20 @@ import { RouteChildrenProps } from 'react-router-dom';
 
 import { CurveEnum } from 'utils/d3';
 import {
+  GroupNameType,
+  IChartTitleData,
   IChartTooltip,
   IFocusedState,
+  IMetricAppConfig,
+  IOnGroupingModeChangeParams,
+  IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
+import { ITableRef } from 'components/Table/Table';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -29,6 +37,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onColorIndicatorChange: () => void;
   isVisibleColorIndicator: boolean;
   tooltip: IChartTooltip;
+  chartTitleData: IChartTitleData;
   onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
   selectedParamsData: IParamsAppConfig['select'];
   onSelectRunQueryChange: (query: string) => void;

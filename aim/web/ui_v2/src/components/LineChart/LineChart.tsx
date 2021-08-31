@@ -9,6 +9,7 @@ import {
   getAxisScale,
   drawBrush,
   drawHoverAttributes,
+  XAlignmentEnum,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import {
@@ -29,16 +30,17 @@ const LineChart = React.forwardRef(function LineChart(
     syncHoverState,
     axesScaleType,
     displayOutliers,
-    xAlignment,
+    xAlignment = XAlignmentEnum.Step,
     zoomMode,
     highlightMode,
     curveInterpolation,
+    title,
   } = props;
 
   // boxes
   const visBoxRef = React.useRef({
     margin: {
-      top: 24,
+      top: 30,
       right: 20,
       bottom: 30,
       left: 60,
@@ -87,6 +89,7 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
+      title,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -106,11 +109,16 @@ const LineChart = React.forwardRef(function LineChart(
     attributesRef.current.yScale = yScale;
 
     drawAxes({
+      svgNodeRef,
       axesNodeRef,
       axesRef,
       plotBoxRef,
       xScale,
       yScale,
+      width,
+      height,
+      margin,
+      xAlignment,
     });
 
     drawLines({
@@ -185,6 +193,7 @@ const LineChart = React.forwardRef(function LineChart(
       curveInterpolation,
       zoomMode,
       aggregationConfig,
+      title,
     ],
   );
 
@@ -201,6 +210,7 @@ const LineChart = React.forwardRef(function LineChart(
     curveInterpolation,
     zoomMode,
     aggregationConfig,
+    title,
   ]);
 
   React.useImperativeHandle(ref, () => ({

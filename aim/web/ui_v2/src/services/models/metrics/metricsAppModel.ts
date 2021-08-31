@@ -49,6 +49,8 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
+  IChartTitle,
+  IChartTitleData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
@@ -274,6 +276,7 @@ function getMetricsData() {
           params,
           data,
           lineChartData: getDataAsLines(data),
+          chartTitleData: getChartTitleData(data),
           aggregatedData: getAggregatedData(data),
           tableData: getDataAsTableRows(data, null, params),
           tableColumns: getTableColumns(params, data[0].config),
@@ -282,6 +285,33 @@ function getMetricsData() {
     },
     abort: metricsRequestRef.abort,
   };
+}
+
+function getChartTitleData(
+  processedData: IMetricsCollection<IMetric>[],
+  configData: IMetricAppConfig | any = model.getState()?.config,
+): IChartTitleData {
+  if (!processedData) {
+    return {};
+  }
+  const groupData = configData?.grouping;
+  let chartTitleData: IChartTitleData = {};
+  processedData.forEach((metricsCollection) => {
+    if (!chartTitleData[metricsCollection.chartIndex]) {
+      chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
+        (acc: IChartTitle, groupItemKey: string) => {
+          if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
+            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
+              metricsCollection.config[groupItemKey] || 'None',
+            );
+            return acc;
+          }
+        },
+        {},
+      );
+    }
+  });
+  return chartTitleData;
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
@@ -604,7 +634,6 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   }
 
   const groups = Object.values(groupValues);
-
   const chartConfig = configData!.chart;
 
   return aggregateGroupData({
@@ -865,38 +894,42 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
   }
 }
 
+function getGroupConfig(
+  metricsCollection: IMetricsCollection<IMetric>,
+  groupingItems: GroupNameType[] = ['color', 'style', 'chart'],
+) {
+  const configData = model.getState()?.config;
+  let groupConfig: { [key: string]: {} } = {};
+
+  for (let groupItemKey of groupingItems) {
+    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+    if (groupItem.length) {
+      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+        Object.assign(acc, {
+          [paramKey.replace('run.params.', '')]: JSON.stringify(
+            _.get(metricsCollection.config, paramKey, '-'),
+          ),
+        });
+        return acc;
+      }, {});
+    }
+  }
+  return groupConfig;
+}
+
 function setTooltipData(
   processedData: IMetricsCollection<IMetric>[],
   paramKeys: string[],
 ): void {
   const data: { [key: string]: any } = {};
 
-  function getGroupConfig(metric: IMetric) {
-    const configData = model.getState()?.config;
-    const groupingItems: GroupNameType[] = ['color', 'style', 'chart'];
-    let groupConfig: { [key: string]: {} } = {};
-    for (let groupItemKey of groupingItems) {
-      const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
-      if (groupItem.length) {
-        groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
-          Object.assign(acc, {
-            [paramKey.replace('run.params.', '')]: JSON.stringify(
-              _.get(metric, paramKey, '-'),
-            ),
-          });
-          return acc;
-        }, {});
-      }
-    }
-    return groupConfig;
-  }
-
   for (let metricsCollection of processedData) {
+    const groupConfig = getGroupConfig(metricsCollection);
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
         metricName: metric.metric_name,
         metricContext: metric.context,
-        group_config: getGroupConfig(metric),
+        groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
             [paramKey]: JSON.stringify(
@@ -1071,6 +1104,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     config: configData,
     data: processedData.data,
     lineChartData: getDataAsLines(processedData.data),
+    chartTitleData: getChartTitleData(processedData.data),
     aggregatedData: getAggregatedData(processedData.data),
     tableData,
     tableColumns,

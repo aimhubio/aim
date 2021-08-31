@@ -8,6 +8,7 @@ import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IChartTitle,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -35,6 +36,7 @@ export interface ILineChartProps {
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   aggregationConfig?: IAggregationConfig;
+  title?: IChartTitle;
 }
 
 export interface IUpdateFocusedChartProps {

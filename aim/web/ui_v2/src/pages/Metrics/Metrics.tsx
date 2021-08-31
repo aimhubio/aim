@@ -55,6 +55,7 @@ function Metrics(
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData}
+                chartTitleData={props.chartTitleData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
                 tooltip={props.tooltip}
@@ -71,7 +72,7 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
-                    selectOptions={props.groupingData?.selectOptions}
+                    selectOptions={props.groupingData.selectOptions}
                     tooltip={props.tooltip}
                     smoothingAlgorithm={props.smoothingAlgorithm}
                     smoothingFactor={props.smoothingFactor}

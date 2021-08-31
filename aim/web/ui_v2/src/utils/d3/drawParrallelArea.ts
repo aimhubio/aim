@@ -14,6 +14,7 @@ function drawParallelArea(props: IDrawAreaProps): void {
     plotBoxRef,
     linesNodeRef,
     attributesNodeRef,
+    title = {},
   } = props;
   if (!parentRef?.current || !visAreaRef?.current) {
     return;
@@ -35,13 +36,16 @@ function drawParallelArea(props: IDrawAreaProps): void {
     width: width - margin.left - margin.right,
     height: height - margin.top - margin.bottom,
   };
+
   visArea.style('width', '100%').style('height', '100%');
+
   svgNodeRef.current = visArea
     .append('svg')
     .attr('id', 'svg-area')
     .attr('width', '100%')
     .attr('height', '100%')
     .attr('xmlns', 'http://www.w3.org/2000/svg');
+
   bgRectNodeRef.current = svgNodeRef.current
     .append('rect')
     .attr('x', margin.left)
@@ -50,11 +54,14 @@ function drawParallelArea(props: IDrawAreaProps): void {
     .attr('width', width - margin.left - margin.right)
     .attr('height', height - margin.top - margin.bottom)
     .style('fill', 'transparent');
+
   plotNodeRef.current = svgNodeRef.current
     .append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
   axesNodeRef.current = plotNodeRef.current.append('g').attr('class', 'Axes');
   linesNodeRef.current = plotNodeRef.current.append('g').attr('class', 'Lines');
+
   linesNodeRef.current
     .append('clipPath')
     .attr('id', 'lines-rect-clip-' + index)
@@ -63,9 +70,11 @@ function drawParallelArea(props: IDrawAreaProps): void {
     .attr('y', 0)
     .attr('width', width - margin.left - margin.right)
     .attr('height', height - margin.top - margin.bottom);
+
   attributesNodeRef.current = plotNodeRef.current
     .append('g')
     .attr('class', 'Attributes');
+
   attributesNodeRef.current
     .append('clipPath')
     .attr('id', 'circles-rect-clip-' + index)
@@ -75,12 +84,70 @@ function drawParallelArea(props: IDrawAreaProps): void {
     .attr(
       'width',
       width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius + 4,
-      // + circle-diameter(2 * CircleEnum.ActiveRadius) + stroke-width(4)
     )
     .attr(
       'height',
       height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius + 4,
-      // + circle-diameter(2 * CircleEnum.ActiveRadius) + stroke-width(4)
     );
+
+  const titleMarginTop = 2;
+  const titleHeight = 15;
+  const keys = Object.keys(title);
+  const titleText = keys
+    ? `${keys.map((key) => `${key}=${title[key]}`).join(', ')}`
+    : '';
+
+  if (titleText) {
+    svgNodeRef.current
+      .append('foreignObject')
+      .attr('x', 0)
+      .attr('y', titleMarginTop)
+      .attr('height', titleHeight)
+      .attr('width', width)
+      .html((d: any) => {
+        return keys.length
+          ? `
+        <div 
+            title='#${index + 1} ${titleText}' 
+            style='
+              display: flex; 
+              align-items: center;
+              justify-content: center;
+              color: #484f56;
+              padding: 0 1em;
+            '
+        >
+          <div 
+            style='
+              width: ${titleHeight}px; 
+              height: ${titleHeight}px;
+              display: flex; 
+              align-items: center;
+              justify-content: center;
+              margin-right: 0.5em;
+              padding: 2px;
+              box-shadow: inset 0 0 0 1px #e8e8e8;
+              border-radius: 0.2em;
+              font-size: 0.6em;
+              flex-shrink: 0;
+            '
+          >
+           ${index + 1}
+          </div>
+          <div 
+            style='
+              white-space: nowrap; 
+              text-overflow: ellipsis;
+              overflow: hidden;
+              font-size: 0.75em;
+            '
+          >
+            ${titleText}
+          </div>
+        </div>
+      `
+          : '';
+      });
+  }
 }
 export default drawParallelArea;

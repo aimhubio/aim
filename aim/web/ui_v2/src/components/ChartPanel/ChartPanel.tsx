@@ -32,7 +32,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const onChangePopoverPosition = React.useCallback(
     (pos: PopoverPosition | null) => {
-      if (props.tooltip.display) {
+      if (props.tooltip.display || props.focusedState.active) {
         setPopoverPosition(pos);
       }
     },
@@ -136,17 +136,16 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   return (
     <Grid container className='ChartPanel__container'>
       <Grid item xs className='ChartPanel'>
-        <Grid
-          ref={containerRef}
-          container
-          spacing={1}
-          className='ChartPanel__paper__grid'
-        >
+        <Grid ref={containerRef} container className='ChartPanel__paper__grid'>
           {props.data.map((chartData: any, index: number) => {
             const Component = chartTypesConfig[props.chartType];
             const aggregatedData = props.aggregatedData?.filter(
               (data) => data.chartIndex === index,
             );
+            const title =
+              props.data.length > 1 && props.chartTitleData
+                ? props.chartTitleData[index]
+                : {};
             return (
               <Grid
                 key={index}
@@ -164,6 +163,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   {...props.chartProps[0]}
                   index={index}
                   data={chartData}
+                  title={title}
                   aggregatedData={aggregatedData}
                   aggregationConfig={props.aggregationConfig}
                   syncHoverState={syncHoverState}
@@ -174,7 +174,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         </Grid>
         <ChartPopover
           popoverPosition={popoverPosition}
-          open={props.data.length > 0 && props.tooltip.display}
+          open={
+            props.data.length > 0 &&
+            (props.tooltip.display || props.focusedState.active)
+          }
           containerRef={containerRef}
         >
           <PopoverContent

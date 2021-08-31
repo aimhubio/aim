@@ -24,6 +24,7 @@ const Params = ({
   tableElemRef,
   groupingData,
   tooltip,
+  chartTitleData,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -83,6 +84,7 @@ const Params = ({
                 focusedState={focusedState}
                 onActivePointChange={onActivePointChange}
                 tooltip={tooltip}
+                chartTitleData={chartTitleData}
                 chartProps={[
                   {
                     curveInterpolation,

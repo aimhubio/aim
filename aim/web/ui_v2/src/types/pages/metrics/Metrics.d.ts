@@ -17,6 +17,8 @@ import {
   IAggregatedData,
   IAlignmentConfig,
   IChartTooltip,
+  IChartTitle,
+  IChartTitleData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -37,6 +39,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
+  chartTitleData: IChartTitleData;
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];

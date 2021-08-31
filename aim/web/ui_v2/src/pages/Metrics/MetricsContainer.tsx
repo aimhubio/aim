@@ -18,7 +18,7 @@ import {
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
-  ITooltipContent,
+  IChartTitleData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -101,6 +101,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       // chart options
       lineChartData={metricsData?.lineChartData as ILine[][]}
+      chartTitleData={metricsData?.chartTitleData as IChartTitleData}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
