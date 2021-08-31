@@ -17,6 +17,7 @@ import {
   IAggregatedData,
   IAlignmentConfig,
   IChartTooltip,
+  IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -56,6 +57,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: IMetricAppConfig['select'];
   tableRowHeight: RowHeight;
+  groupingSelectOptions: IGroupingSelectOption[];
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;

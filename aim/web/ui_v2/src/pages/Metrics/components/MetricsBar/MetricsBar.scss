@@ -1,3 +1,5 @@
+@use '../../../../styles/abstracts/index' as *;
+
 .MetricsBar__item__bookmark {
   margin-right: 0.75em;
   cursor: pointer;
@@ -16,4 +18,22 @@
   height: 100%;
   display: flex;
   align-items: center;
+  span {
+    cursor: pointer;
+  }
+}
+
+.MetricsBar__menu__popover {
+  width: 15.625em;
+  display: flex;
+  flex-direction: column;
+  li {
+    border-top: $border-main;
+    font-size: 0.875em;
+    padding: 0.5em;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 }

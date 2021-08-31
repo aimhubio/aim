@@ -8,7 +8,10 @@ from alembic import context
 from alembic.config import Config
 
 from aim.web.configs import AIM_WEB_ENV_KEY
-from aim.web.api.db import Base, engine, config as api_config
+from aim.web.api.db import engine, config as api_config
+from aim.web.api.dashboards import models
+from aim.web.api.dashboard_apps import models
+from aim.web.api.db import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
