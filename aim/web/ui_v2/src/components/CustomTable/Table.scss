@@ -197,7 +197,7 @@ $group-margin: 6px;
 
     &.expanded {
       position: sticky;
-      top: calc(2 * $cell-height);
+      top: 2 * $cell-height;
     }
 
     &.expandable:hover {

@@ -18,49 +18,49 @@ function getTableColumns(
   const columns = [
     {
       key: 'experiment',
-      content: 'Experiment',
+      content: <span>Experiment</span>,
       topHeader: 'Metrics',
       pin: 'left',
     },
     {
       key: 'run',
-      content: 'Run',
+      content: <span>Run</span>,
       topHeader: 'Metrics',
     },
     {
       key: 'metric',
-      content: 'Metric',
+      content: <span>Metric</span>,
       topHeader: 'Metrics',
     },
     {
       key: 'context',
-      content: 'Context',
+      content: <span>Context</span>,
       topHeader: 'Metrics',
     },
     {
       key: 'value',
-      content: 'Value',
+      content: <span>Value</span>,
       topHeader: 'Metrics',
     },
     {
       key: 'step',
-      content: 'Step',
+      content: <span>Step</span>,
       topHeader: 'Metrics',
     },
     {
       key: 'epoch',
-      content: 'Epoch',
+      content: <span>Epoch</span>,
       topHeader: 'Metrics',
     },
     {
       key: 'timestamp',
-      content: 'Time',
+      content: <span>Time</span>,
       topHeader: 'Metrics',
     },
   ].concat(
     paramColumns.map((param) => ({
       key: param,
-      content: param,
+      content: <span>{param}</span>,
       topHeader: 'Params',
     })),
   );
@@ -90,7 +90,7 @@ function getTableColumns(
     ? [
         {
           key: '#',
-          content: '#',
+          content: <span>#</span>,
           topHeader: 'Grouping',
           pin: 'left',
         } as ITableColumn,
