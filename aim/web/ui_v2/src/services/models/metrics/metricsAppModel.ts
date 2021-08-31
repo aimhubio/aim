@@ -752,12 +752,23 @@ function alignData(
             missingTraces = true;
           }
         }
-        if (missingTraces) {
-          onNotificationAdd({
-            id: Date.now(),
-            severity: 'error',
-            message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
-          });
+      }
+      if (missingTraces) {
+        let configData = model.getState()?.config;
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+        });
+        if (configData?.chart) {
+          configData.chart = {
+            ...configData.chart,
+            alignmentConfig: {
+              metric: '',
+              type: AlignmentOptions.STEP,
+            },
+          };
+          model.setState({ config: configData });
         }
       }
       break;
@@ -1384,12 +1395,35 @@ async function onAlignmentMetricChange(metric: string) {
     };
     const stream = await metricsService.fetchAlignedMetricsData(reqBody).call();
     const runData = await getRunData(stream);
-    const rawData: any = model.getState()?.rawData?.map((item, index) => ({
-      ...item,
-      traces: item.traces.map((trace, ind) => {
-        return { ...trace, ...runData[index][ind] };
-      }),
-    }));
+    let missingTraces = false;
+    const rawData: any = model.getState()?.rawData?.map((item, index) => {
+      return {
+        ...item,
+        traces: item.traces.map((trace, ind) => {
+          let x_axis_iters = runData[index]?.[ind]?.x_axis_iters || null;
+          let x_axis_values = runData[index]?.[ind]?.x_axis_iters || null;
+          if (!x_axis_iters || !x_axis_values) {
+            missingTraces = true;
+          }
+          let data = {
+            ...trace,
+            ...runData[index][ind],
+          };
+          return data;
+        }),
+      };
+    });
+    if (missingTraces) {
+      onNotificationAdd({
+        id: Date.now(),
+        severity: 'error',
+        message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+      });
+      configData.chart = {
+        ...configData.chart,
+        alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
+      };
+    }
     setModelData(rawData, configData);
   }
 }
