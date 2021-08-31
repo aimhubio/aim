@@ -72,7 +72,7 @@ def fill_up_test_data():
                 run['run_index'] = idx
                 run['start_time'] = datetime.datetime.utcnow().isoformat()
                 run['name'] = f'Run # {idx}'
-                run.props.name = run['name']
+                run.name = run['name']
 
                 metric_contexts = itertools.product(metrics, contexts)
                 for metric_context in metric_contexts:
