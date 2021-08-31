@@ -30,6 +30,7 @@ const groupingPopovers = [
 
 function Grouping({
   groupingData,
+  groupingSelectOptions,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
@@ -48,6 +49,7 @@ function Grouping({
               advancedTitle={advancedTitle}
               groupName={groupName as GroupNameType}
               groupingData={groupingData}
+              groupingSelectOptions={groupingSelectOptions}
               onSelect={onGroupingSelectChange}
               onGroupingModeChange={onGroupingModeChange}
               advancedComponent={

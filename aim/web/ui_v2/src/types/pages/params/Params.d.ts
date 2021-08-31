@@ -5,6 +5,7 @@ import { CurveEnum } from 'utils/d3';
 import {
   IChartTooltip,
   IFocusedState,
+  IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';

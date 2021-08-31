@@ -102,7 +102,6 @@ function getConfig() {
         style: 10,
       },
       paletteIndex: 0,
-      selectOptions: [],
     },
     chart: {
       highlightMode: HighlightEnum.Off,
@@ -161,6 +160,7 @@ function initialize() {
       tableRef: { current: null },
       chartPanelRef: { current: null },
     },
+    groupingSelectOptions: [],
   });
 }
 
@@ -238,7 +238,7 @@ function getMetricsData() {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
-  const modelState = model.getState();
+  const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
@@ -417,16 +417,20 @@ function getFilteredGroupingOptions(
   grouping: IMetricAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
-  const { selectOptions, reverseMode, isApplied } = grouping;
-
-  const filteredOptions = [...selectOptions]
-    .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-    .map((item) => item.value);
-  return isApplied[groupName]
-    ? reverseMode[groupName]
-      ? filteredOptions
-      : grouping[groupName]
-    : [];
+  const { reverseMode, isApplied } = grouping;
+  const groupingSelectOptions = model.getState()?.groupingSelectOptions;
+  if (groupingSelectOptions) {
+    const filteredOptions = [...groupingSelectOptions]
+      .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+      .map((item) => item.value);
+    return isApplied[groupName]
+      ? reverseMode[groupName]
+        ? filteredOptions
+        : grouping[groupName]
+      : [];
+  } else {
+    return [];
+  }
 }
 
 function getGroupingPersistIndex({
@@ -1452,9 +1456,14 @@ function onNotificationAdd(notification: INotification) {
 }
 
 function onResetConfigData(): void {
-  model.setState({
-    config: getConfig(),
-  });
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    configData.grouping = {
+      ...getConfig().grouping,
+    };
+    configData.chart = { ...getConfig().chart };
+    updateModelData(configData);
+  }
 }
 
 async function onAlignmentMetricChange(metric: string) {
@@ -1540,8 +1549,8 @@ function setModelData(
   configData: IMetricAppConfig,
 ) {
   const { data, params } = processData(rawData);
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   if (configData) {
-    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
     setAggregationEnabled(configData);
   }
   model.setState({
@@ -1554,6 +1563,7 @@ function setModelData(
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
     tableColumns: getTableColumns(params, data[0].config),
+    groupingSelectOptions,
   });
 }
 

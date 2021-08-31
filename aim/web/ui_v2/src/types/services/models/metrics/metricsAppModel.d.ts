@@ -33,6 +33,7 @@ export interface IMetricAppModelState {
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
+  groupingSelectOptions: IGroupingSelectOption[];
 }
 
 export interface IAggregatedData extends IAggregationData {
@@ -107,7 +108,6 @@ interface IMetricAppConfig {
       style: number;
     };
     paletteIndex: number;
-    selectOptions: IGroupingSelectOption[];
   };
   chart: {
     highlightMode: HighlightEnum;
