@@ -9,10 +9,15 @@ function getBookmarksData() {
   return {
     call: () =>
       call().then(async (data: any) => {
-        const appList = await appsService.fetchAppsList().call();
-        console.log(appList);
+        const appsList = await appsService.fetchAppsList().call();
+        const listData = data.map((item: any) => {
+          const app = appsList.find(
+            (appData: any) => appData.id === item.app_id,
+          );
+          return { ...item, select: app.state.select, type: app.type };
+        });
         model.setState({
-          listData: data,
+          listData,
         });
       }),
     abort,
