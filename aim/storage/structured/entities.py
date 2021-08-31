@@ -224,3 +224,7 @@ class ObjectFactory:
     @abstractmethod
     def create_tag(self, name: str) -> Tag:
         ...
+
+    @abstractmethod
+    def delete_tag(self, name: str) -> bool:
+        ...

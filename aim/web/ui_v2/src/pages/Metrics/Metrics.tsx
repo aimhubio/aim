@@ -4,7 +4,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
-import AppBar from './components/MetricsBar/MetricsBar';
+import MetricsBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
@@ -21,37 +21,34 @@ function Metrics(
     <div ref={props.wrapperElemRef} className='Metrics__container'>
       <section className='Metrics__section'>
         <div className='Metrics__section__div Metrics__fullHeight'>
-          <div>
-            <AppBar
-              onBookmarkCreate={props.onBookmarkCreate}
-              onBookmarkUpdate={props.onBookmarkUpdate}
-              onResetConfigData={props.onResetConfigData}
+          <MetricsBar
+            onBookmarkCreate={props.onBookmarkCreate}
+            onBookmarkUpdate={props.onBookmarkUpdate}
+            onResetConfigData={props.onResetConfigData}
+          />
+          <div className='Metrics__SelectForm__Grouping__container'>
+            <SelectForm
+              selectedMetricsData={props.selectedMetricsData}
+              onMetricsSelectChange={props.onMetricsSelectChange}
+              onSelectRunQueryChange={props.onSelectRunQueryChange}
+              onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
+              toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
             />
-          </div>
-          <div>
-            <div className='Metrics__SelectForm__Grouping__container'>
-              <SelectForm
-                selectedMetricsData={props.selectedMetricsData}
-                onMetricsSelectChange={props.onMetricsSelectChange}
-                onSelectRunQueryChange={props.onSelectRunQueryChange}
-                onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
-                toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
-              />
-              <Grouping
-                groupingData={props.groupingData}
-                onGroupingSelectChange={props.onGroupingSelectChange}
-                onGroupingModeChange={props.onGroupingModeChange}
-                onGroupingPaletteChange={props.onGroupingPaletteChange}
-                onGroupingReset={props.onGroupingReset}
-                onGroupingApplyChange={props.onGroupingApplyChange}
-                onGroupingPersistenceChange={props.onGroupingPersistenceChange}
-              />
-            </div>
+            <Grouping
+              groupingData={props.groupingData}
+              groupingSelectOptions={props.groupingSelectOptions}
+              onGroupingSelectChange={props.onGroupingSelectChange}
+              onGroupingModeChange={props.onGroupingModeChange}
+              onGroupingPaletteChange={props.onGroupingPaletteChange}
+              onGroupingReset={props.onGroupingReset}
+              onGroupingApplyChange={props.onGroupingApplyChange}
+              onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+            />
           </div>
           <div ref={props.chartElemRef} className='Metrics__chart__container'>
             {!!props.lineChartData?.[0]?.length ? (
               <ChartPanel
-                key={props.lineChartData.length}
+                key={props.lineChartData?.length}
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData}
@@ -71,7 +68,7 @@ function Metrics(
                 ]}
                 controls={
                   <Controls
-                    selectOptions={props.groupingData?.selectOptions}
+                    selectOptions={props.groupingSelectOptions}
                     tooltip={props.tooltip}
                     smoothingAlgorithm={props.smoothingAlgorithm}
                     smoothingFactor={props.smoothingFactor}
@@ -96,10 +93,8 @@ function Metrics(
               />
             ) : null}
           </div>
-          <div ref={props.resizeElemRef}>
-            <div className='Metrics__resize'>
-              <MoreHorizIcon />
-            </div>
+          <div className='Metrics__resize' ref={props.resizeElemRef}>
+            <MoreHorizIcon />
           </div>
           <div ref={props.tableElemRef} className='Metrics__table__container'>
             {props.tableData?.length > 0 ? (
@@ -109,7 +104,7 @@ function Metrics(
                 columns={props.tableColumns}
                 // Table options
                 rowHeight={props.tableRowHeight}
-                sortOptions={props.groupingData.selectOptions}
+                sortOptions={props.groupingSelectOptions}
                 // Table actions
                 onSort={() => null}
                 onExport={props.onExportTableData}

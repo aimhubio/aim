@@ -2,29 +2,29 @@ import React from 'react';
 
 import { MenuList, MenuItem, Select, Divider } from '@material-ui/core';
 
-import { XAlignmentEnum } from 'utils/d3';
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
 import projectsModel from 'services/models/projects/projectsModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import useModel from 'hooks/model/useModel';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 import './AlignmentPopover.scss';
 
-const alignmentList: { type: XAlignmentEnum; name: string }[] = [
+const alignmentList: { type: AlignmentOptions; name: string }[] = [
   {
-    type: XAlignmentEnum.Step,
+    type: AlignmentOptions.STEP,
     name: 'Step',
   },
   {
-    type: XAlignmentEnum.Epoch,
+    type: AlignmentOptions.EPOCH,
     name: 'Epoch',
   },
   {
-    type: XAlignmentEnum.RelativeTime,
+    type: AlignmentOptions.RELATIVE_TIME,
     name: 'Relative Time',
   },
   {
-    type: XAlignmentEnum.AbsoluteTime,
+    type: AlignmentOptions.ABSOLUTE_TIME,
     name: 'Absolute Time',
   },
 ];
@@ -37,7 +37,7 @@ function AlignmentPopover({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   function handleTypeChange(e: React.ChangeEvent<any>) {
     const { id } = e.target;
-    onAlignmentTypeChange(id);
+    onAlignmentTypeChange(+id);
   }
 
   function onMetricChange(e: React.ChangeEvent<any>) {
@@ -64,7 +64,7 @@ function AlignmentPopover({
           <MenuItem
             key={name}
             selected={type === alignmentConfig.type}
-            id={type}
+            id={`${type}`}
             onClick={handleTypeChange}
           >
             {name}

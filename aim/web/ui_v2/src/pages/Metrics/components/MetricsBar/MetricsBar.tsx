@@ -6,11 +6,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem,
+  MenuList,
   Typography,
 } from '@material-ui/core';
-
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
+
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
@@ -34,7 +36,7 @@ function MetricsBar({
   }
 
   return (
-    <AppBar title='Metrics'>
+    <AppBar title='Explore'>
       <div onClick={handleBookmarkClick} className='MetricsBar__item__bookmark'>
         <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
         <span>
@@ -42,9 +44,28 @@ function MetricsBar({
         </span>
       </div>
       <div className='MetricsBar__menu'>
-        <span>
-          <i className='icon-menu' />
-        </span>
+        <ControlPopover
+          title='Menu'
+          anchor={({ onAnchorClick }) => (
+            <span onClick={onAnchorClick}>
+              <i className='icon-menu' />
+            </span>
+          )}
+          component={
+            <div className='MetricsBar__menu__popover'>
+              <MenuItem onClick={onResetConfigData}>
+                Reset Controls to System Defaults
+              </MenuItem>
+              <a
+                href='https://github.com/aimhubio/aim#searching-experiments'
+                target='_blank'
+                rel='noreferrer'
+              >
+                <MenuItem>Searching Experiments (docs)</MenuItem>
+              </a>
+            </div>
+          }
+        />
       </div>
       <BookmarkForm
         onBookmarkCreate={onBookmarkCreate}
