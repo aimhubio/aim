@@ -1,6 +1,8 @@
 .Home__container {
   background-color: #FFFFFF;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   h2 {
     font-style: normal;
     font-weight: 600;

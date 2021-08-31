@@ -3,7 +3,7 @@
   flex-direction: column;
   border-left: 0.0625em solid #E8F1FC;
   padding: 1.5em 1.5em 1.5em 2.5em;
-
+  min-width: 600px;
   h2 {
     margin: 0;
   }
@@ -28,7 +28,12 @@
   &:last-child {
     margin-bottom: 0;
   }
-
+  &:hover {
+    border-color: #1473E6;
+    i {
+      color: #1473E6;
+    }
+  }
   span {
     font-size: 1em;
     line-height: 1.1875em;

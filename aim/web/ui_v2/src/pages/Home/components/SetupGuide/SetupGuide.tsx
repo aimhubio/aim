@@ -25,12 +25,17 @@ r['hparams'] = 'foo'`}
         />
       </div>
       <div className='StyleGuide__resources__container'>
-        <div className='SetupGuide__resource__item'>
+        <a
+          target='_blank'
+          href='https://github.com/aimhubio/aim#overview'
+          rel='noreferrer'
+          className='SetupGuide__resource__item'
+        >
           <div className='StyleGuide__resource__item__icon'>
             <i className='icon-runs' />
           </div>
           <span>Full docs</span>
-        </div>
+        </a>
         <div className='SetupGuide__resource__item'>
           <div className='StyleGuide__resource__item__icon'>
             <i className='icon-bookmarks' />

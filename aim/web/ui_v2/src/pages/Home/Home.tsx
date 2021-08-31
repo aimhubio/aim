@@ -17,14 +17,8 @@ function Home({
         <Activity activityData={activityData} />
       </div>
       <div className='Home__Explore__container'>
-        <Grid container>
-          <Grid xs={7} item>
-            <SetupGuide />
-          </Grid>
-          <Grid xs={5} item>
-            <ExploreAim />
-          </Grid>
-        </Grid>
+        <SetupGuide />
+        <ExploreAim />
       </div>
     </section>
   );

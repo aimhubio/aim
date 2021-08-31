@@ -1,7 +1,7 @@
 import React from 'react';
 
 // import { classNames } from '../../utils';
-// import Tooltip from '../Tooltip/Tooltip';
+import { Tooltip } from '@material-ui/core';
 
 import './HeatMapStyle.scss';
 
@@ -126,18 +126,19 @@ function HeatMap({
         {+endDate < +indexToDate(index) ? (
           <div className='CalendarHeatmap__cell CalendarHeatmap__cell--dummy' />
         ) : (
-          <div
-            title={tooltip}
-            className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
-            // className={classNames({
-            //   CalendarHeatmap__cell: true,
-            //   [`CalendarHeatmap__cell--scale-${scale}`]:
-            //     Number.isInteger(scale),
-            // })}
-            // onClick={
-            //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
-            // }
-          />
+          <Tooltip title={tooltip}>
+            <div
+              className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+              // className={classNames({
+              //   CalendarHeatmap__cell: true,
+              //   [`CalendarHeatmap__cell--scale-${scale}`]:
+              //     Number.isInteger(scale),
+              // })}
+              // onClick={
+              //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
+              // }
+            />
+          </Tooltip>
         )}
       </div>
     );
