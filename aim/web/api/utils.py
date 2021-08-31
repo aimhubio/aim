@@ -6,11 +6,6 @@ from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable
 
-try:
-    from collections.abc import Iterable
-except ImportError:
-    from collections import Iterable
-
 
 def object_factory():
     from aim.web.api.projects.project import Project
