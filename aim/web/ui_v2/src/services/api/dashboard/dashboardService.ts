@@ -20,7 +20,9 @@ function fetchDashboard(id: string): IApiRequest<any> {
 function createDashboard(
   reqBody: IDashboardRequestBody,
 ): IApiRequest<IAppData> {
-  return API.post(endpoints.DASHBOARD, reqBody);
+  return API.post(endpoints.DASHBOARD, reqBody, {
+    headers: { 'Content-type': 'application/json' },
+  });
 }
 
 function updateDashboard(
