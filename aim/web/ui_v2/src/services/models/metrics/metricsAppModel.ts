@@ -200,12 +200,12 @@ function getQueryStringFromSelect(
       query = `(${selectData.metrics
         .map((metric) =>
           metric.value.context === null
-            ? `(metric_name == "${metric.value.metric_name}")`
+            ? `(metric.name == "${metric.value.metric_name}")`
             : `${Object.keys(metric.value.context).map(
                 (item) =>
-                  `(metric_name == "${
+                  `(metric.name == "${
                     metric.value.metric_name
-                  }" and context.${item} == "${
+                  }" and metric.context.${item} == "${
                     (metric.value.context as any)[item]
                   }")`,
               )}`,
