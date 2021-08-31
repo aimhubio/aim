@@ -16,6 +16,7 @@ function TagsTable({
   onTableRunClick,
   onSoftDeleteModalToggle,
   onUpdateModalToggle,
+  onDeleteModalToggle,
 }: ITagsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const [hoveredRowIndex, setHoveredRowIndex] = useState('');
   const tableColumns = [
@@ -107,6 +108,7 @@ function TagsTable({
                   fontSize='small'
                   color='primary'
                   className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                  onClick={() => onDeleteClick(cellData)}
                 />
               </div>
             )}
@@ -124,6 +126,11 @@ function TagsTable({
   function onUpdateClick(tagData: ITagProps) {
     tagsAppModel.updateTagInfo(tagData);
     onUpdateModalToggle();
+  }
+
+  function onDeleteClick(tagData: ITagProps) {
+    tagsAppModel.updateTagInfo(tagData);
+    onDeleteModalToggle();
   }
 
   useEffect(() => {

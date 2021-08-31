@@ -48,6 +48,14 @@ function hideTag(id: string, archived: boolean) {
   );
 }
 
+function deleteTag(id: string) {
+  return API.delete(endpoints.GET_TAG + id, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
 const tagsService = {
   endpoints,
   getTags,
@@ -56,6 +64,7 @@ const tagsService = {
   getTagById,
   getTagRuns,
   hideTag,
+  deleteTag,
 };
 
 export default tagsService;

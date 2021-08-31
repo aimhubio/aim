@@ -9,6 +9,7 @@ import TagDetail from './TagDetail';
 import TagSoftDelete from './TagSoftDelete';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
+import TagDelete from './TagDelete';
 import './Tags.scss';
 
 function TagsList({
@@ -24,6 +25,7 @@ function TagsList({
   const [isCreateModalOpened, setIsCreateModalOpened] = useState(false);
   const [isUpdateModalOpened, setIsUpdateModalOpened] = useState(false);
   const [isSoftDeleteModalOpened, setIsSoftDeleteModalOpened] = useState(false);
+  const [isDeleteModalOpened, setIsDeleteModalOpened] = useState(false);
   const [isTagDetailOverLayOpened, setIsTagDetailOverLayOpened] =
     useState(false);
   const [tagDetailId, setTagDetailId] = useState('');
@@ -39,6 +41,10 @@ function TagsList({
 
   function onSoftDeleteModalToggle() {
     setIsSoftDeleteModalOpened(!isSoftDeleteModalOpened);
+  }
+
+  function onDeleteModalToggle() {
+    setIsDeleteModalOpened(!isDeleteModalOpened);
   }
 
   function onTagDetailOverlayToggle() {
@@ -105,6 +111,7 @@ function TagsList({
             )}
             onTableRunClick={onTableRunClick}
             onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+            onDeleteModalToggle={onDeleteModalToggle}
             onUpdateModalToggle={onUpdateModalToggle}
           />
         </div>
@@ -161,6 +168,26 @@ function TagsList({
                 tagInfo={tagInfo}
                 tagHash={tagInfo?.id}
                 onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+                onTagDetailOverlayToggle={onTagDetailOverlayToggle}
+                isTagDetailOverLayOpened={isTagDetailOverLayOpened}
+              />
+            )}
+          </div>
+        </div>
+      </Dialog>
+      <Dialog
+        key={tagInfo?.id + '4'}
+        onClose={onDeleteModalToggle}
+        aria-labelledby='customized-dialog-title'
+        open={isDeleteModalOpened}
+      >
+        <div className='Tags__TagList__modalContainer'>
+          <div className='Tags__TagList__modalContainer__contentBox'>
+            {tagInfo && (
+              <TagDelete
+                tagInfo={tagInfo}
+                tagHash={tagInfo?.id}
+                onDeleteModalToggle={onDeleteModalToggle}
                 onTagDetailOverlayToggle={onTagDetailOverlayToggle}
                 isTagDetailOverLayOpened={isTagDetailOverLayOpened}
               />

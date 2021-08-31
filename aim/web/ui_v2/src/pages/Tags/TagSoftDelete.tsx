@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { Button } from '@material-ui/core';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -14,6 +14,8 @@ function TagSoftDelete({
   onTagDetailOverlayToggle,
   isTagDetailOverLayOpened,
 }: ITagSoftDeleteProps): React.FunctionComponentElement<React.ReactNode> {
+  const archivedRef = useRef({ archived: tagInfo?.archived });
+
   function onTagHide() {
     tagsAppModel.archiveTag(tagHash, !tagInfo?.archived).then(() => {
       tagsAppModel.getTagsData().call();
@@ -34,7 +36,7 @@ function TagSoftDelete({
     <div className='TagSoftDelete'>
       <div className='TagSoftDelete__contentContainer'>
         <div className='TagSoftDelete__contentContainer__iconContainer'>
-          {tagInfo?.archived ? (
+          {archivedRef.current?.archived ? (
             <VisibilityIcon
               className='TagSoftDelete__contentContainer__iconContainer__icon'
               fontSize='large'
@@ -51,7 +53,7 @@ function TagSoftDelete({
             Are you sure?
           </p>
           <p className='TagSoftDelete__contentContainer__textBox__contentText'>{`Are you sure you want to ${
-            tagInfo?.archived ? 'Bring Back' : 'Hide'
+            archivedRef.current?.archived ? 'bring back' : 'hide'
           } this tag?`}</p>
         </div>
       </div>
@@ -62,7 +64,7 @@ function TagSoftDelete({
         >
           Cancel
         </Button>
-        {tagInfo?.archived ? (
+        {archivedRef.current?.archived ? (
           <Button onClick={onTagShow} variant='contained' color='primary'>
             Bring back
           </Button>

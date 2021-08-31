@@ -83,12 +83,13 @@ function TagForm({
     submitForm().then(() =>
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
-          tagsService
+          tagsAppModel
             .createTag({ name, color, description: comment })
-            .call()
-            .then(() => {
-              onCloseModal();
-              tagsAppModel.getTagsData().call();
+            .then((res: any) => {
+              if (res.id) {
+                onCloseModal();
+                tagsAppModel.getTagsData().call();
+              }
             });
         }
       }),
@@ -99,9 +100,8 @@ function TagForm({
     submitForm().then(() =>
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
-          tagsService
+          tagsAppModel
             .updateTag({ name, color, description: comment }, tagId || '')
-            .call()
             .then(() => {
               tagsAppModel.getTagsData().call();
               tagsAppModel.getTagById(tagId || '').call();

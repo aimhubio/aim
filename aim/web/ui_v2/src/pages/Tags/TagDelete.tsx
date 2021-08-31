@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
 import { Button, TextField } from '@material-ui/core';
 import { useFormik } from 'formik';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import './Tags.scss';
@@ -10,7 +11,7 @@ import './Tags.scss';
 function TagDelete({
   tagInfo,
   tagHash,
-  onSoftDeleteModalToggle,
+  onDeleteModalToggle,
   onTagDetailOverlayToggle,
   isTagDetailOverLayOpened,
 }: any): React.FunctionComponentElement<React.ReactNode> {
@@ -44,9 +45,9 @@ function TagDelete({
     submitForm().then(() =>
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
-          tagsAppModel.archiveTag(tagHash, !tagInfo?.archived).then(() => {
+          tagsAppModel.deleteTag(tagHash).then(() => {
             tagsAppModel.getTagsData().call();
-            onSoftDeleteModalToggle();
+            onDeleteModalToggle();
             isTagDetailOverLayOpened && onTagDetailOverlayToggle();
           });
         }
@@ -55,14 +56,21 @@ function TagDelete({
   }
 
   return (
-    <div className='TagDelete'>
-      <div className='TagDelete__contentContainer'>
-        <p className='TagDelete__contentContainer__contentTitle'>Danger Zone</p>
+    <div className='TagSoftDelete'>
+      <div className='TagSoftDelete__contentContainer'>
+        <div className='TagSoftDelete__contentContainer__iconContainer'>
+          <DeleteOutlineIcon
+            className='TagSoftDelete__contentContainer__iconContainer__icon'
+            fontSize='large'
+          />
+        </div>
         <div className='TagDelete__contentContainer__contentBox'>
-          <>
-            <p className='TagDelete__contentContainer__contentBox__warningText'>
-              Delete this tag
+          <div className='TagSoftDelete__contentContainer__textBox'>
+            <p className='TagSoftDelete__contentContainer__textBox__titleText'>
+              Are you sure you want to delete this tag?
             </p>
+          </div>
+          <>
             <p className='TagDelete__contentContainer__contentBox__warningText'>
               {`Please type "${tagInfo?.name}" to confirm:`}
             </p>
@@ -82,7 +90,7 @@ function TagDelete({
       </div>
       <div className='TagDelete__footerBox'>
         <Button
-          onClick={onSoftDeleteModalToggle}
+          onClick={onDeleteModalToggle}
           className='TagDelete__footerBox__cancelButton'
         >
           Cancel

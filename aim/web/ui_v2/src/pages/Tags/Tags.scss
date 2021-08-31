@@ -294,6 +294,9 @@
     display: flex;
     &__iconContainer {
       margin-right: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       .MuiSvgIcon-root {
         width: 4.5rem;
         height: 3.5rem;
@@ -331,12 +334,18 @@
       font-weight: 600;
     }
     &__contentBox {
-      border: 1px solid #df2f4d;
-      border-radius: 6px;
-      padding: 10px 10px 0;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      .TagForm__tagFormContainer__labelField {
+        margin-bottom: 0;
+      }
       &__warningText {
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: normal;
+        word-break: break-all;
+        margin-bottom: 15px;
       }
     }
   }

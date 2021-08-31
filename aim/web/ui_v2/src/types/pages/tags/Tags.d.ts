@@ -65,6 +65,7 @@ export interface ITagsTableProps {
   onTableRunClick: (id: string) => void;
   onSoftDeleteModalToggle: () => void;
   onUpdateModalToggle: () => void;
+  onDeleteModalToggle: () => void;
 }
 
 export interface ITagsListProps {

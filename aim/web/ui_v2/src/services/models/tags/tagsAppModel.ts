@@ -106,6 +106,63 @@ function archiveTag(id: string, archived: boolean = false) {
     });
 }
 
+function createTag(body: object) {
+  return tagsService
+    .createTag(body)
+    .call()
+    .then((res: any) => {
+      if (res.id) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: 'Tags successfully created',
+        });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: res.detail,
+        });
+      }
+      return res;
+    });
+}
+
+function updateTag(body: object, id: string) {
+  return tagsService
+    .updateTag(body, id)
+    .call()
+    .then((res: any) => {
+      if (res.id) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: 'Tags successfully updated',
+        });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: res.detail,
+        });
+      }
+      return res;
+    });
+}
+
+function deleteTag(id: string) {
+  return tagsService
+    .deleteTag(id)
+    .call()
+    .then(() => {
+      onNotificationAdd({
+        id: Date.now(),
+        severity: 'success',
+        message: 'Tags successfully deleted',
+      });
+    });
+}
+
 function updateTagInfo(tagInfo: ITagProps) {
   const state = model.getState();
   model.setState({
@@ -123,6 +180,9 @@ const tagsAppModel = {
   getTagById,
   updateTagInfo,
   onNotificationDelete,
+  deleteTag,
+  createTag,
+  updateTag,
 };
 
 export default tagsAppModel;
