@@ -152,6 +152,14 @@ class TestTagsApi(StructuredApiTestBase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(tag.archived)
 
+    def test_delete_tag_api(self):
+        tag = next(iter(self.repo.structured_db.tags()))
+        client = self.client
+        delete_response = client.delete(f'/api/tags/{tag.uuid}/')
+        self.assertEqual(200, delete_response.status_code)
+        get_response = client.delete(f'/api/tags/{tag.uuid}/')
+        self.assertEqual(404, get_response.status_code)
+
     def test_list_run_tags_with_archived_tag(self):
         tag = next(iter(self.repo.structured_db.tags()))
         self.assertTrue(all(tag in r.tags for r in tag.runs))

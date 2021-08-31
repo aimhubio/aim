@@ -93,6 +93,13 @@ async def update_tag_properties_api(tag_id: str, tag_in: TagUpdateIn, factory=De
     }
 
 
+@tags_router.delete('/{tag_id}/')
+async def delete_tag_api(tag_id: str, factory=Depends(object_factory)):
+    with factory:
+        if not factory.delete_tag(tag_id):
+            raise HTTPException(status_code=404)
+
+
 @tags_router.get('/{tag_id}/runs/', response_model=TagGetRunsOut)
 async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
     tag = factory.find_tag(tag_id)
