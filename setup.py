@@ -47,7 +47,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.6rc2',
+    'aimrocks==0.0.6',
     'anytree>=2.8.0',
     'click>=7.0',
     'GitPython>=3.0.4',

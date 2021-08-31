@@ -271,7 +271,9 @@ function getMetricsData() {
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
-    const app: IAppData | any = await appsService.createApp(configData).call();
+    const app: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'metrics' })
+      .call();
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
         .createDashboard({ app_id: app.id, name, description })
@@ -297,7 +299,7 @@ function onBookmarkUpdate(id: string) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
     appsService
-      .updateApp(id, configData)
+      .updateApp(id, { state: configData, type: 'metrics' })
       .call()
       .then((res: IDashboardData | any) => {
         if (res.id) {

@@ -11,42 +11,14 @@ import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCar
 
 import './BookmarkCard.scss';
 
-const tags = [
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-  {
-    label: 'loss subset=test',
-  },
-];
-
 function BookmarkCard({
   name,
   id,
   app_id,
   description,
   onBookmarkDelete,
+  select,
+  type,
 }: IBookmarkCardProps): React.FunctionComponentElement<React.ReactNode> {
   const [openModal, setOpenModal] = React.useState<boolean>(false);
 
@@ -61,12 +33,17 @@ function BookmarkCard({
     onBookmarkDelete(id);
   }
 
+  const tags: { label: string }[] =
+    React.useMemo(() => {
+      return select.metrics.map((val: any) => ({ label: val.label }));
+    }, [select]) || [];
+
   return (
     <div className='BookmarkCard__container'>
       <div className='BookmarkCard__top'>
         <div className='BookmarkCard__title__section'>
           <span className='BookmarkCard__title'>{name}</span>
-          <NavLink to={`/metrics/${app_id}`}>
+          <NavLink to={`/${type}/${app_id}`}>
             <Button size='small' color='primary' variant='contained'>
               View Bookmark
             </Button>
@@ -74,24 +51,33 @@ function BookmarkCard({
         </div>
         <p>{description}</p>
       </div>
-      <div className='BookmarkCard__bottom'>
-        <div className='BookmarkCard__run__expression'>
-          <CodeBlock
-            code={`
-r = aim.Run(experiment='my_exp_name')
-r.track(value, name='loss', subset='train')
-r['hparams'] = 'foo'`}
-          />
+      {select.advancedMode ? (
+        <div className='BookmarkCard__bottom'>
+          <div className='BookmarkCard__run__expression'>
+            <CodeBlock code={select.advancedQuery} />
+          </div>
         </div>
-        <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
-          {tags.map((tag, index) => {
-            let color = COLORS[0][index % COLORS[0].length];
-            return (
-              <SelectTag key={tag.label} label={tag.label} color={color} />
-            );
-          })}
-        </div>
-      </div>
+      ) : (
+        <>
+          {select.query && (
+            <div className='BookmarkCard__bottom'>
+              <div className='BookmarkCard__run__expression'>
+                <CodeBlock code={select.query} />
+              </div>
+            </div>
+          )}
+          {tags.length > 0 && (
+            <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
+              {tags.map((tag, index) => {
+                let color = COLORS[0][index % COLORS[0].length];
+                return (
+                  <SelectTag key={tag.label} label={tag.label} color={color} />
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
       <ConfirmModal
         open={openModal}
         onCancel={handleCloseModal}
