@@ -1,10 +1,13 @@
 import React from 'react';
 
 // import { classNames } from '../../utils';
-// import Tooltip from '../Tooltip/Tooltip';
+import { Tooltip } from '@material-ui/core';
 
 import './HeatMapStyle.scss';
+import { useHistory } from 'react-router-dom';
+import { encode } from 'utils/encoder/encoder';
 
+const cellScales: number[] = [0, 1, 2, 3, 4];
 function HeatMap({
   data,
   startDate,
@@ -30,7 +33,7 @@ function HeatMap({
     'Nov',
     'Dec',
   ];
-
+  const history = useHistory();
   startDate = new Date(
     startDate.getFullYear(),
     startDate.getMonth(),
@@ -120,23 +123,48 @@ function HeatMap({
     const tooltip = ` ${dataItem ? dataItem[1] : 0} tracked run${
       dataItem?.[1] !== 1 ? 's' : ''
     } on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+
+    function onClickeCell(e: React.MouseEvent) {
+      e.stopPropagation();
+      if (scale) {
+        const startDate = date.getTime();
+        const endDate = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          23,
+          59,
+          59,
+        ).getTime();
+
+        const search = encode({
+          q: `run.date >= ${startDate} && run.date <= ${endDate}`,
+        });
+
+        history.push(`/runs?search=${search}`);
+      }
+    }
+
     return (
       <div className='CalendarHeatmap__cell__wrapper' key={index}>
         {+endDate < +indexToDate(index) ? (
           <div className='CalendarHeatmap__cell CalendarHeatmap__cell--dummy' />
         ) : (
-          <div
-            title={tooltip}
-            className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
-            // className={classNames({
-            //   CalendarHeatmap__cell: true,
-            //   [`CalendarHeatmap__cell--scale-${scale}`]:
-            //     Number.isInteger(scale),
-            // })}
-            // onClick={
-            //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
-            // }
-          />
+          <Tooltip title={tooltip}>
+            <div
+              className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+              onClick={onClickeCell}
+              role='navigation'
+              // className={classNames({
+              //   CalendarHeatmap__cell: true,
+              //   [`CalendarHeatmap__cell--scale-${scale}`]:
+              //     Number.isInteger(scale),
+              // })}
+              // onClick={
+              //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
+              // }
+            />
+          </Tooltip>
         )}
       </div>
     );
@@ -166,6 +194,22 @@ function HeatMap({
         <div className='CalendarHeatmap__map__grid' style={gridStyles}>
           {[...Array(diffDays).keys()].map((index) => renderCell(index))}
         </div>
+      </div>
+      <div className='CalendarHeatmap__cell__info'>
+        <span>Less</span>
+        {cellScales.map((scale) => (
+          <div
+            key={scale}
+            style={{ width: cellSize, height: cellSize }}
+            className='CalendarHeatmap__cell__wrapper'
+          >
+            <div
+              className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+            />
+          </div>
+        ))}
+
+        <span>More</span>
       </div>
     </div>
   );

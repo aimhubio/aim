@@ -26,7 +26,7 @@ const cardsData: IExploreCard[] = [
     title: 'Params Explorer',
     description:
       "Aim UI uses segment's analytics toolkit to collect basic info about...",
-    path: 'bookmarks',
+    path: 'params',
   },
   {
     title: 'Tags',
