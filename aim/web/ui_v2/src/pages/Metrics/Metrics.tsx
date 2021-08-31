@@ -48,7 +48,7 @@ function Metrics(
           <div ref={props.chartElemRef} className='Metrics__chart__container'>
             {!!props.lineChartData?.[0]?.length ? (
               <ChartPanel
-                key={props.lineChartData.length}
+                key={props.lineChartData?.length}
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData}

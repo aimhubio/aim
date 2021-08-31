@@ -1,3 +1,4 @@
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -7,10 +8,10 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { CurveEnum, XAlignmentEnum } from 'utils/d3';
+import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
-import { IMetricTrace, IRun } from './runModel';
+import { IMetricTrace, IRun, ITraceData } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
@@ -140,7 +141,7 @@ export interface IChartTooltip {
 
 export interface IAlignmentConfig {
   metric: string;
-  type: XAlignmentEnum;
+  type: AlignmentOptions;
 }
 
 export interface IAggregationConfig {
@@ -226,4 +227,16 @@ export interface IDashboardData {
   name: string;
   description: string;
   updated_at: string;
+}
+
+export interface IAlignMetricsDataParams {
+  align_by: string;
+  runs: {
+    run_id: string;
+    traces: {
+      context: IMetricTrace['context'];
+      metric_name: string;
+      slice: number[];
+    }[];
+  }[];
 }
