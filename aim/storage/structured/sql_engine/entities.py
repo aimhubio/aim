@@ -16,6 +16,12 @@ from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelM
 from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
 
 
+def timestamp_or_none(dt):
+    if dt is None:
+        return None
+    return dt.timestamp()
+
+
 class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
     __model__ = RunModel
     __mapped_properties__ = [
@@ -24,8 +30,8 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
         Property('finalized_at'),
-        Property('creation_time', 'created_at', get_modifier=datetime.datetime.timestamp, with_setter=False),
-        Property('end_time', 'finalized_at', get_modifier=datetime.datetime.timestamp, with_setter=False),
+        Property('creation_time', 'created_at', get_modifier=timestamp_or_none, with_setter=False),
+        Property('end_time', 'finalized_at', get_modifier=timestamp_or_none, with_setter=False),
         Property('updated_at', with_setter=False),
         Property('hashname', 'hash', with_setter=False),
         Property('experiment', autogenerate=False),

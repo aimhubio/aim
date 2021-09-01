@@ -142,7 +142,7 @@ class Run(StructuredRunMixin):
 
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
-            self.props
+            self.props.finalized_at = None
             self._prepare_resource_tracker(system_tracking_interval)
         if experiment:
             self.experiment = experiment
