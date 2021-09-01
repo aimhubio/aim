@@ -61,6 +61,7 @@ class PropsView(BaseModel):
     experiment: Optional[Experiment] = None
     tags: Optional[List[Tag]] = []
     creation_time: float
+    end_time: float
 
 
 class MetricSearchRunView(BaseModel):

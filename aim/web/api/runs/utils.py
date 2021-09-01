@@ -22,6 +22,7 @@ def get_run_props(run: Run):
                  for tag in run.props.tags],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
+        'end_time': run.creation_time + 24 * 60 * 60  # temporarily hard-code to creation_time + 1 day.
     }
 
 
