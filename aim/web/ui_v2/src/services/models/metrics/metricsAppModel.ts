@@ -72,6 +72,8 @@ import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { getItem, setItem } from 'utils/storage';
+import { useRouteMatch } from 'react-router-dom';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -153,7 +155,7 @@ let appRequestRef: {
   abort: () => void;
 };
 
-function initialize() {
+function initialize(appId: string): void {
   model.init();
   model.setState({
     refs: {
@@ -162,6 +164,11 @@ function initialize() {
     },
     groupingSelectOptions: [],
   });
+  if (!appId) {
+    const url = getItem('metricsUrl');
+    window.history.pushState(null, '', url);
+    setDefaultAppConfigData();
+  }
 }
 
 function setDefaultAppConfigData() {
@@ -190,7 +197,7 @@ function getAppConfigData(appId: string) {
   return {
     call: async () => {
       const appData = await appRequestRef.call();
-      const configData: IMetricAppConfig = _.merge(getConfig(), appData);
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData.state);
       model.setState({
         config: configData,
       });
@@ -1439,6 +1446,10 @@ function updateUrlParam(
 ): void {
   const encodedUrl: string = encode(data);
   const url: string = getUrlWithParam(paramName, encodedUrl);
+  const appId: string = window.location.pathname.split('/')[2];
+  if (!appId) {
+    setItem('metricsUrl', url);
+  }
   window.history.pushState(null, '', url);
 }
 

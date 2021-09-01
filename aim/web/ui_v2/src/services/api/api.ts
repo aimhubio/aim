@@ -88,6 +88,9 @@ function put<ResponseDataType>(
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'PUT',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   });
 }

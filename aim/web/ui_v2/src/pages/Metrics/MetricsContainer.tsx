@@ -49,7 +49,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, [metricsData?.rawData]);
 
   React.useEffect(() => {
-    metricAppModel.initialize();
+    metricAppModel.initialize(route.params.appId);
     let appRequestRef: {
       call: () => Promise<IAppData | void>;
       abort: () => void;
