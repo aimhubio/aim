@@ -57,6 +57,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   selectedMetricsData: IMetricAppConfig['select'];
   tableRowHeight: RowHeight;
   groupingSelectOptions: IGroupingSelectOption[];
+  requestIsPending: boolean;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;

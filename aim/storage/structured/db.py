@@ -18,10 +18,19 @@ class ObjectCache:
         self.data_fetch_func = data_fetch_func
         self.key_func = key_func
 
+    def fill_cache(self):
+        for obj in self.data_fetch_func():
+            self._data[self.key_func(obj)] = obj
+
+    def keys(self) -> list:
+        if not self._cached:
+            self.fill_cache()
+            self._cached = True
+        return list(self._data.keys())
+
     def __getitem__(self, key):
         if not self._cached:
-            for obj in self.data_fetch_func():
-                self._data[self.key_func(obj)] = obj
+            self.fill_cache()
             self._cached = True
         return self._data[key]
 

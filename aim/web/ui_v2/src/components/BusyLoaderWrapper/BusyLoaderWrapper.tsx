@@ -2,6 +2,7 @@ import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Skeleton } from '@material-ui/lab';
 import './BusyLoaderWrapper.scss';
+import { IBusyLoaderWrapperProps } from 'types/components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 function BusyLoaderWrapper({
   isLoading = false,
@@ -11,8 +12,9 @@ function BusyLoaderWrapper({
   loaderConfig = {},
   width = '100%',
   height = 'auto',
-}: any): React.FunctionComponentElement<React.ReactNode> {
-  function loaderRender() {
+  loaderComponent,
+}: IBusyLoaderWrapperProps): React.FunctionComponentElement<React.ReactNode> {
+  function loaderRender(): React.ReactElement {
     switch (loaderType) {
       case 'skeleton': {
         return <Skeleton {...loaderConfig} />;
@@ -25,7 +27,7 @@ function BusyLoaderWrapper({
 
   return isLoading ? (
     <div className={`BusyLoaderWrapper ${className}`} style={{ width, height }}>
-      {loaderRender()}
+      {loaderComponent || loaderRender()}
     </div>
   ) : (
     children

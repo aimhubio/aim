@@ -42,7 +42,6 @@ function SelectForm({
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
     searchRef.current = paramsAppModel.getParamsData();
-
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef.abort();
