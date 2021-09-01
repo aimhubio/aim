@@ -115,7 +115,7 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
             'run_id': tagged_run.hashname,
             'name': tagged_run.name,
             'creation_time': run.creation_time,
-            'end_time': run.creation_time + 24 * 60 * 60,
+            'end_time': run.end_time,
             'experiment': tagged_run.experiment.name if tagged_run.experiment else None
         })
     response = {
