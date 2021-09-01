@@ -1,7 +1,7 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-
+import AimButton from 'components/Button/Button';
 import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -9,6 +9,8 @@ import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
+import MoreIcon from '@material-ui/icons/MoreVert';
+
 import './Params.scss';
 
 const Params = ({
@@ -107,7 +109,7 @@ const Params = ({
               />
             ) : (
               <div className='Params__chart__container__emptyBox'>
-                Choose Params
+                Choose your param
               </div>
             )}
           </Grid>
