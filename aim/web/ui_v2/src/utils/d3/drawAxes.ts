@@ -93,7 +93,8 @@ function drawAxes(props: IDrawAxesProps): void {
     .style('font-size', '0.7em')
     .style('text-transform', 'capitalize')
     .style('fill', '#586069') // var(--grey)
-    .text(xAlignmentText);
+    .text(xAlignmentText)
+    .lower();
 
   axesRef.current.updateXAxis = function (
     xScaleUpdate: d3.AxisScale<d3.AxisDomain>,
