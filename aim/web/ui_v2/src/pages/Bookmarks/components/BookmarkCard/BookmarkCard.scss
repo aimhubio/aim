@@ -5,13 +5,10 @@
   display: flex;
   flex-direction: column;
   border: 1px solid #dee6f3;
-  transition: border 0.3s ease-out;
   border-radius: 0.5em;
   padding: 1.5em 4em 1.5em 1.5em;
   margin-bottom: 1em;
-  &:hover {
-    border: 1px solid $primary-color;
-  }
+ 
 }
 .BookmarkCard__delete {
   position: absolute;
