@@ -103,10 +103,12 @@ function Metrics(
                   }
                 />
               ) : (
-                <EmptyComponent
-                  size='big'
-                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-                />
+                !props.requestIsPending && (
+                  <EmptyComponent
+                    size='big'
+                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                  />
+                )
               )}
             </BusyLoaderWrapper>
           </div>

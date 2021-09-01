@@ -114,13 +114,13 @@ function initialize() {
   model.init();
   model.setState({
     config: getConfig(),
-    requestIsPending: true,
   });
 }
 
 function getParamsData() {
   return {
     call: async () => {
+      // model.setState({ requestIsPending: true });
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (!isEmpty(select?.params)) {

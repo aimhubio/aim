@@ -12,6 +12,8 @@ import { ChartTypeEnum } from 'utils/d3';
 import './Params.scss';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import ChartLoader from 'components/ChartLoader/ChartLoader';
+import TableLoader from 'components/TableLoader/TableLoader';
 
 const Params = ({
   curveInterpolation,
@@ -28,7 +30,7 @@ const Params = ({
   groupingSelectOptions,
   tooltip,
   chartTitleData,
-  pendingRequest,
+  requestIsPending,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -81,7 +83,10 @@ const Params = ({
             </div>
           </Grid>
           <Grid ref={chartElemRef} className='Params__chart__container' item>
-            <BusyLoaderWrapper isLoading={pendingRequest}>
+            <BusyLoaderWrapper
+              isLoading={requestIsPending}
+              loaderComponent={<ChartLoader />}
+            >
               {!!highPlotData?.[0]?.data?.length ? (
                 <ChartPanel
                   ref={chartPanelRef}
@@ -110,7 +115,9 @@ const Params = ({
                   }
                 />
               ) : (
-                <EmptyComponent size='big' content={'Choose Params'} />
+                !requestIsPending && (
+                  <EmptyComponent size='big' content={'Choose Params'} />
+                )
               )}
             </BusyLoaderWrapper>
           </Grid>
@@ -120,7 +127,12 @@ const Params = ({
             </div>
           </div>
           <Grid item xs ref={tableElemRef} className='Params__table__container'>
-            <div>asdasd</div>
+            <BusyLoaderWrapper
+              isLoading={true}
+              loaderComponent={<TableLoader />}
+            >
+              pending
+            </BusyLoaderWrapper>
           </Grid>
         </Grid>
       </section>
