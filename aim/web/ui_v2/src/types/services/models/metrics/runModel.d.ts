@@ -5,7 +5,6 @@ export interface IRun<T> {
     name: string;
   };
   created_at: number;
-  hash: string;
   traces: T[];
   hash: string;
 }
@@ -19,10 +18,13 @@ export interface IParamTrace {
 export interface IMetricTrace {
   metric_name: string;
   context: { [key: string]: unknown };
+  slice: number[];
   values: ITraceData;
   iters: ITraceData;
   epochs: ITraceData;
   timestamps: ITraceData;
+  x_axis_values?: ITraceData;
+  x_axis_iters?: ITraceData;
 }
 
 export interface IRunParam {

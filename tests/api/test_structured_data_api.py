@@ -10,15 +10,15 @@ class StructuredApiTestBase(ApiTestBase):
             for idx, run in enumerate(self.repo.iter_runs()):
                 exp_name = 'Experiment 1' if idx < 5 else 'Experiment 2'
 
-                run.props.name = f'Run number {idx+1}'
-                run.props.experiment = exp_name
+                run.name = f'Run number {idx+1}'
+                run.experiment = exp_name
                 if idx < 3:
-                    run.props.add_tag('first runs')
+                    run.add_tag('first runs')
                 elif 3 <= idx < 7:
-                    run.props.add_tag('first runs')
-                    run.props.add_tag('last runs')
+                    run.add_tag('first runs')
+                    run.add_tag('last runs')
                 else:
-                    run.props.add_tag('last runs')
+                    run.add_tag('last runs')
 
     def tearDown(self) -> None:
         remove_test_data()
@@ -151,6 +151,14 @@ class TestTagsApi(StructuredApiTestBase):
         response = client.put(f'/api/tags/{tag.uuid}/', json={'archived': True})
         self.assertEqual(200, response.status_code)
         self.assertTrue(tag.archived)
+
+    def test_delete_tag_api(self):
+        tag = next(iter(self.repo.structured_db.tags()))
+        client = self.client
+        delete_response = client.delete(f'/api/tags/{tag.uuid}/')
+        self.assertEqual(200, delete_response.status_code)
+        get_response = client.delete(f'/api/tags/{tag.uuid}/')
+        self.assertEqual(404, get_response.status_code)
 
     def test_list_run_tags_with_archived_tag(self):
         tag = next(iter(self.repo.structured_db.tags()))

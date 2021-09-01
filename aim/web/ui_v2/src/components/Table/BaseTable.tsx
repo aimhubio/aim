@@ -454,7 +454,7 @@ class BaseTable extends React.PureComponent {
       expandIconRenderer: this.renderExpandIcon,
       onRowExpand: this._handleRowExpand,
       // for fixed table, we need to sync the hover state across the inner tables
-      onRowHover: hasFrozenColumns ? this._handleRowHover : null,
+      onRowHover: this._handleRowHover,
       onRowClick: this._handleRowClick,
       onRowHeightChange: hasFrozenColumns
         ? this._handleFrozenRowHeightChange

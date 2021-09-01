@@ -66,6 +66,7 @@ const Params = ({
               />
               <Grouping
                 groupingData={groupingData}
+                groupingSelectOptions={groupingData.selectOptions}
                 onGroupingSelectChange={onGroupingSelectChange}
                 onGroupingModeChange={onGroupingModeChange}
                 onGroupingPaletteChange={onGroupingPaletteChange}

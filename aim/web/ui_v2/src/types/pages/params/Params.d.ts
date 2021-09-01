@@ -53,4 +53,5 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onExportTableData: (e: React.ChangeEvent<any>) => void;
 }

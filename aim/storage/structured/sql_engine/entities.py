@@ -1,5 +1,6 @@
 from typing import Collection, Union
 from sqlalchemy.orm import joinedload
+import datetime
 
 from aim.storage.types import SafeNone
 from aim.storage.structured.entities import \
@@ -22,6 +23,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('description'),
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
+        Property('creation_time', 'created_at', get_modifier=datetime.datetime.timestamp, with_setter=False),
         Property('updated_at', with_setter=False),
         Property('hashname', 'hash', with_setter=False),
         Property('experiment', autogenerate=False),
@@ -283,6 +285,17 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
             joinedload(TagModel.runs),
         ]).filter(TagModel.name.like(term))
         return ModelMappedTagCollection(session, query=q)
+
+    @classmethod
+    def delete(cls, _id: str, **kwargs) -> bool:
+        session = kwargs.get('session')
+        if not session:
+            return False
+        model_obj = session.query(TagModel).filter(TagModel.uuid == _id).first()
+        if model_obj:
+            session.delete(model_obj)
+            return True
+        return False
 
     @property
     def runs(self) -> RunCollection:

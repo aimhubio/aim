@@ -11,7 +11,9 @@ from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 from aim.storage.structured.sql_engine.models import Base as StructuredBase
 from aim.web.api.db import get_contexted_session
-from aim.web.api.dashboards.models import Base as ApiBase
+from aim.web.api.dashboards import models
+from aim.web.api.dashboard_apps import models
+from aim.web.api.db import Base as ApiBase
 
 
 def decode_encoded_tree_stream(stream: Iterator[bytes]) -> bytes:
@@ -72,7 +74,7 @@ def fill_up_test_data():
                 run['run_index'] = idx
                 run['start_time'] = datetime.datetime.utcnow().isoformat()
                 run['name'] = f'Run # {idx}'
-                run.props.name = run['name']
+                run.name = run['name']
 
                 metric_contexts = itertools.product(metrics, contexts)
                 for metric_context in metric_contexts:

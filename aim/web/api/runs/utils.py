@@ -13,14 +13,14 @@ from aim.storage.treeutils import encode_tree
 
 def get_run_props(run: Run):
     return {
-        'name': run.props.name if run.props.name else None,
-        'experiment': run.props.experiment.name if run.props.experiment else None,
+        'name': run.name if run.name else None,
+        'experiment': run.experiment.name if run.experiment else None,
         'tags': [{'id': tag.uuid,
                   'name': tag.name,
                   'color': tag.color,
                   'description': tag.description}
                  for tag in run.props.tags],
-        'archived': run.props.archived if run.props.archived else False,
+        'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
     }
 

@@ -28,6 +28,7 @@ function GroupingPopover({
   groupName,
   advancedComponent,
   groupingData,
+  groupingSelectOptions,
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
@@ -42,7 +43,7 @@ function GroupingPopover({
 
   const values: IGroupingSelectOption[] = React.useMemo(() => {
     let data: { value: string; group: string; label: string }[] = [];
-    groupingData.selectOptions.forEach((option) => {
+    groupingSelectOptions.forEach((option) => {
       if (groupingData?.[groupName].indexOf(option.value) !== -1) {
         data.push(option);
       }
@@ -58,7 +59,7 @@ function GroupingPopover({
       groupName,
       value: checked,
       options: groupingData.reverseMode[groupName as GroupNameType]
-        ? groupingData.selectOptions
+        ? groupingSelectOptions
         : null,
     });
   }
@@ -72,7 +73,7 @@ function GroupingPopover({
             size='small'
             multiple
             disableCloseOnSelect
-            options={groupingData?.selectOptions}
+            options={groupingSelectOptions}
             value={values}
             onChange={onChange}
             groupBy={(option) => option.group}

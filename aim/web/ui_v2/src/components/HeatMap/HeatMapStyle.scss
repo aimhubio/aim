@@ -47,7 +47,7 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  box-shadow: inset 0 0 0 2px #FFFF;
+  box-shadow: inset 0 0 0 1px #FFFF;
   border: 1px solid #1473E6;
   border-radius: 3px;
   transition: box-shadow 50ms ease;
@@ -70,22 +70,41 @@
   }
 
   &.CalendarHeatmap__cell--scale-1 {
-    background: #1473E6;
-    opacity: 0.3;
-    border: 1px solid #CDCFD3;
+    background: #ABCAF6;
+    border: 1px solid #ABCAF6;
   }
 
   &.CalendarHeatmap__cell--scale-2 {
-    background: #1473E6;
-    opacity: 0.5;
+    background: #77A8EF;
+    border: 1px solid #ABCAF6;
   }
 
   &.CalendarHeatmap__cell--scale-3 {
-    background: #1473E6;
-    opacity: 0.8;
+    background: #3578E6;
+    border: 1px solid #ABCAF6;
   }
 
   &.CalendarHeatmap__cell--scale-4 {
-    background: #1473E6;
+    background: #225AE0;
+    border: 1px solid #ABCAF6;
+  }
+}
+
+.CalendarHeatmap__cell__info {
+  margin-top: 1em;
+  display: flex;
+  align-items: center;
+  .CalendarHeatmap__cell__wrapper {
+    margin-right: 0.25em;
+  }
+  span {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+    color: #35414F;
+    margin-right: 0.75em;
+    &:last-child {
+      margin-left: 0.5em;
+    }
   }
 }

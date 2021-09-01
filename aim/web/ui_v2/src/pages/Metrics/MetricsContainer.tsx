@@ -15,6 +15,7 @@ import {
   IAlignmentConfig,
   IAppData,
   IChartTooltip,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
@@ -25,6 +26,7 @@ import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { RowHeight } from 'config/table/tableConfigs';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -131,6 +133,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.select as IMetricAppConfig['select']
       }
       tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
+      groupingSelectOptions={
+        metricsData?.groupingSelectOptions as IGroupingSelectOption[]
+      }
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
@@ -159,6 +164,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
       onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
       toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
+      onExportTableData={metricAppModel.onExportTableData}
     />
   );
 }

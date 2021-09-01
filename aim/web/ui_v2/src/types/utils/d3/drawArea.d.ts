@@ -1,5 +1,5 @@
 import React from 'react';
-import { IChartTitle } from '../../services/models/metrics/metricsAppModel';
+import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawAreaProps {
   index?: number;

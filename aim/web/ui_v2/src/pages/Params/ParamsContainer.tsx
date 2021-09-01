@@ -71,6 +71,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationDelete={paramsAppModel.onNotificationDelete}
       onResetConfigData={paramsAppModel.onResetConfigData}
       onChangeTooltip={paramsAppModel.onChangeTooltip}
+      onExportTableData={paramsAppModel.onExportTableData}
     />
   );
 }

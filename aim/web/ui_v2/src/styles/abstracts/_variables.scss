@@ -1,24 +1,23 @@
 @use './functions' as *;
 
-$primary-color: #1473E6;
-$error-color: #E64E48;
-$success-color: #2BC784;
-$warning-color: #E8BB1B;
+$primary-color: #1473e6;
+$error-color: #e64e48;
+$success-color: #2bc784;
+$warning-color: #e8bb1b;
 
 //colors
-$blue: #4B9BFF;
-$orange: #FFB46E;
-$red: #FF5F5F;
-$teal: #50D2A0;
-$pink: #FF73C3;
-$green: #9BE169;
-$purple: #AF78FF;
-$yellow: #FFD76E;
-$cyan: #5FC8FF;
-$indigo: #7785FF;
-$pico: #1C2852;
-
-
+$blue: #4b9bff;
+$orange: #ffb46e;
+$red: #ff5f5f;
+$teal: #50d2a0;
+$pink: #ff73c3;
+$green: #9be169;
+$purple: #af78ff;
+$yellow: #ffd76e;
+$cyan: #5fc8ff;
+$indigo: #7785ff;
+$white: #ffffff;
+$pico: #1c2852;
 
 //border
 $border-color-main: tint($primary-color, 90);
@@ -27,3 +26,28 @@ $radius-main: 0.375em;
 
 //text
 $text-color: $pico;
+
+$xs: 23.5em; // 376px @media (max-width: $xs) {}
+
+$sm: 36em; // (min-width: 576px)
+$md: 48em; // (min-width: 768px)
+$lg: 62em; // (min-width: 992px)
+$gl: 64em; //! gap `lg - xl` (min-width: 1024px)
+$xl: 75em; // (min-width: 1200px)
+$xxl: 80em; // (min-width: 1280px)
+
+//- to container
+
+$col-sm: 540px; // (max-width: 540px)
+$col-md: 720px; // (max-width: 720px)
+$col-lg: 960px; // (max-width: 960px)
+$col-xl: 1140px; // (max-width: 1140px)
+$col-xxl: 1420px; // (max-width: 1420px)
+
+$breakpoints: (
+  sm: $sm,
+  md: $md,
+  lg: $lg,
+  xl: $xl,
+  xxl: $xxl,
+);

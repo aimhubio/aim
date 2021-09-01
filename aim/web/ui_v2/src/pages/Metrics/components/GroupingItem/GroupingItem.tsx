@@ -26,6 +26,7 @@ function GroupingItem({
   advancedComponent,
   onSelect,
   onGroupingModeChange,
+  groupingSelectOptions,
   onReset,
   onVisibilityChange,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
@@ -44,6 +45,7 @@ function GroupingItem({
         <GroupingPopover
           groupName={groupName}
           groupingData={groupingData}
+          groupingSelectOptions={groupingSelectOptions}
           advancedComponent={advancedComponent}
           onSelect={onSelect}
           onGroupingModeChange={onGroupingModeChange}

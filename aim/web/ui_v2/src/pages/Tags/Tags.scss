@@ -1,21 +1,362 @@
+@import 'src/styles/abstracts/_variables.scss';
+
 .Tags {
-  height: 100vh;
-  &__header {
+  &__tabPanel {
+    height: calc(100% - 50px);
+    position: relative;
+    & > div {
+      height: 100%;
+      position: relative;
+    }
+  }
+  &__tabsContainer {
+    border-radius: 0;
+    padding-left: 20px;
+    box-shadow: none;
+    border: 1px solid #ebf0f8;
+    .PrivateTabIndicator-root-5 {
+      height: 3px;
+    }
+    .MuiTab-textColorInherit {
+      color: $text-color;
+      opacity: 1;
+      font-weight: 500;
+      font-size: 14px;
+      text-transform: none;
+      &.MuiInputBase-input {
+        font-weight: 600;
+      }
+    }
+  }
+  &__TagList {
+    position: relative;
+    height: 100%;
+    border-left: 1px solid #dee6f3;
+    border-right: 1px solid #dee6f3;
+    &__tagListBusyLoader {
+      padding-top: 100px;
+    }
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #ebf0f8;
+      .MuiInputBase-root {
+        height: 32px;
+        padding-left: 13px;
+        border-radius: 6px;
+        img {
+          padding-right: 9px;
+        }
+        .MuiInputBase-input {
+          font-weight: 500;
+          font-size: 14px;
+          color: #414b6d;
+          &::placeholder {
+            font-weight: 500;
+            font-size: 14px;
+            color: #606986;
+            opacity: 1;
+          }
+        }
+      }
+      &__createButton {
+        text-transform: none;
+        width: 126px;
+        padding: 4px 10px 4px 13px;
+        img {
+          padding-right: 9px;
+        }
+        .MuiButton-label {
+          font-weight: 500;
+          font-size: 14px;
+          justify-content: flex-start;
+        }
+      }
+    }
+    &__tagListBox {
+      height: calc(100% - 73px);
+      position: relative;
+      &__titleBox {
+        position: relative;
+        margin-left: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 40px;
+        background-color: $white;
+        &::before {
+          content: '';
+          width: 34px;
+          height: 3px;
+          background: $primary-color;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+        }
+        &__title {
+          font-weight: 600;
+          font-size: 14px;
+        }
+      }
+    }
+    &__modalContainer {
+      width: 350px;
+      &__titleBox {
+        height: 40px;
+        border-bottom: 1px solid #f2f5fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &__title {
+          font-weight: 600;
+          font-size: 14px;
+        }
+      }
+    }
+    &__overLayContainer {
+      .MuiDrawer-paper {
+        width: 800px;
+        box-shadow: -5px 0px 10px rgba(28, 40, 82, 0.1);
+        top: 50px;
+      }
+      .MuiBackdrop-root {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.TagsTable {
+  height: calc(100% - 40px);
+  width: 100%;
+  position: relative;
+  &__commentContainer {
+    max-width: 600px;
+    word-break: break-word;
+    &__actionsContainer {
+      right: 0;
+      top: 0;
+      height: 100%;
+      position: absolute;
+      align-items: center;
+      display: flex;
+      width: 160px;
+      justify-content: flex-end;
+      padding-right: 20px;
+      background: linear-gradient(
+        90deg,
+        rgba(236, 243, 252, 0) 0%,
+        #ecf3fc 26.41%,
+        #ecf3fc 60.3%
+      );
+    }
+  }
+  &__runCreatedDate {
+    font-weight: 500;
+    color: $text-color;
+  }
+  &__runName {
+    font-weight: 500;
+    color: $primary-color;
+    text-decoration: none;
+  }
+  .BaseTable {
+    &__table-main {
+      outline: none;
+    }
+    &__header {
+      &-row {
+        background: #ebf0f8;
+        border-bottom: none;
+      }
+      &-cell {
+        border-right: 1px solid #dee6f3;
+        border-bottom: 1px solid #dee6f3;
+        padding: 0 15px;
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+    &__row {
+      border-bottom: none;
+      &--hovered {
+        background: #e8f1fc;
+      }
+      &-cell {
+        border-right: 1px solid #dee6f3;
+        border-bottom: 1px solid #dee6f3;
+        padding-left: 15px;
+        padding-right: 15px;
+        position: relative;
+        &:last-child {
+          white-space: unset;
+          border-right: none;
+        }
+        a {
+          text-decoration: none;
+        }
+        .MuiButton-root {
+          text-transform: none;
+          &:hover {
+            background: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  &__runContainer {
+    &__runBox {
+      padding-left: 5px;
+      display: flex;
+      align-items: center;
+      &__runIconBox {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1px solid $primary-color;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 8px;
+        &__runIcon {
+          width: 4px;
+          height: 4px;
+          background: $primary-color;
+          border-radius: 50%;
+        }
+      }
+      &__runText {
+        font-weight: 500;
+        font-size: 14px;
+        color: $primary-color;
+      }
+    }
+  }
+}
+.TagContainer {
+  &__tagBox {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    &__tag {
+      height: 24px;
+      border: 1px solid;
+      border-radius: 6px;
+      padding: 1px 32px 4px;
+      max-width: 100%;
+      display: flex;
+      &__content {
+        height: 100%;
+        overflow: hidden;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}
+.TagDetail {
+  height: 100%;
+  &__headerContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px 0 13px;
+    height: 40px;
+    border-bottom: 1px solid #dee6f3;
+    &__headerActionsBox {
+      display: flex;
+      .MuiSvgIcon-root {
+        font-size: 16px;
+      }
+      &__actionsIcon {
+        margin-right: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
   }
-  &__title {
-    font-size: 2em;
-    margin: 0.5em 0;
-    padding: 0;
-    color: #3b5896;
+}
+.TagSoftDelete {
+  &__contentContainer {
+    padding: 25px 20px;
+    display: flex;
+    &__iconContainer {
+      margin-right: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .MuiSvgIcon-root {
+        width: 4.5rem;
+        height: 3.5rem;
+      }
+    }
+    &__textBox {
+      &__titleText {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      &__contentText {
+        font-weight: normal;
+        font-size: 12px;
+      }
+    }
   }
-  &__tagListBox {
-    margin-top: 1em;
-    flex-direction: column;
-    &__tagBox {
-      margin-bottom: 5px;
+  &__footerBox {
+    border-top: 1px solid #dee6f3;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__cancelButton {
+      margin-right: 10px;
+    }
+  }
+}
+
+.TagDelete {
+  &__contentContainer {
+    padding: 20px;
+    &__contentTitle {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    &__contentBox {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      .TagForm__tagFormContainer__labelField {
+        margin-bottom: 0;
+      }
+      &__warningText {
+        font-size: 12px;
+        font-weight: normal;
+        word-break: break-all;
+        margin-bottom: 15px;
+      }
+    }
+  }
+  &__footerBox {
+    border-top: 1px solid #dee6f3;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__cancelButton {
+      margin-right: 10px;
     }
   }
 }

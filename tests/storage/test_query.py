@@ -6,7 +6,7 @@ from tests.base import TestBase
 class TestQuery(TestBase):
 
     def test_query_metrics(self):
-        q = 'run.hparams.batch_size == None and context.is_training == True'
+        q = 'run.hparams.batch_size == None and metric.context.is_training == True'
         trace_count = 0
         for trc in self.repo.traces(query=q):
             self.assertIsNone(trc.run['hparams']['batch_size'])
@@ -38,19 +38,19 @@ class TestQuery(TestBase):
         self.assertEqual(10, run_count)
 
     def test_query_run_structured_params(self):
-        q = 'run.props.name == "Run # 2"'
+        q = 'run.name == "Run # 2"'
         run_count = 0
         for run_trace_collection in self.repo.query_runs(query=q).iter_runs():
             run = run_trace_collection.run
-            self.assertEqual("Run # 2", run.props.name)
+            self.assertEqual("Run # 2", run.name)
             run_count += 1
         self.assertEqual(1, run_count)
 
     @parameterized.expand([
-        ('run + context', 'run.hparams.batch_size == None and context.is_training == True'),
+        ('run + context', 'run.hparams.batch_size == None and metric.context.is_training == True'),
         ('run multiple filters', 'run.hparams.batch_size == None and run.hparams.lr == 0.01'),
-        ('context only', 'context.is_training == False'),
-        ('context + metric', 'context.is_training == False and metric == "loss"'),
+        ('context only', 'metric.context["is_training"] == False'),
+        ('context + metric name', 'metric.context.is_training == False and metric.name == "loss"'),
         ('__getitem__ interface with tuple', 'run["hparams","lr"] == 0.01'),
         ('__getitem__ interface chaining', 'run["hparams"]["lr"] == 0.01'),
         ('mixed interface', 'run["hparams"].lr == 0.01'),
