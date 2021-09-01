@@ -28,7 +28,7 @@ function BusyLoaderWrapper({
       {loaderRender()}
     </div>
   ) : (
-    children || <div></div>
+    children
   );
 }
 

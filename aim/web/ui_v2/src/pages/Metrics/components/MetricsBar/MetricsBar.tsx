@@ -7,13 +7,11 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  MenuList,
   Typography,
 } from '@material-ui/core';
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
-import AppBar from 'components/AppBar/AppBar';
 
-import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
+import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
@@ -33,6 +31,11 @@ function MetricsBar({
 
   function handleClosePopover(): void {
     setPopover('');
+  }
+
+  function handleBookmarkUpdate(): void {
+    onBookmarkUpdate(route.params.appId);
+    handleClosePopover();
   }
 
   return (
@@ -113,10 +116,7 @@ function MetricsBar({
           <Button onClick={handleClosePopover} color='primary'>
             Cancel
           </Button>
-          <Button
-            onClick={() => onBookmarkUpdate(route.params.appId)}
-            color='primary'
-          >
+          <Button onClick={handleBookmarkUpdate} color='primary'>
             Save
           </Button>
         </DialogActions>

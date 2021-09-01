@@ -64,11 +64,7 @@ const Table = React.forwardRef(function Table(
   return !isEmpty(rowData) ? (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
       {!hideHeaderActions && (
-        <Box
-          component='nav'
-          p={0.5}
-          style={{ height: '100%', position: 'relative' }}
-        >
+        <Box component='nav' p={0.5}>
           <Grid container justifyContent='space-between' alignItems='center'>
             <Grid xs item>
               <Grid container spacing={1}>
