@@ -12,7 +12,7 @@ import { encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
-import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
+import { getMetricsTableColumns } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
@@ -875,7 +875,9 @@ function getDataAsTableRows(
 
     if (metricsCollection.config !== null) {
       const groupHeaderRow = {
-        '#': metricsCollection.chartIndex + 1,
+        meta: {
+          chartIndex: metricsCollection.chartIndex + 1,
+        },
         key: groupKey!,
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
@@ -888,14 +890,6 @@ function getDataAsTableRows(
         epoch: '',
         timestamp: '',
         children: [],
-        groupHeader: true,
-        rowProps: {
-          style: {
-            boxShadow: `inset 3px 0 0 0 ${
-              metricsCollection.color ?? COLORS[0][0]
-            }`,
-          },
-        },
       };
 
       rows[groupKey!] = {
@@ -933,13 +927,6 @@ function getDataAsTableRows(
             : metric.data.timestamps[closestIndex] ?? '-'
         }`,
         parentId: groupKey,
-        rowProps: {
-          style: {
-            boxShadow: `inset 3px 0 0 0 ${
-              metricsCollection.color ?? metric.color
-            }`,
-          },
-        },
       };
 
       [
@@ -1193,7 +1180,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     null,
     processedData.params,
   );
-  const tableColumns = getTableColumns(
+  const tableColumns = getMetricsTableColumns(
     processedData.params,
     processedData.data[0].config,
   );
@@ -1355,17 +1342,18 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const processedData = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
+
   const tableData: IMetricTableRowData[] = getDataAsTableRows(
     processedData.data,
     null,
     processedData.params,
   );
-  const tableColumns: ITableColumn[] = getTableColumns(
+  const tableColumns: ITableColumn[] = getMetricsTableColumns(
     processedData.params,
     processedData.data[0].config,
   );
   // TODO need to filter excludedFields and sort column order
-  const excludedFields: string[] = ['#'];
+  const excludedFields: string[] = [];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
       acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
@@ -1566,7 +1554,7 @@ function setModelData(
     lineChartData: getDataAsLines(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getTableColumns(params, data[0].config),
+    tableColumns: getMetricsTableColumns(params, data[0].config),
     groupingSelectOptions,
   });
 }

@@ -7,7 +7,7 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 
-function getTableColumns(
+function getMetricsTableColumns(
   paramColumns: string[] = [],
   groupFields?: { [key: string]: string } | null,
   aggregationMethods?: {
@@ -57,12 +57,6 @@ function getTableColumns(
       content: <span>Time</span>,
       topHeader: 'Metrics',
     },
-    {
-      key: 'actions',
-      content: '',
-      topHeader: '',
-      pin: 'right',
-    },
   ].concat(
     paramColumns.map((param) => ({
       key: param,
@@ -77,6 +71,7 @@ function getTableColumns(
       const column = columns.find((col) => col.key === key);
       if (!!column) {
         column.pin = 'left';
+        column.topHeader = 'Grouping';
       }
     });
     columns.sort((a, b) => {
@@ -92,16 +87,7 @@ function getTableColumns(
     });
   }
 
-  return !!groupFields
-    ? [
-        {
-          key: '#',
-          content: <span>#</span>,
-          topHeader: 'Grouping',
-          pin: 'left',
-        } as ITableColumn,
-      ].concat(columns)
-    : columns;
+  return columns;
 }
 
-export default getTableColumns;
+export { getMetricsTableColumns };

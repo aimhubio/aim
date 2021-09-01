@@ -1,6 +1,5 @@
-$border-color-dark: #ccc;
-$header-cell-bg-color: #eee;
-$cell-color-dark: #fafafa;
+$cell-color-dark: #f5f5f5;
+$border-color: #e6e6e6;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
 $border-radius: 0.2em;
 $grey: #586069;
@@ -28,7 +27,7 @@ $text-sm: $text-base-unit / $text-scale-ratio;
 $text-md: $text-base-unit;
 
 $cell-height: 32px;
-$group-margin: 6px;
+$group-margin: 8px;
 
 .Table__container {
   height: 100%;
@@ -38,11 +37,11 @@ $group-margin: 6px;
 
   &.Table__container--short {
     $cell-height: 28px;
-    $group-margin: 4px;
+    $group-margin: 6px;
   }
   f &.Table__container--medium {
     $cell-height: 32px;
-    $group-margin: 6px;
+    $group-margin: 8px;
   }
 
   &.Table__container--tall {
@@ -141,7 +140,7 @@ $group-margin: 6px;
 
 .Table__action__popup__item {
   padding: $space-xxs $space-xs;
-  border-bottom: 1px solid $grey-lighter;
+  border-bottom: 1px solid $border-color;
   text-transform: capitalize;
   cursor: pointer;
   display: flex;
@@ -174,8 +173,8 @@ $group-margin: 6px;
   font-size: $text-sm;
   color: $grey;
   padding: 0 $space-sm;
-  border-bottom: 1px solid $grey-lighter;
-  border-right: 1px solid $grey-lighter;
+  border-bottom: 1px solid $border-color;
+  border-right: 1px solid $border-color;
   text-align: left;
   box-sizing: border-box;
   background-color: inherit;
@@ -190,8 +189,8 @@ $group-margin: 6px;
 
   &.Table__group__header__cell {
     position: relative;
-    background-color: $cell-color-dark;
-    border-color: $border-color-dark;
+    background-color: #fcfcfc;
+    border-color: $border-color;
     z-index: 1;
     transition: background-color 0.2s ease-out;
 
@@ -207,7 +206,7 @@ $group-margin: 6px;
 
   &.Table__group__config__column__cell {
     background-color: $grey-bg;
-    border-right: 1px solid $border-color-dark;
+    border-right: 1px solid $border-color;
     border-bottom: none;
     padding: 0;
 
@@ -244,10 +243,10 @@ $group-margin: 6px;
   position: sticky;
   top: $cell-height;
   flex: none;
-  background-color: $header-cell-bg-color;
+  background-color: $cell-color-dark;
   padding: $space-xxs $space-sm;
   font-size: $text-md;
-  border-color: $border-color-dark;
+  border-color: $border-color;
   color: $grey-dark;
   font-weight: bold;
   z-index: 3;
@@ -287,7 +286,7 @@ $group-margin: 6px;
   font-size: $text-sm;
   font-weight: 500;
   letter-spacing: 0.05rem;
-  border-top: 1px solid $border-color-dark;
+  border-top: 1px solid $border-color;
 }
 
 .Table__header__action__container {
@@ -329,10 +328,10 @@ $group-margin: 6px;
 .Table__group {
   margin-top: $group-margin;
   background-color: #fff;
-  border-top: 1px solid $border-color-dark;
+  border-top: 1px solid $border-color;
 
   .Table__cell:last-of-type {
-    border-bottom: 1px solid $border-color-dark;
+    border-bottom: 1px solid $border-color;
   }
 }
 
@@ -344,7 +343,7 @@ $group-margin: 6px;
         &:first-of-type {
           .Table__group {
             margin-left: $group-margin;
-            border-left: 1px solid $border-color-dark;
+            border-left: 1px solid $border-color;
             border-top-left-radius: $border-radius;
             border-bottom-left-radius: $border-radius;
 
@@ -364,7 +363,7 @@ $group-margin: 6px;
         &:last-of-type {
           .Table__group {
             margin-right: $group-margin;
-            border-right: 1px solid $border-color-dark;
+            border-right: 1px solid $border-color;
             border-top-right-radius: $border-radius;
             border-bottom-right-radius: $border-radius;
 

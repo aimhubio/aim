@@ -26,23 +26,43 @@ const Table = React.forwardRef(function Table(
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef();
+  const scrollTop = React.useRef(0);
+  const expandedGroups = React.useRef([]);
+  const tableContainerRef = React.useRef();
   const [data, setData] = React.useState(props.data);
   const [columns, setColumns] = React.useState(props.columns);
 
   React.useImperativeHandle(ref, () => ({
     updateData: ({ newData, newColumns }) => {
-      if (!!newData) {
-        setData(newData);
+      if (props.custom) {
+        // tableContainerRef.current.
+      } else {
+        if (!!newData) {
+          setData(newData);
+        }
+        if (!!newColumns) {
+          setColumns(newColumns);
+        }
       }
-      if (!!newColumns) {
-        setColumns(newColumns);
-      }
-      // tableRef.current?.forceUpdateTable();
     },
     setHoveredRow: tableRef.current?.setHoveredRow,
     setActiveRow: tableRef.current?.setActiveRow,
     scrollToRow: tableRef.current?.scrollToRowByKey,
   }));
+
+  React.useEffect(() => {
+    if (props.custom) {
+      tableContainerRef.current.onscroll = ({ target }) => {
+        console.log(target.scrollHeight, target.scrollTop);
+      };
+    }
+
+    return () => {
+      if (props.custom && tableContainerRef.current) {
+        tableContainerRef.current.onscroll = null;
+      }
+    };
+  }, [props.custom]);
 
   return (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
@@ -154,7 +174,10 @@ const Table = React.forwardRef(function Table(
           </Grid>
         </Grid>
       </Box>
-      <Box style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}>
+      <div
+        style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}
+        ref={tableContainerRef}
+      >
         <AutoResizer>
           {({ width, height }) =>
             props.custom ? (
@@ -188,7 +211,7 @@ const Table = React.forwardRef(function Table(
                 rowHeight={props.rowHeight}
                 footerHeight={0}
                 defaultExpandedRowKeys={[]}
-                expandColumnKey='#'
+                expandColumnKey={null}
                 rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
                 sortBy={{}}
                 useIsScrolling={false}
@@ -210,9 +233,9 @@ const Table = React.forwardRef(function Table(
             )
           }
         </AutoResizer>
-      </Box>
+      </div>
     </Box>
   );
 });
 
-export default React.memo(Table);
+export default React.memo(Table, () => true);
