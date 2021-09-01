@@ -1575,7 +1575,7 @@ function setModelData(
     lineChartData: getDataAsLines(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getTableColumns(params, data[0].config),
+    tableColumns: getTableColumns(params, data[0]?.config),
     groupingSelectOptions,
   });
 }
