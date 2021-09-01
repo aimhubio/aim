@@ -1,4 +1,5 @@
 @use './abstracts' as *;
+@import './utils';
 
 .ScrollBar__hidden {
   --ms-overflow-style: none;
