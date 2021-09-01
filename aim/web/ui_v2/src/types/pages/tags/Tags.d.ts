@@ -25,6 +25,7 @@ export interface ITagRunsProps {
 }
 
 export interface ITagSoftDeleteProps {
+  modalIsOpen: boolean;
   tagHash: string;
   tagInfo: ITagInfo;
   onSoftDeleteModalToggle: () => void;

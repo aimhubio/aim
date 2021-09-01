@@ -155,46 +155,27 @@ function TagsList({
           </div>
         </div>
       </Dialog>
-      <Dialog
-        key={tagInfo?.id + '3'}
-        onClose={onSoftDeleteModalToggle}
-        aria-labelledby='customized-dialog-title'
-        open={isSoftDeleteModalOpened}
-      >
-        <div className='Tags__TagList__modalContainer'>
-          <div className='Tags__TagList__modalContainer__contentBox'>
-            {tagInfo && (
-              <TagSoftDelete
-                tagInfo={tagInfo}
-                tagHash={tagInfo?.id}
-                onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-                onTagDetailOverlayToggle={onTagDetailOverlayToggle}
-                isTagDetailOverLayOpened={isTagDetailOverLayOpened}
-              />
-            )}
-          </div>
-        </div>
-      </Dialog>
-      <Dialog
-        key={tagInfo?.id + '4'}
-        onClose={onDeleteModalToggle}
-        aria-labelledby='customized-dialog-title'
-        open={isDeleteModalOpened}
-      >
-        <div className='Tags__TagList__modalContainer'>
-          <div className='Tags__TagList__modalContainer__contentBox'>
-            {tagInfo && (
-              <TagDelete
-                tagInfo={tagInfo}
-                tagHash={tagInfo?.id}
-                onDeleteModalToggle={onDeleteModalToggle}
-                onTagDetailOverlayToggle={onTagDetailOverlayToggle}
-                isTagDetailOverLayOpened={isTagDetailOverLayOpened}
-              />
-            )}
-          </div>
-        </div>
-      </Dialog>
+      {tagInfo && (
+        <TagSoftDelete
+          modalIsOpen={isSoftDeleteModalOpened}
+          tagInfo={tagInfo}
+          tagHash={tagInfo?.id}
+          onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+          onTagDetailOverlayToggle={onTagDetailOverlayToggle}
+          isTagDetailOverLayOpened={isTagDetailOverLayOpened}
+        />
+      )}
+
+      {tagInfo && (
+        <TagDelete
+          modalIsOpen={isDeleteModalOpened}
+          tagInfo={tagInfo}
+          tagHash={tagInfo?.id}
+          onDeleteModalToggle={onDeleteModalToggle}
+          onTagDetailOverlayToggle={onTagDetailOverlayToggle}
+          isTagDetailOverLayOpened={isTagDetailOverLayOpened}
+        />
+      )}
       <Drawer
         className='Tags__TagList__overLayContainer'
         anchor='right'

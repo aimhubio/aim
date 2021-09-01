@@ -29,16 +29,17 @@ const LineChart = React.forwardRef(function LineChart(
     syncHoverState,
     axesScaleType,
     displayOutliers,
-    xAlignment,
+    alignmentConfig,
     zoomMode,
     highlightMode,
     curveInterpolation,
+    title,
   } = props;
 
   // boxes
   const visBoxRef = React.useRef({
     margin: {
-      top: 24,
+      top: 30,
       right: 20,
       bottom: 30,
       left: 60,
@@ -87,6 +88,7 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
+      title,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -106,11 +108,16 @@ const LineChart = React.forwardRef(function LineChart(
     attributesRef.current.yScale = yScale;
 
     drawAxes({
+      svgNodeRef,
       axesNodeRef,
       axesRef,
       plotBoxRef,
       xScale,
       yScale,
+      width,
+      height,
+      margin,
+      alignmentConfig,
     });
 
     drawLines({
@@ -129,7 +136,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
-      xAlignment,
+      alignmentConfig,
       highlightMode,
       syncHoverState,
       visAreaRef,

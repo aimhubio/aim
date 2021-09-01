@@ -10,6 +10,8 @@ import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
 import './Params.scss';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 
 const Params = ({
   curveInterpolation,
@@ -23,7 +25,10 @@ const Params = ({
   resizeElemRef,
   tableElemRef,
   groupingData,
+  groupingSelectOptions,
   tooltip,
+  chartTitleData,
+  pendingRequest,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -65,7 +70,7 @@ const Params = ({
               />
               <Grouping
                 groupingData={groupingData}
-                groupingSelectOptions={groupingData.selectOptions}
+                groupingSelectOptions={groupingSelectOptions}
                 onGroupingSelectChange={onGroupingSelectChange}
                 onGroupingModeChange={onGroupingModeChange}
                 onGroupingPaletteChange={onGroupingPaletteChange}
@@ -76,37 +81,38 @@ const Params = ({
             </div>
           </Grid>
           <Grid ref={chartElemRef} className='Params__chart__container' item>
-            {!!highPlotData?.[0]?.data?.length ? (
-              <ChartPanel
-                ref={chartPanelRef}
-                chartType={ChartTypeEnum.HighPlot}
-                data={highPlotData}
-                focusedState={focusedState}
-                onActivePointChange={onActivePointChange}
-                tooltip={tooltip}
-                chartProps={[
-                  {
-                    curveInterpolation,
-                    isVisibleColorIndicator,
-                  },
-                ]}
-                controls={
-                  <Controls
-                    curveInterpolation={curveInterpolation}
-                    isVisibleColorIndicator={isVisibleColorIndicator}
-                    selectOptions={groupingData?.selectOptions}
-                    tooltip={tooltip}
-                    onCurveInterpolationChange={onCurveInterpolationChange}
-                    onColorIndicatorChange={onColorIndicatorChange}
-                    onChangeTooltip={onChangeTooltip}
-                  />
-                }
-              />
-            ) : (
-              <div className='Params__chart__container__emptyBox'>
-                Choose Params
-              </div>
-            )}
+            <BusyLoaderWrapper isLoading={pendingRequest}>
+              {!!highPlotData?.[0]?.data?.length ? (
+                <ChartPanel
+                  ref={chartPanelRef}
+                  chartType={ChartTypeEnum.HighPlot}
+                  data={highPlotData}
+                  focusedState={focusedState}
+                  onActivePointChange={onActivePointChange}
+                  tooltip={tooltip}
+                  chartTitleData={chartTitleData}
+                  chartProps={[
+                    {
+                      curveInterpolation,
+                      isVisibleColorIndicator,
+                    },
+                  ]}
+                  controls={
+                    <Controls
+                      curveInterpolation={curveInterpolation}
+                      isVisibleColorIndicator={isVisibleColorIndicator}
+                      selectOptions={groupingSelectOptions}
+                      tooltip={tooltip}
+                      onCurveInterpolationChange={onCurveInterpolationChange}
+                      onColorIndicatorChange={onColorIndicatorChange}
+                      onChangeTooltip={onChangeTooltip}
+                    />
+                  }
+                />
+              ) : (
+                <EmptyComponent size='big' content={'Choose Params'} />
+              )}
+            </BusyLoaderWrapper>
           </Grid>
           <div ref={resizeElemRef}>
             <div className='Params__resize'>

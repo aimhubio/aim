@@ -28,12 +28,21 @@ export interface IMetricAppModelState {
   config: IMetricAppConfig;
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
+  chartTitleData: IChartTitleData;
   aggregatedData: IAggregatedData[];
   tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+}
+
+export interface IChartTitleData {
+  [key: string]: IChartTitle;
+}
+
+export interface IChartTitle {
+  [key: string]: string;
 }
 
 export interface IAggregatedData extends IAggregationData {
@@ -48,7 +57,7 @@ export interface ITooltipData {
 }
 
 export interface ITooltipContent {
-  group_config?: {
+  groupConfig?: {
     [key: string]: any;
   };
   params?: {

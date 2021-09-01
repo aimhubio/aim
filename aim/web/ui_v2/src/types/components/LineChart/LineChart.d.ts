@@ -8,6 +8,8 @@ import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import {
   IAggregatedData,
   IAggregationConfig,
+  IAlignmentConfig,
+  IChartTitle,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -28,7 +30,7 @@ export interface ILineChartProps {
   index: number;
   data: ILine[];
   aggregatedData?: IAggregatedData[];
-  xAlignment?: AlignmentOptions;
+  alignmentConfig?: IAlignmentConfig;
   displayOutliers: boolean;
   zoomMode: boolean;
   axesScaleType: IAxesScaleState;
@@ -36,6 +38,7 @@ export interface ILineChartProps {
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   aggregationConfig?: IAggregationConfig;
+  title?: IChartTitle;
 }
 
 export interface IUpdateFocusedChartProps {

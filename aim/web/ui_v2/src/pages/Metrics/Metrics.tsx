@@ -7,17 +7,15 @@ import Controls from './components/Controls/Controls';
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
-
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { ChartTypeEnum } from 'utils/d3';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-
-import './Metrics.scss';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
-import { Skeleton } from '@material-ui/lab';
-import TableLoader from '../../components/TableLoader/TableLoader';
-import ChartLoader from '../../components/ChartLoader/ChartLoader';
+import TableLoader from 'components/TableLoader/TableLoader';
+import ChartLoader from 'components/ChartLoader/ChartLoader';
+
+import './Metrics.scss';
 
 function Metrics(
   props: IMetricProps,

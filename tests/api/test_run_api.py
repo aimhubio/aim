@@ -22,6 +22,31 @@ class TestRunApi(ApiTestBase):
             for trace in run['traces']:
                 self.assertAlmostEqual(0.99, trace['last_value']['last'])
 
+    def test_search_runs_api_paginated(self):
+        client = self.client
+
+        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
+                                                               'limit': 1})
+        self.assertEqual(200, response.status_code)
+
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024 * 1024)))
+        self.assertEqual(1, len(decoded_response))
+
+        offset = ''
+        for hashname, run in decoded_response.items():
+            offset = hashname
+            self.assertEqual('Run # 2', run['props']['name'])
+
+        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
+                                                               'limit': 5,
+                                                               'offset': offset})
+        self.assertEqual(200, response.status_code)
+
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024 * 1024)))
+        self.assertEqual(1, len(decoded_response))
+        for hashname, run in decoded_response.items():
+            self.assertEqual('Run # 3', run['props']['name'])
+
     def test_search_metrics_api_default_step(self):
         client = self.client
 
