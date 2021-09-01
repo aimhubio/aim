@@ -135,6 +135,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
+      requestIsPending={metricsData?.requestIsPending as boolean}
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}

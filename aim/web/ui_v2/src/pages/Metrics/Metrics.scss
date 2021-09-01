@@ -1,6 +1,10 @@
 .Metrics__section {
   height: 100vh;
   overflow: hidden;
+  .Metrics__loader {
+    flex-direction: column;
+    justify-content: space-between;
+  }
 }
 
 .Metrics__container {

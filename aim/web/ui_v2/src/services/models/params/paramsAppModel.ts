@@ -112,6 +112,7 @@ function initialize() {
   model.init();
   model.setState({
     config: getConfig(),
+    requestIsPending: true,
   });
 }
 
@@ -145,6 +146,7 @@ function getParamsData() {
           params,
           rawData: runData,
           config: configData,
+          requestIsPending: false,
         });
       }
     },
