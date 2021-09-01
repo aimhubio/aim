@@ -1,6 +1,5 @@
 from typing import Collection, Union
 from sqlalchemy.orm import joinedload
-import datetime
 
 from aim.storage.types import SafeNone
 from aim.storage.structured.entities import \
