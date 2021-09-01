@@ -157,7 +157,8 @@ async def metric_search_result_streamer(traces: QueryTraceCollection, steps_num:
             yield collect_run_streamable_data(encoded_tree)
 
 
-async def run_search_result_streamer(runs: QueryRunTraceCollection) -> bytes:
+async def run_search_result_streamer(runs: QueryRunTraceCollection, limit: int) -> bytes:
+    run_count = 0
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
         run_dict = {
@@ -170,6 +171,10 @@ async def run_search_result_streamer(runs: QueryRunTraceCollection) -> bytes:
 
         encoded_tree = encode_tree(run_dict)
         yield collect_run_streamable_data(encoded_tree)
+
+        run_count += 1
+        if limit and run_count >= limit:
+            break
 
 
 def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
