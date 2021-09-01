@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import SelectTag from 'components/SelectTag/SelectTag';
+import Button from 'components/Button/Button';
+
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
@@ -44,7 +45,7 @@ function BookmarkCard({
         <div className='BookmarkCard__title__section'>
           <span className='BookmarkCard__title'>{name}</span>
           <NavLink to={`/${type}/${app_id}`}>
-            <Button size='small' color='primary' variant='contained'>
+            <Button size='small' variant='outlined'>
               View Bookmark
             </Button>
           </NavLink>
