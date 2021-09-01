@@ -25,7 +25,18 @@ class ContainerConfig(NamedTuple):
 
 # TODO make this api thread-safe
 class Repo:
+    """Aim repository object.
 
+    Provides methods for  repositories creation/opening/cleanup.
+    Provides APIs for accessing Runs.
+    Provides API for querying Runs/Traces based on a given expression.
+
+    Args:
+        path (str): Path to Aim repository.
+        read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
+        init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
+            Recommended to use ``aim init`` command instead.
+    """
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
@@ -65,6 +76,17 @@ class Repo:
 
     @classmethod
     def default_repo(cls, init: bool = False):
+        """Named constructor for default repository.
+
+        Searches nearest `.aim` directory from current directory to roo directory.
+        If not found, return Repo for current directory.
+
+        Args:
+            init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
+                Recommended to use `aim init` command instead.
+        Returns:
+            :obj:`Repo` object.
+        """
         if cls._default_path:
             repo_path = cls._default_path
         else:
@@ -76,6 +98,16 @@ class Repo:
 
     @classmethod
     def from_path(cls, path: str, read_only: bool = None, init: bool = False):
+        """Named constructor for Repo for given path.
+
+        Arguments:
+            path (str): Path to Aim repository.
+            read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
+            init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
+                Recommended to use ``aim init`` command instead.
+        Returns:
+            :obj:`Repo` object.
+        """
         path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
@@ -85,12 +117,24 @@ class Repo:
 
     @classmethod
     def exists(cls, path: str) -> bool:
+        """Check Aim repository existence.
+
+        Args:
+            path (str): Path to Aim repository.
+        Returns:
+            True if repository exists, False otherwise.
+        """
         path = clean_repo_path(path)
         aim_repo_path = os.path.join(path, AIM_REPO_NAME)
         return os.path.exists(aim_repo_path)
 
     @classmethod
     def rm(cls, path: str):
+        """Remove Aim repository.
+
+        Args:
+            path (str): Path to Aim repository.
+        """
         path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is not None:
@@ -147,11 +191,23 @@ class Repo:
         return container_view
 
     def iter_runs(self) -> Iterator["Run"]:
+        """Iterate over Repo runs.
+
+        Yields:
+            next :obj:`Run` in readonly mode .
+        """
         self.meta_tree.preload()
         for run_name in self.meta_tree.view('chunks').keys():
             yield Run(run_name, repo=self, read_only=True)
 
     def get_run(self, hashname: str) -> Optional['Run']:
+        """Get run if exists.
+
+        Args:
+            hashname (str): Run hashname.
+        Returns:
+            :obj:`Run` object if hashname is found in repository. `None` otherwise.
+        """
         # TODO: [MV] optimize existence check for run
         if hashname is None or hashname not in self.meta_tree.view('chunks').keys():
             return None
@@ -159,27 +215,43 @@ class Repo:
             return Run(hashname, repo=self, read_only=True)
 
     def query_runs(self, query: str = '') -> QueryRunTraceCollection:
+        """Get runs satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`TraceCollection`: Iterable for runs/traces matching query expression.
+        """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         Run.set_props_cache_hint('runs_cache')
         return QueryRunTraceCollection(self, query)
 
     def traces(self, query: str = '') -> QueryTraceCollection:
+        """Get traces satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`TraceCollection`: Iterable for traces matching query expression.
+        """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         Run.set_props_cache_hint('runs_cache')
         return QueryTraceCollection(repo=self, query=query)
 
-    def iter_traces(self, query: str = '') -> QueryTraceCollection:
-        return self.traces(query=query)
-
-    def get_meta_tree(self):
+    def _get_meta_tree(self):
         return self.request(
             'meta', read_only=True, from_union=True
         ).tree().view('meta')
 
     def collect_metrics(self) -> Dict[str, list]:
-        meta_tree = self.get_meta_tree()
+        """Utility function for getting metrics and contexts for all traces.
+
+        Returns:
+            :obj:`dict`: Tree of metrics and their contexts.
+        """
+        meta_tree = self._get_meta_tree()
         traces = meta_tree.collect('traces')
         metrics = defaultdict(list)
         for ctx_id, trace_metrics in traces.items():
@@ -189,5 +261,10 @@ class Repo:
         return metrics
 
     def collect_params(self):
-        meta_tree = self.get_meta_tree()
+        """Utility function for getting run meta-parameters.
+
+        Returns:
+            :obj:`dict`: All runs meta-parameters.
+        """
+        meta_tree = self._get_meta_tree()
         return meta_tree.collect('attrs', strict=False)

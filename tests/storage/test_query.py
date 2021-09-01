@@ -58,7 +58,7 @@ class TestQuery(TestBase):
     def test_query_execution(self, name, q):
         # crash/no-crash test
         # execute query and iterate over result
-        for _ in self.repo.iter_traces(q):
+        for _ in self.repo.traces(q):
             continue
         for _ in self.repo.query_runs(q).iter_runs():
             continue
@@ -66,4 +66,4 @@ class TestQuery(TestBase):
     def test_invalid_query(self):
         q = 'invalid_varialble.get("hparams", "batch_size") == None'
         with self.assertRaises(Exception):
-            next(iter(self.repo.iter_traces(q)))
+            next(iter(self.repo.traces(q)))

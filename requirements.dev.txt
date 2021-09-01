@@ -4,3 +4,6 @@ twine
 flake8
 parameterized==0.8.1
 pytest-cov==2.12.1
+Sphinx==4.1.2
+sphinx-rtd-theme==0.5.2
+m2r2==0.3.1

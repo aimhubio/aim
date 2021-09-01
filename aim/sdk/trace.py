@@ -33,6 +33,10 @@ T = TypeVar('T')
 class Trace(Generic[T]):
     # TODO move the core logic of Run.track here
 
+    """Class representing single tracked metric series.
+    Provides interface to access tracked values, steps, timestamps and epochs.
+    Values, epochs and timestamps are accessed via :obj:`aim.storage.arrayview.ArrayView` interface
+    """
     def __init__(
         self,
         name: str,
@@ -64,21 +68,37 @@ class Trace(Generic[T]):
 
     @property
     def values(self) -> ArrayView[T]:
+        """Tracked values array as :obj:`ArrayView`.
+
+            :getter: Returns values ArrayView.
+        """
         array_view = self.tree.array('val')
         return array_view
 
     @property
     def indices(self) -> List[int]:
+        """Metric tracking steps as :obj:`list`.
+
+            :getter: Returns steps list.
+        """
         array_view = [i for i, _ in enumerate(self.values)]
         return array_view
 
     @property
     def epochs(self) -> ArrayView[int]:
+        """Tracked epochs array as :obj:`ArrayView`.
+
+            :getter: Returns epochs ArrayView.
+        """
         array_view = self.tree.array('epoch')
         return array_view
 
     @property
     def timestamps(self) -> ArrayView[float]:
+        """Tracked timestamps array as :obj:`ArrayView`.
+
+            :getter: Returns timestamps ArrayView.
+        """
         array_view = self.tree.array('time')
         return array_view
 
@@ -232,6 +252,13 @@ class MetricView:
 
 
 class TraceCollection:
+    """Collection of tracked metric series.
+    Typically represents metrics of a same run or metrics matching goven query expression.
+
+    Args:
+        run (:obj:`Run`, optinal): If specified, traces will be associated with the Run object.
+
+    """
     def __init__(
         self,
         run: 'Run' = None,
@@ -268,10 +295,15 @@ class TraceCollection:
 
     @abstractmethod
     def iter(self) -> Iterator[Trace]:
+        """Create iterator for collection traces
+
+        Yields:
+            Next trace object based on implementation.
+        """
         ...
 
     def iter_series(self) -> Iterator[Trace]:
-        # Alias to iter
+        """Alias to :obj:`iter`"""
         return self.iter()
 
     @abstractmethod
@@ -282,6 +314,10 @@ class TraceCollection:
 
     @abstractmethod
     def iter_runs(self) -> Iterator['TraceCollection']:
+        """Create iterator for collection run traces
+        Yields:
+            Next run's TraceCollection based on implementation.
+        """
         if self.run is not None:
             logger.warning('Run is already bound to the Collection')
         ...

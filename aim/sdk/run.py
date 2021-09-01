@@ -31,6 +31,12 @@ logger = logging.getLogger(__name__)
 class StructuredRunMixin:
     @property
     def name(self):
+        """Run name, set by user.
+
+            :getter: Returns run's name.
+            :setter: Sets run's name.
+            :type: string
+        """
         return self.props.name
 
     @name.setter
@@ -39,6 +45,12 @@ class StructuredRunMixin:
 
     @property
     def description(self):
+        """Run description, set by user.
+
+            :getter: Returns run's description.
+            :setter: Sets run's description.
+            :type: string
+        """
         return self.props.description
 
     @description.setter
@@ -47,6 +59,12 @@ class StructuredRunMixin:
 
     @property
     def archived(self):
+        """Check is run archived or not.
+
+            :getter: Returns run's archived state.
+            :setter: Archive/un-archive run.
+            :type: bool
+        """
         return self.props.archived
 
     @archived.setter
@@ -55,10 +73,18 @@ class StructuredRunMixin:
 
     @property
     def created_at(self):
+        """Run object creation time [UTC] as datetime.
+
+            :getter: Returns run creation time.
+        """
         return self.props.created_at
 
     @property
     def creation_time(self):
+        """Run object creation time [UTC] as timestamp.
+
+            :getter: Returns run creation time.
+        """
         return self.props.creation_time
 
     @property
@@ -67,6 +93,12 @@ class StructuredRunMixin:
 
     @property
     def experiment(self):
+        """Run experiment.
+
+            :getter: Returns run's experiment name.
+            :setter: Sets run's experiment.
+            :type: string
+        """
         return self.props.experiment
 
     @experiment.setter
@@ -75,16 +107,47 @@ class StructuredRunMixin:
 
     @property
     def tags(self):
+        """List of run tags.
+
+            :getter: Returns run's tag list.
+        """
         return self.props.tags
 
     def add_tag(self, value):
+        """Add tag to run
+
+        Args:
+            value (str): Tag to add.
+        """
         return self.props.add_tag(value)
 
     def remove_tag(self, tag_id):
+        """Remove run tag.
+
+        Args:
+            tag_id (str): :obj:`uuid` of tag to be removed.
+        """
         return self.props.remove_tag(tag_id)
 
 
 class Run(StructuredRunMixin):
+    """Run object used for tracking metrics.
+
+    Provides method :obj:`track` to track value series [traces] for multiple metrics and contexts.
+    Provides dictionary-like interface for Run object meta-parameters.
+    Provides API for iterating tracked traces.
+
+    Args:
+         hashname (:obj:`str`, optional): Run's hashname. If skipped, generated automatically.
+         repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+         read_only (:obj:`bool`, optional): Run creation mode.
+            Default is False, meaning Run object can be used to track metrics.
+         experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/traces.
+         system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+    """
 
     _idx_to_ctx: Dict[int, Context] = dict()
     _props_cache_hint: str = None
@@ -151,10 +214,33 @@ class Run(StructuredRunMixin):
         return ctx
 
     def __setitem__(self, key: str, val: Any):
+        """Set Run top-level meta-parameter.
+
+        Args:
+             key (:obj:`str`): Top-level meta-parameter name. Use ellipsis to reset
+                run's all meta-parameters.
+             val: Meta-parameter value.
+
+        Examples:
+            >>> run = Run('3df703c')
+            >>> run[...] = params
+            >>> run['hparams'] = {'batch_size': 42}
+        """
         self.meta_run_attrs_tree[key] = val
         self.meta_attrs_tree[key] = val
 
     def __getitem__(self, key):
+        """Get run meta-parameter by key.
+
+        Args:
+            key: path to Run meta-parameter.
+        Returns:
+            Collected sub-tree of Run meta-parameters.
+        Examples:
+            >>> run = Run('3df703c')
+            >>> run['hparams']  # -> {'batch_size': 42}
+            >>> run['hparams', 'batch_size']  # -> 42
+        """
         return self._collect(key)
 
     def get(self, key, default: Any = None, strict: bool = True):
@@ -178,6 +264,10 @@ class Run(StructuredRunMixin):
                 self._system_resource_tracker.start()
 
     def __delitem__(self, key: str):
+        """Remove key from run meta-params.
+        Args:
+            key: meta-parameter path
+        """
         del self.meta_attrs_tree[key]
         del self.meta_run_attrs_tree[key]
 
@@ -190,6 +280,17 @@ class Run(StructuredRunMixin):
         *,
         context: AimObject = None,
     ):
+        """Main method for tracking numeric value series.
+
+        Args:
+             value: The tracked value.
+             name (str): Tracked metric name.
+             step (:obj:`int`, optional): Metric tracking iteration. Autoincremented if not specified.
+             epoch (:obj:`int`, optional): The training epoch.
+             context (:obj:`dict`, optional): Metric racking context.
+
+        Appends the tracked value to metric series specified by `name` and `context`.
+        """
         track_time = time()
         # TODO move to Trace
         if context is None:
@@ -254,6 +355,11 @@ class Run(StructuredRunMixin):
         return self.series_run_tree.view((context.idx, name))
 
     def iter_all_traces(self) -> Iterator[Tuple[str, Context, 'Run']]:
+        """Iterator for all run traces.
+
+        Yields:
+            tuples of (metric, context, run) where run is the Run object itself.
+        """
         for ctx_idx, run_ctx_view in self.meta_run_tree.view('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
@@ -263,6 +369,16 @@ class Run(StructuredRunMixin):
                 yield metric_name, ctx, self
 
     def traces(self) -> 'TraceCollection':
+        """Get iterable object for all run tracked traces.
+
+        Returns:
+            :obj:`TraceCollection`: Iterable for run traces.
+
+        Examples:
+            >>> run = Run('3df703c')
+            >>> for trc in run.traces():
+            >>>     trc.values.sparse_numpy()
+        """
         return RunTraceCollection(self)
 
     def __eq__(self, other: 'Run') -> bool:
@@ -273,11 +389,25 @@ class Run(StructuredRunMixin):
             metric_name: str,
             context: Context
     ) -> Optional['Trace']:
+        """Retrieve metric trace by it's name and context.
+
+        Args:
+             metric_name (str): Tracked metric name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Trace` object if exists, `None` otherwise.
+        """
         from aim.sdk.trace import Trace
         trace = Trace(metric_name, context, self)
         return trace if bool(trace) else None
 
     def get_traces_overview(self) -> list:
+        """Retrieve Run traces general overview.
+
+        Returns:
+             :obj:`list`: list of trace's `context`, `metric_name` and last tracked value triplets.
+        """
         traces = self.meta_run_tree.view('traces')
         traces_overview = []
         for idx in traces.keys():
