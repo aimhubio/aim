@@ -75,7 +75,6 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
-import { useRouteMatch } from 'react-router-dom';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
