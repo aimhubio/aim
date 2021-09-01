@@ -21,7 +21,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     data,
     index,
-    xAlignment,
+    alignmentConfig,
     plotBoxRef,
     visAreaRef,
     visBoxRef,

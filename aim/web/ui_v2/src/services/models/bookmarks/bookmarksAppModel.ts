@@ -1,8 +1,13 @@
 import createModel from '../model';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import appsService from 'services/api/apps/appsService';
+import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
+import { IBookmarksData } from 'types/pages/bookmarks/Bookmarks';
 
-const model = createModel<any>({});
+const model = createModel<Partial<IBookmarksAppModelState>>({
+  isLoading: true,
+  listData: [],
+});
 
 function getBookmarksData() {
   const { call, abort } = dashboardService.fetchDashboardsList();
@@ -17,6 +22,7 @@ function getBookmarksData() {
           return { ...item, select: app.state.select, type: app.type };
         });
         model.setState({
+          isLoading: false,
           listData,
         });
       }),
@@ -26,12 +32,13 @@ function getBookmarksData() {
 
 async function onBookmarkDelete(id: string) {
   try {
+    model.setState({ isLoading: true });
     await dashboardService.deleteDashboard(id).call();
-    const newListData = [...model.getState().listData].filter(
-      (bookmark) => bookmark.id !== id,
-    );
+    const listData: IBookmarksData[] | any = model.getState()?.listData;
+    const newListData = [...listData].filter((bookmark) => bookmark.id !== id);
     model.setState({
       listData: newListData,
+      isLoading: false,
     });
   } catch (err) {
     console.log(err);

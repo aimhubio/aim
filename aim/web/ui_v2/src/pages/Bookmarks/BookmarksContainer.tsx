@@ -3,6 +3,7 @@ import React from 'react';
 import useModel from 'hooks/model/useModel';
 import bookmarkAppModel from 'services/models/bookmarks/bookmarksAppModel';
 import Bookmarks from './Bookmarks';
+import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
 
 function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
   const bookmarksRequestRef = React.useRef(bookmarkAppModel.getBookmarksData());
@@ -18,7 +19,8 @@ function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Bookmarks
-      data={bookmarksData.listData}
+      data={bookmarksData?.listData as IBookmarksAppModelState['listData']}
+      isLoading={bookmarksData?.isLoading as boolean}
       onBookmarkDelete={bookmarkAppModel.onBookmarkDelete}
     />
   );

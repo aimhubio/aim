@@ -15,7 +15,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
       <BrowserRouter>
         <ProjectWrapper />
         <Theme>
-          <Box display='flex'>
+          <Box display='flex' className='pageContainer'>
             <SideBar />
             <div className='mainContainer'>
               <React.Suspense fallback={null}>

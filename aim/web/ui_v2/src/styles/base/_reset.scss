@@ -5,9 +5,15 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+html {
+  height: 100%;
+}
 body {
   font-size: 16px;
   font-family: 'Inter Medium', sans-serif;
   color: $text-color;
+  height: 100%;
+}
+#root {
+  height: 100%;
 }

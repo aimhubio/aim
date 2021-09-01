@@ -7,13 +7,11 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  MenuList,
   Typography,
 } from '@material-ui/core';
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
-import AppBar from 'components/AppBar/AppBar';
 
-import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
+import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
@@ -27,22 +25,55 @@ function MetricsBar({
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
 
-  function handleBookmarkClick() {
-    setPopover(route.params.appId ? 'update' : 'create');
+  function handleBookmarkClick(value: string): void {
+    setPopover(value);
   }
 
-  function handleClosePopover() {
+  function handleClosePopover(): void {
     setPopover('');
+  }
+
+  function handleBookmarkUpdate(): void {
+    onBookmarkUpdate(route.params.appId);
+    handleClosePopover();
   }
 
   return (
     <AppBar title='Explore'>
-      <div onClick={handleBookmarkClick} className='MetricsBar__item__bookmark'>
-        <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-        <span>
-          <i className='icon-bookmark' />
-        </span>
-      </div>
+      {route.params.appId ? (
+        <ControlPopover
+          title='Bookmark'
+          anchor={({ onAnchorClick }) => (
+            <div onClick={onAnchorClick} className='MetricsBar__item__bookmark'>
+              <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
+              <span>
+                <i className='icon-bookmark' />
+              </span>
+            </div>
+          )}
+          component={
+            <div className='MetricsBar__popover'>
+              <MenuItem onClick={() => handleBookmarkClick('create')}>
+                Create Bookmark
+              </MenuItem>
+              <MenuItem onClick={() => handleBookmarkClick('update')}>
+                Update Bookmark
+              </MenuItem>
+            </div>
+          }
+        />
+      ) : (
+        <div
+          onClick={() => handleBookmarkClick('create')}
+          className='MetricsBar__item__bookmark'
+        >
+          <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
+          <span>
+            <i className='icon-bookmark' />
+          </span>
+        </div>
+      )}
+
       <div className='MetricsBar__menu'>
         <ControlPopover
           title='Menu'
@@ -52,7 +83,7 @@ function MetricsBar({
             </span>
           )}
           component={
-            <div className='MetricsBar__menu__popover'>
+            <div className='MetricsBar__popover'>
               <MenuItem onClick={onResetConfigData}>
                 Reset Controls to System Defaults
               </MenuItem>
@@ -85,10 +116,7 @@ function MetricsBar({
           <Button onClick={handleClosePopover} color='primary'>
             Cancel
           </Button>
-          <Button
-            onClick={() => onBookmarkUpdate(route.params.appId)}
-            color='primary'
-          >
+          <Button onClick={handleBookmarkUpdate} color='primary'>
             Save
           </Button>
         </DialogActions>

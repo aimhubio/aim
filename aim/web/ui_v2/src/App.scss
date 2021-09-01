@@ -1,8 +1,14 @@
 @import './styles/global.scss';
-@import './src/styles/base/reset.scss';
+@import './src/styles/base/_reset.scss';
 @import 'fonts/icomoon/icomoonIcons.scss';
 @import './styles/base/_fonts.scss';
+@import './styles/components/_inputs.scss';
 
 .mainContainer {
   width: calc(100% - 80px);
+  height: 100%;
+}
+
+.pageContainer {
+  height: 100%;
 }

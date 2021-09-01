@@ -43,7 +43,7 @@ function PopoverContent({
     }
   }
 
-  const { params = {}, group_config = {} } = tooltipContent;
+  const { params = {}, groupConfig = {} } = tooltipContent;
   return (
     <Paper
       className='PopoverContent__container'
@@ -51,14 +51,14 @@ function PopoverContent({
     >
       <Box p={1}>
         {renderPopoverHeader()}
-        {_.isEmpty(group_config) ? null : (
+        {_.isEmpty(groupConfig) ? null : (
           <Box mt={0.5}>
             <Divider style={{ margin: '0.5em 0' }} />
             <Typography variant='subtitle1' style={{ fontWeight: 500 }}>
               Group Config
             </Typography>
-            {Object.keys(group_config).map((groupConfigKey: string) =>
-              _.isEmpty(group_config[groupConfigKey]) ? null : (
+            {Object.keys(groupConfig).map((groupConfigKey: string) =>
+              _.isEmpty(groupConfig[groupConfigKey]) ? null : (
                 <React.Fragment key={groupConfigKey}>
                   <Typography variant='subtitle2'>
                     <span style={{ textTransform: 'capitalize' }}>
@@ -66,13 +66,13 @@ function PopoverContent({
                     </span>{' '}
                     params
                   </Typography>
-                  {Object.keys(group_config[groupConfigKey]).map((item) => (
+                  {Object.keys(groupConfig[groupConfigKey]).map((item) => (
                     <Typography
                       key={item}
                       color='textSecondary'
                       style={{ whiteSpace: 'nowrap' }}
                     >
-                      {item}: {group_config[groupConfigKey][item] ?? '--'}
+                      {item}: {groupConfig[groupConfigKey][item] ?? '--'}
                     </Typography>
                   ))}
                 </React.Fragment>

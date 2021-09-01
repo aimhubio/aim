@@ -1,12 +1,12 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
 import { useFormik } from 'formik';
-import { NavLink } from 'react-router-dom';
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 
 import COLORS from 'config/colors/colors';
 import tagsService from 'services/api/tags/tagsService';
+import tagsAppModel from 'services/models/tags/tagsAppModel';
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
 
 import './TagForm.scss';
@@ -15,21 +15,23 @@ function TagForm({
   tagData,
   editMode,
   tagId,
-  updateTagName = () => {},
+  onCloseModal,
 }: ITagFormProps): React.FunctionComponentElement<React.ReactNode> {
   const formik = useFormik({
     initialValues: editMode
-      ? { name: tagData?.name || '', color: tagData?.color || '' }
-      : { name: '', color: '' },
+      ? {
+          name: tagData?.name || '',
+          color: tagData?.color || COLORS[0][0],
+          comment: tagData?.description || '',
+        }
+      : { name: '', color: COLORS[0][0], comment: '' },
     onSubmit: noop,
     validationSchema: yup.object({
-      name: yup.string().required('Required field'),
-      color: yup
+      name: yup
         .string()
-        .matches(
-          /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/,
-          'Is not in correct format',
-        ),
+        .required('Required field')
+        .max(50, 'Must be 50 characters or fewer'),
+      comment: yup.string().max(100, 'Must be 100 characters or fewer'),
     }),
   });
   const {
@@ -42,19 +44,53 @@ function TagForm({
     submitForm,
     validateForm,
   } = formik;
-  const { name, color } = values;
+  const { name, color, comment } = values;
 
-  function onChange(e: React.ChangeEvent<any>) {
-    setFieldValue(e?.target?.id, e?.target?.value, true).then(() => {
-      setFieldTouched(e?.target?.id, true);
+  function onChange(e: React.ChangeEvent<any>, fieldName: string) {
+    setFieldValue(fieldName, e?.target?.value, true).then(() => {
+      setFieldTouched(fieldName, true);
     });
   }
+
+  const colors = useMemo(
+    () =>
+      COLORS[0].map((colorName) => (
+        <Button
+          className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton'
+          key={colorName}
+          onClick={() => onColorButtonClick(colorName)}
+          style={{
+            border: `1px solid ${colorName === color ? color : 'transparent'}`,
+          }}
+        >
+          <>
+            <span
+              className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton__content'
+              style={{ background: colorName }}
+            ></span>
+            <span
+              className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton__circle'
+              style={{ background: colorName }}
+            ></span>
+          </>
+        </Button>
+      )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [color],
+  );
 
   function onCreateButtonClick() {
     submitForm().then(() =>
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
-          tagsService.createTag({ name, color }).call();
+          tagsAppModel
+            .createTag({ name, color, description: comment })
+            .then((res: any) => {
+              if (res.id) {
+                onCloseModal();
+                tagsAppModel.getTagsData().call();
+              }
+            });
         }
       }),
     );
@@ -64,12 +100,26 @@ function TagForm({
     submitForm().then(() =>
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {
-          tagsService
-            .updateTag({ name, color }, tagId || '')
-            .call()
-            .then(() => updateTagName && updateTagName(name));
+          tagsAppModel
+            .updateTag({ name, color, description: comment }, tagId || '')
+            .then(() => {
+              tagsAppModel.getTagsData().call();
+              tagsAppModel.getTagById(tagId || '').call();
+              onCloseModal();
+            });
         }
       }),
+    );
+  }
+
+  function onResetButtonClick() {
+    setValues(
+      {
+        name: tagData?.name || '',
+        color: tagData?.color || '',
+        comment: tagData?.description || '',
+      },
+      true,
     );
   }
 
@@ -77,56 +127,96 @@ function TagForm({
     setFieldValue('color', color);
   }
 
-  function onResetButtonClick() {
-    setValues({ name: tagData?.name || '', color: tagData?.color || '' }, true);
-  }
-
   return (
-    <Grid container spacing={1} className='TagForm'>
-      <form noValidate autoComplete='off'>
+    <div className='TagForm'>
+      <div className='TagForm__tagFormContainer'>
         <TextField
-          label='Name'
+          label='Label'
+          variant='outlined'
+          className='TagForm__tagFormContainer__labelField TextField__OutLined__Small'
+          onChange={(e) => onChange(e, 'name')}
           value={name}
-          id='name'
-          onChange={onChange}
+          size='small'
           error={!!(touched.name && errors.name)}
           helperText={touched.name && errors.name}
         />
         <TextField
-          label='Color'
-          value={color}
-          id='color'
-          onChange={onChange}
-          error={!!(touched.color && errors.color)}
-          helperText={touched.color && errors.color}
+          label='Comment'
+          variant='outlined'
+          onChange={(e) => onChange(e, 'comment')}
+          className='TagForm__tagFormContainer__commentField TextField__TextArea__OutLined__Small'
+          multiline
+          value={comment}
+          error={!!(touched.comment && errors.comment)}
+          helperText={touched.comment && errors.comment}
         />
-        <div className='TagForm__colorBox'>
-          {COLORS[0].map((color) => {
-            return (
-              <Button
-                className='TagForm__colorBox__colorButton'
-                style={{ background: color }}
-                key={color}
-                onClick={() => onColorButtonClick(color)}
-              >
-                {color}
-              </Button>
-            );
-          })}
+        <div className='TagForm__tagFormContainer__colorContainer'>
+          <p className='TagForm__tagFormContainer__containerTitle'>Colors</p>
+          <div className='TagForm__tagFormContainer__colorContainer__colorBox'>
+            {colors}
+          </div>
         </div>
+        <div className='TagForm__tagFormContainer__previewContainer'>
+          <p className='TagForm__tagFormContainer__containerTitle'>Preview</p>
+          <div className='TagForm__tagFormContainer__previewContainer__tagPreviewBox'>
+            <div
+              className='TagForm__tagFormContainer__previewContainer__tagPreviewBox__tagPreview'
+              style={{ borderColor: color }}
+            >
+              <span
+                className='TagForm__tagFormContainer__previewContainer__tagPreviewBox__tagPreview__content'
+                style={{ background: color }}
+              >
+                {name || 'Tag Preview'}
+              </span>
+            </div>
+            <span
+              className='TagForm__tagFormContainer__previewContainer__tagPreviewBox__tagPreview__label'
+              style={{ color }}
+            >
+              {name || 'Tag Preview'}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className='TagForm__tagFormFooterContainer'>
         {editMode ? (
           <>
-            <Button onClick={onSaveButtonClick}>Save</Button>
-            <Button onClick={onResetButtonClick}>Reset</Button>
+            <Button
+              onClick={onResetButtonClick}
+              className='TagForm__tagFormFooterContainer__secondaryButton'
+            >
+              Reset
+            </Button>
+            <Button
+              onClick={onSaveButtonClick}
+              variant='contained'
+              color='primary'
+              className='TagForm__tagFormFooterContainer__primaryButton'
+            >
+              Save
+            </Button>
           </>
         ) : (
           <>
-            <Button onClick={onCreateButtonClick}>Create</Button>
-            <NavLink to='/tags'>Cancel</NavLink>
+            <Button
+              onClick={onCloseModal}
+              className='TagForm__tagFormFooterContainer__secondaryButton'
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={onCreateButtonClick}
+              variant='contained'
+              color='primary'
+              className='TagForm__tagFormFooterContainer__primaryButton'
+            >
+              Create
+            </Button>
           </>
         )}
-      </form>
-    </Grid>
+      </div>
+    </div>
   );
 }
 

@@ -83,6 +83,8 @@ function BookmarkCard({
         onCancel={handleCloseModal}
         onSubmit={handleBookmarkDelete}
         text='Are you sure you want to delete this bookmark?'
+        icon={<DeleteOutlinedIcon />}
+        title='Are you sure?'
       />
       <span className='BookmarkCard__delete' onClick={handleOpenModal}>
         <DeleteOutlinedIcon />

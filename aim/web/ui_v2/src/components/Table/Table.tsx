@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
+import { isEmpty } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
@@ -18,19 +19,37 @@ import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 
 import './Table.scss';
 
 const Table = React.forwardRef(function Table(
-  props: ITableProps,
+  {
+    onManageColumns,
+    onSort,
+    onRowsChange,
+    onExport,
+    onRowHeightChange,
+    data,
+    columns,
+    navBarItems,
+    rowHeight = 30,
+    headerHeight = 30,
+    sortOptions,
+    onRowHover,
+    onRowClick,
+    hideHeaderActions = false,
+    fixed = true,
+    emptyText = 'No Data',
+  }: ITableProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef();
   const scrollTop = React.useRef(0);
   const expandedGroups = React.useRef([]);
   const tableContainerRef = React.useRef();
-  const [data, setData] = React.useState(props.data);
-  const [columns, setColumns] = React.useState(props.columns);
+  const [rowData, setRowData] = React.useState(data);
+  const [columnsData, setColumnsData] = React.useState(columns);
 
   React.useImperativeHandle(ref, () => ({
     updateData: ({ newData, newColumns }) => {
@@ -38,10 +57,10 @@ const Table = React.forwardRef(function Table(
         // tableContainerRef.current.
       } else {
         if (!!newData) {
-          setData(newData);
+          setRowData(newData);
         }
         if (!!newColumns) {
-          setColumns(newColumns);
+          setColumnsData(newColumns);
         }
       }
     },
@@ -64,116 +83,115 @@ const Table = React.forwardRef(function Table(
     };
   }, [props.custom]);
 
-  return (
+  return !isEmpty(rowData) ? (
     <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
-      <Box component='nav' p={0.5}>
-        <Grid container justifyContent='space-between' alignItems='center'>
-          <Grid xs item>
-            <Grid container spacing={1}>
-              {props.onManageColumns && (
-                <ControlPopover
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                  title='Manage Table Columns'
-                  anchor={({ onAnchorClick, opened }) => (
-                    <Grid
-                      onClick={onAnchorClick}
-                      className='Table__header__item'
-                      item
+      {!hideHeaderActions && (
+        <Box component='nav' p={0.5}>
+          <Grid container justifyContent='space-between' alignItems='center'>
+            <Grid xs item>
+              <Grid container spacing={1}>
+                {onManageColumns && (
+                  <ControlPopover
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                    title='Manage Table Columns'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Grid
+                        onClick={onAnchorClick}
+                        className='Table__header__item'
+                        item
+                      >
+                        <img src={manageColumnsIcon} alt='manage Columns' />
+                        <span onClick={onManageColumns}>Manage Columns</span>
+                      </Grid>
+                    )}
+                    component={<ManageColumns columnsData={columns} />}
+                  />
+                )}
+                {onRowsChange && (
+                  <ControlPopover
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                    title='Manage Rows Visibility'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Grid
+                        onClick={onAnchorClick}
+                        className='Table__header__item'
+                        item
+                      >
+                        <img src={visibilityOffIcon} alt='sort' />
+                        <span onClick={onSort}>Hide Rows</span>
+                      </Grid>
+                    )}
+                    component={<HideRows />}
+                  />
+                )}
+                {onSort && (
+                  <ControlPopover
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                    title='Sort table by:'
+                    anchor={({ onAnchorClick }) => (
+                      <Grid
+                        onClick={onAnchorClick}
+                        className='Table__header__item'
+                        item
+                      >
+                        <img src={sortIcon} alt='sort' />
+                        <span onClick={onSort}>Sort</span>
+                      </Grid>
+                    )}
+                    component={<SortPopover sortOptions={sortOptions} />}
+                  />
+                )}
+                {onRowHeightChange && (
+                  <ControlPopover
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                    title='Select Row Height'
+                    anchor={({ onAnchorClick }) => (
+                      <Grid
+                        onClick={onAnchorClick}
+                        className='Table__header__item'
+                        item
+                      >
+                        <img src={rowHeightIcon} alt='rowHeight' />
+                        <span onClick={onRowHeightChange}>Row Height</span>
+                      </Grid>
+                    )}
+                    component={<RowHeight />}
+                  />
+                )}
+                <Grid item xs />
+                {onExport && (
+                  <Grid item xs={1}>
+                    <Button
+                      fullWidth
+                      variant='outlined'
+                      color='primary'
+                      size='small'
                     >
-                      <img src={manageColumnsIcon} alt='manage Columns' />
-                      <span onClick={props.onManageColumns}>
-                        Manage Columns
-                      </span>
-                    </Grid>
-                  )}
-                  component={<ManageColumns columnsData={columns} />}
-                />
-              )}
-              {props.onRowsChange && (
-                <ControlPopover
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                  title='Manage Rows Visibility'
-                  anchor={({ onAnchorClick, opened }) => (
-                    <Grid
-                      onClick={onAnchorClick}
-                      className='Table__header__item'
-                      item
-                    >
-                      <img src={visibilityOffIcon} alt='sort' />
-                      <span onClick={props.onSort}>Hide Rows</span>
-                    </Grid>
-                  )}
-                  component={<HideRows />}
-                />
-              )}
-              {props.onSort && (
-                <ControlPopover
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                  title='Sort table by:'
-                  anchor={({ onAnchorClick }) => (
-                    <Grid
-                      onClick={onAnchorClick}
-                      className='Table__header__item'
-                      item
-                    >
-                      <img src={sortIcon} alt='sort' />
-                      <span onClick={props.onSort}>Sort</span>
-                    </Grid>
-                  )}
-                  component={<SortPopover sortOptions={props.sortOptions} />}
-                />
-              )}
-              {props.onRowHeightChange && (
-                <ControlPopover
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                  title='Select Row Height'
-                  anchor={({ onAnchorClick }) => (
-                    <Grid
-                      onClick={onAnchorClick}
-                      className='Table__header__item'
-                      item
-                    >
-                      <img src={rowHeightIcon} alt='rowHeight' />
-                      <span onClick={props.onRowHeightChange}>Row Height</span>
-                    </Grid>
-                  )}
-                  component={<RowHeight />}
-                />
-              )}
-              <Grid item xs />
-              {props.onExport && (
-                <Grid item xs={1}>
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                    onClick={props.onExport}
-                  >
-                    Export
-                  </Button>
-                </Grid>
-              )}
+                      Export
+                    </Button>
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      )}
       <div
         style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}
         ref={tableContainerRef}
@@ -200,18 +218,19 @@ const Table = React.forwardRef(function Table(
               <BaseTable
                 ref={tableRef}
                 classPrefix='BaseTable'
-                columns={columns}
-                data={data}
+                columns={columnsData}
+                data={rowData}
                 frozenData={[]}
                 width={width}
                 height={height}
-                fixed
+                fixed={fixed}
                 rowKey='key'
-                headerHeight={30}
-                rowHeight={props.rowHeight}
+                isScrolling
+                headerHeight={headerHeight}
+                rowHeight={rowHeight}
                 footerHeight={0}
                 defaultExpandedRowKeys={[]}
-                expandColumnKey={null}
+                expandColumnKey='#'
                 rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
                 sortBy={{}}
                 useIsScrolling={false}
@@ -227,14 +246,16 @@ const Table = React.forwardRef(function Table(
                 onColumnSort={() => null}
                 onColumnResize={() => null}
                 onColumnResizeEnd={() => null}
-                onRowHover={props.onRowHover}
-                onRowClick={props.onRowClick}
+                onRowHover={onRowHover}
+                onRowClick={onRowClick}
               />
             )
           }
         </AutoResizer>
       </div>
     </Box>
+  ) : (
+    <EmptyComponent size='big' content={emptyText} />
   );
 });
 

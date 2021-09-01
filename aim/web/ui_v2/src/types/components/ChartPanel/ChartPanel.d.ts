@@ -9,6 +9,8 @@ import {
   IAggregationConfig,
   IChartTooltip,
   IFocusedState,
+  IChartTitleData,
+  IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
@@ -18,8 +20,10 @@ export interface IChartPanelProps {
   data: ILine[][] | any;
   focusedState: IFocusedState;
   tooltip: IChartTooltip;
+  chartTitleData?: IChartTitleData;
   aggregatedData?: IAggregatedData[];
   aggregationConfig?: IAggregationConfig;
+  alignmentConfig?: IAlignmentConfig;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,
   //   'data' | 'index' | 'syncHoverState'
