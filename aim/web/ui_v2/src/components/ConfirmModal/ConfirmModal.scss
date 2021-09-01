@@ -1,0 +1,37 @@
+@import 'src/styles/abstracts/_variables.scss';
+
+.ConfirmModal {
+    &__Footer {
+        border-top: 1px solid $grayish;
+        height: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    &__Body {
+        padding: 25px 20px;
+        display: flex;
+    }
+    &__Icon {
+        margin-right: 30px;
+        .MuiSvgIcon-root {
+            width: 4.5rem;
+            height: 3.5rem;
+        }
+    }
+    &__Title {
+        color: $pico;
+        padding-left: 0;
+        padding-bottom: 5px;
+        padding-top: 5px;
+    }
+    &__Content {
+        .Text {
+            color: $pico;
+            max-width: 260px;
+        }
+    }
+    &__CancelButton {
+        margin-right: 10px;
+    }
+}
