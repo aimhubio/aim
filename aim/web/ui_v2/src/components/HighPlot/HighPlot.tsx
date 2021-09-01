@@ -22,6 +22,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     syncHoverState,
     data,
     isVisibleColorIndicator,
+    title,
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -70,6 +71,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
+      title,
     });
 
     if (isVisibleColorIndicator) {
@@ -124,18 +126,6 @@ const HighPlot = React.forwardRef(function HighPlot(
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curveInterpolation, index, isVisibleColorIndicator, data]);
-
-  React.useImperativeHandle(ref, () => ({
-    setActiveLine: (lineKey: string) => {
-      attributesRef.current.setActiveLine?.(lineKey);
-    },
-    clearHoverAttributes: () => {
-      attributesRef.current.clearHoverAttributes?.();
-    },
-    setFocusedState: (focusedState: IFocusedState) => {
-      attributesRef.current.focusedState = focusedState;
-    },
-  }));
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {

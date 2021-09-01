@@ -16,6 +16,7 @@ function drawArea(props: IDrawAreaProps): void {
     plotBoxRef,
     linesNodeRef,
     attributesNodeRef,
+    title = {},
   } = props;
 
   if (!parentRef?.current || !visAreaRef?.current) {
@@ -97,6 +98,68 @@ function drawArea(props: IDrawAreaProps): void {
       'height',
       height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius,
     );
+
+  const titleMarginTop = 4;
+  const titleMarginBottom = 6;
+  const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
+  const keys = Object.keys(title);
+  const titleText = keys
+    ? `${keys.map((key) => `${key}=${title[key]}`).join(', ')}`
+    : '';
+
+  if (titleText) {
+    svgNodeRef.current
+      .append('foreignObject')
+      .attr('x', 0)
+      .attr('y', titleMarginTop)
+      .attr('height', titleHeight)
+      .attr('width', width)
+      .html((d: any) => {
+        if (!keys.length) {
+          return '';
+        }
+        return `
+        <div 
+            title='#${index + 1} ${titleText}' 
+            style='
+              display: flex; 
+              align-items: center;
+              justify-content: center;
+              color: #484f56;
+              padding: 0 1em;
+            '
+        >
+          <div 
+            style='
+              width: ${titleHeight}px; 
+              height: ${titleHeight}px;
+              display: flex; 
+              align-items: center;
+              justify-content: center;
+              margin-right: 0.5em;
+              padding: 2px;
+              box-shadow: inset 0 0 0 1px #e8e8e8;
+              border-radius: 0.2em;
+              font-size: 0.6em;
+              flex-shrink: 0;
+            '
+          >
+           ${index + 1}
+          </div>
+          <div 
+            style='
+              white-space: nowrap; 
+              text-overflow: ellipsis;
+              overflow: hidden;
+              font-size: 0.75em;
+            '
+          >
+            ${titleText}
+          </div>
+        </div>
+      `;
+      });
+  }
 }
 
 export default drawArea;

@@ -52,11 +52,13 @@ function Metrics(
                 ref={props.chartPanelRef}
                 chartType={ChartTypeEnum.LineChart}
                 data={props.lineChartData}
+                chartTitleData={props.chartTitleData}
                 focusedState={props.focusedState}
                 onActivePointChange={props.onActivePointChange}
                 tooltip={props.tooltip}
                 aggregatedData={props.aggregatedData}
                 aggregationConfig={props.aggregationConfig}
+                alignmentConfig={props.alignmentConfig}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,

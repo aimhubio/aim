@@ -25,8 +25,8 @@ import {
 } from 'utils/aggregateGroupData';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getSmoothenedData from 'utils/getSmoothenedData';
@@ -37,15 +37,17 @@ import JsonToCSV from 'utils/JsonToCSV';
 
 // Types
 import {
-  IGroupingSelectOption,
   GroupNameType,
   IAggregatedData,
   IAggregationConfig,
   IAlignMetricsDataParams,
   IAppData,
+  IChartTitle,
+  IChartTitleData,
   IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
@@ -273,6 +275,33 @@ function getMetricsData() {
     },
     abort: metricsRequestRef.abort,
   };
+}
+
+function getChartTitleData(
+  processedData: IMetricsCollection<IMetric>[],
+  configData: IMetricAppConfig | any = model.getState()?.config,
+): IChartTitleData {
+  if (!processedData) {
+    return {};
+  }
+  const groupData = configData?.grouping;
+  let chartTitleData: IChartTitleData = {};
+  processedData.forEach((metricsCollection) => {
+    if (!chartTitleData[metricsCollection.chartIndex]) {
+      chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
+        (acc: IChartTitle, groupItemKey: string) => {
+          if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
+            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
+              metricsCollection.config[groupItemKey] || 'None',
+            );
+            return acc;
+          }
+        },
+        {},
+      );
+    }
+  });
+  return chartTitleData;
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
@@ -602,7 +631,6 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   }
 
   const groups = alignData(Object.values(groupValues));
-
   const chartConfig = configData!.chart;
 
   return aggregateGroupData({
@@ -1003,38 +1031,42 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
   }
 }
 
+function getGroupConfig(
+  metricsCollection: IMetricsCollection<IMetric>,
+  groupingItems: GroupNameType[] = ['color', 'style', 'chart'],
+) {
+  const configData = model.getState()?.config;
+  let groupConfig: { [key: string]: {} } = {};
+
+  for (let groupItemKey of groupingItems) {
+    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+    if (groupItem.length) {
+      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+        Object.assign(acc, {
+          [paramKey.replace('run.params.', '')]: JSON.stringify(
+            _.get(metricsCollection.config, paramKey, '-'),
+          ),
+        });
+        return acc;
+      }, {});
+    }
+  }
+  return groupConfig;
+}
+
 function setTooltipData(
   processedData: IMetricsCollection<IMetric>[],
   paramKeys: string[],
 ): void {
   const data: { [key: string]: any } = {};
 
-  function getGroupConfig(metric: IMetric) {
-    const configData = model.getState()?.config;
-    const groupingItems: GroupNameType[] = ['color', 'style', 'chart'];
-    let groupConfig: { [key: string]: {} } = {};
-    for (let groupItemKey of groupingItems) {
-      const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
-      if (groupItem.length) {
-        groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
-          Object.assign(acc, {
-            [paramKey.replace('run.params.', '')]: JSON.stringify(
-              _.get(metric, paramKey, '-'),
-            ),
-          });
-          return acc;
-        }, {});
-      }
-    }
-    return groupConfig;
-  }
-
   for (let metricsCollection of processedData) {
+    const groupConfig = getGroupConfig(metricsCollection);
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
         metricName: metric.metric_name,
         metricContext: metric.context,
-        group_config: getGroupConfig(metric),
+        groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
             [paramKey]: JSON.stringify(
@@ -1188,18 +1220,11 @@ function onGroupingReset(groupName: GroupNameType) {
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
-  const processedData = processData(
+  const { data, params } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(
-    processedData.data,
-    null,
-    processedData.params,
-  );
-  const tableColumns = getTableColumns(
-    processedData.params,
-    processedData.data[0].config,
-  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getTableColumns(params, data[0].config);
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1207,11 +1232,13 @@ function updateModelData(configData: IMetricAppConfig): void {
   });
   model.setState({
     config: configData,
-    data: processedData.data,
-    lineChartData: getDataAsLines(processedData.data),
-    aggregatedData: getAggregatedData(processedData.data),
+    data,
+    lineChartData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    aggregatedData: getAggregatedData(data),
     tableData,
     tableColumns,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
 
@@ -1547,7 +1574,7 @@ async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
-  const runData: any = [];
+  const runData = [];
   for await (let [keys, val] of objects) {
     runData.push({
       ...(val as any),
@@ -1562,7 +1589,6 @@ function setModelData(
   configData: IMetricAppConfig,
 ) {
   const { data, params } = processData(rawData);
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   if (configData) {
     setAggregationEnabled(configData);
   }
@@ -1573,19 +1599,25 @@ function setModelData(
     params,
     data,
     lineChartData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getTableColumns(params, data[0]?.config),
-    groupingSelectOptions,
+    tableColumns: getTableColumns(params, data[0].config),
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
 
 function onAlignmentTypeChange(type: AlignmentOptions): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
+    const alignmentConfig = { ...configData.chart.alignmentConfig, type };
+
+    if (type !== AlignmentOptions.CUSTOM_METRIC) {
+      alignmentConfig.metric = '';
+    }
     configData.chart = {
       ...configData.chart,
-      alignmentConfig: { ...configData.chart.alignmentConfig, type: type },
+      alignmentConfig,
     };
     updateModelData(configData);
   }

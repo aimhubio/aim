@@ -1,4 +1,5 @@
 import React from 'react';
+import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawAreaProps {
   index?: number;
@@ -12,4 +13,5 @@ export interface IDrawAreaProps {
   plotBoxRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
+  title?: IChartTitle;
 }

@@ -58,11 +58,12 @@ function drawParallelAxes({
             tickWidth + 10
           }px' class='yAxisLabel' title='${d}'>${d}</div>`,
       );
+
     axes
       .append('foreignObject')
       .attr('width', 160)
-      .attr('height', 160)
-      .attr('transform', `translate(-60, ${i % 2 === 0 ? -40 : -60})`)
+      .attr('height', 20)
+      .attr('transform', `translate(-60, ${i % 2 === 0 ? -20 : -40})`)
       .html(
         () =>
           `<div class='xAxisLabel xAxisLabel__${dimensionType}'>${displayName}</div>`,

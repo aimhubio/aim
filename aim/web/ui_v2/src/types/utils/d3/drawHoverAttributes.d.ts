@@ -6,7 +6,7 @@ import { IGetAxisScale } from './getAxisScale';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import {
   IAggregationConfig,
-  IFocusedState,
+  IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawHoverAttributesProps {
@@ -22,11 +22,11 @@ export interface IDrawHoverAttributesProps {
   xAxisLabelNodeRef: React.MutableRefObject<>;
   yAxisLabelNodeRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
-  xAlignment: ILineChartProps['xAlignment'];
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
+  alignmentConfig?: IAlignmentConfig;
 }
 
 export interface ISyncHoverStateParams {
