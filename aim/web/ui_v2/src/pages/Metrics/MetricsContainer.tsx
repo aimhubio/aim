@@ -26,7 +26,6 @@ import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { RowHeight } from 'config/table/tableConfigs';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);

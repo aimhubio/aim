@@ -166,6 +166,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   title={title}
                   aggregatedData={aggregatedData}
                   aggregationConfig={props.aggregationConfig}
+                  alignmentConfig={props.alignmentConfig}
                   syncHoverState={syncHoverState}
                 />
               </Grid>

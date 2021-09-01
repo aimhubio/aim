@@ -58,6 +58,7 @@ function Metrics(
                 tooltip={props.tooltip}
                 aggregatedData={props.aggregatedData}
                 aggregationConfig={props.aggregationConfig}
+                alignmentConfig={props.alignmentConfig}
                 chartProps={[
                   {
                     axesScaleType: props.axesScaleType,

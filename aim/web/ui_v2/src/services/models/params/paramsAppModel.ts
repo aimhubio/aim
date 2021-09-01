@@ -148,6 +148,7 @@ function getParamsData() {
           params,
           rawData: runData,
           config: configData,
+          groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
       }
     },
@@ -700,14 +701,15 @@ function onGroupingReset(groupName: GroupNameType) {
 }
 
 function updateModelData(configData: IParamsAppConfig): void {
-  const processedData = processData(
+  const { data, params } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
   model.setState({
     config: configData,
-    data: processedData.data,
-    highPlotData: getDataAsLines(processedData.data),
-    chartTitleData: getChartTitleData(processedData.data),
+    data,
+    highPlotData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
     // tableData: getDataAsTableRows(
     //   processedData.data,
     //   null,

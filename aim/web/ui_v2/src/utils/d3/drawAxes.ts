@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
 import { XAlignmentEnum } from './index';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 function drawAxes(props: IDrawAxesProps): void {
   const {
@@ -14,14 +15,17 @@ function drawAxes(props: IDrawAxesProps): void {
     width,
     height,
     margin,
-    xAlignment,
+    alignmentConfig,
   } = props;
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
 
-  switch (xAlignment) {
-    case XAlignmentEnum.Epoch:
+  let xAlignmentText = '';
+  switch (alignmentConfig?.type) {
+    case AlignmentOptions.EPOCH:
+      xAlignmentText = XAlignmentEnum.Epoch + 's';
+
       // const ticksCount = Math.floor(plotBoxRef.current.width / 50);
       // const delta = Math.floor(xTicks.length / ticksCount);
       // const ticks =
@@ -31,7 +35,8 @@ function drawAxes(props: IDrawAxesProps): void {
       //   .tickValues(ticks.map((tick) => tick[0]))
       //   .tickFormat((d, i) => ticks[i][1]);
       break;
-    case XAlignmentEnum.RelativeTime:
+    case AlignmentOptions.RELATIVE_TIME:
+      xAlignmentText = XAlignmentEnum.RelativeTime.replace('_', ' ');
       // xAxis
       //     .ticks(ticksCount)
       //     .tickValues(tickValues)
@@ -39,7 +44,8 @@ function drawAxes(props: IDrawAxesProps): void {
       //         shortEnglishHumanizer(Math.round(+d * 1000), humanizerConfig.current),
       //     );
       break;
-    case XAlignmentEnum.AbsoluteTime:
+    case AlignmentOptions.ABSOLUTE_TIME:
+      xAlignmentText = XAlignmentEnum.AbsoluteTime.replace('_', ' ');
       // let ticksCount = Math.floor(plotBoxRef.current.width / 120);
       // ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
       // const tickValues = _.range(...chartOptions.current.xScale.domain());
@@ -59,7 +65,11 @@ function drawAxes(props: IDrawAxesProps): void {
       //     )
       //     .tickFormat((d, i) => moment.unix(d).format('HH:mm:ss D MMM, YY'));
       break;
+    case AlignmentOptions.CUSTOM_METRIC:
+      xAlignmentText = alignmentConfig?.metric.replace('_', ' ');
+      break;
     default:
+      xAlignmentText = XAlignmentEnum.Step + 's';
       const ticksCount = Math.floor(plotBoxRef.current.width / 50);
       xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
   }
@@ -83,16 +93,7 @@ function drawAxes(props: IDrawAxesProps): void {
     .style('font-size', '0.7em')
     .style('text-transform', 'capitalize')
     .style('fill', '#586069') // var(--grey)
-    .text(
-      xAlignment
-        ? `${xAlignment.replace('_', ' ')}${
-            xAlignment === XAlignmentEnum.Step ||
-            xAlignment === XAlignmentEnum.Epoch
-              ? 's'
-              : ''
-          }`
-        : XAlignmentEnum.Step + 's',
-    );
+    .text(xAlignmentText);
 
   axesRef.current.updateXAxis = function (
     xScaleUpdate: d3.AxisScale<d3.AxisDomain>,

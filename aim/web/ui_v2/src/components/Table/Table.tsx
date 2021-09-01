@@ -67,7 +67,7 @@ const Table = React.forwardRef(function Table(
         <Box
           component='nav'
           p={0.5}
-          style={{ height: '100%', position: relative }}
+          style={{ height: '100%', position: 'relative' }}
         >
           <Grid container justifyContent='space-between' alignItems='center'>
             <Grid xs item>

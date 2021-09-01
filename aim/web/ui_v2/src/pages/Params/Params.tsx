@@ -23,6 +23,7 @@ const Params = ({
   resizeElemRef,
   tableElemRef,
   groupingData,
+  groupingSelectOptions,
   tooltip,
   chartTitleData,
   onCurveInterpolationChange,
@@ -66,7 +67,7 @@ const Params = ({
               />
               <Grouping
                 groupingData={groupingData}
-                groupingSelectOptions={groupingData.selectOptions}
+                groupingSelectOptions={groupingSelectOptions}
                 onGroupingSelectChange={onGroupingSelectChange}
                 onGroupingModeChange={onGroupingModeChange}
                 onGroupingPaletteChange={onGroupingPaletteChange}
@@ -96,7 +97,7 @@ const Params = ({
                   <Controls
                     curveInterpolation={curveInterpolation}
                     isVisibleColorIndicator={isVisibleColorIndicator}
-                    selectOptions={groupingData?.selectOptions}
+                    selectOptions={groupingSelectOptions}
                     tooltip={tooltip}
                     onCurveInterpolationChange={onCurveInterpolationChange}
                     onColorIndicatorChange={onColorIndicatorChange}

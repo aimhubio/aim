@@ -4,7 +4,10 @@ import { IProcessedData } from './processData';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { IGetAxisScale } from './getAxisScale';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IAggregationConfig,
+  IAlignmentConfig,
+} from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawHoverAttributesProps {
   index: number;
@@ -19,11 +22,11 @@ export interface IDrawHoverAttributesProps {
   xAxisLabelNodeRef: React.MutableRefObject<>;
   yAxisLabelNodeRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
-  xAlignment: ILineChartProps['xAlignment'];
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
+  alignmentConfig?: IAlignmentConfig;
 }
 
 export interface ISyncHoverStateParams {

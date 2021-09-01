@@ -1,6 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
-import { XAlignmentEnum } from 'utils/d3';
+
+import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawAxesProps {
   svgNodeRef: React.MutableRefObject<>;
@@ -12,5 +13,5 @@ export interface IDrawAxesProps {
   width: number;
   height: number;
   margin: { top: number; right: number; bottom: number; left: number };
-  xAlignment: XAlignmentEnum;
+  alignmentConfig?: IAlignmentConfig;
 }

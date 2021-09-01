@@ -25,8 +25,8 @@ import {
 } from 'utils/aggregateGroupData';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getSmoothenedData from 'utils/getSmoothenedData';
@@ -37,15 +37,17 @@ import JsonToCSV from 'utils/JsonToCSV';
 
 // Types
 import {
-  IGroupingSelectOption,
   GroupNameType,
   IAggregatedData,
   IAggregationConfig,
   IAlignMetricsDataParams,
   IAppData,
+  IChartTitle,
+  IChartTitleData,
   IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
@@ -53,8 +55,6 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
-  IChartTitle,
-  IChartTitleData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
@@ -1213,18 +1213,11 @@ function onGroupingReset(groupName: GroupNameType) {
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
-  const processedData = processData(
+  const { data, params } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(
-    processedData.data,
-    null,
-    processedData.params,
-  );
-  const tableColumns = getTableColumns(
-    processedData.params,
-    processedData.data[0].config,
-  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getTableColumns(params, data[0].config);
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1232,12 +1225,13 @@ function updateModelData(configData: IMetricAppConfig): void {
   });
   model.setState({
     config: configData,
-    data: processedData.data,
-    lineChartData: getDataAsLines(processedData.data),
-    chartTitleData: getChartTitleData(processedData.data),
-    aggregatedData: getAggregatedData(processedData.data),
+    data,
+    lineChartData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    aggregatedData: getAggregatedData(data),
     tableData,
     tableColumns,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
 
@@ -1569,7 +1563,7 @@ async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
-  const runData: any = [];
+  const runData = [];
   for await (let [keys, val] of objects) {
     runData.push({
       ...(val as any),
@@ -1584,7 +1578,6 @@ function setModelData(
   configData: IMetricAppConfig,
 ) {
   const { data, params } = processData(rawData);
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   if (configData) {
     setAggregationEnabled(configData);
   }
@@ -1599,16 +1592,21 @@ function setModelData(
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
     tableColumns: getTableColumns(params, data[0].config),
-    groupingSelectOptions,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
 
 function onAlignmentTypeChange(type: AlignmentOptions): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
+    const alignmentConfig = { ...configData.chart.alignmentConfig, type };
+
+    if (type !== AlignmentOptions.CUSTOM_METRIC) {
+      alignmentConfig.metric = '';
+    }
     configData.chart = {
       ...configData.chart,
-      alignmentConfig: { ...configData.chart.alignmentConfig, type: type },
+      alignmentConfig,
     };
     updateModelData(configData);
   }

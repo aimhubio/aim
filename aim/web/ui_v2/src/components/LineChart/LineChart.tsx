@@ -9,7 +9,6 @@ import {
   getAxisScale,
   drawBrush,
   drawHoverAttributes,
-  XAlignmentEnum,
 } from 'utils/d3';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import {
@@ -30,7 +29,7 @@ const LineChart = React.forwardRef(function LineChart(
     syncHoverState,
     axesScaleType,
     displayOutliers,
-    xAlignment = XAlignmentEnum.Step,
+    alignmentConfig,
     zoomMode,
     highlightMode,
     curveInterpolation,
@@ -118,7 +117,7 @@ const LineChart = React.forwardRef(function LineChart(
       width,
       height,
       margin,
-      xAlignment,
+      alignmentConfig,
     });
 
     drawLines({
@@ -137,7 +136,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
-      xAlignment,
+      alignmentConfig,
       highlightMode,
       syncHoverState,
       visAreaRef,
@@ -193,7 +192,6 @@ const LineChart = React.forwardRef(function LineChart(
       curveInterpolation,
       zoomMode,
       aggregationConfig,
-      title,
     ],
   );
 
@@ -210,7 +208,6 @@ const LineChart = React.forwardRef(function LineChart(
     curveInterpolation,
     zoomMode,
     aggregationConfig,
-    title,
   ]);
 
   React.useImperativeHandle(ref, () => ({

@@ -7,6 +7,7 @@ import {
   IChartTitleData,
   IChartTooltip,
   IFocusedState,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
@@ -28,6 +29,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   curveInterpolation: CurveEnum;
   highPlotData: any;
   groupingData: IMetricAppConfig['grouping'];
+  groupingSelectOptions: IGroupingSelectOption[];
   onCurveInterpolationChange: () => void;
   onActivePointChange: (
     activePoint: IActivePoint,
