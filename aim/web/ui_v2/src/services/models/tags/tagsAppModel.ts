@@ -115,7 +115,7 @@ function createTag(body: object) {
         onNotificationAdd({
           id: Date.now(),
           severity: 'success',
-          message: 'Tags successfully created',
+          message: 'Tag successfully created',
         });
       } else {
         onNotificationAdd({
@@ -137,7 +137,7 @@ function updateTag(body: object, id: string) {
         onNotificationAdd({
           id: Date.now(),
           severity: 'success',
-          message: 'Tags successfully updated',
+          message: 'Tag successfully updated',
         });
       } else {
         onNotificationAdd({
@@ -158,7 +158,7 @@ function deleteTag(id: string) {
       onNotificationAdd({
         id: Date.now(),
         severity: 'success',
-        message: 'Tags successfully deleted',
+        message: 'Tag successfully deleted',
       });
     });
 }

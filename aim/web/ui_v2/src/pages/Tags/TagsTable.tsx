@@ -158,7 +158,7 @@ function TagsTable({
         headerHeight={32}
         onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
         onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
-        emptyText={'No Tags'}
+        emptyText={'No tags found'}
       />
     </div>
   );

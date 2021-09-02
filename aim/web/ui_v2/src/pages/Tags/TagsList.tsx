@@ -77,6 +77,7 @@ function TagsList({
           variant='outlined'
           InputProps={{
             startAdornment: <img src={searchImg} alt='visible' />,
+            disabled: isTagsDataLoading,
           }}
           onChange={onSearchInputChange}
           value={searchValue}
@@ -101,7 +102,7 @@ function TagsList({
         <div className='Tags__TagList__tagListBox'>
           <div className='Tags__TagList__tagListBox__titleBox'>
             <span className='Tags__TagList__tagListBox__titleBox__title'>
-              {tagsList.length} Tags
+              {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
             </span>
           </div>
           <TagsTable
