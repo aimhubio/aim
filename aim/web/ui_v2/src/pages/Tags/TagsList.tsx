@@ -77,6 +77,7 @@ function TagsList({
           variant='outlined'
           InputProps={{
             startAdornment: <img src={searchImg} alt='visible' />,
+            disabled: isTagsDataLoading,
           }}
           onChange={onSearchInputChange}
           value={searchValue}
@@ -94,28 +95,18 @@ function TagsList({
           </Button>
         )}
       </div>
-      <BusyLoaderWrapper
-        isLoading={isTagsDataLoading}
-        className='Tags__TagList__tagListBusyLoader'
-      >
-        <div className='Tags__TagList__tagListBox'>
-          <div className='Tags__TagList__tagListBox__titleBox'>
-            <span className='Tags__TagList__tagListBox__titleBox__title'>
-              {tagsList.length} Tags
-            </span>
-          </div>
-          <TagsTable
-            tableRef={tableRef}
-            tagsList={tagsList.filter((tag: ITagProps) =>
-              tag.name.includes(searchValue),
-            )}
-            onTableRunClick={onTableRunClick}
-            onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-            onDeleteModalToggle={onDeleteModalToggle}
-            onUpdateModalToggle={onUpdateModalToggle}
-          />
-        </div>
-      </BusyLoaderWrapper>
+      <TagsTable
+        tableRef={tableRef}
+        tagsList={tagsList.filter((tag: ITagProps) =>
+          tag.name.includes(searchValue),
+        )}
+        isTagsDataLoading={isTagsDataLoading}
+        hasSearchValue={!!searchValue}
+        onTableRunClick={onTableRunClick}
+        onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+        onDeleteModalToggle={onDeleteModalToggle}
+        onUpdateModalToggle={onUpdateModalToggle}
+      />
       <Dialog
         key={tagInfo?.id + '1'}
         onClose={onCreateModalToggle}
@@ -187,6 +178,7 @@ function TagsList({
             id={tagDetailId}
             onSoftDeleteModalToggle={onSoftDeleteModalToggle}
             onUpdateModalToggle={onUpdateModalToggle}
+            onDeleteModalToggle={onDeleteModalToggle}
             tagRuns={tagRuns}
             tagInfo={tagInfo}
             isRunsDataLoading={isRunsDataLoading}

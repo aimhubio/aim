@@ -2,7 +2,7 @@ import { RowHeight } from 'config/table/tableConfigs';
 import React from 'react';
 
 export interface ITableProps {
-  data: any[];
+  data: any[] | null;
   columns: any[];
   rowHeight: RowHeight;
   onManageColumns?: () => void;
@@ -24,6 +24,7 @@ export interface ITableProps {
   onRowClick?: (rowKey?: string) => void;
   hideHeaderActions?: boolean = false;
   emptyText?: string;
+  isLoading?: boolean;
 }
 
 export interface ITableRef {

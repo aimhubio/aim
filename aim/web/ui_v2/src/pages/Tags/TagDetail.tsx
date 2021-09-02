@@ -17,6 +17,7 @@ function TagDetail({
   id,
   onSoftDeleteModalToggle,
   onUpdateModalToggle,
+  onDeleteModalToggle,
   isTagInfoDataLoading,
   tagInfo,
   isRunsDataLoading,
@@ -82,11 +83,14 @@ function TagDetail({
               onClick={onSoftDeleteModalToggle}
             />
           )}
-          <DeleteOutlineIcon
-            fontSize='small'
-            color='primary'
-            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-          />
+          <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
+            <DeleteOutlineIcon
+              fontSize='small'
+              color='primary'
+              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+              onClick={onDeleteModalToggle}
+            />
+          </span>
         </div>
       </div>
       <BusyLoaderWrapper
