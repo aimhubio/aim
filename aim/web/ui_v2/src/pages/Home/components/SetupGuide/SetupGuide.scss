@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .SetupGuide__container {
   max-width: 800px;
   padding: 1.5em 2.5em 1.5em 1.5em;
@@ -30,7 +32,7 @@
     margin-top: 0.5em;
     font-style: normal;
     font-weight: 500;
-    font-size: 14px;
+    font-size: $text-mm;
     line-height: 17px;
     color: #031123;
   }
@@ -56,7 +58,7 @@
   }
 
   &:hover {
-    color: #FFFFFF;
-    background-color: #1473E6
+    color: #ffffff;
+    background-color: #1473e6;
   }
 }

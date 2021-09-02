@@ -30,11 +30,12 @@ function Button(
   return (
     <MUButton
       variant={props.variant}
-      color='primary'
+      color={props.color || 'primary'}
       style={styleOverrides}
       onClick={props.onClick}
       size={props.size}
       disabled={props.disabled}
+      className={props.className}
     >
       {props.children}
     </MUButton>

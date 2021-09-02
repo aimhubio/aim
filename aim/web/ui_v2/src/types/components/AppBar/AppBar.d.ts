@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface IAppBarProps {
-  title: string;
+  title: string | ReactNode;
   className?: string;
   children?: React.ReactChildren | any;
 }

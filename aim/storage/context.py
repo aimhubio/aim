@@ -48,7 +48,7 @@ class Context:
         return self._context == other._context
 
 
-class Metric:
+class MetricDescriptor:
     __slots__ = ['_name', '_context', '_hash', '_metric_hash']
 
     def __init__(
@@ -83,7 +83,7 @@ class Metric:
             self._hash = self._calc_hash()
         return self._hash
 
-    def __eq__(self, other: 'Metric') -> bool:
+    def __eq__(self, other: 'MetricDescriptor') -> bool:
         if hash(self) != hash(other):
             return False
         return (self._name == other.name and self._context == other._context)
