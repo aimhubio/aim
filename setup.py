@@ -55,7 +55,6 @@ REQUIRED = [
     'numpy>=1.12.0',
     'protobuf>=3.11.0',
     'psutil>=5.6.7',
-    'pyrser>=0.2.0',
     'py3nvml>=0.2.5',
     'RestrictedPython>=5.1',
     'aiofiles>=0.5.0',
