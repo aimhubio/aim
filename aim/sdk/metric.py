@@ -5,17 +5,14 @@ from tqdm import tqdm
 
 from abc import abstractmethod
 
-from aim.sdk.types import AimObjectKey, AimObjectPath, AimObject
+from aim.sdk.query_utils import RunView, MetricView
 from aim.storage import treeutils
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
-from aim.storage.proxy import AimObjectProxy
 from aim.storage.query import RestrictedPythonQuery
-from aim.storage.structured.entities import StructuredObject
-from aim.storage.treeview import TreeView
 
-from typing import Any, Generic, Iterator, List, TypeVar, Union
+from typing import Generic, Iterator, List, TypeVar
 from typing import TYPE_CHECKING
 
 
@@ -30,9 +27,13 @@ logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
 
-class Trace(Generic[T]):
+class Metric(Generic[T]):
     # TODO move the core logic of Run.track here
+    """Class representing single tracked metric series.
 
+    Provides interface to access tracked values, steps, timestamps and epochs.
+    Values, epochs and timestamps are accessed via :obj:`aim.storage.arrayview.ArrayView` interface.
+    """
     def __init__(
         self,
         name: str,
@@ -43,12 +44,12 @@ class Trace(Generic[T]):
         self.context = context
         self.run = run
 
-        self.tree = run.trace_tree(name, context)
+        self.tree = run.metric_tree(name, context)
 
         self._hash: int = None
 
     def __repr__(self) -> str:
-        return f'<Trace#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
+        return f'<Metric#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
 
     def _calc_hash(self):
         return hash_auto(
@@ -64,21 +65,37 @@ class Trace(Generic[T]):
 
     @property
     def values(self) -> ArrayView[T]:
+        """Tracked values array as :obj:`ArrayView`.
+
+            :getter: Returns values ArrayView.
+        """
         array_view = self.tree.array('val')
         return array_view
 
     @property
     def indices(self) -> List[int]:
+        """Metric tracking steps as :obj:`list`.
+
+            :getter: Returns steps list.
+        """
         array_view = [i for i, _ in enumerate(self.values)]
         return array_view
 
     @property
     def epochs(self) -> ArrayView[int]:
+        """Tracked epochs array as :obj:`ArrayView`.
+
+            :getter: Returns epochs ArrayView.
+        """
         array_view = self.tree.array('epoch')
         return array_view
 
     @property
     def timestamps(self) -> ArrayView[float]:
+        """Tracked timestamps array as :obj:`ArrayView`.
+
+            :getter: Returns timestamps ArrayView.
+        """
         array_view = self.tree.array('time')
         return array_view
 
@@ -167,82 +184,11 @@ class Trace(Generic[T]):
         return df
 
 
-class RunView:
+class MetricCollection:
+    """Abstract interface for collection of tracked metric series.
 
-    def __init__(self, run: 'Run'):
-        self.db = run.repo.structured_db
-        self.hashname = run.hashname
-        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
-        self.meta_run_tree: TreeView = run.meta_run_tree
-        self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
-
-    def __getattr__(self, item):
-        if item in self.structured_run_cls.fields():
-            return getattr(self.db.caches['runs_cache'][self.hashname], item)
-        else:
-            return self[item]
-
-    def __getitem__(self, key):
-        return AimObjectProxy(lambda: self.meta_run_attrs_tree.collect(key), view=self.meta_run_attrs_tree.view(key))
-
-    def get(
-        self,
-        key,
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
-
-
-class ContextView:
-    def __init__(self, context: dict):
-        self.context = context
-
-    def __getitem__(self, key):
-        return self.context[key]
-
-    def get(
-            self,
-            key,
-            default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
-
-    def view(self, path: Union[AimObjectKey, AimObjectPath]):
-        if isinstance(path, (int, str)):
-            path = (path,)
-
-        return ContextView(self.context[path[0]])
-
-
-class MetricView:
-    def __init__(self, name: str, context: dict, run_view: RunView):
-        self.name = name
-        self.run = run_view
-        self._context = context
-
-    @property
-    def context(self):
-        return AimObjectProxy(lambda: self._context, view=ContextView(self._context))
-
-
-class TraceCollection:
-    def __init__(
-        self,
-        run: 'Run' = None,
-        metric_name: str = None,
-        context: 'Context' = None,
-        repo: 'Repo' = None
-    ):
-        self.metric_name = metric_name
-        self.context = context
-        self.run = run
-        self.repo = repo
+    Typically represents metrics of a same run or metrics matching given query expression.
+    """
 
     def dataframe(
         self,
@@ -252,94 +198,127 @@ class TraceCollection:
         include_context=True
     ) -> 'DataFrame':
         dfs = [
-            trace.dataframe(include_run=include_run,
-                            include_name=include_name,
-                            include_context=include_context,
-                            only_last=only_last)
-            for trace in self
+            metric.dataframe(include_run=include_run,
+                             include_name=include_name,
+                             include_context=include_context,
+                             only_last=only_last)
+            for metric in self
         ]
         if not dfs:
             return None
         import pandas as pd
         return pd.concat(dfs)
 
-    def __iter__(self) -> Iterator[Trace]:
+    def __iter__(self) -> Iterator[Metric]:
         return self.iter()
 
     @abstractmethod
-    def iter(self) -> Iterator[Trace]:
-        ...
+    def iter(self) -> Iterator[Metric]:
+        """Get Metric iterator for collection's metrics.
 
-    def iter_series(self) -> Iterator[Trace]:
-        # Alias to iter
-        return self.iter()
-
-    @abstractmethod
-    def iter_contexts(self) -> Iterator['TraceCollection']:
-        if self.context is not None:
-            logger.warning('Context is already bound to the Collection.')
+        Yields:
+            Next metric object based on implementation.
+        """
         ...
 
     @abstractmethod
-    def iter_runs(self) -> Iterator['TraceCollection']:
-        if self.run is not None:
-            logger.warning('Run is already bound to the Collection')
+    def iter_runs(self) -> Iterator['MetricCollection']:
+        """Get MetricCollection iterator for collection's runs.
+
+        Yields:
+            Next run's MetricCollection based on implementation.
+        """
         ...
 
 
-class RunTraceCollection(TraceCollection):
+class SingleRunMetricCollection(MetricCollection):
+    """Implementation of MetricCollection interface for a single Run.
+
+    Method `iter()` returns Metric iterator which yields Metric matching query from run's metrics.
+    Method `iter_runs()` raises StopIteration, since the collection is bound to a single Run.
+
+    Args:
+         run (:obj:`Run`): Run object for which metrics are queried.
+         query (:obj:`str`, optional): Query expression. If specified, method `iter()` will return iterator for metrics
+            matching the query. If not, method `iter()` will return iterator for run's all metrics.
+    """
     def __init__(
         self,
         run: 'Run',
-        query_traces: str = None
+        query: str = None
     ):
-        self.run: 'Run'
-        self.repo: 'Repo'
-        if query_traces:
-            self.query_traces = RestrictedPythonQuery(query_traces)
+        self.run: 'Run' = run
+        if query:
+            self.query = RestrictedPythonQuery(query)
         else:
-            self.query_traces = None
-        super().__init__(run=run, repo=run.repo)
+            self.query = None
+
+    def iter_runs(self) -> Iterator['MetricCollection']:
+        """"""
+        logger.warning('Run is already bound to the Collection')
+        raise StopIteration
 
     def iter(
         self
-    ) -> Iterator[Trace]:
-        for metric_name, ctx, run in self.run.iter_all_traces():
-            if not self.query_traces:
+    ) -> Iterator[Metric]:
+        """"""
+        for metric_name, ctx, run in self.run.iter_metrics_info():
+            if not self.query:
                 statement = True
             else:
                 run_view = RunView(run)
                 metric_view = MetricView(metric_name, ctx.to_dict(), run_view)
-                statement = self.query_traces.match(
-                    run=run_view,
-                    metric=metric_view
-                )
+                statement = self.query.match(run=run_view, metric=metric_view)
             if not statement:
                 continue
-            yield Trace(metric_name, ctx, run)
+            yield Metric(metric_name, ctx, run)
 
 
-class QueryTraceCollection(TraceCollection):
+class QueryMetricCollection(MetricCollection):
+    """Implementation of MetricCollection interface for repository's metrics matching given query.
+
+    Method `iter()` returns Metric iterator, which yields Metric matching query from currently iterated run's metrics.
+    Once there are no metrics left in current run, repository's next run is considered.
+    Method `iter_runs()` returns MetricCollection iterator for repository's runs.
+
+    Args:
+         repo (:obj:`Repo`): Aim repository object.
+         query (:obj:`str`, optional): Query expression. If specified, method `iter()` will skip metrics not matching
+            the query. If not, method `iter()` will return iterator for all metrics in repository
+            (that's a lot of metric series!).
+    """
+
     def __init__(
         self,
-        *,
         repo: 'Repo',
         query: str = ''
     ):
-        self.repo: 'Repo'
-        super().__init__(repo=repo)
+        self.repo: 'Repo' = repo
         self.query = query
 
-    def iter_runs(self) -> Iterator['TraceCollection']:
+    def iter_runs(self) -> Iterator['MetricCollection']:
+        """"""
         for run in tqdm(self.repo.iter_runs()):
-            yield RunTraceCollection(run, self.query)
+            yield SingleRunMetricCollection(run, self.query)
 
-    def iter(self) -> Iterator[Trace]:
-        for run_traces in self.iter_runs():
-            yield from run_traces
+    def iter(self) -> Iterator[Metric]:
+        """"""
+        for run_metrics in self.iter_runs():
+            yield from run_metrics
 
 
-class QueryRunTraceCollection(TraceCollection):
+class QueryRunMetricCollection(MetricCollection):
+    """Implementation of MetricCollection interface for repository's runs matching given query.
+
+    Method `iter()` returns Metric iterator which yields Metric for current run's all metrics.
+    Method `iter_runs()` returns MetricCollection iterator from repository's runs matching given query.
+
+    Args:
+         repo (:obj:`Repo`): Aim repository object.
+         query (:obj:`str`, optional): Query expression. If specified, method `iter_runs()` will skip runs not matching
+            the query. If not, method `iter_run()` will return MetricCollection iterator for all runs in repository.
+    """
+
     def __init__(
         self,
         repo: 'Repo',
@@ -347,19 +326,20 @@ class QueryRunTraceCollection(TraceCollection):
         paginated: bool = False,
         offset: str = None
     ):
-        self.repo: 'Repo'
-        super().__init__(repo=repo)
+        self.repo: 'Repo' = repo
         self.query = query
         self.paginated = paginated
         self.offset = offset
         if query:
-            self._query = RestrictedPythonQuery(query)
+            self.query = RestrictedPythonQuery(query)
 
-    def iter(self) -> Iterator[Trace]:
-        for run_traces in self.iter_runs():
-            yield from run_traces
+    def iter(self) -> Iterator[Metric]:
+        """"""
+        for run_metrics in self.iter_runs():
+            yield from run_metrics
 
-    def iter_runs(self) -> Iterator['TraceCollection']:
+    def iter_runs(self) -> Iterator['MetricCollection']:
+        """"""
         if self.paginated:
             runs_iterator = self.repo.iter_runs_from_cache(offset=self.offset)
         else:
@@ -369,7 +349,7 @@ class QueryRunTraceCollection(TraceCollection):
                 statement = True
             else:
                 run_view = RunView(run)
-                statement = self._query.match(run=run_view)
+                statement = self.query.match(run=run_view)
             if not statement:
                 continue
-            yield RunTraceCollection(run)
+            yield SingleRunMetricCollection(run)

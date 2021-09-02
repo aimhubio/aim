@@ -71,7 +71,7 @@ async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_
         raise HTTPException(status_code=404)
 
     search_statement = q.strip()
-    traces = project.repo.traces(query=search_statement)
+    traces = project.repo.query_metrics(query=search_statement)
 
     streamer = metric_search_result_streamer(traces, steps_num, x_axis)
     return StreamingResponse(streamer)
@@ -89,7 +89,7 @@ async def run_params_api(run_id: str):
 
     response = {
         'params': run[...],
-        'traces': run.get_traces_overview(),
+        'traces': run.collect_metrics_info(),
         'props': get_run_props(run)
     }
     return JSONResponse(response)
