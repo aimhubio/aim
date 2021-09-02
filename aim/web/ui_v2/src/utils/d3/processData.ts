@@ -36,7 +36,7 @@ function processData(data: ILine[], displayOutliers: boolean): IProcessData {
   }
 
   let [yMin, yMax] = minMaxOfArray(yValues);
-  // ADD margins for [yMin, yMax] lines
+  // ADD margins for [yMin, yMax]
   if (yMax === yMin) {
     yMax += 1;
     yMin -= 1;
@@ -56,6 +56,8 @@ function processData(data: ILine[], displayOutliers: boolean): IProcessData {
       y: yMax,
     },
     processedData,
+    xValues,
+    yValues,
   };
 }
 

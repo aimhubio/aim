@@ -72,9 +72,13 @@ const LineChart = React.forwardRef(function LineChart(
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
+  const humanizerConfigRef = React.useRef({});
 
   function draw() {
-    const { processedData, min, max } = processData(data, displayOutliers);
+    const { processedData, min, max, xValues } = processData(
+      data,
+      displayOutliers,
+    );
 
     drawArea({
       index,
@@ -118,6 +122,9 @@ const LineChart = React.forwardRef(function LineChart(
       height,
       margin,
       alignmentConfig,
+      xValues,
+      attributesRef,
+      humanizerConfigRef,
     });
 
     drawLines({
@@ -151,6 +158,7 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       highlightedNodeRef,
       aggregationConfig,
+      humanizerConfigRef,
     });
 
     if (zoomMode) {

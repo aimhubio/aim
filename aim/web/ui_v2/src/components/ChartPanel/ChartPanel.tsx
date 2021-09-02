@@ -185,6 +185,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             chartType={props.chartType}
             tooltipContent={props.tooltip.content}
             focusedState={props.focusedState}
+            alignmentConfig={props.alignmentConfig}
           />
         </ChartPopover>
       </Grid>

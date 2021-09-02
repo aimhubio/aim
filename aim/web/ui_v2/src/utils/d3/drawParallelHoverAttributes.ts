@@ -12,7 +12,7 @@ import {
 } from 'types/utils/d3/drawParallelHoverAttributes';
 import { getCoordinates, CircleEnum, ScaleEnum } from './';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import getFormattedValue from '../formattedValue';
+import getFormattedValue from 'utils/formattedValue';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
 const drawParallelHoverAttributes = ({

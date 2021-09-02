@@ -27,6 +27,7 @@ export interface IDrawHoverAttributesProps {
   highlightMode: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
+  humanizerConfigRef: React.MutableRefObject<{}>;
 }
 
 export interface ISyncHoverStateParams {

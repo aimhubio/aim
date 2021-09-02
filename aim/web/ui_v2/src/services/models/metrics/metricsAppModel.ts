@@ -395,6 +395,7 @@ function processData(data: IRun<IMetricTrace>[]): {
     metrics = metrics.concat(
       run.traces.map((trace: any) => {
         index++;
+
         const { values, steps, epochs, timestamps } = filterMetricData({
           values: [...new Float64Array(trace.values.blob)],
           steps: [...new Float64Array(trace.iters.blob)],
