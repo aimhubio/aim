@@ -21,11 +21,11 @@ function Activity({
         <h2>Statistics</h2>
         <div className='Activity__Statistics__card'>
           <span>Experiments</span>
-          <strong>{activityData?.num_experiments}</strong>
+          <strong>{activityData?.num_experiments || 0}</strong>
         </div>
         <div className='Activity__Statistics__card'>
           <span>Runs</span>
-          <strong>{activityData?.num_runs}</strong>
+          <strong>{activityData?.num_runs || 0}</strong>
         </div>
       </Grid>
       <Grid xs item>

@@ -36,7 +36,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setPopoverPosition(pos);
       }
     },
-    [props.tooltip.display, setPopoverPosition],
+    [props.tooltip.display, props.focusedState.active, setPopoverPosition],
   );
 
   const syncHoverState = React.useCallback(
@@ -185,6 +185,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             chartType={props.chartType}
             tooltipContent={props.tooltip.content}
             focusedState={props.focusedState}
+            alignmentConfig={props.alignmentConfig}
           />
         </ChartPopover>
       </Grid>

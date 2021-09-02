@@ -13,6 +13,9 @@ export const ThemeContext = React.createContext({});
 const { Provider } = ThemeContext;
 
 const light: ThemeOptions = {
+  typography: {
+    fontFamily: 'Inter Regular, sans-serif',
+  },
   overrides: {
     MuiTextField: {},
     MuiInputBase: {
@@ -41,7 +44,7 @@ const light: ThemeOptions = {
       main: '#1473E6',
     },
     text: {
-      // secondary: '#fff',
+      primary: '#1C2852',
     },
   },
   spacing: (factor: number) => `${factor}em`,

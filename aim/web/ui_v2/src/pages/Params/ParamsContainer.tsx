@@ -13,8 +13,6 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import { ITableRef } from 'types/components/Table/Table';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 
-const paramsRequestRef = paramsAppModel.getParamsData();
-
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const chartPanelRef = React.useRef<IChartPanelRef>(null);
@@ -26,6 +24,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
   React.useEffect(() => {
+    const paramsRequestRef = paramsAppModel.getParamsData();
     paramsAppModel.initialize();
     paramsRequestRef.call();
     return () => {
@@ -58,6 +57,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
+      requestIsPending={paramsData?.requestIsPending}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
