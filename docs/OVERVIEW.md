@@ -35,6 +35,7 @@ for i in range(100):
 Congratulations! Your first run is ready!
 
 ### Query metric series
+
 ```python
 from aim.sdk.repo import Repo
 
@@ -44,9 +45,9 @@ q = '''
 metric.run.params.foo == 'bar' and metric = 'ordinals' and context['odds'] = True
 '''
 
-traces = repo.traces(query=q)  # query metric traces
-for trc in traces:
-    odd_ordinals = trc.values.values_list()  # return tracked values as list
+metrics = repo.query_metrics(query=q)  # query metric traces
+for metric in metrics:
+    odd_ordinals = metric.values.values_list()  # return tracked values as list
     ...  # do your stuff
 ```
 

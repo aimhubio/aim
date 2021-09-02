@@ -6,7 +6,7 @@ aim.sdk subpackage
 
    aim.sdk.repo
    aim.sdk.run
-   aim.sdk.trace
+   aim.sdk.metric
 
 Submodules
 ----------
@@ -21,21 +21,30 @@ aim.sdk.run module
 ------------------
 
 .. automodule:: aim.sdk.run
-
 .. currentmodule:: aim.sdk.run
+
 .. autoclass:: Run
    :inherited-members:
    :members:
    :special-members: __setitem__, __getitem__, __delitem__
 
-aim.sdk.trace module
---------------------
+aim.sdk.metric module
+---------------------
 
-.. automodule:: aim.sdk.trace
+.. automodule:: aim.sdk.metric
+.. currentmodule:: aim.sdk.metric
 
-.. currentmodule:: aim.sdk.trace
-.. autoclass:: Trace
+.. autoclass:: Metric
    :members:
 
-.. autoclass:: TraceCollection
+.. autoclass:: MetricCollection
    :members:
+
+.. autoclass:: SingleRunMetricCollection
+   :members: None
+
+.. autoclass:: QueryMetricCollection
+   :members: None
+
+.. autoclass:: QueryRunMetricCollection
+   :members: None

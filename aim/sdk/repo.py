@@ -8,7 +8,7 @@ from weakref import WeakValueDictionary
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
-from aim.sdk.trace import QueryRunTraceCollection, QueryTraceCollection
+from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
 
 from aim.storage.union import UnionContainer
 from aim.storage.container import Container
@@ -29,7 +29,7 @@ class Repo:
 
     Provides methods for  repositories creation/opening/cleanup.
     Provides APIs for accessing Runs.
-    Provides API for querying Runs/Traces based on a given expression.
+    Provides API for querying Runs/Metrics based on a given expression.
 
     Args:
         path (str): Path to Aim repository.
@@ -228,7 +228,7 @@ class Repo:
         else:
             return Run(hashname, repo=self, read_only=True)
 
-    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunTraceCollection:
+    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunMetricCollection:
         """Get runs satisfying query expression.
 
         Args:
@@ -237,33 +237,33 @@ class Repo:
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
              offset (:obj:`str`, optional): `hashname` of Run to skip to.
         Returns:
-            :obj:`TraceCollection`: Iterable for runs/traces matching query expression.
+            :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
         """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         Run.set_props_cache_hint('runs_cache')
-        return QueryRunTraceCollection(self, query, paginated, offset)
+        return QueryRunMetricCollection(self, query, paginated, offset)
 
-    def traces(self, query: str = '') -> QueryTraceCollection:
-        """Get traces satisfying query expression.
+    def query_metrics(self, query: str = '') -> QueryMetricCollection:
+        """Get metrics satisfying query expression.
 
         Args:
              query (str): query expression.
         Returns:
-            :obj:`TraceCollection`: Iterable for traces matching query expression.
+            :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         Run.set_props_cache_hint('runs_cache')
-        return QueryTraceCollection(repo=self, query=query)
+        return QueryMetricCollection(repo=self, query=query)
 
     def _get_meta_tree(self):
         return self.request(
             'meta', read_only=True, from_union=True
         ).tree().view('meta')
 
-    def collect_metrics(self) -> Dict[str, list]:
-        """Utility function for getting metrics and contexts for all traces.
+    def collect_metrics_info(self) -> Dict[str, list]:
+        """Utility function for getting metric names and contexts for all runs.
 
         Returns:
             :obj:`dict`: Tree of metrics and their contexts.
@@ -277,7 +277,7 @@ class Repo:
 
         return metrics
 
-    def collect_params(self):
+    def collect_params_info(self):
         """Utility function for getting run meta-parameters.
 
         Returns:

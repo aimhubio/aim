@@ -90,7 +90,7 @@ def check_repo_integrity(repo: Repo, legacy_run_map: dict):
             for run in runs:
                 legacy_hash = run.get(['v2_params', 'run_hash'])
                 run_metrics = legacy_run_map.pop(legacy_hash)
-                for metric_name, ctx, _ in run.iter_all_traces():
+                for metric_name, ctx, _ in run.iter_metrics_info():
                     idx = run_metrics[metric_name].index(ctx.to_dict())
                     run_metrics[metric_name].pop(idx)
                     if not run_metrics[metric_name]:
@@ -165,12 +165,12 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
 def _track_legacy_run_step(run: Run, metric_name: str, context: dict, val):
     (value, step, epoch, timestamp) = val
 
-    from aim.storage.context import Context, Metric
+    from aim.storage.context import Context, MetricDescriptor
     if context is None:
         context = {}
 
     ctx = Context(context)
-    metric = Metric(metric_name, ctx)
+    metric = MetricDescriptor(metric_name, ctx)
 
     if ctx not in run.contexts:
         run.meta_tree['contexts', ctx.idx] = ctx.to_dict()
