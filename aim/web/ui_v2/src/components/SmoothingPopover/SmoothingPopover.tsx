@@ -91,7 +91,6 @@ function SmoothingPopover(
   return (
     <Box>
       <Box p={1}>
-        <div>Chart Smoothening:</div>
         <Slider
           defaultValue={0}
           valueLabelDisplay='auto'

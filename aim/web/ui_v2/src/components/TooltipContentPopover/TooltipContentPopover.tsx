@@ -59,8 +59,6 @@ function TooltipContentPopover({
 
   return (
     <div className='TooltipContentPopover__container'>
-      <Box p={0.5}>Select Tooltip Params:</Box>
-      <Divider />
       <div className='TooltipContentPopover__params'>
         <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
           <Autocomplete

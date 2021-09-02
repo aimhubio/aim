@@ -1223,7 +1223,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getTableColumns(params, data[0].config);
+  const tableColumns = getTableColumns(params, data[0]?.config);
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1601,7 +1601,7 @@ function setModelData(
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getTableColumns(params, data[0].config),
+    tableColumns: getTableColumns(params, data[0]?.config),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }

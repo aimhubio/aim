@@ -39,6 +39,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Axes Scale'
           anchor={({ onAnchorClick }) => (
             <div onClick={onAnchorClick} className='Controls__anchor'>
               <ShowChart />
@@ -54,6 +55,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Select Aggregation Method'
           anchor={({ onAnchorClick, opened }) => (
             <div
               className={`Controls__anchor ${
@@ -94,6 +96,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Select Tooltip Params:'
           anchor={({ onAnchorClick }) => (
             <div onClick={onAnchorClick} className='Controls__anchor'>
               {/*TODO need to change icon */}
@@ -112,6 +115,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Align X-Axis by'
           anchor={({ onAnchorClick }) => (
             <div onClick={onAnchorClick} className='Controls__anchor'>
               <ScatterPlot />
@@ -128,6 +132,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Chart Smoothing Options'
           anchor={({ onAnchorClick }) => (
             <div onClick={onAnchorClick} className='Controls__anchor'>
               <MultilineChart />
@@ -145,6 +150,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Highlight Modes'
           anchor={({ onAnchorClick }) => (
             <div className='Controls__anchor' onClick={onAnchorClick}>
               <CenterFocusWeak />

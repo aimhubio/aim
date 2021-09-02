@@ -1,0 +1,22 @@
+@use '../../styles/abstracts' as *;
+
+.AggregationPopover__container {
+    width: 16.5rem;
+}
+
+.AggregationPopover__subtitle {
+    color: tint($pico, 50);
+    padding: 1rem;
+    font-size: $text-sm;
+    font-family: 'Inter Medium',sans-serif;
+    text-transform: uppercase;
+    display: block;
+}
+
+.AggregationPopover__select__list {
+    padding:0 0.5rem 0.5rem;
+    border-bottom: 0.0625rem solid tint($primary-color, 90);
+    &:last-child {
+        border-bottom: unset;
+    }
+}

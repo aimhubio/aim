@@ -17,10 +17,15 @@ $indigo: #7785FF;
 $white: #FFFFFF;
 $pico: #1C2852;
 $grayish: #dee6f3;
+$cuddle:  #BDCEE8;
 //border
 $border-color-main: tint($primary-color, 90);
 $border-main: 0.0625em solid $border-color-main;
 $radius-main: 0.375em;
+
+$border-radius-sm: 0.25rem;
+$border-radius-md: 0.375rem;
+$border-radius-lg: 0.5rem;
 //text
 $text-color: $pico;
 $text-sm: 0.75em;
