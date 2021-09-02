@@ -42,10 +42,10 @@ from aim.sdk.repo import Repo
 repo = Repo.default_repo()  # get default repository instance
 
 q = '''
-metric.run.params.foo == 'bar' and metric = 'ordinals' and context['odds'] = True
+metric.run['params', 'foo'] == 'bar' and metric.name = 'ordinals' and metric.context['odds'] = True
 '''
 
-metrics = repo.query_metrics(query=q)  # query metric traces
+metrics = repo.query_metrics(query=q)  # query metric sequences.
 for metric in metrics:
     odd_ordinals = metric.values.values_list()  # return tracked values as list
     ...  # do your stuff
