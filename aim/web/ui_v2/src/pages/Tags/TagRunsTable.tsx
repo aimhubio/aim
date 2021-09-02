@@ -1,5 +1,4 @@
 import React, { memo, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import Table from 'components/Table/Table';
 import moment from 'moment';
 import { NavLink } from 'react-router-dom';

@@ -9,6 +9,8 @@ export interface IProcessData {
   min: { x: number; y: number };
   max: { x: number; y: number };
   processedData: IProcessedData[];
+  xValues: number[];
+  yValues: number[];
 }
 
 export interface IGetFilteredValuesParams {
