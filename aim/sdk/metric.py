@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-from tqdm import tqdm
 
 from abc import abstractmethod
 
@@ -298,7 +297,7 @@ class QueryMetricCollection(MetricCollection):
 
     def iter_runs(self) -> Iterator['MetricCollection']:
         """"""
-        for run in tqdm(self.repo.iter_runs()):
+        for run in self.repo.iter_runs():
             yield SingleRunMetricCollection(run, self.query)
 
     def iter(self) -> Iterator[Metric]:
@@ -344,7 +343,7 @@ class QueryRunMetricCollection(MetricCollection):
             runs_iterator = self.repo.iter_runs_from_cache(offset=self.offset)
         else:
             runs_iterator = self.repo.iter_runs()
-        for run in tqdm(runs_iterator):
+        for run in runs_iterator:
             if not self.query:
                 statement = True
             else:
