@@ -3,7 +3,6 @@ import {
   Box,
   Chip,
   TextField,
-  Button,
   Checkbox,
   Divider,
   InputBase,
@@ -15,6 +14,8 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
+import Button from 'components/Button/Button';
+
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
@@ -41,7 +42,6 @@ function SelectForm({
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
     searchRef.current = paramsAppModel.getParamsData();
-
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef.abort();

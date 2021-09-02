@@ -31,16 +31,16 @@ runs_router = APIRouter()
 
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut)
-async def run_search_api(q: Optional[str] = ''):
+async def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
     # Get project
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
 
     query = q.strip()
-    runs = project.repo.query_runs(query=query)
+    runs = project.repo.query_runs(query=query, paginated=bool(limit), offset=offset)
 
-    streamer = run_search_result_streamer(runs)
+    streamer = run_search_result_streamer(runs, limit)
     return StreamingResponse(streamer)
 
 
@@ -59,7 +59,7 @@ async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
 
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut)
-async def run_metric_search_api(q: Optional[str] = '', p: int = 50, x_axis: Optional[str] = None):
+async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:

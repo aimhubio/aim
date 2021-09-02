@@ -120,6 +120,7 @@ function initialize() {
 function getParamsData() {
   return {
     call: async () => {
+      // model.setState({ requestIsPending: true });
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (!isEmpty(select?.params)) {
@@ -148,6 +149,7 @@ function getParamsData() {
           params,
           rawData: runData,
           config: configData,
+          requestIsPending: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
       }

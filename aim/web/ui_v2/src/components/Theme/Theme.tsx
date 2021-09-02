@@ -13,6 +13,9 @@ export const ThemeContext = React.createContext({});
 const { Provider } = ThemeContext;
 
 const light: ThemeOptions = {
+  typography: {
+    fontFamily: 'Inter Regular, sans-serif',
+  },
   overrides: {
     MuiTextField: {},
     MuiInputBase: {

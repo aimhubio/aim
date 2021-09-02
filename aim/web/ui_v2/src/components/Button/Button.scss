@@ -1,0 +1,38 @@
+// -------- contained overrides --------
+.MuiButton-contained {
+    &.Mui-disabled {
+        box-shadow: none;
+        background-color: #1266CC;
+        color: white;
+        opacity: 0.5;
+    }
+}
+
+// Primary
+.MuiButton-outlinedPrimary:hover {
+    background-color: #1473E6;
+    color: #FFFF;
+}
+
+// -------- outlined overrides --------
+.MuiButton-outlined {
+    &.Mui-disabled {
+        box-shadow: none;
+        color: #89B9F2;
+        border-color: #89B9F2;
+        opacity: 0.5;
+    }
+}
+
+
+// text
+.MuiButton-label {
+    text-transform: capitalize;
+}
+
+// -------- text overrides --------
+.MuiButton-text {
+    &.Mui-disabled {
+        color: #89B9F2;
+    }
+}
