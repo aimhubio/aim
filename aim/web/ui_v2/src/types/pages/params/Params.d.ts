@@ -42,6 +42,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartTitleData: IChartTitleData;
   onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
   selectedParamsData: IParamsAppConfig['select'];
+  requestIsPending: boolean;
   onSelectRunQueryChange: (query: string) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;

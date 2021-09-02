@@ -75,7 +75,6 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
-import { useRouteMatch } from 'react-router-dom';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -294,8 +293,8 @@ function getChartTitleData(
             acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
               metricsCollection.config[groupItemKey] || 'None',
             );
-            return acc;
           }
+          return acc;
         },
         {},
       );
@@ -396,6 +395,7 @@ function processData(data: IRun<IMetricTrace>[]): {
     metrics = metrics.concat(
       run.traces.map((trace: any) => {
         index++;
+
         const { values, steps, epochs, timestamps } = filterMetricData({
           values: [...new Float64Array(trace.values.blob)],
           steps: [...new Float64Array(trace.iters.blob)],

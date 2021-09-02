@@ -37,6 +37,7 @@ class Run(Base):
     is_archived = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    finalized_at = Column(DateTime, default=None)
 
     # relationships
     experiment_id = Column(ForeignKey('experiment.id'), nullable=True)

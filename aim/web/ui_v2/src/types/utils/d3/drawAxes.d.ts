@@ -14,4 +14,7 @@ export interface IDrawAxesProps {
   height: number;
   margin: { top: number; right: number; bottom: number; left: number };
   alignmentConfig?: IAlignmentConfig;
+  xValues: number[];
+  attributesRef: React.MutableRefObject<>;
+  humanizerConfigRef: React.MutableRefObject<{}>;
 }

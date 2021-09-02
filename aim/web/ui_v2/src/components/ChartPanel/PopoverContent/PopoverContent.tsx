@@ -3,6 +3,7 @@ import { Box, Divider, Paper, Typography } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
+import formatXAxisValueByAlignment from 'utils/formatXAxisValueByAlignment';
 
 import { ChartTypeEnum } from 'utils/d3';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
@@ -13,6 +14,7 @@ function PopoverContent({
   tooltipContent,
   focusedState,
   chartType,
+  alignmentConfig,
 }: IPopoverContentProps) {
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -23,7 +25,11 @@ function PopoverContent({
               {tooltipContent.metricName}: {focusedState?.yValue ?? '--'}
             </Typography>
             <Typography>
-              Step: {focusedState?.xValue ?? '--'}{' '}
+              Step:{' '}
+              {formatXAxisValueByAlignment({
+                xAxisTickValue: (focusedState?.xValue as number) ?? null,
+                type: alignmentConfig?.type,
+              })}{' '}
               {contextToString(tooltipContent.metricContext)}
             </Typography>
           </>

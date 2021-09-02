@@ -1,7 +1,6 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-
 import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -9,7 +8,12 @@ import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
+
 import './Params.scss';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import ChartLoader from 'components/ChartLoader/ChartLoader';
+import TableLoader from 'components/TableLoader/TableLoader';
 
 const Params = ({
   curveInterpolation,
@@ -26,6 +30,7 @@ const Params = ({
   groupingSelectOptions,
   tooltip,
   chartTitleData,
+  requestIsPending,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -78,38 +83,43 @@ const Params = ({
             </div>
           </Grid>
           <Grid ref={chartElemRef} className='Params__chart__container' item>
-            {!!highPlotData?.[0]?.data?.length ? (
-              <ChartPanel
-                ref={chartPanelRef}
-                chartType={ChartTypeEnum.HighPlot}
-                data={highPlotData}
-                focusedState={focusedState}
-                onActivePointChange={onActivePointChange}
-                tooltip={tooltip}
-                chartTitleData={chartTitleData}
-                chartProps={[
-                  {
-                    curveInterpolation,
-                    isVisibleColorIndicator,
-                  },
-                ]}
-                controls={
-                  <Controls
-                    curveInterpolation={curveInterpolation}
-                    isVisibleColorIndicator={isVisibleColorIndicator}
-                    selectOptions={groupingSelectOptions}
-                    tooltip={tooltip}
-                    onCurveInterpolationChange={onCurveInterpolationChange}
-                    onColorIndicatorChange={onColorIndicatorChange}
-                    onChangeTooltip={onChangeTooltip}
-                  />
-                }
-              />
-            ) : (
-              <div className='Params__chart__container__emptyBox'>
-                Choose Params
-              </div>
-            )}
+            <BusyLoaderWrapper
+              isLoading={requestIsPending}
+              loaderComponent={<ChartLoader />}
+            >
+              {!!highPlotData?.[0]?.data?.length ? (
+                <ChartPanel
+                  ref={chartPanelRef}
+                  chartType={ChartTypeEnum.HighPlot}
+                  data={highPlotData}
+                  focusedState={focusedState}
+                  onActivePointChange={onActivePointChange}
+                  tooltip={tooltip}
+                  chartTitleData={chartTitleData}
+                  chartProps={[
+                    {
+                      curveInterpolation,
+                      isVisibleColorIndicator,
+                    },
+                  ]}
+                  controls={
+                    <Controls
+                      curveInterpolation={curveInterpolation}
+                      isVisibleColorIndicator={isVisibleColorIndicator}
+                      selectOptions={groupingSelectOptions}
+                      tooltip={tooltip}
+                      onCurveInterpolationChange={onCurveInterpolationChange}
+                      onColorIndicatorChange={onColorIndicatorChange}
+                      onChangeTooltip={onChangeTooltip}
+                    />
+                  }
+                />
+              ) : (
+                !requestIsPending && (
+                  <EmptyComponent size='big' content={'Choose Params'} />
+                )
+              )}
+            </BusyLoaderWrapper>
           </Grid>
           <div ref={resizeElemRef}>
             <div className='Params__resize'>
@@ -117,7 +127,12 @@ const Params = ({
             </div>
           </div>
           <Grid item xs ref={tableElemRef} className='Params__table__container'>
-            <div>asdasd</div>
+            <BusyLoaderWrapper
+              isLoading={true}
+              loaderComponent={<TableLoader />}
+            >
+              pending
+            </BusyLoaderWrapper>
           </Grid>
         </Grid>
       </section>

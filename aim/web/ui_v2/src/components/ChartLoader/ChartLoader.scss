@@ -1,0 +1,30 @@
+.ChartLoader {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  padding: 0.5rem 0rem;
+}
+
+.ChartLoader__chart {
+  flex: 1 100%;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  span {
+    margin-left: 3.625rem;
+  }
+}
+
+.ChartLoader__controls {
+  width: 3.125rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  .MuiSkeleton-root {
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+}

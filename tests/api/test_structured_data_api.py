@@ -144,6 +144,7 @@ class TestTagsApi(StructuredApiTestBase):
         run_names = {run['name'] for run in data['runs']}
         expected_run_names = {f'Run number {i}' for i in range(4, 11)}
         self.assertSetEqual(expected_run_names, run_names)
+        self.assertTrue(all('end_time' in run for run in data['runs']))
 
     def test_archive_tag_api(self):
         tag = next(iter(self.repo.structured_db.tags()))
