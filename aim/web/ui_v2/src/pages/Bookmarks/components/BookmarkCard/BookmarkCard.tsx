@@ -44,11 +44,25 @@ function BookmarkCard({
       <div className='BookmarkCard__top'>
         <div className='BookmarkCard__title__section'>
           <span className='BookmarkCard__title'>{name}</span>
-          <NavLink to={`/${type}/${app_id}`}>
-            <Button size='small' variant='outlined'>
-              View Bookmark
-            </Button>
-          </NavLink>
+          <div className='flex fac fjc'>
+            <NavLink to={`/${type}/${app_id}`}>
+              <Button size='small' variant='outlined'>
+                View Bookmark
+              </Button>
+            </NavLink>
+            <span className='BookmarkCard__delete'>
+              <Button
+                variant='text'
+                withOnlyIcon
+                onClick={handleOpenModal}
+                size='small'
+              >
+                <DeleteOutlinedIcon
+                  style={{ color: '#1C2852', fontSize: '24px' }}
+                />
+              </Button>
+            </span>
+          </div>
         </div>
         <p>{description}</p>
       </div>
@@ -87,9 +101,6 @@ function BookmarkCard({
         icon={<DeleteOutlinedIcon />}
         title='Are you sure?'
       />
-      <span className='BookmarkCard__delete' onClick={handleOpenModal}>
-        <DeleteOutlinedIcon />
-      </span>
     </div>
   );
 }

@@ -22,7 +22,6 @@ function Button(
   const styleOverrides = {
     borderRadius: '0.375rem',
     padding: `0.5rem ${props.withOnlyIcon ? '0.5rem' : '1.25rem'}`,
-    marginBottom: '0.3125rem',
     fontSize: fontSizes[props.size || 'medium'],
     height: sizes[props.size || 'medium'],
     minWidth: props.withOnlyIcon ? '2.25rem' : '6.25rem',
