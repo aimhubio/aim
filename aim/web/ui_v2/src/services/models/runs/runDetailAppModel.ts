@@ -1,4 +1,5 @@
 import runsService from 'services/api/runs/runsService';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IRunBatch } from 'types/pages/runs/Runs';
 import createModel from '../model';
 
@@ -67,7 +68,7 @@ function archiveRun(id: string, archived: boolean = false) {
   runsService
     .archiveRun(id, archived)
     .call()
-    .then(() => {
+    .then((res: any) => {
       model.setState({
         ...state,
         runInfo: {
@@ -75,7 +76,37 @@ function archiveRun(id: string, archived: boolean = false) {
           archived,
         },
       });
+      if (res.id) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: archived
+            ? 'Run successfully archived'
+            : 'Run successfully unarchive',
+        });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: 'Something went wrong',
+        });
+      }
     });
+}
+
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
 }
 
 const runDetailAppModel = {
@@ -84,6 +115,8 @@ const runDetailAppModel = {
   getRunInfo,
   getRunBatch,
   archiveRun,
+  onNotificationAdd,
+  onNotificationDelete,
 };
 
 export default runDetailAppModel;

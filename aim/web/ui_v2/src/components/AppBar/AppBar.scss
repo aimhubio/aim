@@ -5,14 +5,16 @@
   align-items: center;
   height: 2.5em;
   border-bottom: $border-main;
+  border-left: $border-main;
+  border-right: $border-main;
   color: #374a61;
-  padding-left: 1.5em;
+  padding-left: 1.5rem;
 }
 
 .AppBar__title {
   flex: 1;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1rem;
   color: #000;
 }
 

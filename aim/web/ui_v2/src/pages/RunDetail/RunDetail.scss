@@ -1,19 +1,189 @@
+@use 'src/styles/abstracts' as *;
+
+.RunDetail {
+  &__runDetailContainer {
+    height: 100%;
+    &__appBarTitleBox {
+      display: flex;
+      font-size: $text-mm;
+      font-weight: 600;
+      color: $text-color;
+      &__pageName {
+        margin-right: 0.4375em;
+        color: tint($text-color, 30);
+      }
+      &__runHash {
+        margin-left: 0.4375em;
+      }
+    }
+    &__headerContainer {
+      padding: 1em 1.5em;
+      height: 4.25rem;
+      border-right: $border-main;
+      border-left: $border-main;
+      border-bottom: $border-secondary;
+      display: flex;
+      justify-content: space-between;
+      &__infoBox {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        &__experimentName {
+          font-size: $text-mm;
+          font-weight: 600;
+        }
+        &__experimentDate {
+          font-size: $text-sm;
+          font-weight: 500;
+        }
+      }
+      &__tagsBox {
+        display: flex;
+        max-width: 50%;
+        overflow: auto;
+        .TagContainer__tagBox {
+          margin-left: 10px;
+          &:first-child {
+            margin-left: 0;
+          }
+        }
+      }
+    }
+    &__tabsContainer {
+      border-right: $border-main;
+      border-left: $border-main;
+      border-bottom: $border-secondary;
+      padding-left: 1.5rem;
+      .MuiTabs-root {
+        height: 40px;
+        min-height: auto;
+      }
+      .MuiTabs-flexContainer {
+        .MuiTab-textColorPrimary {
+          color: tint($pico, 20);
+          font-size: $text-mm;
+          font-weight: 500;
+          text-transform: unset;
+          min-height: 40px;
+          .MuiTab-wrapper {
+            line-height: 1.05;
+          }
+          &.MuiTab-root {
+            padding: 11px 16px;
+            min-width: auto !important;
+            border-right: 1px solid transparent;
+          }
+          &.Mui-selected {
+            color: $pico;
+            font-weight: 600;
+            position: relative;
+            border-right: none;
+            &::before {
+              content: '';
+              width: 100%;
+              height: 3px;
+              background: $primary-color;
+              position: absolute;
+              left: 0;
+              bottom: 0;
+              transition: all 3s;
+            }
+          }
+        }
+      }
+      .PrivateTabIndicator-root-5 {
+        display: none;
+      }
+      &.MuiPaper-elevation1 {
+        box-shadow: none;
+      }
+      &.MuiPaper-rounded {
+        border-radius: unset;
+      }
+    }
+    &__tabPanel {
+      border-right: $border-main;
+      border-left: $border-main;
+      border-bottom: $border-main;
+      padding: 0.75rem;
+      min-height: calc(100% - 149px);
+      .MuiBox-root {
+        height: 100%;
+      }
+    }
+  }
+}
+
 .RunDetailParamsTab {
-  padding: 10px;
-  border: 1px solid #dfe6f7;
-  background-color: #ffffff;
+  padding: 1.5rem;
+  margin: 0.75rem;
+  border: 0.0625rem solid tint($cuddle, 50);
+  border-radius: 0.5rem;
 }
 
 .RunDetailMetricsTab {
   height: 100%;
   &__container {
-    padding: 10px;
     display: flex;
     flex-wrap: wrap;
-    background: #ffffff;
-    &__chartBox {
-      width: 50%;
-      height: 300px;
+    background: $white;
+    align-items: stretch;
+    height: 100%;
+    &__chartContainer {
+      border: 0.0625rem solid tint($cuddle, 50);
+      border-radius: 0.5rem;
+      margin: 0.75rem;
+      width: calc(50% - 24px);
+      &__chartBox {
+        height: 24.5rem;
+        padding: 0.625rem;
+        .LineChart__container {
+          background-color: transparent;
+        }
+      }
+      &__metricDetailBox {
+        border-top: 0.0625rem solid tint($cuddle, 50);
+        padding: 1rem 1.5rem 1.5rem;
+        &__title {
+          font-weight: 500;
+          font-size: 0.625rem;
+        }
+        &__metricName {
+          font-weight: 600;
+          font-size: 1.125rem;
+        }
+        .SelectForm__tags__item {
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+.RunDetailSettingsTab {
+  padding: 1.5rem;
+  border: 0.0625rem solid tint($cuddle, 50);
+  border-radius: 0.5rem;
+  height: 5.25rem;
+  margin: 0 10.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  &__buttonUnarchive {
+    background: tint($pico, 50);
+    color: white;
+  }
+  &__infoBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    &__title {
+      font-size: $text-mm;
+      font-weight: 600;
+    }
+    &__message {
+      font-size: $text-sm;
+      font-weight: normal;
     }
   }
 }

@@ -24,13 +24,14 @@ function BusyLoaderWrapper({
       }
     }
   }
-
   return isLoading ? (
     <div className={`BusyLoaderWrapper ${className}`} style={{ width, height }}>
       {loaderComponent || loaderRender()}
     </div>
-  ) : (
+  ) : children ? (
     children
+  ) : (
+    <div></div>
   );
 }
 

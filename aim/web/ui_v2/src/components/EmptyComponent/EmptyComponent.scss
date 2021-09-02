@@ -1,3 +1,4 @@
+@use 'src/styles/abstracts' as *;
 .EmptyComponent {
   display: flex;
   justify-content: center;
@@ -8,11 +9,11 @@
   &__small {
     &__title {
       font-weight: 600;
-      font-size: 14px;
+      font-size: $text-mm;
     }
     &__content {
       font-weight: 500;
-      font-size: 14px;
+      font-size: $text-mm;
     }
     &__img {
       padding: 10px;
@@ -22,14 +23,14 @@
       }
     }
   }
-  &__medium{
+  &__medium {
     &__title {
       font-weight: 600;
-      font-size: 14px;
+      font-size: $text-mm;
     }
     &__content {
       font-weight: 500;
-      font-size: 14px;
+      font-size: $text-mm;
     }
     &__img {
       padding: 10px;
@@ -39,14 +40,14 @@
       }
     }
   }
-  &__big{
+  &__big {
     &__title {
       font-weight: 500;
-      font-size: 16px;
+      font-size: $text-lm;
     }
     &__content {
       font-weight: 500;
-      font-size: 16px;
+      font-size: $text-lm;
     }
     &__img {
       padding: 10px;

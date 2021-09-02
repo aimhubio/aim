@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Button } from '@material-ui/core';
+import Button from 'components/Button/Button';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import { IRunDetailSettingsTabProps } from 'types/pages/runs/Runs';
@@ -14,19 +14,29 @@ function RunDetailSettingsTab({
 
   return (
     <div className='RunDetailSettingsTab'>
+      <div className='RunDetailSettingsTab__infoBox'>
+        <p className='RunDetailSettingsTab__infoBox__title'>
+          {isArchived ? 'Unarchive Run' : 'Archive Run'}
+        </p>
+        <p className='RunDetailSettingsTab__infoBox__message'>
+          {isArchived
+            ? 'Unarchive runs will appear in search both on Dashboard and Explore.'
+            : 'Archived runs will not appear in search both on Dashboard and Explore.'}
+        </p>
+      </div>
       {isArchived ? (
-        <>
-          <p>This run is archived.</p>
-          <Button onClick={onRunArchive}>Unarchive</Button>
-        </>
+        <Button
+          onClick={onRunArchive}
+          color='default'
+          variant='contained'
+          className='RunDetailSettingsTab__buttonUnarchive'
+        >
+          Unarchive
+        </Button>
       ) : (
-        <>
-          <Button onClick={onRunArchive}>Archive this run</Button>
-          <p>
-            Archived runs will not appear in search both on Dashboard and
-            Explore.
-          </p>
-        </>
+        <Button onClick={onRunArchive} color='secondary' variant='contained'>
+          Archive this run
+        </Button>
       )}
     </div>
   );

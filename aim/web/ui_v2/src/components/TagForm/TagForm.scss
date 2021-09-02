@@ -14,7 +14,7 @@
     }
     &__containerTitle {
       font-weight: 500;
-      font-size: 14px;
+      font-size: $text-mm;
       margin-left: 10px;
       margin-bottom: 6px;
     }
@@ -101,7 +101,7 @@
             top: 50%;
             left: 50%;
             font-weight: 500;
-            font-size: 14px;
+            font-size: $text-mm;
             transform: translate(-50%, -50%);
             overflow: hidden;
             max-width: calc(100% - 104px);
@@ -121,14 +121,14 @@
       margin-right: 10px;
       height: 32px;
       font-weight: 500;
-      font-size: 14px;
+      font-size: $text-mm;
       color: $text-color;
       text-transform: none;
     }
     &__primaryButton {
       height: 32px;
       font-weight: 500;
-      font-size: 14px;
+      font-size: $text-mm;
       color: $white;
       text-transform: none;
     }
