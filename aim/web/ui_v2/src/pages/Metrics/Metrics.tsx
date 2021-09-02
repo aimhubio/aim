@@ -70,6 +70,7 @@ function Metrics(
                   aggregationConfig={props.aggregationConfig}
                   chartTitleData={props.chartTitleData}
                   alignmentConfig={props.alignmentConfig}
+                  zoomMode={props.zoomMode}
                   chartProps={[
                     {
                       axesScaleType: props.axesScaleType,

@@ -5,7 +5,6 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
-import hexToRgbA from 'utils/haxToRgba';
 import Button from 'components/Button/Button';
 import Table from 'components/Table/Table';
 import tagsAppModel from 'services/models/tags/tagsAppModel';

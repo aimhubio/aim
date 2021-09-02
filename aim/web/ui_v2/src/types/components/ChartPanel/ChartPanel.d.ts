@@ -25,6 +25,7 @@ export interface IChartPanelProps {
   aggregatedData?: IAggregatedData[];
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
+  zoomMode?: boolean;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,
   //   'data' | 'index' | 'syncHoverState'
