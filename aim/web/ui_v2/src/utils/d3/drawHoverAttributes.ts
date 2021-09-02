@@ -42,6 +42,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     humanizerConfigRef,
   } = props;
 
+  if (!svgNodeRef?.current || !bgRectNodeRef?.current) {
+    return;
+  }
+
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
 
   const { margin, width, height } = visBoxRef.current;
@@ -672,6 +676,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   linesNodeRef.current?.on('click', handleLeaveFocusedPoint);
 
   // call on every render
-  updateFocusedChart({ force: true });
+
+  if (attributesRef.current.focusedState) {
+    updateFocusedChart({ force: true });
+  }
 }
 export default drawHoverAttributes;

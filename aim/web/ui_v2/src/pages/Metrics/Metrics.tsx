@@ -59,6 +59,7 @@ function Metrics(
                 <ChartPanel
                   key={props.lineChartData?.length}
                   ref={props.chartPanelRef}
+                  panelResizing={props.panelResizing}
                   chartType={ChartTypeEnum.LineChart}
                   data={props.lineChartData}
                   focusedState={props.focusedState}

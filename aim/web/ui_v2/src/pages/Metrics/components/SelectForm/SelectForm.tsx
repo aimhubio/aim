@@ -151,7 +151,7 @@ function SelectForm({
                   rows={3}
                   variant='outlined'
                   placeholder={
-                    'Select statement e.g. select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10 return metric'
+                    'Select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10'
                   }
                   value={selectedMetricsData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
