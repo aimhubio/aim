@@ -1,5 +1,4 @@
 import React from 'react';
-import copy from 'copy-to-clipboard';
 import { ICopyToClipBoardProps } from 'types/components/CopyToClipBoard/CopyToClipBoard';
 
 import copyIcon from 'assets/icons/copy.svg';
@@ -21,17 +20,19 @@ function CopyToClipboard({
 
   const onCopy = React.useCallback(() => {
     if (contentRef.current && !showCopiedIcon) {
-      const copied = copy(contentRef.current.outerText);
-      if (copied) {
-        setShowCopiedIcon(true);
-      }
+      navigator.clipboard
+        .writeText(contentRef.current.innerText.trim(''))
+        .then(function () {
+          setShowCopiedIcon(true);
+        })
+        .catch();
     }
   }, [contentRef, showCopiedIcon]);
 
   return (
     <span className={className} onClick={onCopy}>
       {showCopiedIcon ? (
-        <span style={{ color: 'green', fontSize: 12 }}>Copied !</span>
+        <span style={{ color: 'green', fontSize: 12 }}>Copied!</span>
       ) : (
         <img src={copyIcon} alt='copy' />
       )}
