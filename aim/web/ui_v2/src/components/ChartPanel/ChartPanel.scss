@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .ChartPanel__container {
   height: 100%;
   // height: -moz-available; /* WebKit-based browsers will ignore this. */
@@ -10,7 +12,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-bg);
+    background-color: tint($primary-color, 95);
     user-select: none;
   }
 
