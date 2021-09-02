@@ -12,11 +12,11 @@ import {
   IOnGroupingSelectChangeParams,
   IFocusedState,
   IMetricAppModelState,
-  ITooltipContent,
   IAggregationConfig,
   IAggregatedData,
   IAlignmentConfig,
   IChartTooltip,
+  IChartTitleData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
@@ -27,8 +27,6 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { ISelectMetricsOption } from './components/SelectForm/SelectForm';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { RowHeight } from 'config/table/tableConfigs';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
@@ -39,6 +37,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
+  chartTitleData: IChartTitleData;
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
@@ -58,6 +57,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   selectedMetricsData: IMetricAppConfig['select'];
   tableRowHeight: RowHeight;
   groupingSelectOptions: IGroupingSelectOption[];
+  requestIsPending: boolean;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onZoomModeChange: () => void;

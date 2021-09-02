@@ -4,12 +4,14 @@ import Params from './Params';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import useModel from 'hooks/model/useModel';
-import { IChartTooltip } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IChartTitleData,
+  IChartTooltip,
+  IGroupingSelectOption,
+} from 'types/services/models/metrics/metricsAppModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import { ITableRef } from 'types/components/Table/Table';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
-
-const paramsRequestRef = paramsAppModel.getParamsData();
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -22,6 +24,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
 
   React.useEffect(() => {
+    const paramsRequestRef = paramsAppModel.getParamsData();
     paramsAppModel.initialize();
     paramsRequestRef.call();
     return () => {
@@ -50,6 +53,11 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
       tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
+      chartTitleData={paramsData?.chartTitleData as IChartTitleData}
+      groupingSelectOptions={
+        paramsData?.groupingSelectOptions as IGroupingSelectOption[]
+      }
+      requestIsPending={paramsData?.requestIsPending}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}

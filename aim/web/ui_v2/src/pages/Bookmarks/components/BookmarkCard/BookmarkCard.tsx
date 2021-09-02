@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import SelectTag from 'components/SelectTag/SelectTag';
+import Button from 'components/Button/Button';
+
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
@@ -43,11 +44,25 @@ function BookmarkCard({
       <div className='BookmarkCard__top'>
         <div className='BookmarkCard__title__section'>
           <span className='BookmarkCard__title'>{name}</span>
-          <NavLink to={`/${type}/${app_id}`}>
-            <Button size='small' color='primary' variant='contained'>
-              View Bookmark
-            </Button>
-          </NavLink>
+          <div className='flex fac fjc'>
+            <NavLink to={`/${type}/${app_id}`}>
+              <Button size='small' variant='outlined'>
+                View Bookmark
+              </Button>
+            </NavLink>
+            <span className='BookmarkCard__delete'>
+              <Button
+                variant='text'
+                withOnlyIcon
+                onClick={handleOpenModal}
+                size='small'
+              >
+                <DeleteOutlinedIcon
+                  style={{ color: '#1C2852', fontSize: '24px' }}
+                />
+              </Button>
+            </span>
+          </div>
         </div>
         <p>{description}</p>
       </div>
@@ -83,10 +98,9 @@ function BookmarkCard({
         onCancel={handleCloseModal}
         onSubmit={handleBookmarkDelete}
         text='Are you sure you want to delete this bookmark?'
+        icon={<DeleteOutlinedIcon />}
+        title='Are you sure?'
       />
-      <span className='BookmarkCard__delete' onClick={handleOpenModal}>
-        <DeleteOutlinedIcon />
-      </span>
     </div>
   );
 }

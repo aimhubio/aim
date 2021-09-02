@@ -379,11 +379,15 @@ class QueryRunTraceCollection(TraceCollection):
     def __init__(
         self,
         repo: 'Repo',
-        query: str
+        query: str,
+        paginated: bool = False,
+        offset: str = None
     ):
         self.repo: 'Repo'
         super().__init__(repo=repo)
         self.query = query
+        self.paginated = paginated
+        self.offset = offset
         if query:
             self._query = RestrictedPythonQuery(query)
 
@@ -392,7 +396,11 @@ class QueryRunTraceCollection(TraceCollection):
             yield from run_traces
 
     def iter_runs(self) -> Iterator['TraceCollection']:
-        for run in tqdm(self.repo.iter_runs()):
+        if self.paginated:
+            runs_iterator = self.repo.iter_runs_from_cache(offset=self.offset)
+        else:
+            runs_iterator = self.repo.iter_runs()
+        for run in tqdm(runs_iterator):
             if not self.query:
                 statement = True
             else:

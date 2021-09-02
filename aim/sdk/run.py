@@ -1,5 +1,6 @@
 import logging
 
+import datetime
 from time import time
 from collections import Counter
 
@@ -80,12 +81,28 @@ class StructuredRunMixin:
         return self.props.created_at
 
     @property
+    def finalized_at(self):
+        """Run finalization time [UTC] as datetime.
+
+            :getter: Returns run finalization time.
+        """
+        return self.props.finalized_at
+
+    @property
     def creation_time(self):
         """Run object creation time [UTC] as timestamp.
 
             :getter: Returns run creation time.
         """
         return self.props.creation_time
+
+    @property
+    def end_time(self):
+        """Run finalization time [UTC] as timestamp.
+
+            :getter: Returns run finalization time.
+        """
+        return self.props.end_time
 
     @property
     def updated_at(self):
@@ -196,7 +213,7 @@ class Run(StructuredRunMixin):
 
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
-            self.props
+            self.props.finalized_at = None
             self._prepare_resource_tracker(system_tracking_interval)
         if experiment:
             self.experiment = experiment
@@ -439,6 +456,7 @@ class Run(StructuredRunMixin):
         self.finalize()
 
     def finalize(self):
+        self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',
                                          read_only=False,
                                          from_union=False).view(b'')

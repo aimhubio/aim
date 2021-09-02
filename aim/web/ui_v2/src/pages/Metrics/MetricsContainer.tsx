@@ -19,14 +19,13 @@ import {
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
-  ITooltipContent,
+  IChartTitleData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { RowHeight } from 'config/table/tableConfigs';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -103,6 +102,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       // chart options
       lineChartData={metricsData?.lineChartData as ILine[][]}
+      chartTitleData={metricsData?.chartTitleData as IChartTitleData}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
@@ -135,6 +135,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
+      requestIsPending={metricsData?.requestIsPending as boolean}
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}

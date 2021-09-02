@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import moment from 'moment';
 
 import {
   IDrawHoverAttributesProps,
@@ -11,17 +12,19 @@ import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import { CircleEnum } from './index';
 
 import 'components/LineChart/LineChart.scss';
-import getFormattedValue from '../formattedValue';
+import getFormattedValue from 'utils/formattedValue';
 import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { AggregationAreaMethods } from '../aggregateGroupData';
-import { decode } from '../encoder/encoder';
+import { AggregationAreaMethods } from 'utils/aggregateGroupData';
+import { decode } from 'utils/encoder/encoder';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
+import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {
     data,
     index,
-    xAlignment,
+    alignmentConfig,
     plotBoxRef,
     visAreaRef,
     visBoxRef,
@@ -36,6 +39,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     highlightMode,
     syncHoverState,
     aggregationConfig,
+    humanizerConfigRef,
   } = props;
 
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
@@ -107,28 +111,38 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   function drawXAxisLabel(x: number): void {
     const visArea = d3.select(visAreaRef.current);
-    const xAxisTickValue = attributesRef.current.xScale.invert(x);
-    // Set X axis value label related by 'xAlignment'
-    // TODO change axis label related by x alignment
-    // switch (xAlignment) {
-    //   case XAlignmentEnum.Epoch:
-    //     break;
-    //   case XAlignmentEnum.RelativeTime:
-    //     break;
-    //   case XAlignmentEnum.AbsoluteTime:
-    //     break;
-    //   default:
-    //     xAxisValueLabel = xAxisTickValue;
-    // }
+    const xAxisTickValue = getFormattedValue(
+      attributesRef.current.xScale.invert(x),
+    );
+
+    let xAxisValueText;
+
+    switch (alignmentConfig?.type) {
+      case AlignmentOptions.RELATIVE_TIME:
+        xAxisValueText = shortEnglishHumanizer(
+          Math.round(xAxisTickValue * 1000),
+          {
+            ...humanizerConfigRef.current,
+            maxDecimalPoints: 2,
+          },
+        );
+        break;
+      case AlignmentOptions.ABSOLUTE_TIME:
+        xAxisValueText = moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');
+        break;
+      default:
+        xAxisValueText = xAxisTickValue;
+    }
+
     if (xAxisTickValue || xAxisTickValue === 0) {
       clearXAxisLabel();
-      const formattedValue = getFormattedValue(xAxisTickValue);
       // X Axis Label
       xAxisLabelNodeRef.current = visArea
         .append('div')
         .attr('class', 'ChartMouseValue ChartMouseValueXAxis')
         .style('top', `${height - margin.bottom + 1}px`)
-        .text(formattedValue);
+        .text(xAxisValueText);
+
       const axisLeftEdge = margin.left - 1;
       const axisRightEdge = width - margin.right + 1;
       let xAxisValueWidth = xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
@@ -159,19 +173,20 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
   function drawYAxisLabel(y: number): void {
     const visArea = d3.select(visAreaRef.current);
-    const yAxisTickValue = attributesRef.current.yScale.invert(y);
+    const yAxisTickValue = getFormattedValue(
+      attributesRef.current.yScale.invert(y),
+    );
 
     if (yAxisTickValue || yAxisTickValue === 0) {
       clearYAxisLabel();
-      const formattedValue = getFormattedValue(yAxisTickValue);
       // Y Axis Label
       yAxisLabelNodeRef.current = visArea
         .append('div')
         .attr('class', 'ChartMouseValue ChartMouseValueYAxis')
-        .attr('title', formattedValue)
+        .attr('title', yAxisTickValue)
         .style('max-width', `${margin.left - 5}px`)
         .style('right', `${width - margin.left}px`)
-        .text(formattedValue);
+        .text(yAxisTickValue);
 
       const axisTopEdge = margin.top - 1;
       const axisBottomEdge = height - margin.top;

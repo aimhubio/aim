@@ -190,7 +190,7 @@ class Repo:
 
         return container_view
 
-    def iter_runs(self) -> Iterator["Run"]:
+    def iter_runs(self) -> Iterator['Run']:
         """Iterate over Repo runs.
 
         Yields:
@@ -199,6 +199,20 @@ class Repo:
         self.meta_tree.preload()
         for run_name in self.meta_tree.view('chunks').keys():
             yield Run(run_name, repo=self, read_only=True)
+
+    def iter_runs_from_cache(self, offset: str = None) -> Iterator['Run']:
+        db = self.structured_db
+        cache = db.caches.get('runs_cache')
+        if cache:
+            run_names = cache.keys()
+            try:
+                offset_idx = run_names.index(offset) + 1
+            except ValueError:
+                offset_idx = 0
+            for run_name in run_names[offset_idx:]:
+                yield Run(run_name, repo=self, read_only=True)
+        else:
+            raise StopIteration
 
     def get_run(self, hashname: str) -> Optional['Run']:
         """Get run if exists.
@@ -214,18 +228,21 @@ class Repo:
         else:
             return Run(hashname, repo=self, read_only=True)
 
-    def query_runs(self, query: str = '') -> QueryRunTraceCollection:
+    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunTraceCollection:
         """Get runs satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`, optional): query expression.
+                If not specified, query results will include all runs.
+             paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
+             offset (:obj:`str`, optional): `hashname` of Run to skip to.
         Returns:
             :obj:`TraceCollection`: Iterable for runs/traces matching query expression.
         """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         Run.set_props_cache_hint('runs_cache')
-        return QueryRunTraceCollection(self, query)
+        return QueryRunTraceCollection(self, query, paginated, offset)
 
     def traces(self, query: str = '') -> QueryTraceCollection:
         """Get traces satisfying query expression.

@@ -1,6 +1,13 @@
+import React from 'react';
+
 export interface IConfirmModalProps {
   open: boolean;
-  text: string;
+  text?: string;
+  icon: React.ReactNode;
+  title?: string;
+  cancelBtnText?: string;
+  confirmBtnText?: string;
+  children?: React.ReactNode;
   onSubmit: () => void;
   onCancel: () => void;
 }

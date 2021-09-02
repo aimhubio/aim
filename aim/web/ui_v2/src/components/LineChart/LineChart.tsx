@@ -29,16 +29,17 @@ const LineChart = React.forwardRef(function LineChart(
     syncHoverState,
     axesScaleType,
     displayOutliers,
-    xAlignment,
+    alignmentConfig,
     zoomMode,
     highlightMode,
     curveInterpolation,
+    title,
   } = props;
 
   // boxes
   const visBoxRef = React.useRef({
     margin: {
-      top: 24,
+      top: 30,
       right: 20,
       bottom: 30,
       left: 60,
@@ -71,9 +72,13 @@ const LineChart = React.forwardRef(function LineChart(
   const brushRef = React.useRef<any>({});
   const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
+  const humanizerConfigRef = React.useRef({});
 
   function draw() {
-    const { processedData, min, max } = processData(data, displayOutliers);
+    const { processedData, min, max, xValues } = processData(
+      data,
+      displayOutliers,
+    );
 
     drawArea({
       index,
@@ -87,6 +92,7 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
+      title,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -106,11 +112,19 @@ const LineChart = React.forwardRef(function LineChart(
     attributesRef.current.yScale = yScale;
 
     drawAxes({
+      svgNodeRef,
       axesNodeRef,
       axesRef,
       plotBoxRef,
       xScale,
       yScale,
+      width,
+      height,
+      margin,
+      alignmentConfig,
+      xValues,
+      attributesRef,
+      humanizerConfigRef,
     });
 
     drawLines({
@@ -129,7 +143,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
-      xAlignment,
+      alignmentConfig,
       highlightMode,
       syncHoverState,
       visAreaRef,
@@ -144,6 +158,7 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       highlightedNodeRef,
       aggregationConfig,
+      humanizerConfigRef,
     });
 
     if (zoomMode) {

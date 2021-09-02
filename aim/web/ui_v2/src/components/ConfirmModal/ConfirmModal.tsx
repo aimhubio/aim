@@ -1,43 +1,69 @@
 import React from 'react';
-
+import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
 import {
-  Button,
   Dialog,
-  DialogActions,
-  DialogContent,
   DialogContentText,
   DialogTitle,
+  Button,
 } from '@material-ui/core';
+import AimButton from 'components/Button/Button';
 
-import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
+import './ConfirmModal.scss';
 
-function ConfirmModal({
-  text,
-  onSubmit,
-  onCancel,
-  open,
-}: IConfirmModalProps): React.FunctionComponentElement<React.ReactNode> {
+function ConfirmModal(
+  props: IConfirmModalProps,
+): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Dialog
-      open={open}
-      onClose={onCancel}
+      open={props.open}
+      onClose={props.onCancel}
       aria-labelledby='dialog-title'
       aria-describedby='dialog-description'
+      PaperProps={{
+        elevation: 10,
+      }}
     >
-      <DialogTitle id='dialog-title'>Are you sure?</DialogTitle>
-      <DialogContent>
-        <DialogContentText id='dialog-description'>{text}</DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} color='primary'>
-          Cancel
+      <div className='ConfirmModal__Body'>
+        <div className='ConfirmModal__Icon flex fjc fac'>{props.icon}</div>
+        <div className='flex fdc'>
+          {props.title && (
+            <DialogTitle className='ConfirmModal__Title' id='dialog-title'>
+              {props.title}
+            </DialogTitle>
+          )}
+
+          <div className='ConfirmModal__Content'>
+            {props.text && (
+              <DialogContentText className='Text' id='dialog-description'>
+                {props.text || ''}
+              </DialogContentText>
+            )}
+            {props.children && props.children}
+          </div>
+        </div>
+      </div>
+      <div className='ConfirmModal__Footer'>
+        <Button onClick={props.onCancel} className='ConfirmModal__CancelButton'>
+          {props.cancelBtnText}
         </Button>
-        <Button onClick={onSubmit} color='primary' autoFocus>
-          Submit
-        </Button>
-      </DialogActions>
+        <AimButton
+          onClick={props.onSubmit}
+          color='primary'
+          variant='contained'
+          autoFocus
+        >
+          {props.confirmBtnText}
+        </AimButton>
+      </div>
     </Dialog>
   );
 }
 
-export default React.memo(ConfirmModal);
+ConfirmModal.defaultProps = {
+  confirmBtnText: 'Confirm',
+  cancelBtnText: 'Cancel',
+};
+
+ConfirmModal.displayName = 'ConfirmModal';
+
+export default React.memo<IConfirmModalProps>(ConfirmModal);
