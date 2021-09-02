@@ -136,6 +136,8 @@
   &__commentContainer {
     max-width: 600px;
     word-break: break-word;
+    z-index: 99900;
+
     &__actionsContainer {
       right: 0;
       top: 0;
@@ -358,5 +360,18 @@
     &__cancelButton {
       margin-right: 10px;
     }
+  }
+}
+
+
+.TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper {
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  &:hover {
+    background-color:rgba(28, 40, 82, 0.05);
   }
 }

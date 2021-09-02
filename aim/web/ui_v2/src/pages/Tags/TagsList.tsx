@@ -99,23 +99,17 @@ function TagsList({
         isLoading={isTagsDataLoading}
         className='Tags__TagList__tagListBusyLoader'
       >
-        <div className='Tags__TagList__tagListBox'>
-          <div className='Tags__TagList__tagListBox__titleBox'>
-            <span className='Tags__TagList__tagListBox__titleBox__title'>
-              {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
-            </span>
-          </div>
-          <TagsTable
-            tableRef={tableRef}
-            tagsList={tagsList.filter((tag: ITagProps) =>
-              tag.name.includes(searchValue),
-            )}
-            onTableRunClick={onTableRunClick}
-            onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-            onDeleteModalToggle={onDeleteModalToggle}
-            onUpdateModalToggle={onUpdateModalToggle}
-          />
-        </div>
+        <TagsTable
+          tableRef={tableRef}
+          tagsList={tagsList.filter((tag: ITagProps) =>
+            tag.name.includes(searchValue),
+          )}
+          hasSearchValue={!!searchValue}
+          onTableRunClick={onTableRunClick}
+          onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+          onDeleteModalToggle={onDeleteModalToggle}
+          onUpdateModalToggle={onUpdateModalToggle}
+        />
       </BusyLoaderWrapper>
       <Dialog
         key={tagInfo?.id + '1'}
@@ -188,6 +182,7 @@ function TagsList({
             id={tagDetailId}
             onSoftDeleteModalToggle={onSoftDeleteModalToggle}
             onUpdateModalToggle={onUpdateModalToggle}
+            onDeleteModalToggle={onDeleteModalToggle}
             tagRuns={tagRuns}
             tagInfo={tagInfo}
             isRunsDataLoading={isRunsDataLoading}

@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import hexToRgbA from 'utils/haxToRgba';
-import { Button } from '@material-ui/core';
-
+import Button from 'components/Button/Button';
 import Table from 'components/Table/Table';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -13,6 +12,7 @@ import tagsAppModel from 'services/models/tags/tagsAppModel';
 function TagsTable({
   tableRef,
   tagsList,
+  hasSearchValue,
   onTableRunClick,
   onSoftDeleteModalToggle,
   onUpdateModalToggle,
@@ -85,31 +85,39 @@ function TagsTable({
             {cellData.id === hoveredRowIndex && (
               <div className='TagsTable__commentContainer__actionsContainer'>
                 {!cellData?.archived && (
-                  <CreateIcon
-                    color='primary'
-                    className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                    onClick={() => onUpdateClick(cellData)}
-                  />
+                  <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
+                    <CreateIcon
+                      color='primary'
+                      className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                      onClick={() => onUpdateClick(cellData)}
+                    />
+                  </span>
                 )}
                 {cellData?.archived ? (
-                  <VisibilityIcon
-                    color='primary'
-                    className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                    onClick={() => onSoftDeleteClick(cellData)}
-                  />
+                  <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
+                    <VisibilityIcon
+                      color='primary'
+                      className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                      onClick={() => onSoftDeleteClick(cellData)}
+                    />
+                  </span>
                 ) : (
-                  <VisibilityOffIcon
+                  <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
+                    <VisibilityOffIcon
+                      color='primary'
+                      className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                      onClick={() => onSoftDeleteClick(cellData)}
+                    />
+                  </span>
+                )}
+                <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
+                  <DeleteOutlineIcon
+                    fontSize='small'
                     color='primary'
                     className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                    onClick={() => onSoftDeleteClick(cellData)}
+                    onClick={() => onDeleteClick(cellData)}
                   />
-                )}
-                <DeleteOutlineIcon
-                  fontSize='small'
-                  color='primary'
-                  className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                  onClick={() => onDeleteClick(cellData)}
-                />
+                </span>
               </div>
             )}
           </div>
@@ -147,19 +155,26 @@ function TagsTable({
   }, [tagsList, onTableRunClick, hoveredRowIndex]);
 
   return (
-    <div className='TagsTable'>
-      <Table
-        ref={tableRef}
-        fixed={false}
-        columns={tableColumns}
-        data={[]}
-        hideHeaderActions
-        rowHeight={52}
-        headerHeight={32}
-        onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
-        onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
-        emptyText={'No tags found'}
-      />
+    <div className='Tags__TagList__tagListBox'>
+      <div className='Tags__TagList__tagListBox__titleBox'>
+        <span className='Tags__TagList__tagListBox__titleBox__title'>
+          {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
+        </span>
+      </div>
+      <div className='TagsTable'>
+        <Table
+          ref={tableRef}
+          fixed={false}
+          columns={tableColumns}
+          data={[]}
+          hideHeaderActions
+          rowHeight={52}
+          headerHeight={32}
+          onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
+          onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
+          emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
+        />
+      </div>
     </div>
   );
 }

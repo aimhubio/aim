@@ -51,6 +51,7 @@ export interface ITagDetailProps {
   id: string;
   onSoftDeleteModalToggle: () => void;
   onUpdateModalToggle: () => void;
+  onDeleteModalToggle: () => void;
   isTagInfoDataLoading: any;
   tagInfo: any;
   isRunsDataLoading: any;
@@ -63,6 +64,7 @@ export interface ITagRunsTableProps {
 export interface ITagsTableProps {
   tableRef: React.RefObject<any>;
   tagsList: ITagProps[];
+  hasSearchValue: boolean;
   onTableRunClick: (id: string) => void;
   onSoftDeleteModalToggle: () => void;
   onUpdateModalToggle: () => void;
