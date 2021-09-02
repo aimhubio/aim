@@ -13,6 +13,8 @@ function Cell({
   metadata,
   placeholder,
   col,
+  onRowHover,
+  onRowClick,
 }) {
   return (
     <div
@@ -36,6 +38,8 @@ function Cell({
           item?.style),
       }}
       {...(typeof item === 'object' && item?.props)}
+      onMouseMove={onRowHover}
+      onClick={item?.props?.onClick ? item.props.onClick : onRowClick}
     >
       {metadata && <div className='Table__cell__rowMeta'>{metadata}</div>}
       {isConfigColumn || placeholder ? (

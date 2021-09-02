@@ -245,6 +245,8 @@ function Table(props) {
                   ) === -1
                 }
                 sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+                onRowHover={props.onRowHover}
+                onRowClick={props.onRowClick}
               />
             ))}
           </div>
@@ -288,6 +290,8 @@ function Table(props) {
                   -1
               }
               sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+              onRowHover={props.onRowHover}
+              onRowClick={props.onRowClick}
             />
           ))}
         </div>
@@ -344,6 +348,8 @@ function Table(props) {
                   ) === -1
                 }
                 sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+                onRowHover={props.onRowHover}
+                onRowClick={props.onRowClick}
               />
             ))}
           </div>

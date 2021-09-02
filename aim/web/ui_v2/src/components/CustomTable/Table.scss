@@ -230,6 +230,7 @@ $group-margin: 8px;
   }
 
   &.active {
+    background-color: $primary-lighter;
   }
 
   & > * {

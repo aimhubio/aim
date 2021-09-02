@@ -31,6 +31,8 @@ function Column({
   moveColumn,
   sortable,
   sortByColumn,
+  onRowHover,
+  onRowClick,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -304,6 +306,8 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
+                      onRowHover={() => onRowHover(item.key)}
+                      onRowClick={() => onRowClick(item.key)}
                     />
                   ))}
                 </>
@@ -317,6 +321,8 @@ function Column({
               col={col}
               item={item[col.key]}
               metadata={firstColumn ? item.rowMeta : null}
+              onRowHover={() => onRowHover(item.key)}
+              onRowClick={() => onRowClick(item.key)}
             />
           ))}
     </div>

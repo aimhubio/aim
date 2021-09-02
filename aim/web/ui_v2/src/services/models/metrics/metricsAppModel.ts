@@ -879,7 +879,7 @@ function getDataAsLines(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.params.status.hash],
+          selectors: [metric.key, metric.key, metric.run.hash],
           data: {
             xValues: metric.data.xValues,
             yValues,
@@ -1345,8 +1345,15 @@ function onTableRowHover(rowKey?: string): void {
 }
 
 function onTableRowClick(rowKey?: string): void {
+  const configData: IMetricAppConfig | undefined = model.getState()!.config!;
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
-  const focusedStateActive = !!rowKey;
+  let focusedStateActive = !!rowKey;
+  if (
+    configData.chart.focusedState.active &&
+    configData.chart.focusedState.key === rowKey
+  ) {
+    focusedStateActive = false;
+  }
   chartPanelRef?.current?.setActiveLineAndCircle(
     rowKey,
     focusedStateActive,
