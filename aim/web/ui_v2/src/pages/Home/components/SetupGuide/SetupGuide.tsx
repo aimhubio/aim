@@ -19,8 +19,9 @@ function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
         <h3>3. Track Experiment</h3>
         <CodeBlock
           code={`
-r = aim.Run(experiment='my_exp_name')
-r.track(value, name='loss', subset='train')
+import aim.sdk
+r = aim.sdk.Run(experiment='my_exp_name')
+r.track(value, name='loss', context={'subset': 'train'})
 r['hparams'] = 'foo'`}
         />
       </div>
