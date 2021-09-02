@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
+import { isNil } from 'lodash-es';
 import hexToRgbA from 'utils/haxToRgba';
 import Button from 'components/Button/Button';
 import Table from 'components/Table/Table';
@@ -13,6 +14,7 @@ function TagsTable({
   tableRef,
   tagsList,
   hasSearchValue,
+  isTagsDataLoading,
   onTableRunClick,
   onSoftDeleteModalToggle,
   onUpdateModalToggle,
@@ -156,17 +158,20 @@ function TagsTable({
 
   return (
     <div className='Tags__TagList__tagListBox'>
-      <div className='Tags__TagList__tagListBox__titleBox'>
-        <span className='Tags__TagList__tagListBox__titleBox__title'>
-          {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
-        </span>
-      </div>
+      {!isTagsDataLoading && !isNil(tagsList) && (
+        <div className='Tags__TagList__tagListBox__titleBox'>
+          <span className='Tags__TagList__tagListBox__titleBox__title'>
+            {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
+          </span>
+        </div>
+      )}
       <div className='TagsTable'>
         <Table
           ref={tableRef}
           fixed={false}
           columns={tableColumns}
-          data={[]}
+          data={null}
+          isLoading={isTagsDataLoading}
           hideHeaderActions
           rowHeight={52}
           headerHeight={32}

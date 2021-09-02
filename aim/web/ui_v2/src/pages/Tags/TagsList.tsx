@@ -95,22 +95,18 @@ function TagsList({
           </Button>
         )}
       </div>
-      <BusyLoaderWrapper
-        isLoading={isTagsDataLoading}
-        className='Tags__TagList__tagListBusyLoader'
-      >
-        <TagsTable
-          tableRef={tableRef}
-          tagsList={tagsList.filter((tag: ITagProps) =>
-            tag.name.includes(searchValue),
-          )}
-          hasSearchValue={!!searchValue}
-          onTableRunClick={onTableRunClick}
-          onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-          onDeleteModalToggle={onDeleteModalToggle}
-          onUpdateModalToggle={onUpdateModalToggle}
-        />
-      </BusyLoaderWrapper>
+      <TagsTable
+        tableRef={tableRef}
+        tagsList={tagsList.filter((tag: ITagProps) =>
+          tag.name.includes(searchValue),
+        )}
+        isTagsDataLoading={isTagsDataLoading}
+        hasSearchValue={!!searchValue}
+        onTableRunClick={onTableRunClick}
+        onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+        onDeleteModalToggle={onDeleteModalToggle}
+        onUpdateModalToggle={onUpdateModalToggle}
+      />
       <Dialog
         key={tagInfo?.id + '1'}
         onClose={onCreateModalToggle}

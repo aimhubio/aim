@@ -65,6 +65,7 @@ export interface ITagsTableProps {
   tableRef: React.RefObject<any>;
   tagsList: ITagProps[];
   hasSearchValue: boolean;
+  isTagsDataLoading: boolean;
   onTableRunClick: (id: string) => void;
   onSoftDeleteModalToggle: () => void;
   onUpdateModalToggle: () => void;
