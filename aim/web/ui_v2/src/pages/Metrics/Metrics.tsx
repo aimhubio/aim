@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEmpty, size } from 'lodash-es';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -125,12 +126,16 @@ function Metrics(
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {props.tableData?.length > 0 ? (
+              {!isEmpty(props.tableData) ? (
                 <Table
+                  custom
+                  key={`${props.tableColumns.length}-${size(props.tableData)}`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
                   // Table options
+                  topHeader
+                  groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
                   sortOptions={props.groupingSelectOptions}
                   // Table actions

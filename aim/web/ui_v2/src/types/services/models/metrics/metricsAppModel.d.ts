@@ -181,7 +181,7 @@ export interface IMetricTableRowData {
   value: string;
   step: string;
   epoch: string;
-  timestamp: string;
+  time: string;
   [key: string]: any;
 }
 

@@ -1,18 +1,13 @@
-<<<<<<< HEAD
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { isNil } from 'lodash-es';
-import hexToRgbA from 'utils/haxToRgba';
-import Button from 'components/Button/Button';
-=======
-import React, { memo, useEffect, useState } from 'react';
-import { Button } from '@material-ui/core';
-
->>>>>>> main
-import Table from 'components/Table/Table';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+
+import hexToRgbA from 'utils/haxToRgba';
+import Button from 'components/Button/Button';
+import Table from 'components/Table/Table';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';

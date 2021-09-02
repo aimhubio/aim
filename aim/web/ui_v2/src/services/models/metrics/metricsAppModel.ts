@@ -12,7 +12,7 @@ import { encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
-import getTableColumns from 'pages/Metrics/components/TableColumns/TableColumns';
+import { getMetricsTableColumns } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
@@ -879,7 +879,7 @@ function getDataAsLines(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.params.status.hash],
+          selectors: [metric.key, metric.key, metric.run.hash],
           data: {
             xValues: metric.data.xValues,
             yValues,
@@ -901,7 +901,10 @@ function getDataAsTableRows(
     return [];
   }
 
-  const rows: IMetricTableRowData[] = [];
+  const rows: IMetricTableRowData[] | any =
+    processedData[0]?.config !== null ? {} : [];
+
+  let rowIndex = 0;
 
   processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
     const groupKey = metricsCollection.key;
@@ -909,7 +912,9 @@ function getDataAsTableRows(
 
     if (metricsCollection.config !== null) {
       const groupHeaderRow = {
-        '#': metricsCollection.chartIndex + 1,
+        meta: {
+          chartIndex: metricsCollection.chartIndex + 1,
+        },
         key: groupKey!,
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
@@ -920,19 +925,14 @@ function getDataAsTableRows(
         value: '',
         step: '',
         epoch: '',
-        timestamp: '',
+        time: '',
         children: [],
-        groupHeader: true,
-        rowProps: {
-          style: {
-            boxShadow: `inset 3px 0 0 0 ${
-              metricsCollection.color ?? COLORS[0][0]
-            }`,
-          },
-        },
       };
 
-      rows.push(groupHeaderRow);
+      rows[groupKey!] = {
+        data: groupHeaderRow,
+        items: [],
+      };
     }
 
     metricsCollection.data.forEach((metric: IMetric) => {
@@ -943,6 +943,7 @@ function getDataAsTableRows(
               .index;
       const rowValues: IMetricTableRowData = {
         key: metric.key,
+        index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
@@ -958,20 +959,14 @@ function getDataAsTableRows(
         epoch: `${
           closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
         }`,
-        timestamp: `${
+        time: `${
           closestIndex === null
             ? '-'
             : metric.data.timestamps[closestIndex] ?? '-'
         }`,
         parentId: groupKey,
-        rowProps: {
-          style: {
-            boxShadow: `inset 3px 0 0 0 ${
-              metricsCollection.color ?? metric.color
-            }`,
-          },
-        },
       };
+      rowIndex++;
 
       [
         'experiment',
@@ -980,7 +975,7 @@ function getDataAsTableRows(
         'context',
         'step',
         'epoch',
-        'timestamp',
+        'time',
       ].forEach((key) => {
         if (columnsValues.hasOwnProperty(key)) {
           if (!_.some(columnsValues[key], rowValues[key])) {
@@ -1004,7 +999,7 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[rows.length - 1].children.push(rowValues);
+        rows[groupKey!].items.push(rowValues);
       } else {
         rows.push(rowValues);
       }
@@ -1012,7 +1007,7 @@ function getDataAsTableRows(
 
     if (metricsCollection.config !== null) {
       for (let columnKey in columnsValues) {
-        rows[rows.length - 1][columnKey] =
+        rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length > 1
             ? 'Mix'
             : columnsValues[columnKey][0];
@@ -1224,7 +1219,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getTableColumns(params, data[0].config);
+  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1355,8 +1350,15 @@ function onTableRowHover(rowKey?: string): void {
 }
 
 function onTableRowClick(rowKey?: string): void {
+  const configData: IMetricAppConfig | undefined = model.getState()!.config!;
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
-  const focusedStateActive = !!rowKey;
+  let focusedStateActive = !!rowKey;
+  if (
+    configData.chart.focusedState.active &&
+    configData.chart.focusedState.key === rowKey
+  ) {
+    focusedStateActive = false;
+  }
   chartPanelRef?.current?.setActiveLineAndCircle(
     rowKey,
     focusedStateActive,
@@ -1390,22 +1392,21 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const processedData = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
+
   const tableData: IMetricTableRowData[] = getDataAsTableRows(
     processedData.data,
     null,
     processedData.params,
   );
-  const tableColumns: ITableColumn[] = getTableColumns(
+  const tableColumns: ITableColumn[] = getMetricsTableColumns(
     processedData.params,
-    processedData.data[0].config,
+    processedData.data[0]?.config,
   );
   // TODO need to filter excludedFields and sort column order
-  const excludedFields: string[] = ['#'];
+  const excludedFields: string[] = [];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
-      acc.concat(
-        excludedFields.indexOf(column.dataKey) === -1 ? column.dataKey : [],
-      ),
+      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
     [],
   );
   // const flattenOrders = Object.keys(columnsOrder).reduce(
@@ -1607,7 +1608,7 @@ function setModelData(
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getTableColumns(params, data[0].config),
+    tableColumns: getMetricsTableColumns(params, data[0]?.config),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }

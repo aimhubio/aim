@@ -1,0 +1,362 @@
+// @ts-nocheck
+/* eslint-disable react/prop-types */
+
+import './Table.scss';
+
+import React, { useRef, useState, useEffect } from 'react';
+import _ from 'lodash-es';
+import classNames from 'classnames';
+
+import Column from './TableColumn';
+
+function Table(props) {
+  const columns =
+    !!props.excludedFields && props.excludedFields.length
+      ? props.columns.filter((c) => props.excludedFields.indexOf(c.key) === -1)
+      : props.columns;
+
+  let leftCols =
+    props.columnsOrder?.left?.filter(
+      (colKey) => columns.findIndex((col) => colKey === col.key) > -1,
+    ) ?? columns.filter((col) => col.pin === 'left').map((col) => col.key);
+
+  let midCols =
+    props.columnsOrder?.middle?.filter(
+      (colKey) => columns.findIndex((col) => colKey === col.key) > -1,
+    ) ??
+    columns
+      .filter((col) => col.pin !== 'left' && col.pin !== 'right')
+      .map((col) => col.key);
+
+  let rightCols =
+    props.columnsOrder?.right?.filter(
+      (colKey) => columns.findIndex((col) => colKey === col.key) > -1,
+    ) ?? columns.filter((col) => col.pin === 'right').map((col) => col.key);
+
+  let [expanded, setExpanded] = useState({});
+
+  let prevExpanded = useRef(props.expanded ?? {});
+
+  const leftPane = columns
+    .filter((col) => leftCols.includes(col.key))
+    .sort((a, b) => leftCols.indexOf(a.key) - leftCols.indexOf(b.key));
+  const middlePane = columns
+    .filter((col) => midCols.includes(col.key))
+    .sort((a, b) => midCols.indexOf(a.key) - midCols.indexOf(b.key));
+  const rightPane = columns
+    .filter((col) => rightCols.includes(col.key))
+    .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
+  const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
+
+  useEffect(() => {
+    if (props.expanded && props.groups) {
+      for (let groupKey in props.expanded) {
+        if (
+          props.expanded[groupKey] &&
+          prevExpanded.current[groupKey] !== props.expanded[groupKey]
+        ) {
+          setExpanded((exp) => ({
+            ...exp,
+            [groupKey]: true,
+          }));
+        }
+      }
+    }
+    prevExpanded.current = props.expanded ?? {};
+  }, [props.expanded]);
+
+  function expand(groupKey) {
+    if (groupKey === 'expand_all') {
+      let groupsForExpansion = {};
+      for (let key in props.data) {
+        groupsForExpansion[key] = true;
+        prevExpanded.current[key] = true;
+      }
+      setExpanded({
+        ...expanded,
+        ...groupsForExpansion,
+      });
+      if (typeof props.onGroupExpandToggle === 'function') {
+        props.onGroupExpandToggle(Object.keys(props.data));
+      }
+    } else if (groupKey === 'collapse_all') {
+      for (let key in props.data) {
+        prevExpanded.current[key] = false;
+      }
+      setExpanded({});
+      if (typeof props.onGroupExpandToggle === 'function') {
+        props.onGroupExpandToggle([]);
+      }
+    } else {
+      prevExpanded.current[groupKey] = !expanded[groupKey];
+      setExpanded({
+        ...expanded,
+        [groupKey]: !expanded[groupKey],
+      });
+      if (typeof props.onGroupExpandToggle === 'function') {
+        props.onGroupExpandToggle(groupKey);
+      }
+    }
+  }
+
+  function togglePin(colKey, side) {
+    const columnsOrderClone = _.cloneDeep(props.columnsOrder);
+    if (side === 'left') {
+      if (columnsOrderClone.left.includes(colKey)) {
+        columnsOrderClone.left.splice(
+          columnsOrderClone.left.indexOf(colKey),
+          1,
+        );
+        columnsOrderClone.middle.unshift(colKey);
+      } else {
+        if (columnsOrderClone.right.includes(colKey)) {
+          columnsOrderClone.right.splice(
+            columnsOrderClone.right.indexOf(colKey),
+            1,
+          );
+        } else {
+          columnsOrderClone.middle.splice(
+            columnsOrderClone.middle.indexOf(colKey),
+            1,
+          );
+        }
+        columnsOrderClone.left.push(colKey);
+      }
+    } else if (side === 'right') {
+      if (columnsOrderClone.right.includes(colKey)) {
+        columnsOrderClone.right.splice(
+          columnsOrderClone.right.indexOf(colKey),
+          1,
+        );
+        columnsOrderClone.middle.unshift(colKey);
+      } else {
+        if (columnsOrderClone.left.includes(colKey)) {
+          columnsOrderClone.left.splice(
+            columnsOrderClone.left.indexOf(colKey),
+            1,
+          );
+        } else {
+          columnsOrderClone.middle.splice(
+            columnsOrderClone.middle.indexOf(colKey),
+            1,
+          );
+        }
+        columnsOrderClone.right.push(colKey);
+      }
+    } else {
+      if (columnsOrderClone.left.includes(colKey)) {
+        columnsOrderClone.left.splice(
+          columnsOrderClone.left.indexOf(colKey),
+          1,
+        );
+      }
+      if (columnsOrderClone.right.includes(colKey)) {
+        columnsOrderClone.right.splice(
+          columnsOrderClone.right.indexOf(colKey),
+          1,
+        );
+      }
+      columnsOrderClone.middle.unshift(colKey);
+    }
+    props.updateColumns(columnsOrderClone);
+  }
+
+  function moveColumn(colKey, pane, from, direction) {
+    const columnsOrderClone = _.cloneDeep(props.columnsOrder);
+    let to;
+    switch (direction) {
+      case 'left':
+        to = from - 1;
+        break;
+      case 'right':
+        to = from + 1;
+        break;
+      case 'start':
+        to = 0;
+        break;
+      case 'end':
+        to = columnsOrderClone[pane].length - 1;
+        break;
+    }
+    columnsOrderClone[pane].splice(from, 1);
+    columnsOrderClone[pane].splice(to, 0, colKey);
+    props.updateColumns(columnsOrderClone);
+  }
+
+  function sortByColumn(colKey, order) {
+    props.setSortFields([...props.sortFields, [colKey, order]]);
+  }
+
+  return (
+    <div
+      className={classNames({
+        Table__container: true,
+        [`Table__container--${props.rowHeightMode}`]: true,
+      })}
+    >
+      <div
+        className={classNames({
+          Table: true,
+          'Table--grouped': props.groups,
+        })}
+      >
+        {(props.groups || leftPane.length > 0) && (
+          <div
+            className={classNames({
+              Table__pane: true,
+              'Table__pane--left': true,
+              onlyGroupColumn: leftPane.length === 0,
+            })}
+          >
+            {leftPane.map((col, index) => (
+              <Column
+                key={col.key}
+                topHeader={props.topHeader}
+                showTopHeaderContent={
+                  props.topHeader &&
+                  sortedColumns[index - 1]?.topHeader !== col.topHeader
+                }
+                showTopHeaderBorder={
+                  props.topHeader &&
+                  sortedColumns[index + 1]?.topHeader !== col.topHeader
+                }
+                col={col}
+                data={props.data}
+                groups={props.groups}
+                expanded={expanded}
+                expand={expand}
+                togglePin={togglePin}
+                pinnedTo='left'
+                firstColumn={index === 0}
+                width={props.columnsWidths?.[col.key]}
+                updateColumnWidth={props.updateColumnsWidths}
+                headerMeta={props.headerMeta}
+                isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
+                hideColumn={() =>
+                  props.setExcludedFields([...props.excludedFields, col.key])
+                }
+                paneFirstColumn={index === 0}
+                paneLastColumn={index === leftPane.length - 1}
+                moveColumn={(dir) => moveColumn(col.key, 'left', index, dir)}
+                sortable={
+                  col.sortableKey &&
+                  props.sortFields.findIndex(
+                    (f) => f[0] === col.sortableKey,
+                  ) === -1
+                }
+                sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+                onRowHover={props.onRowHover}
+                onRowClick={props.onRowClick}
+              />
+            ))}
+          </div>
+        )}
+        <div className='Table__pane Table__pane--middle'>
+          {middlePane.map((col, index) => (
+            <Column
+              key={col.key}
+              topHeader={props.topHeader}
+              showTopHeaderContent={
+                props.topHeader &&
+                sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
+                  ?.topHeader !== col.topHeader
+              }
+              showTopHeaderBorder={
+                props.topHeader &&
+                sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
+                  ?.topHeader !== col.topHeader
+              }
+              col={col}
+              data={props.data}
+              groups={props.groups}
+              expanded={expanded}
+              expand={expand}
+              togglePin={togglePin}
+              pinnedTo={null}
+              firstColumn={index === 0 && leftPane.length === 0}
+              width={props.columnsWidths?.[col.key]}
+              updateColumnWidth={props.updateColumnsWidths}
+              headerMeta={props.headerMeta}
+              isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
+              hideColumn={() =>
+                props.setExcludedFields([...props.excludedFields, col.key])
+              }
+              paneFirstColumn={index === 0}
+              paneLastColumn={index === middlePane.length - 1}
+              moveColumn={(dir) => moveColumn(col.key, 'middle', index, dir)}
+              sortable={
+                col.sortableKey &&
+                props.sortFields.findIndex((f) => f[0] === col.sortableKey) ===
+                  -1
+              }
+              sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+              onRowHover={props.onRowHover}
+              onRowClick={props.onRowClick}
+            />
+          ))}
+        </div>
+        {rightPane.length > 0 && (
+          <div className='Table__pane Table__pane--right'>
+            {rightPane.map((col, index) => (
+              <Column
+                key={col.key}
+                topHeader={props.topHeader}
+                showTopHeaderContent={
+                  props.topHeader &&
+                  sortedColumns[
+                    (leftPane ? leftPane.length : 0) +
+                      middlePane.length +
+                      index -
+                      1
+                  ]?.topHeader !== col.topHeader
+                }
+                showTopHeaderBorder={
+                  props.topHeader &&
+                  sortedColumns[
+                    (leftPane ? leftPane.length : 0) +
+                      middlePane.length +
+                      index +
+                      1
+                  ]?.topHeader !== col.topHeader
+                }
+                col={col}
+                data={props.data}
+                groups={props.groups}
+                expanded={expanded}
+                expand={expand}
+                togglePin={togglePin}
+                pinnedTo='right'
+                firstColumn={
+                  index === 0 &&
+                  leftPane.length === 0 &&
+                  middlePane.length === 0
+                }
+                width={props.columnsWidths?.[col.key]}
+                updateColumnWidth={props.updateColumnsWidths}
+                headerMeta={props.headerMeta}
+                isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
+                hideColumn={() =>
+                  props.setExcludedFields([...props.excludedFields, col.key])
+                }
+                paneFirstColumn={index === 0}
+                paneLastColumn={index === rightPane.length - 1}
+                moveColumn={(dir) => moveColumn(col.key, 'right', index, dir)}
+                sortable={
+                  col.sortableKey &&
+                  props.sortFields.findIndex(
+                    (f) => f[0] === col.sortableKey,
+                  ) === -1
+                }
+                sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+                onRowHover={props.onRowHover}
+                onRowClick={props.onRowClick}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Table;

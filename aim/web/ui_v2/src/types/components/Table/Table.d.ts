@@ -2,6 +2,9 @@ import { RowHeight } from 'config/table/tableConfigs';
 import React from 'react';
 
 export interface ITableProps {
+  custom?: boolean;
+  groups?: boolean;
+  topHeader?: boolean;
   data: any[] | null;
   columns: any[];
   rowHeight: RowHeight;
@@ -24,6 +27,16 @@ export interface ITableProps {
   onRowClick?: (rowKey?: string) => void;
   hideHeaderActions?: boolean = false;
   emptyText?: string;
+  excludedFields?: string[];
+  setExcludedFields?: (fields: string[]) => null;
+  alwaysVisibleColumns?: string[];
+  rowHeightMode?: any;
+  columnsOrder?: any;
+  updateColumns?: any;
+  columnsWidths?: any;
+  updateColumnsWidths?: any;
+  sortFields?: any;
+  setSortFields?: any;
   isLoading?: boolean;
 }
 

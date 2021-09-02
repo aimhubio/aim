@@ -8,6 +8,8 @@ import { isEmpty, isNil } from 'lodash-es';
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
+import CustomTable from '../CustomTable/Table';
+
 import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
 import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
 import sortIcon from 'assets/icons/table/sort.svg';
@@ -17,10 +19,10 @@ import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import './Table.scss';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 
 const Table = React.forwardRef(function Table(
   {
@@ -29,39 +31,246 @@ const Table = React.forwardRef(function Table(
     onRowsChange,
     onExport,
     onRowHeightChange,
+    onRowHover,
+    onRowClick,
+    custom,
     data,
     columns,
     navBarItems,
     rowHeight = 30,
     headerHeight = 30,
     sortOptions,
-    onRowHover,
-    onRowClick,
     hideHeaderActions = false,
     fixed = true,
     emptyText = 'No Data',
+    excludedFields,
+    setExcludedFields,
+    alwaysVisibleColumns,
+    rowHeightMode,
+    columnsOrder,
+    updateColumns,
+    columnsWidths,
+    updateColumnsWidths,
+    sortFields,
+    setSortFields,
+    groups,
     isLoading,
+    ...props
   }: ITableProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef();
+  const startIndex = React.useRef(0);
+  const endIndex = React.useRef(0);
+  const expandedGroups = React.useRef([]);
+  const tableContainerRef = React.useRef();
+  const dataRef = React.useRef(data);
+  const columnsRef = React.useRef(columns);
+
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns);
 
   React.useImperativeHandle(ref, () => ({
-    updateData: ({ newData, newColumns }) => {
+    updateData: updateData,
+    setHoveredRow: tableRef.current?.setHoveredRow,
+    setActiveRow: tableRef.current?.setActiveRow,
+    scrollToRow: tableRef.current?.scrollToRowByKey,
+  }));
+
+  function calculateWindow({
+    scrollTop,
+    offsetHeight,
+    scrollHeight,
+    itemHeight,
+    groupMargin,
+  }) {
+    const offset = 10;
+
+    if (groups) {
+      let beforeScrollHeight = 0;
+      let scrollBottomHeight = 0;
+      let start = 0;
+      let end = 0;
+      let startIsSet = false;
+      let endIsSet = false;
+      for (let groupKey in dataRef.current) {
+        beforeScrollHeight += itemHeight + groupMargin;
+        scrollBottomHeight += itemHeight + groupMargin;
+        if (expandedGroups.current.includes(groupKey)) {
+          dataRef.current[groupKey].items.forEach((row) => {
+            if (scrollTop > beforeScrollHeight) {
+              beforeScrollHeight += itemHeight;
+            } else if (!startIsSet) {
+              start = row.index;
+              startIsSet = true;
+            }
+
+            if (scrollBottomHeight < scrollTop + offsetHeight) {
+              scrollBottomHeight += itemHeight;
+            } else if (!endIsSet) {
+              end = row.index;
+              endIsSet = true;
+            }
+          });
+        } else {
+          if (!endIsSet && !!dataRef.current[groupKey]?.items[0]?.index) {
+            end = dataRef.current[groupKey]?.items[0]?.index;
+          }
+        }
+      }
+
+      const startIndex = start < offset ? 0 : start - offset;
+      const endIndex = end + offset;
+
+      return {
+        startIndex,
+        endIndex,
+      };
+    }
+
+    const windowSize = Math.ceil(offsetHeight / itemHeight);
+    const start = Math.floor(scrollTop / itemHeight);
+    const startIndex = start < offset ? 0 : start - offset;
+    const endIndex = start + windowSize + offset;
+
+    return {
+      startIndex,
+      endIndex,
+    };
+  }
+
+  function updateData({ newData, newColumns }) {
+    if (custom) {
+      if (!!newData) {
+        dataRef.current = newData;
+      }
+      if (!!newColumns) {
+        columnsRef.current = newColumns;
+      }
+      virtualizedUpdate();
+    } else {
       if (!!newData) {
         setRowData(newData);
       }
       if (!!newColumns) {
         setColumnsData(newColumns);
       }
-      // tableRef.current?.forceUpdateTable();
-    },
-    setHoveredRow: tableRef.current?.setHoveredRow,
-    setActiveRow: tableRef.current?.setActiveRow,
-    scrollToRow: tableRef.current?.scrollToRowByKey,
-  }));
+    }
+  }
+
+  function virtualizedUpdate() {
+    if (groups) {
+      window.requestAnimationFrame(() => {
+        ['value', 'step', 'epoch', 'time'].forEach((colKey) => {
+          for (let groupKey in dataRef.current) {
+            const groupHeaderRowCell = document.querySelector(
+              `.Table__cell.${colKey}.index-${groupKey}`,
+            );
+            if (!!groupHeaderRowCell) {
+              const groupRow = dataRef.current[groupKey];
+              if (!!groupRow && !!groupRow.data) {
+                groupHeaderRowCell.textContent = groupRow.data[colKey];
+                if (expandedGroups.current.includes(groupKey)) {
+                  groupRow.items.forEach((row) => {
+                    if (row.index > endIndex.current) {
+                      return;
+                    }
+                    if (row.index >= startIndex.current) {
+                      const cell = document.querySelector(
+                        `.Table__cell.${colKey}.index-${row.index}`,
+                      );
+                      if (!!cell) {
+                        cell.textContent = row[colKey];
+                      }
+                    }
+                  });
+                }
+              }
+            }
+          }
+        });
+      });
+    } else {
+      window.requestAnimationFrame(() => {
+        ['value', 'step', 'epoch', 'time'].forEach((colKey) => {
+          for (let i = startIndex.current; i < endIndex.current; i++) {
+            const cell = document.querySelector(
+              `.Table__cell.${colKey}.index-${i}`,
+            );
+            if (!!cell) {
+              const row = dataRef.current[i];
+              if (!!row) {
+                cell.textContent = row[colKey];
+              }
+            }
+          }
+        });
+      });
+    }
+  }
+
+  function onGroupExpandToggle(groupKey) {
+    if (Array.isArray(groupKey)) {
+      expandedGroups.current = expandedGroups.current;
+    } else if (expandedGroups.current.includes(groupKey)) {
+      expandedGroups.current = expandedGroups.current.filter(
+        (item) => item !== groupKey,
+      );
+    } else {
+      expandedGroups.current = expandedGroups.current.concat([groupKey]);
+    }
+
+    const windowEdges = calculateWindow({
+      scrollTop: tableContainerRef.current.scrollTop,
+      offsetHeight: tableContainerRef.current.offsetHeight,
+      scrollHeight: tableContainerRef.current.scrollHeight,
+      itemHeight: 32,
+      groupMargin: 8,
+    });
+
+    startIndex.current = windowEdges.startIndex;
+    endIndex.current = windowEdges.endIndex;
+
+    virtualizedUpdate();
+  }
+
+  React.useEffect(() => {
+    if (custom) {
+      const windowEdges = calculateWindow({
+        scrollTop: tableContainerRef.current.scrollTop,
+        offsetHeight: tableContainerRef.current.offsetHeight,
+        scrollHeight: tableContainerRef.current.scrollHeight,
+        itemHeight: 32,
+        groupMargin: 8,
+      });
+
+      startIndex.current = windowEdges.startIndex;
+      endIndex.current = windowEdges.endIndex;
+
+      virtualizedUpdate();
+
+      tableContainerRef.current.onscroll = ({ target }) => {
+        const windowEdges = calculateWindow({
+          scrollTop: target.scrollTop,
+          offsetHeight: target.offsetHeight,
+          scrollHeight: target.scrollHeight,
+          itemHeight: 32,
+          groupMargin: 8,
+        });
+
+        startIndex.current = windowEdges.startIndex;
+        endIndex.current = windowEdges.endIndex;
+
+        virtualizedUpdate();
+      };
+    }
+
+    return () => {
+      if (custom && tableContainerRef.current) {
+        tableContainerRef.current.onscroll = null;
+      }
+    };
+  }, [custom]);
 
   return (
     <BusyLoaderWrapper
@@ -195,46 +404,73 @@ const Table = React.forwardRef(function Table(
               </Grid>
             </Box>
           )}
-          <Box style={{ height: '100%' }}>
+          <div
+            style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}
+            ref={tableContainerRef}
+          >
             <AutoResizer>
-              {({ width, height }) => (
-                <BaseTable
-                  ref={tableRef}
-                  classPrefix='BaseTable'
-                  columns={columnsData}
-                  data={rowData}
-                  frozenData={[]}
-                  width={width}
-                  height={height}
-                  fixed={fixed}
-                  rowKey='key'
-                  isScrolling
-                  headerHeight={headerHeight}
-                  rowHeight={rowHeight}
-                  footerHeight={0}
-                  defaultExpandedRowKeys={[]}
-                  expandColumnKey='#'
-                  rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
-                  sortBy={{}}
-                  useIsScrolling={false}
-                  overscanRowCount={1}
-                  onEndReachedThreshold={500}
-                  getScrollbarSize={() => null}
-                  ignoreFunctionInColumnCompare={false}
-                  onScroll={() => null}
-                  onRowsRendered={() => null}
-                  onScrollbarPresenceChange={() => null}
-                  onRowExpand={() => null}
-                  onExpandedRowsChange={() => null}
-                  onColumnSort={() => null}
-                  onColumnResize={() => null}
-                  onColumnResizeEnd={() => null}
-                  onRowHover={onRowHover}
-                  onRowClick={onRowClick}
-                />
-              )}
+              {({ width, height }) =>
+                custom ? (
+                  <div style={{ width, height }}>
+                    <CustomTable
+                      excludedFields={excludedFields}
+                      setExcludedFields={setExcludedFields}
+                      alwaysVisibleColumns={alwaysVisibleColumns}
+                      rowHeightMode={rowHeightMode}
+                      columnsOrder={columnsOrder}
+                      updateColumns={() => null}
+                      columnsWidths={columnsWidths}
+                      updateColumnsWidths={() => null}
+                      sortFields={sortFields}
+                      setSortFields={setSortFields}
+                      data={rowData}
+                      columns={columnsData}
+                      groups={groups}
+                      onGroupExpandToggle={onGroupExpandToggle}
+                      onRowHover={onRowHover}
+                      onRowClick={onRowClick}
+                      {...props}
+                    />
+                  </div>
+                ) : (
+                  <BaseTable
+                    ref={tableRef}
+                    classPrefix='BaseTable'
+                    columns={columnsData}
+                    data={rowData}
+                    frozenData={[]}
+                    width={width}
+                    height={height}
+                    fixed={fixed}
+                    rowKey='key'
+                    isScrolling
+                    headerHeight={headerHeight}
+                    rowHeight={rowHeight}
+                    footerHeight={0}
+                    defaultExpandedRowKeys={[]}
+                    expandColumnKey='#'
+                    rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
+                    sortBy={{}}
+                    useIsScrolling={false}
+                    overscanRowCount={1}
+                    onEndReachedThreshold={500}
+                    getScrollbarSize={() => null}
+                    ignoreFunctionInColumnCompare={false}
+                    onScroll={() => null}
+                    onRowsRendered={() => null}
+                    onScrollbarPresenceChange={() => null}
+                    onRowExpand={() => null}
+                    onExpandedRowsChange={() => null}
+                    onColumnSort={() => null}
+                    onColumnResize={() => null}
+                    onColumnResizeEnd={() => null}
+                    onRowHover={onRowHover}
+                    onRowClick={onRowClick}
+                  />
+                )
+              }
             </AutoResizer>
-          </Box>
+          </div>
         </Box>
       ) : (
         <EmptyComponent size='big' content={emptyText} />
@@ -243,4 +479,4 @@ const Table = React.forwardRef(function Table(
   );
 });
 
-export default React.memo(Table);
+export default React.memo(Table, () => true);
