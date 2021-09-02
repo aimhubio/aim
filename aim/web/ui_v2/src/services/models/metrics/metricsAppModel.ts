@@ -293,8 +293,8 @@ function getChartTitleData(
             acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
               metricsCollection.config[groupItemKey] || 'None',
             );
-            return acc;
           }
+          return acc;
         },
         {},
       );
