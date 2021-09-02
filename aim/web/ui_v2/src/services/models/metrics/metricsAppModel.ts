@@ -904,6 +904,8 @@ function getDataAsTableRows(
   const rows: IMetricTableRowData[] | any =
     processedData[0].config === null ? [] : {};
 
+  let rowIndex = 0;
+
   processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
     const groupKey = metricsCollection.key;
     const columnsValues: { [key: string]: string[] } = {};
@@ -923,7 +925,7 @@ function getDataAsTableRows(
         value: '',
         step: '',
         epoch: '',
-        timestamp: '',
+        time: '',
         children: [],
       };
 
@@ -941,6 +943,7 @@ function getDataAsTableRows(
               .index;
       const rowValues: IMetricTableRowData = {
         key: metric.key,
+        index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
@@ -956,13 +959,14 @@ function getDataAsTableRows(
         epoch: `${
           closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
         }`,
-        timestamp: `${
+        time: `${
           closestIndex === null
             ? '-'
             : metric.data.timestamps[closestIndex] ?? '-'
         }`,
         parentId: groupKey,
       };
+      rowIndex++;
 
       [
         'experiment',
@@ -971,7 +975,7 @@ function getDataAsTableRows(
         'context',
         'step',
         'epoch',
-        'timestamp',
+        'time',
       ].forEach((key) => {
         if (columnsValues.hasOwnProperty(key)) {
           if (!_.some(columnsValues[key], rowValues[key])) {

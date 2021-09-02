@@ -5,12 +5,14 @@ import React from 'react';
 import classNames from 'classnames';
 
 function Cell({
+  index,
   item,
   className,
   isConfigColumn,
   groupLength,
   metadata,
   placeholder,
+  col,
 }) {
   return (
     <div
@@ -18,6 +20,8 @@ function Cell({
         Table__cell: true,
         [`${typeof item === 'object' && item?.className}`]: true,
         [className]: !!className,
+        [`index-${index}`]: true,
+        [col.key]: true,
         Table__group__config__column__cell: isConfigColumn,
         clickable: typeof item === 'object' && !!item?.props?.onClick,
         placeholder: !!placeholder,

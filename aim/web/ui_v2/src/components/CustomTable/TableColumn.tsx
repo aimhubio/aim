@@ -271,6 +271,7 @@ function Column({
         ? Object.keys(data).map((groupKey) => (
             <div key={groupKey} className='Table__group'>
               <Cell
+                index={groupKey}
                 col={col}
                 item={
                   typeof data[groupKey].data[col.key] === 'object' &&
@@ -298,7 +299,12 @@ function Column({
               {expanded[groupKey] && (
                 <>
                   {data[groupKey]?.items?.map((item, i) => (
-                    <Cell key={col.key + i} col={col} item={item[col.key]} />
+                    <Cell
+                      key={col.key + i}
+                      index={item.index}
+                      col={col}
+                      item={item[col.key]}
+                    />
                   ))}
                 </>
               )}
@@ -307,6 +313,7 @@ function Column({
         : data.map((item, i) => (
             <Cell
               key={col.key + i}
+              index={item.index}
               col={col}
               item={item[col.key]}
               metadata={firstColumn ? item.rowMeta : null}

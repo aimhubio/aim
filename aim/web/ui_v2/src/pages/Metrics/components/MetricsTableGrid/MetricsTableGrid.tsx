@@ -53,7 +53,7 @@ function getMetricsTableColumns(
       topHeader: 'Metrics',
     },
     {
-      key: 'timestamp',
+      key: 'time',
       content: <span>Time</span>,
       topHeader: 'Metrics',
     },

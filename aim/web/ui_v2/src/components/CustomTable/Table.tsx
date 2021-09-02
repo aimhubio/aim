@@ -76,17 +76,26 @@ function Table(props) {
         ...expanded,
         ...groupsForExpansion,
       });
+      if (typeof props.onGroupExpandToggle === 'function') {
+        props.onGroupExpandToggle(Object.keys(props.data));
+      }
     } else if (groupKey === 'collapse_all') {
       for (let key in props.data) {
         prevExpanded.current[key] = false;
       }
       setExpanded({});
+      if (typeof props.onGroupExpandToggle === 'function') {
+        props.onGroupExpandToggle([]);
+      }
     } else {
       prevExpanded.current[groupKey] = !expanded[groupKey];
       setExpanded({
         ...expanded,
         [groupKey]: !expanded[groupKey],
       });
+      if (typeof props.onGroupExpandToggle === 'function') {
+        props.onGroupExpandToggle(groupKey);
+      }
     }
   }
 
