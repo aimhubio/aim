@@ -214,7 +214,7 @@ class MetricCollection:
 
     @abstractmethod
     def iter(self) -> Iterator[Metric]:
-        """Get iterator for collection metrics
+        """Get Metric iterator for collection's metrics.
 
         Yields:
             Next metric object based on implementation.
@@ -223,7 +223,7 @@ class MetricCollection:
 
     @abstractmethod
     def iter_runs(self) -> Iterator['MetricCollection']:
-        """Get iterator for collection run metrics
+        """Get MetricCollection iterator for collection's runs.
 
         Yields:
             Next run's MetricCollection based on implementation.
@@ -279,7 +279,7 @@ class QueryMetricCollection(MetricCollection):
 
     Method `iter()` returns Metric iterator, which yields Metric matching query from currently iterated run's metrics.
     Once there are no metrics left in current run, repository's next run is considered.
-    Method `iter_runs()` returns iterator for repository's runs MetricCollection.
+    Method `iter_runs()` returns MetricCollection iterator for repository's runs.
 
     Args:
          repo (:obj:`Repo`): Aim repository object.
@@ -311,7 +311,7 @@ class QueryRunMetricCollection(MetricCollection):
     """Implementation of MetricCollection interface for repository's runs matching given query.
 
     Method `iter()` returns Metric iterator which yields Metric for current run's all metrics.
-    Method `iter_runs()` returns iterator for MetricCollection from repository's runs matching given query.
+    Method `iter_runs()` returns MetricCollection iterator from repository's runs matching given query.
 
     Args:
          repo (:obj:`Repo`): Aim repository object.
