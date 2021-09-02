@@ -25,8 +25,6 @@ function drawAxes(props: IDrawAxesProps): void {
     humanizerConfigRef,
   } = props;
 
-  const yAxis = d3.axisLeft(yScale);
-
   function getFormattedXAxis(xScale: d3.AxisScale<d3.AxisDomain>) {
     let xAxis = d3.axisBottom(xScale);
     let xAlignmentText = '';
@@ -157,6 +155,14 @@ function drawAxes(props: IDrawAxesProps): void {
     return { xAlignmentText, xAxis };
   }
 
+  function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
+    const yAxis = d3.axisLeft(yScale);
+    const ticksCount = Math.floor(plotBoxRef.current.height / 20);
+    yAxis.ticks(ticksCount > 3 ? (ticksCount < 20 ? ticksCount : 20) : 3);
+    return yAxis;
+  }
+
+  const yAxis = getFormattedYAxis(yScale);
   const { xAlignmentText, xAxis } = getFormattedXAxis(xScale);
 
   axesRef.current.xAxis = axesNodeRef.current
@@ -191,10 +197,8 @@ function drawAxes(props: IDrawAxesProps): void {
   axesRef.current.updateYAxis = function (
     yScaleUpdate: d3.AxisScale<d3.AxisDomain>,
   ) {
-    axesRef.current.yAxis
-      .transition()
-      .duration(500)
-      .call(d3.axisLeft(yScaleUpdate));
+    const yAxis = getFormattedYAxis(yScaleUpdate);
+    axesRef.current.yAxis.transition().duration(500).call(yAxis);
   };
 }
 

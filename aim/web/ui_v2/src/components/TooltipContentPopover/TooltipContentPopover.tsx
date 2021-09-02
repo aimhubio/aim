@@ -33,7 +33,7 @@ function TooltipContentPopover({
         ),
       });
     },
-    [onChangeTooltip, selectedParams],
+    [onChangeTooltip],
   );
 
   const onDisplayTooltipChange = React.useCallback(

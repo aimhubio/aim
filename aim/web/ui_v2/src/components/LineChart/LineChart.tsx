@@ -128,13 +128,13 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     drawLines({
+      index,
       data: processedData,
       linesNodeRef,
       linesRef,
       curveInterpolation,
       xScale,
       yScale,
-      index,
       highlightMode,
       aggregationConfig,
       aggregatedData,
@@ -143,7 +143,6 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
-      alignmentConfig,
       highlightMode,
       syncHoverState,
       visAreaRef,
@@ -159,6 +158,7 @@ const LineChart = React.forwardRef(function LineChart(
       highlightedNodeRef,
       aggregationConfig,
       humanizerConfigRef,
+      alignmentConfig,
     });
 
     if (zoomMode) {

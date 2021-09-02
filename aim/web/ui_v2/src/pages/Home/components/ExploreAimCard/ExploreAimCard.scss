@@ -10,7 +10,7 @@
   margin-bottom: 2em;
   margin-right: 2em;
   text-decoration: none;
-  color: #031123;
+  color: $pico;
   &:hover {
     background-color: #1473e6;
     color: #ffffff;
@@ -37,7 +37,7 @@
 }
 
 .ExploreAimCard__title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: $text-mm;
   line-height: 1.0625em;
   margin: 0;
