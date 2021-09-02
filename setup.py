@@ -48,28 +48,24 @@ SETUP_REQUIRED = [
 REQUIRED = [
     'aimrecords==0.0.7',
     'aimrocks==0.0.6',
-    'anytree>=2.8.0',
+    'cachetools>=4.0.0',
     'click>=7.0',
+    'filelock>=3.0.0',
     'GitPython>=3.0.4',
+    'numpy>=1.12.0',
     'protobuf>=3.11.0',
     'psutil>=5.6.7',
     'pyrser>=0.2.0',
     'py3nvml>=0.2.5',
-    'requests>=2.0.0',
+    'RestrictedPython>=5.1',
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
     'async-exit-stack>=1.0.0',
     'async-generator>=1.0',
     'fastapi>=0.65.0,<0.68.0',
-    'uvicorn>=0.12.0',
-    'python-multipart>=0.0.3',
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
-    'tensorboard>=2.0.0',
-    'RestrictedPython>=5.1',
-    'wrapt>=1.12.1',
-    'filelock>=3.0.0',
-    'cachetools>=4.0.0'
+    'uvicorn>=0.12.0',
 ]
 
 

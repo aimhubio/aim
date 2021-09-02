@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-from tqdm import tqdm
 
 from abc import abstractmethod
 
@@ -331,7 +330,7 @@ class QueryTraceCollection(TraceCollection):
         self.query = query
 
     def iter_runs(self) -> Iterator['TraceCollection']:
-        for run in tqdm(self.repo.iter_runs()):
+        for run in self.repo.iter_runs():
             yield RunTraceCollection(run, self.query)
 
     def iter(self) -> Iterator[Trace]:
@@ -364,7 +363,7 @@ class QueryRunTraceCollection(TraceCollection):
             runs_iterator = self.repo.iter_runs_from_cache(offset=self.offset)
         else:
             runs_iterator = self.repo.iter_runs()
-        for run in tqdm(runs_iterator):
+        for run in runs_iterator:
             if not self.query:
                 statement = True
             else:
