@@ -3,7 +3,10 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { IRunBatch } from 'types/pages/runs/Runs';
 import createModel from '../model';
 
-const model = createModel<Partial<any>>({});
+const model = createModel<Partial<any>>({
+  isRunInfoLoading: false,
+  isRunBatchLoading: false,
+});
 
 let getRunsInfoRequestRef: {
   call: () => Promise<any>;
@@ -25,11 +28,13 @@ function getRunInfo(runHash: string) {
   getRunsInfoRequestRef = runsService.getRunInfo(runHash);
   return {
     call: async () => {
+      model.setState({ isRunInfoLoading: true });
       const data = await getRunsInfoRequestRef.call();
       model.setState({
         runParams: data.params,
         runTraces: data.traces,
         runInfo: data.props,
+        isRunInfoLoading: false,
       });
     },
     abort: getRunsInfoRequestRef.abort,
@@ -43,6 +48,8 @@ function getRunBatch(body: any, runHash: string) {
   getRunsBatchRequestRef = runsService.getRunBatch(body, runHash);
   return {
     call: async () => {
+      model.setState({ isRunBatchLoading: true });
+
       const data = await getRunsBatchRequestRef.call();
       const runMetricsBatch: IRunBatch[] = [];
       const runSystemBatch: IRunBatch[] = [];
@@ -57,6 +64,7 @@ function getRunBatch(body: any, runHash: string) {
         ...model.getState(),
         runMetricsBatch,
         runSystemBatch,
+        isRunBatchLoading: false,
       });
     },
     abort: getRunsBatchRequestRef.abort,

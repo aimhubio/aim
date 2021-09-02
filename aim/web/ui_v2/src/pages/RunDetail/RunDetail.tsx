@@ -92,7 +92,10 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           index={0}
           className='RunDetail__runDetailContainer__tabPanel'
         >
-          <RunDetailParamsTab runParams={runData?.runParams} />
+          <RunDetailParamsTab
+            runParams={runData?.runParams}
+            isRunInfoLoading={runData?.isRunInfoLoading}
+          />
         </TabPanel>
         <TabPanel
           value={value}
@@ -103,6 +106,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             runHash={runHash}
             runTraces={runData?.runTraces}
             runBatch={runData?.runMetricsBatch}
+            isRunBatchLoading={runData?.isRunBatchLoading}
           />
         </TabPanel>
         <TabPanel
@@ -115,6 +119,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             runTraces={runData?.runTraces}
             runBatch={runData?.runSystemBatch}
             isSystem
+            isRunBatchLoading={runData?.isRunBatchLoading}
           />
         </TabPanel>
         <TabPanel

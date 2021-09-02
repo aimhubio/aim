@@ -106,9 +106,15 @@
       border-left: $border-main;
       border-bottom: $border-main;
       padding: 0.75rem;
-      min-height: calc(100% - 149px);
+      height: calc(100% - 149px);
       .MuiBox-root {
         height: 100%;
+        .runDetailParamsTabLoader {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
       }
     }
   }
@@ -119,6 +125,7 @@
   margin: 0.75rem;
   border: 0.0625rem solid tint($cuddle, 50);
   border-radius: 0.5rem;
+  height: 100%;
 }
 
 .RunDetailMetricsTab {
