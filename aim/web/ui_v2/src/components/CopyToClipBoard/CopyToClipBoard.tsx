@@ -18,7 +18,7 @@ function CopyToClipboard({
     }
   }, [showCopiedIcon]);
 
-  const onCopy = React.useCallback(async () => {
+  const onCopy = React.useCallback(() => {
     if (contentRef.current && !showCopiedIcon) {
       navigator.clipboard
         .writeText(contentRef.current.innerText.trim(''))
