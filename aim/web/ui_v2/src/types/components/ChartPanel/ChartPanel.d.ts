@@ -18,6 +18,7 @@ export interface IChartPanelProps {
   chartType: ChartTypeEnum;
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
+  panelResizing?: boolean;
   focusedState: IFocusedState;
   tooltip: IChartTooltip;
   chartTitleData?: IChartTitleData;
@@ -52,6 +53,6 @@ export type IMemoizedForwardRefComponent<T> = React.MemoExoticComponent<
 
 export interface IChartTypeConfig {
   [key: string]:
-    | React.LazyExoticComponent<IMemoizedForwardRefComponent<ILineChartProps>>
-    | React.LazyExoticComponent<IMemoizedForwardRefComponent<IHighPlotProps>>;
+    | IMemoizedForwardRefComponent<ILineChartProps>
+    | IMemoizedForwardRefComponent<IHighPlotProps>;
 }

@@ -13,7 +13,6 @@ import {
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 export interface ILine {
   key: string;

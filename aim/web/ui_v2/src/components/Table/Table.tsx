@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
@@ -20,6 +20,7 @@ import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import './Table.scss';
 
@@ -53,6 +54,7 @@ const Table = React.forwardRef(function Table(
     sortFields,
     setSortFields,
     groups,
+    isLoading,
     ...props
   }: ITableProps,
   ref,
@@ -270,185 +272,210 @@ const Table = React.forwardRef(function Table(
     };
   }, [custom]);
 
-  return !isEmpty(rowData) ? (
-    <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
-      {!hideHeaderActions && (
-        <Box component='nav' p={0.5}>
-          <Grid container justifyContent='space-between' alignItems='center'>
-            <Grid xs item>
-              <Grid container spacing={1}>
-                {onManageColumns && (
-                  <ControlPopover
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                    title='Manage Table Columns'
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Grid
-                        onClick={onAnchorClick}
-                        className='Table__header__item'
-                        item
-                      >
-                        <img src={manageColumnsIcon} alt='manage Columns' />
-                        <span onClick={onManageColumns}>Manage Columns</span>
+  return (
+    <BusyLoaderWrapper
+      isLoading={isLoading || isNil(rowData)}
+      className='Tags__TagList__tagListBusyLoader'
+    >
+      {!isEmpty(rowData) ? (
+        <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
+          {!hideHeaderActions && (
+            <Box component='nav' p={0.5}>
+              <Grid
+                container
+                justifyContent='space-between'
+                alignItems='center'
+              >
+                <Grid xs item>
+                  <Grid container spacing={1}>
+                    {onManageColumns && (
+                      <ControlPopover
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center',
+                        }}
+                        title='Manage Table Columns'
+                        anchor={({ onAnchorClick, opened }) => (
+                          <Grid
+                            onClick={onAnchorClick}
+                            className='Table__header__item'
+                            item
+                          >
+                            <img src={manageColumnsIcon} alt='manage Columns' />
+                            <span onClick={onManageColumns}>
+                              Manage Columns
+                            </span>
+                          </Grid>
+                        )}
+                        component={<ManageColumns columnsData={columns} />}
+                      />
+                    )}
+                    {onRowsChange && (
+                      <ControlPopover
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center',
+                        }}
+                        title='Manage Rows Visibility'
+                        anchor={({ onAnchorClick, opened }) => (
+                          <Grid
+                            onClick={onAnchorClick}
+                            className='Table__header__item'
+                            item
+                          >
+                            <img src={visibilityOffIcon} alt='sort' />
+                            <span onClick={onSort}>Hide Rows</span>
+                          </Grid>
+                        )}
+                        component={<HideRows />}
+                      />
+                    )}
+                    {onSort && (
+                      <ControlPopover
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center',
+                        }}
+                        title='Sort table by:'
+                        anchor={({ onAnchorClick }) => (
+                          <Grid
+                            onClick={onAnchorClick}
+                            className='Table__header__item'
+                            item
+                          >
+                            <img src={sortIcon} alt='sort' />
+                            <span onClick={onSort}>Sort</span>
+                          </Grid>
+                        )}
+                        component={<SortPopover sortOptions={sortOptions} />}
+                      />
+                    )}
+                    {onRowHeightChange && (
+                      <ControlPopover
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center',
+                        }}
+                        title='Select Row Height'
+                        anchor={({ onAnchorClick }) => (
+                          <Grid
+                            onClick={onAnchorClick}
+                            className='Table__header__item'
+                            item
+                          >
+                            <img src={rowHeightIcon} alt='rowHeight' />
+                            <span onClick={onRowHeightChange}>Row Height</span>
+                          </Grid>
+                        )}
+                        component={<RowHeight />}
+                      />
+                    )}
+                    <Grid item xs />
+                    {onExport && (
+                      <Grid item xs={1}>
+                        <Button
+                          fullWidth
+                          variant='outlined'
+                          color='primary'
+                          size='small'
+                        >
+                          Export
+                        </Button>
                       </Grid>
                     )}
-                    component={<ManageColumns columnsData={columns} />}
-                  />
-                )}
-                {onRowsChange && (
-                  <ControlPopover
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                    title='Manage Rows Visibility'
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Grid
-                        onClick={onAnchorClick}
-                        className='Table__header__item'
-                        item
-                      >
-                        <img src={visibilityOffIcon} alt='sort' />
-                        <span onClick={onSort}>Hide Rows</span>
-                      </Grid>
-                    )}
-                    component={<HideRows />}
-                  />
-                )}
-                {onSort && (
-                  <ControlPopover
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                    title='Sort table by:'
-                    anchor={({ onAnchorClick }) => (
-                      <Grid
-                        onClick={onAnchorClick}
-                        className='Table__header__item'
-                        item
-                      >
-                        <img src={sortIcon} alt='sort' />
-                        <span onClick={onSort}>Sort</span>
-                      </Grid>
-                    )}
-                    component={<SortPopover sortOptions={sortOptions} />}
-                  />
-                )}
-                {onRowHeightChange && (
-                  <ControlPopover
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                    title='Select Row Height'
-                    anchor={({ onAnchorClick }) => (
-                      <Grid
-                        onClick={onAnchorClick}
-                        className='Table__header__item'
-                        item
-                      >
-                        <img src={rowHeightIcon} alt='rowHeight' />
-                        <span onClick={onRowHeightChange}>Row Height</span>
-                      </Grid>
-                    )}
-                    component={<RowHeight />}
-                  />
-                )}
-                <Grid item xs />
-                {onExport && (
-                  <Grid item xs={1}>
-                    <Button
-                      fullWidth
-                      variant='outlined'
-                      color='primary'
-                      size='small'
-                    >
-                      Export
-                    </Button>
                   </Grid>
-                )}
+                </Grid>
               </Grid>
-            </Grid>
-          </Grid>
+            </Box>
+          )}
+          <div
+            style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}
+            ref={tableContainerRef}
+          >
+            <AutoResizer>
+              {({ width, height }) =>
+                custom ? (
+                  <div style={{ width, height }}>
+                    <CustomTable
+                      excludedFields={excludedFields}
+                      setExcludedFields={setExcludedFields}
+                      alwaysVisibleColumns={alwaysVisibleColumns}
+                      rowHeightMode={rowHeightMode}
+                      columnsOrder={columnsOrder}
+                      updateColumns={() => null}
+                      columnsWidths={columnsWidths}
+                      updateColumnsWidths={() => null}
+                      sortFields={sortFields}
+                      setSortFields={setSortFields}
+                      data={rowData}
+                      columns={columnsData}
+                      groups={groups}
+                      onGroupExpandToggle={onGroupExpandToggle}
+                      onRowHover={onRowHover}
+                      onRowClick={onRowClick}
+                      {...props}
+                    />
+                  </div>
+                ) : (
+                  <BaseTable
+                    ref={tableRef}
+                    classPrefix='BaseTable'
+                    columns={columnsData}
+                    data={rowData}
+                    frozenData={[]}
+                    width={width}
+                    height={height}
+                    fixed={fixed}
+                    rowKey='key'
+                    isScrolling
+                    headerHeight={headerHeight}
+                    rowHeight={rowHeight}
+                    footerHeight={0}
+                    defaultExpandedRowKeys={[]}
+                    expandColumnKey='#'
+                    rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
+                    sortBy={{}}
+                    useIsScrolling={false}
+                    overscanRowCount={1}
+                    onEndReachedThreshold={500}
+                    getScrollbarSize={() => null}
+                    ignoreFunctionInColumnCompare={false}
+                    onScroll={() => null}
+                    onRowsRendered={() => null}
+                    onScrollbarPresenceChange={() => null}
+                    onRowExpand={() => null}
+                    onExpandedRowsChange={() => null}
+                    onColumnSort={() => null}
+                    onColumnResize={() => null}
+                    onColumnResizeEnd={() => null}
+                    onRowHover={onRowHover}
+                    onRowClick={onRowClick}
+                  />
+                )
+              }
+            </AutoResizer>
+          </div>
         </Box>
+      ) : (
+        <EmptyComponent size='big' content={emptyText} />
       )}
-      <div
-        style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}
-        ref={tableContainerRef}
-      >
-        <AutoResizer>
-          {({ width, height }) =>
-            custom ? (
-              <div style={{ width, height }}>
-                <CustomTable
-                  excludedFields={excludedFields}
-                  setExcludedFields={setExcludedFields}
-                  alwaysVisibleColumns={alwaysVisibleColumns}
-                  rowHeightMode={rowHeightMode}
-                  columnsOrder={columnsOrder}
-                  updateColumns={() => null}
-                  columnsWidths={columnsWidths}
-                  updateColumnsWidths={() => null}
-                  sortFields={sortFields}
-                  setSortFields={setSortFields}
-                  data={rowData}
-                  columns={columnsData}
-                  groups={groups}
-                  onGroupExpandToggle={onGroupExpandToggle}
-                  onRowHover={onRowHover}
-                  onRowClick={onRowClick}
-                  {...props}
-                />
-              </div>
-            ) : (
-              <BaseTable
-                ref={tableRef}
-                classPrefix='BaseTable'
-                columns={columnsData}
-                data={rowData}
-                frozenData={[]}
-                width={width}
-                height={height}
-                fixed={fixed}
-                rowKey='key'
-                isScrolling
-                headerHeight={headerHeight}
-                rowHeight={rowHeight}
-                footerHeight={0}
-                defaultExpandedRowKeys={[]}
-                expandColumnKey='#'
-                rowProps={({ rowIndex }) => data[rowIndex]?.rowProps}
-                sortBy={{}}
-                useIsScrolling={false}
-                overscanRowCount={1}
-                onEndReachedThreshold={500}
-                getScrollbarSize={() => null}
-                ignoreFunctionInColumnCompare={false}
-                onScroll={() => null}
-                onRowsRendered={() => null}
-                onScrollbarPresenceChange={() => null}
-                onRowExpand={() => null}
-                onExpandedRowsChange={() => null}
-                onColumnSort={() => null}
-                onColumnResize={() => null}
-                onColumnResizeEnd={() => null}
-                onRowHover={onRowHover}
-                onRowClick={onRowClick}
-              />
-            )
-          }
-        </AutoResizer>
-      </div>
-    </Box>
-  ) : (
-    <EmptyComponent size='big' content={emptyText} />
+    </BusyLoaderWrapper>
   );
 });
 

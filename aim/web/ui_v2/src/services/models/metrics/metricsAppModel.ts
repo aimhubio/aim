@@ -1297,9 +1297,6 @@ function onActivePointChange(
     activePoint.xValue,
     model.getState()!.params!,
   );
-  const stateUpdate: Partial<IMetricAppModelState> = {
-    tableData,
-  };
   if (tableRef) {
     tableRef.current?.updateData({ newData: tableData });
     tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -1310,26 +1307,34 @@ function onActivePointChange(
       tableRef.current?.scrollToRow?.(activePoint.key);
     }
   }
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.focusedState = {
-      active: focusedStateActive,
-      key: activePoint.key,
-      xValue: activePoint.xValue,
-      yValue: activePoint.yValue,
-      chartIndex: activePoint.chartIndex,
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        focusedState: {
+          active: focusedStateActive,
+          key: activePoint.key,
+          xValue: activePoint.xValue,
+          yValue: activePoint.yValue,
+          chartIndex: activePoint.chartIndex,
+        },
+        tooltip: {
+          ...configData.chart.tooltip,
+          content: filterTooltipContent(
+            tooltipData[activePoint.key],
+            configData?.chart.tooltip.selectedParams,
+          ),
+        },
+      },
     };
-    configData.chart.tooltip = {
-      ...configData.chart.tooltip,
-      content: filterTooltipContent(
-        tooltipData[activePoint.key],
-        configData?.chart.tooltip.selectedParams,
-      ),
-    };
-    stateUpdate.config = configData;
   }
 
-  model.setState(stateUpdate);
+  model.setState({
+    tableData,
+    config: configData,
+  });
 }
 
 //Table Methods

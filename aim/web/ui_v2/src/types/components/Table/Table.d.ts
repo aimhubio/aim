@@ -5,7 +5,7 @@ export interface ITableProps {
   custom?: boolean;
   groups?: boolean;
   topHeader?: boolean;
-  data: any[];
+  data: any[] | null;
   columns: any[];
   rowHeight: RowHeight;
   onManageColumns?: () => void;
@@ -37,6 +37,7 @@ export interface ITableProps {
   updateColumnsWidths?: any;
   sortFields?: any;
   setSortFields?: any;
+  isLoading?: boolean;
 }
 
 export interface ITableRef {
