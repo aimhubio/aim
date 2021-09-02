@@ -1,11 +1,12 @@
 import React from 'react';
 import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
 import {
-  Button,
   Dialog,
   DialogContentText,
   DialogTitle,
+  Button,
 } from '@material-ui/core';
+import AimButton from 'components/Button/Button';
 
 import './ConfirmModal.scss';
 
@@ -45,14 +46,14 @@ function ConfirmModal(
         <Button onClick={props.onCancel} className='ConfirmModal__CancelButton'>
           {props.cancelBtnText}
         </Button>
-        <Button
+        <AimButton
           onClick={props.onSubmit}
           color='primary'
           variant='contained'
           autoFocus
         >
           {props.confirmBtnText}
-        </Button>
+        </AimButton>
       </div>
     </Dialog>
   );

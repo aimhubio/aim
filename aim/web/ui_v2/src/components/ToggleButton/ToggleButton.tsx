@@ -24,7 +24,7 @@ function ToggleButton({
       >
         <span>{leftLabel}</span>
       </div>
-      <Button></Button>
+      {/* <Button></Button> */}
       <div
         id='1'
         onClick={handleToggle}

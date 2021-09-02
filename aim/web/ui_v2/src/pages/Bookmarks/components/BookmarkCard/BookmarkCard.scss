@@ -6,19 +6,11 @@
   flex-direction: column;
   border: 1px solid #dee6f3;
   border-radius: 0.5em;
-  padding: 1.5em 4em 1.5em 1.5em;
+  padding: 1.5em;
   margin-bottom: 1em;
- 
 }
 .BookmarkCard__delete {
-  position: absolute;
-  right: 1.5em;
-  top: 1.5em;
-  margin-bottom: 0.75em;
-  cursor: pointer;
-  i {
-    font-size: 0.75em;
-  }
+  margin-left: 0.25em;
 }
 
 .BookmarkCard__top {
@@ -26,7 +18,7 @@
   p {
     margin-top: 0.25em;
     font-weight: normal;
-    font-size: 12px;
+    font-size: $text-sm;
   }
 }
 
@@ -55,5 +47,5 @@
   margin-top: 1em;
   width: 100%;
   white-space: nowrap;
-  overflow: auto; 
+  overflow: auto;
 }

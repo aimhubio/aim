@@ -5,6 +5,7 @@ import {
 } from 'types/services/models/metrics/runModel';
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
+  isRunInfoLoading: boolean;
 }
 
 export interface IRunsProps {
@@ -15,6 +16,7 @@ export interface IRunDetailMetricsAndSystemTabProps {
   runTraces: any;
   runBatch: any;
   isSystem?: boolean;
+  isRunBatchLoading: boolean;
 }
 export interface IRunDetailSettingsTabProps {
   runHash: string;

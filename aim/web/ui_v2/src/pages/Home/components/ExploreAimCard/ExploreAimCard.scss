@@ -1,24 +1,25 @@
+@use 'src/styles/abstracts' as *;
+
 .ExploreAimCard__container {
   width: 15.5em;
   background-color: transparent;
   border-radius: 0.5em;
-  border: 0.0625em solid #E8F1FC;
-  transition: background-color .3s ease-out;
+  border: 0.0625em solid #e8f1fc;
+  transition: background-color 0.3s ease-out;
   padding: 1.5em 1.5em 0.875em 1.5em;
   margin-bottom: 2em;
   margin-right: 2em;
   text-decoration: none;
-  color: #031123;
+  color: $pico;
   &:hover {
-    background-color: #1473E6;
-    color: #FFFFFF;
+    background-color: #1473e6;
+    color: #ffffff;
     .ExploreAimCard__icon {
-      color: #1473E6;
-      background-color: #FFFFFF;
+      color: #1473e6;
+      background-color: #ffffff;
     }
   }
 }
-
 
 .ExploreAimCard__icon {
   display: flex;
@@ -27,8 +28,8 @@
   border-radius: 50%;
   width: 2.75em;
   height: 2.75em;
-  background: #1473E6;
-  color: #FFFFFF;
+  background: #1473e6;
+  color: #ffffff;
   margin-bottom: 0.875em;
   i {
     font-size: 1.5em;
@@ -36,10 +37,10 @@
 }
 
 .ExploreAimCard__title {
-  font-weight: 500;
-  font-size: 0.875em;
+  font-weight: 600;
+  font-size: $text-mm;
   line-height: 1.0625em;
-  margin: 0
+  margin: 0;
 }
 
 .ExploreAimCard__desc {
@@ -52,6 +53,6 @@
 .ExploreAim_card__arrowIcon__container {
   display: flex;
   justify-content: flex-end;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 0.5em;
 }

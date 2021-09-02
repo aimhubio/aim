@@ -1,0 +1,27 @@
+@use 'src/styles/abstracts' as *;
+
+.TagContainer {
+  &__tagBox {
+    max-width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    &__tag {
+      height: 1.5rem;
+      border: 0.0625rem solid;
+      border-radius: $border-radius-main;
+      padding: 0.0625rem 2em 0.25em;
+      max-width: 100%;
+      display: flex;
+      &__content {
+        height: 100%;
+        overflow: hidden;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 500;
+        font-size: $text-mm;
+      }
+    }
+  }
+}

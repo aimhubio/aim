@@ -39,7 +39,7 @@ class TagGetRunsOut(BaseModel):
         name: str
         experiment: Optional[str] = None
         creation_time: float
-        end_time: float
+        end_time: Optional[float]
 
     id: UUID
     runs: List[Run]
