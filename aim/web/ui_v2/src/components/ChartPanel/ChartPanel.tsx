@@ -36,7 +36,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setPopoverPosition(pos);
       }
     },
-    [props.tooltip.display, setPopoverPosition],
+    [props.tooltip.display, props.focusedState.active, setPopoverPosition],
   );
 
   const syncHoverState = React.useCallback(
