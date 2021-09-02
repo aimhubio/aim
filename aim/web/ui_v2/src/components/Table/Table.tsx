@@ -402,6 +402,8 @@ const Table = React.forwardRef(function Table(
                   columns={columnsData}
                   groups={groups}
                   onGroupExpandToggle={onGroupExpandToggle}
+                  onRowHover={onRowHover}
+                  onRowClick={onRowClick}
                   {...props}
                 />
               </div>

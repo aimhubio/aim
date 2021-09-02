@@ -902,7 +902,7 @@ function getDataAsTableRows(
   }
 
   const rows: IMetricTableRowData[] | any =
-    processedData[0].config === null ? [] : {};
+    processedData[0]?.config !== null ? {} : [];
 
   let rowIndex = 0;
 
@@ -1219,7 +1219,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getMetricsTableColumns(params, data[0].config);
+  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1388,7 +1388,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     processedData.params,
-    processedData.data[0].config,
+    processedData.data[0]?.config,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -1596,7 +1596,7 @@ function setModelData(
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getMetricsTableColumns(params, data[0].config),
+    tableColumns: getMetricsTableColumns(params, data[0]?.config),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
