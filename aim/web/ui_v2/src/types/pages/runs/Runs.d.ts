@@ -16,7 +16,7 @@ export interface IRunDetailMetricsAndSystemTabProps {
   runTraces: any;
   runBatch: any;
   isSystem?: boolean;
-  isRunBatchLoading?: boolean;
+  isRunBatchLoading: boolean;
 }
 export interface IRunDetailSettingsTabProps {
   runHash: string;

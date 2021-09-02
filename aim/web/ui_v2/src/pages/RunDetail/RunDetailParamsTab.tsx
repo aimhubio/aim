@@ -15,7 +15,7 @@ function RunDetailParamsTab({
       height='100%'
     >
       <div className='RunDetailParamsTab'>
-        {!runParams ? (
+        {runParams ? (
           <ReactJson name={false} theme='bright:inverted' src={runParams} />
         ) : (
           <EmptyComponent

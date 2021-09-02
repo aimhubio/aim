@@ -14,7 +14,7 @@ def select_metrics(search_statement: str, repo_path: Optional[str] = None):
     if not repo:
         return None
 
-    return repo.traces(search_statement)
+    return repo.query_metrics(search_statement)
 
 
 @deprecated
