@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   unstable_createMuiStrictModeTheme as createMuiTheme,
-  CssBaseline,
   ThemeOptions,
   ThemeProvider,
 } from '@material-ui/core';

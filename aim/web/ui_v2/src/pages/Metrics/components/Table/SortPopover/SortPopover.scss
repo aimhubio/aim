@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .SortPopover__container {
   width: 300px;
   max-height: 210px;
@@ -10,7 +12,7 @@
 
 .SortPopover__chip {
   margin-bottom: 0.5em;
-  font-size: 0.875em;
+  font-size: $text-mm;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,22 +30,22 @@
 }
 
 .SortPopover__chip__left {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .SortPopover__chip__delete {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .SortPopover__select__item {
   span {
-    font-size: 0.875em;
+    font-size: $text-mm;
   }
 }
 
 .SortPopover__reset__sorting {
-    margin-top: 0.5em;
-    display: flex;
-    justify-content: center;
+  margin-top: 0.5em;
+  display: flex;
+  justify-content: center;
 }

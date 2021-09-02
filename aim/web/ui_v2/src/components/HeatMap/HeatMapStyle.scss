@@ -1,10 +1,9 @@
-
 .CalendarHeatmap {
 }
 
 .CalendarHeatmap__map {
   display: grid;
-  grid-template-columns: 16px 1fr;
+  grid-template-columns: 1em 1fr;
   grid-template-rows: 20px 1fr;
 }
 
@@ -47,8 +46,8 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  box-shadow: inset 0 0 0 1px #FFFF;
-  border: 1px solid #1473E6;
+  box-shadow: inset 0 0 0 1px #ffff;
+  border: 1px solid #1473e6;
   border-radius: 3px;
   transition: box-shadow 50ms ease;
   cursor: pointer;
@@ -65,28 +64,28 @@
   }
 
   &.CalendarHeatmap__cell--scale-0 {
-    background: #FFF;
-    border: 1px solid #CDCFD3;
+    background: #fff;
+    border: 1px solid #cdcfd3;
   }
 
   &.CalendarHeatmap__cell--scale-1 {
-    background: #ABCAF6;
-    border: 1px solid #ABCAF6;
+    background: #abcaf6;
+    border: 1px solid #abcaf6;
   }
 
   &.CalendarHeatmap__cell--scale-2 {
-    background: #77A8EF;
-    border: 1px solid #ABCAF6;
+    background: #77a8ef;
+    border: 1px solid #abcaf6;
   }
 
   &.CalendarHeatmap__cell--scale-3 {
-    background: #3578E6;
-    border: 1px solid #ABCAF6;
+    background: #3578e6;
+    border: 1px solid #abcaf6;
   }
 
   &.CalendarHeatmap__cell--scale-4 {
-    background: #225AE0;
-    border: 1px solid #ABCAF6;
+    background: #225ae0;
+    border: 1px solid #abcaf6;
   }
 }
 
@@ -101,7 +100,7 @@
     font-weight: 500;
     font-size: 10px;
     line-height: 12px;
-    color: #35414F;
+    color: #35414f;
     margin-right: 0.75em;
     &:last-child {
       margin-left: 0.5em;

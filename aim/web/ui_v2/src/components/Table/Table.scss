@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .Table__header__item {
   cursor: pointer;
   display: flex;
@@ -5,7 +7,7 @@
   span {
     font-style: normal;
     font-weight: 500;
-    font-size: 14px;
+    font-size: $text-mm;
     line-height: 17px;
     color: #09003f;
   }
