@@ -5,7 +5,9 @@ function usePanelResize(
   topPanelRef: React.MutableRefObject<HTMLElement | any>,
   bottomPanelRef: React.MutableRefObject<HTMLElement | any>,
   resizeElemRef: React.MutableRefObject<HTMLElement | any>,
-): void {
+) {
+  const [panelResizing, setPanelResizing] = React.useState<boolean>(false);
+
   const handleResize = React.useCallback(() => {
     document.addEventListener('mousemove', startResize);
     document.addEventListener('mouseup', endResize);
@@ -14,6 +16,7 @@ function usePanelResize(
   const startResize = React.useCallback((event: MouseEvent): void => {
     requestAnimationFrame(() => {
       if (bottomPanelRef.current && topPanelRef.current && wrapperRef.current) {
+        setPanelResizing(true);
         const containerHeight: number =
           bottomPanelRef.current.getBoundingClientRect()?.height +
           topPanelRef.current.getBoundingClientRect()?.height;
@@ -33,16 +36,20 @@ function usePanelResize(
   }, []);
 
   const endResize = React.useCallback(() => {
+    setPanelResizing(false);
     document.removeEventListener('mousemove', startResize);
   }, []);
 
   React.useEffect(() => {
     resizeElemRef.current.addEventListener('mousedown', handleResize);
     return () => {
+      setPanelResizing(false);
       resizeElemRef.current?.removeEventListener('mousedown', handleResize);
       document.removeEventListener('mouseup', endResize);
     };
   }, []);
+
+  return [panelResizing];
 }
 
 export default usePanelResize;

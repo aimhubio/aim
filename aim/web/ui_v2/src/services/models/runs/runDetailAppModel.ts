@@ -1,8 +1,12 @@
 import runsService from 'services/api/runs/runsService';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IRunBatch } from 'types/pages/runs/Runs';
 import createModel from '../model';
 
-const model = createModel<Partial<any>>({});
+const model = createModel<Partial<any>>({
+  isRunInfoLoading: false,
+  isRunBatchLoading: false,
+});
 
 let getRunsInfoRequestRef: {
   call: () => Promise<any>;
@@ -24,11 +28,13 @@ function getRunInfo(runHash: string) {
   getRunsInfoRequestRef = runsService.getRunInfo(runHash);
   return {
     call: async () => {
+      model.setState({ isRunInfoLoading: true });
       const data = await getRunsInfoRequestRef.call();
       model.setState({
         runParams: data.params,
         runTraces: data.traces,
         runInfo: data.props,
+        isRunInfoLoading: false,
       });
     },
     abort: getRunsInfoRequestRef.abort,
@@ -42,6 +48,8 @@ function getRunBatch(body: any, runHash: string) {
   getRunsBatchRequestRef = runsService.getRunBatch(body, runHash);
   return {
     call: async () => {
+      model.setState({ isRunBatchLoading: true });
+
       const data = await getRunsBatchRequestRef.call();
       const runMetricsBatch: IRunBatch[] = [];
       const runSystemBatch: IRunBatch[] = [];
@@ -56,6 +64,7 @@ function getRunBatch(body: any, runHash: string) {
         ...model.getState(),
         runMetricsBatch,
         runSystemBatch,
+        isRunBatchLoading: false,
       });
     },
     abort: getRunsBatchRequestRef.abort,
@@ -67,7 +76,7 @@ function archiveRun(id: string, archived: boolean = false) {
   runsService
     .archiveRun(id, archived)
     .call()
-    .then(() => {
+    .then((res: any) => {
       model.setState({
         ...state,
         runInfo: {
@@ -75,7 +84,37 @@ function archiveRun(id: string, archived: boolean = false) {
           archived,
         },
       });
+      if (res.id) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: archived
+            ? 'Run successfully archived'
+            : 'Run successfully unarchive',
+        });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: 'Something went wrong',
+        });
+      }
     });
+}
+
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
 }
 
 const runDetailAppModel = {
@@ -84,6 +123,8 @@ const runDetailAppModel = {
   getRunInfo,
   getRunBatch,
   archiveRun,
+  onNotificationAdd,
+  onNotificationDelete,
 };
 
 export default runDetailAppModel;

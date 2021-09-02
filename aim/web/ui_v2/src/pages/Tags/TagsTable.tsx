@@ -1,14 +1,21 @@
+<<<<<<< HEAD
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { isNil } from 'lodash-es';
 import hexToRgbA from 'utils/haxToRgba';
 import Button from 'components/Button/Button';
+=======
+import React, { memo, useEffect, useState } from 'react';
+import { Button } from '@material-ui/core';
+
+>>>>>>> main
 import Table from 'components/Table/Table';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+import TagLabel from 'components/TagLabel/TagLabel';
+import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
 
 function TagsTable({
   tableRef,
@@ -29,24 +36,7 @@ function TagsTable({
       width: 200,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         const { name, color } = cellData;
-        return (
-          <div key={i} className='TagContainer__tagBox'>
-            <div
-              className='TagContainer__tagBox__tag'
-              style={{
-                borderColor: color,
-                background: hexToRgbA(color, 0.1),
-              }}
-            >
-              <span
-                className='TagContainer__tagBox__tag__content'
-                style={{ color }}
-              >
-                {name}
-              </span>
-            </div>
-          </div>
-        );
+        return <TagLabel name={name} color={color} key={i} />;
       },
     },
     {

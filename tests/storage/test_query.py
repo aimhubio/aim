@@ -8,7 +8,7 @@ class TestQuery(TestBase):
     def test_query_metrics(self):
         q = 'run.hparams.batch_size == None and metric.context.is_training == True'
         trace_count = 0
-        for trc in self.repo.traces(query=q):
+        for trc in self.repo.query_metrics(query=q):
             self.assertIsNone(trc.run['hparams']['batch_size'])
             self.assertTrue(trc.context['is_training'])
             trace_count += 1
@@ -16,7 +16,7 @@ class TestQuery(TestBase):
 
     def test_query_metrics_empty_query(self):
         q = ''
-        trcs = self.repo.traces(query=q)
+        trcs = self.repo.query_metrics(query=q)
         trace_count = sum(1 for _ in trcs)
         self.assertEqual(40, trace_count)
 
@@ -58,7 +58,7 @@ class TestQuery(TestBase):
     def test_query_execution(self, name, q):
         # crash/no-crash test
         # execute query and iterate over result
-        for _ in self.repo.iter_traces(q):
+        for _ in self.repo.query_metrics(q):
             continue
         for _ in self.repo.query_runs(q).iter_runs():
             continue
@@ -66,4 +66,4 @@ class TestQuery(TestBase):
     def test_invalid_query(self):
         q = 'invalid_varialble.get("hparams", "batch_size") == None'
         with self.assertRaises(Exception):
-            next(iter(self.repo.iter_traces(q)))
+            next(iter(self.repo.query_metrics(q)))

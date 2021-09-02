@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
+import { Grid, PopoverPosition, GridSize, Typography } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
@@ -33,10 +33,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const onChangePopoverPosition = React.useCallback(
     (pos: PopoverPosition | null) => {
       if (props.tooltip.display || props.focusedState.active) {
-        setPopoverPosition(pos);
+        setPopoverPosition(pos?.top && pos.left ? pos : null);
       }
     },
-    [props.tooltip.display, setPopoverPosition],
+    [props.tooltip.display, props.focusedState.active, setPopoverPosition],
   );
 
   const syncHoverState = React.useCallback(
@@ -112,17 +112,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }));
 
   React.useEffect(() => {
-    chartRefs.forEach((chartRef) => {
-      chartRef.current?.setFocusedState?.(props.focusedState);
-    });
-  }, [chartRefs, props.focusedState]);
-
-  // TODO: remove setTimeout
-  React.useEffect(() => {
-    setTimeout(() => {
-      setChartsRefs((refs) => [...refs]);
-    });
-  }, []);
+    !props.panelResizing &&
+      chartRefs.forEach((chartRef) => {
+        chartRef.current?.setFocusedState?.(props.focusedState);
+      });
+  }, [chartRefs, props.focusedState, props.panelResizing]);
 
   React.useEffect(() => {
     const debouncedScroll = _.debounce(onScroll, 100);
@@ -136,47 +130,60 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   return (
     <Grid container className='ChartPanel__container'>
       <Grid item xs className='ChartPanel'>
-        <Grid ref={containerRef} container className='ChartPanel__paper__grid'>
-          {props.data.map((chartData: any, index: number) => {
-            const Component = chartTypesConfig[props.chartType];
-            const aggregatedData = props.aggregatedData?.filter(
-              (data) => data.chartIndex === index,
-            );
-            const title =
-              props.data.length > 1 && props.chartTitleData
-                ? props.chartTitleData[index]
-                : {};
-            return (
-              <Grid
-                key={index}
-                item
-                className='ChartPanel__paper__grid__chartBox'
-                xs={
-                  props.data.length > 9
-                    ? 4
-                    : (chartGridPattern[props.data.length][index] as GridSize)
-                }
-              >
-                <Component
-                  ref={chartRefs[index]}
-                  // TODO change props.chartProps[0] to props.chartProps
-                  {...props.chartProps[0]}
-                  index={index}
-                  data={chartData}
-                  title={title}
-                  aggregatedData={aggregatedData}
-                  aggregationConfig={props.aggregationConfig}
-                  alignmentConfig={props.alignmentConfig}
-                  syncHoverState={syncHoverState}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
+        {props.panelResizing ? (
+          <div className='ChartPanel__resizing'>
+            <Typography variant='subtitle1' color='primary'>
+              Release to resize
+            </Typography>
+          </div>
+        ) : (
+          <Grid
+            ref={containerRef}
+            container
+            className='ChartPanel__paper__grid'
+          >
+            {props.data.map((chartData: any, index: number) => {
+              const Component = chartTypesConfig[props.chartType];
+              const aggregatedData = props.aggregatedData?.filter(
+                (data) => data.chartIndex === index,
+              );
+              const title =
+                props.data.length > 1 && props.chartTitleData
+                  ? props.chartTitleData[index]
+                  : {};
+              return (
+                <Grid
+                  key={index}
+                  item
+                  className='ChartPanel__paper__grid__chartBox'
+                  xs={
+                    props.data.length > 9
+                      ? 4
+                      : (chartGridPattern[props.data.length][index] as GridSize)
+                  }
+                >
+                  <Component
+                    ref={chartRefs[index]}
+                    // TODO change props.chartProps[0] to props.chartProps
+                    {...props.chartProps[0]}
+                    index={index}
+                    data={chartData}
+                    title={title}
+                    aggregatedData={aggregatedData}
+                    aggregationConfig={props.aggregationConfig}
+                    alignmentConfig={props.alignmentConfig}
+                    syncHoverState={syncHoverState}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        )}
         <ChartPopover
           popoverPosition={popoverPosition}
           open={
             props.data.length > 0 &&
+            !props.panelResizing &&
             (props.tooltip.display || props.focusedState.active)
           }
           containerRef={containerRef}

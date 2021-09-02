@@ -1,27 +1,27 @@
 .Activity__container {
   h2 {
-    margin:0 0 1em 0;
+    margin: 0 0 1em 0;
   }
 }
 
 .Activity__Statistics__card {
-  background: linear-gradient(97.73deg, #8C32AF 0%, #6BACE5 100%);
+  background: linear-gradient(97.73deg, #8c32af 0%, #6bace5 100%);
   opacity: 0.8;
   border-radius: 6px;
   width: 13.125em;
   height: 80px;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 0.5em 1em;
   position: relative;
   span {
-   font-size: 16px;
+    font-size: 1em;
     display: block;
     line-height: 19px;
   }
 
   strong {
-   font-size: 36px;
-   line-height: 44px;
+    font-size: 36px;
+    line-height: 44px;
   }
 
   :after {
@@ -34,7 +34,7 @@
 
   &:last-child {
     margin-top: 6px;
-    background: linear-gradient(98.46deg, #1473E6 0%, #09C6F9 100%);
+    background: linear-gradient(98.46deg, #1473e6 0%, #09c6f9 100%);
     :after {
       content: url('../../../../../src/assets/runs.svg');
     }

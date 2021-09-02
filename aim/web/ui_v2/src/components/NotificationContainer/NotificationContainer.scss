@@ -1,0 +1,47 @@
+@use 'src/styles/abstracts' as *;
+
+.NotificationContainer {
+  .MuiAlert-outlinedSuccess {
+    border: 0.0625rem solid #2bc784;
+  }
+  .MuiAlert-outlinedError {
+    border: 0.0625rem solid #e64e48;
+  }
+  .MuiPaper-root {
+    background: $white;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    border-radius: $border-radius-main;
+    .MuiAlert-icon {
+      padding: 0;
+      img {
+        width: 2.375rem;
+        height: 2.375rem;
+      }
+    }
+
+    .MuiAlert-action {
+      display: flex;
+      align-items: end;
+      height: 100%;
+      .MuiSvgIcon-fontSizeSmall {
+        font-size: 1.05rem;
+        fill: $pico;
+      }
+    }
+  }
+  &__contentBox {
+    &__severity {
+      font-weight: 600;
+      font-size: $text-mm;
+      text-transform: capitalize;
+      color: $pico;
+    }
+    &__message {
+      font-weight: normal;
+      font-size: $text-mm;
+      color: $pico;
+    }
+  }
+}

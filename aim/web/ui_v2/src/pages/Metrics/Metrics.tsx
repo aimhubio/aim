@@ -59,6 +59,7 @@ function Metrics(
                 <ChartPanel
                   key={props.lineChartData?.length}
                   ref={props.chartPanelRef}
+                  panelResizing={props.panelResizing}
                   chartType={ChartTypeEnum.LineChart}
                   data={props.lineChartData}
                   focusedState={props.focusedState}
@@ -66,6 +67,8 @@ function Metrics(
                   tooltip={props.tooltip}
                   aggregatedData={props.aggregatedData}
                   aggregationConfig={props.aggregationConfig}
+                  chartTitleData={props.chartTitleData}
+                  alignmentConfig={props.alignmentConfig}
                   chartProps={[
                     {
                       axesScaleType: props.axesScaleType,

@@ -100,8 +100,8 @@ function archiveTag(id: string, archived: boolean = false) {
         id: Date.now(),
         severity: 'success',
         message: archived
-          ? 'Tags successfully archived'
-          : 'Tags successfully unarchive',
+          ? 'Tag successfully archived'
+          : 'Tag successfully unarchive',
       });
     });
 }
