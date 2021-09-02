@@ -72,6 +72,6 @@ async def project_params_api():
         raise HTTPException(status_code=404)
 
     return {
-        'params': project.repo.collect_params(),
-        'metrics': project.repo.collect_metrics(),
+        'params': project.repo.collect_params_info(),
+        'metrics': project.repo.collect_metrics_info(),
     }

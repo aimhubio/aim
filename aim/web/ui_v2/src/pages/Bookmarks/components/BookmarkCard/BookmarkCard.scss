@@ -8,7 +8,6 @@
   border-radius: 0.5em;
   padding: 1.5em;
   margin-bottom: 1em;
- 
 }
 .BookmarkCard__delete {
   margin-left: 0.25em;
@@ -19,7 +18,7 @@
   p {
     margin-top: 0.25em;
     font-weight: normal;
-    font-size: 12px;
+    font-size: $text-sm;
   }
 }
 
@@ -48,5 +47,5 @@
   margin-top: 1em;
   width: 100%;
   white-space: nowrap;
-  overflow: auto; 
+  overflow: auto;
 }

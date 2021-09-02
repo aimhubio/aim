@@ -18,9 +18,9 @@ const SortIndicator = ({ sortOrder, className, style }) => {
       className={cls}
       style={{
         userSelect: 'none',
-        width: '16px',
-        height: '16px',
-        lineHeight: '16px',
+        width: '1em',
+        height: '1em',
+        lineHeight: '1em',
         textAlign: 'center',
         ...style,
       }}

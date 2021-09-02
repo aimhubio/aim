@@ -1,4 +1,4 @@
-@import 'src/styles/abstracts/_variables.scss';
+@use 'src/styles/abstracts' as *;
 
 .Tags {
   &__tabPanel {
@@ -11,17 +11,17 @@
   }
   &__tabsContainer {
     border-radius: 0;
-    padding-left: 20px;
+    padding-left: 1.25rem;
     box-shadow: none;
-    border: 1px solid #ebf0f8;
+    border: 0.0625rem solid #ebf0f8;
     .PrivateTabIndicator-root-5 {
-      height: 3px;
+      height: 0.1875rem;
     }
     .MuiTab-textColorInherit {
       color: $text-color;
       opacity: 1;
       font-weight: 500;
-      font-size: 14px;
+      font-size: $text-mm;
       text-transform: none;
       &.MuiInputBase-input {
         font-weight: 600;
@@ -31,8 +31,8 @@
   &__TagList {
     position: relative;
     height: 100%;
-    border-left: 1px solid #dee6f3;
-    border-right: 1px solid #dee6f3;
+    border-left: 0.0625rem solid #dee6f3;
+    border-right: 0.0625rem solid #dee6f3;
     &__tagListBusyLoader {
       padding-top: 100px;
     }
@@ -40,23 +40,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
+      padding: 1.25rem;
       background: #ffffff;
-      border-bottom: 1px solid #ebf0f8;
+      border-bottom: 0.0625rem solid #ebf0f8;
       .MuiInputBase-root {
-        height: 32px;
-        padding-left: 13px;
-        border-radius: 6px;
+        height: 2rem;
+        padding-left: 0.8125rem;
+        border-radius: $border-radius-main;
         img {
-          padding-right: 9px;
+          padding-right: 0.5625rem;
         }
         .MuiInputBase-input {
           font-weight: 500;
-          font-size: 14px;
+          font-size: $text-mm;
           color: #414b6d;
           &::placeholder {
             font-weight: 500;
-            font-size: 14px;
+            font-size: $text-mm;
             color: #606986;
             opacity: 1;
           }
@@ -71,7 +71,7 @@
         }
         .MuiButton-label {
           font-weight: 500;
-          font-size: 14px;
+          font-size: $text-mm;
           justify-content: flex-start;
         }
       }
@@ -98,7 +98,7 @@
         }
         &__title {
           font-weight: 600;
-          font-size: 14px;
+          font-size: $text-mm;
         }
       }
     }
@@ -112,7 +112,7 @@
         align-items: center;
         &__title {
           font-weight: 600;
-          font-size: 14px;
+          font-size: $text-mm;
         }
       }
     }
@@ -215,8 +215,8 @@
       display: flex;
       align-items: center;
       &__runIconBox {
-        width: 16px;
-        height: 16px;
+        width: 1em;
+        height: 1em;
         border-radius: 50%;
         border: 1px solid $primary-color;
         display: flex;
@@ -232,37 +232,13 @@
       }
       &__runText {
         font-weight: 500;
-        font-size: 14px;
+        font-size: $text-mm;
         color: $primary-color;
       }
     }
   }
 }
-.TagContainer {
-  &__tagBox {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    &__tag {
-      height: 24px;
-      border: 1px solid;
-      border-radius: 6px;
-      padding: 1px 32px 4px;
-      max-width: 100%;
-      display: flex;
-      &__content {
-        height: 100%;
-        overflow: hidden;
-        max-width: 100%;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-weight: 500;
-        font-size: 14px;
-      }
-    }
-  }
-}
+
 .TagDetail {
   height: 100%;
   &__headerContainer {
@@ -275,12 +251,12 @@
     &__headerActionsBox {
       display: flex;
       .MuiSvgIcon-root {
-        font-size: 16px;
+        font-size: 1em;
       }
       &__actionsIcon {
         margin-right: 25px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 1em;
         &:last-child {
           margin-right: 0;
         }
@@ -305,12 +281,12 @@
     &__textBox {
       &__titleText {
         font-weight: 600;
-        font-size: 14px;
+        font-size: $text-mm;
         margin-bottom: 5px;
       }
       &__contentText {
         font-weight: normal;
-        font-size: 12px;
+        font-size: $text-sm;
       }
     }
   }
@@ -330,7 +306,7 @@
   &__contentContainer {
     padding: 20px;
     &__contentTitle {
-      font-size: 14px;
+      font-size: $text-mm;
       font-weight: 600;
     }
     &__contentBox {
@@ -342,7 +318,7 @@
         margin-bottom: 0;
       }
       &__warningText {
-        font-size: 12px;
+        font-size: $text-sm;
         font-weight: normal;
         word-break: break-all;
         margin-bottom: 15px;

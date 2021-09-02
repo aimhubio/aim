@@ -7,7 +7,7 @@
 
 .MetricsBar__item__bookmark__span {
   font-weight: 500;
-  font-size: 0.875em;
+  font-size: $text-mm;
   line-height: 1.0625em;
   margin-right: 0.625em;
 }
@@ -29,7 +29,7 @@
   flex-direction: column;
   li {
     border-top: $border-main;
-    font-size: 0.875em;
+    font-size: $text-mm;
     padding: 0.5em;
   }
   a {

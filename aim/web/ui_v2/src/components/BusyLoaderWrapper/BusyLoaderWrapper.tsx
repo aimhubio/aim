@@ -1,8 +1,8 @@
 import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Skeleton } from '@material-ui/lab';
-import './BusyLoaderWrapper.scss';
 import { IBusyLoaderWrapperProps } from 'types/components/BusyLoaderWrapper/BusyLoaderWrapper';
+import './BusyLoaderWrapper.scss';
 
 function BusyLoaderWrapper({
   isLoading = false,
@@ -24,13 +24,14 @@ function BusyLoaderWrapper({
       }
     }
   }
-
   return isLoading ? (
     <div className={`BusyLoaderWrapper ${className}`} style={{ width, height }}>
       {loaderComponent || loaderRender()}
     </div>
-  ) : (
+  ) : children ? (
     children
+  ) : (
+    <div></div>
   );
 }
 

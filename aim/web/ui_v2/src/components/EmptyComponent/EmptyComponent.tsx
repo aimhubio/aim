@@ -6,10 +6,11 @@ function EmptyComponent({
   title,
   content = 'No Data',
   img,
+  className = '',
   size = 'small',
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='EmptyComponent'>
+    <div className={`EmptyComponent ${className}`}>
       <div className={`EmptyComponent__${size}__img`}>
         {img || <img src={noData} alt='' />}
       </div>
