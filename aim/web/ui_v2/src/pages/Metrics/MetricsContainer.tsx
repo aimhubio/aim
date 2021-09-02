@@ -36,7 +36,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const metricsData = useModel(metricAppModel);
-  usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
+
+  const [panelResizing] = usePanelResize(
+    wrapperElemRef,
+    chartElemRef,
+    tableElemRef,
+    resizeElemRef,
+  );
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
@@ -101,6 +107,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.grouping as IMetricAppConfig['grouping']
       }
       // chart options
+      panelResizing={panelResizing}
       lineChartData={metricsData?.lineChartData as ILine[][]}
       chartTitleData={metricsData?.chartTitleData as IChartTitleData}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
