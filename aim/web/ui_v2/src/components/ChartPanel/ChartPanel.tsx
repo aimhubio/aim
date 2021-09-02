@@ -32,11 +32,20 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const onChangePopoverPosition = React.useCallback(
     (pos: PopoverPosition | null) => {
-      if (props.tooltip.display || props.focusedState.active) {
+      if (
+        props.tooltip.display ||
+        props.focusedState.active ||
+        props.zoomMode
+      ) {
         setPopoverPosition(pos?.top && pos.left ? pos : null);
       }
     },
-    [props.tooltip.display, props.focusedState.active, setPopoverPosition],
+    [
+      props.tooltip.display,
+      props.focusedState.active,
+      props.zoomMode,
+      setPopoverPosition,
+    ],
   );
 
   const syncHoverState = React.useCallback(
@@ -184,6 +193,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           open={
             props.data.length > 0 &&
             !props.panelResizing &&
+            !props.zoomMode &&
             (props.tooltip.display || props.focusedState.active)
           }
           containerRef={containerRef}
