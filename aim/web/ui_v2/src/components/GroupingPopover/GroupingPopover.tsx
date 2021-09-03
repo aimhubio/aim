@@ -102,7 +102,7 @@ function GroupingPopover({
         </Box>
         <Box className='GroupingPopover__toggleMode_div'>
           <h3>select grouping mode</h3>
-          <ToggleButton
+          {/* <ToggleButton
             id='groupMode'
             value={groupingData.reverseMode[groupName as GroupNameType]}
             leftLabel='Group'
@@ -111,7 +111,7 @@ function GroupingPopover({
               groupingData.reverseMode[groupName as GroupNameType]
             }
             onChange={handleGroupingMode}
-          />
+          /> */}
         </Box>
         {advancedComponent && (
           <Accordion className='GroupingPopover__accordion__container'>

@@ -52,12 +52,12 @@ function SortPopover({
               <span className='SortPopover__chip__label'>{field.label}</span>
             </div>
             <span>
-              <ToggleButton
+              {/* <ToggleButton
                 id={field.label}
                 onChange={() => null}
                 leftLabel='ASC'
                 rightLabel='DESC'
-              />
+              /> */}
             </span>
           </div>
         ))}

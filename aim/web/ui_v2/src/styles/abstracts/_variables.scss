@@ -31,9 +31,11 @@ $border-radius-md: 0.375rem;
 $border-radius-lg: 0.5rem;
 //text
 $text-color: $pico;
+$text-color-50: tint($pico, 50%);
+$text-color-80: tint($pico, 20%);
 $text-sm: 0.75rem;
-$text-mm: 0.875rem;
-$text-lm: 1rem;
+$text-md: 0.875rem;
+$text-lg: 1rem;
 $xs: 23.5em; // 376px @media (max-width: $xs) {}
 $sm: 36em; // (min-width: 576px)
 $md: 48em; // (min-width: 768px)

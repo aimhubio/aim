@@ -12,36 +12,36 @@ import './AxesScalePopover.scss';
 function AxesScalePopover(
   props: IAxesScalePopoverProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  function handleScaleChange(
-    event: ChangeEvent<HTMLInputElement>,
-    checked: boolean,
-  ) {
-    const { id } = event.target;
-    const value: ScaleEnum = checked ? ScaleEnum.Log : ScaleEnum.Linear;
+  function handleScaleChange(val: string | number, id: any) {
     const scaleParams: IAxesScaleState = {
       ...props.axesScaleType,
-      [id]: value,
+      [id]: val,
     };
     props.onAxesScaleTypeChange(scaleParams);
   }
 
   return (
     <div className='AxesScalePopover__container'>
-      <div>
-        <span>X-axis scale:</span>
+      <span className='AxesScalePopover__subtitle'>Select Axes Scale:</span>
+      <div className='AxesScalePopover__select'>
         <ToggleButton
-          checked={props.axesScaleType.xAxis === ScaleEnum.Log}
+          title='X-axis scale:'
           id='xAxis'
+          value={props.axesScaleType.xAxis}
+          leftValue={ScaleEnum.Linear}
+          rightValue={ScaleEnum.Log}
           leftLabel='Linear'
           rightLabel='Log'
           onChange={handleScaleChange}
         />
       </div>
-      <div>
-        Y-axis scale:
+      <div className='AxesScalePopover__select'>
         <ToggleButton
-          checked={props.axesScaleType.yAxis === ScaleEnum.Log}
+          title='Y-axis scale:'
           id='yAxis'
+          value={props.axesScaleType.yAxis}
+          leftValue={ScaleEnum.Linear}
+          rightValue={ScaleEnum.Log}
           leftLabel='Linear'
           rightLabel='Log'
           onChange={handleScaleChange}

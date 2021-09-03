@@ -1,4 +1,13 @@
-.ToggleButton {
+@use 'src/styles/abstracts' as *;
+
+.ToggleButton__title {
+    color: $text-color-80;
+    font-size: $text-md;
+}
+
+.ToggleButton_container {
     padding: 0.25rem;
-    display: flex;
+    border: $border-main;
+    border-radius: $border-radius-md;
+    display: inline-block;
 }

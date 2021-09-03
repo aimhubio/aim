@@ -26,13 +26,13 @@ function ColorPopoverAdvanced({
           color regardless of its order.
         </span>
         <div>
-          <ToggleButton
+          {/* <ToggleButton
             id='persistence'
             leftLabel='Enabled'
             defaultChecked={persistence}
             value={persistence}
             onChange={() => onPersistenceChange('color')}
-          />
+          /> */}
         </div>
       </div>
       <Box pt={0.5} borderTop='1px solid #b7b7b7'>

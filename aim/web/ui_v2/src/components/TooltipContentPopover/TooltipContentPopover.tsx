@@ -98,13 +98,13 @@ function TooltipContentPopover({
         <Divider />
         <Box className='TooltipContentPopover__toggle'>
           <h3>Display tooltip</h3>
-          <ToggleButton
+          {/* <ToggleButton
             id='display'
             checked={displayTooltip}
             leftLabel='Hide'
             rightLabel='Show'
             onChange={onDisplayTooltipChange}
-          />
+          /> */}
         </Box>
       </div>
     </div>

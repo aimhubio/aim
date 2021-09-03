@@ -17,13 +17,13 @@ function StylePopoverAdvanced({
           the same stroke style regardless to its order
         </span>
         <div>
-          <ToggleButton
+          {/* <ToggleButton
             id='persistence'
             leftLabel='Enabled'
             defaultChecked={persistence}
             value={persistence}
             onChange={() => onPersistenceChange('style')}
-          />
+          /> */}
         </div>
       </div>
     </Box>
