@@ -1,7 +1,7 @@
 import React from 'react';
 import { ICopyToClipBoardProps } from 'types/components/CopyToClipBoard/CopyToClipBoard';
 
-import copyIcon from 'assets/icons/copy.svg';
+import Icon from 'components/Icon/Icon';
 
 function CopyToClipboard({
   contentRef,
@@ -34,7 +34,7 @@ function CopyToClipboard({
       {showCopiedIcon ? (
         <span style={{ color: 'green', fontSize: 12 }}>Copied!</span>
       ) : (
-        <img src={copyIcon} alt='copy' />
+        <Icon name='copy' />
       )}
     </span>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import { Chip } from '@material-ui/core';
 
 import { ISelectTagProps } from 'types/components/SelectTag/SelectTag';
+import Icon from 'components/Icon/Icon';
 
 import './SelectTag.scss';
 
@@ -20,14 +21,7 @@ function SelectTag({
       className='SelectForm__tags__item'
       label={label}
       data-name={label}
-      deleteIcon={
-        <i
-          style={{
-            color: color,
-          }}
-          className='icon-delete'
-        />
-      }
+      deleteIcon={<Icon color={color} name='close' />}
       {...(onDelete && { onDelete: () => onDelete(label) })}
     />
   );

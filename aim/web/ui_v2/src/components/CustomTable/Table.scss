@@ -162,8 +162,9 @@ $group-margin: 8px;
     color: $primary-darker;
   }
 
-  .Icon {
-    margin-right: $space-xxs;
+  i {
+    margin-right: 1rem;
+    font-size: 0.75rem;
   }
 }
 

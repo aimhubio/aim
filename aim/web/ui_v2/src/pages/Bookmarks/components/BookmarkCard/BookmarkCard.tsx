@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import SelectTag from 'components/SelectTag/SelectTag';
-import Button from 'components/Button/Button';
+import Icon from 'components/Icon/Icon';
 
+import Button from 'components/Button/Button';
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
@@ -51,15 +51,8 @@ function BookmarkCard({
               </Button>
             </NavLink>
             <span className='BookmarkCard__delete'>
-              <Button
-                variant='text'
-                withOnlyIcon
-                onClick={handleOpenModal}
-                size='small'
-              >
-                <DeleteOutlinedIcon
-                  style={{ color: '#1C2852', fontSize: '24px' }}
-                />
+              <Button variant='text' withOnlyIcon onClick={handleOpenModal}>
+                <Icon name='delete' />
               </Button>
             </span>
           </div>
@@ -98,7 +91,7 @@ function BookmarkCard({
         onCancel={handleCloseModal}
         onSubmit={handleBookmarkDelete}
         text='Are you sure you want to delete this bookmark?'
-        icon={<DeleteOutlinedIcon />}
+        icon={<Icon name='delete' />}
         title='Are you sure?'
       />
     </div>
