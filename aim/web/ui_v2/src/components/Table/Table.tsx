@@ -394,6 +394,7 @@ const Table = React.forwardRef(function Table(
                           variant='outlined'
                           color='primary'
                           size='small'
+                          onClick={onExport}
                         >
                           Export
                         </Button>
