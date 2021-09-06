@@ -18,16 +18,6 @@ async def serve_static_files(path):
     return FileResponse(static_file_name)
 
 
-@general_router.get('/static/{exp_name}/{commit_hash}/media/images/{path}/')
-async def serve_images(exp_name, commit_hash, path):
-    project = Project()
-    image_file = os.path.join(project.repo_path,
-                              exp_name, commit_hash,
-                              'objects', 'media', 'images',
-                              path)
-    return FileResponse(image_file)
-
-
 # do not change the placement of this method
 # as it also serves as a fallback for wrong url routes
 @general_router.get('/{path:path}/')
