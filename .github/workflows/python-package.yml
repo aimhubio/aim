@@ -19,6 +19,12 @@ jobs:
         with:
           ref: main
 
+      - name: Build UI
+        working-directory: ./aim/web/ui_v2
+        run: |
+          npm i
+          npm run build
+
       - name: Setup python
         uses: actions/setup-python@v2
         with:
@@ -53,6 +59,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: main
+
+      - name: Build UI
+        working-directory: ./aim/web/ui_v2
+        run: |
+          npm i
+          npm run build
 
       - name: Setup python
         uses: actions/setup-python@v2
