@@ -104,7 +104,7 @@ class Container(ContainerView):
         for k, v in self.items():
             index[k] = v
 
-        self._progress_path.unlink(missing_ok=False)
+        self._progress_path.unlink()
         self._progress_path = None
 
     def close(self):

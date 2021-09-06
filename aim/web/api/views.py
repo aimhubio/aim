@@ -11,7 +11,7 @@ general_router = APIRouter()
 @general_router.get('/static-files/{path:path}/')
 async def serve_static_files(path):
     from aim import web
-    static_file_name = os.path.join(os.path.dirname(web.__file__), 'ui', 'build', path)
+    static_file_name = os.path.join(os.path.dirname(web.__file__), 'ui_v2', 'build', path)
     compressed_file_name = '{}.gz'.format(static_file_name)
     if os.path.exists(compressed_file_name):
         return FileResponse(compressed_file_name, headers={'Content-Encoding': 'gzip'})
@@ -33,7 +33,7 @@ async def serve_images(exp_name, commit_hash, path):
 @general_router.get('/{path:path}/')
 async def serve_index_html():
     from aim import web
-    static_file_name = os.path.join(os.path.dirname(web.__file__), 'ui', 'build', 'index.html')
+    static_file_name = os.path.join(os.path.dirname(web.__file__), 'ui_v2', 'build', 'index.html')
     compressed_file_name = '{}.gz'.format(static_file_name)
     if os.path.exists(compressed_file_name):
         return FileResponse(compressed_file_name, headers={'Content-Encoding': 'gzip'})
