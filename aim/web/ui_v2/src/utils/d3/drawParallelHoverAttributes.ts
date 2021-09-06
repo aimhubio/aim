@@ -163,13 +163,28 @@ const drawParallelHoverAttributes = ({
     focusedStateActive = attributesRef.current.focusedState?.active || false,
     force,
   }: IUpdateParallelFocusedChartProps) {
-    const dimensionLabel = scalePointValue(
-      attributesRef.current.xScale,
-      mouse[0],
-    );
-    if (dimensionLabel) {
+    const { xScale, yScale, focusedState, activePoint } = attributesRef.current;
+
+    let mousePosition: [number, number] | [] = [];
+    let dimensionLabel: string = '';
+    if (mouse) {
+      dimensionLabel = scalePointValue(attributesRef.current.xScale, mouse[0]);
+      mousePosition = mouse;
+    } else if (focusedState?.active && focusedState.chartIndex === index) {
+      const xPos = xScale(focusedState.xValue);
+      dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
+      mousePosition = [xPos, yScale[dimensionLabel](focusedState.yValue)];
+    } else if (activePoint?.xValue && activePoint.yValue) {
+      const xPos = xScale(activePoint.xValue);
+      dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
+      mousePosition = [
+        xScale(activePoint.xValue),
+        yScale[dimensionLabel](activePoint.yValue),
+      ];
+    }
+    if (dimensionLabel && mousePosition.length === 2) {
       const { mouseX, mouseY } = getCoordinates({
-        mouse,
+        mouse: mousePosition,
         xScale: attributesRef.current.xScale,
         yScale: attributesRef.current.yScale[dimensionLabel],
         margin,
@@ -423,13 +438,13 @@ const drawParallelHoverAttributes = ({
       focusedState?.xValue &&
       focusedState.yValue
     ) {
-      const mouse: [number, number] = [
-        xScale(scalePointValue(xScale, activePoint?.xPos || 0)),
-        yScale[scalePointValue(xScale, activePoint?.xPos || 0)](
-          focusedState?.yValue,
-        ) + margin.top,
-      ];
-      updateFocusedChart({ mouse, force: true });
+      // const mouse: [number, number] = [
+      //   xScale(scalePointValue(xScale, activePoint?.xPos || 0)),
+      //   yScale[scalePointValue(xScale, activePoint?.xPos || 0)](
+      //     focusedState?.yValue,
+      //   ) + margin.top,
+      // ];
+      updateFocusedChart({ force: true });
       drawFocusedCircle(focusedState.key);
     }
   }

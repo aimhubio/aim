@@ -18,6 +18,42 @@ const initialPathData: InitialPathDataType = {
   isDotted: false,
 };
 
+function drawParallelLines({
+  linesNodeRef,
+  attributesRef,
+  dimensions,
+  curveInterpolation,
+  linesRef,
+  data,
+  attributesNodeRef,
+  isVisibleColorIndicator,
+}: IDrawParallelLinesProps) {
+  if (!linesNodeRef?.current || !linesRef?.current || !attributesRef?.current) {
+    return;
+  }
+  const keysOfDimensions: string[] = Object.keys(dimensions);
+  linesRenderer({
+    data,
+    keysOfDimensions,
+    curveInterpolation,
+    linesNodeRef,
+    attributesRef,
+    isVisibleColorIndicator,
+  });
+  linesRef.current.updateLines = function (updatedData: ILineDataType[]) {
+    linesNodeRef.current?.selectAll('*')?.remove();
+    attributesNodeRef.current?.selectAll('*')?.remove();
+    linesRenderer({
+      data: updatedData,
+      keysOfDimensions,
+      curveInterpolation,
+      linesNodeRef,
+      attributesRef,
+      isVisibleColorIndicator,
+    });
+  };
+}
+
 function linesRenderer({
   data,
   keysOfDimensions,
@@ -57,7 +93,7 @@ function linesRenderer({
           arrayOfPathData[pathDataArrayIndex + 2] = cloneDeep(initialPathData);
           pathDataArrayIndex = pathDataArrayIndex + 2;
         }
-        i = i + nextStep;
+        i = i + nextStep - 1;
       } else {
         arrayOfPathData[pathDataArrayIndex].isEmpty = false;
         arrayOfPathData[pathDataArrayIndex].dimensionList.push(keyOfDimension);
@@ -90,39 +126,6 @@ function linesRenderer({
       }
     });
   });
-}
-
-function drawParallelLines({
-  linesNodeRef,
-  attributesRef,
-  dimensions,
-  curveInterpolation,
-  linesRef,
-  data,
-  attributesNodeRef,
-  isVisibleColorIndicator,
-}: IDrawParallelLinesProps) {
-  const keysOfDimensions: string[] = Object.keys(dimensions);
-  linesRenderer({
-    data,
-    keysOfDimensions,
-    curveInterpolation,
-    linesNodeRef,
-    attributesRef,
-    isVisibleColorIndicator,
-  });
-  linesRef.current.updateLines = function (updatedData: ILineDataType[]) {
-    linesNodeRef.current?.selectAll('*')?.remove();
-    attributesNodeRef.current?.selectAll('*')?.remove();
-    linesRenderer({
-      data: updatedData,
-      keysOfDimensions,
-      curveInterpolation,
-      linesNodeRef,
-      attributesRef,
-      isVisibleColorIndicator,
-    });
-  };
 }
 
 function drawParallelLine({

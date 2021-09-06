@@ -1268,7 +1268,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;
     if (tooltip.selectedParams && configData?.chart.focusedState.key) {
@@ -1277,10 +1277,16 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
         tooltip.selectedParams,
       );
     }
-    configData.chart.tooltip = {
-      ...configData.chart.tooltip,
-      ...tooltip,
-      content,
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        tooltip: {
+          ...configData.chart.tooltip,
+          ...tooltip,
+          content,
+        },
+      },
     };
 
     model.setState({ config: configData });

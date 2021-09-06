@@ -55,14 +55,14 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               Experiment: {runData?.runInfo?.experiment}
             </p>
             <p className='RunDetail__runDetailContainer__headerContainer__infoBox__experimentDate'>
-              {`${moment(runData?.runInfo?.creation_time).format(
+              {`${moment(runData?.runInfo?.creation_time * 1000).format(
                 'DD MMM YYYY ~ HH:mm A',
               )} ~ ${
                 !runData?.runInfo?.end_time
                   ? 'in progress'
                   : processDurationTime(
-                      runData?.runInfo?.creation_time,
-                      runData?.runInfo?.end_time,
+                      runData?.runInfo?.creation_time * 1000,
+                      runData?.runInfo?.end_time * 1000,
                     )
               }`}
             </p>
