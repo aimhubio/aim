@@ -119,6 +119,7 @@ function Controls(
           )}
           component={
             <AlignmentPopover
+              projectsDataMetrics={props.projectsDataMetrics}
               alignmentConfig={props.alignmentConfig}
               onAlignmentMetricChange={props.onAlignmentMetricChange}
               onAlignmentTypeChange={props.onAlignmentTypeChange}
