@@ -23,7 +23,7 @@ jobs:
         working-directory: ./aim/web/ui_v2
         run: |
           npm i
-          npm run build
+          CI=false npm run build
 
       - name: Setup python
         uses: actions/setup-python@v2
@@ -64,7 +64,7 @@ jobs:
         working-directory: ./aim/web/ui_v2
         run: |
           npm i
-          npm run build
+          CI=false npm run build
 
       - name: Setup python
         uses: actions/setup-python@v2
