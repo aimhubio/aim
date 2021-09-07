@@ -138,20 +138,23 @@ const Table = React.forwardRef(function Table(
     };
   }
 
-  function updateData({ newData, newColumns }) {
-    if (custom) {
+  function updateData({ newData, newColumns, dynamicData }) {
+    if (custom && dynamicData) {
       if (!!newData) {
         dataRef.current = newData;
       }
       if (!!newColumns) {
         columnsRef.current = newColumns;
+        setColumnsData(newColumns);
       }
       virtualizedUpdate();
     } else {
       if (!!newData) {
+        dataRef.current = newData;
         setRowData(newData);
       }
       if (!!newColumns) {
+        columnsRef.current = newColumns;
         setColumnsData(newColumns);
       }
     }
