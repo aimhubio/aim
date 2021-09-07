@@ -1,5 +1,6 @@
 import React from 'react';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
+import Icon from 'components/Icon/Icon';
 
 import './SetupGuide.scss';
 
@@ -32,19 +33,19 @@ r['hparams'] = 'foo'`}
           className='SetupGuide__resource__item'
         >
           <div className='StyleGuide__resource__item__icon'>
-            <i className='icon-runs' />
+            <Icon name='runs' />
           </div>
           <span>Full docs</span>
         </a>
         <div className='SetupGuide__resource__item'>
           <div className='StyleGuide__resource__item__icon'>
-            <i className='icon-bookmarks' />
+            <Icon name='bookmarks' />
           </div>
           <span>Jupyter notebook</span>
         </div>
         <div className='SetupGuide__resource__item'>
           <div className='StyleGuide__resource__item__icon'>
-            <i className='icon-metrics' />
+            <Icon name='metrics' />
           </div>
           <span>Live demo</span>
         </div>

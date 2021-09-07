@@ -8,14 +8,14 @@ import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
-
-import './Params.scss';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
 import { size } from 'lodash-es';
 import Table from 'components/CustomTable/Table';
+
+import './Params.scss';
 
 const Params = ({
   curveInterpolation,

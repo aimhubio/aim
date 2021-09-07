@@ -1,7 +1,9 @@
 import React from 'react';
+
 import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
 import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
+import Icon from 'components/Icon/Icon';
 
 import './ExploreAim.scss';
 
@@ -54,7 +56,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
           >
             <img src={slackIcon} alt='slack' />
             <span>Join Aim slack community</span>
-            <i className='icon-arrowRight' />
+            <Icon name='arrow-right' />
           </a>
           <a
             target='_blank'
@@ -66,7 +68,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
             <span>
               Create an issue <br /> or report a bug to help us improve
             </span>
-            <i className='icon-arrowRight' />
+            <Icon name='arrow-right' />
           </a>
         </div>
       </div>

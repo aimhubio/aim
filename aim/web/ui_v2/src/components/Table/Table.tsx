@@ -10,10 +10,6 @@ import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
 import CustomTable from '../CustomTable/Table';
 
-import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
-import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
-import sortIcon from 'assets/icons/table/sort.svg';
-import visibilityOffIcon from 'assets/icons/table/visibilityOff.svg';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
@@ -21,6 +17,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import Icon from 'components/Icon/Icon';
 
 import './Table.scss';
 
@@ -434,7 +431,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={manageColumnsIcon} alt='manage Columns' />
+                            <Icon name='manage-calumn' />
                             <span onClick={onManageColumns}>
                               Manage Columns
                             </span>
@@ -460,7 +457,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={visibilityOffIcon} alt='sort' />
+                            <Icon name='eye-outline-hide' />
                             <span onClick={onSort}>Hide Rows</span>
                           </Grid>
                         )}
@@ -484,7 +481,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={sortIcon} alt='sort' />
+                            <Icon name='sort-outside' />
                             <span onClick={onSort}>Sort</span>
                           </Grid>
                         )}
@@ -508,7 +505,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={rowHeightIcon} alt='rowHeight' />
+                            <Icon name='row-height' />
                             <span onClick={onRowHeightChange}>Row Height</span>
                           </Grid>
                         )}

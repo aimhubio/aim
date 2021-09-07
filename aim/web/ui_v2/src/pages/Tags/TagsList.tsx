@@ -1,8 +1,6 @@
 import React, { ChangeEvent, memo, useRef, useState } from 'react';
 import { Button, TextField, Dialog, Drawer } from '@material-ui/core';
 
-import searchImg from 'assets/icons/search.svg';
-import plusImg from 'assets/icons/plus.svg';
 import TagForm from 'components/TagForm/TagForm';
 import TagsTable from './TagsTable';
 import TagDetail from './TagDetail';
@@ -10,6 +8,8 @@ import TagSoftDelete from './TagSoftDelete';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
 import TagDelete from './TagDelete';
+import Icon from 'components/Icon/Icon';
+
 import './Tags.scss';
 
 function TagsList({
@@ -76,7 +76,7 @@ function TagsList({
           placeholder='Search'
           variant='outlined'
           InputProps={{
-            startAdornment: <img src={searchImg} alt='visible' />,
+            startAdornment: <Icon name='search' />,
             disabled: isTagsDataLoading,
           }}
           onChange={onSearchInputChange}
@@ -90,7 +90,7 @@ function TagsList({
             color='primary'
             onClick={onCreateModalToggle}
           >
-            <img src={plusImg} alt='visible' />
+            <Icon name='plus' />
             Create Tag
           </Button>
         )}

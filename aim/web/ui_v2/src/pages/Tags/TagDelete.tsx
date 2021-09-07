@@ -3,10 +3,11 @@ import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
 import { TextField } from '@material-ui/core';
 import { useFormik } from 'formik';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 
+import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
+import Icon from 'components/Icon/Icon';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+
 import './Tags.scss';
 
 function TagDelete({
@@ -63,7 +64,7 @@ function TagDelete({
       onCancel={onDeleteModalToggle}
       onSubmit={onTagHide}
       text='Are you sure you want to delete this tag?'
-      icon={<DeleteOutlineIcon />}
+      icon={<Icon name='delete' />}
     >
       <p className='TagDelete__contentContainer__contentBox__warningText'>
         {`Please type "${tagInfo?.name}" to confirm:`}

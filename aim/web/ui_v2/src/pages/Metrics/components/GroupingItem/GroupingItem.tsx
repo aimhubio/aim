@@ -1,21 +1,17 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
-import { More, Visibility, VisibilityOff } from '@material-ui/icons';
-
-import styleIcon from 'assets/icons/style.svg';
-import chartIcon from 'assets/icons/chart.svg';
-import colorIcon from 'assets/icons/palette.svg';
+import Icon from 'components/Icon/Icon';
+import { IconName } from 'types/components/Icon/Icon';
 
 import './groupingItemStyle.scss';
 
 const icons = {
-  style: styleIcon,
-  chart: chartIcon,
-  color: colorIcon,
+  style: 'line-style',
+  chart: 'chart-group',
+  color: 'coloring',
 };
 
 function GroupingItem({
@@ -36,7 +32,7 @@ function GroupingItem({
       anchor={({ onAnchorClick }) => (
         <div className='GroupingItem__container'>
           <div onClick={onAnchorClick} className='GroupingItem__icon__box'>
-            <img src={icons[groupName]} alt={groupName} />
+            <Icon name={icons[groupName] as IconName} />
           </div>
           <span>{groupName}</span>
         </div>
