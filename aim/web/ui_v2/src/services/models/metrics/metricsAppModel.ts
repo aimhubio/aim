@@ -916,6 +916,7 @@ function getDataAsTableRows(
           chartIndex: metricsCollection.chartIndex + 1,
         },
         key: groupKey!,
+        groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
         experiment: '',

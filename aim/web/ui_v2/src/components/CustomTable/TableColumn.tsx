@@ -306,8 +306,9 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      onRowHover={() => onRowHover(item.key)}
-                      onRowClick={() => onRowClick(item.key)}
+                      className={`rowKey-${item.key}`}
+                      onRowHover={() => onRowHover(item)}
+                      onRowClick={() => onRowClick(item)}
                     />
                   ))}
                 </>
@@ -320,9 +321,10 @@ function Column({
               index={item.index}
               col={col}
               item={item[col.key]}
+              className={`rowKey-${item.key}`}
               metadata={firstColumn ? item.rowMeta : null}
-              onRowHover={() => onRowHover(item.key)}
-              onRowClick={() => onRowClick(item.key)}
+              onRowHover={() => onRowHover(item)}
+              onRowClick={() => onRowClick(item)}
             />
           ))}
     </div>
