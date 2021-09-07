@@ -9,7 +9,7 @@ export interface IRunDetailParamsTabProps {
 }
 
 export interface IRunsProps {
-  runsData: IRun<IMetricTrace | IParamTrace>[];
+  tableData: IRun<IMetricTrace | IParamTrace>[];
 }
 export interface IRunDetailMetricsAndSystemTabProps {
   runHash: string;
@@ -28,4 +28,10 @@ export interface IRunBatch {
   iters: number[];
   metric_name: string;
   values: number[];
+}
+
+export interface IRunsTableProps {
+  tableRef: React.RefObject<any>;
+  runsList: ITagProps[];
+  isRunsDataLoading: boolean;
 }

@@ -29,6 +29,7 @@ function Button(
 
   return (
     <MUButton
+      {...props}
       variant={props.variant}
       color={props.color || 'primary'}
       style={styleOverrides}

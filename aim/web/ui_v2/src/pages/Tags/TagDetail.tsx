@@ -64,24 +64,30 @@ function TagDetail({
         </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>
           {!tagInfo?.archived && (
-            <CreateIcon
-              color='primary'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onUpdateModalToggle}
-            />
+            <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
+              <CreateIcon
+                color='primary'
+                className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                onClick={onUpdateModalToggle}
+              />
+            </span>
           )}
           {tagInfo?.archived ? (
-            <VisibilityIcon
-              color='primary'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onSoftDeleteModalToggle}
-            />
+            <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
+              <VisibilityIcon
+                color='primary'
+                className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                onClick={onSoftDeleteModalToggle}
+              />
+            </span>
           ) : (
-            <VisibilityOffIcon
-              color='primary'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onSoftDeleteModalToggle}
-            />
+            <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
+              <VisibilityOffIcon
+                color='primary'
+                className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+                onClick={onSoftDeleteModalToggle}
+              />
+            </span>
           )}
           <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
             <DeleteOutlineIcon

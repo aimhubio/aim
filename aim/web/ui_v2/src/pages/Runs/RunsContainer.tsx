@@ -6,7 +6,7 @@ import Runs from './Runs';
 const runsRequestRef = runsAppModel.getRunsData();
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const runsData = useModel(runsAppModel);
-
+  console.log(runsData);
   React.useEffect(() => {
     runsAppModel.initialize();
     runsRequestRef.call();
@@ -14,7 +14,15 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       runsRequestRef.abort();
     };
   }, []);
-  return <Runs runsData={runsData?.data} />;
+  return (
+    <Runs
+      tableData={runsData?.data}
+      isRunsDataLoading={runsData?.requestIsPending}
+      onBookmarkCreate={() => null}
+      onBookmarkUpdate={() => null}
+      onResetConfigData={() => null}
+    />
+  );
 }
 
 export default memo(RunsContainer);

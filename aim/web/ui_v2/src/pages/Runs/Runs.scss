@@ -1,0 +1,154 @@
+@use './src/styles/abstracts' as *;
+.Runs__section {
+  height: 100vh;
+  overflow: hidden;
+  .Runs__loader {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.Runs__container {
+  background-color: #ffffff;
+  .Runs__paper {
+    padding: 1em;
+    height: 100%;
+    user-select: none;
+  }
+
+  .Runs__fullHeight {
+    height: 100%;
+    // height: -moz-available; /* WebKit-based browsers will ignore this. */
+    // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  }
+
+  .Runs__section__div {
+    //display: flex;
+    //flex-direction: column;
+    //justify-content: center;
+  }
+  .Runs__table__container {
+    -webkit-box-flex: 0.5;
+    -ms-flex: 0.5 1 0px;
+    flex: 0.5 1 0;
+    height: 100%;
+  }
+}
+
+.Runs {
+  height: 100vh;
+  &__RunList {
+    position: relative;
+    height: 100%;
+    border-left: 0.0625rem solid #dee6f3;
+    border-right: 0.0625rem solid #dee6f3;
+    &__runListBusyLoader {
+      padding-top: 100px;
+    }
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem;
+      background: #ffffff;
+      border-bottom: 0.0625rem solid #ebf0f8;
+      .MuiInputBase-root {
+        height: 2rem;
+        padding-left: 0.8125rem;
+        border-radius: $border-radius-main;
+        img {
+          padding-right: 0.5625rem;
+        }
+        .MuiInputBase-input {
+          font-weight: 500;
+          font-size: $text-mm;
+          color: #414b6d;
+          &::placeholder {
+            font-weight: 500;
+            font-size: $text-mm;
+            color: #606986;
+            opacity: 1;
+          }
+        }
+      }
+      &__createButton {
+        text-transform: none;
+        width: 126px;
+        padding: 4px 10px 4px 13px;
+        img {
+          padding-right: 9px;
+        }
+        .MuiButton-label {
+          font-weight: 500;
+          font-size: $text-mm;
+          justify-content: flex-start;
+        }
+      }
+    }
+    &__runListBox {
+      height: calc(100% - 73px);
+      position: relative;
+      &__titleBox {
+        position: relative;
+        margin-left: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 40px;
+        background-color: $white;
+        &::before {
+          content: '';
+          width: 34px;
+          height: 3px;
+          background: $primary-color;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+        }
+        &__title {
+          font-weight: 600;
+          font-size: $text-mm;
+        }
+      }
+    }
+    &__modalContainer {
+      width: 350px;
+      &__titleBox {
+        height: 40px;
+        border-bottom: 1px solid #f2f5fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &__title {
+          font-weight: 600;
+          font-size: $text-mm;
+        }
+      }
+    }
+    &__overLayContainer {
+      .MuiDrawer-paper {
+        width: 800px;
+        box-shadow: -5px 0px 10px rgba(28, 40, 82, 0.1);
+        top: 50px;
+      }
+      .MuiBackdrop-root {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.Runs__title {
+  margin: 0;
+  padding: 0;
+  color: $primary-color;
+}
+
+.RunsTable {
+  height: calc(100% - 40px);
+  width: 100%;
+  position: relative;
+}
+.Run__list {
+    height: 100%;
+}

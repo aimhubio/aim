@@ -2,7 +2,8 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
+import Button from 'components/Button/Button';
 import { isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
@@ -63,7 +64,7 @@ const Table = React.forwardRef(function Table(
   const startIndex = React.useRef(0);
   const endIndex = React.useRef(0);
   const expandedGroups = React.useRef([]);
-  const tableContainerRef = React.useRef();
+  const tableContainerRef = React.useRef({});
   const dataRef = React.useRef(data);
   const columnsRef = React.useRef(columns);
 
@@ -479,4 +480,4 @@ const Table = React.forwardRef(function Table(
   );
 });
 
-export default React.memo(Table, () => true);
+export default React.memo(Table);
