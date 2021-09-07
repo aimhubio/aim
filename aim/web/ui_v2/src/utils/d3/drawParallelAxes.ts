@@ -17,6 +17,9 @@ function drawParallelAxes({
   axesRef,
   dimensions,
 }: IDrawParallelAxesProps): void {
+  if (!axesNodeRef?.current) {
+    return;
+  }
   const keysOfDimensions = Object.keys(dimensions);
   const { width, height, margin } = visBoxRef.current;
   const xScale = getAxisScale({
@@ -39,7 +42,7 @@ function drawParallelAxes({
     yScale[keyOfDimension] = tmpYScale;
     const tickWidth = i === 0 ? 40 : width / keysOfDimensions.length - 10;
     const axes = axesNodeRef.current
-      .append('g')
+      ?.append('g')
       .attr('class', 'Axis')
       .data([keyOfDimension])
       .attr('transform', `translate(${xScale(keyOfDimension)})`)

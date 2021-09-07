@@ -1,7 +1,20 @@
+@use 'src/styles/abstracts' as *;
+
 .ChartPanel__container {
   height: 100%;
   // height: -moz-available; /* WebKit-based browsers will ignore this. */
   // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+
+  .ChartPanel__resizing {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: tint($primary-color, 95);
+    user-select: none;
+  }
 
   .ChartPanel {
     overflow: hidden;

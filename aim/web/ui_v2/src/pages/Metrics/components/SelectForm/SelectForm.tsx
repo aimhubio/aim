@@ -20,15 +20,13 @@ import { IProjectsModelState } from 'types/services/models/projects/projectsMode
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
 
-import resetImg from 'assets/icons/reset.svg';
-import visibleImg from 'assets/icons/visible.svg';
-import editImg from 'assets/icons/edit.svg';
 import {
   ISelectMetricsOption,
   ISelectFormProps,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import SelectTag from 'components/SelectTag/SelectTag';
+import Icon from 'components/Icon/Icon';
 
 import './SelectForm.scss';
 
@@ -151,7 +149,7 @@ function SelectForm({
                   rows={3}
                   variant='outlined'
                   placeholder={
-                    'Select statement e.g. select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10 return metric'
+                    'Select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10'
                   }
                   value={selectedMetricsData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
@@ -168,7 +166,8 @@ function SelectForm({
                     onClick={handleClick}
                     aria-describedby={id}
                   >
-                    + Metrics
+                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />{' '}
+                    Metrics
                   </Button>
                   <Popper
                     id={id}
@@ -248,7 +247,7 @@ function SelectForm({
                   onClick={() => onMetricsSelectChange([])}
                   className='SelectForm__clearAll'
                 >
-                  <i className='icon-delete' />
+                  <Icon name='close' />
                 </span>
               </>
             )}
@@ -280,13 +279,13 @@ function SelectForm({
         </Button>
         <div className='SelectForm__search__actions'>
           <span>
-            <img src={resetImg} alt='reset' />
+            <Icon name='reset' />
           </span>
           <span onClick={toggleEditMode}>
-            <img src={editImg} alt='edit' />
+            <Icon name='edit' />
           </span>
           <span>
-            <img src={visibleImg} alt='visible' />
+            <Icon name='eye-fill-show' />
           </span>
         </div>
       </div>

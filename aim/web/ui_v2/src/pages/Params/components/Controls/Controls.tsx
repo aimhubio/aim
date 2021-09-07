@@ -1,11 +1,11 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import { MultilineChart, ColorLens, ShowChart } from '@material-ui/icons';
 
 import { CurveEnum } from 'utils/d3';
 import { IControlProps } from 'types/pages/params/components/controls/Controls';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
+import Icon from 'components/Icon/Icon';
 
 function Controls(
   props: IControlProps,
@@ -19,7 +19,8 @@ function Controls(
       alignItems='center'
     >
       <Grid onClick={props.onCurveInterpolationChange} item>
-        <MultilineChart
+        <Icon
+          name='smoothing'
           style={{
             background:
               props.curveInterpolation === CurveEnum.Linear
@@ -30,7 +31,8 @@ function Controls(
         />
       </Grid>
       <Grid onClick={props.onColorIndicatorChange} item>
-        <ColorLens
+        <Icon
+          name='indicator'
           style={{
             background: !props.isVisibleColorIndicator
               ? 'transparent'
@@ -44,7 +46,7 @@ function Controls(
           anchor={({ onAnchorClick }) => (
             <div onClick={onAnchorClick} className='Controls__anchor'>
               {/*TODO need to change icon */}
-              <ShowChart />
+              <Icon name='cursor' />
             </div>
           )}
           component={

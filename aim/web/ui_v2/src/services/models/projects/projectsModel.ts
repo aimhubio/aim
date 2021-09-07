@@ -1,5 +1,3 @@
-import { omit } from 'lodash-es';
-
 import projectsService from 'services/api/projects/projectsService';
 import {
   IProject,
@@ -8,7 +6,7 @@ import {
 } from 'types/services/models/projects/projectsModel';
 import createModel from 'services/models/model';
 
-const model = createModel<IProjectsModelState>({});
+const model = createModel<Partial<IProjectsModelState>>({});
 
 function getProjectsData() {
   const { call, abort } = projectsService.getProjectsData();

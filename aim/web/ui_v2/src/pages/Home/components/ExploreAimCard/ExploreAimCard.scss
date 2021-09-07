@@ -1,16 +1,17 @@
 @use 'src/styles/abstracts' as *;
 
 .ExploreAimCard__container {
-  width: 15.5em;
+  width: 15.5rem;
   background-color: transparent;
-  border-radius: 0.5em;
-  border: 0.0625em solid #e8f1fc;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #e8f1fc;
   transition: background-color 0.3s ease-out;
-  padding: 1.5em 1.5em 0.875em 1.5em;
-  margin-bottom: 2em;
-  margin-right: 2em;
+  padding: 1.5rem 1.5rem 0.875rem 1.5rem;
+  margin-bottom: 2rem;
+  margin-right: 2rem;
   text-decoration: none;
   color: $pico;
+
   &:hover {
     background-color: #1473e6;
     color: #ffffff;
@@ -26,33 +27,37 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  width: 2.75em;
-  height: 2.75em;
+  width: 2.75rem;
+  height: 2.75rem;
   background: #1473e6;
   color: #ffffff;
-  margin-bottom: 0.875em;
+  margin-bottom: 0.875rem;
+  transition: all .3s ease-out;
   i {
-    font-size: 1.5em;
+    font-size: 1.5rem;
   }
 }
 
 .ExploreAimCard__title {
   font-weight: 600;
   font-size: $text-md;
-  line-height: 1.0625em;
+  line-height: 1.0625rem;
   margin: 0;
 }
 
 .ExploreAimCard__desc {
   font-weight: 400;
-  font-size: 0.75em;
-  margin-top: 0.5em;
-  margin-bottom: 0.75em;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .ExploreAim_card__arrowIcon__container {
   display: flex;
   justify-content: flex-end;
-  color: #ffffff;
-  font-size: 0.5em;
+
+  i {
+    color: #ffffff;
+    font-size: 1.75rem;
+  }
 }

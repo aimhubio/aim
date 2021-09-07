@@ -33,8 +33,8 @@ function AlignmentPopover({
   onAlignmentTypeChange,
   onAlignmentMetricChange,
   alignmentConfig,
+  projectsDataMetrics,
 }: IAlignmentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   function handleTypeChange(e: React.ChangeEvent<any>) {
     const { id } = e.target;
     onAlignmentTypeChange(+id);
@@ -47,13 +47,13 @@ function AlignmentPopover({
 
   const metricOptions: string[] = React.useMemo(() => {
     let data: string[] = [];
-    if (projectsData?.metrics) {
-      for (let key in projectsData?.metrics) {
+    if (projectsDataMetrics) {
+      for (let key in projectsDataMetrics) {
         data.push(key);
       }
     }
     return data;
-  }, [projectsData]);
+  }, [projectsDataMetrics]);
 
   return (
     <div className='AlignmentPopover__container'>

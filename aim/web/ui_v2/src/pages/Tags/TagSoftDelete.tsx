@@ -1,10 +1,10 @@
 import React, { memo, useRef } from 'react';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import { ITagSoftDeleteProps } from 'types/pages/tags/Tags';
+import Icon from 'components/Icon/Icon';
+
 import './Tags.scss';
 
 function TagSoftDelete({
@@ -43,12 +43,14 @@ function TagSoftDelete({
       } this tag?`}
       icon={
         archivedRef.current?.archived ? (
-          <VisibilityIcon
+          <Icon
+            name='eye-show-outline'
             className='TagSoftDelete__contentContainer__iconContainer__icon'
             fontSize='large'
           />
         ) : (
-          <VisibilityOffIcon
+          <Icon
+            name='delete'
             className='TagSoftDelete__contentContainer__iconContainer__icon'
             fontSize='large'
           />

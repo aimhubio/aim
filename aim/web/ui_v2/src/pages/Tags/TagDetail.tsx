@@ -1,8 +1,4 @@
 import React, { memo, useEffect } from 'react';
-import CreateIcon from '@material-ui/icons/Create';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import { isEmpty } from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -11,12 +7,15 @@ import hexToRgbA from 'utils/haxToRgba';
 import TagRunsTable from './TagRunsTable';
 import { ITagDetailProps } from 'types/pages/tags/Tags';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import Icon from 'components/Icon/Icon';
+
 import './Tags.scss';
 
 function TagDetail({
   id,
   onSoftDeleteModalToggle,
   onUpdateModalToggle,
+  onDeleteModalToggle,
   isTagInfoDataLoading,
   tagInfo,
   isRunsDataLoading,
@@ -63,30 +62,36 @@ function TagDetail({
         </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>
           {!tagInfo?.archived && (
-            <CreateIcon
-              color='primary'
+            <Icon
+              name='edit'
               className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
               onClick={onUpdateModalToggle}
             />
           )}
           {tagInfo?.archived ? (
-            <VisibilityIcon
+            <Icon
+              name='eye-show-outline'
               color='primary'
               className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
               onClick={onSoftDeleteModalToggle}
             />
           ) : (
-            <VisibilityOffIcon
+            <Icon
+              name='eye-outline-hide'
               color='primary'
               className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
               onClick={onSoftDeleteModalToggle}
             />
           )}
-          <DeleteOutlineIcon
-            fontSize='small'
-            color='primary'
-            className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-          />
+          <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
+            <Icon
+              name='delete'
+              fontSize='small'
+              color='primary'
+              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
+              onClick={onDeleteModalToggle}
+            />
+          </span>
         </div>
       </div>
       <BusyLoaderWrapper

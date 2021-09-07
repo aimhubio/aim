@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Chip,
   TextField,
   Checkbox,
   Divider,
@@ -21,15 +20,14 @@ import { IProjectsModelState } from 'types/services/models/projects/projectsMode
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
 import getObjectPaths from 'utils/getObjectPaths';
-import resetImg from 'assets/icons/reset.svg';
-import visibleImg from 'assets/icons/visible.svg';
-import editImg from 'assets/icons/edit.svg';
 import {
   ISelectFormProps,
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import 'pages/Metrics/components/SelectForm/SelectForm.scss';
+import Icon from 'components/Icon/Icon';
+import SelectTag from 'components/SelectTag/SelectTag';
 
 function SelectForm({
   onParamsSelectChange,
@@ -59,7 +57,7 @@ function SelectForm({
 
   function handleDelete(field: any): void {
     let fieldData = [...selectedParamsData?.params].filter(
-      (opt: any) => opt.name !== field,
+      (opt: any) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);
   }
@@ -201,25 +199,11 @@ function SelectForm({
                   {selectedParamsData?.params?.map(
                     (tag: ISelectParamsOption) => {
                       return (
-                        <Chip
+                        <SelectTag
                           key={tag.label}
-                          style={{
-                            backgroundColor: `${tag.color}1a`,
-                            color: tag.color,
-                          }}
-                          size='small'
-                          className='SelectForm__tags__item'
+                          color={tag.color}
                           label={tag.label}
-                          data-name={tag.label}
-                          deleteIcon={
-                            <i
-                              style={{
-                                color: tag.color,
-                              }}
-                              className='icon-delete'
-                            />
-                          }
-                          onDelete={() => handleDelete(tag.label)}
+                          onDelete={handleDelete}
                         />
                       );
                     },
@@ -230,7 +214,7 @@ function SelectForm({
                 onClick={() => onParamsSelectChange([])}
                 className='SelectForm__clearAll'
               >
-                <i className='icon-delete' />
+                <Icon name='close' />
               </span>
             </>
           </Box>
@@ -260,13 +244,13 @@ function SelectForm({
         </Button>
         <div className='SelectForm__search__actions'>
           <span>
-            <img src={resetImg} alt='reset' />
+            <Icon name='reset' />
           </span>
           <span>
-            <img src={editImg} alt='edit' />
+            <Icon name='edit' />
           </span>
           <span>
-            <img src={visibleImg} alt='visible' />
+            <Icon name='eye-fill-show' />
           </span>
         </div>
       </div>

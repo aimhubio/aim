@@ -50,7 +50,7 @@ export interface IParallelClosestCircle {
   color: string;
 }
 export interface IUpdateParallelFocusedChartProps {
-  mouse: [number, number];
+  mouse?: [number, number];
   focusedStateActive?: boolean;
   force?: boolean;
 }

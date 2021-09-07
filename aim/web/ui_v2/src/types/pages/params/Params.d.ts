@@ -27,6 +27,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   curveInterpolation: CurveEnum;
+  panelResizing: boolean;
   highPlotData: any;
   groupingData: IMetricAppConfig['grouping'];
   groupingSelectOptions: IGroupingSelectOption[];
@@ -57,4 +58,9 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
+  tableData: any;
+  tableRowHeight?: any;
+  onTableRowHover?: any;
+  onTableRowClick?: any;
+  tableColumns: any;
 }

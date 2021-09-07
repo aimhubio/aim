@@ -28,6 +28,7 @@ import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { RowHeight } from 'config/table/tableConfigs';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -37,6 +38,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
   lineChartData: ILine[][];
+  panelResizing: boolean;
   chartTitleData: IChartTitleData;
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
@@ -57,6 +59,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   selectedMetricsData: IMetricAppConfig['select'];
   tableRowHeight: RowHeight;
   groupingSelectOptions: IGroupingSelectOption[];
+  projectsDataMetrics: IProjectParamsMetrics['metrics'];
   requestIsPending: boolean;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;

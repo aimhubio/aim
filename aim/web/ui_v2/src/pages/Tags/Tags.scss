@@ -47,7 +47,7 @@
         height: 2rem;
         padding-left: 0.8125rem;
         border-radius: $border-radius-main;
-        img {
+        i {
           padding-right: 0.5625rem;
         }
         .MuiInputBase-input {
@@ -66,8 +66,8 @@
         text-transform: none;
         width: 126px;
         padding: 4px 10px 4px 13px;
-        img {
-          padding-right: 9px;
+        i {
+          padding-right: 0.5rem;
         }
         .MuiButton-label {
           font-weight: 500;
@@ -136,6 +136,8 @@
   &__commentContainer {
     max-width: 600px;
     word-break: break-word;
+    z-index: 99900;
+
     &__actionsContainer {
       right: 0;
       top: 0;
@@ -250,13 +252,15 @@
     border-bottom: 1px solid #dee6f3;
     &__headerActionsBox {
       display: flex;
-      .MuiSvgIcon-root {
-        font-size: 1em;
+      align-items: center;
+      i {
+        font-size: 1rem;
       }
       &__actionsIcon {
         margin-right: 25px;
         cursor: pointer;
-        font-size: 1em;
+        font-size: 1rem;
+        color: $primary-color;
         &:last-child {
           margin-right: 0;
         }
@@ -334,5 +338,19 @@
     &__cancelButton {
       margin-right: 10px;
     }
+  }
+}
+
+
+.TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper {
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  color: $primary-color;
+  &:hover {
+    background-color:rgba(28, 40, 82, 0.05);
   }
 }

@@ -8,12 +8,14 @@ import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
-
-import './Params.scss';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
+import { size } from 'lodash-es';
+import Table from 'components/CustomTable/Table';
+
+import './Params.scss';
 
 const Params = ({
   curveInterpolation,
@@ -31,6 +33,13 @@ const Params = ({
   tooltip,
   chartTitleData,
   requestIsPending,
+  panelResizing,
+  tableColumns,
+  tableRef,
+  tableData,
+  tableRowHeight,
+  onTableRowHover,
+  onTableRowClick,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -90,12 +99,14 @@ const Params = ({
               {!!highPlotData?.[0]?.data?.length ? (
                 <ChartPanel
                   ref={chartPanelRef}
+                  key={highPlotData?.[0]?.data?.length}
                   chartType={ChartTypeEnum.HighPlot}
                   data={highPlotData}
                   focusedState={focusedState}
                   onActivePointChange={onActivePointChange}
                   tooltip={tooltip}
                   chartTitleData={chartTitleData}
+                  panelResizing={panelResizing}
                   chartProps={[
                     {
                       curveInterpolation,
@@ -127,12 +138,31 @@ const Params = ({
             </div>
           </div>
           <Grid item xs ref={tableElemRef} className='Params__table__container'>
-            <BusyLoaderWrapper
-              isLoading={true}
+            {/* <BusyLoaderWrapper
+              isLoading={false}
               loaderComponent={<TableLoader />}
             >
-              pending
-            </BusyLoaderWrapper>
+              <Table
+                custom
+                key={`${tableColumns?.length}-${size(tableData)}`}
+                ref={tableRef}
+                data={tableData}
+                columns={tableColumns}
+                // Table options
+                topHeader
+                groups={!Array.isArray(tableData)}
+                rowHeight={tableRowHeight}
+                sortOptions={groupingSelectOptions}
+                // Table actions
+                onSort={() => null}
+                onExport={() => null}
+                onManageColumns={() => null}
+                onRowHeightChange={() => null}
+                onRowsChange={() => null}
+                onRowHover={onTableRowHover}
+                onRowClick={onTableRowClick}
+              />
+            </BusyLoaderWrapper> */}
           </Grid>
         </Grid>
       </section>

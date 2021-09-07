@@ -8,6 +8,7 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { CurveEnum } from 'utils/d3';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
+import projectsModel from 'services/models/projects/projectsModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import {
   IAggregatedData,
@@ -26,6 +27,10 @@ import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { RowHeight } from 'config/table/tableConfigs';
+import {
+  IProjectParamsMetrics,
+  IProjectsModelState,
+} from 'types/services/models/projects/projectsModel';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -35,8 +40,15 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
-  const metricsData = useModel(metricAppModel);
-  usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
+  const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
+  const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
+
+  const panelResizing = usePanelResize(
+    wrapperElemRef,
+    chartElemRef,
+    tableElemRef,
+    resizeElemRef,
+  );
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
@@ -101,6 +113,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.grouping as IMetricAppConfig['grouping']
       }
       // chart options
+      panelResizing={panelResizing}
       lineChartData={metricsData?.lineChartData as ILine[][]}
       chartTitleData={metricsData?.chartTitleData as IChartTitleData}
       displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
@@ -134,6 +147,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
+      }
+      projectsDataMetrics={
+        projectsData?.metrics as IProjectParamsMetrics['metrics']
       }
       requestIsPending={metricsData?.requestIsPending as boolean}
       //methods

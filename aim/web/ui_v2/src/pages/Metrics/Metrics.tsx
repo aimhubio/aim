@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEmpty, size } from 'lodash-es';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -59,6 +60,7 @@ function Metrics(
                 <ChartPanel
                   key={props.lineChartData?.length}
                   ref={props.chartPanelRef}
+                  panelResizing={props.panelResizing}
                   chartType={ChartTypeEnum.LineChart}
                   data={props.lineChartData}
                   focusedState={props.focusedState}
@@ -68,6 +70,7 @@ function Metrics(
                   aggregationConfig={props.aggregationConfig}
                   chartTitleData={props.chartTitleData}
                   alignmentConfig={props.alignmentConfig}
+                  zoomMode={props.zoomMode}
                   chartProps={[
                     {
                       axesScaleType: props.axesScaleType,
@@ -90,6 +93,7 @@ function Metrics(
                       aggregationConfig={props.aggregationConfig}
                       axesScaleType={props.axesScaleType}
                       alignmentConfig={props.alignmentConfig}
+                      projectsDataMetrics={props.projectsDataMetrics}
                       onChangeTooltip={props.onChangeTooltip}
                       onDisplayOutliersChange={props.onDisplayOutliersChange}
                       onZoomModeChange={props.onZoomModeChange}
@@ -124,12 +128,16 @@ function Metrics(
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {props.tableData?.length > 0 ? (
+              {!isEmpty(props.tableData) ? (
                 <Table
+                  custom
+                  key={`${props.tableColumns.length}-${size(props.tableData)}`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
                   // Table options
+                  topHeader
+                  groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
                   sortOptions={props.groupingSelectOptions}
                   // Table actions

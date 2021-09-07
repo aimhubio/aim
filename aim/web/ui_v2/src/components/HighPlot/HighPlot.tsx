@@ -85,45 +85,47 @@ const HighPlot = React.forwardRef(function HighPlot(
       axesRef,
       dimensions: data.dimensions,
     });
+    if (attributesRef?.current.xScale && attributesRef.current.yScale) {
+      drawParallelLines({
+        linesNodeRef,
+        attributesRef,
+        attributesNodeRef,
+        curveInterpolation,
+        isVisibleColorIndicator,
+        linesRef,
+        dimensions: data.dimensions,
+        data: data.data,
+      });
 
-    drawParallelLines({
-      linesNodeRef,
-      attributesRef,
-      attributesNodeRef,
-      curveInterpolation,
-      isVisibleColorIndicator,
-      linesRef,
-      dimensions: data.dimensions,
-      data: data.data,
-    });
+      linesRef.current.data = data.data;
 
-    linesRef.current.data = data.data;
+      drawParallelHoverAttributes({
+        dimensions: data.dimensions,
+        index,
+        visAreaRef,
+        linesRef,
+        attributesRef,
+        visBoxRef,
+        bgRectNodeRef,
+        attributesNodeRef,
+        linesNodeRef,
+        highlightedNodeRef,
+        isVisibleColorIndicator,
+        axesNodeRef,
+        syncHoverState,
+      });
 
-    drawParallelHoverAttributes({
-      dimensions: data.dimensions,
-      index,
-      visAreaRef,
-      linesRef,
-      attributesRef,
-      visBoxRef,
-      bgRectNodeRef,
-      attributesNodeRef,
-      linesNodeRef,
-      highlightedNodeRef,
-      isVisibleColorIndicator,
-      axesNodeRef,
-      syncHoverState,
-    });
+      drawParallelAxesBrush({
+        plotBoxRef,
+        plotNodeRef,
+        brushRef,
+        linesRef,
+        attributesRef,
+        dimensions: data.dimensions,
+        data: data.data,
+      });
+    }
 
-    drawParallelAxesBrush({
-      plotBoxRef,
-      plotNodeRef,
-      brushRef,
-      linesRef,
-      attributesRef,
-      dimensions: data.dimensions,
-      data: data.data,
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curveInterpolation, index, isVisibleColorIndicator, data]);
 
