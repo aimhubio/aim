@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty, size } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
@@ -132,7 +132,7 @@ function Metrics(
               {!isEmpty(props.tableData) ? (
                 <Table
                   custom
-                  key={`${props.tableColumns.length}-${size(props.tableData)}`}
+                  key={`${Array.isArray(props.tableData)}`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
