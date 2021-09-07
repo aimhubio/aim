@@ -21,13 +21,328 @@ import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import _ from 'lodash-es';
 import { encode } from 'utils/encoder/encoder';
+import { IMetric } from '../../../types/services/models/metrics/metricModel';
+import {
+  GroupNameType,
+  IGetGroupingPersistIndex,
+  IMetricAppConfig,
+  IMetricAppModelState,
+  IMetricsCollection,
+} from '../../../types/services/models/metrics/metricsAppModel';
+import {
+  aggregateGroupData,
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from '../../../utils/aggregateGroupData';
+import { AlignmentOptions } from '../../../config/alignment/alignmentOptions';
+import { INotification } from '../../../types/components/NotificationContainer/NotificationContainer';
+import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
+import { CurveEnum, ScaleEnum } from '../../../utils/d3';
+import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
+import { RowHeight } from '../../../config/table/tableConfigs';
+import getStateFromUrl from '../../../utils/getStateFromUrl';
+import React from 'react';
+import { getMetricsTableColumns } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 
 const model = createModel<Partial<any>>({
   requestIsPending: true,
 });
+function getConfig() {
+  return {
+    grouping: {
+      color: [],
+      style: [],
+      chart: [],
+      // TODO refactor boolean value types objects into one
+      reverseMode: {
+        color: false,
+        style: false,
+        chart: false,
+      },
+      isApplied: {
+        color: true,
+        style: true,
+        chart: true,
+      },
+      persistence: {
+        color: false,
+        style: false,
+      },
+      seed: {
+        color: 10,
+        style: 10,
+      },
+      paletteIndex: 0,
+    },
+    chart: {
+      highlightMode: HighlightEnum.Off,
+      displayOutliers: true,
+      zoomMode: false,
+      axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
+      curveInterpolation: CurveEnum.Linear,
+      smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
+      smoothingFactor: 0,
+      alignmentConfig: {
+        metric: '',
+        type: AlignmentOptions.STEP,
+      },
+      aggregationConfig: {
+        methods: {
+          area: AggregationAreaMethods.MIN_MAX,
+          line: AggregationLineMethods.MEAN,
+        },
+        isApplied: false,
+        isEnabled: false,
+      },
+      tooltip: {
+        content: {},
+        display: true,
+        selectedParams: [],
+      },
+      focusedState: {
+        active: false,
+        key: null,
+        xValue: null,
+        yValue: null,
+        chartIndex: null,
+      },
+    },
+    select: {
+      metrics: [],
+      query: '',
+      advancedMode: false,
+      advancedQuery: '',
+    },
+    table: {
+      rowHeight: RowHeight.md,
+    },
+  };
+}
 
-function initialize() {
+function setDefaultAppConfigData() {
+  const grouping: IMetricAppConfig['grouping'] =
+    getStateFromUrl('grouping') || getConfig().grouping;
+  const chart: IMetricAppConfig['chart'] =
+    getStateFromUrl('chart') || getConfig().chart;
+  const select: IMetricAppConfig['select'] =
+    getStateFromUrl('select') || getConfig().select;
+  const configData: IMetricAppConfig = _.merge(getConfig(), {
+    chart,
+    grouping,
+    select,
+  });
+
+  model.setState({
+    config: configData,
+  });
+}
+
+function initialize(appId: string = '') {
   model.init();
+  model.setState({
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
+    groupingSelectOptions: [],
+  });
+  if (!appId) {
+    // const url = getItem('metricsUrl');
+    // window.history.pushState(null, '', url);
+    setDefaultAppConfigData();
+  }
+}
+
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
+}
+
+function getFilteredGroupingOptions(
+  grouping: IMetricAppConfig['grouping'],
+  groupName: GroupNameType,
+): string[] {
+  const { reverseMode, isApplied } = grouping;
+  const groupingSelectOptions = model.getState()?.groupingSelectOptions;
+  if (groupingSelectOptions) {
+    const filteredOptions = [...groupingSelectOptions]
+      .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+      .map((item) => item.value);
+    return isApplied[groupName]
+      ? reverseMode[groupName]
+        ? filteredOptions
+        : grouping[groupName]
+      : [];
+  } else {
+    return [];
+  }
+}
+
+function getGroupingPersistIndex({
+  groupValues,
+  groupKey,
+  grouping,
+}: IGetGroupingPersistIndex) {
+  const configHash = encode(groupValues[groupKey].config as {});
+  let index = BigInt(0);
+  for (let i = 0; i < configHash.length; i++) {
+    const charCode = configHash.charCodeAt(i);
+    if (charCode > 47 && charCode < 58) {
+      index += BigInt(
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+      );
+    } else if (charCode > 96 && charCode < 103) {
+      index += BigInt(
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+      );
+    }
+  }
+  return index;
+}
+
+function groupData(data: any): IMetricsCollection<IMetric>[] {
+  const configData = model.getState()!.config;
+  const grouping = configData!.grouping;
+  const { paletteIndex } = grouping;
+  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
+  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
+  if (
+    groupByColor.length === 0 &&
+    groupByStyle.length === 0 &&
+    groupByChart.length === 0
+  ) {
+    return [
+      {
+        config: null,
+        color: null,
+        dasharray: null,
+        chartIndex: 0,
+        data: data,
+      },
+    ];
+  }
+  const groupValues: {
+    [key: string]: IMetricsCollection<IMetric>;
+  } = {};
+
+  const groupingFields = _.uniq(
+    groupByColor.concat(groupByStyle).concat(groupByChart),
+  );
+
+  for (let i = 0; i < data.length; i++) {
+    const groupValue: { [key: string]: string } = {};
+    groupingFields.forEach((field) => {
+      groupValue[field] = _.get(data[i], field);
+    });
+    const groupKey = encode(groupValue);
+    if (groupValues.hasOwnProperty(groupKey)) {
+      groupValues[groupKey].data.push(data[i]);
+    } else {
+      groupValues[groupKey] = {
+        key: groupKey,
+        config: groupValue,
+        color: null,
+        dasharray: null,
+        chartIndex: 0,
+        data: [data[i]],
+      };
+    }
+  }
+
+  let colorIndex = 0;
+  let dasharrayIndex = 0;
+  let chartIndex = 0;
+
+  const colorConfigsMap: { [key: string]: number } = {};
+  const dasharrayConfigsMap: { [key: string]: number } = {};
+  const chartIndexConfigsMap: { [key: string]: number } = {};
+
+  for (let groupKey in groupValues) {
+    const groupValue = groupValues[groupKey];
+
+    if (groupByColor.length > 0) {
+      const colorConfig = _.pick(groupValue.config, groupByColor);
+      const colorKey = encode(colorConfig);
+
+      if (grouping.persistence.color && grouping.isApplied.color) {
+        let index = getGroupingPersistIndex({
+          groupValues,
+          groupKey,
+          grouping,
+        });
+        groupValue.color =
+          COLORS[paletteIndex][
+            Number(index % BigInt(COLORS[paletteIndex].length))
+          ];
+      } else if (colorConfigsMap.hasOwnProperty(colorKey)) {
+        groupValue.color =
+          COLORS[paletteIndex][
+            colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+          ];
+      } else {
+        colorConfigsMap[colorKey] = colorIndex;
+        groupValue.color =
+          COLORS[paletteIndex][colorIndex % COLORS[paletteIndex].length];
+        colorIndex++;
+      }
+    }
+
+    if (groupByStyle.length > 0) {
+      const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
+      const dasharrayKey = encode(dasharrayConfig);
+      if (grouping.persistence.style && grouping.isApplied.style) {
+        let index = getGroupingPersistIndex({
+          groupValues,
+          groupKey,
+          grouping,
+        });
+        groupValue.dasharray =
+          DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
+      } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
+        groupValue.dasharray =
+          DASH_ARRAYS[dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length];
+      } else {
+        dasharrayConfigsMap[dasharrayKey] = dasharrayIndex;
+        groupValue.dasharray = DASH_ARRAYS[dasharrayIndex % DASH_ARRAYS.length];
+        dasharrayIndex++;
+      }
+    }
+
+    if (groupByChart.length > 0) {
+      const chartIndexConfig = _.pick(groupValue.config, groupByChart);
+      const chartIndexKey = encode(chartIndexConfig);
+      if (chartIndexConfigsMap.hasOwnProperty(chartIndexKey)) {
+        groupValue.chartIndex = chartIndexConfigsMap[chartIndexKey];
+      } else {
+        chartIndexConfigsMap[chartIndexKey] = chartIndex;
+        groupValue.chartIndex = chartIndex;
+        chartIndex++;
+      }
+    }
+  }
+
+  const groups = Object.values(groupValues);
+  const chartConfig = configData!.chart;
+
+  return aggregateGroupData({
+    groupData: groups,
+    methods: {
+      area: chartConfig.aggregationConfig.methods.area,
+      line: chartConfig.aggregationConfig.methods.line,
+    },
+    scale: chartConfig.axesScaleType,
+  });
 }
 
 function processData(data: any[]): {
@@ -48,7 +363,7 @@ function processData(data: any[]): {
       dasharray: DASH_ARRAYS[0],
     });
   });
-  const processedData = runs; // grouping(runs)
+  const processedData = groupData(runs);
   const uniqParams = _.uniq(params);
 
   return {
@@ -56,9 +371,155 @@ function processData(data: any[]): {
     params: uniqParams,
   };
 }
+function getDataAsTableRows(
+  processedData: any,
+  xValue: number | string | null = null,
+  paramKeys: string[],
+): any {
+  if (!processedData) {
+    return [];
+  }
+  const rows: any = processedData[0]?.config !== null ? {} : [];
+  let rowIndex = 0;
+
+  processedData.forEach((metricsCollection: any) => {
+    const groupKey = metricsCollection.key;
+    const columnsValues: { [key: string]: string[] } = {};
+    if (metricsCollection.config !== null) {
+      const groupHeaderRow = {
+        meta: {
+          chartIndex: metricsCollection.chartIndex + 1,
+        },
+        key: groupKey!,
+        color: metricsCollection.color,
+        dasharray: metricsCollection.dasharray,
+        experiment: '',
+        run: '',
+        metric: '',
+        context: [],
+        children: [],
+      };
+      rows[groupKey!] = {
+        data: groupHeaderRow,
+        items: [],
+      };
+    }
+    metricsCollection.data.forEach((metric: any) => {
+      const rowValues: any = {
+        key: metric.key,
+        index: rowIndex,
+        color: metricsCollection.color ?? metric.color,
+        dasharray: metricsCollection.dasharray ?? metric.dasharray,
+        experiment: metric.run.props.experiment ?? 'default',
+        run: metric.run.props.name ?? '-',
+        metric: metric.metric_name,
+      };
+      rowIndex++;
+      [
+        'experiment',
+        'run',
+        'metric',
+        'context',
+        'step',
+        'epoch',
+        'time',
+      ].forEach((key) => {
+        if (columnsValues.hasOwnProperty(key)) {
+          if (!_.some(columnsValues[key], rowValues[key])) {
+            columnsValues[key].push(rowValues[key]);
+          }
+        } else {
+          columnsValues[key] = [rowValues[key]];
+        }
+      });
+      paramKeys.forEach((paramKey) => {
+        const value = _.get(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = value;
+        if (columnsValues.hasOwnProperty(paramKey)) {
+          if (!columnsValues[paramKey].includes(value)) {
+            columnsValues[paramKey].push(value);
+          }
+        } else {
+          columnsValues[paramKey] = [value];
+        }
+      });
+      if (metricsCollection.config !== null) {
+        rows[groupKey!].items.push(rowValues);
+      } else {
+        rows.push(rowValues);
+      }
+    });
+    if (metricsCollection.config !== null) {
+      for (let columnKey in columnsValues) {
+        rows[groupKey!].data[columnKey] =
+          columnsValues[columnKey].length > 1
+            ? 'Mix'
+            : columnsValues[columnKey][0];
+      }
+    }
+  });
+  return rows;
+}
+function getQueryStringFromSelect(
+  selectData: IMetricAppConfig['select'] | undefined,
+) {
+  let query = '';
+  if (selectData !== undefined) {
+    if (selectData.advancedMode) {
+      query = selectData.advancedQuery;
+    } else {
+      query = `(${selectData.metrics
+        .map((metric) =>
+          metric.value.context === null
+            ? `(metric.name == "${metric.value.metric_name}")`
+            : `${Object.keys(metric.value.context).map(
+                (item) =>
+                  `(metric.name == "${
+                    metric.value.metric_name
+                  }" and metric.context.${item} == "${
+                    (metric.value.context as any)[item]
+                  }")`,
+              )}`,
+        )
+        .join(' or ')})${
+        selectData.query ? `and ${selectData.query}` : ''
+      }`.trim();
+    }
+  }
+
+  return query;
+}
+
+function updateModelData(configData: IMetricAppConfig): void {
+  const { data, params } = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
+  model.setState({
+    config: configData,
+    data,
+    tableData,
+    tableColumns,
+  });
+}
 
 function getRunsData() {
-  const { call, abort } = runsService.getRunsData();
+  model.setState({
+    requestIsPending: true,
+  });
+  const modelState = model.getState();
+  const configData = modelState?.config;
+
+  let query = getQueryStringFromSelect(configData?.select);
+
+  const { call, abort } = runsService.getRunsData(query === '()' ? '' : query);
   return {
     call: async () => {
       const stream = await call();
@@ -73,21 +534,54 @@ function getRunsData() {
         runsData.push({ ...runData, hash: keys[0] } as any);
       }
       const { data, params } = processData(runsData);
+      const tableData = getDataAsTableRows(data, null, params);
+      const tableColumns = getMetricsTableColumns(params, data[0]?.config);
 
       model.setState({
         data: runsData,
         requestIsPending: false,
         tableColumns: getRunsTableColumns(params, data[0]?.config),
+        tableData: getDataAsTableRows(data, null, params),
       });
+
+      setTimeout(() => {
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData,
+          newColumns: tableColumns,
+        });
+      }, 100);
     },
     abort,
   };
+}
+
+function onSelectRunQueryChange(query: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        select: { ...configData.select, query },
+      },
+    });
+  }
+}
+
+function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
+  const modelState = model.getState();
+  if (modelState?.refs) {
+    modelState.refs = Object.assign(modelState.refs, refElement);
+    model.setState({ refs: modelState.refs });
+  }
 }
 
 const runAppModel = {
   ...model,
   initialize,
   getRunsData,
+  onSelectRunQueryChange,
+  setComponentRefs,
 };
 
 export default runAppModel;

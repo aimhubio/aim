@@ -362,7 +362,7 @@ const Table = React.forwardRef(function Table(
   }
 
   React.useEffect(() => {
-    if (custom) {
+    if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
         scrollTop: tableContainerRef.current.scrollTop,
         offsetHeight: tableContainerRef.current.offsetHeight,
@@ -397,7 +397,7 @@ const Table = React.forwardRef(function Table(
         tableContainerRef.current.onscroll = null;
       }
     };
-  }, [custom]);
+  }, [custom, tableContainerRef.current]);
 
   return (
     <BusyLoaderWrapper

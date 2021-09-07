@@ -9,9 +9,15 @@ import runAppModel from 'services/models/runs/runsAppModel';
 function SearchBar({
   isRunsDataLoading,
   searchValue,
-  onSelectRunQueryChange,
+  onSearchInputChange,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
+
+  React.useEffect(() => {
+    return () => {
+      searchRunsRef.current?.abort();
+    };
+  }, []);
 
   function handleRunSearch() {
     searchRunsRef.current = runAppModel.getRunsData();
@@ -29,9 +35,14 @@ function SearchBar({
           startAdornment: (
             <img src={searchImg} alt='visible' style={{ marginRight: 10 }} />
           ),
+          onKeyPress: (event) => {
+            if (event.key === 'Enter') {
+              handleRunSearch();
+            }
+          },
           disabled: isRunsDataLoading,
         }}
-        onChange={({ target }) => onSelectRunQueryChange(target.value)}
+        onChange={({ target }) => onSearchInputChange(target.value)}
         value={searchValue || ''}
       />
       <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />

@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   IMetricTrace,
   IParamTrace,
@@ -34,4 +35,6 @@ export interface IRunsTableProps {
   tableRef: React.RefObject<any>;
   runsList: ITagProps[];
   isRunsDataLoading: boolean;
+  columns: any;
+  tableRowHeight: number;
 }
