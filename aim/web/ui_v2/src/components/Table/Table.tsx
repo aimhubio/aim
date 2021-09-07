@@ -63,24 +63,26 @@ const Table = React.forwardRef(function Table(
   const startIndex = React.useRef(0);
   const endIndex = React.useRef(0);
   const expandedGroups = React.useRef([]);
+  const hoveredRowKey = React.useRef(null);
+  const activeRowKey = React.useRef(null);
   const tableContainerRef = React.useRef();
   const dataRef = React.useRef(data);
   const columnsRef = React.useRef(columns);
 
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns);
+  const [expanded, setExpanded] = React.useState({});
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
-    setHoveredRow: tableRef.current?.setHoveredRow,
-    setActiveRow: tableRef.current?.setActiveRow,
-    scrollToRow: tableRef.current?.scrollToRowByKey,
+    setHoveredRow: setHoveredRow,
+    setActiveRow: setActiveRow,
+    scrollToRow: scrollToRow,
   }));
 
   function calculateWindow({
     scrollTop,
     offsetHeight,
-    scrollHeight,
     itemHeight,
     groupMargin,
   }) {
@@ -158,6 +160,91 @@ const Table = React.forwardRef(function Table(
     }
   }
 
+  function setHoveredRow(rowKey: string) {
+    window.requestAnimationFrame(() => {
+      if (custom) {
+        if (hoveredRowKey.current === rowKey) {
+          hoveredRowKey.current = null;
+        } else {
+          hoveredRowKey.current = rowKey;
+        }
+        if (activeRowKey.current === null) {
+          updateHoveredRow(`rowKey-${hoveredRowKey.current}`);
+        }
+      } else {
+        tableRef.current?.setHoveredRow(rowKey);
+      }
+    });
+  }
+
+  function setActiveRow(rowKey: string, toggle = false) {
+    window.requestAnimationFrame(() => {
+      if (custom) {
+        if (toggle && activeRowKey.current === rowKey) {
+          activeRowKey.current = null;
+        } else {
+          activeRowKey.current = rowKey;
+        }
+        updateHoveredRow(`rowKey-${activeRowKey.current}`);
+      } else {
+        tableRef.current?.setActiveRow(rowKey);
+      }
+    });
+  }
+
+  function scrollToRow(rowKey: string) {
+    window.requestAnimationFrame(() => {
+      if (custom) {
+        function scrollToElement() {
+          const rowCell = document.querySelector(
+            `.Table__cell.rowKey-${rowKey}`,
+          );
+
+          if (!!rowCell) {
+            const top = rowCell.offsetTop - (groups ? 3 : 2) * rowHeight;
+            if (
+              tableContainerRef.current.scrollTop > top ||
+              tableContainerRef.current.scrollTop +
+                tableContainerRef.current.offsetHeight <
+                top
+            ) {
+              tableContainerRef.current.scrollTo({
+                top,
+              });
+            }
+          }
+        }
+        if (groups) {
+          for (let groupKey in dataRef.current) {
+            if (dataRef.current[groupKey].data.groupRowsKeys.includes(rowKey)) {
+              if (expandedGroups.current.includes(groupKey)) {
+                scrollToElement();
+              } else {
+                expandedGroups.current.push(groupKey);
+                setExpanded(
+                  Object.fromEntries(
+                    expandedGroups.current.map((key) => [key, true]),
+                  ),
+                );
+                // TODO: probably need useEffect for this
+                setTimeout(() => {
+                  window.requestAnimationFrame(() => {
+                    updateHoveredRow(`rowKey-${rowKey}`);
+                    scrollToElement();
+                  });
+                }, 100);
+              }
+            }
+          }
+        } else {
+          scrollToElement();
+        }
+      } else {
+        tableRef.current?.scrollToRowByKey(rowKey);
+      }
+    });
+  }
+
   function virtualizedUpdate() {
     if (groups) {
       window.requestAnimationFrame(() => {
@@ -232,6 +319,48 @@ const Table = React.forwardRef(function Table(
     endIndex.current = windowEdges.endIndex;
 
     virtualizedUpdate();
+  }
+
+  function rowHoverHandler(row) {
+    if (activeRowKey.current === null) {
+      if (typeof onRowHover === 'function') {
+        onRowHover(row.key);
+      }
+      updateHoveredRow(`rowKey-${row.key}`);
+    }
+  }
+
+  function rowClickHandler(row) {
+    if (activeRowKey.current === row.key) {
+      activeRowKey.current = null;
+    } else {
+      activeRowKey.current = row.key;
+    }
+
+    updateHoveredRow(`rowKey-${activeRowKey.current}`);
+
+    if (typeof onRowClick === 'function') {
+      onRowClick(activeRowKey.current);
+    }
+  }
+
+  function updateHoveredRow(activeRowClass) {
+    if (activeRowClass !== 'rowKey-null') {
+      window.requestAnimationFrame(() => {
+        const prevActiveRow = document.querySelectorAll('.Table__cell.active');
+        if (!!prevActiveRow && prevActiveRow.length > 0) {
+          prevActiveRow.forEach((cell) => cell.classList.remove('active'));
+        }
+
+        const activeRow = document.querySelectorAll(
+          `.Table__cell.${activeRowClass}`,
+        );
+
+        if (!!activeRow && activeRow.length > 0) {
+          activeRow.forEach((cell) => cell.classList.add('active'));
+        }
+      });
+    }
   }
 
   React.useEffect(() => {
@@ -414,6 +543,7 @@ const Table = React.forwardRef(function Table(
                 custom ? (
                   <div style={{ width, height }}>
                     <CustomTable
+                      expanded={expanded}
                       excludedFields={excludedFields}
                       setExcludedFields={setExcludedFields}
                       alwaysVisibleColumns={alwaysVisibleColumns}
@@ -428,8 +558,8 @@ const Table = React.forwardRef(function Table(
                       columns={columnsData}
                       groups={groups}
                       onGroupExpandToggle={onGroupExpandToggle}
-                      onRowHover={onRowHover}
-                      onRowClick={onRowClick}
+                      onRowHover={rowHoverHandler}
+                      onRowClick={rowClickHandler}
                       {...props}
                     />
                   </div>
