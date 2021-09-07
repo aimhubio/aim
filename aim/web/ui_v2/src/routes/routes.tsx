@@ -21,6 +21,18 @@ const PATHS = {
   RUN_DETAIL: '/runs/:runHash',
 };
 
+export interface IRoute {
+  path: string;
+  component:
+    | React.LazyExoticComponent<
+        () => React.FunctionComponentElement<React.ReactNode>
+      >
+    | any;
+  showInSidebar: boolean;
+  displayName: string | null;
+  icon?: string | null;
+}
+
 const routes = {
   HOME: {
     path: PATHS.HOME,
@@ -33,12 +45,14 @@ const routes = {
     component: Runs,
     showInSidebar: true,
     displayName: 'Runs',
+    icon: 'runs',
   },
   METRICS: {
     path: PATHS.METRICS,
     component: Metrics,
     showInSidebar: true,
     displayName: 'Metrics',
+    icon: 'metrics',
   },
   METRICS_ID: {
     path: PATHS.METRICS_ID,
@@ -51,18 +65,21 @@ const routes = {
     component: Params,
     showInSidebar: true,
     displayName: 'Params',
+    icon: 'params',
   },
   BOOKMARKS: {
     path: PATHS.BOOKMARKS,
     component: Bookmarks,
     showInSidebar: true,
     displayName: 'Bookmarks',
+    icon: 'bookmarks',
   },
   TAGS: {
     path: PATHS.TAGS,
     component: TagsContainer,
     showInSidebar: true,
     displayName: 'Tags',
+    icon: 'tags',
   },
   RUN_DETAIL: {
     path: PATHS.RUN_DETAIL,

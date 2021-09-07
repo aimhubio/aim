@@ -8,6 +8,9 @@ export default function lineGenerator(
   yScaleValues: IGetAxisScale | { [key: string]: IGetAxisScale },
   curve: CurveEnum = CurveEnum.Linear,
 ) {
+  if (!xScaleValues) {
+    return;
+  }
   return d3
     .line()
     .x((d) => xScaleValues(d[0]))

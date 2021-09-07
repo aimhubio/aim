@@ -69,7 +69,7 @@ function MetricsBar({
         >
           <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
           <span>
-            <i className='icon-bookmark' />
+            <i className='icon-bookmarks' />
           </span>
         </div>
       )}

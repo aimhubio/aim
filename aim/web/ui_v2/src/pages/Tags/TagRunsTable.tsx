@@ -1,8 +1,9 @@
 import React, { memo, useEffect, useRef } from 'react';
-import Table from 'components/Table/Table';
-import moment from 'moment';
 import { NavLink } from 'react-router-dom';
+import moment from 'moment';
+
 import { ITagRun, ITagRunsTableProps } from 'types/pages/tags/Tags';
+import Table from 'components/Table/Table';
 
 function TagRunsTable({
   // eslint-disable-next-line react/prop-types

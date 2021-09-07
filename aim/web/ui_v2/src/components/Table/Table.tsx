@@ -11,10 +11,6 @@ import BaseTable from './BaseTable';
 import AutoResizer from './AutoResizer';
 import CustomTable from '../CustomTable/Table';
 
-import manageColumnsIcon from 'assets/icons/table/manageColumns.svg';
-import rowHeightIcon from 'assets/icons/table/rowHeight.svg';
-import sortIcon from 'assets/icons/table/sort.svg';
-import visibilityOffIcon from 'assets/icons/table/visibilityOff.svg';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
@@ -22,6 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import Icon from 'components/Icon/Icon';
 
 import './Table.scss';
 
@@ -64,24 +61,26 @@ const Table = React.forwardRef(function Table(
   const startIndex = React.useRef(0);
   const endIndex = React.useRef(0);
   const expandedGroups = React.useRef([]);
-  const tableContainerRef = React.useRef({});
+  const hoveredRowKey = React.useRef(null);
+  const activeRowKey = React.useRef(null);
+  const tableContainerRef = React.useRef();
   const dataRef = React.useRef(data);
   const columnsRef = React.useRef(columns);
 
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns);
+  const [expanded, setExpanded] = React.useState({});
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
-    setHoveredRow: tableRef.current?.setHoveredRow,
-    setActiveRow: tableRef.current?.setActiveRow,
-    scrollToRow: tableRef.current?.scrollToRowByKey,
+    setHoveredRow: setHoveredRow,
+    setActiveRow: setActiveRow,
+    scrollToRow: scrollToRow,
   }));
 
   function calculateWindow({
     scrollTop,
     offsetHeight,
-    scrollHeight,
     itemHeight,
     groupMargin,
   }) {
@@ -157,6 +156,91 @@ const Table = React.forwardRef(function Table(
         setColumnsData(newColumns);
       }
     }
+  }
+
+  function setHoveredRow(rowKey: string) {
+    window.requestAnimationFrame(() => {
+      if (custom) {
+        if (hoveredRowKey.current === rowKey) {
+          hoveredRowKey.current = null;
+        } else {
+          hoveredRowKey.current = rowKey;
+        }
+        if (activeRowKey.current === null) {
+          updateHoveredRow(`rowKey-${hoveredRowKey.current}`);
+        }
+      } else {
+        tableRef.current?.setHoveredRow(rowKey);
+      }
+    });
+  }
+
+  function setActiveRow(rowKey: string, toggle = false) {
+    window.requestAnimationFrame(() => {
+      if (custom) {
+        if (toggle && activeRowKey.current === rowKey) {
+          activeRowKey.current = null;
+        } else {
+          activeRowKey.current = rowKey;
+        }
+        updateHoveredRow(`rowKey-${activeRowKey.current}`);
+      } else {
+        tableRef.current?.setActiveRow(rowKey);
+      }
+    });
+  }
+
+  function scrollToRow(rowKey: string) {
+    window.requestAnimationFrame(() => {
+      if (custom) {
+        function scrollToElement() {
+          const rowCell = document.querySelector(
+            `.Table__cell.rowKey-${rowKey}`,
+          );
+
+          if (!!rowCell) {
+            const top = rowCell.offsetTop - (groups ? 3 : 2) * rowHeight;
+            if (
+              tableContainerRef.current.scrollTop > top ||
+              tableContainerRef.current.scrollTop +
+                tableContainerRef.current.offsetHeight <
+                top
+            ) {
+              tableContainerRef.current.scrollTo({
+                top,
+              });
+            }
+          }
+        }
+        if (groups) {
+          for (let groupKey in dataRef.current) {
+            if (dataRef.current[groupKey].data.groupRowsKeys.includes(rowKey)) {
+              if (expandedGroups.current.includes(groupKey)) {
+                scrollToElement();
+              } else {
+                expandedGroups.current.push(groupKey);
+                setExpanded(
+                  Object.fromEntries(
+                    expandedGroups.current.map((key) => [key, true]),
+                  ),
+                );
+                // TODO: probably need useEffect for this
+                setTimeout(() => {
+                  window.requestAnimationFrame(() => {
+                    updateHoveredRow(`rowKey-${rowKey}`);
+                    scrollToElement();
+                  });
+                }, 100);
+              }
+            }
+          }
+        } else {
+          scrollToElement();
+        }
+      } else {
+        tableRef.current?.scrollToRowByKey(rowKey);
+      }
+    });
   }
 
   function virtualizedUpdate() {
@@ -235,6 +319,48 @@ const Table = React.forwardRef(function Table(
     virtualizedUpdate();
   }
 
+  function rowHoverHandler(row) {
+    if (activeRowKey.current === null) {
+      if (typeof onRowHover === 'function') {
+        onRowHover(row.key);
+      }
+      updateHoveredRow(`rowKey-${row.key}`);
+    }
+  }
+
+  function rowClickHandler(row) {
+    if (activeRowKey.current === row.key) {
+      activeRowKey.current = null;
+    } else {
+      activeRowKey.current = row.key;
+    }
+
+    updateHoveredRow(`rowKey-${activeRowKey.current}`);
+
+    if (typeof onRowClick === 'function') {
+      onRowClick(activeRowKey.current);
+    }
+  }
+
+  function updateHoveredRow(activeRowClass) {
+    if (activeRowClass !== 'rowKey-null') {
+      window.requestAnimationFrame(() => {
+        const prevActiveRow = document.querySelectorAll('.Table__cell.active');
+        if (!!prevActiveRow && prevActiveRow.length > 0) {
+          prevActiveRow.forEach((cell) => cell.classList.remove('active'));
+        }
+
+        const activeRow = document.querySelectorAll(
+          `.Table__cell.${activeRowClass}`,
+        );
+
+        if (!!activeRow && activeRow.length > 0) {
+          activeRow.forEach((cell) => cell.classList.add('active'));
+        }
+      });
+    }
+  }
+
   React.useEffect(() => {
     if (custom) {
       const windowEdges = calculateWindow({
@@ -306,7 +432,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={manageColumnsIcon} alt='manage Columns' />
+                            <Icon name='manage-calumn' />
                             <span onClick={onManageColumns}>
                               Manage Columns
                             </span>
@@ -332,7 +458,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={visibilityOffIcon} alt='sort' />
+                            <Icon name='eye-outline-hide' />
                             <span onClick={onSort}>Hide Rows</span>
                           </Grid>
                         )}
@@ -356,7 +482,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={sortIcon} alt='sort' />
+                            <Icon name='sort-outside' />
                             <span onClick={onSort}>Sort</span>
                           </Grid>
                         )}
@@ -380,7 +506,7 @@ const Table = React.forwardRef(function Table(
                             className='Table__header__item'
                             item
                           >
-                            <img src={rowHeightIcon} alt='rowHeight' />
+                            <Icon name='row-height' />
                             <span onClick={onRowHeightChange}>Row Height</span>
                           </Grid>
                         )}
@@ -395,6 +521,7 @@ const Table = React.forwardRef(function Table(
                           variant='outlined'
                           color='primary'
                           size='small'
+                          onClick={onExport}
                         >
                           Export
                         </Button>
@@ -414,6 +541,7 @@ const Table = React.forwardRef(function Table(
                 custom ? (
                   <div style={{ width, height }}>
                     <CustomTable
+                      expanded={expanded}
                       excludedFields={excludedFields}
                       setExcludedFields={setExcludedFields}
                       alwaysVisibleColumns={alwaysVisibleColumns}
@@ -428,8 +556,8 @@ const Table = React.forwardRef(function Table(
                       columns={columnsData}
                       groups={groups}
                       onGroupExpandToggle={onGroupExpandToggle}
-                      onRowHover={onRowHover}
-                      onRowClick={onRowClick}
+                      onRowHover={rowHoverHandler}
+                      onRowClick={rowClickHandler}
                       {...props}
                     />
                   </div>

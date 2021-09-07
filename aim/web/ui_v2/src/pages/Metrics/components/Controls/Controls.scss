@@ -1,34 +1,54 @@
+@use 'src/styles/abstracts' as *;
+
 .Controls__container {
   width: 3.125em;
+  padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
+  justify-content: center;
+  overflow: auto;
    & > div {
-     margin-bottom: 0.35em;
-     padding-top: 0.35em;
+     margin-bottom: 0.375rem;
      &:last-child {
        margin-bottom: 0;
-       padding-bottom: 0.35em;
      }
   }
 }
 
+.Controls__icon {
+  color: tint($text-color, 30);
+  font-size: 1.125rem;
+  &.active {
+    color: $primary-color;
+  }
+}
+
 .Controls__anchor {
+  display: flex;
   cursor: pointer;
   position: relative;
-  &:hover .arrowLeft {
-    opacity: 1
+  align-items: center;
+  justify-content: center;
+  height: 2.25rem;
+  width: 2.25rem;
+  transition: background-color .3s ease-out;
+  border-radius: 6px;
+  &.active {
+    background-color: tint($primary-color, 90);
   }
-   &.disabled {
-    opacity: 0.2;
-    cursor: unset;
+  &:hover {
+    background-color: tint($pico, 95);
+    .arrowLeft {
+      opacity: 1;
+    }
   }
+
 }
 
 .Controls__anchor__arrow {
   position: absolute;
-  left: -18px;
+  left: -8px;
 
   .arrowLeft {
     opacity: 0;

@@ -4,10 +4,10 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { Typography } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 
 import Cell from './TableCell';
 import Popover from './TablePopover';
+import Icon from 'components/Icon/Icon';
 
 function Column({
   topHeader,
@@ -113,7 +113,7 @@ function Column({
         {firstColumn ? headerMeta : null}
         {col.content}
         <Popover
-          target={<Icon>more_vert</Icon>}
+          target={<Icon name='more-vertical' />}
           targetClassName='Table__action'
           tooltip='Column actions'
           content={(opened, setOpened) => (
@@ -126,7 +126,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>visibility_off</Icon>
+                  <Icon name='eye-outline-hide' />
                   <Typography small>Hide column</Typography>
                 </div>
               )}
@@ -138,7 +138,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>push_pin</Icon>
+                  <Icon name='pin' />
                   <Typography small>Unpin</Typography>
                 </div>
               )}
@@ -150,7 +150,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon style={{ transform: 'rotate(30deg)' }}>push_pin</Icon>
+                  <Icon name='pin-left' />
                   <Typography small>Pin to left</Typography>
                 </div>
               )}
@@ -162,7 +162,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon style={{ transform: 'rotate(-30deg)' }}>push_pin</Icon>
+                  <Icon name='pin-right' />
                   <Typography small>Pin to right</Typography>
                 </div>
               )}
@@ -174,7 +174,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>chevron_left</Icon>
+                  <Icon name='arrow-left' />
                   <Typography small>Move left</Typography>
                 </div>
               )}
@@ -186,7 +186,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>chevron_right</Icon>
+                  <Icon name='arrow-right' />
                   <Typography small>Move right</Typography>
                 </div>
               )}
@@ -198,7 +198,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>first_page</Icon>
+                  <Icon name='move-to-left' />
                   <Typography small>Move to start</Typography>
                 </div>
               )}
@@ -210,7 +210,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>last_page</Icon>
+                  <Icon name='move-to-right' />
                   <Typography small>Move to end</Typography>
                 </div>
               )}
@@ -222,7 +222,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>import_export</Icon>
+                  <Icon name='sort-outside' />
                   <Typography small>
                     Sort by <em>ASC</em>
                   </Typography>
@@ -236,7 +236,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon>import_export</Icon>
+                  <Icon name='sort-outside' />
                   <Typography small>
                     Sort by <em>DESC</em>
                   </Typography>
@@ -250,9 +250,7 @@ function Column({
                     setOpened(false);
                   }}
                 >
-                  <Icon style={{ transform: 'rotate(90deg)' }}>
-                    vertical_align_center
-                  </Icon>
+                  <Icon name='reset-width-outside' />
                   <Typography small>Reset width</Typography>
                 </div>
               )}
@@ -306,8 +304,9 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      onRowHover={() => onRowHover(item.key)}
-                      onRowClick={() => onRowClick(item.key)}
+                      className={`rowKey-${item.key}`}
+                      onRowHover={() => onRowHover(item)}
+                      onRowClick={() => onRowClick(item)}
                     />
                   ))}
                 </>
@@ -320,9 +319,10 @@ function Column({
               index={item.index}
               col={col}
               item={item[col.key]}
+              className={`rowKey-${item.key}`}
               metadata={firstColumn ? item.rowMeta : null}
-              onRowHover={() => onRowHover(item.key)}
-              onRowClick={() => onRowClick(item.key)}
+              onRowHover={() => onRowHover(item)}
+              onRowClick={() => onRowClick(item)}
             />
           ))}
     </div>

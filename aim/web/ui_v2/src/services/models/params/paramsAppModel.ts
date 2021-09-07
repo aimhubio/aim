@@ -17,8 +17,9 @@ import {
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import filterTooltipContent from 'utils/filterTooltipContent';
-import JsonToCSV from 'utils/JsonToCSV';
-
+import getUrlWithParam from 'utils/getUrlWithParam';
+import { getItem, setItem } from 'utils/storage';
+import getStateFromUrl from 'utils/getStateFromUrl';
 // Types
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
@@ -50,6 +51,7 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { getParamsTableColumns } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -110,10 +112,37 @@ let getRunsRequestRef: {
   abort: () => void;
 };
 
-function initialize() {
+function initialize(appId: string): void {
   model.init();
   model.setState({
-    config: getConfig(),
+    refs: {
+      tableRef: { current: null },
+      chartPanelRef: { current: null },
+    },
+    groupingSelectOptions: [],
+  });
+  if (!appId) {
+    const url = getItem('paramsUrl');
+    window.history.pushState(null, '', url);
+    setDefaultAppConfigData();
+  }
+}
+
+function setDefaultAppConfigData() {
+  const grouping: IParamsAppConfig['grouping'] =
+    getStateFromUrl('grouping') || getConfig().grouping;
+  const chart: IParamsAppConfig['chart'] =
+    getStateFromUrl('chart') || getConfig().chart;
+  const select: IParamsAppConfig['select'] =
+    getStateFromUrl('select') || getConfig().select;
+  const configData: IParamsAppConfig | any = _.merge(getConfig(), {
+    chart,
+    grouping,
+    select,
+  });
+
+  model.setState({
+    config: configData,
   });
 }
 
@@ -549,20 +578,21 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
 function onColorIndicatorChange(): void {
   const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.isVisibleColorIndicator =
-      !configData.chart.isVisibleColorIndicator;
-    model.setState({ config: configData });
+    const chart = { ...configData.chart };
+    chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
+    updateModelData({ ...configData, chart });
   }
 }
 
 function onCurveInterpolationChange(): void {
   const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.curveInterpolation =
+    const chart = { ...configData.chart };
+    chart.curveInterpolation =
       configData.chart.curveInterpolation === CurveEnum.Linear
         ? CurveEnum.MonotoneX
         : CurveEnum.Linear;
-    model.setState({ config: configData });
+    updateModelData({ ...configData, chart });
   }
 }
 
@@ -572,23 +602,23 @@ function onActivePointChange(
 ): void {
   const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.focusedState = {
+    const chart = { ...configData.chart };
+    chart.focusedState = {
       active: !!focusedStateActive,
       key: activePoint.key,
       xValue: activePoint.xValue,
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
     };
-    configData.chart.tooltip = {
+    chart.tooltip = {
       ...configData.chart.tooltip,
       content: filterTooltipContent(
         tooltipData[activePoint.key],
         configData?.chart.tooltip.selectedParams,
       ),
     };
-
     model.setState({
-      config: configData,
+      config: { ...configData, chart },
     });
   }
 }
@@ -712,13 +742,136 @@ function updateModelData(configData: IParamsAppConfig): void {
     highPlotData: getDataAsLines(data),
     chartTitleData: getChartTitleData(data),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
-    // tableData: getDataAsTableRows(
-    //   processedData.data,
-    //   null,
-    //   processedData.params,
-    // ),
+    // tableData: getDataAsTableRows(data, null, params),
+    // tableColumns: getParamsTableColumns(params, data[0]?.config),
   });
 }
+
+// function getDataAsTableRows(
+//   processedData: IMetricsCollection<any>[],
+//   xValue: number | string | null = null,
+//   paramKeys: string[],
+// ): IMetricTableRowData[] | any {
+//   if (!processedData) {
+//     return [];
+//   }
+
+//   const rows: IMetricTableRowData[] | any =
+//     processedData[0]?.config !== null ? {} : [];
+
+//   let rowIndex = 0;
+
+//   processedData.forEach((metricsCollection: IMetricsCollection<any>) => {
+//     const groupKey = metricsCollection.key;
+//     const columnsValues: { [key: string]: string[] } = {};
+
+//     if (metricsCollection.config !== null) {
+//       const groupHeaderRow = {
+//         meta: {
+//           chartIndex: metricsCollection.chartIndex + 1,
+//         },
+//         key: groupKey!,
+//         color: metricsCollection.color,
+//         dasharray: metricsCollection.dasharray,
+//         experiment: '',
+//         run: '',
+//         metric: '',
+//         context: [],
+//         value: '',
+//         step: '',
+//         epoch: '',
+//         time: '',
+//         children: [],
+//       };
+
+//       rows[groupKey!] = {
+//         data: groupHeaderRow,
+//         items: [],
+//       };
+//     }
+
+//     metricsCollection.data.forEach((metric: any) => {
+//       const closestIndex =
+//         xValue === null
+//           ? null
+//           : getClosestValue(metric.data.xValues as number[], xValue as number)
+//               .index;
+//       const rowValues: IMetricTableRowData = {
+//         key: metric.key,
+//         index: rowIndex,
+//         color: metricsCollection.color ?? metric.color,
+//         dasharray: metricsCollection.dasharray ?? metric.dasharray,
+//         experiment: metric.run.props.experiment ?? 'default',
+//         run: metric.run.props.name ?? '-',
+//         metric: metric.metric_name,
+//         context: Object.entries(metric.context).map((entry) => entry.join(':')),
+//         value: `${
+//           closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
+//         }`,
+//         step: `${
+//           closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
+//         }`,
+//         epoch: `${
+//           closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
+//         }`,
+//         time: `${
+//           closestIndex === null
+//             ? '-'
+//             : metric.data.timestamps[closestIndex] ?? '-'
+//         }`,
+//         parentId: groupKey,
+//       };
+//       rowIndex++;
+
+//       [
+//         'experiment',
+//         'run',
+//         'metric',
+//         'context',
+//         'step',
+//         'epoch',
+//         'time',
+//       ].forEach((key) => {
+//         if (columnsValues.hasOwnProperty(key)) {
+//           if (!_.some(columnsValues[key], rowValues[key])) {
+//             columnsValues[key].push(rowValues[key]);
+//           }
+//         } else {
+//           columnsValues[key] = [rowValues[key]];
+//         }
+//       });
+
+//       paramKeys.forEach((paramKey) => {
+//         const value = _.get(metric.run.params, paramKey, '-');
+//         rowValues[paramKey] = value;
+//         if (columnsValues.hasOwnProperty(paramKey)) {
+//           if (!columnsValues[paramKey].includes(value)) {
+//             columnsValues[paramKey].push(value);
+//           }
+//         } else {
+//           columnsValues[paramKey] = [value];
+//         }
+//       });
+
+//       if (metricsCollection.config !== null) {
+//         rows[groupKey!].items.push(rowValues);
+//       } else {
+//         rows.push(rowValues);
+//       }
+//     });
+
+//     if (metricsCollection.config !== null) {
+//       for (let columnKey in columnsValues) {
+//         rows[groupKey!].data[columnKey] =
+//           columnsValues[columnKey].length > 1
+//             ? 'Mix'
+//             : columnsValues[columnKey][0];
+//       }
+//     }
+//   });
+
+//   return rows;
+// }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
@@ -794,7 +947,7 @@ function onBookmarkUpdate(id: string) {
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;
     if (tooltip.selectedParams && configData?.chart.focusedState.key) {
@@ -803,10 +956,16 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
         tooltip.selectedParams,
       );
     }
-    configData.chart.tooltip = {
-      ...configData.chart.tooltip,
-      ...tooltip,
-      content,
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        tooltip: {
+          ...configData.chart.tooltip,
+          ...tooltip,
+          content,
+        },
+      },
     };
 
     model.setState({ config: configData });
@@ -921,6 +1080,42 @@ function onResetConfigData(): void {
     config: getConfig(),
   });
 }
+
+function updateGroupingStateUrl(): void {
+  const groupingData = model.getState()?.config?.grouping;
+  if (groupingData) {
+    updateUrlParam('grouping', groupingData);
+  }
+}
+
+function updateChartStateUrl(): void {
+  const chartData = model.getState()?.config?.chart;
+
+  if (chartData) {
+    updateUrlParam('chart', chartData);
+  }
+}
+
+function updateSelectStateUrl(): void {
+  const selectData = model.getState()?.config?.select;
+  if (selectData) {
+    updateUrlParam('select', selectData);
+  }
+}
+
+function updateUrlParam(
+  paramName: string,
+  data: Record<string, unknown>,
+): void {
+  const encodedUrl: string = encode(data);
+  const url: string = getUrlWithParam(paramName, encodedUrl);
+  const appId: string = window.location.pathname.split('/')[2];
+  if (!appId) {
+    setItem('paramsUrl', url);
+  }
+  window.history.pushState(null, '', url);
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -943,6 +1138,9 @@ const paramsAppModel = {
   onNotificationDelete,
   onChangeTooltip,
   onExportTableData,
+  updateChartStateUrl,
+  updateSelectStateUrl,
+  updateGroupingStateUrl,
 };
 
 export default paramsAppModel;

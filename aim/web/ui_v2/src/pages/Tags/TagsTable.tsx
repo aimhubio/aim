@@ -1,15 +1,12 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { isNil } from 'lodash-es';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import CreateIcon from '@material-ui/icons/Create';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 import Button from 'components/Button/Button';
 import Table from 'components/Table/Table';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
+import Icon from 'components/Icon/Icon';
 
 function TagsTable({
   tableRef,
@@ -72,8 +69,9 @@ function TagsTable({
               <div className='TagsTable__commentContainer__actionsContainer'>
                 {!cellData?.archived && (
                   <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                    <CreateIcon
+                    <Icon
                       color='primary'
+                      name='edit'
                       className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
                       onClick={() => onUpdateClick(cellData)}
                     />
@@ -81,24 +79,27 @@ function TagsTable({
                 )}
                 {cellData?.archived ? (
                   <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                    <VisibilityIcon
+                    <Icon
                       color='primary'
+                      name='eye-show-outline'
                       className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
                       onClick={() => onSoftDeleteClick(cellData)}
                     />
                   </span>
                 ) : (
                   <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                    <VisibilityOffIcon
+                    <Icon
                       color='primary'
+                      name='eye-outline-hide'
                       className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
                       onClick={() => onSoftDeleteClick(cellData)}
                     />
                   </span>
                 )}
                 <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                  <DeleteOutlineIcon
+                  <Icon
                     fontSize='small'
+                    name='delete'
                     color='primary'
                     className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
                     onClick={() => onDeleteClick(cellData)}

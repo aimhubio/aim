@@ -93,6 +93,7 @@ function Metrics(
                       aggregationConfig={props.aggregationConfig}
                       axesScaleType={props.axesScaleType}
                       alignmentConfig={props.alignmentConfig}
+                      projectsDataMetrics={props.projectsDataMetrics}
                       onChangeTooltip={props.onChangeTooltip}
                       onDisplayOutliersChange={props.onDisplayOutliersChange}
                       onZoomModeChange={props.onZoomModeChange}
