@@ -226,6 +226,7 @@ const Table = React.forwardRef(function Table(
                     expandedGroups.current.map((key) => [key, true]),
                   ),
                 );
+                // TODO: probably need useEffect for this
                 setTimeout(() => {
                   window.requestAnimationFrame(() => {
                     updateHoveredRow(`rowKey-${rowKey}`);
