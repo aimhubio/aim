@@ -33,6 +33,11 @@ export interface IDrawParallelHoverAttributesProps {
     lineKey?: string;
     focusedState?: IFocusedState;
     updateFocusedChart: (params: IUpdateParallelFocusedChartProps) => void;
+    setActiveLineAndCircle?: (
+      lineKey?: string,
+      focusedStateActive: boolean,
+      force: boolean,
+    ) => void;
   }>;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   linesNodeRef: React.MutableRefObject<>;

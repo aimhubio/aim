@@ -340,7 +340,9 @@ const Table = React.forwardRef(function Table(
     updateHoveredRow(`rowKey-${activeRowKey.current}`);
 
     if (typeof onRowClick === 'function') {
-      onRowClick(activeRowKey.current);
+      onRowClick(
+        activeRowKey.current === null ? undefined : activeRowKey.current,
+      );
     }
   }
 

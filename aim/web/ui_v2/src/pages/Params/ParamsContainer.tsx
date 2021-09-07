@@ -16,8 +16,6 @@ import { useRouteMatch } from 'react-router-dom';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
-  const chartPanelRef = React.useRef<IChartPanelRef>(null);
-  const tableRef = React.useRef<ITableRef>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
@@ -61,8 +59,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Params
-      tableRef={tableRef}
-      chartPanelRef={chartPanelRef}
+      tableRef={paramsData?.refs?.tableRef}
+      chartPanelRef={paramsData?.refs?.chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
@@ -105,6 +103,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationDelete={paramsAppModel.onNotificationDelete}
       onResetConfigData={paramsAppModel.onResetConfigData}
       onChangeTooltip={paramsAppModel.onChangeTooltip}
+      onTableRowHover={paramsAppModel.onTableRowHover}
+      onTableRowClick={paramsAppModel.onTableRowClick}
       onExportTableData={paramsAppModel.onExportTableData}
     />
   );
