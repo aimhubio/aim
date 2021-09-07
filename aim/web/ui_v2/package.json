@@ -51,12 +51,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "ASSET_PATH=\"/static-files/\" react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
-  "homepage": ".",
+  "homepage": "/static-files",
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {

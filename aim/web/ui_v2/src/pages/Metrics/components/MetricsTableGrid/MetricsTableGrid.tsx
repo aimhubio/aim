@@ -57,6 +57,12 @@ function getMetricsTableColumns(
       content: <span>Time</span>,
       topHeader: 'Metrics',
     },
+    {
+      key: 'actions',
+      content: '',
+      topHeader: '',
+      pin: 'right',
+    },
   ].concat(
     paramColumns.map((param) => ({
       key: param,
@@ -90,4 +96,8 @@ function getMetricsTableColumns(
   return columns;
 }
 
-export { getMetricsTableColumns };
+function getMetricsTableRowContent(rowsData: any, groups: boolean) {
+  let rowsContent = groups ? {} : [];
+}
+
+export { getMetricsTableColumns, getMetricsTableRowContent };
