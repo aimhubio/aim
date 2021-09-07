@@ -1,5 +1,5 @@
 import React from 'react';
-import { isNil, size, isEmpty } from 'lodash-es';
+import { size } from 'lodash-es';
 import Table from 'components/Table/Table';
 import { IRunsTableProps } from 'types/pages/runs/Runs';
 
@@ -10,14 +10,6 @@ function RunsTable({
   columns,
   tableRowHeight,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
-  // React.useEffect(() => {
-  //   tableRef.current?.updateData({
-  //     newData: runsList?.map((i: number) => ({})),
-  //     newColumns: columns,
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [runsList]);
-
   return (
     <div className='Runs__RunList__runListBox'>
       <div className='Runs__RunList__runListBox__titleBox'>
@@ -29,7 +21,7 @@ function RunsTable({
           emptyText={'No runs'}
           key={`${columns?.length}-${size(runsList)}`}
           ref={tableRef}
-          data={[]}
+          data={null}
           columns={columns}
           isLoading={isRunsDataLoading}
           // Table options

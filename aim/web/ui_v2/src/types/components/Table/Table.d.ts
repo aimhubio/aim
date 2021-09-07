@@ -25,7 +25,7 @@ export interface ITableProps {
   fixed?: boolean;
   onRowHover?: (rowKey: string) => void;
   onRowClick?: (rowKey?: string) => void;
-  hideHeaderActions?: boolean = false;
+  hideHeaderActions?: boolean;
   emptyText?: string;
   excludedFields?: string[];
   setExcludedFields?: (fields: string[]) => null;

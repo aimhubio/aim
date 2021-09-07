@@ -3,14 +3,16 @@ import runsAppModel from 'services/models/runs/runsAppModel';
 import useModel from 'hooks/model/useModel';
 import Runs from './Runs';
 import { ITableRef } from '../../types/components/Table/Table';
+import metricAppModel from '../../services/models/metrics/metricsAppModel';
+import { useRouteMatch } from 'react-router-dom';
 
 const runsRequestRef = runsAppModel.getRunsData();
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
-
   const runsData = useModel(runsAppModel);
 
   React.useEffect(() => {
+    metricAppModel.setDefaultAppConfigData();
     if (tableRef.current) {
       runsAppModel.setComponentRefs({
         tableRef,
@@ -25,6 +27,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       runsRequestRef.abort();
     };
   }, []);
+
   return (
     <Runs
       tableData={runsData?.tableData}
@@ -34,6 +37,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRowHeight={runsData?.config?.table.rowHeight}
       tableRef={tableRef}
       query={runsData?.config?.select.query}
+      updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
     />
   );
 }

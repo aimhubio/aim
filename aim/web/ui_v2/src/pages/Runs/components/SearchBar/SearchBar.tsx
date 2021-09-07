@@ -10,6 +10,7 @@ function SearchBar({
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
+  updateSelectStateUrl,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
 
@@ -22,6 +23,7 @@ function SearchBar({
   function handleRunSearch() {
     searchRunsRef.current = runAppModel.getRunsData();
     searchRunsRef.current.call();
+    updateSelectStateUrl();
   }
 
   return (

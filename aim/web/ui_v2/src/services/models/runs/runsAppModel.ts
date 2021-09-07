@@ -43,6 +43,8 @@ import { RowHeight } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
 import React from 'react';
 import { getMetricsTableColumns } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
+import getUrlWithParam from '../../../utils/getUrlWithParam';
+import { setItem, getItem } from '../../../utils/storage';
 
 const model = createModel<Partial<any>>({
   requestIsPending: true,
@@ -125,13 +127,13 @@ function setDefaultAppConfigData() {
   const chart: IMetricAppConfig['chart'] =
     getStateFromUrl('chart') || getConfig().chart;
   const select: IMetricAppConfig['select'] =
-    getStateFromUrl('select') || getConfig().select;
+    getStateFromUrl('search') || getConfig().select;
   const configData: IMetricAppConfig = _.merge(getConfig(), {
-    chart,
-    grouping,
+    chart, // not useful
+    grouping, // not useful
     select,
   });
-
+  debugger;
   model.setState({
     config: configData,
   });
@@ -147,8 +149,16 @@ function initialize(appId: string = '') {
     groupingSelectOptions: [],
   });
   if (!appId) {
-    // const url = getItem('metricsUrl');
-    // window.history.pushState(null, '', url);
+    const searchParam = new URLSearchParams(window.location.search);
+    const searchFromUrl = searchParam.get('search');
+    const urlFromStorage = getItem('runsUrl');
+    if (searchFromUrl) {
+      setItem('runsUrl', getUrlWithParam('search', searchFromUrl));
+    } else {
+      if (urlFromStorage) {
+        window.history.pushState(null, '', urlFromStorage);
+      }
+    }
     setDefaultAppConfigData();
   }
 }
@@ -490,26 +500,6 @@ function getQueryStringFromSelect(
   return query;
 }
 
-function updateModelData(configData: IMetricAppConfig): void {
-  const { data, params } = processData(
-    model.getState()?.rawData as IRun<IMetricTrace>[],
-  );
-  const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
-  const tableRef: any = model.getState()?.refs?.tableRef;
-
-  tableRef.current?.updateData({
-    newData: tableData,
-    newColumns: tableColumns,
-  });
-  model.setState({
-    config: configData,
-    data,
-    tableData,
-    tableColumns,
-  });
-}
-
 function getRunsData() {
   model.setState({
     requestIsPending: true,
@@ -517,9 +507,9 @@ function getRunsData() {
   const modelState = model.getState();
   const configData = modelState?.config;
 
-  let query = getQueryStringFromSelect(configData?.select);
-
-  const { call, abort } = runsService.getRunsData(query === '()' ? '' : query);
+  const query = configData?.select?.query || '';
+  debugger;
+  const { call, abort } = runsService.getRunsData(query);
   return {
     call: async () => {
       const stream = await call();
@@ -535,7 +525,7 @@ function getRunsData() {
       }
       const { data, params } = processData(runsData);
       const tableData = getDataAsTableRows(data, null, params);
-      const tableColumns = getMetricsTableColumns(params, data[0]?.config);
+      const tableColumns = getRunsTableColumns(params, data[0]?.config);
 
       model.setState({
         data: runsData,
@@ -550,7 +540,7 @@ function getRunsData() {
           newData: tableData,
           newColumns: tableColumns,
         });
-      }, 100);
+      }, 0);
     },
     abort,
   };
@@ -576,12 +566,33 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
   }
 }
 
+function updateUrlParam(
+  paramName: string,
+  data: Record<string, unknown>,
+): void {
+  const encodedUrl: string = encode(data);
+  const url: string = getUrlWithParam(paramName, encodedUrl);
+  const appId: string = window.location.pathname.split('/')[2];
+  if (!appId) {
+    setItem('runsUrl', url);
+  }
+  window.history.pushState(null, '', url);
+}
+
+function updateSelectStateUrl(): void {
+  const selectData = model.getState()?.config?.select;
+  if (selectData) {
+    updateUrlParam('search', selectData);
+  }
+}
+
 const runAppModel = {
   ...model,
   initialize,
   getRunsData,
   onSelectRunQueryChange,
   setComponentRefs,
+  updateSelectStateUrl,
 };
 
 export default runAppModel;

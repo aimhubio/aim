@@ -21,6 +21,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import Icon from 'components/Icon/Icon';
 
 import './Table.scss';
+import TableLoader from '../TableLoader/TableLoader';
 
 const Table = React.forwardRef(function Table(
   {
@@ -405,6 +406,7 @@ const Table = React.forwardRef(function Table(
   return (
     <BusyLoaderWrapper
       isLoading={isLoading || isNil(rowData)}
+      loaderComponent={<TableLoader />}
       className='Tags__TagList__tagListBusyLoader'
     >
       {!isEmpty(rowData) ? (
