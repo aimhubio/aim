@@ -1,5 +1,4 @@
 import React from 'react';
-import { KeyboardArrowLeft } from '@material-ui/icons';
 
 import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
@@ -20,23 +19,74 @@ function Controls(
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Controls__container ScrollBar__hidden'>
-      <div
-        className={`Controls__anchor ${props.displayOutliers ? 'active' : ''}`}
-        onClick={props.onDisplayOutliersChange}
-      >
-        {props.displayOutliers ? (
-          <Icon
-            className={`Controls__icon ${
-              props.displayOutliers ? 'active' : ''
-            }`}
-            name='ignore-outliers'
-          />
-        ) : (
-          <Icon className='Controls__icon' name='ignore-outliers' />
-        )}
+      <div>
+        <ControlPopover
+          title='Select Aggregation Method'
+          anchor={({ onAnchorClick, opened }) => (
+            <div
+              onClick={() => {
+                if (props.aggregationConfig.isEnabled) {
+                  props.onAggregationConfigChange({
+                    isApplied: !props.aggregationConfig?.isApplied,
+                  });
+                }
+              }}
+              className={`Controls__anchor ${
+                props.aggregationConfig.isApplied ? 'active outlined' : ''
+              }`}
+            >
+              {props.aggregationConfig.isEnabled && (
+                <span
+                  className={`Controls__anchor__arrow ${
+                    opened ? 'Controls__anchor__arrow__opened' : ''
+                  }`}
+                >
+                  <Icon name='arrow-left' onClick={onAnchorClick} />
+                </span>
+              )}
+              <Icon
+                className={`Controls__icon ${
+                  props.aggregationConfig.isApplied ? 'active' : ''
+                }`}
+                name='aggregation'
+              />
+            </div>
+          )}
+          component={
+            <AggregationPopup
+              aggregationConfig={props.aggregationConfig}
+              onChange={props.onAggregationConfigChange}
+            />
+          }
+        />
       </div>
       <div>
         <ControlPopover
+          title='Align X-Axis by'
+          anchor={({ onAnchorClick, opened }) => (
+            <div
+              onClick={onAnchorClick}
+              className={`Controls__anchor ${opened ? 'active' : ''}`}
+            >
+              <Icon
+                className={`Controls__icon ${opened ? 'active' : ''}`}
+                name='x-axis'
+              />
+            </div>
+          )}
+          component={
+            <AlignmentPopover
+              projectsDataMetrics={props.projectsDataMetrics}
+              alignmentConfig={props.alignmentConfig}
+              onAlignmentMetricChange={props.onAlignmentMetricChange}
+              onAlignmentTypeChange={props.onAlignmentTypeChange}
+            />
+          }
+        />
+      </div>
+      <div>
+        <ControlPopover
+          title='Axes Scale'
           anchor={({ onAnchorClick, opened }) => (
             <div
               onClick={onAnchorClick}
@@ -58,47 +108,70 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Chart Smoothing Options'
           anchor={({ onAnchorClick, opened }) => (
             <div
-              className={`Controls__anchor ${
-                props.aggregationConfig.isEnabled ? 'active' : ''
-              }`}
+              onClick={onAnchorClick}
+              className={`Controls__anchor ${opened ? 'active' : ''}`}
             >
-              {props.aggregationConfig.isEnabled && (
-                <span
-                  className={`Controls__anchor__arrow ${
-                    opened ? 'Controls__anchor__arrow__opened' : ''
-                  }`}
-                  onClick={onAnchorClick}
-                >
-                  <KeyboardArrowLeft className='arrowLeft' />
-                </span>
-              )}
               <Icon
-                className={`Controls__icon ${
-                  props.aggregationConfig.isEnabled ? 'active' : ''
-                }`}
-                name='aggregation'
-                onClick={() => {
-                  if (props.aggregationConfig.isEnabled) {
-                    props.onAggregationConfigChange({
-                      isApplied: !props.aggregationConfig?.isApplied,
-                    });
-                  }
-                }}
+                className={`Controls__icon ${opened ? 'active' : ''}`}
+                name='smoothing'
               />
             </div>
           )}
           component={
-            <AggregationPopup
-              aggregationConfig={props.aggregationConfig}
-              onChange={props.onAggregationConfigChange}
+            <SmootheningPopup
+              onSmoothingChange={props.onSmoothingChange}
+              smoothingAlgorithm={props.smoothingAlgorithm}
+              curveInterpolation={props.curveInterpolation}
+              smoothingFactor={props.smoothingFactor}
+            />
+          }
+        />
+      </div>
+      <div
+        className={`Controls__anchor ${
+          props.displayOutliers ? 'active outlined' : ''
+        }`}
+        onClick={props.onDisplayOutliersChange}
+      >
+        {props.displayOutliers ? (
+          <Icon
+            className={`Controls__icon ${
+              props.displayOutliers ? 'active' : ''
+            }`}
+            name='ignore-outliers'
+          />
+        ) : (
+          <Icon className='Controls__icon' name='ignore-outliers' />
+        )}
+      </div>
+      <div>
+        <ControlPopover
+          title='Highlight Modes'
+          anchor={({ onAnchorClick, opened }) => (
+            <div
+              className={`Controls__anchor ${opened ? 'active' : ''}`}
+              onClick={onAnchorClick}
+            >
+              <Icon
+                className={`Controls__icon ${opened ? 'active' : ''}`}
+                name='highlight-mode'
+              />
+            </div>
+          )}
+          component={
+            <HighlightModePopup
+              mode={props.highlightMode}
+              onChange={props.onHighlightModeChange}
             />
           }
         />
       </div>
       <div>
         <ControlPopover
+          title='Select Tooltip Params:'
           anchor={({ onAnchorClick, opened }) => (
             <div
               onClick={onAnchorClick}
@@ -125,73 +198,6 @@ function Controls(
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
             <div
-              onClick={onAnchorClick}
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='x-axis'
-              />
-            </div>
-          )}
-          component={
-            <AlignmentPopover
-              projectsDataMetrics={props.projectsDataMetrics}
-              alignmentConfig={props.alignmentConfig}
-              onAlignmentMetricChange={props.onAlignmentMetricChange}
-              onAlignmentTypeChange={props.onAlignmentTypeChange}
-            />
-          }
-        />
-      </div>
-      <div>
-        <ControlPopover
-          anchor={({ onAnchorClick, opened }) => (
-            <div
-              onClick={onAnchorClick}
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='smoothing'
-              />
-            </div>
-          )}
-          component={
-            <SmootheningPopup
-              onSmoothingChange={props.onSmoothingChange}
-              smoothingAlgorithm={props.smoothingAlgorithm}
-              curveInterpolation={props.curveInterpolation}
-              smoothingFactor={props.smoothingFactor}
-            />
-          }
-        />
-      </div>
-      <div>
-        <ControlPopover
-          anchor={({ onAnchorClick, opened }) => (
-            <div
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-              onClick={onAnchorClick}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='highlight-mode'
-              />
-            </div>
-          )}
-          component={
-            <HighlightModePopup
-              mode={props.highlightMode}
-              onChange={props.onHighlightModeChange}
-            />
-          }
-        />
-      </div>
-      <div>
-        <ControlPopover
-          anchor={({ onAnchorClick, opened }) => (
-            <div
               className={`Controls__anchor ${props.zoomMode ? 'active' : ''}`}
             >
               <span
@@ -200,7 +206,7 @@ function Controls(
                 }`}
                 onClick={onAnchorClick}
               >
-                <KeyboardArrowLeft className='arrowLeft' />
+                <Icon name='arrow-left' />
               </span>
               <span onClick={props.onZoomModeChange}>
                 <Icon
@@ -221,9 +227,8 @@ function Controls(
                 className={`Controls__anchor__arrow ${
                   opened ? 'Controls__anchor__arrow__opened' : ''
                 }`}
-                onClick={onAnchorClick}
               >
-                <KeyboardArrowLeft className='arrowLeft' />
+                <Icon name='arrow-left' onClick={onAnchorClick} />
               </span>
               <span onClick={props.onZoomModeChange}>
                 <Icon className='Controls__icon' name='zoom-out' />

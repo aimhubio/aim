@@ -1,16 +1,18 @@
 import React from 'react';
-import { MenuItem, MenuList } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import { RowHeightEnum } from 'config/enums/tableEnums';
 
-function RowHeight() {
+import './RowHeightPopover.scss';
+
+function RowHeightPopover() {
   return (
-    <MenuList>
+    <div className='RowHeight'>
       {Object.values(RowHeightEnum).map((value) => (
         <MenuItem key={value}>{value}</MenuItem>
       ))}
-    </MenuList>
+    </div>
   );
 }
 
-export default React.memo(RowHeight);
+export default React.memo(RowHeightPopover);

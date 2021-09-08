@@ -9,11 +9,11 @@
   &__small {
     &__title {
       font-weight: 600;
-      font-size: $text-mm;
+      font-size: $text-md;
     }
     &__content {
       font-weight: 500;
-      font-size: $text-mm;
+      font-size: $text-md;
     }
     &__img {
       padding: 10px;
@@ -26,11 +26,11 @@
   &__medium {
     &__title {
       font-weight: 600;
-      font-size: $text-mm;
+      font-size: $text-md;
     }
     &__content {
       font-weight: 500;
-      font-size: $text-mm;
+      font-size: $text-md;
     }
     &__img {
       padding: 10px;
@@ -43,11 +43,11 @@
   &__big {
     &__title {
       font-weight: 500;
-      font-size: $text-lm;
+      font-size: $text-lg;
     }
     &__content {
       font-weight: 500;
-      font-size: $text-lm;
+      font-size: $text-lg;
     }
     &__img {
       padding: 10px;

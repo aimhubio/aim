@@ -1,0 +1,20 @@
+@use 'src/styles/abstracts' as *;
+
+.SmoothingPopover {
+  width: 24.5rem;
+}
+
+.SmoothingPopover__section {
+  padding: 1rem;
+  &:last-child {
+    border-top: $border-main;
+  }
+}
+
+.SmoothingPopover__subtitle {
+  display: block;
+  color: $text-color-50;
+  font-size: $text-sm;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
