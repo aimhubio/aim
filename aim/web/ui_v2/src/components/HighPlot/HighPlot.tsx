@@ -139,6 +139,17 @@ const HighPlot = React.forwardRef(function HighPlot(
     setFocusedState: (focusedState: IFocusedState) => {
       attributesRef.current.focusedState = focusedState;
     },
+    setActiveLineAndCircle: (
+      lineKey?: string,
+      focusedStateActive: boolean = false,
+      force: boolean = false,
+    ) => {
+      attributesRef.current.setActiveLineAndCircle?.(
+        lineKey,
+        focusedStateActive,
+        force,
+      );
+    },
   }));
 
   const renderChart = React.useCallback((): void => {

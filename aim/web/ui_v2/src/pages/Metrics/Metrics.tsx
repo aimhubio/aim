@@ -18,6 +18,7 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 
 import './Metrics.scss';
+import Icon from '../../components/Icon/Icon';
 
 function Metrics(
   props: IMetricProps,
@@ -119,8 +120,13 @@ function Metrics(
               )}
             </BusyLoaderWrapper>
           </div>
-          <div className='Metrics__resize' ref={props.resizeElemRef}>
-            <MoreHorizIcon />
+          <div
+            className={`Metrics__resize ${
+              props.panelResizing ? 'resizing' : ''
+            }`}
+            ref={props.resizeElemRef}
+          >
+            <Icon name='more-horizontal' />
           </div>
           <div ref={props.tableElemRef} className='Metrics__table__container'>
             <BusyLoaderWrapper

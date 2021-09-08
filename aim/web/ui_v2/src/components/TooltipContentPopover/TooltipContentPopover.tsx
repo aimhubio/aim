@@ -37,8 +37,8 @@ function TooltipContentPopover({
   );
 
   const onDisplayTooltipChange = React.useCallback(
-    (e: React.ChangeEvent<any>, checked: boolean): void => {
-      onChangeTooltip({ [e.target.id]: checked });
+    (value, id): void => {
+      onChangeTooltip({ [id]: value === 'Show' });
     },
     [onChangeTooltip],
   );
@@ -59,10 +59,8 @@ function TooltipContentPopover({
 
   return (
     <div className='TooltipContentPopover__container'>
-      <Box p={0.5}>Select Tooltip Params:</Box>
-      <Divider />
       <div className='TooltipContentPopover__params'>
-        <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
+        <div>
           <Autocomplete
             id='select-params'
             size='small'
@@ -96,18 +94,19 @@ function TooltipContentPopover({
               </React.Fragment>
             )}
           />
-        </Box>
-        <Divider />
-        <Box className='TooltipContentPopover__toggle'>
-          <h3>Display tooltip</h3>
+        </div>
+        <div className='TooltipContentPopover__toggle'>
           <ToggleButton
+            title='Display tooltip'
             id='display'
-            checked={displayTooltip}
+            value={displayTooltip ? 'Show' : 'Hide'}
             leftLabel='Hide'
             rightLabel='Show'
+            leftValue={'Hide'}
+            rightValue={'Show'}
             onChange={onDisplayTooltipChange}
           />
-        </Box>
+        </div>
       </div>
     </div>
   );

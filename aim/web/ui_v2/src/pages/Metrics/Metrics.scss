@@ -1,6 +1,9 @@
+@use 'src/styles/abstracts' as *;
+
 .Metrics__section {
   height: 100vh;
   overflow: hidden;
+
   .Metrics__loader {
     flex-direction: column;
     justify-content: space-between;
@@ -9,6 +12,7 @@
 
 .Metrics__container {
   background-color: #ffffff;
+
   .Metrics__paper {
     padding: 1em;
     height: 100%;
@@ -28,11 +32,26 @@
   }
 
   .Metrics__resize {
-    cursor: ns-resize;
+    cursor: row-resize;
     justify-content: center;
     display: flex;
     align-items: center;
-    height: 6px;
+    height: 0.5rem;
+    border-top: 0.125rem solid tint( $primary-color, 90);
+    border-bottom: 0.125rem solid  tint( $primary-color, 90);
+    background-color: tint( $primary-color, 90);
+    transition: all .15s ease-out;
+    transition-delay: .3s;
+    i {
+      transition: all .15s ease-out;
+      transition-delay: .3s;
+    }
+    &:hover, &.resizing {
+      background-color: tint( $primary-color, 25);
+      i {
+        opacity: 0;
+      }
+    }
   }
 
   .Metrics__chart__container {
@@ -40,7 +59,6 @@
     -ms-flex: 0.5 1 0;
     flex: 0.5 1 0;
     min-height: 372px;
-    border-bottom: 1px solid #e8f1fc;
   }
 
   .Metrics__table__container {
@@ -56,7 +74,7 @@
 }
 
 .Metrics__controls__container {
-  width: 50px;
+  width: 3.75rem;
   max-height: 100%;
   overflow-y: auto;
 }

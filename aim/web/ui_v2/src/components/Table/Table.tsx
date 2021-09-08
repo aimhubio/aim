@@ -12,8 +12,8 @@ import AutoResizer from './AutoResizer';
 import CustomTable from '../CustomTable/Table';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
-import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
+import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
+import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
@@ -342,7 +342,9 @@ const Table = React.forwardRef(function Table(
     updateHoveredRow(`rowKey-${activeRowKey.current}`);
 
     if (typeof onRowClick === 'function') {
-      onRowClick(activeRowKey.current);
+      onRowClick(
+        activeRowKey.current === null ? undefined : activeRowKey.current,
+      );
     }
   }
 
@@ -461,7 +463,6 @@ const Table = React.forwardRef(function Table(
                           vertical: 'top',
                           horizontal: 'center',
                         }}
-                        title='Manage Rows Visibility'
                         anchor={({ onAnchorClick, opened }) => (
                           <Grid
                             onClick={onAnchorClick}
@@ -509,7 +510,6 @@ const Table = React.forwardRef(function Table(
                           vertical: 'top',
                           horizontal: 'center',
                         }}
-                        title='Select Row Height'
                         anchor={({ onAnchorClick }) => (
                           <Grid
                             onClick={onAnchorClick}

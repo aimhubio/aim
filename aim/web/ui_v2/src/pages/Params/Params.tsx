@@ -1,5 +1,4 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
@@ -12,8 +11,8 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
-import { size } from 'lodash-es';
-import Table from 'components/CustomTable/Table';
+import { isEmpty, size } from 'lodash-es';
+import Table from 'components/Table/Table';
 
 import './Params.scss';
 
@@ -40,6 +39,7 @@ const Params = ({
   tableRowHeight,
   onTableRowHover,
   onTableRowClick,
+  onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -59,39 +59,32 @@ const Params = ({
   return (
     <div ref={wrapperElemRef} className='Params__container'>
       <section className='Params__section'>
-        <Grid
-          container
-          direction='column'
-          justifyContent='center'
-          className='Params__fullHeight'
-        >
-          <Grid item>
+        <div className='Params__fullHeight Params__section__div'>
+          <div>
             <AppBar
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}
             />
-          </Grid>
-          <Grid item>
-            <div className='Params__SelectForm__Grouping__container'>
-              <SelectForm
-                selectedParamsData={selectedParamsData}
-                onParamsSelectChange={onParamsSelectChange}
-                onSelectRunQueryChange={onSelectRunQueryChange}
-              />
-              <Grouping
-                groupingData={groupingData}
-                groupingSelectOptions={groupingSelectOptions}
-                onGroupingSelectChange={onGroupingSelectChange}
-                onGroupingModeChange={onGroupingModeChange}
-                onGroupingPaletteChange={onGroupingPaletteChange}
-                onGroupingReset={onGroupingReset}
-                onGroupingApplyChange={onGroupingApplyChange}
-                onGroupingPersistenceChange={onGroupingPersistenceChange}
-              />
-            </div>
-          </Grid>
-          <Grid ref={chartElemRef} className='Params__chart__container' item>
+          </div>
+          <div className='Params__SelectForm__Grouping__container'>
+            <SelectForm
+              selectedParamsData={selectedParamsData}
+              onParamsSelectChange={onParamsSelectChange}
+              onSelectRunQueryChange={onSelectRunQueryChange}
+            />
+            <Grouping
+              groupingData={groupingData}
+              groupingSelectOptions={groupingSelectOptions}
+              onGroupingSelectChange={onGroupingSelectChange}
+              onGroupingModeChange={onGroupingModeChange}
+              onGroupingPaletteChange={onGroupingPaletteChange}
+              onGroupingReset={onGroupingReset}
+              onGroupingApplyChange={onGroupingApplyChange}
+              onGroupingPersistenceChange={onGroupingPersistenceChange}
+            />
+          </div>
+          <div ref={chartElemRef} className='Params__chart__container'>
             <BusyLoaderWrapper
               isLoading={requestIsPending}
               loaderComponent={<ChartLoader />}
@@ -131,40 +124,42 @@ const Params = ({
                 )
               )}
             </BusyLoaderWrapper>
-          </Grid>
-          <div ref={resizeElemRef}>
-            <div className='Params__resize'>
-              <MoreHorizIcon />
-            </div>
           </div>
-          <Grid item xs ref={tableElemRef} className='Params__table__container'>
-            {/* <BusyLoaderWrapper
+          <div className='Params__resize' ref={resizeElemRef}>
+            <MoreHorizIcon />
+          </div>
+          <div ref={tableElemRef} className='Params__table__container'>
+            <BusyLoaderWrapper
               isLoading={false}
+              className='Params__loader'
+              height='100%'
               loaderComponent={<TableLoader />}
             >
-              <Table
-                custom
-                key={`${tableColumns?.length}-${size(tableData)}`}
-                ref={tableRef}
-                data={tableData}
-                columns={tableColumns}
-                // Table options
-                topHeader
-                groups={!Array.isArray(tableData)}
-                rowHeight={tableRowHeight}
-                sortOptions={groupingSelectOptions}
-                // Table actions
-                onSort={() => null}
-                onExport={() => null}
-                onManageColumns={() => null}
-                onRowHeightChange={() => null}
-                onRowsChange={() => null}
-                onRowHover={onTableRowHover}
-                onRowClick={onTableRowClick}
-              />
-            </BusyLoaderWrapper> */}
-          </Grid>
-        </Grid>
+              {!isEmpty(tableData) ? (
+                <Table
+                  custom
+                  key={`${tableColumns?.length}-${size(tableData)}`}
+                  ref={tableRef}
+                  data={tableData}
+                  columns={tableColumns}
+                  // Table options
+                  topHeader
+                  groups={!Array.isArray(tableData)}
+                  rowHeight={tableRowHeight}
+                  sortOptions={groupingSelectOptions}
+                  // Table actions
+                  onSort={() => null}
+                  onExport={onExportTableData}
+                  onManageColumns={() => null}
+                  onRowHeightChange={() => null}
+                  onRowsChange={() => null}
+                  onRowHover={onTableRowHover}
+                  onRowClick={onTableRowClick}
+                />
+              ) : null}
+            </BusyLoaderWrapper>
+          </div>
+        </div>
       </section>
     </div>
   );

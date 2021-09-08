@@ -21,7 +21,7 @@
       color: $text-color;
       opacity: 1;
       font-weight: 500;
-      font-size: $text-mm;
+      font-size: $text-md;
       text-transform: none;
       &.MuiInputBase-input {
         font-weight: 600;
@@ -52,11 +52,11 @@
         }
         .MuiInputBase-input {
           font-weight: 500;
-          font-size: $text-mm;
+          font-size: $text-md;
           color: #414b6d;
           &::placeholder {
             font-weight: 500;
-            font-size: $text-mm;
+            font-size: $text-md;
             color: #606986;
             opacity: 1;
           }
@@ -71,7 +71,7 @@
         }
         .MuiButton-label {
           font-weight: 500;
-          font-size: $text-mm;
+          font-size: $text-md;
           justify-content: flex-start;
         }
       }
@@ -98,7 +98,7 @@
         }
         &__title {
           font-weight: 600;
-          font-size: $text-mm;
+          font-size: $text-md;
         }
       }
     }
@@ -112,7 +112,7 @@
         align-items: center;
         &__title {
           font-weight: 600;
-          font-size: $text-mm;
+          font-size: $text-md;
         }
       }
     }
@@ -234,7 +234,7 @@
       }
       &__runText {
         font-weight: 500;
-        font-size: $text-mm;
+        font-size: $text-md;
         color: $primary-color;
       }
     }
@@ -285,7 +285,7 @@
     &__textBox {
       &__titleText {
         font-weight: 600;
-        font-size: $text-mm;
+        font-size: $text-md;
         margin-bottom: 5px;
       }
       &__contentText {
@@ -310,7 +310,7 @@
   &__contentContainer {
     padding: 20px;
     &__contentTitle {
-      font-size: $text-mm;
+      font-size: $text-md;
       font-weight: 600;
     }
     &__contentBox {
