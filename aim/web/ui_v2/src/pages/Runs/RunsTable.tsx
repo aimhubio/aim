@@ -10,6 +10,7 @@ function RunsTable({
   columns,
   tableRowHeight,
   onExportTableData,
+  getLastRunsData,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Runs__RunList__runListBox'>
@@ -20,9 +21,7 @@ function RunsTable({
         <Table
           custom
           isInfiniteLoading
-          infiniteLoadHandler={(data) => {
-            console.log('infinite ---- ', data);
-          }}
+          infiniteLoadHandler={getLastRunsData}
           emptyText={'No runs found'}
           key={`${columns?.length}-${size(runsList)}`}
           ref={tableRef}

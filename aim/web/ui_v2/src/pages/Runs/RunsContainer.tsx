@@ -35,6 +35,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       query={runsData?.config?.select.query}
       updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
       onExportTableData={runsAppModel.onExportTableData}
+      getLastRunsData={runsAppModel.getLastRunsData}
     />
   );
 }

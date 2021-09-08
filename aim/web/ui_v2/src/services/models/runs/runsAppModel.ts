@@ -53,6 +53,7 @@ import moment from 'moment';
 
 const model = createModel<Partial<any>>({
   requestIsPending: true,
+  infiniteIsPending: false,
 });
 function getConfig() {
   return {
@@ -123,7 +124,27 @@ function getConfig() {
     table: {
       rowHeight: RowHeight.md,
     },
+    pagination: {
+      limit: 25,
+    },
   };
+}
+
+function getLastRunsData(lastRow: any) {
+  const modelData = model.getState();
+  const infiniteIsPending = modelData?.infiniteIsPending;
+  if (!infiniteIsPending) {
+    model.setState({
+      config: {
+        ...modelData?.config,
+        pagination: {
+          ...modelData?.config.pagination,
+          offset: lastRow.key,
+        },
+      },
+    });
+    // getRunsData(true);
+  }
 }
 
 function setDefaultAppConfigData() {
@@ -473,6 +494,7 @@ function processData(data: any[]): {
     params: uniqParams,
   };
 }
+
 function getDataAsTableRows(
   processedData: any,
   xValue: number | string | null = null,
@@ -686,6 +708,7 @@ const runAppModel = {
   setComponentRefs,
   updateSelectStateUrl,
   onExportTableData,
+  getLastRunsData,
 };
 
 export default runAppModel;

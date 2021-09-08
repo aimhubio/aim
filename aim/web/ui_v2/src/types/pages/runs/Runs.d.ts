@@ -4,6 +4,7 @@ import {
   IParamTrace,
   IRun,
 } from 'types/services/models/metrics/runModel';
+import runsAppModel from '../../../services/models/runs/runsAppModel';
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
   isRunInfoLoading: boolean;
@@ -38,4 +39,5 @@ export interface IRunsTableProps {
   columns: any;
   tableRowHeight: number;
   onExportTableData: () => void;
+  getLastRunsData: (row: any) => void;
 }
