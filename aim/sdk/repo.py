@@ -60,7 +60,7 @@ class Repo:
         if init:
             os.makedirs(self.path, exist_ok=True)
             with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
-                version_fh.write(DATA_VERSION+'\n')
+                version_fh.write(DATA_VERSION + '\n')
         if not os.path.exists(self.path):
             raise RuntimeError(f'Cannot find repository \'{path}\'. Please init first.')
 
