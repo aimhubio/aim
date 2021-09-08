@@ -173,7 +173,10 @@ const drawParallelHoverAttributes = ({
     } else if (focusedState?.active && focusedState.chartIndex === index) {
       const xPos = xScale(focusedState.xValue);
       dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
-      mousePosition = [xPos, yScale[dimensionLabel](focusedState.yValue)];
+      mousePosition = [
+        xPos,
+        yScale[dimensionLabel](focusedState.yValue) + margin.top,
+      ];
     } else if (activePoint?.xValue && activePoint.yValue) {
       const xPos = xScale(activePoint.xValue);
       dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
@@ -209,6 +212,9 @@ const drawParallelHoverAttributes = ({
             lineCirclesOfClosestCircle,
             closestCircle,
           );
+          if (focusedStateActive) {
+            drawFocusedCircle(closestCircle.key);
+          }
           safeSyncHoverState({ activePoint, focusedStateActive });
           attributesRef.current.activePoint = activePoint;
           attributesRef.current.lineKey = closestCircle.key;
@@ -238,7 +244,6 @@ const drawParallelHoverAttributes = ({
       focusedStateActive: true,
       force: true,
     });
-    drawFocusedCircle(circle.key);
   }
 
   function setActiveLineAndCircle(

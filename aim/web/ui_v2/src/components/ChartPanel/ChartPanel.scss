@@ -2,8 +2,6 @@
 
 .ChartPanel__container {
   height: 100%;
-  // height: -moz-available; /* WebKit-based browsers will ignore this. */
-  // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
 
   .ChartPanel__resizing {
     display: flex;
@@ -20,6 +18,7 @@
     overflow: hidden;
     height: 100%;
     border-right: 1px solid #e8f1fc;
+    padding-left: 1.5rem;
   }
 
   .ChartPanel__paper {

@@ -13,6 +13,7 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
 import { isEmpty, size } from 'lodash-es';
 import Table from 'components/Table/Table';
+import Icon from 'components/Icon/Icon';
 
 import './Params.scss';
 
@@ -29,9 +30,9 @@ const Params = ({
   tableElemRef,
   groupingData,
   groupingSelectOptions,
+  isParamsLoading,
   tooltip,
   chartTitleData,
-  requestIsPending,
   panelResizing,
   tableColumns,
   tableRef,
@@ -86,7 +87,7 @@ const Params = ({
           </div>
           <div ref={chartElemRef} className='Params__chart__container'>
             <BusyLoaderWrapper
-              isLoading={requestIsPending}
+              isLoading={isParamsLoading}
               loaderComponent={<ChartLoader />}
             >
               {!!highPlotData?.[0]?.data?.length ? (
@@ -119,18 +120,24 @@ const Params = ({
                   }
                 />
               ) : (
-                !requestIsPending && (
-                  <EmptyComponent size='big' content={'Choose Params'} />
+                !isParamsLoading && (
+                  <EmptyComponent
+                    size='big'
+                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                  />
                 )
               )}
             </BusyLoaderWrapper>
           </div>
-          <div className='Params__resize' ref={resizeElemRef}>
-            <MoreHorizIcon />
+          <div
+            className={`Params__resize ${panelResizing ? 'resizing' : ''}`}
+            ref={resizeElemRef}
+          >
+            <Icon name='more-horizontal' />
           </div>
           <div ref={tableElemRef} className='Params__table__container'>
             <BusyLoaderWrapper
-              isLoading={false}
+              isLoading={isParamsLoading}
               className='Params__loader'
               height='100%'
               loaderComponent={<TableLoader />}

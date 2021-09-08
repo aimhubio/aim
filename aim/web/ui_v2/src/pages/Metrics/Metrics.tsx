@@ -15,9 +15,9 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
+import Icon from 'components/Icon/Icon';
 
 import './Metrics.scss';
-import Icon from '../../components/Icon/Icon';
 
 function Metrics(
   props: IMetricProps,
