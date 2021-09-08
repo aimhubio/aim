@@ -7,7 +7,7 @@ from logging.config import fileConfig
 from alembic import context
 from alembic.config import Config
 
-from aim.web.configs import AIM_WEB_ENV_KEY
+from aim.web.configs import AIM_ENV_MODE_KEY
 from aim.web.api.db import engine, config as api_config
 from aim.web.api.dashboards import models
 from aim.web.api.dashboard_apps import models
@@ -17,7 +17,7 @@ from aim.web.api.db import Base
 # access to the values within the .ini file in use.
 config = context.config
 
-if os.getenv(AIM_WEB_ENV_KEY) != 'prod':
+if os.getenv(AIM_ENV_MODE_KEY, 'prod') != 'prod':
     here = os.path.abspath(os.path.dirname(__file__))
     config = Config(os.path.join(here, 'alembic_dev.ini'))
 
