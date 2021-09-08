@@ -212,6 +212,7 @@ function SelectForm({
                         return (
                           <React.Fragment>
                             <Checkbox
+                              color='primary'
                               icon={<CheckBoxOutlineBlank />}
                               checkedIcon={<CheckBoxIcon />}
                               style={{ marginRight: 4 }}
@@ -224,7 +225,7 @@ function SelectForm({
                     />
                   </Popper>
                   <Divider
-                    style={{ margin: '0 1em' }}
+                    style={{ margin: '0 1rem' }}
                     orientation='vertical'
                     flexItem
                   />
@@ -259,6 +260,7 @@ function SelectForm({
               fullWidth
               size='small'
               variant='outlined'
+              inputProps={{ style: { height: '0.687rem' } }}
               placeholder='Run expression'
               value={selectedMetricsData?.query ?? ''}
               onChange={({ target }) => onSelectRunQueryChange(target.value)}

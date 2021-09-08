@@ -5,7 +5,7 @@
     height: 100%;
     &__appBarTitleBox {
       display: flex;
-      font-size: $text-mm;
+      font-size: $text-md;
       font-weight: 600;
       color: $text-color;
       &__pageName {
@@ -29,7 +29,7 @@
         flex-direction: column;
         justify-content: space-between;
         &__experimentName {
-          font-size: $text-mm;
+          font-size: $text-md;
           font-weight: 600;
         }
         &__experimentDate {
@@ -61,7 +61,7 @@
       .MuiTabs-flexContainer {
         .MuiTab-textColorPrimary {
           color: tint($pico, 20);
-          font-size: $text-mm;
+          font-size: $text-md;
           font-weight: 500;
           text-transform: unset;
           min-height: 40px;
@@ -185,7 +185,7 @@
     flex-direction: column;
     justify-content: space-between;
     &__title {
-      font-size: $text-mm;
+      font-size: $text-md;
       font-weight: 600;
     }
     &__message {

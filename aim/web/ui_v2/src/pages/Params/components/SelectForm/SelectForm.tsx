@@ -225,6 +225,7 @@ function SelectForm({
             fullWidth
             size='small'
             variant='outlined'
+            inputProps={{ style: { height: '0.687rem' } }}
             placeholder='Run expression'
             value={selectedParamsData?.query}
             onChange={({ target }) => onSelectRunQueryChange(target.value)}

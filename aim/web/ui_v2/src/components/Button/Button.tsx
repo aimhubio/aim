@@ -16,28 +16,24 @@ const fontSizes = {
   large: '0.875rem',
 };
 
-function Button(
-  props: IButtonProps,
-): React.FunctionComponentElement<React.ReactNode> {
+function Button({
+  size,
+  withOnlyIcon,
+  color,
+  children,
+  ...rest
+}: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
   const styleOverrides = {
     borderRadius: '0.375rem',
-    padding: `0.5rem ${props.withOnlyIcon ? '0.5rem' : '1.25rem'}`,
-    fontSize: fontSizes[props.size || 'medium'],
-    height: sizes[props.size || 'medium'],
-    minWidth: props.withOnlyIcon ? '2.25rem' : '6.25rem',
+    padding: `0.5rem ${withOnlyIcon ? '0.5rem' : '1.25rem'}`,
+    fontSize: fontSizes[size || 'medium'],
+    height: sizes[size || 'medium'],
+    minWidth: withOnlyIcon ? '2.25rem' : '4.375rem',
   };
 
   return (
-    <MUButton
-      variant={props.variant}
-      color={props.color || 'primary'}
-      style={styleOverrides}
-      onClick={props.onClick}
-      size={props.size}
-      disabled={props.disabled}
-      className={props.className}
-    >
-      {props.children}
+    <MUButton color={color || 'primary'} style={styleOverrides} {...rest}>
+      {children}
     </MUButton>
   );
 }

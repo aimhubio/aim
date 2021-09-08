@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, Radio } from '@material-ui/core';
+import { Box, Radio, Switch } from '@material-ui/core';
 
-import ToggleButton from 'components/ToggleButton/ToggleButton';
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
+
+import './ColorPopoverAdvanced.scss';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
@@ -18,49 +19,51 @@ function ColorPopoverAdvanced({
     }
   }
   return (
-    <div className='AdvancedPopover__container'>
-      <div>
-        <h3>colors persistence:</h3>
-        <span>
+    <div className='ColorPopoverAdvanced__container'>
+      <div className='ColorPopoverAdvanced__persistence'>
+        <h3 className='subtitle'>colors persistence</h3>
+        <p className='ColorPopoverAdvanced__persistence__p'>
           Enable persistent coloring mode so that each item always has the same
           color regardless of its order.
-        </span>
+        </p>
         <div>
-          <ToggleButton
-            id='persistence'
-            leftLabel='Enabled'
-            defaultChecked={persistence}
-            value={persistence}
-            onChange={() => onPersistenceChange('color')}
-          />
+          <Switch color='primary' />
+          <span className='ColorPopoverAdvanced__container__span'>Enable</span>
         </div>
       </div>
-      <Box pt={0.5} borderTop='1px solid #b7b7b7'>
-        <h3>Preferred color palette:</h3>
+      <div className='ColorPopoverAdvanced__preferred__colors'>
+        <h3 className='subtitle'>Preferred color palette:</h3>
         <div>
           {COLORS.map((options, index) => (
             <Box key={index} display='flex' alignItems='center'>
               <Radio
+                color='primary'
                 checked={paletteIndex === index}
                 onChange={onPaletteChange}
                 size='small'
                 value={index}
               />
-              <div className='AdvancedPopover__paletteColors__container'>
+              <span className='ColorPopoverAdvanced__container__span'>
+                {index === 0 ? '8 distinct colors' : '24 colors'}{' '}
+              </span>
+              <div
+                className={`ColorPopoverAdvanced__paletteColors__container ${
+                  paletteIndex === index ? 'active' : ''
+                }`}
+              >
                 {options.map((color) => (
                   <Box
                     key={color}
                     component='span'
-                    className='AdvancedPopover__paletteColors_colorItem'
+                    className='ColorPopoverAdvanced__paletteColors_colorItem'
                     bgcolor={color}
                   />
                 ))}
               </div>
-              <span>{index === 0 ? '8 distinct colors' : '24 colors'} </span>
             </Box>
           ))}
         </div>
-      </Box>
+      </div>
     </div>
   );
 }

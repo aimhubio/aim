@@ -2,24 +2,27 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
 import './ColumnItem.scss';
+import Icon from 'components/Icon/Icon';
 
 function ColumnItem(props: any) {
   return (
-    <Draggable draggableId={props.task} index={props.index}>
+    <Draggable draggableId={props.data} index={props.index}>
       {(provided) => (
         <div
           className='ColumnItem__container'
           {...provided.draggableProps}
           ref={provided.innerRef}
         >
-          <span className='ColumnItem__toggle'></span>
+          <span className='ColumnItem__toggle'>
+            <Icon name='eye-show-outline' />
+          </span>
           <div>
-            <span className='ColumnItem__name'>{props.task}</span>
+            <span className='ColumnItem__name'>{props.data}</span>
             <span
               className='ColumnItem__drag__icon'
               {...provided.dragHandleProps}
             >
-              <i className='icon-menu'></i>
+              <Icon name='drag' />
             </span>
           </div>
         </div>

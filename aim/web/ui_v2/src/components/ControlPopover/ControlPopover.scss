@@ -1,9 +1,48 @@
+@use 'src/styles/abstracts' as *;
+
+.ControlPopover {
+  box-shadow: 0 0.25rem 0.375rem rgba(144, 175, 218, 0.2);
+  border: $border-main;
+}
+
+.ControlPopover__container {
+  .MuiListItem-button {
+    color: tint($pico, 16.5);
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border-radius: $border-radius-sm;
+    &:hover {
+      background-color: tint($cuddle, 80);
+    }
+  }
+  .MuiListItem-root.Mui-selected {
+    background-color: transparent;
+
+    color: $primary-color;
+    &:hover {
+      background-color: tint($cuddle, 80);
+    }
+    &::after {
+      content: '✓';
+      position: absolute;
+      right: 0.5rem;
+    }
+  }
+
+  .subtitle {
+    color: tint($pico, 50);
+    font-size: $text-sm;
+    font-family: 'Inter Medium',sans-serif;
+    text-transform: uppercase;
+    display: block;
+  }
+}
+
 .ControlPopover__title {
-  padding: 0.5em 1em;
-  border-bottom: 1px solid #dfe6f7;
-  color: #1473e6;
-  background: #f3f8fe;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.825em;
+  padding: 0.5rem 1rem;
+  border-bottom: $border-main;
+  background: tint($primary-color, 95);
+  text-transform: capitalize;
+  font-size: 0.875rem;
+  font-family: 'Inter SemiBold',sans-serif;
 }

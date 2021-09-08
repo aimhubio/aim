@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { MenuList, MenuItem, Select, Divider } from '@material-ui/core';
+import { MenuItem, Select } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
 import projectsModel from 'services/models/projects/projectsModel';
@@ -57,9 +57,7 @@ function AlignmentPopover({
 
   return (
     <div className='AlignmentPopover__container'>
-      <div className='AlignmentPopover__title'>Align X-Axis by:</div>
-      <Divider />
-      <MenuList>
+      <div className='AlignmentPopover__types'>
         {alignmentList.map(({ name, type }) => (
           <MenuItem
             key={name}
@@ -70,7 +68,7 @@ function AlignmentPopover({
             {name}
           </MenuItem>
         ))}
-      </MenuList>
+      </div>
       <div className='AlignmentPopover__select'>
         <span>Metric:</span>
         <Select
