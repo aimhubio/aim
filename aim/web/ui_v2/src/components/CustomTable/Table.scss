@@ -35,16 +35,15 @@ $group-margin: 8px;
   box-sizing: border-box;
   background: #fff;
 
-  &.Table__container--short {
+  &.Table__container--small {
     $cell-height: 28px;
     $group-margin: 6px;
   }
-  f &.Table__container--medium {
+  &.Table__container--medium {
     $cell-height: 32px;
     $group-margin: 8px;
   }
-
-  &.Table__container--tall {
+  &.Table__container--large {
     $cell-height: 36px;
     $group-margin: 10px;
   }

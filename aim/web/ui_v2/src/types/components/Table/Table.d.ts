@@ -1,4 +1,4 @@
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
 import React from 'react';
 
 export interface ITableProps {
@@ -12,7 +12,7 @@ export interface ITableProps {
   onSort?: () => void;
   onRowsChange?: () => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
-  onRowHeightChange?: () => void;
+  onRowHeightChange?: (height: RowHeightSize) => void;
   data: any[];
   columns: any[];
   navBarItems?: {

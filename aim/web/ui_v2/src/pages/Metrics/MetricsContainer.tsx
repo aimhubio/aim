@@ -181,6 +181,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
       toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
       onExportTableData={metricAppModel.onExportTableData}
+      onRowHeightChange={metricAppModel.onRowHeightChange}
     />
   );
 }

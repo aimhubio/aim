@@ -76,7 +76,9 @@ import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
 
-const model = createModel<Partial<IMetricAppModelState>>({});
+const model = createModel<Partial<IMetricAppModelState>>({
+  requestIsPending: true,
+});
 let tooltipData: ITooltipData = {};
 
 function getConfig() {
@@ -258,6 +260,7 @@ function getMetricsData() {
     call: async () => {
       if (query === '') {
         model.setState({
+          requestIsPending: false,
           queryIsEmpty: true,
         });
       } else {
@@ -1691,6 +1694,21 @@ function toggleSelectAdvancedMode() {
   }
 }
 
+function onRowHeightChange(height: RowHeightSize) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.select) {
+    model.setState({
+      config: {
+        ...configData,
+        table: {
+          ...configData.table,
+          rowHeight: height,
+        },
+      },
+    });
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1730,6 +1748,7 @@ const metricAppModel = {
   updateSelectStateUrl,
   onChangeTooltip,
   onExportTableData,
+  onRowHeightChange,
 };
 
 export default metricAppModel;

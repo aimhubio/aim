@@ -27,7 +27,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
@@ -94,6 +94,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
+  onRowHeightChange: (height: RowHeightSize) => void;
 }
 
 export interface IOnSmoothingChange {

@@ -312,7 +312,7 @@ const Table = React.forwardRef(function Table(
       scrollTop: tableContainerRef.current.scrollTop,
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
-      itemHeight: 32,
+      itemHeight: rowHeight,
       groupMargin: 8,
     });
 
@@ -372,7 +372,7 @@ const Table = React.forwardRef(function Table(
         scrollTop: tableContainerRef.current.scrollTop,
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
-        itemHeight: 32,
+        itemHeight: rowHeight,
         groupMargin: 8,
       });
 
@@ -386,7 +386,7 @@ const Table = React.forwardRef(function Table(
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
-          itemHeight: 32,
+          itemHeight: rowHeight,
           groupMargin: 8,
         });
 
@@ -510,10 +510,15 @@ const Table = React.forwardRef(function Table(
                             item
                           >
                             <Icon name='row-height' />
-                            <span onClick={onRowHeightChange}>Row Height</span>
+                            <span>Row Height</span>
                           </Grid>
                         )}
-                        component={<RowHeight />}
+                        component={
+                          <RowHeight
+                            rowHeight={rowHeight}
+                            onRowHeightChange={onRowHeightChange}
+                          />
+                        }
                       />
                     )}
                     <Grid item xs />

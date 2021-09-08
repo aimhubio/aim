@@ -18,6 +18,7 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 
 import './Metrics.scss';
 import Icon from '../../components/Icon/Icon';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 function Metrics(
   props: IMetricProps,
@@ -110,7 +111,7 @@ function Metrics(
                   }
                 />
               ) : (
-                !props.requestIsPending && (
+                props.requestIsPending === false && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."
@@ -137,7 +138,9 @@ function Metrics(
               {!isEmpty(props.tableData) ? (
                 <Table
                   custom
-                  key={`${Array.isArray(props.tableData)}`}
+                  key={`${Array.isArray(props.tableData)}-${
+                    props.tableRowHeight
+                  }`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
@@ -145,12 +148,19 @@ function Metrics(
                   topHeader
                   groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
+                  rowHeightMode={
+                    props.tableRowHeight === RowHeightSize.sm
+                      ? 'small'
+                      : props.tableRowHeight === RowHeightSize.md
+                      ? 'medium'
+                      : 'large'
+                  }
                   sortOptions={props.groupingSelectOptions}
                   // Table actions
                   onSort={() => null}
                   onExport={props.onExportTableData}
                   onManageColumns={() => null}
-                  onRowHeightChange={() => null}
+                  onRowHeightChange={props.onRowHeightChange}
                   onRowsChange={() => null}
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
