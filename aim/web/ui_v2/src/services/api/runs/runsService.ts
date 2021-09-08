@@ -7,9 +7,11 @@ const endpoints = {
   ARCHIVE_RUN: (id: string) => `runs/${id}`,
 };
 
-function getRunsData(query?: string) {
+function getRunsData(limit: number, query?: string, offset?: string) {
   return API.getStream<ReadableStream>(endpoints.GET_RUNS, {
     q: query || '',
+    limit,
+    offset,
   });
 }
 
