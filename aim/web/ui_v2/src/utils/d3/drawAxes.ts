@@ -195,14 +195,14 @@ function drawAxes(props: IDrawAxesProps): void {
     xScaleUpdate: d3.AxisScale<d3.AxisDomain>,
   ) {
     const { xAxis } = getFormattedXAxis(xScaleUpdate);
-    axesRef.current.xAxis.transition().duration(500).call(xAxis);
+    axesRef.current.xAxis.call(xAxis);
   };
 
   axesRef.current.updateYAxis = function (
     yScaleUpdate: d3.AxisScale<d3.AxisDomain>,
   ) {
     const yAxis = getFormattedYAxis(yScaleUpdate);
-    axesRef.current.yAxis.transition().duration(500).call(yAxis);
+    axesRef.current.yAxis.call(yAxis);
   };
 }
 
