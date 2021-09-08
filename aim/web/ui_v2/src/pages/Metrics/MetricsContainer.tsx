@@ -26,7 +26,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import {
   IProjectParamsMetrics,
   IProjectsModelState,
@@ -144,7 +144,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       selectedMetricsData={
         metricsData?.config?.select as IMetricAppConfig['select']
       }
-      tableRowHeight={metricsData?.config?.table.rowHeight as RowHeight}
+      tableRowHeight={metricsData?.config?.table.rowHeight as RowHeightSize}
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }

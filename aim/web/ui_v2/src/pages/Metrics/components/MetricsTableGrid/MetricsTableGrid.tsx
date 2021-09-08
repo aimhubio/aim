@@ -72,6 +72,12 @@ function getMetricsTableColumns(
   );
 
   if (groupFields) {
+    columns.push({
+      key: '#',
+      content: '#',
+      topHeader: 'Grouping',
+      pin: 'left',
+    });
     Object.keys(groupFields).forEach((field) => {
       const key = field.replace('run.params.', '');
       const column = columns.find((col) => col.key === key);
@@ -98,6 +104,11 @@ function getMetricsTableColumns(
 
 function getMetricsTableRowContent(rowsData: any, groups: boolean) {
   let rowsContent = groups ? {} : [];
+
+  if (groups) {
+    for (let groupKey in rowsData) {
+    }
+  }
 }
 
 export { getMetricsTableColumns, getMetricsTableRowContent };

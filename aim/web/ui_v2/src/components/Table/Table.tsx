@@ -17,6 +17,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import Icon from 'components/Icon/Icon';
 
 import './Table.scss';
@@ -34,8 +35,8 @@ const Table = React.forwardRef(function Table(
     data,
     columns,
     navBarItems,
-    rowHeight = 30,
-    headerHeight = 30,
+    rowHeight = RowHeightSize.md,
+    headerHeight = RowHeightSize.md,
     sortOptions,
     hideHeaderActions = false,
     fixed = true,

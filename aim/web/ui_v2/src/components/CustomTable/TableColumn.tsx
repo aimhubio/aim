@@ -112,7 +112,7 @@ function Column({
       >
         {firstColumn ? headerMeta : null}
         {col.content}
-        {col.key !== 'actions' && (
+        {col.key !== 'actions' && col.key !== '#' && (
           <>
             <Popover
               target={<Icon name='more-vertical' />}
@@ -274,7 +274,23 @@ function Column({
       {groups
         ? Object.keys(data).map((groupKey) => (
             <div key={groupKey} className='Table__group'>
-              {col.key === 'actions' ? (
+              {col.key === '#' ? (
+                <div
+                  className={classNames({
+                    Table__cell: true,
+                    Table__group__config__cell: true,
+                    Table__group__header__cell: true,
+                    expanded: expanded[groupKey],
+                    expandable: true,
+                  })}
+                >
+                  <GroupConfig
+                    expand={expand}
+                    expanded={expanded}
+                    groupKey={groupKey}
+                  />
+                </div>
+              ) : col.key === 'actions' ? (
                 <div
                   className={classNames({
                     Table__cell: true,
@@ -352,7 +368,15 @@ function Column({
   );
 }
 
-function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
+function GroupConfig({ config, expand, expanded, groupKey }) {
+  return (
+    <div className='Table__action' onClick={(evt) => expand(groupKey)}>
+      <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+    </div>
+  );
+}
+
+function GroupActions({ expand, expanded, groupKeys, groupKey }) {
   return (
     <Popover
       target={<Icon name='more-horizontal' />}
@@ -369,7 +393,9 @@ function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
             <Icon
               name={expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'}
             />
-            {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
+            <Typography small>
+              {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
+            </Typography>
           </div>
           {(expanded[groupKey] || groupKeys.some((key) => !!expanded[key])) && (
             <div
@@ -380,7 +406,7 @@ function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
               }}
             >
               <Icon name='collapse-inside' />
-              Collapse all
+              <Typography small>Collapse all</Typography>
             </div>
           )}
           {(!expanded[groupKey] || groupKeys.some((key) => !expanded[key])) && (
@@ -392,7 +418,7 @@ function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
               }}
             >
               <Icon name='collapse-outside' />
-              Expand all
+              <Typography small>Expand all</Typography>
             </div>
           )}
         </div>

@@ -31,7 +31,7 @@ import {
 } from 'utils/encoder/streamEncoding';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import filterMetricData from 'utils/filterMetricData';
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import JsonToCSV from 'utils/JsonToCSV';
 
@@ -146,7 +146,7 @@ function getConfig() {
       advancedQuery: '',
     },
     table: {
-      rowHeight: RowHeight.md,
+      rowHeight: RowHeightSize.md,
     },
   };
 }
@@ -948,23 +948,19 @@ function getDataAsTableRows(
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
-        run: metric.run.props.name ?? '-',
+        run: metric.run.props.name,
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
-        value: `${
-          closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
-        }`,
-        step: `${
-          closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
-        }`,
-        epoch: `${
-          closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
-        }`,
-        time: `${
+        value:
+          closestIndex === null ? '-' : `${metric.data.values[closestIndex]}`,
+        step:
+          closestIndex === null ? '-' : `${metric.data.steps[closestIndex]}`,
+        epoch:
+          closestIndex === null ? '-' : `${metric.data.epochs[closestIndex]}`,
+        time:
           closestIndex === null
             ? '-'
-            : metric.data.timestamps[closestIndex] ?? '-'
-        }`,
+            : `${metric.data.timestamps[closestIndex]}`,
         parentId: groupKey,
       };
       rowIndex++;
@@ -979,7 +975,11 @@ function getDataAsTableRows(
         'time',
       ].forEach((key) => {
         if (columnsValues.hasOwnProperty(key)) {
-          if (!_.some(columnsValues[key], rowValues[key])) {
+          if (
+            _.findIndex(columnsValues[key], (value) =>
+              _.isEqual(rowValues[key], value),
+            ) === -1
+          ) {
             columnsValues[key].push(rowValues[key]);
           }
         } else {
@@ -991,7 +991,11 @@ function getDataAsTableRows(
         const value = _.get(metric.run.params, paramKey, '-');
         rowValues[paramKey] = value;
         if (columnsValues.hasOwnProperty(paramKey)) {
-          if (!columnsValues[paramKey].includes(value)) {
+          if (
+            _.findIndex(columnsValues[paramKey], (paramValue) =>
+              _.isEqual(value, paramValue),
+            ) === -1
+          ) {
             columnsValues[paramKey].push(value);
           }
         } else {
