@@ -2,8 +2,9 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
-import { isEmpty, isNil } from 'lodash-es';
+import { Box, Grid } from '@material-ui/core';
+import Button from 'components/Button/Button';
+import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
@@ -20,6 +21,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import Icon from 'components/Icon/Icon';
 
 import './Table.scss';
+import TableLoader from '../TableLoader/TableLoader';
 
 const Table = React.forwardRef(function Table(
   {
@@ -366,7 +368,7 @@ const Table = React.forwardRef(function Table(
   }
 
   React.useEffect(() => {
-    if (custom) {
+    if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
         scrollTop: tableContainerRef.current.scrollTop,
         offsetHeight: tableContainerRef.current.offsetHeight,
@@ -380,7 +382,7 @@ const Table = React.forwardRef(function Table(
 
       virtualizedUpdate();
 
-      tableContainerRef.current.onscroll = ({ target }) => {
+      tableContainerRef.current.onscroll = debounce(({ target }) => {
         const windowEdges = calculateWindow({
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
@@ -391,9 +393,14 @@ const Table = React.forwardRef(function Table(
 
         startIndex.current = windowEdges.startIndex;
         endIndex.current = windowEdges.endIndex;
-
         virtualizedUpdate();
-      };
+        if (props.isInfiniteLoading && props.infiniteLoadHandler) {
+          const index = windowEdges.endIndex - 10 - 3; // 10: offset, 3: header rows
+          if (index + 5 >= rowData.length) {
+            props.infiniteLoadHandler(rowData[index]);
+          }
+        }
+      }, 100);
     }
 
     return () => {
@@ -401,11 +408,12 @@ const Table = React.forwardRef(function Table(
         tableContainerRef.current.onscroll = null;
       }
     };
-  }, [custom]);
+  }, [custom, rowData]);
 
   return (
     <BusyLoaderWrapper
       isLoading={isLoading || isNil(rowData)}
+      loaderComponent={<TableLoader />}
       className='Tags__TagList__tagListBusyLoader'
     >
       {!isEmpty(rowData) ? (
@@ -610,4 +618,4 @@ const Table = React.forwardRef(function Table(
   );
 });
 
-export default React.memo(Table, () => true);
+export default React.memo(Table);
