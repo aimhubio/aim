@@ -28,8 +28,9 @@ def pytest_sessionstart(session):
     Repo.set_default_path(TEST_REPO_PATH)
     Project.set_repo_path(TEST_REPO_PATH)
 
-    _init_test_repo()
     os.environ[AIM_ENV_MODE_KEY] = 'test'
+
+    _init_test_repo()
     _upgrade_api_db()
 
 
