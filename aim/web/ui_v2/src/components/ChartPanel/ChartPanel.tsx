@@ -35,7 +35,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       if (
         props.tooltip.display ||
         props.focusedState.active ||
-        props.zoomMode
+        props.zoom?.active
       ) {
         setPopoverPosition(pos?.top && pos.left ? pos : null);
       }
@@ -43,7 +43,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     [
       props.tooltip.display,
       props.focusedState.active,
-      props.zoomMode,
+      props.zoom?.active,
       setPopoverPosition,
     ],
   );
@@ -121,10 +121,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }));
 
   React.useEffect(() => {
-    !props.panelResizing &&
+    if (!props.panelResizing) {
       chartRefs.forEach((chartRef) => {
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
+    }
   }, [chartRefs, props.focusedState, props.panelResizing]);
 
   React.useEffect(() => {
@@ -153,13 +154,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           >
             {props.data.map((chartData: any, index: number) => {
               const Component = chartTypesConfig[props.chartType];
-              const aggregatedData = props.aggregatedData?.filter(
-                (data) => data.chartIndex === index,
-              );
-              const title =
-                props.data.length > 1 && props.chartTitleData
-                  ? props.chartTitleData[index]
-                  : {};
               return (
                 <Grid
                   key={index}
@@ -173,14 +167,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 >
                   <Component
                     ref={chartRefs[index]}
-                    // TODO change props.chartProps[0] to props.chartProps
-                    {...props.chartProps[0]}
+                    {...props.chartProps[index]}
                     index={index}
                     data={chartData}
-                    title={title}
-                    aggregatedData={aggregatedData}
-                    aggregationConfig={props.aggregationConfig}
-                    alignmentConfig={props.alignmentConfig}
                     syncHoverState={syncHoverState}
                   />
                 </Grid>
@@ -193,7 +182,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           open={
             props.data.length > 0 &&
             !props.panelResizing &&
-            !props.zoomMode &&
+            !props.zoom?.active &&
             (props.tooltip.display || props.focusedState.active)
           }
           containerRef={containerRef}
