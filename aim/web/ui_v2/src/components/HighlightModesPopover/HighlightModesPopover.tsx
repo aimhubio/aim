@@ -1,7 +1,9 @@
 import React from 'react';
-import { Box, MenuItem, MenuList } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import { IHighlightModesPopoverProps } from 'types/components/HighlightModesPopover/HighlightModesPopover';
+
+import './HighlightModePopover.scss';
 
 export enum HighlightEnum {
   Off = 0,
@@ -22,7 +24,7 @@ function HighlightModesPopover({
   }
 
   return (
-    <Box p='0.5rem'>
+    <div className='HighlightModePopover'>
       <MenuItem
         data-name={HighlightEnum.Off}
         selected={mode === HighlightEnum.Off}
@@ -44,7 +46,7 @@ function HighlightModesPopover({
       >
         Highlight Run On Hover
       </MenuItem>
-    </Box>
+    </div>
   );
 }
 

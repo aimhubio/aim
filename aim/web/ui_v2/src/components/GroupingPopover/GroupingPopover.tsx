@@ -23,6 +23,8 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 
 import './groupingPopoverStyle.scss';
+import { ScaleEnum } from '../../utils/d3';
+import Icon from '../Icon/Icon';
 
 function GroupingPopover({
   groupName,
@@ -52,12 +54,14 @@ function GroupingPopover({
   }, [groupName, groupingData]);
 
   function handleGroupingMode(
-    e: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
+    // e: React.ChangeEvent<HTMLInputElement>,
+    // checked: boolean,
+    val: string | number,
+    id: any,
   ) {
     onGroupingModeChange({
       groupName,
-      value: checked,
+      value: val === 'Reverse',
       options: groupingData.reverseMode[groupName as GroupNameType]
         ? groupingSelectOptions
         : null,
@@ -65,9 +69,12 @@ function GroupingPopover({
   }
 
   return (
-    <Box className='GroupingPopover__container'>
-      <Box p={0.5}>
-        <Box borderRadius={4} border='1px solid #B7B7B7' p={0.5}>
+    <div className='GroupingPopover'>
+      <div className='GroupingPopover__container'>
+        <div className='GroupingPopover__container__select'>
+          <h3 className='GroupingPopover__subtitle'>
+            Select Fields for grouping by Stroke style
+          </h3>
           <Autocomplete
             id='select-metrics'
             size='small'
@@ -99,37 +106,45 @@ function GroupingPopover({
               </React.Fragment>
             )}
           />
-        </Box>
-        <Box className='GroupingPopover__toggleMode_div'>
-          <h3>select grouping mode</h3>
-          {/* <ToggleButton
-            id='groupMode'
-            value={groupingData.reverseMode[groupName as GroupNameType]}
+        </div>
+        <div className='GroupingPopover__toggleMode__div'>
+          <h3 className='GroupingPopover__subtitle'>select grouping mode</h3>
+          <ToggleButton
+            title='Select Mode'
+            id='yAxis'
+            value={
+              groupingData.reverseMode[groupName as GroupNameType]
+                ? 'Reverse'
+                : 'Group'
+            }
+            leftValue='Group'
+            rightValue='Reverse'
             leftLabel='Group'
             rightLabel='Reverse'
-            defaultChecked={
-              groupingData.reverseMode[groupName as GroupNameType]
-            }
             onChange={handleGroupingMode}
-          /> */}
-        </Box>
+          />
+        </div>
         {advancedComponent && (
-          <Accordion className='GroupingPopover__accordion__container'>
-            <AccordionSummary
-              style={{ padding: '0 0.5em' }}
-              expandIcon={<ExpandMore />}
-              id='panel1c-header'
-            >
-              <span>Advanced options</span>
-            </AccordionSummary>
-            <AccordionDetails style={{ padding: 0 }}>
-              {advancedComponent}
-            </AccordionDetails>
-            <Divider />
-          </Accordion>
+          <div className='GroupingPopover__advanced__component'>
+            <Accordion className='GroupingPopover__accordion__container'>
+              <AccordionSummary
+                expandIcon={
+                  <Icon fontSize='0.875rem' name='arrow-bidirectional-close' />
+                }
+                id='panel1c-header'
+              >
+                <span className='GroupingPopover__subtitle'>
+                  Advanced options
+                </span>
+              </AccordionSummary>
+              <AccordionDetails style={{ padding: 0 }}>
+                {advancedComponent}
+              </AccordionDetails>
+            </Accordion>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 

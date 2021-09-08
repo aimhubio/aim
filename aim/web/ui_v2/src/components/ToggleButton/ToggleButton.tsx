@@ -13,6 +13,7 @@ function ToggleButton({
   onChange,
   value,
   id,
+  className,
 }: IToggleButtonProps): React.FunctionComponentElement<React.ReactNode> {
   const [state, setState] = React.useState<number | string>(value);
 
@@ -23,7 +24,7 @@ function ToggleButton({
   }
 
   return (
-    <div className='ToggleButton'>
+    <div className={`ToggleButton ${className || ''}`}>
       <span className='ToggleButton__title'>{title}</span>
       <div className='ToggleButton__container'>
         <Button

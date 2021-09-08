@@ -2,35 +2,49 @@
 
 .ManageColumns__container {
   display: flex;
-  padding: 0.5em;
-  height: 210px;
+  height: 13.125rem;
 }
 
 .ColumnList__container {
-  border-radius: 4px;
-  width: 210px;
+  width: 13.125rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e8f1fc;
+  border-bottom: $border-main;
   &:nth-child(2) {
-    border-left: unset;
-    border-right: unset;
+    border-left: $border-main;
+    border-right: $border-main;
   }
 }
 
 .ColumnList__title {
-  padding: 0.5em;
-  border-bottom: 1px solid rgba(8, 46, 92, 0.1);
+  border-bottom: $border-main;
   font-size: $text-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.875rem;
+}
+
+.ManageColumns__Search {
+  display: flex;
+  align-items: center;
+  margin: 0 0.875rem;
+  width: 100%;
+  input {
+    font-size: $text-sm;
+  }
+}
+
+.ManageColumns__Search__icon {
+  margin-right: 0.625rem;
 }
 
 .ColumnList__items__wrapper {
   height: 100%;
   overflow: auto;
-  padding: 8px;
+  padding: 0.5rem;
   transition: background-color 0.2s ease;
-
   min-height: 100px;
 }
 
@@ -39,11 +53,21 @@
 }
 
 .ManageColumns__actions__container {
-  padding: 0em 0.5em 0.5em 0.5em;
+  padding: 0.5rem;
   display: flex;
   justify-content: flex-end;
+
   button {
-    font-size: 0.625em;
-    margin-left: 0.5em;
+    font-size: $text-sm;
+    margin-left: 0.5rem;
+    font-family: 'Inter Medium', sans-serif;
+
+    &:nth-child(4) {
+      margin-left: 0;
+    }
+
+    i {
+      margin-right: 0.75rem;
+    }
   }
 }

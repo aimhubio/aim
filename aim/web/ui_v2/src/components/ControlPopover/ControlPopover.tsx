@@ -16,6 +16,7 @@ function ControlPopover({
 
   const onAnchorClick = React.useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
+      event.stopPropagation();
       setAnchorEl(event.currentTarget);
     },
     [],

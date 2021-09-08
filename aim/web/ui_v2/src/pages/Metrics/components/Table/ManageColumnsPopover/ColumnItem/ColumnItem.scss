@@ -1,19 +1,28 @@
+@use 'src/styles/abstracts' as *;
+
 .ColumnItem__container {
-  border: 1px solid rgba(8, 46, 92, 0.1);
+  border: $border-main;
   margin-bottom: 0.25em;
   border-radius: 0.25em;
   padding: 0.25em 0.5em;
-  background-color: #fff;
+  background-color: tint($cuddle, 90);
   display: flex;
+
   div {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex: 1;
   }
 }
 
 .ColumnItem__toggle {
-  //   margin-right: 0.5em;
+  margin-right: 0.785rem;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
 }
 
 .ColumnItem__name {
@@ -22,12 +31,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.785em;
+  font-size: $text-sm;
   flex: 1;
 }
 
 .ColumnItem__drag__icon {
+  display: flex;
   i {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
 }
