@@ -9,7 +9,7 @@ const endpoints = {
 
 function getRunsData(query?: string) {
   return API.getStream<ReadableStream>(endpoints.GET_RUNS, {
-    q: query || 'True',
+    q: query || '',
   });
 }
 

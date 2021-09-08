@@ -381,6 +381,7 @@ const Table = React.forwardRef(function Table(
       virtualizedUpdate();
 
       tableContainerRef.current.onscroll = ({ target }) => {
+        alert('');
         const windowEdges = calculateWindow({
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
@@ -391,7 +392,6 @@ const Table = React.forwardRef(function Table(
 
         startIndex.current = windowEdges.startIndex;
         endIndex.current = windowEdges.endIndex;
-
         virtualizedUpdate();
       };
     }

@@ -133,7 +133,7 @@ function setDefaultAppConfigData() {
     grouping, // not useful
     select,
   });
-  debugger;
+
   model.setState({
     config: configData,
   });
@@ -159,8 +159,9 @@ function initialize(appId: string = '') {
         window.history.pushState(null, '', urlFromStorage);
       }
     }
-    setDefaultAppConfigData();
   }
+  setDefaultAppConfigData();
+  getRunsData().call();
 }
 
 function onNotificationDelete(id: number) {
@@ -508,7 +509,7 @@ function getRunsData() {
   const configData = modelState?.config;
 
   const query = configData?.select?.query || '';
-  debugger;
+
   const { call, abort } = runsService.getRunsData(query);
   return {
     call: async () => {
@@ -530,8 +531,8 @@ function getRunsData() {
       model.setState({
         data: runsData,
         requestIsPending: false,
-        tableColumns: getRunsTableColumns(params, data[0]?.config),
-        tableData: getDataAsTableRows(data, null, params),
+        tableColumns,
+        tableData,
       });
 
       setTimeout(() => {

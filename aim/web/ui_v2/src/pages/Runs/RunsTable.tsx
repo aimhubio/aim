@@ -18,7 +18,7 @@ function RunsTable({
       <div className='RunsTable'>
         <Table
           custom
-          emptyText={'No runs'}
+          emptyText={'No runs found'}
           key={`${columns?.length}-${size(runsList)}`}
           ref={tableRef}
           data={null}

@@ -1,10 +1,8 @@
 import React, { memo } from 'react';
-import runsAppModel from 'services/models/runs/runsAppModel';
 import useModel from 'hooks/model/useModel';
 import Runs from './Runs';
 import { ITableRef } from '../../types/components/Table/Table';
-import metricAppModel from '../../services/models/metrics/metricsAppModel';
-import { useRouteMatch } from 'react-router-dom';
+import runsAppModel from '../../services/models/runs/runsAppModel';
 
 const runsRequestRef = runsAppModel.getRunsData();
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
@@ -12,7 +10,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const runsData = useModel(runsAppModel);
 
   React.useEffect(() => {
-    metricAppModel.setDefaultAppConfigData();
     if (tableRef.current) {
       runsAppModel.setComponentRefs({
         tableRef,
@@ -22,7 +19,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     runsAppModel.initialize();
-    runsRequestRef.call();
     return () => {
       runsRequestRef.abort();
     };
