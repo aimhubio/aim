@@ -13,12 +13,6 @@ export interface IDrawParallelAxesBrushBrushProps {
   dimensions: IDimensionsType;
 }
 
-export interface IHandleBrushChange {
-  xValues: IGetAxisScale;
-  yValues: IGetAxisScale;
-  mousePosition: number[];
-}
-
 export type DomainsDataType = {
   [key: string]: number[] | string[];
 };

@@ -9,9 +9,7 @@ function getObjectPaths(
   let rootKeys = Object.keys(obj).map((key) => {
     return { prefixedKey: prefix ? `${prefix}.${key}` : key, key };
   });
-  let paths: string[] = includeRoot
-    ? rootKeys.map(({ prefixedKey }) => prefixedKey)
-    : [];
+  let paths: string[] = rootKeys.map(({ prefixedKey }) => prefixedKey);
   rootKeys.forEach(({ prefixedKey }) => {
     const val: any = _.get(rootObject, prefixedKey);
     if (typeof val === 'object' && !_.isNil(val) && !Array.isArray(val)) {

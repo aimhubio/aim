@@ -308,7 +308,10 @@ class Repo:
             :obj:`dict`: Tree of metrics and their contexts.
         """
         meta_tree = self._get_meta_tree()
-        traces = meta_tree.collect('traces')
+        try:
+            traces = meta_tree.collect('traces')
+        except KeyError:
+            traces = {}
         metrics = defaultdict(list)
         for ctx_id, trace_metrics in traces.items():
             for metric in trace_metrics.keys():
@@ -316,11 +319,14 @@ class Repo:
 
         return metrics
 
-    def collect_params_info(self):
+    def collect_params_info(self) -> dict:
         """Utility function for getting run meta-parameters.
 
         Returns:
             :obj:`dict`: All runs meta-parameters.
         """
         meta_tree = self._get_meta_tree()
-        return meta_tree.collect('attrs', strict=False)
+        try:
+            return meta_tree.collect('attrs', strict=False)
+        except KeyError:
+            return {}

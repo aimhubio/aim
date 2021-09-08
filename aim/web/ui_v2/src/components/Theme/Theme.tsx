@@ -17,11 +17,7 @@ const light: ThemeOptions = {
   },
   overrides: {
     MuiTextField: {},
-    MuiInputBase: {
-      input: {
-        height: '0.6875em',
-      },
-    },
+    MuiInputBase: {},
     MuiButton: {
       root: {
         height: 32,

@@ -5,7 +5,6 @@ import {
   IFocusedState,
 } from 'metrics/metricsAppModel';
 import { CurveEnum } from 'utils/d3';
-import { ISelectMetricsOption } from 'pages/metrics/components/SelectForm/SelectForm';
 
 export interface IParam {
   run: IRun<IParamTrace>;
@@ -46,7 +45,7 @@ interface IParamsAppConfig {
     tooltip: IChartTooltip;
   };
   select: {
-    params: ISelectMetricsOption[];
+    params: any; // ISelectMetricsOption[];
     query: string;
   };
   onParamsSelectChange: (data) => void;

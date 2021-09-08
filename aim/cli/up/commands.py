@@ -1,7 +1,7 @@
 import os
 import click
 
-from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_WEB_ENV_KEY, \
+from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_ENV_MODE_KEY, \
     AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
@@ -22,9 +22,9 @@ from aim.web.utils import ShellCommandException
 @click.option('--dev', is_flag=True, default=False)
 def up(dev, host, port, repo, tf_logs):
     if dev:
-        os.environ[AIM_WEB_ENV_KEY] = 'dev'
+        os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
-        os.environ[AIM_WEB_ENV_KEY] = 'prod'
+        os.environ[AIM_ENV_MODE_KEY] = 'prod'
 
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)

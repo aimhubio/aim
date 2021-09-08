@@ -1,11 +1,13 @@
 import * as d3 from 'd3';
 
-import { IDrawBrushProps, IHandleBrushChange } from 'types/utils/d3/drawBrush';
+import { IDrawBrushProps } from 'types/utils/d3/drawBrush';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import getAxisScale from './getAxisScale';
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {
+    index,
     brushRef,
     plotBoxRef,
     plotNodeRef,
@@ -17,7 +19,16 @@ function drawBrush(props: IDrawBrushProps): void {
     axesScaleType,
     min,
     max,
+    zoom,
+    onZoomChange,
   } = props;
+
+  if (!plotNodeRef.current) {
+    return;
+  }
+
+  brushRef.current.xScale = attributesRef.current.xScale;
+  brushRef.current.yScale = attributesRef.current.yScale;
 
   const brush = d3
     .brush()
@@ -27,7 +38,9 @@ function drawBrush(props: IDrawBrushProps): void {
     ])
     .on('end', handleBrushChange);
 
-  plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
+  if (zoom?.active) {
+    plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
+  }
 
   brushRef.current.updateScales = function (
     xScale: IGetAxisScale,
@@ -35,6 +48,43 @@ function drawBrush(props: IDrawBrushProps): void {
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;
+  };
+
+  brushRef.current.handleZoomIn = function (
+    xValues: [number, number],
+    yValues: [number, number],
+  ): void {
+    const { width, height, margin } = visBoxRef.current;
+
+    // updating Scales domain
+    brushRef.current.xScale
+      .domain(xValues)
+      .range([0, width - margin.left - margin.right]);
+
+    brushRef.current.yScale
+      .domain(yValues)
+      .range([height - margin.top - margin.bottom, 0]);
+
+    // updating axes with new Scales
+    axesRef.current.updateXAxis(brushRef.current.xScale);
+    axesRef.current.updateYAxis(brushRef.current.yScale);
+
+    linesRef.current.updateLinesScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
+
+    linesRef.current.updateAggregatedAreasScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
+
+    linesRef.current.updateAggregatedLinesScales(
+      brushRef.current.xScale,
+      brushRef.current.yScale,
+    );
+
+    attributesRef.current.updateFocusedChart?.();
   };
 
   // This remove the grey brush area as soon as the selection has been done
@@ -45,7 +95,6 @@ function drawBrush(props: IDrawBrushProps): void {
   // This event firing after brush selection ends
   function handleBrushChange(event: d3.D3BrushEvent<d3.BrushSelection>): void {
     const extent: d3.BrushSelection | any = event.selection;
-    const mousePos = d3.pointer(event);
     if (!extent) {
       return;
     } else if (
@@ -64,61 +113,35 @@ function drawBrush(props: IDrawBrushProps): void {
       const [xMin, xMax]: number[] = brushRef.current.xScale.domain();
       const [yMin, yMax]: number[] = brushRef.current.yScale.domain();
 
-      const xValues: number[] | null =
+      const xValues: [number, number] | null =
         extent[1][0] - extent[0][0] < 5
           ? null
           : [left < xMin ? xMin : left, right > xMax ? xMax : right];
 
-      const yValues: number[] | null =
+      const yValues: [number, number] | null =
         extent[1][1] - extent[0][1] < 5
           ? null
           : [bottom < yMin ? yMin : bottom, top > yMax ? yMax : top];
 
-      handleZoomIn({
-        xValues,
-        yValues,
-        mousePos,
-      });
+      if (xValues && yValues) {
+        brushRef.current.handleZoomIn?.(xValues, yValues);
+        if (typeof onZoomChange === 'function' && zoom) {
+          onZoomChange({
+            active: zoom.mode !== ZoomEnum.SINGLE,
+            history: [
+              ...zoom.history,
+              {
+                index,
+                xValues,
+                yValues,
+              },
+            ],
+          });
+        }
+      }
     }
     svgNodeRef.current.on('dblclick', handleZoomOut);
     removeBrush();
-  }
-
-  function handleZoomIn({
-    xValues,
-    yValues,
-    mousePos,
-  }: IHandleBrushChange): void {
-    //
-    const { width, height, margin } = visBoxRef.current;
-
-    // updating Scales domain
-    brushRef.current.xScale
-      .domain(xValues)
-      .range([0, width - margin.left - margin.right]);
-    brushRef.current.yScale
-      .domain(yValues)
-      .range([height - margin.top - margin.bottom, 0]);
-
-    // updating axes with new Scales
-    axesRef.current.updateXAxis(brushRef.current.xScale);
-    axesRef.current.updateYAxis(brushRef.current.yScale);
-
-    attributesRef.current.updateFocusedChart();
-
-    linesRef.current.updateLinesScales(
-      brushRef.current.xScale,
-      brushRef.current.yScale,
-    );
-
-    linesRef.current.updateAggregatedAreasScales(
-      brushRef.current.xScale,
-      brushRef.current.yScale,
-    );
-    linesRef.current.updateAggregatedLinesScales(
-      brushRef.current.xScale,
-      brushRef.current.yScale,
-    );
   }
 
   function handleZoomOut(event: Event): void {
@@ -139,13 +162,26 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateYAxis(yScale);
 
     // setting scales and lines to initial state
-    brushRef.current.updateScales(xScale, yScale);
+    brushRef.current.updateScales?.(xScale, yScale);
     linesRef.current.updateLinesScales(xScale, yScale);
     linesRef.current.updateAggregatedAreasScales(xScale, yScale);
     linesRef.current.updateAggregatedLinesScales(xScale, yScale);
 
-    attributesRef.current.updateScales(xScale, yScale);
-    attributesRef.current.updateFocusedChart();
+    attributesRef.current.updateScales?.(xScale, yScale);
+    attributesRef.current.updateFocusedChart?.();
+  }
+
+  if (zoom?.history?.length) {
+    const chartZoomHistory = zoom.history.filter(
+      (item) => item.index === index,
+    );
+    const lastHistoryState = chartZoomHistory[chartZoomHistory.length - 1];
+    if (lastHistoryState) {
+      brushRef.current.handleZoomIn(
+        lastHistoryState.xValues,
+        lastHistoryState.yValues,
+      );
+    }
   }
 }
 

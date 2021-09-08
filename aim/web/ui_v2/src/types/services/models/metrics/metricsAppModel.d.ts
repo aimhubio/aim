@@ -16,6 +16,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { RowHeight } from 'config/table/tableConfigs';
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 export interface IMetricAppModelState {
   refs: {
@@ -121,7 +122,7 @@ interface IMetricAppConfig {
   chart: {
     highlightMode: HighlightEnum;
     displayOutliers: boolean;
-    zoomMode: boolean;
+    zoom: IChartZoom;
     axesScaleType: IAxesScaleState;
     curveInterpolation: CurveEnum;
     smoothingAlgorithm: SmoothingAlgorithmEnum;
@@ -140,6 +141,16 @@ interface IMetricAppConfig {
   table: {
     rowHeight: RowHeight;
   };
+}
+
+export interface IChartZoom {
+  active: boolean;
+  mode: ZoomEnum;
+  history: {
+    index: number;
+    xValues: [number, number];
+    yValues: [number, number];
+  }[];
 }
 
 export interface IChartTooltip {

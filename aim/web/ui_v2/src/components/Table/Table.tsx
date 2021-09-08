@@ -2,8 +2,9 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
-import { isEmpty, isNil } from 'lodash-es';
+import { Box, Grid } from '@material-ui/core';
+import Button from 'components/Button/Button';
+import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
@@ -11,8 +12,8 @@ import AutoResizer from './AutoResizer';
 import CustomTable from '../CustomTable/Table';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRows';
-import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeight';
+import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
+import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
@@ -20,6 +21,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import Icon from 'components/Icon/Icon';
 
 import './Table.scss';
+import TableLoader from '../TableLoader/TableLoader';
 
 const Table = React.forwardRef(function Table(
   {
@@ -340,7 +342,9 @@ const Table = React.forwardRef(function Table(
     updateHoveredRow(`rowKey-${activeRowKey.current}`);
 
     if (typeof onRowClick === 'function') {
-      onRowClick(activeRowKey.current);
+      onRowClick(
+        activeRowKey.current === null ? undefined : activeRowKey.current,
+      );
     }
   }
 
@@ -364,7 +368,7 @@ const Table = React.forwardRef(function Table(
   }
 
   React.useEffect(() => {
-    if (custom) {
+    if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
         scrollTop: tableContainerRef.current.scrollTop,
         offsetHeight: tableContainerRef.current.offsetHeight,
@@ -378,7 +382,7 @@ const Table = React.forwardRef(function Table(
 
       virtualizedUpdate();
 
-      tableContainerRef.current.onscroll = ({ target }) => {
+      tableContainerRef.current.onscroll = debounce(({ target }) => {
         const windowEdges = calculateWindow({
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
@@ -389,9 +393,14 @@ const Table = React.forwardRef(function Table(
 
         startIndex.current = windowEdges.startIndex;
         endIndex.current = windowEdges.endIndex;
-
         virtualizedUpdate();
-      };
+        if (props.isInfiniteLoading && props.infiniteLoadHandler) {
+          const index = windowEdges.endIndex - 10 - 3; // 10: offset, 3: header rows
+          if (index + 5 >= rowData.length) {
+            props.infiniteLoadHandler(rowData[index]);
+          }
+        }
+      }, 100);
     }
 
     return () => {
@@ -399,11 +408,12 @@ const Table = React.forwardRef(function Table(
         tableContainerRef.current.onscroll = null;
       }
     };
-  }, [custom]);
+  }, [custom, rowData]);
 
   return (
     <BusyLoaderWrapper
       isLoading={isLoading || isNil(rowData)}
+      loaderComponent={<TableLoader />}
       className='Tags__TagList__tagListBusyLoader'
     >
       {!isEmpty(rowData) ? (
@@ -453,7 +463,6 @@ const Table = React.forwardRef(function Table(
                           vertical: 'top',
                           horizontal: 'center',
                         }}
-                        title='Manage Rows Visibility'
                         anchor={({ onAnchorClick, opened }) => (
                           <Grid
                             onClick={onAnchorClick}
@@ -501,7 +510,6 @@ const Table = React.forwardRef(function Table(
                           vertical: 'top',
                           horizontal: 'center',
                         }}
-                        title='Select Row Height'
                         anchor={({ onAnchorClick }) => (
                           <Grid
                             onClick={onAnchorClick}
@@ -610,4 +618,4 @@ const Table = React.forwardRef(function Table(
   );
 });
 
-export default React.memo(Table, () => true);
+export default React.memo(Table);

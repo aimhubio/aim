@@ -14,7 +14,7 @@ function drawParallelArea(props: IDrawAreaProps): void {
     plotBoxRef,
     linesNodeRef,
     attributesNodeRef,
-    title = {},
+    chartTitle = {},
   } = props;
   if (!parentRef?.current || !visAreaRef?.current) {
     return;
@@ -92,9 +92,9 @@ function drawParallelArea(props: IDrawAreaProps): void {
 
   const titleMarginTop = 2;
   const titleHeight = 15;
-  const keys = Object.keys(title);
+  const keys = Object.keys(chartTitle);
   const titleText = keys
-    ? `${keys.map((key) => `${key}=${title[key]}`).join(', ')}`
+    ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
     : '';
 
   if (titleText) {

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, TextField } from '@material-ui/core';
+import { Button, Divider, InputBase } from '@material-ui/core';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import ColumnItem from './ColumnItem/ColumnItem';
+import Icon from 'components/Icon/Icon';
 
 import './ManageColumnsPopover.scss';
 
@@ -90,7 +91,7 @@ function ManageColumnsPopover({ columnsData }: any) {
   }
 
   React.useEffect(() => {
-    const optionsList = columnsData.map((item: any) => item.dataKey);
+    const optionsList = columnsData.map((item: any) => item.key);
     const filteredList = optionsList.filter(
       (column: string) =>
         state.columns.leftPinned.list.indexOf(column) === -1 &&
@@ -118,8 +119,8 @@ function ManageColumnsPopover({ columnsData }: any) {
                 {...provided.droppableProps}
               >
                 {state.columns.leftPinned.list.map(
-                  (column: any, index: number) => (
-                    <ColumnItem key={column} task={column} index={index} />
+                  (data: any, index: number) => (
+                    <ColumnItem key={index} data={data} index={index} />
                   ),
                 )}
                 {provided.placeholder}
@@ -129,7 +130,15 @@ function ManageColumnsPopover({ columnsData }: any) {
         </div>
         <div className='ColumnList__container'>
           <div className='ColumnList__title'>
-            <TextField size='small' fullWidth placeholder='search' />
+            <div className='ManageColumns__Search'>
+              <div className='ManageColumns__Search__icon'>
+                <Icon name='search' />
+              </div>
+              <InputBase
+                placeholder='Search'
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </div>
           </div>
           <Droppable droppableId='optionsData'>
             {(provided, snapshot) => (
@@ -143,10 +152,8 @@ function ManageColumnsPopover({ columnsData }: any) {
                 {...provided.droppableProps}
               >
                 {state.columns.optionsData.list.map(
-                  (column: any, index: number) => {
-                    return (
-                      <ColumnItem key={column} task={column} index={index} />
-                    );
+                  (data: any, index: number) => {
+                    return <ColumnItem key={index} data={data} index={index} />;
                   },
                 )}
                 {provided.placeholder}
@@ -168,9 +175,9 @@ function ManageColumnsPopover({ columnsData }: any) {
                 {...provided.droppableProps}
               >
                 {state.columns.rightPinned.list.map(
-                  (task: any, index: number) => (
-                    <ColumnItem key={task} task={task} index={index} />
-                  ),
+                  (data: any, index: number) => {
+                    return <ColumnItem key={index} data={data} index={index} />;
+                  },
                 )}
                 {provided.placeholder}
               </div>
@@ -179,17 +186,22 @@ function ManageColumnsPopover({ columnsData }: any) {
         </div>
       </div>
       <div className='ManageColumns__actions__container'>
-        <Button variant='outlined' size='small'>
+        <Button variant='text' size='small'>
           reset columns order
         </Button>
-        <Button variant='outlined' size='small'>
+        <Button variant='text' size='small'>
           show table diff
         </Button>
-        <Button variant='outlined' size='small'>
-          show all
+        <Divider
+          style={{ margin: '0 0.875rem' }}
+          orientation='vertical'
+          flexItem
+        />
+        <Button variant='text' size='small'>
+          <Icon name='eye-show-outline' /> show all
         </Button>
-        <Button variant='outlined' size='small'>
-          hide all
+        <Button variant='text' size='small'>
+          <Icon name='eye-outline-hide' /> hide all
         </Button>
       </div>
     </DragDropContext>

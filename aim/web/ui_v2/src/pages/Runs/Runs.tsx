@@ -1,40 +1,37 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Box, Grid } from '@material-ui/core';
-import {
-  IMetricTrace,
-  IParamTrace,
-  IRun,
-} from 'types/services/models/metrics/runModel';
-import { IRunsProps } from 'types/pages/runs/Runs';
+import RunsTable from './RunsTable';
 
-function Runs({
-  runsData,
-}: IRunsProps): React.FunctionComponentElement<React.ReactNode> {
+import './Runs.scss';
+import RunsBar from './components/RunsBar/RunsBar';
+import SearchBar from './components/SearchBar/SearchBar';
+import runsAppModel from '../../services/models/runs/runsAppModel';
+
+function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box
-      bgcolor='grey.200'
-      component='section'
-      height='100vh'
-      overflow='hidden'
-      className='Params'
-    >
-      <Grid
-        container
-        direction='column'
-        justifyContent='center'
-        className='Params__fullHeight'
-        spacing={1}
-      >
-        <Grid item>
-          {runsData?.map((run: IRun<IMetricTrace | IParamTrace>) => (
-            <NavLink key={run.hash} to={`runs/${run.hash}`}>
-              <p>{run.hash}</p>
-            </NavLink>
-          ))}
-        </Grid>
-      </Grid>
-    </Box>
+    <div className='Runs__container'>
+      <section className='Runs__section'>
+        <div className='Runs__section__div Runs__fullHeight'>
+          <RunsBar />
+          <SearchBar
+            onSearchInputChange={props.onSelectRunQueryChange}
+            searchValue={props.query}
+            isRunsDataLoading={props.isRunsDataLoading}
+            updateSelectStateUrl={props.updateSelectStateUrl}
+          />
+          <div className='Runs__table__container'>
+            <RunsTable
+              onExportTableData={props.onExportTableData}
+              tableRowHeight={props.tableRowHeight}
+              columns={props.tableColumns}
+              runsList={props.tableData}
+              isRunsDataLoading={props.isRunsDataLoading}
+              tableRef={props.tableRef}
+              getLastRunsData={props.getLastRunsData}
+            />
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
 

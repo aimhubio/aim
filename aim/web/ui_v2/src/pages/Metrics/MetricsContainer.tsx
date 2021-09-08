@@ -21,6 +21,7 @@ import {
   IMetricAppModelState,
   IMetricTableRowData,
   IChartTitleData,
+  IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -120,7 +121,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
-      zoomMode={metricsData?.config?.chart.zoomMode as boolean}
+      zoom={metricsData?.config?.chart.zoom as IChartZoom}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum
       }
@@ -155,7 +156,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
-      onZoomModeChange={metricAppModel.onZoomModeChange}
+      onZoomChange={metricAppModel.onZoomChange}
       onHighlightModeChange={metricAppModel.onHighlightModeChange}
       onSmoothingChange={metricAppModel.onSmoothingChange}
       onTableRowHover={metricAppModel.onTableRowHover}

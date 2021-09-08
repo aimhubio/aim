@@ -45,6 +45,7 @@ import {
   IChartTitle,
   IChartTitleData,
   IChartTooltip,
+  IChartZoom,
   IDashboardData,
   IGetGroupingPersistIndex,
   IGroupingSelectOption,
@@ -75,6 +76,7 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -109,7 +111,11 @@ function getConfig() {
     chart: {
       highlightMode: HighlightEnum.Off,
       displayOutliers: true,
-      zoomMode: false,
+      zoom: {
+        active: false,
+        mode: ZoomEnum.SINGLE,
+        history: [],
+      },
       axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
@@ -1095,7 +1101,7 @@ function onHighlightModeChange(mode: HighlightEnum): void {
   }
 }
 
-function onZoomModeChange(): void {
+function onZoomChange(zoom: Partial<IChartZoom>): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     model.setState({
@@ -1103,7 +1109,10 @@ function onZoomModeChange(): void {
         ...configData,
         chart: {
           ...configData.chart,
-          zoomMode: !configData.chart.zoomMode,
+          zoom: {
+            ...configData.chart.zoom,
+            ...zoom,
+          },
         },
       },
     });
@@ -1696,7 +1705,7 @@ const metricAppModel = {
   setComponentRefs,
   setDefaultAppConfigData,
   onHighlightModeChange,
-  onZoomModeChange,
+  onZoomChange,
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,
