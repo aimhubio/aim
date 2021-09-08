@@ -5,6 +5,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
+
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -95,7 +96,6 @@ function Metrics(
                       aggregationConfig={props.aggregationConfig}
                       axesScaleType={props.axesScaleType}
                       alignmentConfig={props.alignmentConfig}
-                      projectsDataMetrics={props.projectsDataMetrics}
                       onChangeTooltip={props.onChangeTooltip}
                       onDisplayOutliersChange={props.onDisplayOutliersChange}
                       onZoomModeChange={props.onZoomModeChange}
@@ -107,6 +107,7 @@ function Metrics(
                       }
                       onAlignmentTypeChange={props.onAlignmentTypeChange}
                       onAlignmentMetricChange={props.onAlignmentMetricChange}
+                      projectsDataMetrics={props.projectsDataMetrics}
                     />
                   }
                 />

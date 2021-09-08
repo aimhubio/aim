@@ -39,6 +39,7 @@ const Params = ({
   tableRowHeight,
   onTableRowHover,
   onTableRowClick,
+  onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
   onColorIndicatorChange,
@@ -148,7 +149,7 @@ const Params = ({
                   sortOptions={groupingSelectOptions}
                   // Table actions
                   onSort={() => null}
-                  onExport={() => null}
+                  onExport={onExportTableData}
                   onManageColumns={() => null}
                   onRowHeightChange={() => null}
                   onRowsChange={() => null}

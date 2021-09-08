@@ -25,7 +25,7 @@ export interface ITableProps {
   fixed?: boolean;
   onRowHover?: (rowKey: string) => void;
   onRowClick?: (rowKey?: string) => void;
-  hideHeaderActions?: boolean = false;
+  hideHeaderActions?: boolean;
   emptyText?: string;
   excludedFields?: string[];
   setExcludedFields?: (fields: string[]) => null;
@@ -38,6 +38,8 @@ export interface ITableProps {
   sortFields?: any;
   setSortFields?: any;
   isLoading?: boolean;
+  infiniteLoadHandler?: (data: any) => void;
+  isInfiniteLoading?: boolean;
 }
 
 export interface ITableRef {
