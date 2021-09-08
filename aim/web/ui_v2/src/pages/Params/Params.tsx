@@ -47,6 +47,18 @@ const Params = ({
   onResetConfigData,
   onChangeTooltip,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
+  const chartProps: any[] = React.useMemo(() => {
+    return (highPlotData || []).map((chartData: any, index: number) => ({
+      curveInterpolation,
+      isVisibleColorIndicator,
+      chartTitle: chartTitleData[index],
+    }));
+  }, [
+    highPlotData,
+    curveInterpolation,
+    isVisibleColorIndicator,
+    chartTitleData,
+  ]);
   return (
     <div ref={wrapperElemRef} className='Params__container'>
       <section className='Params__section'>
@@ -95,13 +107,7 @@ const Params = ({
                   focusedState={focusedState}
                   onActivePointChange={onActivePointChange}
                   tooltip={tooltip}
-                  chartTitleData={chartTitleData}
-                  chartProps={[
-                    {
-                      curveInterpolation,
-                      isVisibleColorIndicator,
-                    },
-                  ]}
+                  chartProps={chartProps}
                   controls={
                     <Controls
                       curveInterpolation={curveInterpolation}

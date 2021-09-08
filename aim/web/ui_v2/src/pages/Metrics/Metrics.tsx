@@ -15,12 +15,44 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
+import { ILine } from 'types/components/LineChart/LineChart';
 
 import './Metrics.scss';
 
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const chartProps: any[] = React.useMemo(() => {
+    return (props.lineChartData || []).map(
+      (chartData: ILine[], index: number) => ({
+        axesScaleType: props.axesScaleType,
+        curveInterpolation: props.curveInterpolation,
+        displayOutliers: props.displayOutliers,
+        highlightMode: props.highlightMode,
+        aggregatedData: props.aggregatedData?.filter(
+          (data) => data.chartIndex === index,
+        ),
+        zoom: props.zoom,
+        chartTitle: props.chartTitleData[index],
+        aggregationConfig: props.aggregationConfig,
+        alignmentConfig: props.alignmentConfig,
+        onZoomChange: props.onZoomChange,
+      }),
+    );
+  }, [
+    props.lineChartData,
+    props.axesScaleType,
+    props.curveInterpolation,
+    props.displayOutliers,
+    props.highlightMode,
+    props.zoom,
+    props.chartTitleData,
+    props.aggregatedData,
+    props.aggregationConfig,
+    props.alignmentConfig,
+    props.onZoomChange,
+  ]);
+
   return (
     <div ref={props.wrapperElemRef} className='Metrics__container'>
       <section className='Metrics__section'>
@@ -64,22 +96,11 @@ function Metrics(
                   chartType={ChartTypeEnum.LineChart}
                   data={props.lineChartData}
                   focusedState={props.focusedState}
-                  onActivePointChange={props.onActivePointChange}
                   tooltip={props.tooltip}
-                  aggregatedData={props.aggregatedData}
-                  aggregationConfig={props.aggregationConfig}
-                  chartTitleData={props.chartTitleData}
                   alignmentConfig={props.alignmentConfig}
-                  zoomMode={props.zoomMode}
-                  chartProps={[
-                    {
-                      axesScaleType: props.axesScaleType,
-                      curveInterpolation: props.curveInterpolation,
-                      displayOutliers: props.displayOutliers,
-                      zoomMode: props.zoomMode,
-                      highlightMode: props.highlightMode,
-                    },
-                  ]}
+                  zoom={props.zoom}
+                  onActivePointChange={props.onActivePointChange}
+                  chartProps={chartProps}
                   controls={
                     <Controls
                       selectOptions={props.groupingSelectOptions}
@@ -88,14 +109,14 @@ function Metrics(
                       smoothingFactor={props.smoothingFactor}
                       curveInterpolation={props.curveInterpolation}
                       displayOutliers={props.displayOutliers}
-                      zoomMode={props.zoomMode}
+                      zoom={props.zoom}
                       highlightMode={props.highlightMode}
                       aggregationConfig={props.aggregationConfig}
                       axesScaleType={props.axesScaleType}
                       alignmentConfig={props.alignmentConfig}
                       onChangeTooltip={props.onChangeTooltip}
                       onDisplayOutliersChange={props.onDisplayOutliersChange}
-                      onZoomModeChange={props.onZoomModeChange}
+                      onZoomChange={props.onZoomChange}
                       onHighlightModeChange={props.onHighlightModeChange}
                       onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                       onSmoothingChange={props.onSmoothingChange}

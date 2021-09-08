@@ -18,7 +18,7 @@ import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 
 import './Controls.scss';
@@ -60,7 +60,7 @@ function Controls(
                 props.aggregationConfig.isEnabled ? '' : 'disabled'
               }`}
             >
-              {props.aggregationConfig.isEnabled && (
+              {props.aggregationConfig.isEnabled ? (
                 <span
                   className={`Controls__anchor__arrow ${
                     opened ? 'Controls__anchor__arrow__opened' : ''
@@ -69,7 +69,7 @@ function Controls(
                 >
                   <KeyboardArrowLeft className='arrowLeft' />
                 </span>
-              )}
+              ) : null}
               <GroupWorkOutlined
                 color={
                   props.aggregationConfig?.isApplied ? 'primary' : 'inherit'
@@ -85,10 +85,12 @@ function Controls(
             </div>
           )}
           component={
-            <AggregationPopup
-              aggregationConfig={props.aggregationConfig}
-              onChange={props.onAggregationConfigChange}
-            />
+            props.aggregationConfig.isEnabled ? (
+              <AggregationPopup
+                aggregationConfig={props.aggregationConfig}
+                onChange={props.onAggregationConfigChange}
+              />
+            ) : null
           }
         />
       </div>
@@ -171,30 +173,60 @@ function Controls(
                 <KeyboardArrowLeft className='arrowLeft' />
               </span>
               <ZoomIn
-                color={props.zoomMode ? 'primary' : 'inherit'}
-                onClick={props.onZoomModeChange}
+                color={props.zoom?.active ? 'primary' : 'inherit'}
+                onClick={() => {
+                  if (props.zoom) {
+                    props.onZoomChange?.({ active: !props.zoom.active });
+                  }
+                }}
               />
             </div>
           )}
-          component={<ZoomInPopup />}
+          component={
+            <ZoomInPopup
+              mode={props.zoom?.mode}
+              onChange={props.onZoomChange}
+            />
+          }
         />
       </div>
       <div>
         <ControlPopover
           anchor={({ onAnchorClick, opened }) => (
-            <div className='Controls__anchor'>
-              <span
-                className={`Controls__anchor__arrow ${
-                  opened ? 'Controls__anchor__arrow__opened' : ''
-                }`}
-                onClick={onAnchorClick}
-              >
-                <KeyboardArrowLeft className='arrowLeft' />
-              </span>
-              <ZoomOut onClick={props.onZoomModeChange} />
+            <div
+              className={`Controls__anchor ${
+                props.zoom?.history.length ? '' : 'disabled'
+              }`}
+            >
+              {props.zoom?.history.length ? (
+                <span
+                  className={`Controls__anchor__arrow ${
+                    opened ? 'Controls__anchor__arrow__opened' : ''
+                  }`}
+                  onClick={onAnchorClick}
+                >
+                  <KeyboardArrowLeft className='arrowLeft' />
+                </span>
+              ) : null}
+              <ZoomOut
+                onClick={() => {
+                  if (props.zoom?.history.length) {
+                    props.onZoomChange?.({
+                      history: [...props.zoom.history].slice(0, -1),
+                    });
+                  }
+                }}
+              />
             </div>
           )}
-          component={<ZoomOutPopup />}
+          component={
+            props.zoom?.history.length ? (
+              <ZoomOutPopup
+                zoomHistory={props.zoom?.history}
+                onChange={props.onZoomChange}
+              />
+            ) : null
+          }
         />
       </div>
     </div>

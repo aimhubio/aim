@@ -5,6 +5,7 @@ import {
   IAggregationConfig,
   IAlignmentConfig,
   IChartTooltip,
+  IChartZoom,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -15,7 +16,7 @@ export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IChartTooltip;
   displayOutliers: boolean;
-  zoomMode: boolean;
+  zoom?: IChartZoom;
   highlightMode: HighlightEnum;
   aggregationConfig: IAggregationConfig;
   axesScaleType: IAxesScaleState;
@@ -31,7 +32,7 @@ export interface IControlProps {
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,
   ) => void;
-  onZoomModeChange: () => void;
+  onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   onAlignmentTypeChange: IMetricProps['onAlignmentTypeChange'];
   onAlignmentMetricChange: IMetricProps['onAlignmentMetricChange'];
 }

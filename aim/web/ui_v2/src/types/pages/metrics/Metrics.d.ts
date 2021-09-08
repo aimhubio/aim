@@ -18,6 +18,7 @@ import {
   IChartTooltip,
   IChartTitleData,
   IGroupingSelectOption,
+  IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -43,7 +44,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   displayOutliers: boolean;
-  zoomMode: boolean;
+  zoom: IChartZoom;
   curveInterpolation: CurveEnum;
   axesScaleType: IAxesScaleState;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
@@ -61,7 +62,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   requestIsPending: boolean;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
-  onZoomModeChange: () => void;
+  onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,

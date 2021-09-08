@@ -22,7 +22,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     syncHoverState,
     data,
     isVisibleColorIndicator,
-    title,
+    chartTitle,
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -71,7 +71,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
-      title,
+      chartTitle,
     });
 
     if (isVisibleColorIndicator) {
