@@ -1,52 +1,84 @@
-.GroupingPopover__container {
-  width: 25em;
+@use 'src/styles/abstracts' as *;
+
+.GroupingPopover {
+  width: 25rem;
+
   h3 {
     color: #324480;
     text-transform: uppercase;
-    font-size: 1em;
     padding: 0;
     margin: 0;
     font-weight: 500;
+  }
+
+  .GroupingPopover__container__select {
+    padding: 1rem;
   }
 
   .GroupingPopover__toggleMode__div {
     display: flex;
-    align-items: center;
-    border-radius: 4px;
     flex-direction: column;
-    border: 1px solid #b7b7b7;
-    margin-top: 0.25em;
-    margin-bottom: 0.5em;
-    padding: 0.5em;
+    border-top: $border-main;
+    border-bottom: $border-main;
+    padding: 1rem;
+  }
+
+  .GroupingPopover__subtitle {
+    font-size: $text-sm;
+    text-transform: uppercase;
+    color: $text-color-50;
+    margin-bottom: 0.5rem;
   }
 
   .GroupingPopover__accordion__container {
     box-shadow: unset;
-    border: 1px solid #b7b7b7;
-    border-radius: 4px;
     margin: 0 !important;
-  }   
-}
 
-.AdvancedPopover__container {
-  width: 25em;
-  padding: 0.5em;
-  h3 {
-    color: #324480;
-    text-transform: uppercase;
-    font-size: 1em;
-    padding: 0;
-    margin: 0;
-    font-weight: 500;
+    .GroupingPopover__subtitle {
+      margin-bottom: unset;
+    }
+
+    .MuiAccordionSummary-expandIcon {
+      padding: 0;
+      transform: unset;
+      margin: unset;
+
+      &.Mui-expanded {
+        transform: unset;
+      }
+    }
+
+    .Mui-expanded {
+      margin: 0;
+
+    }
+  }
+
+  .GroupingPopover__advanced__component {
+    padding-bottom: 0.875rem;
+  }
+
+
+  .MuiAccordionSummary-root {
+    min-height: unset;
+    height: 2.125rem;
+    border-bottom: $border-main;
+    padding: 0 1rem;
   }
 }
+
+
+.AdvancedPopover__container {
+  width: 25rem;
+}
+
 .AdvancedPopover__paletteColors__container {
   display: flex;
   border-radius: 4px;
-  width: 10.5em;
-  border: 1px solid;
-  height: 2em;
-  margin-right: 0.5em;
+  width: 10.5rem;
+  border-top: $border-main;
+  height: 2rem;
+  margin-right: 0.5rem;
   overflow: hidden;
 }
 

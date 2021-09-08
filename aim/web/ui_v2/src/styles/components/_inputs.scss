@@ -5,7 +5,7 @@
     &__Small {
       .MuiInputLabel-outlined.MuiInputLabel-marginDense {
         font-weight: 500;
-        font-size: $text-mm;
+        font-size: $text-md;
         color: $text-color;
         transform: translate(14px, 8px) scale(1);
       }
@@ -16,7 +16,7 @@
       .MuiInputBase-root {
         .MuiInputBase-input {
           font-weight: 500;
-          font-size: $text-mm;
+          font-size: $text-md;
           color: $text-color;
         }
         .MuiOutlinedInput-notchedOutline {
@@ -45,19 +45,19 @@
         }
         .MuiInputLabel-outlined.MuiInputLabel-shrink {
           transform: translate(14px, -6px) scale(0.75);
-          font-size: $text-mm;
+          font-size: $text-md;
           color: $primary-color;
           font-weight: 500;
         }
         .MuiFormLabel-root {
           color: $text-color;
           font-weight: 500;
-          font-size: $text-mm;
+          font-size: $text-md;
         }
         .MuiInputBase-root {
           .MuiInputBase-input {
             font-weight: 500;
-            font-size: $text-mm;
+            font-size: $text-md;
             color: $text-color;
           }
           .MuiOutlinedInput-notchedOutline {

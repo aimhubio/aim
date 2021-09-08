@@ -12,6 +12,9 @@ import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/Smooth
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
 
+import './SmoothingPopover.scss';
+import ToggleButton from '../ToggleButton/ToggleButton';
+
 const emaProps = {
   marks: [
     { value: 0, label: '0' },
@@ -67,9 +70,9 @@ function SmoothingPopover(
     }
   }
 
-  function handleInterpolation(ev: React.ChangeEvent, checked: boolean): void {
+  function handleInterpolation(value: CurveEnum, id: string | number): void {
     props.onSmoothingChange({
-      curveInterpolation: checked ? CurveEnum.MonotoneX : CurveEnum.Linear,
+      curveInterpolation: value,
     });
   }
 
@@ -89,9 +92,9 @@ function SmoothingPopover(
   }, [props.smoothingAlgorithm]);
 
   return (
-    <Box>
-      <Box p={1}>
-        <div>Chart Smoothening:</div>
+    <div className='SmoothingPopover'>
+      <div className='SmoothingPopover__section'>
+        <span className='SmoothingPopover__subtitle'>Chart Smoothing</span>
         <Slider
           defaultValue={0}
           valueLabelDisplay='auto'
@@ -104,40 +107,41 @@ function SmoothingPopover(
           max={sliderProps.max}
           min={sliderProps.min}
         />
-      </Box>
-      <Divider />
-      <MenuList>
-        <MenuItem
-          id={SmoothingAlgorithmEnum.EMA}
-          selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
-          onClick={handleAlgorithmChange}
-        >
-          Exponential Moving Average
-        </MenuItem>
-        <MenuItem
-          id={SmoothingAlgorithmEnum.CMA}
-          selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
-          onClick={handleAlgorithmChange}
-        >
-          Centred Moving Average
-        </MenuItem>
-      </MenuList>
-      <Divider />
-      <Box p={0.5}>Curve Interpolation method:</Box>
-      <Box p={1}>
-        Select Method
-        <Box component='span' marginLeft={1}>
-          Linear
-        </Box>
-        <Switch
-          checked={props.curveInterpolation === CurveEnum.MonotoneX}
-          color='primary'
-          inputProps={{ 'aria-label': 'checkbox with default color' }}
-          onChange={handleInterpolation}
-        />
-        <Box component='span'>Cubic</Box>
-      </Box>
-    </Box>
+        <div>
+          <MenuItem
+            id={SmoothingAlgorithmEnum.EMA}
+            selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
+            onClick={handleAlgorithmChange}
+          >
+            Exponential Moving Average
+          </MenuItem>
+          <MenuItem
+            id={SmoothingAlgorithmEnum.CMA}
+            selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
+            onClick={handleAlgorithmChange}
+          >
+            Centred Moving Average
+          </MenuItem>
+        </div>
+      </div>
+      <div className='SmoothingPopover__section'>
+        <span className='SmoothingPopover__subtitle'>
+          Curve Interpolation method:
+        </span>
+        <div>
+          <ToggleButton
+            title='Select Method'
+            onChange={handleInterpolation}
+            id='smoothing'
+            rightLabel='Cubic'
+            leftLabel='Linear'
+            leftValue={CurveEnum.Linear}
+            rightValue={CurveEnum.MonotoneX}
+            value={props.curveInterpolation}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 

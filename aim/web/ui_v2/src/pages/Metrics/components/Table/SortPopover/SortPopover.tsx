@@ -9,6 +9,7 @@ import {
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import ToggleButton from 'components/ToggleButton/ToggleButton';
+import Icon from 'components/Icon/Icon';
 
 import './SortPopover.scss';
 
@@ -37,31 +38,12 @@ function SortPopover({
     return filtered;
   }, [sortOptions]);
 
+  const handleResetSorting = React.useCallback(() => {
+    setSelectedFields([]);
+  }, [selectedFields]);
+
   return (
     <div className='SortPopover__container'>
-      <div className='SortPopover__chip__container'>
-        {selectedFields.map((field) => (
-          <div className='SortPopover__chip' key={field.value}>
-            <div className='SortPopover__chip__left'>
-              <span
-                className='SortPopover__chip__delete'
-                onClick={() => handleDelete(field.label)}
-              >
-                <i className='icon-delete' />
-              </span>
-              <span className='SortPopover__chip__label'>{field.label}</span>
-            </div>
-            <span>
-              <ToggleButton
-                id={field.label}
-                onChange={() => null}
-                leftLabel='ASC'
-                rightLabel='DESC'
-              />
-            </span>
-          </div>
-        ))}
-      </div>
       <div className='SortPopover__select__container'>
         <Autocomplete
           id='select-sort'
@@ -91,6 +73,7 @@ function SortPopover({
           renderOption={(option, { selected }) => (
             <div className='SortPopover__select__item'>
               <Checkbox
+                color='primary'
                 icon={<CheckBoxOutlineBlank />}
                 checkedIcon={<CheckBoxIcon />}
                 style={{ marginRight: 4 }}
@@ -101,8 +84,32 @@ function SortPopover({
           )}
         />
       </div>
+      <div className='SortPopover__chip__container'>
+        {selectedFields.map((field) => (
+          <div className='SortPopover__chip' key={field.value}>
+            <div className='SortPopover__chip__left'>
+              <span
+                className='SortPopover__chip__delete'
+                onClick={() => handleDelete(field.label)}
+              >
+                <Icon name='close' />
+              </span>
+            </div>
+            <ToggleButton
+              className='TooltipContentPopover__toggle__button'
+              onChange={() => null}
+              leftLabel={'Asc'}
+              rightLabel={'Desc'}
+              leftValue={'Asc'}
+              rightValue={'Desc'}
+              value={'Asc'}
+              title={field.label}
+            />
+          </div>
+        ))}
+      </div>
       <div className='SortPopover__reset__sorting'>
-        <Button variant='outlined' size='small'>
+        <Button onClick={handleResetSorting} variant='outlined' size='small'>
           Reset Sorting
         </Button>
       </div>

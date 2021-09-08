@@ -7,14 +7,14 @@
 
 .MetricsBar__item__bookmark__span {
   font-weight: 500;
-  font-size: $text-mm;
+  font-size: $text-md;
   line-height: 1.0625em;
   margin-right: 0.625em;
 }
 
 .MetricsBar__menu {
-  border-left: 1px solid #e8f1fc;
-  padding: 0 0.75em;
+  border-left: 0.0625rem solid #e8f1fc;
+  padding: 0 0.75rem;
   height: 100%;
   display: flex;
   align-items: center;
@@ -24,14 +24,10 @@
 }
 
 .MetricsBar__popover {
-  width: 15.625em;
+  width: 15.625rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
-  li {
-    border-top: $border-main;
-    font-size: $text-mm;
-    padding: 0.5em;
-  }
   a {
     text-decoration: none;
     color: inherit;
