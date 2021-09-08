@@ -2,6 +2,7 @@ import React from 'react';
 import _, { isEmpty } from 'lodash-es';
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
+import { saveAs } from 'file-saver';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
@@ -49,6 +50,9 @@ import dashboardService from 'services/api/dashboard/dashboardService';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { getParamsTableColumns } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import JsonToCSV from 'utils/JsonToCSV';
+import moment from 'moment';
 
 const model = createModel<Partial<any>>({});
 let tooltipData: ITooltipData = {};
@@ -915,6 +919,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
     updateModelData(configData);
   }
 }
+
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
@@ -1010,69 +1015,58 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const processedData = processData(
-    model.getState()?.rawData as IRun<IParamTrace>[],
+  const processedData = processData(model.getState()?.rawData as IRun<any>[]);
+
+  const tableData: IMetricTableRowData[] = getDataAsTableRows(
+    processedData.data,
+    null,
+    processedData.params,
   );
-  // TODO need to implement `getDataAsTableRows` and `getTableColumns` functions
-  // const tableData: IMetricTableRowData[] = getDataAsTableRows(
-  //   processedData.data,
-  //   null,
-  //   processedData.params,
-  // );
-  // const tableColumns: ITableColumn[] = getTableColumns(
-  //   processedData.params,
-  //   processedData.data[0].config,
-  // );
-  // // TODO need to filter excludedFields and sort column order
-  // const excludedFields: string[] = ['#'];
-  // const filteredHeader: string[] = tableColumns.reduce(
-  //   (acc: string[], column: ITableColumn) =>
-  //     acc.concat(
-  //       excludedFields.indexOf(column.dataKey) === -1 ? column.dataKey : [],
-  //     ),
-  //   [],
-  // );
-  // // const flattenOrders = Object.keys(columnsOrder).reduce(
-  // //   (acc, key) => acc.concat(columnsOrder[key]),
-  // //   [],
-  // // );
-  // // filteredHeader.sort(
-  // //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
-  // // );
-  //
-  // let emptyRow: { [key: string]: string } = {};
-  // filteredHeader.forEach((column: string) => {
-  //   emptyRow[column] = '--';
-  // });
-  //
-  // const dataToExport = tableData?.reduce(
-  //   (
-  //     accArray: { [key: string]: string }[],
-  //     rowData: IMetricTableRowData,
-  //     rowDataIndex: number,
-  //   ) => {
-  //     if (rowData?.children?.length > 0) {
-  //       rowData.children.forEach((row: IMetricTableRowData) => {
-  //         const filteredRow = getFilteredRow(filteredHeader, row);
-  //         accArray = accArray.concat(filteredRow);
-  //       });
-  //       if (tableData.length - 1 !== rowDataIndex) {
-  //         accArray = accArray.concat(emptyRow);
-  //       }
-  //     } else {
-  //       const filteredRow = getFilteredRow(filteredHeader, rowData);
-  //       accArray = accArray.concat(filteredRow);
-  //     }
-  //
-  //     return accArray;
-  //   },
-  //   [],
-  // );
-  //
-  // const blob = new Blob([JsonToCSV(dataToExport)], {
-  //   type: 'text/csv;charset=utf-8;',
-  // });
-  // saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  const tableColumns: ITableColumn[] = getParamsTableColumns(
+    processedData.params,
+    processedData.data[0]?.config,
+  );
+  // TODO need to filter excludedFields and sort column order
+  const excludedFields: string[] = [];
+  const filteredHeader: string[] = tableColumns.reduce(
+    (acc: string[], column: ITableColumn) =>
+      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
+    [],
+  );
+
+  let emptyRow: { [key: string]: string } = {};
+  filteredHeader.forEach((column: string) => {
+    emptyRow[column] = '--';
+  });
+
+  const dataToExport = tableData?.reduce(
+    (
+      accArray: { [key: string]: string }[],
+      rowData: IMetricTableRowData,
+      rowDataIndex: number,
+    ) => {
+      if (rowData?.children?.length > 0) {
+        rowData.children.forEach((row: IMetricTableRowData) => {
+          const filteredRow = getFilteredRow(filteredHeader, row);
+          accArray = accArray.concat(filteredRow);
+        });
+        if (tableData.length - 1 !== rowDataIndex) {
+          accArray = accArray.concat(emptyRow);
+        }
+      } else {
+        const filteredRow = getFilteredRow(filteredHeader, rowData);
+        accArray = accArray.concat(filteredRow);
+      }
+
+      return accArray;
+    },
+    [],
+  );
+
+  const blob = new Blob([JsonToCSV(dataToExport)], {
+    type: 'text/csv;charset=utf-8;',
+  });
+  saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
 }
 
 function onNotificationDelete(id: number) {
