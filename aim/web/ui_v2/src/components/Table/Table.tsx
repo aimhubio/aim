@@ -52,7 +52,6 @@ const Table = React.forwardRef(function Table(
     columnsWidths,
     updateColumnsWidths,
     sortFields,
-    setSortFields,
     groups,
     isLoading,
     ...props
@@ -495,10 +494,16 @@ const Table = React.forwardRef(function Table(
                             item
                           >
                             <Icon name='sort-outside' />
-                            <span onClick={onSort}>Sort</span>
+                            <span>Sort</span>
                           </Grid>
                         )}
-                        component={<SortPopover sortOptions={sortOptions} />}
+                        component={
+                          <SortPopover
+                            sortOptions={sortOptions}
+                            sortFields={sortFields}
+                            onSort={onSort}
+                          />
+                        }
                       />
                     )}
                     {onRowHeightChange && (
@@ -567,7 +572,7 @@ const Table = React.forwardRef(function Table(
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}
                       sortFields={sortFields}
-                      setSortFields={setSortFields}
+                      setSortFields={onSort}
                       data={rowData}
                       columns={columnsData}
                       groups={groups}

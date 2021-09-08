@@ -27,7 +27,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
@@ -57,7 +57,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: IMetricAppConfig['select'];
-  tableRowHeight: RowHeight;
+  tableRowHeight: RowHeightSize;
+  sortFields: [string, 'asc' | 'desc' | boolean][];
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   requestIsPending: boolean;
@@ -95,6 +96,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;
+  onSortFieldsChange: (fileds: []) => void;
 }
 
 export interface IOnSmoothingChange {

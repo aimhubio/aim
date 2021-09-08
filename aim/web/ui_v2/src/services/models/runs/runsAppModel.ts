@@ -40,7 +40,7 @@ import { INotification } from '../../../types/components/NotificationContainer/N
 import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
 import { CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
-import { RowHeight } from '../../../config/table/tableConfigs';
+import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
 import React from 'react';
 import { getMetricsTableColumns } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
@@ -122,7 +122,7 @@ function getConfig() {
       advancedQuery: '',
     },
     table: {
-      rowHeight: RowHeight.md,
+      rowHeight: RowHeightSize.md,
     },
     pagination: {
       limit: 25,

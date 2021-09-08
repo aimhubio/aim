@@ -9,7 +9,7 @@ export interface ITableProps {
   columns: any[];
   rowHeight: RowHeight;
   onManageColumns?: () => void;
-  onSort?: () => void;
+  onSort?: (sortFields: []) => void;
   onRowsChange?: () => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange?: (height: RowHeightSize) => void;

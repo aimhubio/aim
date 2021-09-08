@@ -15,20 +15,15 @@ import './SortPopover.scss';
 
 function SortPopover({
   sortOptions,
+  sortFields,
+  onSort,
 }: ISortPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  const [selectedFields, setSelectedFields] = React.useState<
-    IGroupingSelectOption[]
-  >([]);
-
   function onChange(e: object, values: IGroupingSelectOption[]): void {
-    setSelectedFields(values);
+    onSort(values.map((v) => [v.value, 'asc']));
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedFields].filter(
-      (opt: any) => opt.label !== field,
-    );
-    setSelectedFields(fieldData);
+    onSort(sortFields.filter((f) => f[0] !== field));
   }
 
   const selectOptions: IGroupingSelectOption[] = React.useMemo(() => {
@@ -39,8 +34,8 @@ function SortPopover({
   }, [sortOptions]);
 
   const handleResetSorting = React.useCallback(() => {
-    setSelectedFields([]);
-  }, [selectedFields]);
+    onSort([]);
+  }, [sortFields]);
 
   return (
     <div className='SortPopover__container'>
@@ -51,7 +46,9 @@ function SortPopover({
           multiple
           disableCloseOnSelect
           options={selectOptions}
-          value={selectedFields}
+          value={selectOptions.filter(
+            (option) => sortFields.findIndex((f) => f[0] === option.value) > -1,
+          )}
           onChange={onChange}
           groupBy={(option) => option.group}
           getOptionLabel={(option) => option.label}
@@ -85,25 +82,31 @@ function SortPopover({
         />
       </div>
       <div className='SortPopover__chip__container'>
-        {selectedFields.map((field) => (
-          <div className='SortPopover__chip' key={field.value}>
+        {sortFields.map((field) => (
+          <div className='SortPopover__chip' key={field[0]}>
             <div className='SortPopover__chip__left'>
               <span
                 className='SortPopover__chip__delete'
-                onClick={() => handleDelete(field.label)}
+                onClick={() => handleDelete(field[0])}
               >
                 <Icon name='close' />
               </span>
             </div>
             <ToggleButton
               className='TooltipContentPopover__toggle__button'
-              onChange={() => null}
+              onChange={(value) =>
+                onSort(
+                  sortFields.map((f) =>
+                    f[0] === field[0] ? [f[0], value as any] : f,
+                  ),
+                )
+              }
               leftLabel={'Asc'}
               rightLabel={'Desc'}
-              leftValue={'Asc'}
-              rightValue={'Desc'}
-              value={'Asc'}
-              title={field.label}
+              leftValue={'asc'}
+              rightValue={'desc'}
+              value={field[1] as string}
+              title={field[0]}
             />
           </div>
         ))}

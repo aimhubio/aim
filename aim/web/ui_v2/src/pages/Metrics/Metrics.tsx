@@ -157,8 +157,9 @@ function Metrics(
                       : 'large'
                   }
                   sortOptions={props.groupingSelectOptions}
+                  sortFields={props.sortFields}
                   // Table actions
-                  onSort={() => null}
+                  onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}
                   onManageColumns={() => null}
                   onRowHeightChange={props.onRowHeightChange}

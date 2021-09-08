@@ -145,6 +145,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.select as IMetricAppConfig['select']
       }
       tableRowHeight={metricsData?.config?.table.rowHeight as RowHeightSize}
+      sortFields={metricsData?.config?.table.sortFields!}
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
@@ -182,6 +183,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
       onExportTableData={metricAppModel.onExportTableData}
       onRowHeightChange={metricAppModel.onRowHeightChange}
+      onSortFieldsChange={metricAppModel.onSortFieldsChange}
     />
   );
 }

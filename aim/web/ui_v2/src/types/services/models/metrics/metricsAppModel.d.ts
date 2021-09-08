@@ -15,7 +15,7 @@ import { IMetricTrace, IRun, ITraceData } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 export interface IMetricAppModelState {
   refs: {
@@ -138,7 +138,8 @@ interface IMetricAppConfig {
     advancedQuery: string;
   };
   table: {
-    rowHeight: RowHeight;
+    rowHeight: RowHeightSize;
+    sortFields?: [string, boolean | 'asc' | 'desc'][];
   };
 }
 

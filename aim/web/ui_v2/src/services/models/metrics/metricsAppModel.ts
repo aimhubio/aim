@@ -81,7 +81,7 @@ const model = createModel<Partial<IMetricAppModelState>>({
 });
 let tooltipData: ITooltipData = {};
 
-function getConfig() {
+function getConfig(): IMetricAppConfig {
   return {
     grouping: {
       color: [],
@@ -149,6 +149,7 @@ function getConfig() {
     },
     table: {
       rowHeight: RowHeightSize.md,
+      sortFields: [],
     },
   };
 }
@@ -443,7 +444,18 @@ function processData(data: IRun<IMetricTrace>[]): {
     );
   });
 
-  const processedData = groupData(metrics);
+  const processedData = groupData(
+    _.orderBy(
+      metrics,
+      configData!.table.sortFields!.map(
+        (f) =>
+          function (metric) {
+            return _.get(metric, f[0], '');
+          },
+      ),
+      configData!.table.sortFields!.map((f) => f[1]),
+    ),
+  );
   const uniqParams = _.uniq(params);
 
   setTooltipData(processedData, uniqParams);
@@ -1696,7 +1708,7 @@ function toggleSelectAdvancedMode() {
 
 function onRowHeightChange(height: RowHeightSize) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.select) {
+  if (configData?.table) {
     model.setState({
       config: {
         ...configData,
@@ -1706,6 +1718,23 @@ function onRowHeightChange(height: RowHeightSize) {
         },
       },
     });
+  }
+}
+
+function onSortFieldsChange(sortFields: [string, any][]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        sortFields: sortFields,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
   }
 }
 
@@ -1749,6 +1778,7 @@ const metricAppModel = {
   onChangeTooltip,
   onExportTableData,
   onRowHeightChange,
+  onSortFieldsChange,
 };
 
 export default metricAppModel;
