@@ -59,22 +59,22 @@
     stroke: #94999f; /* var(--grey-light) */
   }
 
-  .HoverCircle {
+  .ParallelCircle {
     stroke: #3b5896; /* var(--primary) */
     stroke-width: 1;
     cursor: pointer;
   }
 
   /* on click */
-  .HoverCircle.focus {
+  .ParallelCircle.focus {
     stroke: #3b5896; /* var(--primary) */
     stroke-width: 2;
     opacity: 1;
   }
 
   /* on hover */
-  .HoverCircle.active {
-    stroke: #7a94cc; /* var(--primary-light); */
+  .ParallelCircle.active {
+    stroke: #7a94cc; /** var(--primary-light); */
     stroke-width: 3;
     opacity: 1;
   }

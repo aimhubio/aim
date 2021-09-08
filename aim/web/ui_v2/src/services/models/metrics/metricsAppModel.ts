@@ -1305,7 +1305,7 @@ function onActivePointChange(
     model.getState()!.params!,
   );
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData });
+    tableRef.current?.updateData({ newData: tableData, dynamicData: true });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
