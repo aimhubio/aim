@@ -166,7 +166,10 @@ class DB(object):
 
     @cachetools.func.ttl_cache(maxsize=None, ttl=0.1)
     def _list_dir(self, path: str):
-        return os.listdir(path)
+        try:
+            return os.listdir(path)
+        except FileNotFoundError:
+            return []
 
     @property
     @cachetools.func.ttl_cache(maxsize=None, ttl=0.1)
