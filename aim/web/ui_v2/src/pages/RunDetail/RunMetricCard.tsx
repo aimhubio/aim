@@ -37,7 +37,6 @@ function RunMetricCard({
             yAxis: ScaleEnum.Linear,
           }}
           displayOutliers
-          zoomMode={false}
           highlightMode={0}
           curveInterpolation={CurveEnum.Linear}
         />
