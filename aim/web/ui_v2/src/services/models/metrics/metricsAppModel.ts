@@ -150,6 +150,7 @@ function getConfig(): IMetricAppConfig {
     table: {
       rowHeight: RowHeightSize.md,
       sortFields: [],
+      hiddenMetrics: [],
     },
   };
 }
@@ -419,16 +420,21 @@ function processData(data: IRun<IMetricTrace>[]): {
             data: values,
           });
         }
+        const metricKey = encode({
+          runHash: run.hash,
+          metricName: trace.metric_name,
+          traceContext: trace.context,
+        });
         return createMetricModel({
           ...trace,
           run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
-          key: encode({
-            runHash: run.hash,
-            metricName: trace.metric_name,
-            traceContext: trace.context,
-          }),
+          key: metricKey,
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+          isHidden:
+            configData!.table.hiddenMetrics![0] === 'all'
+              ? true
+              : configData!.table.hiddenMetrics!.includes(metricKey),
           data: {
             values,
             steps,
@@ -447,13 +453,13 @@ function processData(data: IRun<IMetricTrace>[]): {
   const processedData = groupData(
     _.orderBy(
       metrics,
-      configData!.table.sortFields!.map(
+      configData?.table?.sortFields?.map(
         (f) =>
           function (metric) {
             return _.get(metric, f[0], '');
           },
-      ),
-      configData!.table.sortFields!.map((f) => f[1]),
+      ) ?? [],
+      configData?.table?.sortFields?.map((f) => f[1]) ?? [],
     ),
   );
   const uniqParams = _.uniq(params);
@@ -878,29 +884,31 @@ function getDataAsLines(
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
   const lines = processedData
     .map((metricsCollection: IMetricsCollection<IMetric>) =>
-      metricsCollection.data.map((metric: IMetric) => {
-        let yValues;
-        if (smoothingAlgorithm && smoothingFactor) {
-          yValues = getSmoothenedData({
-            smoothingAlgorithm,
-            smoothingFactor,
-            data: metric.data.yValues,
-          });
-        } else {
-          yValues = metric.data.yValues;
-        }
-        return {
-          ...metric,
-          color: metricsCollection.color ?? metric.color,
-          dasharray: metricsCollection.dasharray ?? metric.color,
-          chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.hash],
-          data: {
-            xValues: metric.data.xValues,
-            yValues,
-          },
-        };
-      }),
+      metricsCollection.data
+        .filter((metric) => !metric.isHidden)
+        .map((metric: IMetric) => {
+          let yValues;
+          if (smoothingAlgorithm && smoothingFactor) {
+            yValues = getSmoothenedData({
+              smoothingAlgorithm,
+              smoothingFactor,
+              data: metric.data.yValues,
+            });
+          } else {
+            yValues = metric.data.yValues;
+          }
+          return {
+            ...metric,
+            color: metricsCollection.color ?? metric.color,
+            dasharray: metricsCollection.dasharray ?? metric.color,
+            chartIndex: metricsCollection.chartIndex,
+            selectors: [metric.key, metric.key, metric.run.hash],
+            data: {
+              xValues: metric.data.xValues,
+              yValues,
+            },
+          };
+        }),
     )
     .flat();
 
@@ -959,6 +967,7 @@ function getDataAsTableRows(
               .index;
       const rowValues: IMetricTableRowData = {
         key: metric.key,
+        isHidden: metric.isHidden,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
@@ -1738,6 +1747,23 @@ function onSortFieldsChange(sortFields: [string, any][]) {
   }
 }
 
+function onMetricVisibilityChange(metricsKeys: string[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        hiddenMetrics: metricsKeys,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1779,6 +1805,7 @@ const metricAppModel = {
   onExportTableData,
   onRowHeightChange,
   onSortFieldsChange,
+  onMetricVisibilityChange,
 };
 
 export default metricAppModel;

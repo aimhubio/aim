@@ -52,6 +52,7 @@ const Table = React.forwardRef(function Table(
     columnsWidths,
     updateColumnsWidths,
     sortFields,
+    hiddenRows,
     groups,
     isLoading,
     ...props
@@ -470,10 +471,12 @@ const Table = React.forwardRef(function Table(
                             item
                           >
                             <Icon name='eye-outline-hide' />
-                            <span onClick={onSort}>Hide Rows</span>
+                            <span>Hide Rows</span>
                           </Grid>
                         )}
-                        component={<HideRows />}
+                        component={
+                          <HideRows toggleRowsVisibility={onRowsChange} />
+                        }
                       />
                     )}
                     {onSort && (
@@ -573,6 +576,7 @@ const Table = React.forwardRef(function Table(
                       updateColumnsWidths={() => null}
                       sortFields={sortFields}
                       setSortFields={onSort}
+                      hiddenRows={hiddenRows}
                       data={rowData}
                       columns={columnsData}
                       groups={groups}

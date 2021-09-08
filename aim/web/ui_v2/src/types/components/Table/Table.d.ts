@@ -10,7 +10,7 @@ export interface ITableProps {
   rowHeight: RowHeight;
   onManageColumns?: () => void;
   onSort?: (sortFields: []) => void;
-  onRowsChange?: () => void;
+  onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange?: (height: RowHeightSize) => void;
   data: any[];
@@ -19,7 +19,6 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
-  rowHeight?: number;
   headerHeight?: number;
   sortOptions?: GroupingSelectOptionType[];
   fixed?: boolean;
@@ -36,6 +35,7 @@ export interface ITableProps {
   columnsWidths?: any;
   updateColumnsWidths?: any;
   sortFields?: any;
+  hiddenRows?: string[];
   setSortFields?: any;
   isLoading?: boolean;
   infiniteLoadHandler?: (data: any) => void;

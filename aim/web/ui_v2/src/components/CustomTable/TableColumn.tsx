@@ -343,7 +343,9 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      className={`rowKey-${item.key}`}
+                      className={`rowKey-${item.key}${
+                        item.isHidden ? ' hidden' : ''
+                      }`}
                       onRowHover={() => onRowHover(item)}
                       onRowClick={() => onRowClick(item)}
                     />
@@ -358,7 +360,7 @@ function Column({
               index={item.index}
               col={col}
               item={item[col.key]}
-              className={`rowKey-${item.key}`}
+              className={`rowKey-${item.key}${item.isHidden ? ' hidden' : ''}`}
               metadata={firstColumn ? item.rowMeta : null}
               onRowHover={() => onRowHover(item)}
               onRowClick={() => onRowClick(item)}

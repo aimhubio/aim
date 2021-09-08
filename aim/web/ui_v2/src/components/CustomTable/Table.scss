@@ -233,6 +233,10 @@ $group-margin: 8px;
     background-color: $primary-lighter;
   }
 
+  &.hidden {
+    background-color: #eee !important;
+  }
+
   & > * {
     white-space: nowrap;
     overflow: hidden;

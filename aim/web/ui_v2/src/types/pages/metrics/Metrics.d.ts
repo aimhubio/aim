@@ -59,6 +59,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   selectedMetricsData: IMetricAppConfig['select'];
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];
+  hiddenMetrics: string[];
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   requestIsPending: boolean;
@@ -97,6 +98,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;
   onSortFieldsChange: (fileds: []) => void;
+  onMetricVisibilityChange: (metricKeys: string[]) => void;
 }
 
 export interface IOnSmoothingChange {

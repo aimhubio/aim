@@ -158,12 +158,13 @@ function Metrics(
                   }
                   sortOptions={props.groupingSelectOptions}
                   sortFields={props.sortFields}
+                  hiddenRows={props.hiddenMetrics}
                   // Table actions
                   onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}
                   onManageColumns={() => null}
                   onRowHeightChange={props.onRowHeightChange}
-                  onRowsChange={() => null}
+                  onRowsChange={props.onMetricVisibilityChange}
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
                 />

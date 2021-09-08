@@ -140,6 +140,7 @@ interface IMetricAppConfig {
   table: {
     rowHeight: RowHeightSize;
     sortFields?: [string, boolean | 'asc' | 'desc'][];
+    hiddenMetrics?: string[];
   };
 }
 
