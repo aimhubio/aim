@@ -4,6 +4,7 @@ import { isNil, isEmpty } from 'lodash-es';
 import {
   IActivePoint,
   INearestCircle,
+  ISyncHoverStateParams,
 } from 'types/utils/d3/drawHoverAttributes';
 import {
   IDrawParallelHoverAttributesProps,
@@ -163,13 +164,27 @@ const drawParallelHoverAttributes = ({
     focusedStateActive = attributesRef.current.focusedState?.active || false,
     force,
   }: IUpdateParallelFocusedChartProps) {
-    const dimensionLabel = scalePointValue(
-      attributesRef.current.xScale,
-      mouse[0],
-    );
-    if (dimensionLabel) {
+    const { xScale, yScale, focusedState, activePoint } = attributesRef.current;
+    let mousePosition: [number, number] | [] = [];
+    let dimensionLabel: string = '';
+    if (mouse) {
+      dimensionLabel = scalePointValue(attributesRef.current.xScale, mouse[0]);
+      mousePosition = mouse;
+    } else if (focusedState?.active && focusedState.chartIndex === index) {
+      const xPos = xScale(focusedState.xValue);
+      dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
+      mousePosition = [xPos, yScale[dimensionLabel](focusedState.yValue)];
+    } else if (activePoint?.xValue && activePoint.yValue) {
+      const xPos = xScale(activePoint.xValue);
+      dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
+      mousePosition = [
+        xScale(activePoint.xValue),
+        yScale[dimensionLabel](activePoint.yValue),
+      ];
+    }
+    if (dimensionLabel && mousePosition.length === 2) {
       const { mouseX, mouseY } = getCoordinates({
-        mouse,
+        mouse: mousePosition,
         xScale: attributesRef.current.xScale,
         yScale: attributesRef.current.yScale[dimensionLabel],
         margin,
@@ -194,12 +209,7 @@ const drawParallelHoverAttributes = ({
             lineCirclesOfClosestCircle,
             closestCircle,
           );
-          if (typeof syncHoverState === 'function') {
-            syncHoverState({
-              activePoint,
-              focusedStateActive,
-            });
-          }
+          safeSyncHoverState({ activePoint, focusedStateActive });
           attributesRef.current.activePoint = activePoint;
           attributesRef.current.lineKey = closestCircle.key;
           attributesRef.current.x = closestCircle.x + margin.left;
@@ -217,9 +227,7 @@ const drawParallelHoverAttributes = ({
   ): void {
     event.stopPropagation();
     if (attributesRef.current.focusedState?.chartIndex !== index) {
-      if (typeof syncHoverState === 'function') {
-        syncHoverState({ activePoint: null });
-      }
+      safeSyncHoverState({ activePoint: null });
     }
     const mousePos: [number, number] = [
       circle.x + margin.left,
@@ -231,6 +239,59 @@ const drawParallelHoverAttributes = ({
       force: true,
     });
     drawFocusedCircle(circle.key);
+  }
+
+  function setActiveLineAndCircle(
+    lineKey?: string,
+    focusedStateActive: boolean = false,
+    force: boolean = false,
+  ): void {
+    if (!lineKey) {
+      safeSyncHoverState({
+        activePoint: attributesRef.current?.activePoint || null,
+        focusedStateActive: false,
+      });
+    } else {
+      let xPos = 0;
+      const xStep = attributesRef.current.xScale.step();
+      let closestCircle;
+      let nearestCircles;
+      while (xPos <= attributesRef.current.xScale.range()[1]) {
+        nearestCircles = getNearestCircles(xPos);
+        closestCircle = nearestCircles.find((c) => c.key === lineKey);
+        if (closestCircle) {
+          break;
+        }
+        xPos += xStep;
+      }
+
+      if (closestCircle?.key !== attributesRef.current?.lineKey || force) {
+        const lineCirclesOfClosestCircle = closestCircle
+          ? //@ts-ignore
+            getLineCirclesOfClosestCircle(closestCircle, nearestCircles)
+          : [];
+        linesNodeRef.current.classed('highlight', false);
+        // previous line
+        clearActiveLine(attributesRef.current.lineKey);
+        // new line
+        //@ts-ignore
+        drawActiveLine(closestCircle?.key);
+        if (closestCircle) {
+          const activePoint = getActivePoint(closestCircle);
+          drawParallelCircles(
+            //@ts-ignore
+            nearestCircles,
+            lineCirclesOfClosestCircle,
+            closestCircle,
+          );
+          safeSyncHoverState({ activePoint, focusedStateActive });
+          attributesRef.current.activePoint = activePoint;
+          attributesRef.current.lineKey = closestCircle.key;
+          attributesRef.current.x = closestCircle.x + margin.left;
+          attributesRef.current.y = closestCircle.y + margin.top;
+        }
+      }
+    }
   }
 
   function drawFocusedCircle(key: string): void {
@@ -371,17 +432,13 @@ const drawParallelHoverAttributes = ({
         .remove();
 
       clearHoverAttributes();
-      if (typeof syncHoverState === 'function') {
-        syncHoverState({ activePoint: null });
-      }
+      safeSyncHoverState({ activePoint: null });
     }
   }
 
   function handleLeaveFocusedPoint(event: MouseEvent): void {
     if (attributesRef.current.focusedState?.chartIndex !== index) {
-      if (typeof syncHoverState === 'function') {
-        syncHoverState({ activePoint: null });
-      }
+      safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
 
@@ -414,8 +471,15 @@ const drawParallelHoverAttributes = ({
       .classed('focus', false);
   }
 
+  // Interactions
+  function safeSyncHoverState(params: ISyncHoverStateParams): void {
+    if (typeof syncHoverState === 'function') {
+      syncHoverState(params);
+    }
+  }
+
   function init() {
-    const { focusedState, xScale, yScale, activePoint } = attributesRef.current;
+    const { focusedState } = attributesRef.current;
     if (
       focusedState?.chartIndex === index &&
       focusedState?.active &&
@@ -423,13 +487,7 @@ const drawParallelHoverAttributes = ({
       focusedState?.xValue &&
       focusedState.yValue
     ) {
-      const mouse: [number, number] = [
-        xScale(scalePointValue(xScale, activePoint?.xPos || 0)),
-        yScale[scalePointValue(xScale, activePoint?.xPos || 0)](
-          focusedState?.yValue,
-        ) + margin.top,
-      ];
-      updateFocusedChart({ mouse, force: true });
+      updateFocusedChart({ force: true });
       drawFocusedCircle(focusedState.key);
     }
   }
@@ -444,6 +502,7 @@ const drawParallelHoverAttributes = ({
   axesNodeRef.current?.on('click', handleLeaveFocusedPoint);
   attributesRef.current.setActiveLine = setActiveLine;
   attributesRef.current.updateFocusedChart = updateFocusedChart;
+  attributesRef.current.setActiveLineAndCircle = setActiveLineAndCircle;
 };
 
 function scalePointValue(

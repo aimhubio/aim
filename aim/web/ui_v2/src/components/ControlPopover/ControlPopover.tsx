@@ -16,6 +16,7 @@ function ControlPopover({
 
   const onAnchorClick = React.useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
+      event.stopPropagation();
       setAnchorEl(event.currentTarget);
     },
     [],
@@ -45,10 +46,11 @@ function ControlPopover({
             horizontal: 'right',
           }
         }
+        PaperProps={{ className: 'ControlPopover' }}
       >
         <div className='ControlPopover__container'>
           {title && <div className='ControlPopover__title'>{title}</div>}
-          {component}
+          <div className='ControlPopover__component'>{component}</div>
         </div>
       </Popover>
     </>

@@ -20,15 +20,13 @@ import { IProjectsModelState } from 'types/services/models/projects/projectsMode
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
 
-import resetImg from 'assets/icons/reset.svg';
-import visibleImg from 'assets/icons/visible.svg';
-import editImg from 'assets/icons/edit.svg';
 import {
   ISelectMetricsOption,
   ISelectFormProps,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import SelectTag from 'components/SelectTag/SelectTag';
+import Icon from 'components/Icon/Icon';
 
 import './SelectForm.scss';
 
@@ -168,7 +166,8 @@ function SelectForm({
                     onClick={handleClick}
                     aria-describedby={id}
                   >
-                    + Metrics
+                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />{' '}
+                    Metrics
                   </Button>
                   <Popper
                     id={id}
@@ -213,6 +212,7 @@ function SelectForm({
                         return (
                           <React.Fragment>
                             <Checkbox
+                              color='primary'
                               icon={<CheckBoxOutlineBlank />}
                               checkedIcon={<CheckBoxIcon />}
                               style={{ marginRight: 4 }}
@@ -225,7 +225,7 @@ function SelectForm({
                     />
                   </Popper>
                   <Divider
-                    style={{ margin: '0 1em' }}
+                    style={{ margin: '0 1rem' }}
                     orientation='vertical'
                     flexItem
                   />
@@ -248,7 +248,7 @@ function SelectForm({
                   onClick={() => onMetricsSelectChange([])}
                   className='SelectForm__clearAll'
                 >
-                  <i className='icon-delete' />
+                  <Icon name='close' />
                 </span>
               </>
             )}
@@ -260,6 +260,7 @@ function SelectForm({
               fullWidth
               size='small'
               variant='outlined'
+              inputProps={{ style: { height: '0.687rem' } }}
               placeholder='Run expression'
               value={selectedMetricsData?.query ?? ''}
               onChange={({ target }) => onSelectRunQueryChange(target.value)}
@@ -280,13 +281,13 @@ function SelectForm({
         </Button>
         <div className='SelectForm__search__actions'>
           <span>
-            <img src={resetImg} alt='reset' />
+            <Icon name='reset' />
           </span>
           <span onClick={toggleEditMode}>
-            <img src={editImg} alt='edit' />
+            <Icon name='edit' />
           </span>
           <span>
-            <img src={visibleImg} alt='visible' />
+            <Icon name='eye-fill-show' />
           </span>
         </div>
       </div>

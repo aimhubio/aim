@@ -1,8 +1,12 @@
-import { SwitchProps } from '@material-ui/core';
+import { ButtonProps } from '@material-ui/core';
 
-export default interface IToggleButtonProps extends SwitchProps {
-  onChange: (event: React.ChangeEvent<any>, checked: boolean) => void;
-  id: string | undefined;
+export default interface IToggleButtonProps extends ButtonProps {
+  onChange: (value: string | number | any, id?: string | number | any) => void;
+  id?: string | undefined;
   leftLabel: string;
-  rightLabel?: string;
+  rightLabel: string;
+  leftValue: number | string;
+  rightValue: number | string;
+  value: string | number;
+  title: string;
 }

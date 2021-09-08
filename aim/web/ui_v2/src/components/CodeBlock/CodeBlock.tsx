@@ -3,9 +3,10 @@ import React from 'react';
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/nightOwlLight';
 
-import './CodeBlock.scss';
 import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
 import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
+
+import './CodeBlock.scss';
 
 function CodeBlock({
   code = '',

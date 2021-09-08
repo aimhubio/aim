@@ -9,12 +9,18 @@
   padding: 1.5em;
   margin-bottom: 1em;
 }
+
 .BookmarkCard__delete {
-  margin-left: 0.25em;
+  margin-left: 0.25rem;
+
+  i {
+    color: $text-color;
+  }
 }
 
 .BookmarkCard__top {
   flex: 1 1;
+
   p {
     margin-top: 0.25em;
     font-weight: normal;
@@ -25,6 +31,7 @@
 .BookmarkCard__title__section {
   display: flex;
   justify-content: space-between;
+
   a {
     text-decoration: none;
   }
@@ -37,6 +44,7 @@
 
 .BookmarkCard__bottom {
   margin-top: 0.75em;
+
   strong {
     color: #243969;
     margin-right: 0.5em;
@@ -48,4 +56,8 @@
   width: 100%;
   white-space: nowrap;
   overflow: auto;
+}
+
+.BookmarkCard__run__expression {
+  margin-right: 45px;
 }

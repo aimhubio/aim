@@ -1,0 +1,13 @@
+@use 'src/styles/abstracts' as *;
+
+.StylePopoverAdvanced__container {
+  padding: 1rem;
+}
+
+.StylePopoverAdvanced__container__span {
+  display: inline-block;
+  color: $text-color-80;
+  font-size: $text-md;
+  font-family: 'Inter Regular', sans-serif;
+  margin: 1rem 0;
+}

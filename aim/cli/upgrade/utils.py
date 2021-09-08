@@ -1,3 +1,5 @@
+import os.path
+
 import click
 import shutil
 
@@ -17,14 +19,14 @@ class RepoIntegrityError(Exception):
     pass
 
 
-def get_legacy_run_hash(lrun: LegacyRun) -> str:
-    return hex(hash(lrun.run_hash))[2:9]
-
-
-def setup_directories(path: str):
-    path = clean_repo_path(path)
+def setup_directories(input_path: str):
+    path = clean_repo_path(input_path)
     repo_path = path + '/.aim'
+    if not (os.path.exists(repo_path) and os.path.isdir(repo_path)):
+        click.echo(f'\'{input_path}\' does not seem to be an Aim repository. Exiting.')
+        exit(1)
     lrepo_path = path + '/.aim_legacy'
+    shutil.move(repo_path, lrepo_path)
     return lrepo_path, repo_path
 
 
@@ -38,7 +40,7 @@ def collect_runs(lrepo: LegacyRepo):
 
 def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
     try:
-        run = Run(hashname=get_legacy_run_hash(lrun), repo=repo,
+        run = Run(repo=repo,
                   system_tracking_interval=None)  # do not track system metrics as they already logged if needed
 
         lrun.open_storage()
@@ -116,7 +118,6 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
 
     try:
         click.echo('Preparing new repository...')
-        shutil.move(repo_path, lrepo_path)
         lrepo = LegacyRepo(mode=LegacyRepo.READING_MODE, repo_full_path=lrepo_path)
         repo = Repo.from_path(repo_path, init=True)
         repo.structured_db.run_upgrades()

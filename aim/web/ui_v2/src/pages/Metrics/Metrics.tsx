@@ -1,10 +1,11 @@
 import React from 'react';
-import { isEmpty, size } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
+
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -18,6 +19,7 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 import { ILine } from 'types/components/LineChart/LineChart';
 
 import './Metrics.scss';
+import Icon from '../../components/Icon/Icon';
 
 function Metrics(
   props: IMetricProps,
@@ -125,6 +127,7 @@ function Metrics(
                       }
                       onAlignmentTypeChange={props.onAlignmentTypeChange}
                       onAlignmentMetricChange={props.onAlignmentMetricChange}
+                      projectsDataMetrics={props.projectsDataMetrics}
                     />
                   }
                 />
@@ -138,8 +141,13 @@ function Metrics(
               )}
             </BusyLoaderWrapper>
           </div>
-          <div className='Metrics__resize' ref={props.resizeElemRef}>
-            <MoreHorizIcon />
+          <div
+            className={`Metrics__resize ${
+              props.panelResizing ? 'resizing' : ''
+            }`}
+            ref={props.resizeElemRef}
+          >
+            <Icon name='more-horizontal' />
           </div>
           <div ref={props.tableElemRef} className='Metrics__table__container'>
             <BusyLoaderWrapper
@@ -151,7 +159,7 @@ function Metrics(
               {!isEmpty(props.tableData) ? (
                 <Table
                   custom
-                  key={`${props.tableColumns.length}-${size(props.tableData)}`}
+                  key={`${Array.isArray(props.tableData)}`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}

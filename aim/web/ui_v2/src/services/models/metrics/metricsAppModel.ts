@@ -922,6 +922,7 @@ function getDataAsTableRows(
           chartIndex: metricsCollection.chartIndex + 1,
         },
         key: groupKey!,
+        groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
         experiment: '',
@@ -1277,7 +1278,7 @@ function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;
     if (tooltip.selectedParams && configData?.chart.focusedState.key) {
@@ -1286,10 +1287,16 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
         tooltip.selectedParams,
       );
     }
-    configData.chart.tooltip = {
-      ...configData.chart.tooltip,
-      ...tooltip,
-      content,
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        tooltip: {
+          ...configData.chart.tooltip,
+          ...tooltip,
+          content,
+        },
+      },
     };
 
     model.setState({ config: configData });
@@ -1307,7 +1314,7 @@ function onActivePointChange(
     model.getState()!.params!,
   );
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData });
+    tableRef.current?.updateData({ newData: tableData, dynamicData: true });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,

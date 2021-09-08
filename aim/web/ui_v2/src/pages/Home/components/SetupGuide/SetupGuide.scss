@@ -2,11 +2,12 @@
 
 .SetupGuide__container {
   max-width: 800px;
-  padding: 1.5em 2.5em 1.5em 1.5em;
+  padding: 1.5rem 2.5rem 1.5rem 1.5rem;
   flex: 1 100%;
+
   h3 {
-    font-size: 18px;
-    margin: 0 0 0.5em;
+    font-size: 1.125rem;
+    margin: 0 0 0.5rem;
   }
 
   h2 {
@@ -15,24 +16,25 @@
 }
 
 .SetupGuide__code {
-  margin-top: 2em;
-  max-width: 44.5em;
+  margin-top: 2rem;
+  max-width: 44.5rem;
 }
 
 .StyleGuide__resources__container {
-  margin-top: 2.75em;
+  margin-top: 2.75rem;
   display: flex;
 }
 
 .SetupGuide__resource__item {
   margin-right: 2.375em;
   text-decoration: none;
+
   span {
     display: inline-block;
-    margin-top: 0.5em;
+    margin-top: 0.5rem;
     font-style: normal;
     font-weight: 500;
-    font-size: $text-mm;
+    font-size: $text-md;
     line-height: 17px;
     color: #031123;
   }
@@ -44,21 +46,28 @@
 
 .StyleGuide__resource__item__icon {
   margin: 0 auto;
-  width: 2.75em;
-  height: 2.75em;
-  border: 2px solid #1473e6;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0.125rem solid $primary-color;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all .3s ease-out;
   cursor: pointer;
-  color: #1473e6;
+
   i {
-    font-size: 1.5em;
+    font-size: 1.5rem;
+    color: $primary-color;
+    transition: all .3s ease-out;
   }
 
   &:hover {
     color: #ffffff;
     background-color: #1473e6;
+
+    i {
+      color: #FFFFFF;
+    }
   }
 }

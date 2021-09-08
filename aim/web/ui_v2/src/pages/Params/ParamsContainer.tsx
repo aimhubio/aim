@@ -12,35 +12,63 @@ import {
 import usePanelResize from 'hooks/resize/usePanelResize';
 import { ITableRef } from 'types/components/Table/Table';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
+import { useRouteMatch } from 'react-router-dom';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
-  const chartPanelRef = React.useRef<IChartPanelRef>(null);
-  const tableRef = React.useRef<ITableRef>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const paramsData = useModel(paramsAppModel);
-  usePanelResize(wrapperElemRef, chartElemRef, tableElemRef, resizeElemRef);
+  const route = useRouteMatch<any>();
+
+  const panelResizing = usePanelResize(
+    wrapperElemRef,
+    chartElemRef,
+    tableElemRef,
+    resizeElemRef,
+  );
 
   React.useEffect(() => {
     const paramsRequestRef = paramsAppModel.getParamsData();
-    paramsAppModel.initialize();
+    paramsAppModel.initialize(route.params.appId);
+
     paramsRequestRef.call();
     return () => {
       paramsRequestRef.abort();
     };
   }, []);
 
+  React.useEffect(() => {
+    if (paramsData?.config?.grouping) {
+      paramsAppModel.updateGroupingStateUrl();
+    }
+  }, [paramsData?.config?.grouping]);
+
+  React.useEffect(() => {
+    if (paramsData?.config?.chart) {
+      paramsAppModel.updateChartStateUrl();
+    }
+  }, [paramsData?.config?.chart]);
+
+  React.useEffect(() => {
+    if (paramsData?.config?.select) {
+      paramsAppModel.updateSelectStateUrl();
+    }
+  }, [paramsData?.config?.select]);
+
   return (
     <Params
-      tableRef={tableRef}
-      chartPanelRef={chartPanelRef}
+      tableRef={paramsData?.refs?.tableRef}
+      chartPanelRef={paramsData?.refs?.chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
+      panelResizing={panelResizing}
       highPlotData={paramsData?.highPlotData}
+      tableData={paramsData?.tableData}
+      tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator
@@ -75,6 +103,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationDelete={paramsAppModel.onNotificationDelete}
       onResetConfigData={paramsAppModel.onResetConfigData}
       onChangeTooltip={paramsAppModel.onChangeTooltip}
+      onTableRowHover={paramsAppModel.onTableRowHover}
+      onTableRowClick={paramsAppModel.onTableRowClick}
       onExportTableData={paramsAppModel.onExportTableData}
     />
   );

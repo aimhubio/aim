@@ -4,10 +4,10 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { Typography } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 
 import Cell from './TableCell';
 import Popover from './TablePopover';
+import Icon from 'components/Icon/Icon';
 
 function Column({
   topHeader,
@@ -112,192 +112,213 @@ function Column({
       >
         {firstColumn ? headerMeta : null}
         {col.content}
-        <Popover
-          target={<Icon>more_vert</Icon>}
-          targetClassName='Table__action'
-          tooltip='Column actions'
-          content={(opened, setOpened) => (
-            <div className='Table__action__popup__body'>
-              {!isAlwaysVisible && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    hideColumn();
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>visibility_off</Icon>
-                  <Typography small>Hide column</Typography>
+        {col.key !== 'actions' && (
+          <>
+            <Popover
+              target={<Icon name='more-vertical' />}
+              targetClassName='Table__action'
+              tooltip='Column actions'
+              content={(opened, setOpened) => (
+                <div className='Table__action__popup__body'>
+                  {!isAlwaysVisible && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        hideColumn();
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='eye-outline-hide' />
+                      <Typography small>Hide column</Typography>
+                    </div>
+                  )}
+                  {(pinnedTo === 'left' || pinnedTo === 'right') && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        togglePin(col.key, null);
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='pin' />
+                      <Typography small>Unpin</Typography>
+                    </div>
+                  )}
+                  {pinnedTo !== 'left' && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        togglePin(col.key, 'left');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='pin-left' />
+                      <Typography small>Pin to left</Typography>
+                    </div>
+                  )}
+                  {pinnedTo !== 'right' && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        togglePin(col.key, 'right');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='pin-right' />
+                      <Typography small>Pin to right</Typography>
+                    </div>
+                  )}
+                  {!paneFirstColumn && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        moveColumn('left');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='arrow-left' />
+                      <Typography small>Move left</Typography>
+                    </div>
+                  )}
+                  {!paneLastColumn && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        moveColumn('right');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='arrow-right' />
+                      <Typography small>Move right</Typography>
+                    </div>
+                  )}
+                  {pinnedTo === null && !paneFirstColumn && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        moveColumn('start');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='move-to-left' />
+                      <Typography small>Move to start</Typography>
+                    </div>
+                  )}
+                  {pinnedTo === null && !paneLastColumn && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        moveColumn('end');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='move-to-right' />
+                      <Typography small>Move to end</Typography>
+                    </div>
+                  )}
+                  {sortable && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        sortByColumn('asc');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='sort-outside' />
+                      <Typography small>
+                        Sort by <em>ASC</em>
+                      </Typography>
+                    </div>
+                  )}
+                  {sortable && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        sortByColumn('desc');
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='sort-outside' />
+                      <Typography small>
+                        Sort by <em>DESC</em>
+                      </Typography>
+                    </div>
+                  )}
+                  {width !== undefined && (
+                    <div
+                      className='Table__action__popup__item'
+                      onClick={(evt) => {
+                        resetWidth();
+                        setOpened(false);
+                      }}
+                    >
+                      <Icon name='reset-width-outside' />
+                      <Typography small>Reset width</Typography>
+                    </div>
+                  )}
                 </div>
               )}
-              {(pinnedTo === 'left' || pinnedTo === 'right') && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    togglePin(col.key, null);
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>push_pin</Icon>
-                  <Typography small>Unpin</Typography>
-                </div>
-              )}
-              {pinnedTo !== 'left' && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    togglePin(col.key, 'left');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon style={{ transform: 'rotate(30deg)' }}>push_pin</Icon>
-                  <Typography small>Pin to left</Typography>
-                </div>
-              )}
-              {pinnedTo !== 'right' && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    togglePin(col.key, 'right');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon style={{ transform: 'rotate(-30deg)' }}>push_pin</Icon>
-                  <Typography small>Pin to right</Typography>
-                </div>
-              )}
-              {!paneFirstColumn && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    moveColumn('left');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>chevron_left</Icon>
-                  <Typography small>Move left</Typography>
-                </div>
-              )}
-              {!paneLastColumn && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    moveColumn('right');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>chevron_right</Icon>
-                  <Typography small>Move right</Typography>
-                </div>
-              )}
-              {pinnedTo === null && !paneFirstColumn && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    moveColumn('start');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>first_page</Icon>
-                  <Typography small>Move to start</Typography>
-                </div>
-              )}
-              {pinnedTo === null && !paneLastColumn && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    moveColumn('end');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>last_page</Icon>
-                  <Typography small>Move to end</Typography>
-                </div>
-              )}
-              {sortable && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    sortByColumn('asc');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>import_export</Icon>
-                  <Typography small>
-                    Sort by <em>ASC</em>
-                  </Typography>
-                </div>
-              )}
-              {sortable && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    sortByColumn('desc');
-                    setOpened(false);
-                  }}
-                >
-                  <Icon>import_export</Icon>
-                  <Typography small>
-                    Sort by <em>DESC</em>
-                  </Typography>
-                </div>
-              )}
-              {width !== undefined && (
-                <div
-                  className='Table__action__popup__item'
-                  onClick={(evt) => {
-                    resetWidth();
-                    setOpened(false);
-                  }}
-                >
-                  <Icon style={{ transform: 'rotate(90deg)' }}>
-                    vertical_align_center
-                  </Icon>
-                  <Typography small>Reset width</Typography>
-                </div>
-              )}
-            </div>
-          )}
-          popupClassName='Table__action__popup'
-        />
-        <div
-          className={classNames({
-            Table__column__resizeHandler: true,
-            leftResize: pinnedTo === 'right',
-            isResizing: isResizing,
-          })}
-          onMouseDown={resizeStart}
-        />
+              popupClassName='Table__action__popup'
+            />
+            <div
+              className={classNames({
+                Table__column__resizeHandler: true,
+                leftResize: pinnedTo === 'right',
+                isResizing: isResizing,
+              })}
+              onMouseDown={resizeStart}
+            />
+          </>
+        )}
       </div>
       {groups
         ? Object.keys(data).map((groupKey) => (
             <div key={groupKey} className='Table__group'>
-              <Cell
-                index={groupKey}
-                col={col}
-                item={
-                  typeof data[groupKey].data[col.key] === 'object' &&
-                  data[groupKey].data[col.key]?.hasOwnProperty('content')
-                    ? {
-                        ...data[groupKey].data[col.key],
-                        props: {
-                          ...data[groupKey].data[col.key]?.props,
-                          onClick: (e) => expand(groupKey),
-                        },
-                      }
-                    : {
-                        content: data[groupKey].data[col.key],
-                        props: {
-                          onClick: (e) => expand(groupKey),
-                        },
-                      }
-                }
-                className={classNames({
-                  Table__group__header__cell: true,
-                  expanded: expanded[groupKey],
-                  expandable: true,
-                })}
-              />
+              {col.key === 'actions' ? (
+                <div
+                  className={classNames({
+                    Table__cell: true,
+                    Table__group__config__cell: true,
+                    Table__group__header__cell: true,
+                    expanded: expanded[groupKey],
+                    expandable: true,
+                  })}
+                >
+                  <GroupActions
+                    expand={expand}
+                    expanded={expanded}
+                    groupKeys={Object.keys(data)}
+                    groupKey={groupKey}
+                  />
+                </div>
+              ) : (
+                <Cell
+                  index={groupKey}
+                  col={col}
+                  item={
+                    typeof data[groupKey].data[col.key] === 'object' &&
+                    data[groupKey].data[col.key]?.hasOwnProperty('content')
+                      ? {
+                          ...data[groupKey].data[col.key],
+                          props: {
+                            ...data[groupKey].data[col.key]?.props,
+                            onClick: (e) => expand(groupKey),
+                          },
+                        }
+                      : {
+                          content: data[groupKey].data[col.key],
+                          props: {
+                            onClick: (e) => expand(groupKey),
+                          },
+                        }
+                  }
+                  className={classNames({
+                    Table__group__header__cell: true,
+                    expanded: expanded[groupKey],
+                    expandable: true,
+                  })}
+                />
+              )}
               {expanded[groupKey] && (
                 <>
                   {data[groupKey]?.items?.map((item, i) => (
@@ -306,8 +327,9 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      onRowHover={() => onRowHover(item.key)}
-                      onRowClick={() => onRowClick(item.key)}
+                      className={`rowKey-${item.key}`}
+                      onRowHover={() => onRowHover(item)}
+                      onRowClick={() => onRowClick(item)}
                     />
                   ))}
                 </>
@@ -320,12 +342,63 @@ function Column({
               index={item.index}
               col={col}
               item={item[col.key]}
+              className={`rowKey-${item.key}`}
               metadata={firstColumn ? item.rowMeta : null}
-              onRowHover={() => onRowHover(item.key)}
-              onRowClick={() => onRowClick(item.key)}
+              onRowHover={() => onRowHover(item)}
+              onRowClick={() => onRowClick(item)}
             />
           ))}
     </div>
+  );
+}
+
+function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
+  return (
+    <Popover
+      target={<Icon name='more-horizontal' />}
+      targetClassName='Table__action'
+      content={(opened, setOpened) => (
+        <div className='Table__action__popup__body'>
+          <div
+            className='Table__action__popup__item'
+            onClick={(evt) => {
+              expand(groupKey);
+              setOpened(false);
+            }}
+          >
+            <Icon
+              name={expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'}
+            />
+            {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
+          </div>
+          {(expanded[groupKey] || groupKeys.some((key) => !!expanded[key])) && (
+            <div
+              className='Table__action__popup__item'
+              onClick={(evt) => {
+                expand('collapse_all');
+                setOpened(false);
+              }}
+            >
+              <Icon name='collapse-inside' />
+              Collapse all
+            </div>
+          )}
+          {(!expanded[groupKey] || groupKeys.some((key) => !expanded[key])) && (
+            <div
+              className='Table__action__popup__item'
+              onClick={(evt) => {
+                expand('expand_all');
+                setOpened(false);
+              }}
+            >
+              <Icon name='collapse-outside' />
+              Expand all
+            </div>
+          )}
+        </div>
+      )}
+      popupClassName='Table__action__popup'
+    />
   );
 }
 

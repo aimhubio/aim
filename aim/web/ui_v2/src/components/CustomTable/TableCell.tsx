@@ -9,7 +9,6 @@ function Cell({
   item,
   className,
   isConfigColumn,
-  groupLength,
   metadata,
   placeholder,
   col,
@@ -30,7 +29,8 @@ function Cell({
       })}
       style={{
         cursor:
-          typeof item === 'object' && item?.props?.onClick
+          typeof onRowClick === 'function' ||
+          (typeof item === 'object' && item?.props?.onClick)
             ? 'pointer'
             : 'inherit',
         ...(typeof item === 'object' &&
@@ -38,7 +38,9 @@ function Cell({
           item?.style),
       }}
       {...(typeof item === 'object' && item?.props)}
-      onMouseMove={onRowHover}
+      onMouseMove={
+        item?.props?.onMouseMove ? item.props.onMouseMove : onRowHover
+      }
       onClick={item?.props?.onClick ? item.props.onClick : onRowClick}
     >
       {metadata && <div className='Table__cell__rowMeta'>{metadata}</div>}

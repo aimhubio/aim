@@ -49,7 +49,7 @@ function usePanelResize(
     };
   }, []);
 
-  return [panelResizing];
+  return panelResizing;
 }
 
 export default usePanelResize;

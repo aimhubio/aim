@@ -11,6 +11,7 @@ import {
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
@@ -24,6 +25,7 @@ export interface IControlProps {
   smoothingFactor: number;
   curveInterpolation: CurveEnum;
   alignmentConfig: IAlignmentConfig;
+  projectsDataMetrics: IProjectParamsMetrics['metrics'];
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;
