@@ -37,4 +37,5 @@ export interface IRunsTableProps {
   isRunsDataLoading: boolean;
   columns: any;
   tableRowHeight: number;
+  onExportTableData: () => void;
 }

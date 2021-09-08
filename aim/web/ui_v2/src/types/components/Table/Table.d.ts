@@ -38,6 +38,8 @@ export interface ITableProps {
   sortFields?: any;
   setSortFields?: any;
   isLoading?: boolean;
+  infiniteLoadHandler?: (data: any) => void;
+  isInfiniteLoading?: boolean;
 }
 
 export interface ITableRef {

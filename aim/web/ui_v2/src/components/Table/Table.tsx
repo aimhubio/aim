@@ -4,7 +4,7 @@
 import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import Button from 'components/Button/Button';
-import { isEmpty, isNil } from 'lodash-es';
+import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
 import BaseTable from './BaseTable';
@@ -380,8 +380,7 @@ const Table = React.forwardRef(function Table(
 
       virtualizedUpdate();
 
-      tableContainerRef.current.onscroll = ({ target }) => {
-        alert('');
+      tableContainerRef.current.onscroll = debounce(({ target }) => {
         const windowEdges = calculateWindow({
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
@@ -393,7 +392,13 @@ const Table = React.forwardRef(function Table(
         startIndex.current = windowEdges.startIndex;
         endIndex.current = windowEdges.endIndex;
         virtualizedUpdate();
-      };
+        if (props.isInfiniteLoading && props.infiniteLoadHandler) {
+          const index = windowEdges.endIndex - 10 - 3; // 10: offset, 3: header rows
+          if (index + 5 >= rowData.length) {
+            props.infiniteLoadHandler(rowData[index]);
+          }
+        }
+      }, 100);
     }
 
     return () => {
@@ -401,7 +406,7 @@ const Table = React.forwardRef(function Table(
         tableContainerRef.current.onscroll = null;
       }
     };
-  }, [custom, tableContainerRef.current]);
+  }, [custom, rowData]);
 
   return (
     <BusyLoaderWrapper

@@ -28,6 +28,7 @@ import {
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
+  IMetricTableRowData,
 } from '../../../types/services/models/metrics/metricsAppModel';
 import {
   aggregateGroupData,
@@ -45,6 +46,10 @@ import React from 'react';
 import { getMetricsTableColumns } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
+import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
+import JsonToCSV from '../../../utils/JsonToCSV';
+import { saveAs } from 'file-saver';
+import moment from 'moment';
 
 const model = createModel<Partial<any>>({
   requestIsPending: true,
@@ -162,6 +167,92 @@ function initialize(appId: string = '') {
   }
   setDefaultAppConfigData();
   getRunsData().call();
+}
+
+function getFilteredRow(
+  columnKeys: string[],
+  row: IMetricTableRowData,
+): { [key: string]: string } {
+  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
+    let value = row[column];
+    if (Array.isArray(value)) {
+      value = value.join(', ');
+    } else if (typeof value !== 'string') {
+      value = JSON.stringify(value);
+    }
+
+    if (column.startsWith('params.')) {
+      acc[column.replace('params.', '')] = value;
+    } else {
+      acc[column] = value;
+    }
+
+    return acc;
+  }, {});
+}
+
+function onExportTableData(e: React.ChangeEvent<any>): void {
+  const processedData = processData(
+    model.getState()?.data as IRun<IMetricTrace>[],
+  );
+
+  const tableData: IMetricTableRowData[] = getDataAsTableRows(
+    processedData.data,
+    null,
+    processedData.params,
+  );
+  const tableColumns: ITableColumn[] = getMetricsTableColumns(
+    processedData.params,
+    processedData.data[0]?.config,
+  );
+  // TODO need to filter excludedFields and sort column order
+  const excludedFields: string[] = [];
+  const filteredHeader: string[] = tableColumns.reduce(
+    (acc: string[], column: ITableColumn) =>
+      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
+    [],
+  );
+  // const flattenOrders = Object.keys(columnsOrder).reduce(
+  //   (acc, key) => acc.concat(columnsOrder[key]),
+  //   [],
+  // );
+  // filteredHeader.sort(
+  //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
+  // );
+
+  let emptyRow: { [key: string]: string } = {};
+  filteredHeader.forEach((column: string) => {
+    emptyRow[column] = '--';
+  });
+
+  const dataToExport = tableData?.reduce(
+    (
+      accArray: { [key: string]: string }[],
+      rowData: IMetricTableRowData,
+      rowDataIndex: number,
+    ) => {
+      if (rowData?.children?.length > 0) {
+        rowData.children.forEach((row: IMetricTableRowData) => {
+          const filteredRow = getFilteredRow(filteredHeader, row);
+          accArray = accArray.concat(filteredRow);
+        });
+        if (tableData.length - 1 !== rowDataIndex) {
+          accArray = accArray.concat(emptyRow);
+        }
+      } else {
+        const filteredRow = getFilteredRow(filteredHeader, rowData);
+        accArray = accArray.concat(filteredRow);
+      }
+
+      return accArray;
+    },
+    [],
+  );
+
+  const blob = new Blob([JsonToCSV(dataToExport)], {
+    type: 'text/csv;charset=utf-8;',
+  });
+  saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
 }
 
 function onNotificationDelete(id: number) {
@@ -594,6 +685,7 @@ const runAppModel = {
   onSelectRunQueryChange,
   setComponentRefs,
   updateSelectStateUrl,
+  onExportTableData,
 };
 
 export default runAppModel;

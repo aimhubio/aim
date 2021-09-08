@@ -19,6 +19,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='Runs__table__container'>
             <RunsTable
+              onExportTableData={props.onExportTableData}
               tableRowHeight={props.tableRowHeight}
               columns={props.tableColumns}
               runsList={props.tableData}

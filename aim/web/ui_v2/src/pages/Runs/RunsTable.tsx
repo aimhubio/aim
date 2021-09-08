@@ -9,6 +9,7 @@ function RunsTable({
   tableRef,
   columns,
   tableRowHeight,
+  onExportTableData,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Runs__RunList__runListBox'>
@@ -18,6 +19,10 @@ function RunsTable({
       <div className='RunsTable'>
         <Table
           custom
+          isInfiniteLoading
+          infiniteLoadHandler={(data) => {
+            console.log('infinite ---- ', data);
+          }}
           emptyText={'No runs found'}
           key={`${columns?.length}-${size(runsList)}`}
           ref={tableRef}
@@ -30,7 +35,7 @@ function RunsTable({
           rowHeight={tableRowHeight}
           // Table actions
           onSort={() => null}
-          onExport={() => null}
+          onExport={onExportTableData}
           onManageColumns={() => null}
           onRowHeightChange={() => null}
           onRowsChange={() => null}

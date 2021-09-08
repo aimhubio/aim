@@ -34,6 +34,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRef={tableRef}
       query={runsData?.config?.select.query}
       updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
+      onExportTableData={runsAppModel.onExportTableData}
     />
   );
 }
