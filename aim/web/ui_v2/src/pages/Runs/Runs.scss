@@ -61,11 +61,11 @@
         }
         .MuiInputBase-input {
           font-weight: 500;
-          font-size: $text-mm;
+          font-size: $text-md;
           color: #414b6d;
           &::placeholder {
             font-weight: 500;
-            font-size: $text-mm;
+            font-size: $text-md;
             color: #606986;
             opacity: 1;
           }
@@ -80,7 +80,7 @@
         }
         .MuiButton-label {
           font-weight: 500;
-          font-size: $text-mm;
+          font-size: $text-md;
           justify-content: flex-start;
         }
       }
@@ -107,7 +107,7 @@
         }
         &__title {
           font-weight: 600;
-          font-size: $text-mm;
+          font-size: $text-md;
         }
       }
     }
@@ -121,7 +121,7 @@
         align-items: center;
         &__title {
           font-weight: 600;
-          font-size: $text-mm;
+          font-size: $text-md;
         }
       }
     }
