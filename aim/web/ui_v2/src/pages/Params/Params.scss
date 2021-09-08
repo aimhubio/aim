@@ -1,20 +1,18 @@
 .Params__section {
   height: 100vh;
   overflow: hidden;
+  .Params__loader {
+    flex-direction: column;
+    justify-content: space-between;
+  }
 }
 
 .Params__container {
   background-color: #ffffff;
-  .Params__paper {
-    padding: 1em;
-    height: 100%;
-    user-select: none;
-  }
-
   .Params__fullHeight {
     height: 100%;
-    height: -moz-available; /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    // height: -moz-available; /* WebKit-based browsers will ignore this. */
+    // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   }
 
   .Params__resize {
@@ -23,6 +21,11 @@
     display: flex;
     align-items: center;
     height: 6px;
+  }
+  .Params__section__div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .Params__chart__container {
@@ -54,5 +57,6 @@
 
 .Metrics__controls__container {
   width: 50px;
+  max-height: 100%;
   display: flex;
 }

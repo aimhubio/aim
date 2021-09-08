@@ -1,8 +1,5 @@
 import React from 'react';
 import _, { isEmpty } from 'lodash-es';
-import { saveAs } from 'file-saver';
-import moment from 'moment';
-
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
 import { encode } from 'utils/encoder/encoder';
@@ -178,6 +175,8 @@ function getParamsData() {
           params,
           rawData: runData,
           config: configData,
+          tableData: getDataAsTableRows(data, null, params),
+          tableColumns: getParamsTableColumns(params, data[0]?.config),
           requestIsPending: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
@@ -185,6 +184,36 @@ function getParamsData() {
     },
     abort: () => getRunsRequestRef.abort(),
   };
+}
+
+//Table Methods
+
+function onTableRowHover(rowKey?: string): void {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.chart) {
+    const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
+
+    if (chartPanelRef && !configData.chart.focusedState.active) {
+      chartPanelRef.current?.setActiveLineAndCircle(rowKey);
+    }
+  }
+}
+
+function onTableRowClick(rowKey?: string): void {
+  const configData: IParamsAppConfig | undefined = model.getState()!.config!;
+  const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
+  let focusedStateActive = !!rowKey;
+  if (
+    configData?.chart.focusedState.active &&
+    configData?.chart.focusedState.key === rowKey
+  ) {
+    focusedStateActive = false;
+  }
+  chartPanelRef?.current?.setActiveLineAndCircle(
+    rowKey,
+    focusedStateActive,
+    true,
+  );
 }
 
 function getChartTitleData(
@@ -602,6 +631,17 @@ function onActivePointChange(
 ): void {
   const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
+    }
+    model.getState()?.refs?.tableRef?.current?.setHoveredRow(activePoint.key);
     const chart = { ...configData.chart };
     chart.focusedState = {
       active: !!focusedStateActive,
@@ -742,136 +782,111 @@ function updateModelData(configData: IParamsAppConfig): void {
     highPlotData: getDataAsLines(data),
     chartTitleData: getChartTitleData(data),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
-    // tableData: getDataAsTableRows(data, null, params),
-    // tableColumns: getParamsTableColumns(params, data[0]?.config),
+    tableData: getDataAsTableRows(data, null, params),
+    tableColumns: getParamsTableColumns(params, data[0]?.config),
   });
 }
 
-// function getDataAsTableRows(
-//   processedData: IMetricsCollection<any>[],
-//   xValue: number | string | null = null,
-//   paramKeys: string[],
-// ): IMetricTableRowData[] | any {
-//   if (!processedData) {
-//     return [];
-//   }
+function getDataAsTableRows(
+  processedData: IMetricsCollection<any>[],
+  xValue: number | string | null = null,
+  paramKeys: string[],
+): IMetricTableRowData[] | any {
+  if (!processedData) {
+    return [];
+  }
 
-//   const rows: IMetricTableRowData[] | any =
-//     processedData[0]?.config !== null ? {} : [];
+  const rows: IMetricTableRowData[] | any =
+    processedData[0]?.config !== null ? {} : [];
 
-//   let rowIndex = 0;
+  let rowIndex = 0;
 
-//   processedData.forEach((metricsCollection: IMetricsCollection<any>) => {
-//     const groupKey = metricsCollection.key;
-//     const columnsValues: { [key: string]: string[] } = {};
+  processedData.forEach((metricsCollection: IMetricsCollection<any>) => {
+    const groupKey = metricsCollection.key;
+    const columnsValues: { [key: string]: string[] } = {};
 
-//     if (metricsCollection.config !== null) {
-//       const groupHeaderRow = {
-//         meta: {
-//           chartIndex: metricsCollection.chartIndex + 1,
-//         },
-//         key: groupKey!,
-//         color: metricsCollection.color,
-//         dasharray: metricsCollection.dasharray,
-//         experiment: '',
-//         run: '',
-//         metric: '',
-//         context: [],
-//         value: '',
-//         step: '',
-//         epoch: '',
-//         time: '',
-//         children: [],
-//       };
+    if (metricsCollection.config !== null) {
+      const groupHeaderRow = {
+        meta: {
+          chartIndex: metricsCollection.chartIndex + 1,
+        },
+        key: groupKey!,
+        color: metricsCollection.color,
+        dasharray: metricsCollection.dasharray,
+        experiment: '',
+        run: '',
+        metric: '',
+        context: [],
+        children: [],
+      };
 
-//       rows[groupKey!] = {
-//         data: groupHeaderRow,
-//         items: [],
-//       };
-//     }
+      rows[groupKey!] = {
+        data: groupHeaderRow,
+        items: [],
+      };
+    }
 
-//     metricsCollection.data.forEach((metric: any) => {
-//       const closestIndex =
-//         xValue === null
-//           ? null
-//           : getClosestValue(metric.data.xValues as number[], xValue as number)
-//               .index;
-//       const rowValues: IMetricTableRowData = {
-//         key: metric.key,
-//         index: rowIndex,
-//         color: metricsCollection.color ?? metric.color,
-//         dasharray: metricsCollection.dasharray ?? metric.dasharray,
-//         experiment: metric.run.props.experiment ?? 'default',
-//         run: metric.run.props.name ?? '-',
-//         metric: metric.metric_name,
-//         context: Object.entries(metric.context).map((entry) => entry.join(':')),
-//         value: `${
-//           closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
-//         }`,
-//         step: `${
-//           closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
-//         }`,
-//         epoch: `${
-//           closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
-//         }`,
-//         time: `${
-//           closestIndex === null
-//             ? '-'
-//             : metric.data.timestamps[closestIndex] ?? '-'
-//         }`,
-//         parentId: groupKey,
-//       };
-//       rowIndex++;
+    metricsCollection.data.forEach((metric: any) => {
+      const rowValues: any = {
+        key: metric.key,
+        index: rowIndex,
+        color: metricsCollection.color ?? metric.color,
+        dasharray: metricsCollection.dasharray ?? metric.dasharray,
+        experiment: metric.run.props.experiment ?? 'default',
+        run: metric.run.props.name ?? '-',
+        metric: metric.metric_name,
+      };
+      rowIndex++;
 
-//       [
-//         'experiment',
-//         'run',
-//         'metric',
-//         'context',
-//         'step',
-//         'epoch',
-//         'time',
-//       ].forEach((key) => {
-//         if (columnsValues.hasOwnProperty(key)) {
-//           if (!_.some(columnsValues[key], rowValues[key])) {
-//             columnsValues[key].push(rowValues[key]);
-//           }
-//         } else {
-//           columnsValues[key] = [rowValues[key]];
-//         }
-//       });
+      [
+        'experiment',
+        'run',
+        'metric',
+        'context',
+        'step',
+        'epoch',
+        'time',
+      ].forEach((key) => {
+        if (columnsValues.hasOwnProperty(key)) {
+          if (!_.some(columnsValues[key], rowValues[key])) {
+            columnsValues[key].push(rowValues[key]);
+          }
+        } else {
+          columnsValues[key] = [rowValues[key]];
+        }
+      });
 
-//       paramKeys.forEach((paramKey) => {
-//         const value = _.get(metric.run.params, paramKey, '-');
-//         rowValues[paramKey] = value;
-//         if (columnsValues.hasOwnProperty(paramKey)) {
-//           if (!columnsValues[paramKey].includes(value)) {
-//             columnsValues[paramKey].push(value);
-//           }
-//         } else {
-//           columnsValues[paramKey] = [value];
-//         }
-//       });
+      paramKeys.forEach((paramKey) => {
+        const value = _.get(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = value;
+        if (columnsValues.hasOwnProperty(paramKey)) {
+          if (!columnsValues[paramKey].includes(value)) {
+            columnsValues[paramKey].push(value);
+          }
+        } else {
+          columnsValues[paramKey] = [value];
+        }
+      });
 
-//       if (metricsCollection.config !== null) {
-//         rows[groupKey!].items.push(rowValues);
-//       } else {
-//         rows.push(rowValues);
-//       }
-//     });
+      if (metricsCollection.config !== null) {
+        rows[groupKey!].items.push(rowValues);
+      } else {
+        rows.push(rowValues);
+      }
+    });
 
-//     if (metricsCollection.config !== null) {
-//       for (let columnKey in columnsValues) {
-//         rows[groupKey!].data[columnKey] =
-//           columnsValues[columnKey].length > 1
-//             ? 'Mix'
-//             : columnsValues[columnKey][0];
-//       }
-//     }
-//   });
+    if (metricsCollection.config !== null) {
+      for (let columnKey in columnsValues) {
+        rows[groupKey!].data[columnKey] =
+          columnsValues[columnKey].length > 1
+            ? 'Mix'
+            : columnsValues[columnKey][0];
+      }
+    }
+  });
 
-//   return rows;
-// }
+  return rows;
+}
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
@@ -1141,6 +1156,8 @@ const paramsAppModel = {
   updateChartStateUrl,
   updateSelectStateUrl,
   updateGroupingStateUrl,
+  onTableRowHover,
+  onTableRowClick,
 };
 
 export default paramsAppModel;

@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 function getParamsTableColumns(
@@ -19,31 +21,6 @@ function getParamsTableColumns(
     {
       key: 'metric',
       content: <span>Metric</span>,
-      topHeader: 'Metrics',
-    },
-    {
-      key: 'context',
-      content: <span>Context</span>,
-      topHeader: 'Metrics',
-    },
-    {
-      key: 'value',
-      content: <span>Value</span>,
-      topHeader: 'Metrics',
-    },
-    {
-      key: 'step',
-      content: <span>Step</span>,
-      topHeader: 'Metrics',
-    },
-    {
-      key: 'epoch',
-      content: <span>Epoch</span>,
-      topHeader: 'Metrics',
-    },
-    {
-      key: 'time',
-      content: <span>Time</span>,
       topHeader: 'Metrics',
     },
   ].concat(
