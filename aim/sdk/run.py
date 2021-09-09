@@ -178,10 +178,19 @@ class Run(StructuredRunMixin):
 
         if repo is None:
             from aim.sdk.repo import Repo
-            repo = Repo.default_repo()
-        elif isinstance(repo, str):
-            from aim.sdk.repo import Repo
-            repo = Repo.from_path(repo)
+            repo = Repo.default_repo_path()
+        if isinstance(repo, str):
+            from aim.sdk.repo import Repo, RepoStatus
+            repo_status = Repo.check_repo_status(repo)
+            if repo_status == RepoStatus.UPDATE_REQUIRED:
+                logger.error(f'Trying to start Run on repository {repo}, which is out of date. '
+                             f'Please upgrade repository with the following command: '
+                             f'`aim upgrade --repo {repo} 2to3`.')
+                raise RuntimeError()
+            elif repo_status == RepoStatus.MISSING:
+                repo = Repo.from_path(repo, init=True)
+            else:
+                repo = Repo.from_path(repo)
 
         self.repo = repo
         self.read_only = read_only
@@ -205,9 +214,6 @@ class Run(StructuredRunMixin):
         self.series_run_tree: TreeView = self.repo.request(
             'trcs', hashname, read_only=read_only
         ).tree().view('trcs').view('chunks').view(hashname)
-        if not read_only:
-            # TODO: [AT] check this once Container db open locking is added
-            self.series_run_tree.preload()
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
@@ -452,7 +458,7 @@ class Run(StructuredRunMixin):
         if self._system_resource_tracker:
             self._system_resource_tracker.stop()
 
-        logger.warning(f'finalizing {self}')
+        logger.debug(f'finalizing {self}')
         self.finalize()
 
     def finalize(self):

@@ -1,6 +1,7 @@
 from psutil import Process, cpu_percent
 from threading import Thread
 import time
+import weakref
 
 from aim.ext.resource.stat import Stat
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
@@ -22,7 +23,7 @@ class ResourceTracker(object):
         cpu_percent(0.0)
 
     def __init__(self, track, interval: int = STAT_INTERVAL_DEFAULT):
-        self._track_func = track
+        self._track_func = weakref.WeakMethod(track)
         self._interval = interval
 
         try:
@@ -74,7 +75,7 @@ class ResourceTracker(object):
     def _track(self, stat: Stat):
         # Store system stats
         for resource, usage in stat.system.items():
-            self._track_func(
+            self._track_func()(
                 usage,
                 name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
             )
@@ -82,7 +83,7 @@ class ResourceTracker(object):
         # Store GPU stats
         for gpu_idx, gpu in enumerate(stat.gpus):
             for resource, usage in gpu.items():
-                self._track_func(
+                self._track_func()(
                     usage,
                     name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
                     gpu=gpu_idx,

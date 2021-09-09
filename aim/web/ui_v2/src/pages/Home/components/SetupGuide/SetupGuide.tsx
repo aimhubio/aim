@@ -7,22 +7,26 @@ import './SetupGuide.scss';
 function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='SetupGuide__container'>
-      <h2>Quick setup</h2>
+      <h2>Integrate Aim with your code</h2>
       <div className='SetupGuide__code'>
-        <h3>1. Installation</h3>
-        <CodeBlock code='pip install aim' />
-      </div>
-      <div className='SetupGuide__code'>
-        <h3>2. Import Aim</h3>
+        <h3>Import Aim</h3>
         <CodeBlock code='import aim' />
       </div>
       <div className='SetupGuide__code'>
-        <h3>3. Track Experiment</h3>
+        <h3>Track your training runs</h3>
         <CodeBlock
-          code={`
-r = aim.sdk.Run(experiment='my_exp_name')
-r.track(value, name='loss', context={'subset': 'train'})
-r['hparams'] = 'foo'`}
+          code={`run_inst = aim.Run(experiment='my_exp_name')
+
+# Save inputs, hparams or any other \`key: value\` pairs
+run_inst['hparams'] = {
+    'learning_rate': 0.01,
+    'batch_size': 32,
+}
+
+# Track metrics
+for step in range(10):
+    run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
+`}
         />
       </div>
       <div className='StyleGuide__resources__container'>

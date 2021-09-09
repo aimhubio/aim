@@ -148,7 +148,7 @@ async def metric_search_result_streamer(traces: MetricCollection, steps_num: int
         if run:
             run_dict = {
                 run.hashname: {
-                    'params': run[...],
+                    'params': run.get(...),
                     'traces': traces_list,
                     'props': get_run_props(run)
                 }
@@ -164,7 +164,7 @@ async def run_search_result_streamer(runs: MetricCollection, limit: int) -> byte
         run = run_trace_collection.run
         run_dict = {
             run.hashname: {
-                'params': run[...],
+                'params': run.get(...),
                 'traces': run.collect_metrics_info(),
                 'props': get_run_props(run)
             }

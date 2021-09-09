@@ -43,7 +43,6 @@ function SelectForm({
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef?.abort();
@@ -161,7 +160,7 @@ function SelectForm({
               <>
                 <Box display='flex' alignItems='center'>
                   <Button
-                    variant='contained'
+                    variant='outlined'
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
@@ -180,8 +179,9 @@ function SelectForm({
                       open
                       onClose={handleClose}
                       multiple
+                      className='Autocomplete__container'
                       size='small'
-                      disablePortal
+                      disablePortal={true}
                       disableCloseOnSelect
                       options={metricsOptions}
                       value={selectedMetricsData?.metrics ?? ''}
@@ -199,6 +199,7 @@ function SelectForm({
                         <InputBase
                           ref={params.InputProps.ref}
                           inputProps={params.inputProps}
+                          placeholder='Search'
                           autoFocus={true}
                           className='SelectForm__metric__select'
                         />
@@ -215,10 +216,12 @@ function SelectForm({
                               color='primary'
                               icon={<CheckBoxOutlineBlank />}
                               checkedIcon={<CheckBoxIcon />}
-                              style={{ marginRight: 4 }}
                               checked={selected}
+                              size='small'
                             />
-                            {option.label}
+                            <span className='SelectForm__option__label'>
+                              {option.label}
+                            </span>
                           </React.Fragment>
                         );
                       }}

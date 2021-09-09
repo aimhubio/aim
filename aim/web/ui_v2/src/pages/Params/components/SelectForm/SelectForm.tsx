@@ -25,9 +25,10 @@ import {
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
-import 'pages/Metrics/components/SelectForm/SelectForm.scss';
 import Icon from 'components/Icon/Icon';
 import SelectTag from 'components/SelectTag/SelectTag';
+
+import './SelectForm.scss';
 
 function SelectForm({
   onParamsSelectChange,
@@ -106,7 +107,7 @@ function SelectForm({
       paramPaths.forEach((paramPath, index) => {
         data.push({
           label: paramPath,
-          group: paramPath.slice(0, paramPath.indexOf('.')),
+          group: 'Params',
           type: 'params',
           color: COLORS[0][index % COLORS[0].length],
         });
@@ -130,12 +131,12 @@ function SelectForm({
             <>
               <Box display='flex' alignItems='center'>
                 <Button
-                  variant='contained'
+                  variant='outlined'
                   color='primary'
                   onClick={handleClick}
                   aria-describedby={id}
                 >
-                  + Params
+                  <Icon name='plus' style={{ marginRight: '0.5rem' }} /> Params
                 </Button>
                 <Popper
                   id={id}
@@ -179,12 +180,14 @@ function SelectForm({
                       return (
                         <React.Fragment>
                           <Checkbox
+                            color='primary'
                             icon={<CheckBoxOutlineBlank />}
                             checkedIcon={<CheckBoxIcon />}
-                            style={{ marginRight: 4 }}
                             checked={selected}
                           />
-                          {option.label}
+                          <span className='SelectForm__option__label'>
+                            {option.label}
+                          </span>
                         </React.Fragment>
                       );
                     }}
@@ -218,6 +221,15 @@ function SelectForm({
               </span>
             </>
           </Box>
+          <Button
+            color='primary'
+            variant='contained'
+            startIcon={<SearchOutlined />}
+            className='Params__SelectForm__search__button'
+            onClick={handleParamsSearch}
+          >
+            Search
+          </Button>
         </Box>
 
         <Box mt={0.875}>
@@ -231,29 +243,6 @@ function SelectForm({
             onChange={({ target }) => onSelectRunQueryChange(target.value)}
           />
         </Box>
-      </div>
-      <Divider style={{ margin: '0 1.5em' }} orientation='vertical' flexItem />
-      <div className='SelectForm__search__container'>
-        <Button
-          color='primary'
-          variant='contained'
-          startIcon={<SearchOutlined />}
-          className='SelectForm__search__button'
-          onClick={handleParamsSearch}
-        >
-          Search
-        </Button>
-        <div className='SelectForm__search__actions'>
-          <span>
-            <Icon name='reset' />
-          </span>
-          <span>
-            <Icon name='edit' />
-          </span>
-          <span>
-            <Icon name='eye-fill-show' />
-          </span>
-        </div>
       </div>
     </div>
   );

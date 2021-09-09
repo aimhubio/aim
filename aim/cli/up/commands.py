@@ -1,9 +1,9 @@
 import os
 import click
 
-from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_WEB_ENV_KEY, \
+from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_ENV_MODE_KEY, \
     AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY
-from aim.sdk.repo import Repo
+from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
 from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
 
@@ -21,19 +21,35 @@ from aim.web.utils import ShellCommandException
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
 def up(dev, host, port, repo, tf_logs):
-    repo_path = clean_repo_path(repo)
-    if repo_path:
-        repo_inst = Repo.from_path(repo_path)
+    if dev:
+        os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
-        repo_inst = Repo.default_repo()
-    repo_inst.structured_db.run_upgrades()
+        os.environ[AIM_ENV_MODE_KEY] = 'prod'
+
+    repo_path = clean_repo_path(repo) or Repo.default_repo_path()
+    repo_status = Repo.check_repo_status(repo_path)
+    if repo_status == RepoStatus.MISSING:
+        init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
+        if not init_repo:
+            click.echo('To initialize repo please run the following command:')
+            click.secho('aim init', fg='yellow')
+            return
+        repo_inst = Repo.from_path(repo_path, init=True)
+    elif repo_status == RepoStatus.UPDATE_REQUIRED:
+        upgrade_repo = click.confirm(f'\'{repo_path}\' requires upgrade. Do you want to run upgrade automatically?')
+        if upgrade_repo:
+            from aim.cli.upgrade.utils import convert_2to3
+            repo_inst = convert_2to3(repo_path, drop_existing=False, skip_failed_runs=False, skip_checks=False)
+        else:
+            click.echo('To upgrade repo please run the following command:')
+            click.secho(f'aim upgrade --repo {repo_path} 2to3', fg='yellow')
+            return
+    else:
+        repo_inst = Repo.from_path(repo_path)
+        if repo_status == RepoStatus.PATCH_REQUIRED:
+            repo_inst.structured_db.run_upgrades()
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
-
-    if dev:
-        os.environ[AIM_WEB_ENV_KEY] = 'dev'
-    else:
-        os.environ[AIM_WEB_ENV_KEY] = 'prod'
 
     if tf_logs:
         os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs
