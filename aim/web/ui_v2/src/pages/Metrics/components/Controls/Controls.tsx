@@ -6,10 +6,10 @@ import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
+import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
 import Icon from 'components/Icon/Icon';
 
 import './Controls.scss';
@@ -198,6 +198,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Select Zoom Mode'
           anchor={({ onAnchorClick, opened }) => (
             <div
               className={`Controls__anchor ${
@@ -238,6 +239,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Select Option To Zoom Out'
           anchor={({ onAnchorClick, opened }) => (
             <div
               className={`Controls__anchor ${

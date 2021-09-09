@@ -1,7 +1,9 @@
 import React from 'react';
 import _ from 'lodash-es';
-import { Box, Divider, MenuItem, MenuList } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 import { IZoomOutPopoverProps } from 'types/components/ZoomOutPopover/ZoomOutPopover';
+
+import './ZoomOutPopover.scss';
 
 function ZoomOutPopover({
   zoomHistory = [],
@@ -30,18 +32,14 @@ function ZoomOutPopover({
     }
   }
   return (
-    <Box>
-      <Box p={0.5}>Select Option To Zoom Out</Box>
-      <Divider />
-      <MenuList>
-        {Object.keys(groupedHistory)?.map((index) => (
-          <MenuItem key={index} data-name={index} onClick={handleZoomOut}>
-            {`Zoom Out Chart ${parseInt(index) + 1}`}
-          </MenuItem>
-        ))}
-        <MenuItem onClick={handleResetZooming}>Reset Zooming</MenuItem>
-      </MenuList>
-    </Box>
+    <div className='ZoomOutPopover'>
+      {Object.keys(groupedHistory)?.map((index) => (
+        <MenuItem key={index} data-name={index} onClick={handleZoomOut}>
+          {`Zoom Out Chart ${parseInt(index) + 1}`}
+        </MenuItem>
+      ))}
+      <MenuItem onClick={handleResetZooming}>Reset Zooming</MenuItem>
+    </div>
   );
 }
 

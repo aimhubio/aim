@@ -1,6 +1,5 @@
 import React from 'react';
 import { isEmpty } from 'lodash-es';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
@@ -10,16 +9,16 @@ import MetricsBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
-import { ChartTypeEnum } from 'utils/d3';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import { ILine } from 'types/components/LineChart/LineChart';
+import { ChartTypeEnum } from 'utils/d3';
+import Icon from 'components/Icon/Icon';
 
 import './Metrics.scss';
-import Icon from '../../components/Icon/Icon';
 
 function Metrics(
   props: IMetricProps,

@@ -4,13 +4,19 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine
 
 from alembic import context
+from alembic.config import Config
 
+from aim.web.configs import AIM_ENV_MODE_KEY
 from aim.storage.structured.sql_engine.models import *
 from aim.storage.structured.db import DB
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+if os.getenv(AIM_ENV_MODE_KEY, 'prod') != 'prod':
+    here = os.path.abspath(os.path.dirname(__file__))
+    config = Config(os.path.join(here, 'alembic_dev.ini'))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

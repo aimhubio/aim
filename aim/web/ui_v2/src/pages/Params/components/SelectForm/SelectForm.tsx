@@ -25,9 +25,9 @@ import {
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
-import 'pages/Metrics/components/SelectForm/SelectForm.scss';
 import Icon from 'components/Icon/Icon';
 import SelectTag from 'components/SelectTag/SelectTag';
+import './SelectForm.scss';
 
 function SelectForm({
   onParamsSelectChange,
@@ -106,7 +106,7 @@ function SelectForm({
       paramPaths.forEach((paramPath, index) => {
         data.push({
           label: paramPath,
-          group: paramPath.slice(0, paramPath.indexOf('.')),
+          group: 'Params',
           type: 'params',
           color: COLORS[0][index % COLORS[0].length],
         });
@@ -218,6 +218,15 @@ function SelectForm({
               </span>
             </>
           </Box>
+          <Button
+            color='primary'
+            variant='contained'
+            startIcon={<SearchOutlined />}
+            className='Params__SelectForm__search__button'
+            onClick={handleParamsSearch}
+          >
+            Search
+          </Button>
         </Box>
 
         <Box mt={0.875}>
@@ -231,29 +240,6 @@ function SelectForm({
             onChange={({ target }) => onSelectRunQueryChange(target.value)}
           />
         </Box>
-      </div>
-      <Divider style={{ margin: '0 1.5em' }} orientation='vertical' flexItem />
-      <div className='SelectForm__search__container'>
-        <Button
-          color='primary'
-          variant='contained'
-          startIcon={<SearchOutlined />}
-          className='SelectForm__search__button'
-          onClick={handleParamsSearch}
-        >
-          Search
-        </Button>
-        <div className='SelectForm__search__actions'>
-          <span>
-            <Icon name='reset' />
-          </span>
-          <span>
-            <Icon name='edit' />
-          </span>
-          <span>
-            <Icon name='eye-fill-show' />
-          </span>
-        </div>
       </div>
     </div>
   );

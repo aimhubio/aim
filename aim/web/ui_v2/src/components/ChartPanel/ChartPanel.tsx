@@ -139,65 +139,69 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   return (
     <Grid container className='ChartPanel__container'>
-      <Grid item xs className='ChartPanel'>
-        {props.panelResizing ? (
-          <div className='ChartPanel__resizing'>
-            <Typography variant='subtitle1' color='primary'>
-              Release to resize
-            </Typography>
-          </div>
-        ) : (
-          <Grid
-            ref={containerRef}
-            container
-            className='ChartPanel__paper__grid'
-          >
-            {props.data.map((chartData: any, index: number) => {
-              const Component = chartTypesConfig[props.chartType];
-              return (
-                <Grid
-                  key={index}
-                  item
-                  className='ChartPanel__paper__grid__chartBox'
-                  xs={
-                    props.data.length > 9
-                      ? 4
-                      : (chartGridPattern[props.data.length][index] as GridSize)
-                  }
-                >
-                  <Component
-                    ref={chartRefs[index]}
-                    {...props.chartProps[index]}
-                    index={index}
-                    data={chartData}
-                    syncHoverState={syncHoverState}
-                  />
-                </Grid>
-              );
-            })}
+      {props.panelResizing ? (
+        <div className='ChartPanel__resizing'>
+          <Typography variant='subtitle1' color='primary'>
+            Release to resize
+          </Typography>
+        </div>
+      ) : (
+        <>
+          <Grid item xs className='ChartPanel'>
+            <Grid
+              ref={containerRef}
+              container
+              className='ChartPanel__paper__grid'
+            >
+              {props.data.map((chartData: any, index: number) => {
+                const Component = chartTypesConfig[props.chartType];
+                return (
+                  <Grid
+                    key={index}
+                    item
+                    className='ChartPanel__paper__grid__chartBox'
+                    xs={
+                      props.data.length > 9
+                        ? 4
+                        : (chartGridPattern[props.data.length][
+                            index
+                          ] as GridSize)
+                    }
+                  >
+                    <Component
+                      ref={chartRefs[index]}
+                      {...props.chartProps[index]}
+                      index={index}
+                      data={chartData}
+                      syncHoverState={syncHoverState}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+            <ChartPopover
+              popoverPosition={popoverPosition}
+              open={
+                props.data.length > 0 &&
+                !props.panelResizing &&
+                !props.zoom?.active &&
+                (props.tooltip.display || props.focusedState.active)
+              }
+              containerRef={containerRef}
+            >
+              <PopoverContent
+                chartType={props.chartType}
+                tooltipContent={props.tooltip.content}
+                focusedState={props.focusedState}
+                alignmentConfig={props.alignmentConfig}
+              />
+            </ChartPopover>
           </Grid>
-        )}
-        <ChartPopover
-          popoverPosition={popoverPosition}
-          open={
-            props.data.length > 0 &&
-            !props.panelResizing &&
-            !props.zoom?.active &&
-            (props.tooltip.display || props.focusedState.active)
-          }
-          containerRef={containerRef}
-        >
-          <PopoverContent
-            chartType={props.chartType}
-            tooltipContent={props.tooltip.content}
-            focusedState={props.focusedState}
-            alignmentConfig={props.alignmentConfig}
-          />
-        </ChartPopover>
-      </Grid>
-      <Grid className='Metrics__controls__container' item>
-        {props.controls}
-      </Grid>
+          <Grid className='Metrics__controls__container' item>
+            {props.controls}
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 });
