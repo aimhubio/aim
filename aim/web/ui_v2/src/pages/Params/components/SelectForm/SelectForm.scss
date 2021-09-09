@@ -18,12 +18,12 @@
 }
 
 .SelectForm__metric__select {
-  background-color: #ffffff;
   width: 100%;
+
   input {
-    border-radius: 6px;
     padding: 8px;
     font-size: $text-md;
+    border-bottom: $border-main;
   }
 }
 
@@ -62,11 +62,37 @@
   }
 }
 
+
 .SelectForm__Popper {
-  border: 1px solid rgba(27, 31, 35, 0.15);
-  width: 300px;
+  border: $border-main;
+  width: 40%;
+  border-radius: $radius-main;
   z-index: 1;
   color: #586069;
+  background-color: #FFFFFF;
+  .MuiAutocomplete-paper {
+    box-shadow: unset;
+    margin: unset;
+  }
+
+  .MuiAutocomplete-popperDisablePortal {
+    position: initial;
+  }
+
+  .MuiAutocomplete-listbox {
+    .MuiAutocomplete-groupUl .MuiAutocomplete-option {
+      padding: 0.625rem 1rem;
+
+      .MuiCheckbox-root {
+        padding: 0;
+      }
+
+      .SelectForm__option__label {
+        margin-left: 0.5rem;
+        font-size: $text-md;
+      }
+    }
+  }
 }
 
 .SelectForm__clearAll {

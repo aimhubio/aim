@@ -27,6 +27,7 @@ import {
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import Icon from 'components/Icon/Icon';
 import SelectTag from 'components/SelectTag/SelectTag';
+
 import './SelectForm.scss';
 
 function SelectForm({
@@ -130,12 +131,12 @@ function SelectForm({
             <>
               <Box display='flex' alignItems='center'>
                 <Button
-                  variant='contained'
+                  variant='outlined'
                   color='primary'
                   onClick={handleClick}
                   aria-describedby={id}
                 >
-                  + Params
+                  <Icon name='plus' style={{ marginRight: '0.5rem' }} /> Params
                 </Button>
                 <Popper
                   id={id}
@@ -179,12 +180,14 @@ function SelectForm({
                       return (
                         <React.Fragment>
                           <Checkbox
+                            color='primary'
                             icon={<CheckBoxOutlineBlank />}
                             checkedIcon={<CheckBoxIcon />}
-                            style={{ marginRight: 4 }}
                             checked={selected}
                           />
-                          {option.label}
+                          <span className='SelectForm__option__label'>
+                            {option.label}
+                          </span>
                         </React.Fragment>
                       );
                     }}

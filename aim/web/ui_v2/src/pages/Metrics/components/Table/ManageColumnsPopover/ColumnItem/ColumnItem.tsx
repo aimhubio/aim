@@ -12,9 +12,12 @@ function ColumnItem(props: any) {
           className='ColumnItem__container'
           {...provided.draggableProps}
           ref={provided.innerRef}
+          onClick={props.onClick}
         >
           <span className='ColumnItem__toggle'>
-            <Icon name='eye-show-outline' />
+            <Icon
+              name={props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
+            />
           </span>
           <div>
             <span className='ColumnItem__name'>{props.data}</span>

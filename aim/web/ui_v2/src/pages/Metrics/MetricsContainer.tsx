@@ -148,6 +148,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRowHeight={metricsData?.config?.table.rowHeight as RowHeightSize}
       sortFields={metricsData?.config?.table.sortFields!}
       hiddenMetrics={metricsData?.config?.table.hiddenMetrics!}
+      hiddenColumns={metricsData?.config?.table.hiddenColumns!}
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
@@ -188,6 +189,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortFieldsChange={metricAppModel.onSortFieldsChange}
       onMetricVisibilityChange={metricAppModel.onMetricVisibilityChange}
       onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
+      onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
+      onTableDiffShow={metricAppModel.onTableDiffShow}
     />
   );
 }
