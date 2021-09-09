@@ -9,7 +9,7 @@ const endpoints = {
 
 function getRunsData(query?: string, limit?: number, offset?: string) {
   return API.getStream<ReadableStream>(endpoints.GET_RUNS, {
-    q: query || 'True',
+    q: query || '',
     ...(limit ? { limit } : {}),
     ...(offset ? { offset } : {}),
   });
