@@ -4,7 +4,7 @@ import RunsTable from './RunsTable';
 import './Runs.scss';
 import RunsBar from './components/RunsBar/RunsBar';
 import SearchBar from './components/SearchBar/SearchBar';
-import runsAppModel from '../../services/models/runs/runsAppModel';
+import NotificationContainer from '../../components/NotificationContainer/NotificationContainer';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -20,6 +20,9 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='Runs__table__container'>
             <RunsTable
+              data={props.tableData}
+              isInfiniteLoading={props.isInfiniteLoading}
+              isLatest={props.isLatest}
               onExportTableData={props.onExportTableData}
               tableRowHeight={props.tableRowHeight}
               columns={props.tableColumns}
@@ -30,6 +33,12 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             />
           </div>
         </div>
+        {props.notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={props.onNotificationDelete}
+            data={props.notifyData}
+          />
+        )}
       </section>
     </div>
   );

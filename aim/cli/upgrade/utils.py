@@ -120,7 +120,6 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
         click.echo('Preparing new repository...')
         lrepo = LegacyRepo(mode=LegacyRepo.READING_MODE, repo_full_path=lrepo_path)
         repo = Repo.from_path(repo_path, init=True)
-        repo.structured_db.run_upgrades()
 
         click.echo('Analyzing legacy repository...')
         lruns = collect_runs(lrepo)
@@ -160,6 +159,7 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
     else:
         click.echo(f'Legacy repository can be found at \'{lrepo_path}\'.')
     click.echo('DONE')
+    return repo
 
 
 # this is a duplicate of run.track() method allowing to set timestamp. used for legacy data migration only.
