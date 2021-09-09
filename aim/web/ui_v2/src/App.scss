@@ -3,6 +3,7 @@
 @import 'fonts/icomoon/icomoonIcons.scss';
 @import './styles/base/_fonts.scss';
 @import './styles/components/_inputs.scss';
+@import './styles/components/_autocomplete.scss';
 
 .mainContainer {
   width: calc(100% - 80px);

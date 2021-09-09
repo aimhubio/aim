@@ -33,7 +33,7 @@ function Controls(
               }}
               className={`Controls__anchor ${
                 props.aggregationConfig.isApplied ? 'active outlined' : ''
-              }`}
+              } ${props.aggregationConfig.isEnabled ? '' : 'disabled'}`}
             >
               {props.aggregationConfig.isEnabled ? (
                 <span
@@ -173,7 +173,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
-          title='Select Tooltip Params:'
+          title='Select Tooltip Params'
           anchor={({ onAnchorClick, opened }) => (
             <div
               onClick={onAnchorClick}

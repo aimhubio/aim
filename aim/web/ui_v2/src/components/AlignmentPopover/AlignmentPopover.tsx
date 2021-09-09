@@ -1,11 +1,7 @@
 import React from 'react';
-
 import { MenuItem, Select } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
-import projectsModel from 'services/models/projects/projectsModel';
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import useModel from 'hooks/model/useModel';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 
 import './AlignmentPopover.scss';
@@ -73,6 +69,7 @@ function AlignmentPopover({
         <span>Metric:</span>
         <Select
           fullWidth
+          // variant='outlined'
           value={alignmentConfig.metric}
           onChange={onMetricChange}
         >

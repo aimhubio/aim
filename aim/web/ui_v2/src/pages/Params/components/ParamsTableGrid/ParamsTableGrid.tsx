@@ -30,16 +30,6 @@ function getParamsTableColumns(
         ? 'right'
         : null,
     },
-    {
-      key: 'metric',
-      content: <span>Metric</span>,
-      topHeader: 'Metrics',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.right?.includes('run')
-        ? 'right'
-        : null,
-    },
   ].concat(
     paramColumns.map((param) => ({
       key: param,

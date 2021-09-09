@@ -29,9 +29,14 @@ function GroupingItem({
   return (
     <ControlPopover
       title={title}
-      anchor={({ onAnchorClick }) => (
-        <div className='GroupingItem__container'>
-          <div onClick={onAnchorClick} className='GroupingItem__icon__box'>
+      anchor={({ onAnchorClick, opened }) => (
+        <div className={'GroupingItem__container'}>
+          <div
+            onClick={onAnchorClick}
+            className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
+              groupingData?.[groupName]?.length > 0 ? 'outlined' : ''
+            }`}
+          >
             <Icon name={icons[groupName] as IconName} />
           </div>
           <span>{groupName}</span>

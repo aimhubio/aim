@@ -27,7 +27,7 @@ function TagsTable({
       width: 200,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         const { name, color } = cellData;
-        return <TagLabel name={name} color={color} key={i} />;
+        return <TagLabel label={name} color={color} key={i} />;
       },
     },
     {
@@ -68,43 +68,34 @@ function TagsTable({
             {cellData.id === hoveredRowIndex && (
               <div className='TagsTable__commentContainer__actionsContainer'>
                 {!cellData?.archived && (
-                  <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                    <Icon
-                      color='primary'
-                      name='edit'
-                      className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                      onClick={() => onUpdateClick(cellData)}
-                    />
-                  </span>
+                  <Button
+                    withOnlyIcon={true}
+                    onClick={() => onUpdateClick(cellData)}
+                  >
+                    <Icon color='primary' name='edit' />
+                  </Button>
                 )}
                 {cellData?.archived ? (
-                  <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                    <Icon
-                      color='primary'
-                      name='eye-show-outline'
-                      className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                      onClick={() => onSoftDeleteClick(cellData)}
-                    />
-                  </span>
+                  <Button
+                    withOnlyIcon={true}
+                    onClick={() => onSoftDeleteClick(cellData)}
+                  >
+                    <Icon color='primary' name='eye-show-outline' />
+                  </Button>
                 ) : (
-                  <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                    <Icon
-                      color='primary'
-                      name='eye-outline-hide'
-                      className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                      onClick={() => onSoftDeleteClick(cellData)}
-                    />
-                  </span>
+                  <Button
+                    withOnlyIcon={true}
+                    onClick={() => onSoftDeleteClick(cellData)}
+                  >
+                    <Icon color='primary' name='eye-outline-hide' />
+                  </Button>
                 )}
-                <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper '>
-                  <Icon
-                    fontSize='small'
-                    name='delete'
-                    color='primary'
-                    className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-                    onClick={() => onDeleteClick(cellData)}
-                  />
-                </span>
+                <Button
+                  onClick={() => onDeleteClick(cellData)}
+                  withOnlyIcon={true}
+                >
+                  <Icon fontSize='small' name='delete' color='primary' />
+                </Button>
               </div>
             )}
           </div>

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Checkbox,
-  Divider,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Checkbox, TextField, Typography } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
@@ -83,6 +77,7 @@ function TooltipContentPopover({
             renderOption={(option, { selected }) => (
               <React.Fragment>
                 <Checkbox
+                  color='primary'
                   icon={<CheckBoxOutlineBlank />}
                   checkedIcon={<CheckBoxIcon />}
                   style={{ marginRight: 4 }}

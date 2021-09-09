@@ -69,7 +69,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           </div>
           <Box className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
             {runData?.runInfo?.tags.map((tag: any, i: number) => (
-              <TagLabel color={tag.color} name={tag.name} key={i} />
+              <TagLabel color={tag.color} label={tag.name} key={i} />
             ))}
           </Box>
         </div>

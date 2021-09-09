@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   TextField,
-  Button,
   Checkbox,
   Divider,
   InputBase,
@@ -25,8 +24,9 @@ import {
   ISelectFormProps,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
-import SelectTag from 'components/SelectTag/SelectTag';
 import Icon from 'components/Icon/Icon';
+import TagLabel from 'components/TagLabel/TagLabel';
+import Button from 'components/Button/Button';
 
 import './SelectForm.scss';
 
@@ -127,6 +127,16 @@ function SelectForm({
     return data;
   }, [projectsData]);
 
+  function handleRunCopy(): void {
+    let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
+    navigator.clipboard.writeText(query);
+  }
+
+  function handleResetSelectForm(): void {
+    onMetricsSelectChange([]);
+    onSelectRunQueryChange('');
+  }
+
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
   return (
@@ -165,7 +175,7 @@ function SelectForm({
                     onClick={handleClick}
                     aria-describedby={id}
                   >
-                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />{' '}
+                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />
                     Metrics
                   </Button>
                   <Popper
@@ -227,16 +237,18 @@ function SelectForm({
                       }}
                     />
                   </Popper>
-                  <Divider
-                    style={{ margin: '0 1rem' }}
-                    orientation='vertical'
-                    flexItem
-                  />
+                  {selectedMetricsData?.metrics.length > 0 && (
+                    <Divider
+                      style={{ margin: '0 1rem' }}
+                      orientation='vertical'
+                      flexItem
+                    />
+                  )}
                   <Box className='SelectForm__tags ScrollBar__hidden'>
                     {selectedMetricsData?.metrics?.map(
                       (tag: ISelectMetricsOption) => {
                         return (
-                          <SelectTag
+                          <TagLabel
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}
@@ -247,12 +259,14 @@ function SelectForm({
                     )}
                   </Box>
                 </Box>
-                <span
-                  onClick={() => onMetricsSelectChange([])}
-                  className='SelectForm__clearAll'
-                >
-                  <Icon name='close' />
-                </span>
+                {selectedMetricsData?.metrics.length > 0 && (
+                  <span
+                    onClick={() => onMetricsSelectChange([])}
+                    className='SelectForm__clearAll'
+                  >
+                    <Icon name='close' />
+                  </span>
+                )}
               </>
             )}
           </Box>
@@ -263,6 +277,7 @@ function SelectForm({
               fullWidth
               size='small'
               variant='outlined'
+              className='TextField'
               inputProps={{ style: { height: '0.687rem' } }}
               placeholder='Run expression'
               value={selectedMetricsData?.query ?? ''}
@@ -274,6 +289,7 @@ function SelectForm({
       <Divider style={{ margin: '0 1.5em' }} orientation='vertical' flexItem />
       <div className='SelectForm__search__container'>
         <Button
+          fullWidth
           color='primary'
           variant='contained'
           startIcon={<SearchOutlined />}
@@ -283,15 +299,19 @@ function SelectForm({
           Search
         </Button>
         <div className='SelectForm__search__actions'>
-          <span>
+          <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
             <Icon name='reset' />
-          </span>
-          <span onClick={toggleEditMode}>
+          </Button>
+          <Button
+            className={selectedMetricsData?.advancedMode ? 'active' : ''}
+            withOnlyIcon={true}
+            onClick={toggleEditMode}
+          >
             <Icon name='edit' />
-          </span>
-          <span>
-            <Icon name='eye-fill-show' />
-          </span>
+          </Button>
+          <Button onClick={handleRunCopy} withOnlyIcon={true}>
+            <Icon name='copy' />
+          </Button>
         </div>
       </div>
     </div>
