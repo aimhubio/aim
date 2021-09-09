@@ -9,5 +9,5 @@ export interface IHighPlotProps {
   isVisibleColorIndicator: boolean;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   data: any;
-  title?: IChartTitle;
+  chartTitle?: IChartTitle;
 }

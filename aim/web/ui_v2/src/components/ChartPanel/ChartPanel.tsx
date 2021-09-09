@@ -35,7 +35,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       if (
         props.tooltip.display ||
         props.focusedState.active ||
-        props.zoomMode
+        props.zoom?.active
       ) {
         setPopoverPosition(pos?.top && pos.left ? pos : null);
       }
@@ -43,7 +43,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     [
       props.tooltip.display,
       props.focusedState.active,
-      props.zoomMode,
+      props.zoom?.active,
       setPopoverPosition,
     ],
   );
@@ -121,10 +121,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }));
 
   React.useEffect(() => {
-    !props.panelResizing &&
+    if (!props.panelResizing) {
       chartRefs.forEach((chartRef) => {
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
+    }
   }, [chartRefs, props.focusedState, props.panelResizing]);
 
   React.useEffect(() => {
@@ -138,77 +139,69 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   return (
     <Grid container className='ChartPanel__container'>
-      <Grid item xs className='ChartPanel'>
-        {props.panelResizing ? (
-          <div className='ChartPanel__resizing'>
-            <Typography variant='subtitle1' color='primary'>
-              Release to resize
-            </Typography>
-          </div>
-        ) : (
-          <Grid
-            ref={containerRef}
-            container
-            className='ChartPanel__paper__grid'
-          >
-            {props.data.map((chartData: any, index: number) => {
-              const Component = chartTypesConfig[props.chartType];
-              const aggregatedData = props.aggregatedData?.filter(
-                (data) => data.chartIndex === index,
-              );
-              const title =
-                props.data.length > 1 && props.chartTitleData
-                  ? props.chartTitleData[index]
-                  : {};
-              return (
-                <Grid
-                  key={index}
-                  item
-                  className='ChartPanel__paper__grid__chartBox'
-                  xs={
-                    props.data.length > 9
-                      ? 4
-                      : (chartGridPattern[props.data.length][index] as GridSize)
-                  }
-                >
-                  <Component
-                    ref={chartRefs[index]}
-                    // TODO change props.chartProps[0] to props.chartProps
-                    {...props.chartProps[0]}
-                    index={index}
-                    data={chartData}
-                    title={title}
-                    aggregatedData={aggregatedData}
-                    aggregationConfig={props.aggregationConfig}
-                    alignmentConfig={props.alignmentConfig}
-                    syncHoverState={syncHoverState}
-                  />
-                </Grid>
-              );
-            })}
+      {props.panelResizing ? (
+        <div className='ChartPanel__resizing'>
+          <Typography variant='subtitle1' color='primary'>
+            Release to resize
+          </Typography>
+        </div>
+      ) : (
+        <>
+          <Grid item xs className='ChartPanel'>
+            <Grid
+              ref={containerRef}
+              container
+              className='ChartPanel__paper__grid'
+            >
+              {props.data.map((chartData: any, index: number) => {
+                const Component = chartTypesConfig[props.chartType];
+                return (
+                  <Grid
+                    key={index}
+                    item
+                    className='ChartPanel__paper__grid__chartBox'
+                    xs={
+                      props.data.length > 9
+                        ? 4
+                        : (chartGridPattern[props.data.length][
+                            index
+                          ] as GridSize)
+                    }
+                  >
+                    <Component
+                      ref={chartRefs[index]}
+                      {...props.chartProps[index]}
+                      index={index}
+                      data={chartData}
+                      syncHoverState={syncHoverState}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+            <ChartPopover
+              popoverPosition={popoverPosition}
+              open={
+                props.data.length > 0 &&
+                !props.panelResizing &&
+                !props.zoom?.active &&
+                (props.tooltip.display || props.focusedState.active)
+              }
+              containerRef={containerRef}
+            >
+              <PopoverContent
+                chartType={props.chartType}
+                tooltipContent={props.tooltip.content}
+                focusedState={props.focusedState}
+                alignmentConfig={props.alignmentConfig}
+              />
+            </ChartPopover>
           </Grid>
-        )}
-        <ChartPopover
-          popoverPosition={popoverPosition}
-          open={
-            props.data.length > 0 &&
-            !props.panelResizing &&
-            !props.zoomMode &&
-            (props.tooltip.display || props.focusedState.active)
-          }
-          containerRef={containerRef}
-        >
-          <PopoverContent
-            chartType={props.chartType}
-            tooltipContent={props.tooltip.content}
-            focusedState={props.focusedState}
-            alignmentConfig={props.alignmentConfig}
-          />
-        </ChartPopover>
-      </Grid>
-      <Grid className='Metrics__controls__container' item>
-        {props.controls}
-      </Grid>
+          <Grid className='Metrics__controls__container' item>
+            {props.controls}
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 });

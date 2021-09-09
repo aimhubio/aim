@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Button from 'components/Button/Button';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
@@ -20,9 +20,9 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import Icon from 'components/Icon/Icon';
+import TableLoader from '../TableLoader/TableLoader';
 
 import './Table.scss';
-import TableLoader from '../TableLoader/TableLoader';
 
 const Table = React.forwardRef(function Table(
   {
@@ -217,6 +217,7 @@ const Table = React.forwardRef(function Table(
             }
           }
         }
+
         if (groups) {
           for (let groupKey in dataRef.current) {
             if (dataRef.current[groupKey].data.groupRowsKeys.includes(rowKey)) {
@@ -420,147 +421,150 @@ const Table = React.forwardRef(function Table(
       {!isEmpty(rowData) ? (
         <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
           {!hideHeaderActions && (
-            <Box component='nav' p={0.5}>
-              <Grid
-                container
-                justifyContent='space-between'
-                alignItems='center'
-              >
-                <Grid xs item>
-                  <Grid container spacing={1}>
-                    {onManageColumns && (
-                      <ControlPopover
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'center',
-                        }}
-                        title='Manage Table Columns'
-                        anchor={({ onAnchorClick, opened }) => (
-                          <Grid
-                            onClick={onAnchorClick}
-                            className='Table__header__item'
-                            item
-                          >
-                            <Icon name='manage-calumn' />
-                            <span>Manage Columns</span>
-                          </Grid>
+            <div className='Table__header__popovers__container'>
+              <div className='Table__header__select__resize'>
+                <Icon name='table-resize-hide' />
+                <Icon name='table-resize-resizable' />
+                <Icon name='table-resize-maximize' />
+              </div>
+              <div className='flex fac Table__header__popovers__buttons'>
+                {onManageColumns && (
+                  <ControlPopover
+                    title='Manage Table Columns'
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='manage-calumn' />
+                        <span onClick={onManageColumns}>Manage Columns</span>
+                      </Button>
+                    )}
+                    component={
+                      <ManageColumns
+                        columnsData={columns.filter(
+                          (item: any) =>
+                            item.key !== '#' && item.key !== 'actions',
                         )}
-                        component={
-                          <ManageColumns
-                            columnsData={columns.filter(
-                              (item: any) =>
-                                item.key !== '#' && item.key !== 'actions',
-                            )}
-                            onManageColumns={onManageColumns}
-                          />
-                        }
+                        onManageColumns={onManageColumns}
                       />
+                    }
+                  />
+                )}
+                {onRowsChange && (
+                  <ControlPopover
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='eye-outline-hide' />
+                        <span onClick={onSort}>Hide Rows</span>
+                      </Button>
                     )}
-                    {onRowsChange && (
-                      <ControlPopover
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'center',
-                        }}
-                        anchor={({ onAnchorClick, opened }) => (
-                          <Grid
-                            onClick={onAnchorClick}
-                            className='Table__header__item'
-                            item
-                          >
-                            <Icon name='eye-outline-hide' />
-                            <span>Hide Rows</span>
-                          </Grid>
-                        )}
-                        component={
-                          <HideRows toggleRowsVisibility={onRowsChange} />
-                        }
+                    component={<HideRows toggleRowsVisibility={onRowsChange} />}
+                  />
+                )}
+                {onSort && (
+                  <ControlPopover
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    title='Sort table by:'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='sort-outside' />
+                        <span onClick={onSort}>Sort</span>
+                      </Button>
+                    )}
+                    component={
+                      <SortPopover
+                        sortOptions={sortOptions}
+                        sortFields={sortFields}
+                        onSort={onSort}
                       />
+                    }
+                  />
+                )}
+                {onRowHeightChange && (
+                  <ControlPopover
+                    title='Select Table Row Height'
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='row-height' />
+                        <span onClick={onRowHeightChange}>Row Height</span>
+                      </Button>
                     )}
-                    {onSort && (
-                      <ControlPopover
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'center',
-                        }}
-                        title='Sort table by:'
-                        anchor={({ onAnchorClick }) => (
-                          <Grid
-                            onClick={onAnchorClick}
-                            className='Table__header__item'
-                            item
-                          >
-                            <Icon name='sort-outside' />
-                            <span>Sort</span>
-                          </Grid>
-                        )}
-                        component={
-                          <SortPopover
-                            sortOptions={sortOptions}
-                            sortFields={sortFields}
-                            onSort={onSort}
-                          />
-                        }
+                    component={
+                      <RowHeight
+                        rowHeight={rowHeight}
+                        onRowHeightChange={onRowHeightChange}
                       />
-                    )}
-                    {onRowHeightChange && (
-                      <ControlPopover
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'center',
-                        }}
-                        anchor={({ onAnchorClick }) => (
-                          <Grid
-                            onClick={onAnchorClick}
-                            className='Table__header__item'
-                            item
-                          >
-                            <Icon name='row-height' />
-                            <span>Row Height</span>
-                          </Grid>
-                        )}
-                        component={
-                          <RowHeight
-                            rowHeight={rowHeight}
-                            onRowHeightChange={onRowHeightChange}
-                          />
-                        }
-                      />
-                    )}
-                    <Grid item xs />
-                    {onExport && (
-                      <Grid item xs={1}>
-                        <Button
-                          fullWidth
-                          variant='outlined'
-                          color='primary'
-                          size='small'
-                          onClick={onExport}
-                        >
-                          Export
-                        </Button>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
+                    }
+                  />
+                )}
+              </div>
+              {onExport && (
+                <div className='flex fac'>
+                  <Button
+                    fullWidth
+                    variant='outlined'
+                    color='primary'
+                    size='small'
+                    onClick={onExport}
+                  >
+                    Export
+                  </Button>
+                </div>
+              )}
+            </div>
           )}
           <div
             style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}

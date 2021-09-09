@@ -12,10 +12,7 @@ import {
   IRun,
 } from 'types/services/models/metrics/runModel';
 import { getRunsTableColumns } from 'pages/Runs/components/RunsTableColumns/RunsTableColumns';
-import {
-  IParam,
-  IParamsAppConfig,
-} from 'types/services/models/params/paramsAppModel';
+import { IParam } from 'types/services/models/params/paramsAppModel';
 import getObjectPaths from 'utils/getObjectPaths';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -26,7 +23,6 @@ import {
   GroupNameType,
   IGetGroupingPersistIndex,
   IMetricAppConfig,
-  IMetricAppModelState,
   IMetricsCollection,
   IMetricTableRowData,
 } from '../../../types/services/models/metrics/metricsAppModel';
@@ -124,7 +120,8 @@ function getConfig() {
       rowHeight: RowHeightSize.md,
     },
     pagination: {
-      limit: 25,
+      limit: 1000,
+      offset: null,
     },
   };
 }
@@ -142,7 +139,7 @@ function getLastRunsData(lastRow: any) {
         },
       },
     });
-    // getRunsData(true);
+    // getRunsData().call(false);
   }
 }
 
@@ -583,55 +580,34 @@ function getDataAsTableRows(
   });
   return rows;
 }
-function getQueryStringFromSelect(
-  selectData: IMetricAppConfig['select'] | undefined,
-) {
-  let query = '';
-  if (selectData !== undefined) {
-    if (selectData.advancedMode) {
-      query = selectData.advancedQuery;
-    } else {
-      query = `(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(metric.name == "${
-                    metric.value.metric_name
-                  }" and metric.context.${item} == "${
-                    (metric.value.context as any)[item]
-                  }")`,
-              )}`,
-        )
-        .join(' or ')})${
-        selectData.query ? `and ${selectData.query}` : ''
-      }`.trim();
-    }
-  }
-
-  return query;
-}
 
 function getRunsData() {
-  model.setState({
-    requestIsPending: true,
-  });
   const modelState = model.getState();
   const configData = modelState?.config;
 
   const query = configData?.select?.query || '';
+  const pagination = configData?.pagination;
 
-  const { call, abort } = runsService.getRunsData(query);
+  const { call, abort } = runsService.getRunsData(
+    pagination?.limit,
+    query,
+    pagination?.offset,
+  );
+
   return {
-    call: async () => {
+    call: async (isInitial = true) => {
+      model.setState({
+        requestIsPending: isInitial,
+        infiniteIsPending: !isInitial,
+      });
       const stream = await call();
       let gen = adjustable_reader(stream);
       let buffer_pairs = decode_buffer_pairs(gen);
       let decodedPairs = decodePathsVals(buffer_pairs);
       let objects = iterFoldTree(decodedPairs, 1);
 
-      const runsData: IRun<IMetricTrace | IParamTrace>[] = [];
+      const runsData: IRun<IMetricTrace | IParamTrace>[] =
+        modelState?.data || [];
       for await (let [keys, val] of objects) {
         const runData: any = val;
         runsData.push({ ...runData, hash: keys[0] } as any);
@@ -643,6 +619,7 @@ function getRunsData() {
       model.setState({
         data: runsData,
         requestIsPending: false,
+        infiniteIsPending: false,
         tableColumns,
         tableData,
       });

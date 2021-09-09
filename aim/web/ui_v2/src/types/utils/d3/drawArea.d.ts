@@ -13,5 +13,5 @@ export interface IDrawAreaProps {
   plotBoxRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
-  title?: IChartTitle;
+  chartTitle?: IChartTitle;
 }
