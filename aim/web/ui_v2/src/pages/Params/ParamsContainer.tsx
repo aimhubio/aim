@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Params from './Params';
-import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import useModel from 'hooks/model/useModel';
 import {
@@ -10,7 +9,6 @@ import {
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
-import { ITableRef } from 'types/components/Table/Table';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -70,6 +68,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableData={paramsData?.tableData}
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState}
+      isParamsLoading={paramsData?.isParamsLoading}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator
       }

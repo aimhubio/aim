@@ -1,7 +1,7 @@
 import os
 import click
 
-from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_WEB_ENV_KEY, \
+from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_ENV_MODE_KEY, \
     AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
@@ -21,6 +21,11 @@ from aim.web.utils import ShellCommandException
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
 def up(dev, host, port, repo, tf_logs):
+    if dev:
+        os.environ[AIM_ENV_MODE_KEY] = 'dev'
+    else:
+        os.environ[AIM_ENV_MODE_KEY] = 'prod'
+
     repo_path = clean_repo_path(repo)
     if repo_path:
         repo_inst = Repo.from_path(repo_path)
@@ -29,11 +34,6 @@ def up(dev, host, port, repo, tf_logs):
     repo_inst.structured_db.run_upgrades()
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
-
-    if dev:
-        os.environ[AIM_WEB_ENV_KEY] = 'dev'
-    else:
-        os.environ[AIM_WEB_ENV_KEY] = 'prod'
 
     if tf_logs:
         os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs

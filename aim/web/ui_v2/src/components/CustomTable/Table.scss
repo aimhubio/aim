@@ -8,7 +8,7 @@ $grey-darker: #24292e;
 $grey-bg: #f7f7f7;
 $grey-lighter: #e8e8e8;
 $grey-light-xx: #d4d4d4;
-$primary: #3b5896;
+$primary: #1C2852FF;
 $primary-dark: #243969;
 $primary-darker: #142447;
 $primary-bg: #f7faff;
@@ -35,16 +35,15 @@ $group-margin: 8px;
   box-sizing: border-box;
   background: #fff;
 
-  &.Table__container--short {
+  &.Table__container--small {
     $cell-height: 28px;
     $group-margin: 6px;
   }
-  f &.Table__container--medium {
+  &.Table__container--medium {
     $cell-height: 32px;
     $group-margin: 8px;
   }
-
-  &.Table__container--tall {
+  &.Table__container--large {
     $cell-height: 36px;
     $group-margin: 10px;
   }
@@ -136,11 +135,16 @@ $group-margin: 8px;
 
 .Table__action__popup__body {
   min-width: 180px;
+  padding: 0.5rem;
+}
+
+.Table__action__anchor {
+  margin-left: 0.5rem;
+  cursor: pointer;
 }
 
 .Table__action__popup__item {
   padding: $space-xxs $space-xs;
-  border-bottom: 1px solid $border-color;
   text-transform: capitalize;
   cursor: pointer;
   display: flex;
@@ -232,6 +236,10 @@ $group-margin: 8px;
 
   &.active {
     background-color: $primary-lighter;
+  }
+
+  &.hidden {
+    background-color: #eee !important;
   }
 
   & > * {

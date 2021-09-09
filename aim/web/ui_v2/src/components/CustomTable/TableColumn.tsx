@@ -3,11 +3,12 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { Typography } from '@material-ui/core';
+import { MenuItem, Typography } from '@material-ui/core';
 
 import Cell from './TableCell';
 import Popover from './TablePopover';
 import Icon from 'components/Icon/Icon';
+import ControlPopover from '../ControlPopover/ControlPopover';
 
 function Column({
   topHeader,
@@ -112,16 +113,28 @@ function Column({
       >
         {firstColumn ? headerMeta : null}
         {col.content}
-        {col.key !== 'actions' && (
+        {col.key !== 'actions' && col.key !== '#' && (
           <>
-            <Popover
-              target={<Icon name='more-vertical' />}
-              targetClassName='Table__action'
-              tooltip='Column actions'
-              content={(opened, setOpened) => (
+            <ControlPopover
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              anchor={({ onAnchorClick, opened }) => (
+                <Icon
+                  className='Table__action__anchor'
+                  onClick={onAnchorClick}
+                  name='more-vertical'
+                />
+              )}
+              component={
                 <div className='Table__action__popup__body'>
                   {!isAlwaysVisible && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         hideColumn();
@@ -129,11 +142,11 @@ function Column({
                       }}
                     >
                       <Icon name='eye-outline-hide' />
-                      <Typography small>Hide column</Typography>
-                    </div>
+                      <span>Hide column</span>
+                    </MenuItem>
                   )}
                   {(pinnedTo === 'left' || pinnedTo === 'right') && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         togglePin(col.key, null);
@@ -141,11 +154,11 @@ function Column({
                       }}
                     >
                       <Icon name='pin' />
-                      <Typography small>Unpin</Typography>
-                    </div>
+                      <span>Unpin</span>
+                    </MenuItem>
                   )}
                   {pinnedTo !== 'left' && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         togglePin(col.key, 'left');
@@ -153,11 +166,11 @@ function Column({
                       }}
                     >
                       <Icon name='pin-left' />
-                      <Typography small>Pin to left</Typography>
-                    </div>
+                      <span>Pin to left</span>
+                    </MenuItem>
                   )}
                   {pinnedTo !== 'right' && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         togglePin(col.key, 'right');
@@ -165,59 +178,59 @@ function Column({
                       }}
                     >
                       <Icon name='pin-right' />
-                      <Typography small>Pin to right</Typography>
-                    </div>
+                      <span>Pin to right</span>
+                    </MenuItem>
                   )}
                   {!paneFirstColumn && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         moveColumn('left');
                         setOpened(false);
                       }}
                     >
-                      <Icon name='arrow-left' />
-                      <Typography small>Move left</Typography>
-                    </div>
+                      <Icon fontSize={10} name='arrow-left' />
+                      <span>Move left</span>
+                    </MenuItem>
                   )}
                   {!paneLastColumn && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         moveColumn('right');
                         setOpened(false);
                       }}
                     >
-                      <Icon name='arrow-right' />
-                      <Typography small>Move right</Typography>
-                    </div>
+                      <Icon fontSize={10} name='arrow-right' />
+                      <span>Move right</span>
+                    </MenuItem>
                   )}
                   {pinnedTo === null && !paneFirstColumn && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         moveColumn('start');
                         setOpened(false);
                       }}
                     >
-                      <Icon name='move-to-left' />
-                      <Typography small>Move to start</Typography>
-                    </div>
+                      <Icon fontSize={10} name='move-to-left' />
+                      <span>Move to start</span>
+                    </MenuItem>
                   )}
                   {pinnedTo === null && !paneLastColumn && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         moveColumn('end');
                         setOpened(false);
                       }}
                     >
-                      <Icon name='move-to-right' />
-                      <Typography small>Move to end</Typography>
-                    </div>
+                      <Icon fontSize={10} name='move-to-right' />
+                      <span>Move to end</span>
+                    </MenuItem>
                   )}
                   {sortable && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         sortByColumn('asc');
@@ -225,13 +238,13 @@ function Column({
                       }}
                     >
                       <Icon name='sort-outside' />
-                      <Typography small>
+                      <span>
                         Sort by <em>ASC</em>
-                      </Typography>
-                    </div>
+                      </span>
+                    </MenuItem>
                   )}
                   {sortable && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         sortByColumn('desc');
@@ -239,13 +252,13 @@ function Column({
                       }}
                     >
                       <Icon name='sort-outside' />
-                      <Typography small>
+                      <span>
                         Sort by <em>DESC</em>
-                      </Typography>
-                    </div>
+                      </span>
+                    </MenuItem>
                   )}
                   {width !== undefined && (
-                    <div
+                    <MenuItem
                       className='Table__action__popup__item'
                       onClick={(evt) => {
                         resetWidth();
@@ -253,13 +266,21 @@ function Column({
                       }}
                     >
                       <Icon name='reset-width-outside' />
-                      <Typography small>Reset width</Typography>
-                    </div>
+                      <span>Reset width</span>
+                    </MenuItem>
                   )}
                 </div>
-              )}
-              popupClassName='Table__action__popup'
+              }
             />
+            {/*<Popover*/}
+            {/*  target={<Icon name='more-vertical' />}*/}
+            {/*  targetClassName='Table__action'*/}
+            {/*  tooltip='Column actions'*/}
+            {/*  content={(opened, setOpened) => (*/}
+            {/*    */}
+            {/*  )}*/}
+            {/*  popupClassName='Table__action__popup'*/}
+            {/*/>*/}
             <div
               className={classNames({
                 Table__column__resizeHandler: true,
@@ -274,7 +295,23 @@ function Column({
       {groups
         ? Object.keys(data).map((groupKey) => (
             <div key={groupKey} className='Table__group'>
-              {col.key === 'actions' ? (
+              {col.key === '#' ? (
+                <div
+                  className={classNames({
+                    Table__cell: true,
+                    Table__group__config__cell: true,
+                    Table__group__header__cell: true,
+                    expanded: expanded[groupKey],
+                    expandable: true,
+                  })}
+                >
+                  <GroupConfig
+                    expand={expand}
+                    expanded={expanded}
+                    groupKey={groupKey}
+                  />
+                </div>
+              ) : col.key === 'actions' ? (
                 <div
                   className={classNames({
                     Table__cell: true,
@@ -327,7 +364,9 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      className={`rowKey-${item.key}`}
+                      className={`rowKey-${item.key}${
+                        item.isHidden ? ' hidden' : ''
+                      }`}
                       onRowHover={() => onRowHover(item)}
                       onRowClick={() => onRowClick(item)}
                     />
@@ -342,7 +381,7 @@ function Column({
               index={item.index}
               col={col}
               item={item[col.key]}
-              className={`rowKey-${item.key}`}
+              className={`rowKey-${item.key}${item.isHidden ? ' hidden' : ''}`}
               metadata={firstColumn ? item.rowMeta : null}
               onRowHover={() => onRowHover(item)}
               onRowClick={() => onRowClick(item)}
@@ -352,7 +391,15 @@ function Column({
   );
 }
 
-function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
+function GroupConfig({ config, expand, expanded, groupKey }) {
+  return (
+    <div className='Table__action' onClick={(evt) => expand(groupKey)}>
+      <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+    </div>
+  );
+}
+
+function GroupActions({ expand, expanded, groupKeys, groupKey }) {
   return (
     <Popover
       target={<Icon name='more-horizontal' />}
@@ -369,7 +416,9 @@ function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
             <Icon
               name={expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'}
             />
-            {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
+            <Typography small>
+              {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
+            </Typography>
           </div>
           {(expanded[groupKey] || groupKeys.some((key) => !!expanded[key])) && (
             <div
@@ -380,7 +429,7 @@ function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
               }}
             >
               <Icon name='collapse-inside' />
-              Collapse all
+              <Typography small>Collapse all</Typography>
             </div>
           )}
           {(!expanded[groupKey] || groupKeys.some((key) => !expanded[key])) && (
@@ -392,7 +441,7 @@ function GroupActions({ config, expand, expanded, groupKeys, groupKey }) {
               }}
             >
               <Icon name='collapse-outside' />
-              Expand all
+              <Typography small>Expand all</Typography>
             </div>
           )}
         </div>

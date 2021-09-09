@@ -17,6 +17,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 
 export interface ILine {
   key: string;
+  groupKey?: string;
   data: {
     xValues: number[];
     yValues: number[];

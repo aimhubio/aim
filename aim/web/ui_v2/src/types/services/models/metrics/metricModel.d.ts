@@ -1,8 +1,6 @@
 import { IMetricTrace, IRun, ITraceData } from './runModel';
 
 export interface IMetric {
-  x_axis_values: any;
-  x_axis_iters: any;
   run: IRun<IMetricTrace>;
   key: string;
   metric_name: string;
@@ -19,4 +17,5 @@ export interface IMetric {
   dasharray: string;
   x_axis_iters?: ITraceData;
   x_axis_values?: ITraceData;
+  isHidden: boolean;
 }

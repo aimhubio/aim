@@ -205,9 +205,6 @@ class Run(StructuredRunMixin):
         self.series_run_tree: TreeView = self.repo.request(
             'trcs', hashname, read_only=read_only
         ).tree().view('trcs').view('chunks').view(hashname)
-        if not read_only:
-            # TODO: [AT] check this once Container db open locking is added
-            self.series_run_tree.preload()
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 

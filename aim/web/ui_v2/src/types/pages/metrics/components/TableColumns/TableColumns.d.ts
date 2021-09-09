@@ -4,5 +4,5 @@ export interface ITableColumn {
   key: string;
   content: React.ReactNode;
   topHeader: string;
-  pin?: string;
+  pin?: string | null;
 }

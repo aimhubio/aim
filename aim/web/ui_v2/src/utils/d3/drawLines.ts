@@ -44,6 +44,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
       .attr('id', (line: ILine) => `Line-${line.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('groupKey', (line: ILine) => line.groupKey)
       .attr(
         'data-selector',
         (line: ILine) =>

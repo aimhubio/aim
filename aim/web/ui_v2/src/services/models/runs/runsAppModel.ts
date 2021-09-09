@@ -36,10 +36,9 @@ import { INotification } from '../../../types/components/NotificationContainer/N
 import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
 import { CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
-import { RowHeight } from '../../../config/table/tableConfigs';
+import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
 import React from 'react';
-import { getMetricsTableColumns } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
@@ -118,7 +117,7 @@ function getConfig() {
       advancedQuery: '',
     },
     table: {
-      rowHeight: RowHeight.md,
+      rowHeight: RowHeightSize.md,
     },
     pagination: {
       limit: 1000,
@@ -219,7 +218,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     null,
     processedData.params,
   );
-  const tableColumns: ITableColumn[] = getMetricsTableColumns(
+  const tableColumns: ITableColumn[] = getRunsTableColumns(
     processedData.params,
     processedData.data[0]?.config,
   );
