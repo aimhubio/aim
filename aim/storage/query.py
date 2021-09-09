@@ -102,40 +102,61 @@ def compile_checker(expr):
     return byte_code
 
 
+def syntax_error_check(expr):
+    if not expr:
+        return
+    expr = strip_query(expr)
+    try:
+        compile_restricted(expr,
+                           filename='<inline code>',
+                           mode='eval')
+    except SyntaxError:
+        compile(expr, filename='<inline code>', mode='eval')
+
+
+@lru_cache(maxsize=100)
+def strip_query(query: str) -> str:
+    import re
+    stripped_query = query.strip()
+    # cut the hardcoded part (SELECT something IF)
+    if query.lower().startswith('select'):
+        try:
+            stripped_query = re.split('if',
+                                      query,
+                                      maxsplit=1,
+                                      flags=re.IGNORECASE)[1]
+        except IndexError:
+            stripped_query = ''
+
+    if stripped_query:
+        stripped_query = f'({stripped_query.strip()})'
+
+    return stripped_query
+
+
+@lru_cache(maxsize=100)
+def query_add_default_expr(query: str) -> str:
+    default_expression = 'run.archived == False'
+    # add the default expression to the query if needed
+    if not query:
+        return default_expression
+    else:
+        if 'run.archived' not in query:
+            return f'{query} and {default_expression}'
+        else:
+            return query
+
+
 class RestrictedPythonQuery(Query):
     def __init__(
         self,
         query: str
     ):
-        expr = self._strip_query(query=query)
+        stripped_query = strip_query(query)
+        expr = query_add_default_expr(stripped_query)
         super().__init__(expr=expr)
         self._checker = compile_checker(expr)
         self.run_metadata_cache = None
-
-    @staticmethod
-    def _strip_query(query: str) -> str:
-        import re
-        default_expression = 'run.archived == False'
-        stripped_query = query
-        # cut the hardcoded part (SELECT something IF)
-        if query.lower().startswith('select'):
-            try:
-                stripped_query = re.split('if',
-                                          query,
-                                          maxsplit=1,
-                                          flags=re.IGNORECASE)[1]
-            except IndexError:
-                stripped_query = ''
-
-        # add the default expression to the query if needed
-        if stripped_query:
-            stripped_query = f'({stripped_query.strip()})'
-            if 'run.archived' not in stripped_query:
-                stripped_query = f'{stripped_query} and {default_expression}'
-        else:
-            stripped_query = default_expression
-
-        return stripped_query
 
     def eval(
         self,

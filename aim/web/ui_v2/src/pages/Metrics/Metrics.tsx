@@ -132,7 +132,7 @@ function Metrics(
                   }
                 />
               ) : (
-                props.requestIsPending === false && (
+                !props.requestIsPending && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."
@@ -179,10 +179,13 @@ function Metrics(
                   sortOptions={props.groupingSelectOptions}
                   sortFields={props.sortFields}
                   hiddenRows={props.hiddenMetrics}
+                  hiddenColumns={props.hiddenColumns}
                   // Table actions
                   onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}
                   onManageColumns={props.onColumnsOrderChange}
+                  onColumnsVisibilityChange={props.onColumnsVisibilityChange}
+                  onTableDiffShow={props.onTableDiffShow}
                   onRowHeightChange={props.onRowHeightChange}
                   onRowsChange={props.onMetricVisibilityChange}
                   onRowHover={props.onTableRowHover}

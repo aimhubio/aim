@@ -4,8 +4,6 @@ import {
   IParamTrace,
   IRun,
 } from 'types/services/models/metrics/runModel';
-import runsAppModel from '../../../services/models/runs/runsAppModel';
-import { bool } from 'yup';
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
   isRunInfoLoading: boolean;
@@ -34,13 +32,18 @@ export interface IRunBatch {
 }
 
 export interface IRunsTableProps {
+  columnsOrder: any;
   tableRef: React.RefObject<any>;
   runsList: ITagProps[];
   isRunsDataLoading: boolean;
   isInfiniteLoading: boolean;
+  hiddenRuns: any;
   columns: any;
   tableRowHeight: number;
   onExportTableData: () => void;
+  onManageColumns: () => void;
+  onRowsChange: () => void;
+  onRowHeightChange: () => void;
   getLastRunsData: (row: any) => void;
   isLatest?: boolean;
   data: any;

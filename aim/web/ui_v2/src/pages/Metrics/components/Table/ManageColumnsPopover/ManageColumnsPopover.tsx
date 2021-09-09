@@ -24,7 +24,13 @@ const initialData = {
   },
   columnOrder: ['left', 'middle', 'right'],
 };
-function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
+function ManageColumnsPopover({
+  columnsData,
+  onManageColumns,
+  onColumnsVisibilityChange,
+  onTableDiffShow,
+  hiddenColumns,
+}: any) {
   const [state, setState] = React.useState<any>(initialData);
 
   function onDragEnd(result: any) {
@@ -134,7 +140,19 @@ function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
                 {...provided.droppableProps}
               >
                 {state.columns.left.list.map((data: any, index: number) => (
-                  <ColumnItem key={index} data={data} index={index} />
+                  <ColumnItem
+                    key={index}
+                    data={data}
+                    index={index}
+                    isHidden={hiddenColumns.includes(data)}
+                    onClick={() =>
+                      onColumnsVisibilityChange(
+                        hiddenColumns.includes(data)
+                          ? hiddenColumns.filter((col: string) => col !== data)
+                          : hiddenColumns.concat([data]),
+                      )
+                    }
+                  />
                 ))}
                 {provided.placeholder}
               </div>
@@ -165,7 +183,23 @@ function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
                 {...provided.droppableProps}
               >
                 {state.columns.middle.list.map((data: any, index: number) => {
-                  return <ColumnItem key={index} data={data} index={index} />;
+                  return (
+                    <ColumnItem
+                      key={index}
+                      data={data}
+                      index={index}
+                      isHidden={hiddenColumns.includes(data)}
+                      onClick={() =>
+                        onColumnsVisibilityChange(
+                          hiddenColumns.includes(data)
+                            ? hiddenColumns.filter(
+                                (col: string) => col !== data,
+                              )
+                            : hiddenColumns.concat([data]),
+                        )
+                      }
+                    />
+                  );
                 })}
                 {provided.placeholder}
               </div>
@@ -186,7 +220,23 @@ function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
                 {...provided.droppableProps}
               >
                 {state.columns.right.list.map((data: any, index: number) => {
-                  return <ColumnItem key={index} data={data} index={index} />;
+                  return (
+                    <ColumnItem
+                      key={index}
+                      data={data}
+                      index={index}
+                      isHidden={hiddenColumns.includes(data)}
+                      onClick={() =>
+                        onColumnsVisibilityChange(
+                          hiddenColumns.includes(data)
+                            ? hiddenColumns.filter(
+                                (col: string) => col !== data,
+                              )
+                            : hiddenColumns.concat([data]),
+                        )
+                      }
+                    />
+                  );
                 })}
                 {provided.placeholder}
               </div>
@@ -208,7 +258,7 @@ function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
         >
           reset columns order
         </Button>
-        <Button variant='text' size='small'>
+        <Button variant='text' size='small' onClick={onTableDiffShow}>
           show table diff
         </Button>
         <Divider
@@ -216,10 +266,18 @@ function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
           orientation='vertical'
           flexItem
         />
-        <Button variant='text' size='small'>
+        <Button
+          variant='text'
+          size='small'
+          onClick={() => onColumnsVisibilityChange([])}
+        >
           <Icon name='eye-show-outline' /> show all
         </Button>
-        <Button variant='text' size='small'>
+        <Button
+          variant='text'
+          size='small'
+          onClick={() => onColumnsVisibilityChange(['all'])}
+        >
           <Icon name='eye-outline-hide' /> hide all
         </Button>
       </div>
@@ -227,4 +285,4 @@ function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
   );
 }
 
-export default React.memo(ManageColumnsPopover);
+export default ManageColumnsPopover;

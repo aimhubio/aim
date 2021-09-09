@@ -64,6 +64,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               dataSelector,
             );
           });
+        } else if (props.chartType === ChartTypeEnum.HighPlot) {
+          chartRefs.forEach((chartRef, index) => {
+            if (index === activePoint.chartIndex) {
+              return;
+            }
+            chartRef.current?.clearHoverAttributes?.();
+          });
         }
 
         if (props.onActivePointChange) {

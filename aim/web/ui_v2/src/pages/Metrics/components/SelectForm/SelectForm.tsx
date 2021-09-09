@@ -127,6 +127,15 @@ function SelectForm({
     return data;
   }, [projectsData]);
 
+  function handleRunCopy(): void {
+    navigator.clipboard.writeText(selectedMetricsData?.query);
+  }
+
+  function handleResetSelectForm(): void {
+    onMetricsSelectChange([]);
+    onSelectRunQueryChange('');
+  }
+
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
   return (
@@ -289,7 +298,7 @@ function SelectForm({
           Search
         </Button>
         <div className='SelectForm__search__actions'>
-          <Button withOnlyIcon={true}>
+          <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
             <Icon name='reset' />
           </Button>
           <Button
@@ -299,7 +308,7 @@ function SelectForm({
           >
             <Icon name='edit' />
           </Button>
-          <Button withOnlyIcon={true}>
+          <Button onClick={handleRunCopy} withOnlyIcon={true}>
             <Icon name='copy' />
           </Button>
         </div>

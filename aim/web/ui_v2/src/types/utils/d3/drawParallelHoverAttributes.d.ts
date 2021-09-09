@@ -33,6 +33,7 @@ export interface IDrawParallelHoverAttributesProps {
     lineKey?: string;
     focusedState?: IFocusedState;
     updateFocusedChart: (params: IUpdateParallelFocusedChartProps) => void;
+    clearHoverAttributes: () => void;
     setActiveLineAndCircle?: (
       lineKey?: string,
       focusedStateActive: boolean,

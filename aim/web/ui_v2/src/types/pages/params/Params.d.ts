@@ -32,6 +32,8 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   highPlotData: any;
   groupingData: IMetricAppConfig['grouping'];
   groupingSelectOptions: IGroupingSelectOption[];
+  hiddenMetrics: string[];
+  sortFields: [string, 'asc' | 'desc' | boolean][];
   onCurveInterpolationChange: () => void;
   onActivePointChange: (
     activePoint: IActivePoint,
@@ -59,9 +61,14 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
+  onRowHeightChange: any;
+  onSortFieldsChange: any;
+  onParamVisibilityChange: any;
+  onColumnsOrderChange: any;
   tableData: any;
   tableRowHeight?: any;
   onTableRowHover?: any;
   onTableRowClick?: any;
   tableColumns: any;
+  tableRowHeight: any;
 }

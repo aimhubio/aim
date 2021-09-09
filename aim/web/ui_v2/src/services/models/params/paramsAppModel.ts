@@ -53,6 +53,7 @@ import { getParamsTableColumns } from 'pages/Params/components/ParamsTableGrid/P
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
 import moment from 'moment';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -104,6 +105,17 @@ function getConfig() {
     select: {
       params: [],
       query: '',
+    },
+    table: {
+      rowHeight: RowHeightSize.md,
+      sortFields: [],
+      hiddenMetrics: [],
+      hiddenColumns: [],
+      columnsOrder: {
+        left: [],
+        middle: [],
+        right: [],
+      },
     },
   };
 }
@@ -180,7 +192,11 @@ function getParamsData() {
           rawData: runData,
           config: configData,
           tableData: getDataAsTableRows(data, null, params),
-          tableColumns: getParamsTableColumns(params, data[0]?.config),
+          tableColumns: getParamsTableColumns(
+            params,
+            data[0]?.config,
+            configData.table.columnsOrder!,
+          ),
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
@@ -251,6 +267,7 @@ function processData(data: IRun<IParamTrace>[]): {
   data: IMetricsCollection<IParam>[];
   params: string[];
 } {
+  const configData = model.getState()?.config;
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
@@ -260,6 +277,10 @@ function processData(data: IRun<IParamTrace>[]): {
 
     runs.push({
       run,
+      isHidden:
+        configData!.table.hiddenMetrics![0] === 'all'
+          ? true
+          : configData!.table.hiddenMetrics!.includes(run.hash),
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
@@ -290,77 +311,79 @@ function getDataAsLines(
         dimensionsObject[chartIndex] = {};
       }
 
-      return data.map((run: IParam) => {
-        const values: { [key: string]: string | number | null } = {};
-        configData.select.params.forEach(
-          ({ type, label, value }: ISelectParamsOption) => {
-            const dimension = dimensionsObject[chartIndex];
-            if (!dimension[label] && type === 'params') {
-              dimension[label] = {
-                values: new Set(),
-                scaleType: 'linear',
-                displayName: `<span>${label}</span>`,
-                dimensionType: 'param',
-              };
-            }
-            if (type === 'metrics') {
-              run.run.traces.forEach((trace: IParamTrace) => {
-                const formattedContext = `${
-                  value?.param_name
-                }-${contextToString(trace.context)}`;
-                if (
-                  trace.metric_name === value?.param_name &&
-                  _.isEqual(trace.context, value?.context)
-                ) {
-                  values[formattedContext] = trace.last_value.last;
-                  if (dimension[formattedContext]) {
-                    dimension[formattedContext].values.add(
-                      trace.last_value.last,
-                    );
-                    if (typeof trace.last_value.last === 'string') {
-                      dimension[formattedContext].scaleType = 'point';
+      return data
+        .filter((run) => !run.isHidden)
+        .map((run: IParam) => {
+          const values: { [key: string]: string | number | null } = {};
+          configData.select.params.forEach(
+            ({ type, label, value }: ISelectParamsOption) => {
+              const dimension = dimensionsObject[chartIndex];
+              if (!dimension[label] && type === 'params') {
+                dimension[label] = {
+                  values: new Set(),
+                  scaleType: 'linear',
+                  displayName: `<span>${label}</span>`,
+                  dimensionType: 'param',
+                };
+              }
+              if (type === 'metrics') {
+                run.run.traces.forEach((trace: IParamTrace) => {
+                  const formattedContext = `${
+                    value?.param_name
+                  }-${contextToString(trace.context)}`;
+                  if (
+                    trace.metric_name === value?.param_name &&
+                    _.isEqual(trace.context, value?.context)
+                  ) {
+                    values[formattedContext] = trace.last_value.last;
+                    if (dimension[formattedContext]) {
+                      dimension[formattedContext].values.add(
+                        trace.last_value.last,
+                      );
+                      if (typeof trace.last_value.last === 'string') {
+                        dimension[formattedContext].scaleType = 'point';
+                      }
+                    } else {
+                      dimension[formattedContext] = {
+                        values: new Set().add(trace.last_value.last),
+                        scaleType: 'linear',
+                        displayName: `<span>${
+                          value.param_name
+                        }</span><span>${contextToString(trace.context)}</span>`,
+                        dimensionType: 'metric',
+                      };
                     }
-                  } else {
-                    dimension[formattedContext] = {
-                      values: new Set().add(trace.last_value.last),
-                      scaleType: 'linear',
-                      displayName: `<span>${
-                        value.param_name
-                      }</span><span>${contextToString(trace.context)}</span>`,
-                      dimensionType: 'metric',
-                    };
                   }
-                }
-              });
-            } else {
-              const paramValue = _.get(run.run.params, label);
-              if (paramValue === undefined) {
-                values[label] = null;
-              } else if (paramValue === null) {
-                values[label] = 'None';
-              } else if (typeof paramValue === 'string') {
-                values[label] = `"${paramValue}"`;
+                });
               } else {
-                // TODO need to fix type
-                values[label] = paramValue as any;
-              }
-              if (values[label] !== null) {
-                if (typeof values[label] === 'string') {
-                  dimension[label].scaleType = 'point';
+                const paramValue = _.get(run.run.params, label);
+                if (paramValue === undefined) {
+                  values[label] = null;
+                } else if (paramValue === null) {
+                  values[label] = 'None';
+                } else if (typeof paramValue === 'string') {
+                  values[label] = `"${paramValue}"`;
+                } else {
+                  // TODO need to fix type
+                  values[label] = paramValue as any;
                 }
-                dimension[label].values.add(values[label]);
+                if (values[label] !== null) {
+                  if (typeof values[label] === 'string') {
+                    dimension[label].scaleType = 'point';
+                  }
+                  dimension[label].values.add(values[label]);
+                }
               }
-            }
-          },
-        );
-        return {
-          values,
-          color: color ?? run.color,
-          dasharray: dasharray ?? run.dasharray,
-          chartIndex: chartIndex,
-          key: run.key,
-        };
-      });
+            },
+          );
+          return {
+            values,
+            color: color ?? run.color,
+            dasharray: dasharray ?? run.dasharray,
+            chartIndex: chartIndex,
+            key: run.key,
+          };
+        });
     },
   );
 
@@ -786,14 +809,25 @@ function updateModelData(configData: IParamsAppConfig): void {
   const { data, params } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getParamsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+  );
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
   model.setState({
     config: configData,
     data,
     highPlotData: getDataAsLines(data),
     chartTitleData: getChartTitleData(data),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
-    tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getParamsTableColumns(params, data[0]?.config),
+    tableData,
+    tableColumns,
   });
 }
 
@@ -840,6 +874,7 @@ function getDataAsTableRows(
     metricsCollection.data.forEach((metric: any) => {
       const rowValues: any = {
         key: metric.key,
+        isHidden: metric.isHidden,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
@@ -1032,6 +1067,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     processedData.params,
     processedData.data[0]?.config,
+    model.getState()?.config.table.columnsOrder!,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -1132,6 +1168,74 @@ function updateUrlParam(
   window.history.pushState(null, '', url);
 }
 
+function onRowHeightChange(height: RowHeightSize) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    model.setState({
+      config: {
+        ...configData,
+        table: {
+          ...configData.table,
+          rowHeight: height,
+        },
+      },
+    });
+  }
+}
+
+function onSortFieldsChange(sortFields: [string, any][]) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        sortFields: sortFields,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
+function onParamVisibilityChange(metricsKeys: string[]) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        hiddenMetrics: metricsKeys,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
+function onColumnsVisibilityChange(columns: string[]) {}
+
+function onColumnsOrderChange(columnsOrder: any) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        columnsOrder: columnsOrder,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1141,6 +1245,7 @@ const paramsAppModel = {
   onActivePointChange,
   onParamsSelectChange,
   onSelectRunQueryChange,
+  onRowHeightChange,
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
@@ -1160,6 +1265,9 @@ const paramsAppModel = {
   onTableRowHover,
   onTableRowClick,
   setDefaultAppConfigData,
+  onSortFieldsChange,
+  onParamVisibilityChange,
+  onColumnsOrderChange,
 };
 
 export default paramsAppModel;
