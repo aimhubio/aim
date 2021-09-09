@@ -3,13 +3,10 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Checkbox,
-  Divider,
   TextField,
 } from '@material-ui/core';
 import {
-  ExpandMore,
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
@@ -97,6 +94,8 @@ function GroupingPopover({
             renderOption={(option, { selected }) => (
               <React.Fragment>
                 <Checkbox
+                  color='primary'
+                  size='small'
                   icon={<CheckBoxOutlineBlank />}
                   checkedIcon={<CheckBoxIcon />}
                   style={{ marginRight: 4 }}
