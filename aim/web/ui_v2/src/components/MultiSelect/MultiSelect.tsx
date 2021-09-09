@@ -41,7 +41,10 @@ function MultiSelect(
       >
         {props.options.map((value) => (
           <MenuItem key={value} value={value}>
-            <Checkbox checked={props.values.indexOf(value) > -1} />
+            <Checkbox
+              color='primary'
+              checked={props.values.indexOf(value) > -1}
+            />
             <ListItemText primary={value} />
           </MenuItem>
         ))}

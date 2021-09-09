@@ -1,0 +1,23 @@
+.MuiAutocomplete-paper {
+  box-shadow: unset;
+  margin: unset;
+}
+
+.MuiAutocomplete-popperDisablePortal {
+  position: initial !important; 
+}
+
+.MuiAutocomplete-listbox {
+  .MuiAutocomplete-groupUl .MuiAutocomplete-option {
+    padding: 0.625rem 1rem;
+
+    .MuiCheckbox-root {
+      padding: 0;
+    }
+
+    .SelectForm__option__label {
+      margin-left: 0.5rem;
+      font-size: $text-md;
+    }
+  }
+}

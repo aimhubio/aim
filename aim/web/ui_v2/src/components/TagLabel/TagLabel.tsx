@@ -1,26 +1,30 @@
 import React from 'react';
-import hexToRgbA from 'utils/haxToRgba';
+
+import { Chip } from '@material-ui/core';
+import Icon from '../Icon/Icon';
+import { ITagLabelProps } from 'types/components/SelectTag/SelectTag';
 
 import './TagLabel.scss';
 
 function TagLabel({
+  label,
   color,
-  name,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+  onDelete,
+}: ITagLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='TagContainer__tagBox'>
-      <div
-        className='TagContainer__tagBox__tag'
-        style={{
-          borderColor: color,
-          background: hexToRgbA(color, 0.1),
-        }}
-      >
-        <span className='TagContainer__tagBox__tag__content' style={{ color }}>
-          {name}
-        </span>
-      </div>
-    </div>
+    <Chip
+      style={{
+        backgroundColor: `${color}1a`,
+        color: color,
+        border: `0.0625rem solid ${color}`,
+      }}
+      size='small'
+      className='TagLabel'
+      label={label}
+      data-name={label}
+      deleteIcon={<Icon color={color} name='close' />}
+      {...(onDelete && { onDelete: () => onDelete(label) })}
+    />
   );
 }
 

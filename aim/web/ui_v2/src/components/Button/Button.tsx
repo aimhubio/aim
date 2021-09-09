@@ -28,7 +28,7 @@ function Button({
     padding: `0.5rem ${withOnlyIcon ? '0.5rem' : '1.25rem'}`,
     fontSize: fontSizes[size || 'medium'],
     height: sizes[size || 'medium'],
-    minWidth: withOnlyIcon ? '2.25rem' : '4.375rem',
+    minWidth: withOnlyIcon ? '2rem' : '4.375rem',
   };
 
   return (

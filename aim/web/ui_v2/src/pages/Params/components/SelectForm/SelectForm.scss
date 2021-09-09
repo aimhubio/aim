@@ -43,23 +43,6 @@
   display: flex;
   justify-content: space-between;
   margin-top: 0.5em;
-
-  span {
-    width: 2em;
-    height: 2em;
-    border: 1px solid rgba(8, 46, 92, 0.1);
-    box-sizing: border-box;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  i {
-    color: #1473e6;
-    font-size: 1em;
-  }
 }
 
 
@@ -73,25 +56,6 @@
   .MuiAutocomplete-paper {
     box-shadow: unset;
     margin: unset;
-  }
-
-  .MuiAutocomplete-popperDisablePortal {
-    position: initial;
-  }
-
-  .MuiAutocomplete-listbox {
-    .MuiAutocomplete-groupUl .MuiAutocomplete-option {
-      padding: 0.625rem 1rem;
-
-      .MuiCheckbox-root {
-        padding: 0;
-      }
-
-      .SelectForm__option__label {
-        margin-left: 0.5rem;
-        font-size: $text-md;
-      }
-    }
   }
 }
 

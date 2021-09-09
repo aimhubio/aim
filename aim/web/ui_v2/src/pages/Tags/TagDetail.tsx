@@ -8,6 +8,7 @@ import TagRunsTable from './TagRunsTable';
 import { ITagDetailProps } from 'types/pages/tags/Tags';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import Icon from 'components/Icon/Icon';
+import Button from 'components/Button/Button';
 
 import './Tags.scss';
 
@@ -62,36 +63,22 @@ function TagDetail({
         </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>
           {!tagInfo?.archived && (
-            <Icon
-              name='edit'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onUpdateModalToggle}
-            />
+            <Button withOnlyIcon={true} onClick={onUpdateModalToggle}>
+              <Icon name='edit' />
+            </Button>
           )}
           {tagInfo?.archived ? (
-            <Icon
-              name='eye-show-outline'
-              color='primary'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onSoftDeleteModalToggle}
-            />
+            <Button onClick={onSoftDeleteModalToggle} withOnlyIcon={true}>
+              <Icon name='eye-show-outline' color='primary' />
+            </Button>
           ) : (
-            <Icon
-              name='eye-outline-hide'
-              color='primary'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onSoftDeleteModalToggle}
-            />
+            <Button withOnlyIcon={true} onClick={onSoftDeleteModalToggle}>
+              <Icon name='eye-outline-hide' color='primary' />
+            </Button>
           )}
-          <span className='TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper'>
-            <Icon
-              name='delete'
-              fontSize='small'
-              color='primary'
-              className='TagDetail__headerContainer__headerActionsBox__actionsIcon'
-              onClick={onDeleteModalToggle}
-            />
-          </span>
+          <Button withOnlyIcon={true} onClick={onDeleteModalToggle}>
+            <Icon name='delete' fontSize='small' color='primary' />
+          </Button>
         </div>
       </div>
       <BusyLoaderWrapper

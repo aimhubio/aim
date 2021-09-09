@@ -26,7 +26,7 @@ import {
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import Icon from 'components/Icon/Icon';
-import SelectTag from 'components/SelectTag/SelectTag';
+import TagLabel from 'components/TagLabel/TagLabel';
 
 import './SelectForm.scss';
 
@@ -193,32 +193,38 @@ function SelectForm({
                     }}
                   />
                 </Popper>
-                <Divider
-                  style={{ margin: '0 1em' }}
-                  orientation='vertical'
-                  flexItem
-                />
-                <Box className='SelectForm__tags'>
-                  {selectedParamsData?.params?.map(
-                    (tag: ISelectParamsOption) => {
-                      return (
-                        <SelectTag
-                          key={tag.label}
-                          color={tag.color}
-                          label={tag.label}
-                          onDelete={handleDelete}
-                        />
-                      );
-                    },
-                  )}
-                </Box>
+                {selectedParamsData?.params.length > 0 && (
+                  <>
+                    <Divider
+                      style={{ margin: '0 1em' }}
+                      orientation='vertical'
+                      flexItem
+                    />
+                    <Box className='SelectForm__tags'>
+                      {selectedParamsData?.params?.map(
+                        (tag: ISelectParamsOption) => {
+                          return (
+                            <TagLabel
+                              key={tag.label}
+                              color={tag.color}
+                              label={tag.label}
+                              onDelete={handleDelete}
+                            />
+                          );
+                        },
+                      )}
+                    </Box>
+                  </>
+                )}
               </Box>
-              <span
-                onClick={() => onParamsSelectChange([])}
-                className='SelectForm__clearAll'
-              >
-                <Icon name='close' />
-              </span>
+              {selectedParamsData?.params.length > 0 && (
+                <span
+                  onClick={() => onParamsSelectChange([])}
+                  className='SelectForm__clearAll'
+                >
+                  <Icon name='close' />
+                </span>
+              )}
             </>
           </Box>
           <Button
@@ -237,6 +243,7 @@ function SelectForm({
             fullWidth
             size='small'
             variant='outlined'
+            className='TextField'
             inputProps={{ style: { height: '0.687rem' } }}
             placeholder='Run expression'
             value={selectedParamsData?.query}
