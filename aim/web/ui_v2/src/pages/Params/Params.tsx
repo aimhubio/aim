@@ -1,5 +1,5 @@
 import React from 'react';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
 import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';

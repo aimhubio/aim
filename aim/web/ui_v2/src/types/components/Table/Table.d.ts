@@ -1,4 +1,4 @@
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
 import React from 'react';
 
 export interface ITableProps {
@@ -8,18 +8,17 @@ export interface ITableProps {
   data: any[] | null;
   columns: any[];
   rowHeight: RowHeight;
-  onManageColumns?: () => void;
-  onSort?: () => void;
-  onRowsChange?: () => void;
+  onManageColumns?: (order: any) => void;
+  onSort?: (sortFields: []) => void;
+  onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
-  onRowHeightChange?: () => void;
+  onRowHeightChange?: (height: RowHeightSize) => void;
   data: any[];
   columns: any[];
   navBarItems?: {
     name: string;
     callBack: () => void;
   }[];
-  rowHeight?: number;
   headerHeight?: number;
   sortOptions?: GroupingSelectOptionType[];
   fixed?: boolean;
@@ -36,10 +35,13 @@ export interface ITableProps {
   columnsWidths?: any;
   updateColumnsWidths?: any;
   sortFields?: any;
+  hiddenRows?: string[];
   setSortFields?: any;
   isLoading?: boolean;
   infiniteLoadHandler?: (data: any) => void;
   isInfiniteLoading?: boolean;
+  allowInfiniteLoading?: boolean;
+  showRowClickBehaviour?: boolean;
 }
 
 export interface ITableRef {

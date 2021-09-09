@@ -17,4 +17,5 @@ export interface IMetric {
   dasharray: string;
   x_axis_iters?: ITraceData;
   x_axis_values?: ITraceData;
+  isHidden: boolean;
 }

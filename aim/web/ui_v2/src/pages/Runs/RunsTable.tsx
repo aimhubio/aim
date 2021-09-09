@@ -5,13 +5,30 @@ import { IRunsTableProps } from 'types/pages/runs/Runs';
 
 function RunsTable({
   isRunsDataLoading,
+  isInfiniteLoading,
   runsList,
   tableRef,
   columns,
   tableRowHeight,
   onExportTableData,
   getLastRunsData,
+  isLatest,
+  data,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
+  const getLatestRunsDataRequestRef = React.useRef<any>(null);
+  React.useEffect(() => {
+    return () => {
+      getLatestRunsDataRequestRef.current?.abort();
+    };
+  }, []);
+
+  function handleInfiniteLoad(row: any) {
+    if (!isLatest) {
+      getLatestRunsDataRequestRef.current = getLastRunsData(row);
+      getLatestRunsDataRequestRef.current.call().catch();
+    }
+  }
+
   return (
     <div className='Runs__RunList__runListBox'>
       <div className='Runs__RunList__runListBox__titleBox'>
@@ -20,12 +37,14 @@ function RunsTable({
       <div className='RunsTable'>
         <Table
           custom
-          isInfiniteLoading
-          infiniteLoadHandler={getLastRunsData}
+          allowInfiniteLoading
+          isInfiniteLoading={isInfiniteLoading}
+          showRowClickBehaviour={false}
+          infiniteLoadHandler={handleInfiniteLoad}
           emptyText={'No runs found'}
           key={`${columns?.length}-${size(runsList)}`}
           ref={tableRef}
-          data={null}
+          data={data}
           columns={columns}
           isLoading={isRunsDataLoading}
           // Table options
@@ -34,12 +53,10 @@ function RunsTable({
           rowHeight={tableRowHeight}
           // Table actions
           onSort={() => null}
-          onExport={onExportTableData}
           onManageColumns={() => null}
-          onRowHeightChange={() => null}
+          onExport={onExportTableData}
           onRowsChange={() => null}
           onRowHover={() => null}
-          onRowClick={() => null}
         />
       </div>
     </div>
