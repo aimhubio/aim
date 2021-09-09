@@ -107,7 +107,7 @@ async def run_params_api(run_id: str):
         raise HTTPException(status_code=404)
 
     response = {
-        'params': run[...],
+        'params': run.get(...),
         'traces': run.collect_metrics_info(),
         'props': get_run_props(run)
     }
