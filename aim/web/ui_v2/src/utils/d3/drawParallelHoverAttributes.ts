@@ -289,6 +289,9 @@ const drawParallelHoverAttributes = ({
             lineCirclesOfClosestCircle,
             closestCircle,
           );
+          if (focusedStateActive) {
+            drawFocusedCircle(closestCircle?.key);
+          }
           safeSyncHoverState({ activePoint, focusedStateActive });
           attributesRef.current.activePoint = activePoint;
           attributesRef.current.lineKey = closestCircle.key;
@@ -469,11 +472,7 @@ const drawParallelHoverAttributes = ({
       .classed('highlighted', false)
       .classed('active', false);
 
-    attributesNodeRef.current
-      .selectAll('circle')
-      .attr('r', CircleEnum.Radius)
-      .classed('active', false)
-      .classed('focus', false);
+    attributesNodeRef.current.selectAll('circle').remove();
   }
 
   // Interactions
@@ -508,6 +507,7 @@ const drawParallelHoverAttributes = ({
   attributesRef.current.setActiveLine = setActiveLine;
   attributesRef.current.updateFocusedChart = updateFocusedChart;
   attributesRef.current.setActiveLineAndCircle = setActiveLineAndCircle;
+  attributesRef.current.clearHoverAttributes = clearHoverAttributes;
 };
 
 function scalePointValue(

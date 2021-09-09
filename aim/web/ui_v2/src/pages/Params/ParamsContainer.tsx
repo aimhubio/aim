@@ -11,6 +11,7 @@ import {
 import usePanelResize from 'hooks/resize/usePanelResize';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { useRouteMatch } from 'react-router-dom';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -78,12 +79,15 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       selectedParamsData={
         paramsData?.config?.select as IParamsAppConfig['select']
       }
+      sortFields={paramsData?.config?.table.sortFields!}
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
       tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
+      hiddenMetrics={paramsData?.config?.table.hiddenMetrics!}
+      tableRowHeight={paramsData?.config?.table.rowHeight as RowHeightSize}
       requestIsPending={paramsData?.requestIsPending}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
@@ -105,6 +109,10 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableRowHover={paramsAppModel.onTableRowHover}
       onTableRowClick={paramsAppModel.onTableRowClick}
       onExportTableData={paramsAppModel.onExportTableData}
+      onRowHeightChange={paramsAppModel.onRowHeightChange}
+      onSortFieldsChange={paramsAppModel.onSortFieldsChange}
+      onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
+      onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
     />
   );
 }

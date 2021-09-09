@@ -600,6 +600,7 @@ function processData(data: any[]): {
   data: any[];
   params: string[];
 } {
+  const configData = model.getState()?.config;
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
@@ -609,6 +610,10 @@ function processData(data: any[]): {
 
     runs.push({
       run,
+      isHidden:
+        configData!.table.hiddenMetrics![0] === 'all'
+          ? true
+          : configData!.table.hiddenMetrics!.includes(run.hash),
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
