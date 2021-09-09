@@ -103,6 +103,8 @@ def compile_checker(expr):
 
 
 def syntax_error_check(expr):
+    if not expr:
+        return
     expr = strip_query(expr)
     try:
         compile_restricted(expr,
