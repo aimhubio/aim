@@ -5,6 +5,7 @@ import {
   IRun,
 } from 'types/services/models/metrics/runModel';
 import runsAppModel from '../../../services/models/runs/runsAppModel';
+import { bool } from 'yup';
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
   isRunInfoLoading: boolean;
@@ -36,8 +37,11 @@ export interface IRunsTableProps {
   tableRef: React.RefObject<any>;
   runsList: ITagProps[];
   isRunsDataLoading: boolean;
+  isInfiniteLoading: boolean;
   columns: any;
   tableRowHeight: number;
   onExportTableData: () => void;
   getLastRunsData: (row: any) => void;
+  isLatest?: boolean;
+  data: any;
 }

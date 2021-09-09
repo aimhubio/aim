@@ -50,6 +50,13 @@ const model = createModel<Partial<any>>({
   requestIsPending: true,
   infiniteIsPending: false,
 });
+
+const initialPaginationConfig = {
+  limit: 45,
+  offset: null,
+  isLatest: false,
+};
+
 function getConfig() {
   return {
     grouping: {
@@ -119,10 +126,134 @@ function getConfig() {
     table: {
       rowHeight: RowHeightSize.md,
     },
-    pagination: {
-      limit: 1000,
-      offset: null,
+    pagination: initialPaginationConfig,
+  };
+}
+
+function prepareModelStateToCall(isInitial: boolean) {
+  const config = model.getState()?.config;
+  if (isInitial) {
+    model.setState({
+      config: {
+        ...config,
+        pagination: initialPaginationConfig,
+      },
+      notifyData: [],
+      rowData: [],
+      tableColumns: [],
+      tableData: [],
+      data: [],
+    });
+  }
+
+  model.setState({
+    requestIsPending: isInitial,
+    infiniteIsPending: !isInitial,
+  });
+
+  return model.getState();
+}
+
+function getRunsData(isInitial = true) {
+  // isInitial: true --> when search button clicked or data is loading at the first time
+  const modelState = prepareModelStateToCall(isInitial);
+  const configData = modelState?.config;
+
+  const query = configData?.select?.query || '';
+  const pagination = configData?.pagination;
+
+  const { call, abort } = runsService.getRunsData(
+    query,
+    pagination?.limit,
+    pagination?.offset,
+  );
+
+  return {
+    call: async () => {
+      try {
+        const stream = await call();
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
+
+        const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
+          ? []
+          : modelState?.rowData;
+
+        let count = 0;
+        for await (let [keys, val] of objects) {
+          if (isInitial) {
+            const runData: any = val;
+            runsData.push({ ...runData, hash: keys[0] } as any);
+          } else {
+            if (count > 0) {
+              const runData: any = val;
+              runsData.push({ ...runData, hash: keys[0] } as any);
+            }
+          }
+          count++;
+        }
+        const { data, params } = processData(runsData);
+
+        const tableData = getDataAsTableRows(data, null, params);
+        const tableColumns = getRunsTableColumns(params, data[0]?.config);
+
+        model.setState({
+          data,
+          rowData: runsData,
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns,
+          tableData,
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...modelState?.config.pagination,
+              isLatest:
+                !isInitial && count < modelState?.config.pagination.limit,
+            },
+          },
+        });
+
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData,
+            newColumns: tableColumns,
+          });
+        }, 0);
+      } catch (e) {
+        model.setState({
+          data: [],
+          rowData: [],
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns: [],
+          tableData: [],
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...initialPaginationConfig,
+            },
+          },
+        });
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: 'Invalid syntax at query statement',
+        });
+
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: [],
+            newColumns: [],
+          });
+        }, 0);
+      }
     },
+    abort,
   };
 }
 
@@ -139,7 +270,7 @@ function getLastRunsData(lastRow: any) {
         },
       },
     });
-    // getRunsData().call(false);
+    return getRunsData(false);
   }
 }
 
@@ -183,7 +314,8 @@ function initialize(appId: string = '') {
     }
   }
   setDefaultAppConfigData();
-  getRunsData().call();
+
+  return getRunsData();
 }
 
 function getFilteredRow(
@@ -210,7 +342,7 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const processedData = processData(
-    model.getState()?.data as IRun<IMetricTrace>[],
+    model.getState()?.rowData as IRun<IMetricTrace>[],
   );
 
   const tableData: IMetricTableRowData[] = getDataAsTableRows(
@@ -581,61 +713,6 @@ function getDataAsTableRows(
   return rows;
 }
 
-function getRunsData() {
-  const modelState = model.getState();
-  const configData = modelState?.config;
-
-  const query = configData?.select?.query || '';
-  const pagination = configData?.pagination;
-
-  const { call, abort } = runsService.getRunsData(
-    pagination?.limit,
-    query,
-    pagination?.offset,
-  );
-
-  return {
-    call: async (isInitial = true) => {
-      model.setState({
-        requestIsPending: isInitial,
-        infiniteIsPending: !isInitial,
-      });
-      const stream = await call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
-
-      const runsData: IRun<IMetricTrace | IParamTrace>[] =
-        modelState?.data || [];
-      for await (let [keys, val] of objects) {
-        const runData: any = val;
-        runsData.push({ ...runData, hash: keys[0] } as any);
-      }
-      const { data, params } = processData(runsData);
-      const tableData = getDataAsTableRows(data, null, params);
-      const tableColumns = getRunsTableColumns(params, data[0]?.config);
-
-      model.setState({
-        data: runsData,
-        requestIsPending: false,
-        infiniteIsPending: false,
-        tableColumns,
-        tableData,
-      });
-
-      setTimeout(() => {
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
-          newData: tableData,
-          newColumns: tableColumns,
-        });
-      }, 0);
-    },
-    abort,
-  };
-}
-
 function onSelectRunQueryChange(query: string) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
@@ -685,6 +762,7 @@ const runAppModel = {
   updateSelectStateUrl,
   onExportTableData,
   getLastRunsData,
+  onNotificationDelete,
 };
 
 export default runAppModel;
