@@ -11,6 +11,7 @@ export interface IParam {
   color: string;
   key: string;
   dasharray: string;
+  isHidden?: boolean;
 }
 interface IParamsAppConfig {
   grouping: {
