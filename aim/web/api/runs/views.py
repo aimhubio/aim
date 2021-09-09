@@ -84,11 +84,11 @@ async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=403, detail={
-                "name": "SyntaxError",
-                "statement": se.text,
-                "line": se.lineno,
-                "offset": se.offset
-            })
+            "name": "SyntaxError",
+            "statement": se.text,
+            "line": se.lineno,
+            "offset": se.offset
+        })
 
     traces = project.repo.query_metrics(query=query)
 
