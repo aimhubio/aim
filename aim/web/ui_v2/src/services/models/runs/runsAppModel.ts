@@ -51,6 +51,13 @@ const model = createModel<Partial<any>>({
   requestIsPending: true,
   infiniteIsPending: false,
 });
+
+const initialPaginationConfig = {
+  limit: 30,
+  offset: null,
+  isLatest: false,
+};
+
 function getConfig() {
   return {
     grouping: {
@@ -120,10 +127,102 @@ function getConfig() {
     table: {
       rowHeight: RowHeight.md,
     },
-    pagination: {
-      limit: 1000,
-      offset: null,
+    pagination: initialPaginationConfig,
+  };
+}
+
+function prepareModelStateToCall(isInitial: boolean) {
+  const config = model.getState()?.config;
+  if (isInitial) {
+    model.setState({
+      config: {
+        ...config,
+        pagination: initialPaginationConfig,
+      },
+    });
+  }
+
+  model.setState({
+    requestIsPending: isInitial,
+    infiniteIsPending: !isInitial,
+  });
+
+  return model.getState();
+}
+
+// tested cases
+// 1. first load of data ---- everything is initial +
+// 2. click button search ---- everything is initial +
+// 3. delete search data ---- everything is initial +
+// 4. infinite on first loaded data ---- nothing is initial -
+// 5. infinite on searched data ---- nothing is initial -
+// 6. if the data is not enough, doesnt call infinite loader -
+
+// cases  need to test
+// check isLatestOrNot
+// shows initial loader when scrolling
+function getRunsData(isInitial = true) {
+  // isInitial: true --> when search button clicked or data is loading at the first time
+  const modelState = prepareModelStateToCall(isInitial);
+  const configData = modelState?.config;
+
+  const query = configData?.select?.query || '';
+  const pagination = configData?.pagination;
+
+  const { call, abort } = runsService.getRunsData(
+    pagination?.limit,
+    query,
+    pagination?.offset,
+  );
+
+  return {
+    call: async () => {
+      console.log('calllllling');
+      const stream = await call();
+      let gen = adjustable_reader(stream);
+      let buffer_pairs = decode_buffer_pairs(gen);
+      let decodedPairs = decodePathsVals(buffer_pairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+
+      const runsData: IRun<IMetricTrace | IParamTrace>[] =
+        modelState?.data || [];
+      console.log('prevData ----- > ', runsData);
+      let count = 0;
+      for await (let [keys, val] of objects) {
+        const runData: any = val;
+        runsData.push({ ...runData, hash: keys[0] } as any);
+        count++;
+      }
+      const { data, params } = processData(runsData);
+      console.log('nextData ----- > ', data);
+      console.log(count);
+      const tableData = getDataAsTableRows(data, null, params);
+      const tableColumns = getRunsTableColumns(params, data[0]?.config);
+
+      model.setState({
+        data: runsData,
+        requestIsPending: false,
+        infiniteIsPending: false,
+        tableColumns,
+        tableData,
+        config: {
+          ...modelState?.config,
+          pagination: {
+            ...modelState?.config.pagination,
+            isLatest: isInitial && count < modelState?.config.pagination.limit,
+          },
+        },
+      });
+
+      setTimeout(() => {
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData,
+          newColumns: tableColumns,
+        });
+      }, 0);
     },
+    abort,
   };
 }
 
@@ -140,7 +239,7 @@ function getLastRunsData(lastRow: any) {
         },
       },
     });
-    // getRunsData().call(false);
+    return getRunsData(false);
   }
 }
 
@@ -184,7 +283,8 @@ function initialize(appId: string = '') {
     }
   }
   setDefaultAppConfigData();
-  getRunsData().call();
+  console.log('initializing ----- ', model.getState());
+  return getRunsData();
 }
 
 function getFilteredRow(
@@ -580,61 +680,6 @@ function getDataAsTableRows(
     }
   });
   return rows;
-}
-
-function getRunsData() {
-  const modelState = model.getState();
-  const configData = modelState?.config;
-
-  const query = configData?.select?.query || '';
-  const pagination = configData?.pagination;
-
-  const { call, abort } = runsService.getRunsData(
-    pagination?.limit,
-    query,
-    pagination?.offset,
-  );
-
-  return {
-    call: async (isInitial = true) => {
-      model.setState({
-        requestIsPending: isInitial,
-        infiniteIsPending: !isInitial,
-      });
-      const stream = await call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
-
-      const runsData: IRun<IMetricTrace | IParamTrace>[] =
-        modelState?.data || [];
-      for await (let [keys, val] of objects) {
-        const runData: any = val;
-        runsData.push({ ...runData, hash: keys[0] } as any);
-      }
-      const { data, params } = processData(runsData);
-      const tableData = getDataAsTableRows(data, null, params);
-      const tableColumns = getRunsTableColumns(params, data[0]?.config);
-
-      model.setState({
-        data: runsData,
-        requestIsPending: false,
-        infiniteIsPending: false,
-        tableColumns,
-        tableData,
-      });
-
-      setTimeout(() => {
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
-          newData: tableData,
-          newColumns: tableColumns,
-        });
-      }, 0);
-    },
-    abort,
-  };
 }
 
 function onSelectRunQueryChange(query: string) {

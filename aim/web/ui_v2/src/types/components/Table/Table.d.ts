@@ -40,6 +40,7 @@ export interface ITableProps {
   isLoading?: boolean;
   infiniteLoadHandler?: (data: any) => void;
   isInfiniteLoading?: boolean;
+  showRowClickBehaviour?: boolean;
 }
 
 export interface ITableRef {

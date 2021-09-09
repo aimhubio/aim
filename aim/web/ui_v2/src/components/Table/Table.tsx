@@ -54,6 +54,7 @@ const Table = React.forwardRef(function Table(
     setSortFields,
     groups,
     isLoading,
+    showRowClickBehaviour = true,
     ...props
   }: ITableProps,
   ref,
@@ -333,13 +334,15 @@ const Table = React.forwardRef(function Table(
   }
 
   function rowClickHandler(row) {
-    if (activeRowKey.current === row.key) {
-      activeRowKey.current = null;
-    } else {
-      activeRowKey.current = row.key;
-    }
+    if (showRowClickBehaviour) {
+      if (activeRowKey.current === row.key) {
+        activeRowKey.current = null;
+      } else {
+        activeRowKey.current = row.key;
+      }
 
-    updateHoveredRow(`rowKey-${activeRowKey.current}`);
+      updateHoveredRow(`rowKey-${activeRowKey.current}`);
+    }
 
     if (typeof onRowClick === 'function') {
       onRowClick(

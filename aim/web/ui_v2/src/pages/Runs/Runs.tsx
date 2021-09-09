@@ -4,7 +4,6 @@ import RunsTable from './RunsTable';
 import './Runs.scss';
 import RunsBar from './components/RunsBar/RunsBar';
 import SearchBar from './components/SearchBar/SearchBar';
-import runsAppModel from '../../services/models/runs/runsAppModel';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
   return (
