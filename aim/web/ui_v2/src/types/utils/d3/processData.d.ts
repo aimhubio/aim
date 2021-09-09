@@ -1,4 +1,4 @@
-import { ILine, ILineChartProps } from 'types/components/LineChart/LineChart';
+import { ILine } from 'types/components/LineChart/LineChart';
 
 export interface IProcessedData extends ILine {
   color: string;
