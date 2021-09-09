@@ -1,6 +1,8 @@
 import os
 import shutil
+from enum import Enum
 
+from packaging import version
 from collections import defaultdict
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
@@ -9,6 +11,7 @@ from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
+from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.union import UnionContainer
 from aim.storage.container import Container
@@ -21,6 +24,13 @@ class ContainerConfig(NamedTuple):
     name: str
     sub: Optional[str]
     read_only: bool
+
+
+class RepoStatus(Enum):
+    MISSING = 1
+    UPDATE_REQUIRED = 2
+    PATCH_REQUIRED = 3
+    UPDATED = 4
 
 
 # TODO make this api thread-safe
@@ -46,16 +56,21 @@ class Repo:
         self.read_only = read_only
         self.root_path = path
         self.path = os.path.join(path, AIM_REPO_NAME)
+
         if init:
             os.makedirs(self.path, exist_ok=True)
+            with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
+                version_fh.write(DATA_VERSION + '\n')
         if not os.path.exists(self.path):
-            raise RuntimeError(f'Cannot find database \'{path}\'. Please init first.')
+            raise RuntimeError(f'Cannot find repository \'{path}\'. Please init first.')
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
         self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
 
         self.structured_db = DB.from_path(self.path)
+        if init:
+            self.structured_db.run_upgrades()
 
     @property
     def meta_tree(self):
@@ -75,6 +90,16 @@ class Repo:
         Repo._default_path = path
 
     @classmethod
+    def default_repo_path(cls) -> str:
+        if cls._default_path:
+            repo_path = cls._default_path
+        else:
+            repo_path, found = search_aim_repo(os.path.curdir)
+            if not found:
+                repo_path = os.getcwd()
+        return repo_path
+
+    @classmethod
     def default_repo(cls, init: bool = False):
         """Named constructor for default repository.
 
@@ -87,14 +112,7 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        if cls._default_path:
-            repo_path = cls._default_path
-        else:
-            repo_path, found = search_aim_repo(os.path.curdir)
-            if not found:
-                repo_path = os.getcwd()
-
-        return cls.from_path(repo_path, init=init)
+        return cls.from_path(cls.default_repo_path(), init=init)
 
     @classmethod
     def from_path(cls, path: str, read_only: bool = None, init: bool = False):
@@ -141,6 +159,27 @@ class Repo:
             del cls._pool[path]
         aim_repo_path = os.path.join(path, AIM_REPO_NAME)
         shutil.rmtree(aim_repo_path)
+
+    @classmethod
+    def check_repo_status(cls, path: str) -> RepoStatus:
+        if not cls.exists(path):
+            return RepoStatus.MISSING
+        repo_version = version.parse(cls.get_version(path))
+        current_version = version.parse(DATA_VERSION)
+        if repo_version.major < current_version.major:
+            return RepoStatus.UPDATE_REQUIRED
+        if repo_version.minor < current_version.minor:
+            return RepoStatus.PATCH_REQUIRED
+        return RepoStatus.UPDATED
+
+    @classmethod
+    def get_version(cls, path: str):
+        path = clean_repo_path(path)
+        version_file_path = os.path.join(path, '.aim', 'VERSION')
+        if os.path.exists(version_file_path):
+            with open(version_file_path, 'r') as version_fh:
+                return version_fh.read()
+        return '0.0'  # old Aim repos
 
     def _get_container(
         self, name: str, read_only: bool, from_union: bool = False

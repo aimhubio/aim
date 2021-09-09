@@ -39,6 +39,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
 
     def __init__(self, model: RunModel, session):
         self._model = model
+        self._id = model.id
         self._session = session
 
     def __repr__(self) -> str:
@@ -158,6 +159,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
 
     def __init__(self, model_inst: ExperimentModel, session):
         self._model = model_inst
+        self._id = model_inst.id
         self._session = session
 
     def __repr__(self) -> str:
@@ -235,6 +237,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
 
     def __init__(self, model_inst: TagModel, session):
         self._model = model_inst
+        self._id = model_inst.id
         self._session = session
 
     def __repr__(self) -> str:

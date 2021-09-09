@@ -12,7 +12,6 @@ TEST_REPO_PATH = '.aim-test-repo'
 
 def _init_test_repo():
     repo = Repo.default_repo(init=True)
-    repo.structured_db.run_upgrades()
 
 
 def _cleanup_test_repo(path):

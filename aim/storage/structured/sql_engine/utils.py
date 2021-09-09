@@ -1,5 +1,6 @@
 from abc import ABCMeta
 from typing import Iterator, Collection, TypeVar, Union, Callable
+from sqlalchemy import text
 
 try:
     from typing import GenericMeta
@@ -30,8 +31,16 @@ class ModelMappedProperty:
         if self.with_setter:
             def setter(object_, value):
                 assert object_._model
-                setattr(object_._model, self.mapped_name, value)
-                object_._session.add(object_._model)
+                try:
+                    setattr(object_._model, self.mapped_name, value)
+                    object_._session.add(object_._model)
+                except Exception:
+                    engine = object_._session.bind
+                    table_name = object_._model.__tablename__
+                    with engine.begin() as conn:
+                        sql = text(f'UPDATE {table_name} SET {self.mapped_name} = :val WHERE id = :id')
+                        conn.execute(sql, {'val': value, 'id': object_._id})
+
         return property(getter, setter)
 
 
