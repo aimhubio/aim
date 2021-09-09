@@ -164,8 +164,8 @@ function getRunsData(isInitial = true) {
   const pagination = configData?.pagination;
 
   const { call, abort } = runsService.getRunsData(
-    pagination?.limit,
     query,
+    pagination?.limit,
     pagination?.offset,
   );
 
