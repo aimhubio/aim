@@ -1,4 +1,7 @@
 // -------- contained overrides --------
+.MuiButton-root {
+    border-radius: 6px;
+}
 .MuiButton-contained {
     &.Mui-disabled {
         box-shadow: none;
@@ -6,6 +9,9 @@
         color: white;
         opacity: 0.5;
     }
+   &:hover {
+       box-shadow: none;
+   }
 }
 
 // Primary

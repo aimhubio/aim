@@ -18,6 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import Icon from 'components/Icon/Icon';
 import TableLoader from '../TableLoader/TableLoader';
 
@@ -36,8 +37,8 @@ const Table = React.forwardRef(function Table(
     data,
     columns,
     navBarItems,
-    rowHeight = 30,
-    headerHeight = 30,
+    rowHeight = RowHeightSize.md,
+    headerHeight = RowHeightSize.md,
     sortOptions,
     hideHeaderActions = false,
     fixed = true,
@@ -51,9 +52,10 @@ const Table = React.forwardRef(function Table(
     columnsWidths,
     updateColumnsWidths,
     sortFields,
-    setSortFields,
+    hiddenRows,
     groups,
     isLoading,
+    showRowClickBehaviour = true,
     ...props
   }: ITableProps,
   ref,
@@ -71,6 +73,7 @@ const Table = React.forwardRef(function Table(
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns);
   const [expanded, setExpanded] = React.useState({});
+  const scrollTopMutableRef = React.useRef({ top: 0 });
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -314,7 +317,7 @@ const Table = React.forwardRef(function Table(
       scrollTop: tableContainerRef.current.scrollTop,
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
-      itemHeight: 32,
+      itemHeight: rowHeight,
       groupMargin: 8,
     });
 
@@ -334,13 +337,15 @@ const Table = React.forwardRef(function Table(
   }
 
   function rowClickHandler(row) {
-    if (activeRowKey.current === row.key) {
-      activeRowKey.current = null;
-    } else {
-      activeRowKey.current = row.key;
-    }
+    if (showRowClickBehaviour) {
+      if (activeRowKey.current === row.key) {
+        activeRowKey.current = null;
+      } else {
+        activeRowKey.current = row.key;
+      }
 
-    updateHoveredRow(`rowKey-${activeRowKey.current}`);
+      updateHoveredRow(`rowKey-${activeRowKey.current}`);
+    }
 
     if (typeof onRowClick === 'function') {
       onRowClick(
@@ -374,7 +379,7 @@ const Table = React.forwardRef(function Table(
         scrollTop: tableContainerRef.current.scrollTop,
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
-        itemHeight: 32,
+        itemHeight: rowHeight,
         groupMargin: 8,
       });
 
@@ -388,17 +393,26 @@ const Table = React.forwardRef(function Table(
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
-          itemHeight: 32,
+          itemHeight: rowHeight,
           groupMargin: 8,
         });
 
         startIndex.current = windowEdges.startIndex;
         endIndex.current = windowEdges.endIndex;
         virtualizedUpdate();
-        if (props.isInfiniteLoading && props.infiniteLoadHandler) {
+
+        const isDownScrolling =
+          scrollTopMutableRef.current.top < target.scrollTop;
+        scrollTopMutableRef.current.top = target.scrollTop;
+
+        if (
+          props.allowInfiniteLoading &&
+          props.infiniteLoadHandler &&
+          isDownScrolling
+        ) {
           const index = windowEdges.endIndex - 10 - 3; // 10: offset, 3: header rows
           if (index + 5 >= rowData.length) {
-            props.infiniteLoadHandler(rowData[index]);
+            props.infiniteLoadHandler(rowData[index - 1]);
           }
         }
       }, 100);
@@ -411,9 +425,12 @@ const Table = React.forwardRef(function Table(
     };
   }, [custom, rowData]);
 
+  // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
+  // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
+  // @TODO sanitize this point
   return (
     <BusyLoaderWrapper
-      isLoading={isLoading || isNil(rowData)}
+      isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
       loaderComponent={<TableLoader />}
       className='Tags__TagList__tagListBusyLoader'
     >
@@ -447,10 +464,18 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='manage-calumn' />
-                        <span onClick={onManageColumns}>Manage Columns</span>
+                        <span>Manage Columns</span>
                       </Button>
                     )}
-                    component={<ManageColumns columnsData={columns} />}
+                    component={
+                      <ManageColumns
+                        columnsData={columns.filter(
+                          (item: any) =>
+                            item.key !== '#' && item.key !== 'actions',
+                        )}
+                        onManageColumns={onManageColumns}
+                      />
+                    }
                   />
                 )}
                 {onRowsChange && (
@@ -472,10 +497,10 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='eye-outline-hide' />
-                        <span onClick={onSort}>Hide Rows</span>
+                        <span>Hide Rows</span>
                       </Button>
                     )}
-                    component={<HideRows />}
+                    component={<HideRows toggleRowsVisibility={onRowsChange} />}
                   />
                 )}
                 {onSort && (
@@ -498,10 +523,16 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='sort-outside' />
-                        <span onClick={onSort}>Sort</span>
+                        <span>Sort</span>
                       </Button>
                     )}
-                    component={<SortPopover sortOptions={sortOptions} />}
+                    component={
+                      <SortPopover
+                        sortOptions={sortOptions}
+                        sortFields={sortFields}
+                        onSort={onSort}
+                      />
+                    }
                   />
                 )}
                 {onRowHeightChange && (
@@ -524,10 +555,15 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='row-height' />
-                        <span onClick={onRowHeightChange}>Row Height</span>
+                        <span>Row Height</span>
                       </Button>
                     )}
-                    component={<RowHeight />}
+                    component={
+                      <RowHeight
+                        rowHeight={rowHeight}
+                        onRowHeightChange={onRowHeightChange}
+                      />
+                    }
                   />
                 )}
               </div>
@@ -565,7 +601,8 @@ const Table = React.forwardRef(function Table(
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}
                       sortFields={sortFields}
-                      setSortFields={setSortFields}
+                      setSortFields={onSort}
+                      hiddenRows={hiddenRows}
                       data={rowData}
                       columns={columnsData}
                       groups={groups}

@@ -52,61 +52,63 @@ export function aggregateGroupData({
     const data = group.data;
 
     for (let i = 0; i < data.length; i++) {
-      const trace = data[i].data;
+      if (!data[i].isHidden) {
+        const trace = data[i].data;
 
-      // Calculate line value (y) for each X axis value in chart
-      // Even for case when line does not have corresponding x value
-      for (let j = 0; j < trace.xValues.length; j++) {
-        const step = trace.xValues[j];
-        const point = trace.yValues[j];
-        const nextStep = trace.xValues[j + 1];
-        const nextPoint = trace.yValues[j + 1];
+        // Calculate line value (y) for each X axis value in chart
+        // Even for case when line does not have corresponding x value
+        for (let j = 0; j < trace.xValues.length; j++) {
+          const step = trace.xValues[j];
+          const point = trace.yValues[j];
+          const nextStep = trace.xValues[j + 1];
+          const nextPoint = trace.yValues[j + 1];
 
-        const stepsInBetween = nextStep - step;
+          const stepsInBetween = nextStep - step;
 
-        for (let value of chartXValues.slice(
-          chartXValues.indexOf(step),
-          chartXValues.indexOf(nextStep) + 1,
-        )) {
-          let y;
-          let x0 = value - step;
-          let x2 = stepsInBetween;
-          let point1 = point;
-          let point2 = nextPoint;
+          for (let value of chartXValues.slice(
+            chartXValues.indexOf(step),
+            chartXValues.indexOf(nextStep) + 1,
+          )) {
+            let y;
+            let x0 = value - step;
+            let x2 = stepsInBetween;
+            let point1 = point;
+            let point2 = nextPoint;
 
-          if (x0 === 0) {
-            y = point1;
-          } else if (x0 === x2) {
-            y = point2;
-          } else {
-            if (scale.xAxis === ScaleEnum.Log) {
-              x0 = Math.log(value) - Math.log(step);
-              x2 = Math.log(nextStep) - Math.log(step);
-            }
-            if (scale.yAxis === ScaleEnum.Log) {
-              point1 = Math.log(point1);
-              point2 = Math.log(point2);
-            }
-            if (point1 > point2) {
-              y = point1 - ((point1 - point2) * x0) / x2;
+            if (x0 === 0) {
+              y = point1;
+            } else if (x0 === x2) {
+              y = point2;
             } else {
-              y = ((point2 - point1) * x0) / x2 + point1;
-            }
-            if (scale.yAxis === ScaleEnum.Log) {
-              y = Math.exp(y);
-            }
-          }
-          if (
-            (scale.xAxis === ScaleEnum.Linear ||
-              (value !== 0 && step !== 0 && nextStep !== 0)) &&
-            (scale.yAxis === ScaleEnum.Linear || y > 0)
-          ) {
-            if (yValuesPerX.hasOwnProperty(value)) {
-              if (!yValuesPerX[value].includes(y)) {
-                yValuesPerX[value].push(y);
+              if (scale.xAxis === ScaleEnum.Log) {
+                x0 = Math.log(value) - Math.log(step);
+                x2 = Math.log(nextStep) - Math.log(step);
               }
-            } else {
-              yValuesPerX[value] = [y];
+              if (scale.yAxis === ScaleEnum.Log) {
+                point1 = Math.log(point1);
+                point2 = Math.log(point2);
+              }
+              if (point1 > point2) {
+                y = point1 - ((point1 - point2) * x0) / x2;
+              } else {
+                y = ((point2 - point1) * x0) / x2 + point1;
+              }
+              if (scale.yAxis === ScaleEnum.Log) {
+                y = Math.exp(y);
+              }
+            }
+            if (
+              (scale.xAxis === ScaleEnum.Linear ||
+                (value !== 0 && step !== 0 && nextStep !== 0)) &&
+              (scale.yAxis === ScaleEnum.Linear || y > 0)
+            ) {
+              if (yValuesPerX.hasOwnProperty(value)) {
+                if (!yValuesPerX[value].includes(y)) {
+                  yValuesPerX[value].push(y);
+                }
+              } else {
+                yValuesPerX[value] = [y];
+              }
             }
           }
         }
