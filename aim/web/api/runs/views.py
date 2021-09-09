@@ -13,6 +13,7 @@ from aim.web.api.runs.utils import (
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
+    QuerySyntaxErrorOut,
     RunTracesBatchApiIn,
     RunMetricCustomAlignApiOut,
     RunMetricSearchApiOut,
@@ -30,7 +31,8 @@ from aim.storage.query import syntax_error_check
 runs_router = APIRouter()
 
 
-@runs_router.get('/search/run/', response_model=RunSearchApiOut)
+@runs_router.get('/search/run/', response_model=RunSearchApiOut,
+                 responses={403: {'model': QuerySyntaxErrorOut}})
 async def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
     # Get project
     project = Project()
@@ -67,7 +69,8 @@ async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     return StreamingResponse(streamer)
 
 
-@runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut)
+@runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut,
+                 responses={403: {'model': QuerySyntaxErrorOut}})
 async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
     steps_num = p
 

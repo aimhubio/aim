@@ -135,3 +135,12 @@ class StructuredRunRemoveTagOut(BaseModel):
     id: str
     removed: bool
     status: str = 'OK'
+
+
+class QuerySyntaxErrorOut(BaseModel):
+    class SE(BaseModel):
+        name: str
+        statement: str
+        line: int
+        offset: int
+    detail: SE
