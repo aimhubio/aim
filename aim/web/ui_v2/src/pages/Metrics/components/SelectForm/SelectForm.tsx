@@ -128,7 +128,8 @@ function SelectForm({
   }, [projectsData]);
 
   function handleRunCopy(): void {
-    navigator.clipboard.writeText(selectedMetricsData?.query);
+    let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
+    navigator.clipboard.writeText(query);
   }
 
   function handleResetSelectForm(): void {

@@ -251,7 +251,7 @@ function getQueryStringFromSelect(
               )}`,
         )
         .join(' or ')})${
-        selectData.query ? `and ${selectData.query}` : ''
+        selectData.query ? ` and ${selectData.query}` : ''
       }`.trim();
     }
   }
@@ -1926,6 +1926,7 @@ const metricAppModel = {
   onColumnsVisibilityChange,
   onTableDiffShow,
   onColumnsOrderChange,
+  getQueryStringFromSelect,
 };
 
 export default metricAppModel;
