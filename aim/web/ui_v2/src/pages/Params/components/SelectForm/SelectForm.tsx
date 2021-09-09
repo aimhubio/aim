@@ -29,6 +29,7 @@ import Icon from 'components/Icon/Icon';
 import SelectTag from 'components/SelectTag/SelectTag';
 
 import './SelectForm.scss';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function SelectForm({
   onParamsSelectChange,
@@ -53,7 +54,16 @@ function SelectForm({
   }
 
   function onSelect(event: object, value: any): void {
-    onParamsSelectChange(value);
+    const lookup = value.reduce(
+      (acc: { [key: string]: number }, curr: ISelectMetricsOption) => {
+        acc[curr.label] = ++acc[curr.label] || 0;
+        return acc;
+      },
+      {},
+    );
+    onParamsSelectChange(
+      value.filter((option: any) => lookup[option.label] === 0),
+    );
   }
 
   function handleDelete(field: any): void {
