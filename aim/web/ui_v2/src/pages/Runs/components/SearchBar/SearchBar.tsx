@@ -22,18 +22,19 @@ function SearchBar({
 
   function handleRunSearch() {
     searchRunsRef.current = runAppModel.getRunsData();
-    searchRunsRef.current.call();
+    searchRunsRef.current.call().catch();
     updateSelectStateUrl();
   }
 
   return (
     <div className='Runs_Search_Bar'>
       <TextField
-        className='Runs_Search_Bar__Input'
+        fullWidth
+        size='small'
         placeholder='Runs'
         variant='outlined'
-        size='small'
         InputProps={{
+          className: 'Runs_Search_Bar__Input',
           startAdornment: (
             <img src={searchImg} alt='visible' style={{ marginRight: 10 }} />
           ),
@@ -43,6 +44,7 @@ function SearchBar({
             }
           },
           disabled: isRunsDataLoading,
+          style: { height: '1.845rem', border: '1px solid #BDCEE8' },
         }}
         onChange={({ target }) => onSearchInputChange(target.value)}
         value={searchValue || ''}
@@ -56,6 +58,10 @@ function SearchBar({
         size='small'
         startIcon={<SearchIcon color='inherit' />}
         disabled={isRunsDataLoading}
+        style={{
+          height: 32,
+          border: '1px solid #BDCEE8',
+        }}
       >
         Search
       </Button>

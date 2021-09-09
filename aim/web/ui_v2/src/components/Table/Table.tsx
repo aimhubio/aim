@@ -57,6 +57,7 @@ const Table = React.forwardRef(function Table(
     hiddenRows,
     groups,
     isLoading,
+    showRowClickBehaviour = true,
     ...props
   }: ITableProps,
   ref,
@@ -74,6 +75,7 @@ const Table = React.forwardRef(function Table(
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns);
   const [expanded, setExpanded] = React.useState({});
+  const scrollTopMutableRef = React.useRef({ top: 0 });
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -337,13 +339,15 @@ const Table = React.forwardRef(function Table(
   }
 
   function rowClickHandler(row) {
-    if (activeRowKey.current === row.key) {
-      activeRowKey.current = null;
-    } else {
-      activeRowKey.current = row.key;
-    }
+    if (showRowClickBehaviour) {
+      if (activeRowKey.current === row.key) {
+        activeRowKey.current = null;
+      } else {
+        activeRowKey.current = row.key;
+      }
 
-    updateHoveredRow(`rowKey-${activeRowKey.current}`);
+      updateHoveredRow(`rowKey-${activeRowKey.current}`);
+    }
 
     if (typeof onRowClick === 'function') {
       onRowClick(
@@ -398,10 +402,19 @@ const Table = React.forwardRef(function Table(
         startIndex.current = windowEdges.startIndex;
         endIndex.current = windowEdges.endIndex;
         virtualizedUpdate();
-        if (props.isInfiniteLoading && props.infiniteLoadHandler) {
+
+        const isDownScrolling =
+          scrollTopMutableRef.current.top < target.scrollTop;
+        scrollTopMutableRef.current.top = target.scrollTop;
+
+        if (
+          props.allowInfiniteLoading &&
+          props.infiniteLoadHandler &&
+          isDownScrolling
+        ) {
           const index = windowEdges.endIndex - 10 - 3; // 10: offset, 3: header rows
           if (index + 5 >= rowData.length) {
-            props.infiniteLoadHandler(rowData[index]);
+            props.infiniteLoadHandler(rowData[index - 1]);
           }
         }
       }, 100);
@@ -414,9 +427,12 @@ const Table = React.forwardRef(function Table(
     };
   }, [custom, rowData]);
 
+  // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
+  // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
+  // @TODO sanitize this point
   return (
     <BusyLoaderWrapper
-      isLoading={isLoading || isNil(rowData)}
+      isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
       loaderComponent={<TableLoader />}
       className='Tags__TagList__tagListBusyLoader'
     >
