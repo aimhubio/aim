@@ -9,22 +9,22 @@ import './ManageColumnsPopover.scss';
 
 const initialData = {
   columns: {
-    leftPinned: {
-      id: 'leftPinned',
+    left: {
+      id: 'left',
       list: [],
     },
-    optionsData: {
-      id: 'optionsData',
+    middle: {
+      id: 'middle',
       list: [],
     },
-    rightPinned: {
-      id: 'rightPinned',
+    right: {
+      id: 'right',
       list: [],
     },
   },
-  columnOrder: ['leftPinned', 'optionsData', 'rightPinned'],
+  columnOrder: ['left', 'middle', 'right'],
 };
-function ManageColumnsPopover({ columnsData }: any) {
+function ManageColumnsPopover({ columnsData, onManageColumns }: any) {
   const [state, setState] = React.useState<any>(initialData);
 
   function onDragEnd(result: any) {
@@ -62,6 +62,11 @@ function ManageColumnsPopover({ columnsData }: any) {
         },
       };
       setState(newState);
+      onManageColumns({
+        left: newState.columns.left.list,
+        middle: newState.columns.middle.list,
+        right: newState.columns.right.list,
+      });
       return;
     }
 
@@ -88,26 +93,36 @@ function ManageColumnsPopover({ columnsData }: any) {
       },
     };
     setState(newState);
+    onManageColumns({
+      left: newState.columns.left.list,
+      middle: newState.columns.middle.list,
+      right: newState.columns.right.list,
+    });
   }
 
   React.useEffect(() => {
-    const optionsList = columnsData.map((item: any) => item.key);
-    const filteredList = optionsList.filter(
-      (column: string) =>
-        state.columns.leftPinned.list.indexOf(column) === -1 &&
-        state.columns.rightPinned.list.indexOf(column) === -1,
-    );
     const newState = { ...state };
-    newState.columns.optionsData.list = filteredList;
+    const leftList = columnsData
+      .filter((item: any) => item.pin === 'left')
+      .map((item: any) => item.key);
+    const rightList = columnsData
+      .filter((item: any) => item.pin === 'right')
+      .map((item: any) => item.key);
+    const middleList = columnsData
+      .filter((item: any) => item.pin !== 'left' && item.pin !== 'right')
+      .map((item: any) => item.key);
+    newState.columns.left.list = leftList;
+    newState.columns.middle.list = middleList;
+    newState.columns.right.list = rightList;
     setState(newState);
-  }, []);
+  }, [columnsData]);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className='ManageColumns__container'>
         <div className='ColumnList__container'>
           <div className='ColumnList__title'>Pinned to the left</div>
-          <Droppable droppableId='leftPinned'>
+          <Droppable droppableId='left'>
             {(provided, snapshot) => (
               <div
                 className={`ColumnList__items__wrapper ${
@@ -118,11 +133,9 @@ function ManageColumnsPopover({ columnsData }: any) {
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {state.columns.leftPinned.list.map(
-                  (data: any, index: number) => (
-                    <ColumnItem key={index} data={data} index={index} />
-                  ),
-                )}
+                {state.columns.left.list.map((data: any, index: number) => (
+                  <ColumnItem key={index} data={data} index={index} />
+                ))}
                 {provided.placeholder}
               </div>
             )}
@@ -140,7 +153,7 @@ function ManageColumnsPopover({ columnsData }: any) {
               />
             </div>
           </div>
-          <Droppable droppableId='optionsData'>
+          <Droppable droppableId='middle'>
             {(provided, snapshot) => (
               <div
                 className={`ColumnList__items__wrapper ${
@@ -151,11 +164,9 @@ function ManageColumnsPopover({ columnsData }: any) {
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {state.columns.optionsData.list.map(
-                  (data: any, index: number) => {
-                    return <ColumnItem key={index} data={data} index={index} />;
-                  },
-                )}
+                {state.columns.middle.list.map((data: any, index: number) => {
+                  return <ColumnItem key={index} data={data} index={index} />;
+                })}
                 {provided.placeholder}
               </div>
             )}
@@ -163,7 +174,7 @@ function ManageColumnsPopover({ columnsData }: any) {
         </div>
         <div className='ColumnList__container'>
           <div className='ColumnList__title'>Pinned to the right</div>
-          <Droppable droppableId='rightPinned'>
+          <Droppable droppableId='right'>
             {(provided, snapshot) => (
               <div
                 className={`ColumnList__items__wrapper ${
@@ -174,11 +185,9 @@ function ManageColumnsPopover({ columnsData }: any) {
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {state.columns.rightPinned.list.map(
-                  (data: any, index: number) => {
-                    return <ColumnItem key={index} data={data} index={index} />;
-                  },
-                )}
+                {state.columns.right.list.map((data: any, index: number) => {
+                  return <ColumnItem key={index} data={data} index={index} />;
+                })}
                 {provided.placeholder}
               </div>
             )}
@@ -186,7 +195,17 @@ function ManageColumnsPopover({ columnsData }: any) {
         </div>
       </div>
       <div className='ManageColumns__actions__container'>
-        <Button variant='text' size='small'>
+        <Button
+          variant='text'
+          size='small'
+          onClick={() =>
+            onManageColumns({
+              left: [],
+              middle: [],
+              right: [],
+            })
+          }
+        >
           reset columns order
         </Button>
         <Button variant='text' size='small'>

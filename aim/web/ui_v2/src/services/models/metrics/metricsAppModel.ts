@@ -151,6 +151,12 @@ function getConfig(): IMetricAppConfig {
       rowHeight: RowHeightSize.md,
       sortFields: [],
       hiddenMetrics: [],
+      hiddenColumns: [],
+      columnsOrder: {
+        left: [],
+        middle: [],
+        right: [],
+      },
     },
   };
 }
@@ -1248,7 +1254,11 @@ function updateModelData(configData: IMetricAppConfig): void {
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
+  const tableColumns = getMetricsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+  );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1436,6 +1446,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     processedData.params,
     processedData.data[0]?.config,
+    model.getState()?.config?.table.columnsOrder!,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -1643,7 +1654,11 @@ function setModelData(
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getMetricsTableColumns(params, data[0]?.config),
+    tableColumns: getMetricsTableColumns(
+      params,
+      data[0]?.config,
+      configData.table.columnsOrder!,
+    ),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
@@ -1764,6 +1779,25 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
   }
 }
 
+function onColumnsVisibilityChange(columns: string[]) {}
+
+function onColumnsOrderChange(columnsOrder: any) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        columnsOrder: columnsOrder,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1806,6 +1840,8 @@ const metricAppModel = {
   onRowHeightChange,
   onSortFieldsChange,
   onMetricVisibilityChange,
+  onColumnsVisibilityChange,
+  onColumnsOrderChange,
 };
 
 export default metricAppModel;

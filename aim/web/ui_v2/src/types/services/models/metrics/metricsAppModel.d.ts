@@ -141,6 +141,12 @@ interface IMetricAppConfig {
     rowHeight: RowHeightSize;
     sortFields?: [string, boolean | 'asc' | 'desc'][];
     hiddenMetrics?: string[];
+    hiddenColumns?: string[];
+    columnsOrder?: {
+      left: string[];
+      middle: string[];
+      right: string[];
+    };
   };
 }
 

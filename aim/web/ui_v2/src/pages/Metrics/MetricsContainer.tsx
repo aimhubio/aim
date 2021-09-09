@@ -186,6 +186,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onRowHeightChange={metricAppModel.onRowHeightChange}
       onSortFieldsChange={metricAppModel.onSortFieldsChange}
       onMetricVisibilityChange={metricAppModel.onMetricVisibilityChange}
+      onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
     />
   );
 }

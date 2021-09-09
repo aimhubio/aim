@@ -99,6 +99,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onRowHeightChange: (height: RowHeightSize) => void;
   onSortFieldsChange: (fileds: []) => void;
   onMetricVisibilityChange: (metricKeys: string[]) => void;
+  onColumnsOrderChange: (order: any) => void;
 }
 
 export interface IOnSmoothingChange {

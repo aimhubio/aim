@@ -446,12 +446,18 @@ const Table = React.forwardRef(function Table(
                             item
                           >
                             <Icon name='manage-calumn' />
-                            <span onClick={onManageColumns}>
-                              Manage Columns
-                            </span>
+                            <span>Manage Columns</span>
                           </Grid>
                         )}
-                        component={<ManageColumns columnsData={columns} />}
+                        component={
+                          <ManageColumns
+                            columnsData={columns.filter(
+                              (item: any) =>
+                                item.key !== '#' && item.key !== 'actions',
+                            )}
+                            onManageColumns={onManageColumns}
+                          />
+                        }
                       />
                     )}
                     {onRowsChange && (

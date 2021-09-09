@@ -43,7 +43,6 @@ import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
 import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
 import React from 'react';
-import { getMetricsTableColumns } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
@@ -222,7 +221,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     null,
     processedData.params,
   );
-  const tableColumns: ITableColumn[] = getMetricsTableColumns(
+  const tableColumns: ITableColumn[] = getRunsTableColumns(
     processedData.params,
     processedData.data[0]?.config,
   );

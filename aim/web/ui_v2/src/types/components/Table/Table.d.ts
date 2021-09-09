@@ -8,7 +8,7 @@ export interface ITableProps {
   data: any[] | null;
   columns: any[];
   rowHeight: RowHeight;
-  onManageColumns?: () => void;
+  onManageColumns?: (order: any) => void;
   onSort?: (sortFields: []) => void;
   onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
