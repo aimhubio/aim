@@ -16,7 +16,7 @@ function drawArea(props: IDrawAreaProps): void {
     plotBoxRef,
     linesNodeRef,
     attributesNodeRef,
-    title = {},
+    chartTitle = {},
   } = props;
 
   if (!parentRef?.current || !visAreaRef?.current) {
@@ -102,9 +102,9 @@ function drawArea(props: IDrawAreaProps): void {
   const titleMarginTop = 4;
   const titleMarginBottom = 6;
   const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
-  const keys = Object.keys(title);
+  const keys = Object.keys(chartTitle);
   const titleText = keys
-    ? `${keys.map((key) => `${key}=${title[key]}`).join(', ')}`
+    ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
     : '';
 
   if (titleText) {

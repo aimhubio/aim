@@ -10,12 +10,14 @@ import {
   IAggregationConfig,
   IAlignmentConfig,
   IChartTitle,
+  IChartZoom,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 export interface ILine {
   key: string;
+  groupKey?: string;
   data: {
     xValues: number[];
     yValues: number[];
@@ -31,19 +33,27 @@ export interface ILineChartProps {
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;
   displayOutliers: boolean;
-  zoomMode: boolean;
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   aggregationConfig?: IAggregationConfig;
-  title?: IChartTitle;
+  chartTitle?: IChartTitle;
+  zoom?: IChartZoom;
+  onZoomChange?: (zoom: Partial<IChartZoom>) => void;
 }
 
 export interface IUpdateFocusedChartProps {
   mousePos?: [number, number];
   focusedStateActive?: boolean;
   force?: boolean;
+}
+
+export interface IBrushRef {
+  updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
+  xScale?: IGetAxisScale;
+  yScale?: IGetAxisScale;
+  handleZoomIn?: (xValues: [number, number], yValues: [number, number]) => void;
 }
 
 export interface IAttributesRef {

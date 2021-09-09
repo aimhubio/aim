@@ -13,6 +13,7 @@ import {
 import useResizeObserver from 'hooks/window/useResizeObserver';
 import {
   IAttributesRef,
+  IBrushRef,
   ILineChartProps,
 } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -30,10 +31,11 @@ const LineChart = React.forwardRef(function LineChart(
     axesScaleType,
     displayOutliers,
     alignmentConfig,
-    zoomMode,
     highlightMode,
     curveInterpolation,
-    title,
+    chartTitle,
+    zoom,
+    onZoomChange,
   } = props;
 
   // boxes
@@ -69,7 +71,7 @@ const LineChart = React.forwardRef(function LineChart(
 
   // methods and values refs
   const axesRef = React.useRef({});
-  const brushRef = React.useRef<any>({});
+  const brushRef = React.useRef<IBrushRef>({});
   const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
@@ -92,7 +94,7 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       linesNodeRef,
       attributesNodeRef,
-      title,
+      chartTitle,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -161,23 +163,22 @@ const LineChart = React.forwardRef(function LineChart(
       alignmentConfig,
     });
 
-    if (zoomMode) {
-      brushRef.current.xScale = xScale;
-      brushRef.current.yScale = yScale;
-      drawBrush({
-        brushRef,
-        plotBoxRef,
-        plotNodeRef,
-        visBoxRef,
-        axesRef,
-        attributesRef,
-        linesRef,
-        svgNodeRef,
-        axesScaleType,
-        min,
-        max,
-      });
-    }
+    drawBrush({
+      index,
+      brushRef,
+      plotBoxRef,
+      plotNodeRef,
+      visBoxRef,
+      axesRef,
+      attributesRef,
+      linesRef,
+      svgNodeRef,
+      axesScaleType,
+      min,
+      max,
+      zoom,
+      onZoomChange,
+    });
   }
 
   function renderChart() {
@@ -193,12 +194,11 @@ const LineChart = React.forwardRef(function LineChart(
     },
     [
       data,
-      zoomMode,
+      zoom,
       displayOutliers,
       highlightMode,
       axesScaleType,
       curveInterpolation,
-      zoomMode,
       aggregationConfig,
     ],
   );
@@ -209,12 +209,11 @@ const LineChart = React.forwardRef(function LineChart(
     requestAnimationFrame(renderChart);
   }, [
     data,
-    zoomMode,
+    zoom,
     displayOutliers,
     highlightMode,
     axesScaleType,
     curveInterpolation,
-    zoomMode,
     aggregationConfig,
   ]);
 
@@ -244,7 +243,7 @@ const LineChart = React.forwardRef(function LineChart(
   return (
     <div
       ref={parentRef}
-      className={`LineChart__container ${zoomMode ? 'zoomMode' : ''}`}
+      className={`LineChart__container ${zoom?.active ? 'zoomMode' : ''}`}
     >
       <div ref={visAreaRef} />
     </div>

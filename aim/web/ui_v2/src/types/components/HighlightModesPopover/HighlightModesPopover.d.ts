@@ -1,4 +1,6 @@
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 export interface IHighlightModesPopoverProps {
-  mode: number;
-  onChange: (mode: number) => void;
+  mode: HighlightEnum;
+  onChange: (mode: HighlightEnum) => void;
 }

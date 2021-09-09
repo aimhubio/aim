@@ -45,6 +45,7 @@ import {
   IChartTitle,
   IChartTitleData,
   IChartTooltip,
+  IChartZoom,
   IDashboardData,
   IGetGroupingPersistIndex,
   IGroupingSelectOption,
@@ -75,6 +76,7 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 const model = createModel<Partial<IMetricAppModelState>>({});
 let tooltipData: ITooltipData = {};
@@ -109,7 +111,11 @@ function getConfig() {
     chart: {
       highlightMode: HighlightEnum.Off,
       displayOutliers: true,
-      zoomMode: false,
+      zoom: {
+        active: false,
+        mode: ZoomEnum.SINGLE,
+        history: [],
+      },
       axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
       curveInterpolation: CurveEnum.Linear,
       smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
@@ -836,7 +842,7 @@ function getAggregatedData(
 
   processedData.forEach((metricsCollection, index) => {
     aggregatedData.push({
-      key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
+      key: metricsCollection.key,
       area: {
         min: metricsCollection.aggregation?.area.min || null,
         max: metricsCollection.aggregation?.area.max || null,
@@ -876,6 +882,7 @@ function getDataAsLines(
         }
         return {
           ...metric,
+          groupKey: metricsCollection.key,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
@@ -1095,7 +1102,7 @@ function onHighlightModeChange(mode: HighlightEnum): void {
   }
 }
 
-function onZoomModeChange(): void {
+function onZoomChange(zoom: Partial<IChartZoom>): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     model.setState({
@@ -1103,7 +1110,10 @@ function onZoomModeChange(): void {
         ...configData,
         chart: {
           ...configData.chart,
-          zoomMode: !configData.chart.zoomMode,
+          zoom: {
+            ...configData.chart.zoom,
+            ...zoom,
+          },
         },
       },
     });
@@ -1158,6 +1168,40 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   }
 }
 
+function resetChartZoom(configData: IMetricAppConfig): void {
+  configData.chart = {
+    ...configData.chart,
+    zoom: {
+      ...configData.chart.zoom,
+      active: false,
+      history: [],
+    },
+  };
+}
+
+function updateModelData(configData: IMetricAppConfig): void {
+  const { data, params } = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
+  model.setState({
+    config: configData,
+    data,
+    lineChartData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    aggregatedData: getAggregatedData(data),
+    tableData,
+    tableColumns,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+  });
+}
+
 function onGroupingSelectChange({
   groupName,
   list,
@@ -1165,6 +1209,7 @@ function onGroupingSelectChange({
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
+    resetChartZoom(configData);
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
@@ -1180,6 +1225,9 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
+    if (groupName === 'chart') {
+      resetChartZoom(configData);
+    }
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
@@ -1213,29 +1261,6 @@ function onGroupingReset(groupName: GroupNameType) {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-}
-
-function updateModelData(configData: IMetricAppConfig): void {
-  const { data, params } = processData(
-    model.getState()?.rawData as IRun<IMetricTrace>[],
-  );
-  const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef.current?.updateData({
-    newData: tableData,
-    newColumns: tableColumns,
-  });
-  model.setState({
-    config: configData,
-    data,
-    lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
-    aggregatedData: getAggregatedData(data),
-    tableData,
-    tableColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
-  });
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
@@ -1696,7 +1721,7 @@ const metricAppModel = {
   setComponentRefs,
   setDefaultAppConfigData,
   onHighlightModeChange,
-  onZoomModeChange,
+  onZoomChange,
   onSmoothingChange,
   onDisplayOutliersChange,
   onAxesScaleTypeChange,

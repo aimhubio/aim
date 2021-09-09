@@ -1,8 +1,6 @@
 import { IMetricTrace, IRun, ITraceData } from './runModel';
 
 export interface IMetric {
-  x_axis_values: any;
-  x_axis_iters: any;
   run: IRun<IMetricTrace>;
   key: string;
   metric_name: string;

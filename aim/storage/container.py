@@ -64,6 +64,8 @@ class Container(ContainerView):
         self._wait_if_busy = wait_if_busy  # TODO implement
         self._lock_path: Optional[Path] = None
         self._progress_path: Optional[Path] = None
+        if not self.read_only:
+            self.preload()
         # TODO check if Containers are reopenable
 
     @property

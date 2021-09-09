@@ -241,7 +241,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
       if (aggregationConfig?.isApplied) {
         if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
-          drawActiveArea(key);
+          const groupKey = newActiveLine.attr('groupKey');
+          drawActiveArea(groupKey);
         }
       }
 
@@ -250,21 +251,17 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
   }
 
-  function drawActiveArea(lineKey: string): void {
-    //TODO need to optimize performance
-    linesNodeRef.current.selectAll('.AggrArea').each(function (this: any) {
-      const area = d3.select(this);
-      const areaNode = area.node();
-      if (areaNode) {
-        const key = areaNode.id.split('AggrArea-')[1];
-        const lineKeyArray = decode(key);
-        if (lineKeyArray.includes(lineKey)) {
-          area.classed('highlighted', true).raise();
-        } else {
-          area.classed('highlighted', false);
-        }
-      }
-    });
+  function drawActiveArea(groupKey: string): void {
+    linesNodeRef.current
+      .select(`[id=AggrArea-${attributesRef.current.groupKey}]`)
+      .classed('highlighted', false);
+
+    linesNodeRef.current
+      .select(`[id=AggrArea-${groupKey}]`)
+      .classed('highlighted', true)
+      .raise();
+
+    attributesRef.current.groupKey = groupKey;
   }
 
   function clearVerticalAxisLine(): void {

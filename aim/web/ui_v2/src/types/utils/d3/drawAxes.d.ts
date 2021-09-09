@@ -2,6 +2,7 @@ import React from 'react';
 import * as d3 from 'd3';
 
 import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
+import { IAttributesRef } from 'types/components/LineChart/LineChart';
 
 export interface IDrawAxesProps {
   svgNodeRef: React.MutableRefObject<>;
@@ -15,6 +16,6 @@ export interface IDrawAxesProps {
   margin: { top: number; right: number; bottom: number; left: number };
   alignmentConfig?: IAlignmentConfig;
   xValues: number[];
-  attributesRef: React.MutableRefObject<>;
+  attributesRef: React.MutableRefObject<IAttributesRef>;
   humanizerConfigRef: React.MutableRefObject<{}>;
 }

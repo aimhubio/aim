@@ -28,6 +28,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   resizeElemRef: React.RefObject<HTMLDivElement>;
   curveInterpolation: CurveEnum;
   panelResizing: boolean;
+  isParamsLoading: boolean;
   highPlotData: any;
   groupingData: IMetricAppConfig['grouping'];
   groupingSelectOptions: IGroupingSelectOption[];

@@ -33,8 +33,6 @@ function drawLines(props: IDrawLinesProps): void {
   ): void {
     linesNodeRef.current
       .selectAll('.Line')
-      .transition()
-      .duration(500)
       .attr('d', lineGenerator(xScale, yScale, curve));
   };
 
@@ -46,6 +44,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
       .attr('id', (line: ILine) => `Line-${line.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('groupKey', (line: ILine) => line.groupKey)
       .attr(
         'data-selector',
         (line: ILine) =>
@@ -68,8 +67,6 @@ function drawLines(props: IDrawLinesProps): void {
   ): void {
     linesNodeRef.current
       .selectAll('.AggrArea')
-      .transition()
-      .duration(500)
       .attr('d', areaGenerator(xScale, yScale));
   };
 
@@ -105,8 +102,6 @@ function drawLines(props: IDrawLinesProps): void {
   ): void {
     linesNodeRef.current
       .selectAll('.AggrLine')
-      .transition()
-      .duration(500)
       .attr('d', lineGenerator(xScale, yScale, curve));
   };
 
