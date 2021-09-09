@@ -6,10 +6,10 @@ import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
+import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
 import Icon from 'components/Icon/Icon';
 
 import './Controls.scss';
@@ -35,7 +35,7 @@ function Controls(
                 props.aggregationConfig.isApplied ? 'active outlined' : ''
               }`}
             >
-              {props.aggregationConfig.isEnabled && (
+              {props.aggregationConfig.isEnabled ? (
                 <span
                   className={`Controls__anchor__arrow ${
                     opened ? 'Controls__anchor__arrow__opened' : ''
@@ -43,7 +43,7 @@ function Controls(
                 >
                   <Icon name='arrow-left' onClick={onAnchorClick} />
                 </span>
-              )}
+              ) : null}
               <Icon
                 className={`Controls__icon ${
                   props.aggregationConfig.isApplied ? 'active' : ''
@@ -53,10 +53,12 @@ function Controls(
             </div>
           )}
           component={
-            <AggregationPopup
-              aggregationConfig={props.aggregationConfig}
-              onChange={props.onAggregationConfigChange}
-            />
+            props.aggregationConfig.isEnabled ? (
+              <AggregationPopup
+                aggregationConfig={props.aggregationConfig}
+                onChange={props.onAggregationConfigChange}
+              />
+            ) : null
           }
         />
       </div>
@@ -196,9 +198,12 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Select Zoom Mode'
           anchor={({ onAnchorClick, opened }) => (
             <div
-              className={`Controls__anchor ${props.zoomMode ? 'active' : ''}`}
+              className={`Controls__anchor ${
+                props.zoom?.active ? 'active' : ''
+              }`}
             >
               <span
                 className={`Controls__anchor__arrow ${
@@ -208,34 +213,70 @@ function Controls(
               >
                 <Icon name='arrow-left' />
               </span>
-              <span onClick={props.onZoomModeChange}>
+              <span
+                onClick={() => {
+                  if (props.zoom) {
+                    props.onZoomChange?.({ active: !props.zoom.active });
+                  }
+                }}
+              >
                 <Icon
-                  className={`Controls__icon ${props.zoomMode ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    props.zoom?.active ? 'active' : ''
+                  }`}
                   name='zoom-in'
                 />
               </span>
             </div>
           )}
-          component={<ZoomInPopup />}
+          component={
+            <ZoomInPopup
+              mode={props.zoom?.mode}
+              onChange={props.onZoomChange}
+            />
+          }
         />
       </div>
       <div>
         <ControlPopover
+          title='Select Option To Zoom Out'
           anchor={({ onAnchorClick, opened }) => (
-            <div className='Controls__anchor'>
+            <div
+              className={`Controls__anchor ${
+                props.zoom?.history.length ? '' : 'disabled'
+              }`}
+            >
+              {props.zoom?.history.length ? (
+                <span
+                  className={`Controls__anchor__arrow ${
+                    opened ? 'Controls__anchor__arrow__opened' : ''
+                  }`}
+                  onClick={onAnchorClick}
+                >
+                  <Icon name='arrow-left' />
+                </span>
+              ) : null}
               <span
-                className={`Controls__anchor__arrow ${
-                  opened ? 'Controls__anchor__arrow__opened' : ''
-                }`}
+                onClick={() => {
+                  if (props.zoom?.history.length) {
+                    props.onZoomChange?.({
+                      history: [...props.zoom.history].slice(0, -1),
+                    });
+                  }
+                }}
               >
-                <Icon name='arrow-left' onClick={onAnchorClick} />
-              </span>
-              <span onClick={props.onZoomModeChange}>
                 <Icon className='Controls__icon' name='zoom-out' />
               </span>
             </div>
           )}
-          component={<ZoomOutPopup />}
+          component={
+            props.zoom?.history.length ? (
+              <ZoomOutPopup
+                zoomHistory={props.zoom?.history}
+                onChange={props.onZoomChange}
+              />
+            ) : null
+          }
         />
       </div>
     </div>
