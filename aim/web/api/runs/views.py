@@ -26,7 +26,7 @@ from aim.web.api.runs.pydantic_models import (
     StructuredRunRemoveTagOut
 )
 from aim.web.api.utils import object_factory
-
+from aim.storage.query import syntax_error_check
 runs_router = APIRouter()
 
 
@@ -38,6 +38,15 @@ async def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset
         raise HTTPException(status_code=404)
 
     query = q.strip()
+    try:
+        syntax_error_check(query)
+    except SyntaxError as se:
+        raise HTTPException(status_code=403, detail={
+            "name": "SyntaxError",
+            "statement": se.text,
+            "line": se.lineno,
+            "offset": se.offset
+        })
     runs = project.repo.query_runs(query=query, paginated=bool(limit), offset=offset)
 
     streamer = run_search_result_streamer(runs, limit)
@@ -70,8 +79,18 @@ async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    search_statement = q.strip()
-    traces = project.repo.query_metrics(query=search_statement)
+    query = q.strip()
+    try:
+        syntax_error_check(query)
+    except SyntaxError as se:
+        raise HTTPException(status_code=403, detail={
+            "name": "SyntaxError",
+            "statement": se.text,
+            "line": se.lineno,
+            "offset": se.offset
+        })
+
+    traces = project.repo.query_metrics(query=query)
 
     streamer = metric_search_result_streamer(traces, steps_num, x_axis)
     return StreamingResponse(streamer)
