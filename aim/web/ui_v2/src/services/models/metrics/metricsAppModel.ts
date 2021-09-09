@@ -8,7 +8,7 @@ import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
 import createMetricModel from './metricModel';
 import { createRunModel } from './runModel';
-import { encode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -195,10 +195,16 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IMetricAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+
+  const tableConfigHash = getItem('metricsTable');
+  const table = tableConfigHash
+    ? JSON.parse(decode(tableConfigHash))
+    : getConfig().table;
   const configData: IMetricAppConfig = _.merge(getConfig(), {
-    chart,
-    grouping,
+    chart, // not useful
+    grouping, // not useful
     select,
+    table,
   });
 
   model.setState({
@@ -1776,15 +1782,18 @@ function toggleSelectAdvancedMode() {
 function onRowHeightChange(height: RowHeightSize) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      rowHeight: height,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
     model.setState({
-      config: {
-        ...configData,
-        table: {
-          ...configData.table,
-          rowHeight: height,
-        },
-      },
+      config,
     });
+    setItem('metricsTable', encode(table));
   }
 }
 
@@ -1808,17 +1817,19 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 function onMetricVisibilityChange(metricsKeys: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
-    const configUpdate = {
+    const table = {
+      ...configData.table,
+      hiddenMetrics: metricsKeys,
+    };
+    const config = {
       ...configData,
-      table: {
-        ...configData.table,
-        hiddenMetrics: metricsKeys,
-      },
+      table,
     };
     model.setState({
-      config: configUpdate,
+      config,
     });
-    updateModelData(configUpdate);
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
   }
 }
 
@@ -1853,17 +1864,20 @@ function onTableDiffShow() {
 function onColumnsOrderChange(columnsOrder: any) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
-    const configUpdate = {
-      ...configData,
-      table: {
-        ...configData.table,
-        columnsOrder: columnsOrder,
-      },
+    const table = {
+      ...configData.table,
+      columnsOrder: columnsOrder,
     };
+    const config = {
+      ...configData,
+      table,
+    };
+
     model.setState({
-      config: configUpdate,
+      config,
     });
-    updateModelData(configUpdate);
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
   }
 }
 

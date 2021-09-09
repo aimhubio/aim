@@ -20,6 +20,11 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='Runs__table__container'>
             <RunsTable
+              columnsOrder={props.columnsOrder}
+              hiddenRuns={props.hiddenRuns}
+              onRowsChange={props.onRowsChange}
+              onManageColumns={props.onManageColumns}
+              onRowHeightChange={props.onRowHeightChange}
               data={props.tableData}
               isInfiniteLoading={props.isInfiniteLoading}
               isLatest={props.isLatest}

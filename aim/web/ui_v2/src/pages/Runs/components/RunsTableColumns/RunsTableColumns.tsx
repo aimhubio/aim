@@ -1,34 +1,55 @@
 import * as React from 'react';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 function getRunsTableColumns(
   runColumns: string[] = [],
-  groupFields?: { [key: string]: string } | null,
-): any {
-  const columns = [
+  groupFields: { [key: string]: string } | null,
+  order: { left: string[]; middle: string[]; right: string[] },
+): ITableColumn[] {
+  const columns: ITableColumn[] = [
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Metrics',
-      pin: 'left',
+      topHeader: 'Runs',
+      pin: order?.left?.includes('experiment')
+        ? 'left'
+        : order?.middle?.includes('experiment')
+        ? null
+        : order?.right?.includes('experiment')
+        ? 'right'
+        : 'left',
     },
     {
       key: 'run',
       content: <span>Run</span>,
-      topHeader: 'Metrics',
-    },
-    {
-      key: 'metric',
-      content: <span>Metric</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Runs',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
     },
   ].concat(
     runColumns.map((param) => ({
       key: param,
       content: <span>{param}</span>,
       topHeader: 'Params',
+      pin: order?.left?.includes(param)
+        ? 'left'
+        : order?.right?.includes(param)
+        ? 'right'
+        : null,
     })),
   );
   if (groupFields) {
+    columns.push({
+      key: '#',
+      content: '#',
+      topHeader: 'Grouping',
+      pin: 'left',
+    });
     Object.keys(groupFields).forEach((field) => {
       const key = field.replace('run.params.', '');
       const column = columns.find((col) => col.key === key);
@@ -37,18 +58,28 @@ function getRunsTableColumns(
         column.topHeader = 'Grouping';
       }
     });
-    columns.sort((a, b) => {
-      if (a.key === '#') {
-        return -1;
-      } else if (
-        groupFields.hasOwnProperty(a.key) ||
-        groupFields.hasOwnProperty(`run.params.${a.key}`)
-      ) {
-        return -1;
-      }
-      return 0;
-    });
   }
+
+  const columnsOrder = order?.left.concat(order.middle).concat(order.right);
+  columns.sort((a, b) => {
+    if (a.key === '#') {
+      return -1;
+    } else if (
+      groupFields?.hasOwnProperty(a.key) ||
+      groupFields?.hasOwnProperty(`run.params.${a.key}`)
+    ) {
+      return -1;
+    } else if (a.key === 'actions') {
+      return 1;
+    }
+    if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
+      return 0;
+    } else if (!columnsOrder.includes(a.key)) {
+      return -1;
+    }
+    return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
+  });
+
   return columns;
 }
 

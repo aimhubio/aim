@@ -45,6 +45,7 @@ export interface ITableProps {
   isInfiniteLoading?: boolean;
   allowInfiniteLoading?: boolean;
   showRowClickBehaviour?: boolean;
+  showResizeContainerActionBar?: booelan;
 }
 
 export interface ITableRef {
