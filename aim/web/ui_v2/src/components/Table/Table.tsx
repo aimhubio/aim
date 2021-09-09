@@ -448,7 +448,7 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='manage-calumn' />
-                        <span onClick={onManageColumns}>Manage Columns</span>
+                        <span>Manage Columns</span>
                       </Button>
                     )}
                     component={
@@ -481,7 +481,7 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='eye-outline-hide' />
-                        <span onClick={onSort}>Hide Rows</span>
+                        <span>Hide Rows</span>
                       </Button>
                     )}
                     component={<HideRows toggleRowsVisibility={onRowsChange} />}
@@ -507,7 +507,7 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='sort-outside' />
-                        <span onClick={onSort}>Sort</span>
+                        <span>Sort</span>
                       </Button>
                     )}
                     component={
@@ -539,7 +539,7 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='row-height' />
-                        <span onClick={onRowHeightChange}>Row Height</span>
+                        <span>Row Height</span>
                       </Button>
                     )}
                     component={
