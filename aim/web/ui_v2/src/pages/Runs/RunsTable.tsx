@@ -57,7 +57,7 @@ function RunsTable({
           topHeader
           groups={!Array.isArray(runsList)}
           rowHeight={tableRowHeight}
-          hiddenRows={hiddenRuns}
+          hiddenColumns={hiddenRuns}
           // Table actions
           columnsOrder={columnsOrder}
           onManageColumns={onManageColumns}
