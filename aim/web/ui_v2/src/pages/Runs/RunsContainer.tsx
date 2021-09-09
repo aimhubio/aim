@@ -3,6 +3,7 @@ import useModel from 'hooks/model/useModel';
 import Runs from './Runs';
 import { ITableRef } from '../../types/components/Table/Table';
 import runsAppModel from '../../services/models/runs/runsAppModel';
+import tagsAppModel from '../../services/models/tags/tagsAppModel';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -23,12 +24,13 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       runsRequestRef.abort();
     };
   }, []);
-  console.log(runsData?.requestIsPending);
+
   return (
     <Runs
       tableData={runsData?.tableData}
       tableColumns={runsData?.tableColumns}
       isRunsDataLoading={runsData?.requestIsPending}
+      isLatest={runsData?.config?.pagination.isLatest}
       onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
       tableRowHeight={runsData?.config?.table?.rowHeight}
       tableRef={tableRef}
@@ -36,6 +38,9 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
       onExportTableData={runsAppModel.onExportTableData}
       getLastRunsData={runsAppModel.getLastRunsData}
+      isInfiniteLoading={runsData?.infiniteIsPending}
+      onNotificationDelete={runsAppModel.onNotificationDelete}
+      notifyData={runsData?.notifyData}
     />
   );
 }

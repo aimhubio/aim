@@ -10,8 +10,8 @@ const endpoints = {
 function getRunsData(limit: number, query?: string, offset?: string) {
   return API.getStream<ReadableStream>(endpoints.GET_RUNS, {
     q: query || '',
-    limit: limit || 0,
-    offset: offset || 10,
+    limit: limit,
+    offset: offset,
   });
 }
 

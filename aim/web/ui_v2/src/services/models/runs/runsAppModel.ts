@@ -53,7 +53,7 @@ const model = createModel<Partial<any>>({
 });
 
 const initialPaginationConfig = {
-  limit: 30,
+  limit: 45,
   offset: null,
   isLatest: false,
 };
@@ -139,6 +139,11 @@ function prepareModelStateToCall(isInitial: boolean) {
         ...config,
         pagination: initialPaginationConfig,
       },
+      notifyData: [],
+      rowData: [],
+      tableColumns: [],
+      tableData: [],
+      data: [],
     });
   }
 
@@ -150,17 +155,6 @@ function prepareModelStateToCall(isInitial: boolean) {
   return model.getState();
 }
 
-// tested cases
-// 1. first load of data ---- everything is initial +
-// 2. click button search ---- everything is initial +
-// 3. delete search data ---- everything is initial +
-// 4. infinite on first loaded data ---- nothing is initial -
-// 5. infinite on searched data ---- nothing is initial -
-// 6. if the data is not enough, doesnt call infinite loader -
-
-// cases  need to test
-// check isLatestOrNot
-// shows initial loader when scrolling
 function getRunsData(isInitial = true) {
   // isInitial: true --> when search button clicked or data is loading at the first time
   const modelState = prepareModelStateToCall(isInitial);
@@ -177,50 +171,88 @@ function getRunsData(isInitial = true) {
 
   return {
     call: async () => {
-      console.log('calllllling');
-      const stream = await call();
-      let gen = adjustable_reader(stream);
-      let buffer_pairs = decode_buffer_pairs(gen);
-      let decodedPairs = decodePathsVals(buffer_pairs);
-      let objects = iterFoldTree(decodedPairs, 1);
+      try {
+        const stream = await call();
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
 
-      const runsData: IRun<IMetricTrace | IParamTrace>[] =
-        modelState?.data || [];
-      console.log('prevData ----- > ', runsData);
-      let count = 0;
-      for await (let [keys, val] of objects) {
-        const runData: any = val;
-        runsData.push({ ...runData, hash: keys[0] } as any);
-        count++;
-      }
-      const { data, params } = processData(runsData);
-      console.log('nextData ----- > ', data);
-      console.log(count);
-      const tableData = getDataAsTableRows(data, null, params);
-      const tableColumns = getRunsTableColumns(params, data[0]?.config);
+        const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
+          ? []
+          : modelState?.rowData;
 
-      model.setState({
-        data: runsData,
-        requestIsPending: false,
-        infiniteIsPending: false,
-        tableColumns,
-        tableData,
-        config: {
-          ...modelState?.config,
-          pagination: {
-            ...modelState?.config.pagination,
-            isLatest: isInitial && count < modelState?.config.pagination.limit,
+        let count = 0;
+        for await (let [keys, val] of objects) {
+          if (isInitial) {
+            const runData: any = val;
+            runsData.push({ ...runData, hash: keys[0] } as any);
+          } else {
+            if (count > 0) {
+              const runData: any = val;
+              runsData.push({ ...runData, hash: keys[0] } as any);
+            }
+          }
+          count++;
+        }
+        const { data, params } = processData(runsData);
+
+        const tableData = getDataAsTableRows(data, null, params);
+        const tableColumns = getRunsTableColumns(params, data[0]?.config);
+
+        model.setState({
+          data,
+          rowData: runsData,
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns,
+          tableData,
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...modelState?.config.pagination,
+              isLatest:
+                !isInitial && count < modelState?.config.pagination.limit,
+            },
           },
-        },
-      });
-
-      setTimeout(() => {
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
-          newData: tableData,
-          newColumns: tableColumns,
         });
-      }, 0);
+
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData,
+            newColumns: tableColumns,
+          });
+        }, 0);
+      } catch (e) {
+        model.setState({
+          data: [],
+          rowData: [],
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns: [],
+          tableData: [],
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...initialPaginationConfig,
+            },
+          },
+        });
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: 'Invalid syntax at query statement',
+        });
+
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: [],
+            newColumns: [],
+          });
+        }, 0);
+      }
     },
     abort,
   };
@@ -283,7 +315,7 @@ function initialize(appId: string = '') {
     }
   }
   setDefaultAppConfigData();
-  console.log('initializing ----- ', model.getState());
+
   return getRunsData();
 }
 
@@ -311,7 +343,7 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const processedData = processData(
-    model.getState()?.data as IRun<IMetricTrace>[],
+    model.getState()?.rowData as IRun<IMetricTrace>[],
   );
 
   const tableData: IMetricTableRowData[] = getDataAsTableRows(
@@ -731,6 +763,7 @@ const runAppModel = {
   updateSelectStateUrl,
   onExportTableData,
   getLastRunsData,
+  onNotificationDelete,
 };
 
 export default runAppModel;
