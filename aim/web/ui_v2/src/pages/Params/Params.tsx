@@ -16,6 +16,7 @@ import Table from 'components/Table/Table';
 import Icon from 'components/Icon/Icon';
 
 import './Params.scss';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 const Params = ({
   curveInterpolation,
@@ -32,6 +33,7 @@ const Params = ({
   groupingSelectOptions,
   isParamsLoading,
   tooltip,
+  hiddenMetrics,
   chartTitleData,
   panelResizing,
   tableColumns,
@@ -40,6 +42,8 @@ const Params = ({
   tableRowHeight,
   onTableRowHover,
   onTableRowClick,
+  onColumnsOrderChange,
+  onRowHeightChange,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -55,7 +59,10 @@ const Params = ({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
+  onParamVisibilityChange,
+  onSortFieldsChange,
   onChangeTooltip,
+  sortFields,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -69,6 +76,7 @@ const Params = ({
     isVisibleColorIndicator,
     chartTitleData,
   ]);
+
   return (
     <div ref={wrapperElemRef} className='Params__container'>
       <section className='Params__section'>
@@ -111,6 +119,7 @@ const Params = ({
                   focusedState={focusedState}
                   onActivePointChange={onActivePointChange}
                   tooltip={tooltip}
+                  panelResizing={panelResizing}
                   chartProps={chartProps}
                   controls={
                     <Controls
@@ -150,7 +159,7 @@ const Params = ({
               {!isEmpty(tableData) ? (
                 <Table
                   custom
-                  key={`${tableColumns?.length}-${size(tableData)}`}
+                  key={`${Array.isArray(tableData)}-${tableRowHeight}`}
                   ref={tableRef}
                   data={tableData}
                   columns={tableColumns}
@@ -158,13 +167,22 @@ const Params = ({
                   topHeader
                   groups={!Array.isArray(tableData)}
                   rowHeight={tableRowHeight}
+                  rowHeightMode={
+                    tableRowHeight === RowHeightSize.sm
+                      ? 'small'
+                      : tableRowHeight === RowHeightSize.md
+                      ? 'medium'
+                      : 'large'
+                  }
                   sortOptions={groupingSelectOptions}
+                  sortFields={sortFields}
+                  hiddenRows={hiddenMetrics}
                   // Table actions
-                  onSort={() => null}
+                  onSort={onSortFieldsChange}
                   onExport={onExportTableData}
-                  onManageColumns={() => null}
-                  onRowHeightChange={() => null}
-                  onRowsChange={() => null}
+                  onManageColumns={onColumnsOrderChange}
+                  onRowHeightChange={onRowHeightChange}
+                  onRowsChange={onParamVisibilityChange}
                   onRowHover={onTableRowHover}
                   onRowClick={onTableRowClick}
                 />

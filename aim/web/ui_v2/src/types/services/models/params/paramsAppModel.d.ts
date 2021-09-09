@@ -8,6 +8,7 @@ import { CurveEnum } from 'utils/d3';
 
 export interface IParam {
   run: IRun<IParamTrace>;
+  isHidden: boolean;
   color: string;
   key: string;
   dasharray: string;
@@ -48,5 +49,6 @@ interface IParamsAppConfig {
     params: any; // ISelectMetricsOption[];
     query: string;
   };
+  table: any;
   onParamsSelectChange: (data) => void;
 }

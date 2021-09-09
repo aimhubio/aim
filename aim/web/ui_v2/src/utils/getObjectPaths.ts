@@ -9,13 +9,20 @@ function getObjectPaths(
   let rootKeys = Object.keys(obj).map((key) => {
     return { prefixedKey: prefix ? `${prefix}.${key}` : key, key };
   });
-  let paths: string[] = rootKeys.map(({ prefixedKey }) => prefixedKey);
+  let paths: string[] = includeRoot
+    ? rootKeys.map(({ prefixedKey }) => prefixedKey)
+    : Object.keys(obj)
+        .filter((key) => !_.isObject(obj[key]))
+        .map((key) => {
+          return key;
+        });
   rootKeys.forEach(({ prefixedKey }) => {
     const val: any = _.get(rootObject, prefixedKey);
     if (typeof val === 'object' && !_.isNil(val) && !Array.isArray(val)) {
       paths = paths.concat(getObjectPaths(val, rootObject, prefixedKey, true));
     }
   });
+
   return paths;
 }
 
