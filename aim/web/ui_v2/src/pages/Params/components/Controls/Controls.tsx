@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 
 import { CurveEnum } from 'utils/d3';
-import { IControlProps } from 'types/pages/params/components/controls/Controls';
+import { IControlProps } from 'types/pages/params/components/Controls/Controls';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import Icon from 'components/Icon/Icon';
