@@ -59,6 +59,7 @@ const Table = React.forwardRef(function Table(
     groups,
     isLoading,
     showRowClickBehaviour = true,
+    showResizeContainerActionBar = true,
     ...props
   }: ITableProps,
   ref,
@@ -448,11 +449,14 @@ const Table = React.forwardRef(function Table(
         <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
           {!hideHeaderActions && (
             <div className='Table__header__popovers__container'>
-              <div className='Table__header__select__resize'>
-                <Icon name='table-resize-hide' />
-                <Icon name='table-resize-resizable' />
-                <Icon name='table-resize-maximize' />
-              </div>
+              {showResizeContainerActionBar && (
+                <div className='Table__header__select__resize'>
+                  <Icon name='table-resize-hide' />
+                  <Icon name='table-resize-resizable' />
+                  <Icon name='table-resize-maximize' />
+                </div>
+              )}
+
               <div className='flex fac Table__header__popovers__buttons'>
                 {onManageColumns && (
                   <ControlPopover
@@ -609,7 +613,6 @@ const Table = React.forwardRef(function Table(
                       setExcludedFields={setExcludedFields}
                       alwaysVisibleColumns={alwaysVisibleColumns}
                       rowHeightMode={rowHeightMode}
-                      columnsOrder={columnsOrder}
                       updateColumns={() => null}
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}

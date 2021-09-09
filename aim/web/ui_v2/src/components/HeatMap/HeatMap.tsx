@@ -138,7 +138,9 @@ function HeatMap({
         ).getTime();
 
         const search = encode({
-          query: `run.date >= "${startDate}" and run.date <= "${endDate}"`,
+          query: `run.creation_time >= ${
+            startDate / 1000
+          } and run.creation_time <= ${endDate / 1000}`,
         });
 
         history.push(`/runs?search=${search}`);

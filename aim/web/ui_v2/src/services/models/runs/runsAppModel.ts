@@ -17,7 +17,7 @@ import getObjectPaths from 'utils/getObjectPaths';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import _ from 'lodash-es';
-import { encode } from 'utils/encoder/encoder';
+import { encode, decode } from 'utils/encoder/encoder';
 import { IMetric } from '../../../types/services/models/metrics/metricModel';
 import {
   GroupNameType,
@@ -123,8 +123,17 @@ function getConfig() {
       advancedMode: false,
       advancedQuery: '',
     },
+    // @TODO get from local storage
     table: {
       rowHeight: RowHeightSize.md,
+      sortFields: [],
+      hiddenMetrics: [],
+      hiddenColumns: [],
+      columnsOrder: {
+        left: [],
+        middle: [],
+        right: [],
+      },
     },
     pagination: initialPaginationConfig,
   };
@@ -197,7 +206,11 @@ function getRunsData(isInitial = true) {
         const { data, params } = processData(runsData);
 
         const tableData = getDataAsTableRows(data, null, params);
-        const tableColumns = getRunsTableColumns(params, data[0]?.config);
+        const tableColumns = getRunsTableColumns(
+          params,
+          data[0]?.config,
+          model.getState()?.config?.table.columnsOrder!,
+        );
 
         model.setState({
           data,
@@ -281,10 +294,17 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IMetricAppConfig['select'] =
     getStateFromUrl('search') || getConfig().select;
+
+  const tableConfigHash = getItem('runsTable');
+
+  const table = tableConfigHash
+    ? JSON.parse(decode(tableConfigHash))
+    : getConfig().table;
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
+    table,
   });
 
   model.setState({
@@ -353,6 +373,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const tableColumns: ITableColumn[] = getRunsTableColumns(
     processedData.params,
     processedData.data[0]?.config,
+    model.getState()?.config?.table.columnsOrder!,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -758,16 +779,98 @@ function updateSelectStateUrl(): void {
   }
 }
 
+function onColumnsOrderChange(columnsOrder: any) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      columnsOrder: columnsOrder,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+
+    model.setState({
+      config,
+    });
+    setItem('runsTable', encode(table));
+    updateModelData(config);
+  }
+}
+function updateModelData(configData: IMetricAppConfig): void {
+  const { data, params } = processData(
+    model.getState()?.rowData as IRun<IMetricTrace>[],
+  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getRunsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+  );
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
+  model.setState({
+    config: configData,
+    data,
+    tableData,
+    tableColumns,
+  });
+}
+
+function onRowHeightChange(height: RowHeightSize) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      rowHeight: height,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('runsTable', encode(table));
+  }
+}
+
+function onRunsVisibilityChange(metricsKeys: string[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      hiddenMetrics: metricsKeys,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('runsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const runAppModel = {
   ...model,
   initialize,
   getRunsData,
-  onSelectRunQueryChange,
-  setComponentRefs,
-  updateSelectStateUrl,
-  onExportTableData,
   getLastRunsData,
+  setComponentRefs,
+  onExportTableData,
+  onRowHeightChange,
   onNotificationDelete,
+  onColumnsOrderChange,
+  updateSelectStateUrl,
+  onSelectRunQueryChange,
+  onRunsVisibilityChange,
 };
 
 export default runAppModel;
