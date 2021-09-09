@@ -54,7 +54,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import JsonToCSV from 'utils/JsonToCSV';
 import moment from 'moment';
 
-const model = createModel<Partial<any>>({});
+const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
 
 function getConfig() {
@@ -150,10 +150,10 @@ function setDefaultAppConfigData() {
 function getParamsData() {
   return {
     call: async () => {
-      // model.setState({ requestIsPending: true });
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (!isEmpty(select?.params)) {
+        model.setState({ isParamsLoading: true });
         const stream = await getRunsRequestRef.call();
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
@@ -181,7 +181,7 @@ function getParamsData() {
           config: configData,
           tableData: getDataAsTableRows(data, null, params),
           tableColumns: getParamsTableColumns(params, data[0]?.config),
-          requestIsPending: false,
+          isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
       }
@@ -502,7 +502,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
         color: null,
         dasharray: null,
         chartIndex: 0,
-        data: data,
+        data,
       },
     ];
   }
@@ -525,6 +525,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
       groupValues[groupKey].data.push(data[i]);
     } else {
       groupValues[groupKey] = {
+        key: groupKey,
         config: groupValue,
         color: null,
         dasharray: null,
@@ -646,7 +647,11 @@ function onActivePointChange(
       }
     }
     model.getState()?.refs?.tableRef?.current?.setHoveredRow(activePoint.key);
-    const chart = { ...configData.chart };
+    let chart =
+      focusedStateActive !== configData.chart.focusedState.active
+        ? { ...configData.chart }
+        : configData.chart;
+
     chart.focusedState = {
       active: !!focusedStateActive,
       key: activePoint.key,
@@ -661,6 +666,7 @@ function onActivePointChange(
         configData?.chart.tooltip.selectedParams,
       ),
     };
+
     model.setState({
       config: { ...configData, chart },
     });
@@ -815,6 +821,7 @@ function getDataAsTableRows(
           chartIndex: metricsCollection.chartIndex + 1,
         },
         key: groupKey!,
+        groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
         experiment: '',
@@ -889,6 +896,7 @@ function getDataAsTableRows(
     }
   });
 
+  console.log(rows);
   return rows;
 }
 
@@ -1152,6 +1160,7 @@ const paramsAppModel = {
   updateGroupingStateUrl,
   onTableRowHover,
   onTableRowClick,
+  setDefaultAppConfigData,
 };
 
 export default paramsAppModel;
