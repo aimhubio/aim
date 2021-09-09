@@ -9,7 +9,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
-import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
 import Icon from 'components/Icon/Icon';
 
 import './Controls.scss';

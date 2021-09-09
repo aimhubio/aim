@@ -842,7 +842,7 @@ function getAggregatedData(
 
   processedData.forEach((metricsCollection, index) => {
     aggregatedData.push({
-      key: encode(metricsCollection.data.map((metric) => metric.key) as {}),
+      key: metricsCollection.key,
       area: {
         min: metricsCollection.aggregation?.area.min || null,
         max: metricsCollection.aggregation?.area.max || null,
@@ -882,6 +882,7 @@ function getDataAsLines(
         }
         return {
           ...metric,
+          groupKey: metricsCollection.key,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.color,
           chartIndex: metricsCollection.chartIndex,
@@ -1167,6 +1168,40 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   }
 }
 
+function resetChartZoom(configData: IMetricAppConfig): void {
+  configData.chart = {
+    ...configData.chart,
+    zoom: {
+      ...configData.chart.zoom,
+      active: false,
+      history: [],
+    },
+  };
+}
+
+function updateModelData(configData: IMetricAppConfig): void {
+  const { data, params } = processData(
+    model.getState()?.rawData as IRun<IMetricTrace>[],
+  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+  });
+  model.setState({
+    config: configData,
+    data,
+    lineChartData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    aggregatedData: getAggregatedData(data),
+    tableData,
+    tableColumns,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+  });
+}
+
 function onGroupingSelectChange({
   groupName,
   list,
@@ -1174,6 +1209,7 @@ function onGroupingSelectChange({
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
+    resetChartZoom(configData);
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
@@ -1189,6 +1225,9 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
+    if (groupName === 'chart') {
+      resetChartZoom(configData);
+    }
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
@@ -1222,29 +1261,6 @@ function onGroupingReset(groupName: GroupNameType) {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-}
-
-function updateModelData(configData: IMetricAppConfig): void {
-  const { data, params } = processData(
-    model.getState()?.rawData as IRun<IMetricTrace>[],
-  );
-  const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef.current?.updateData({
-    newData: tableData,
-    newColumns: tableColumns,
-  });
-  model.setState({
-    config: configData,
-    data,
-    lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
-    aggregatedData: getAggregatedData(data),
-    tableData,
-    tableColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
-  });
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
