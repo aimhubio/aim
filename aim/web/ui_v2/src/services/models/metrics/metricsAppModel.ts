@@ -1051,11 +1051,12 @@ function getDataAsTableRows(
       }
     });
 
-    if (metricsCollection.config !== null) {
-      for (let columnKey in columnsValues) {
-        if (columnsValues[columnKey].length === 1) {
-          sameValueColumns.push(columnKey);
-        }
+    for (let columnKey in columnsValues) {
+      if (columnsValues[columnKey].length === 1) {
+        sameValueColumns.push(columnKey);
+      }
+
+      if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length > 1
             ? 'Mix'
@@ -1235,6 +1236,7 @@ function updateModelData(configData: IMetricAppConfig): void {
   tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
+    hiddenColumns: configData.table.hiddenColumns!,
   });
   model.setState({
     config: configData,
@@ -1822,12 +1824,16 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
     const configUpdate = {
       ...configData,
       table: {
         ...configData.table,
-        hiddenColumns: hiddenColumns,
+        hiddenColumns:
+          hiddenColumns[0] === 'all'
+            ? columnsData.map((col) => col.key)
+            : hiddenColumns,
       },
     };
     model.setState({

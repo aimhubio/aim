@@ -136,7 +136,10 @@ function getMetricsTableColumns(
     });
   }
 
-  columns = columns.filter((col) => !hiddenColumns.includes(col.key));
+  columns = columns.map((col) => ({
+    ...col,
+    isHidden: hiddenColumns.includes(col.key),
+  }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {

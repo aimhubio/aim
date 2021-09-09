@@ -9,8 +9,8 @@ export interface ITableProps {
   columns: any[];
   rowHeight: RowHeight;
   onManageColumns?: (order: any) => void;
-  onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
-  onTableDiffShow: () => void;
+  onColumnsVisibilityChange?: (hiddenColumns: string[]) => void;
+  onTableDiffShow?: () => void;
   onSort?: (sortFields: []) => void;
   onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
@@ -33,6 +33,7 @@ export interface ITableProps {
   alwaysVisibleColumns?: string[];
   rowHeightMode?: any;
   columnsOrder?: any;
+  hiddenColumns?: string[];
   updateColumns?: any;
   columnsWidths?: any;
   updateColumnsWidths?: any;

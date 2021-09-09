@@ -179,6 +179,7 @@ function Metrics(
                   sortOptions={props.groupingSelectOptions}
                   sortFields={props.sortFields}
                   hiddenRows={props.hiddenMetrics}
+                  hiddenColumns={props.hiddenColumns}
                   // Table actions
                   onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}

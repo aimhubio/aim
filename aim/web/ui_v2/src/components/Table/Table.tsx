@@ -50,6 +50,7 @@ const Table = React.forwardRef(function Table(
     alwaysVisibleColumns,
     rowHeightMode,
     columnsOrder,
+    hiddenColumns,
     updateColumns,
     columnsWidths,
     updateColumnsWidths,
@@ -71,6 +72,7 @@ const Table = React.forwardRef(function Table(
   const tableContainerRef = React.useRef();
   const dataRef = React.useRef(data);
   const columnsRef = React.useRef(columns);
+  const hiddenColumnsRef = React.useRef(hiddenColumns);
 
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns);
@@ -145,10 +147,13 @@ const Table = React.forwardRef(function Table(
     };
   }
 
-  function updateData({ newData, newColumns, dynamicData }) {
+  function updateData({ newData, newColumns, hiddenColumns, dynamicData }) {
     if (custom && dynamicData) {
       if (!!newData) {
         dataRef.current = newData;
+      }
+      if (!!hiddenColumns) {
+        hiddenColumnsRef.current = hiddenColumns;
       }
       if (!!newColumns) {
         columnsRef.current = newColumns;
@@ -159,6 +164,9 @@ const Table = React.forwardRef(function Table(
       if (!!newData) {
         dataRef.current = newData;
         setRowData(newData);
+      }
+      if (!!hiddenColumns) {
+        hiddenColumnsRef.current = hiddenColumns;
       }
       if (!!newColumns) {
         columnsRef.current = newColumns;
@@ -471,11 +479,14 @@ const Table = React.forwardRef(function Table(
                     )}
                     component={
                       <ManageColumns
-                        columnsData={columns.filter(
+                        columnsData={columnsData.filter(
                           (item: any) =>
                             item.key !== '#' && item.key !== 'actions',
                         )}
+                        hiddenColumns={hiddenColumnsRef.current}
                         onManageColumns={onManageColumns}
+                        onColumnsVisibilityChange={onColumnsVisibilityChange}
+                        onTableDiffShow={onTableDiffShow}
                       />
                     }
                   />
@@ -606,7 +617,7 @@ const Table = React.forwardRef(function Table(
                       setSortFields={onSort}
                       hiddenRows={hiddenRows}
                       data={rowData}
-                      columns={columnsData}
+                      columns={columnsData.filter((col) => !col.isHidden)}
                       groups={groups}
                       onGroupExpandToggle={onGroupExpandToggle}
                       onRowHover={rowHoverHandler}
