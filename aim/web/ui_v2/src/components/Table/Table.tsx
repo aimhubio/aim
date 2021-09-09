@@ -18,6 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import Icon from 'components/Icon/Icon';
 import TableLoader from '../TableLoader/TableLoader';
 
@@ -36,8 +37,8 @@ const Table = React.forwardRef(function Table(
     data,
     columns,
     navBarItems,
-    rowHeight = 30,
-    headerHeight = 30,
+    rowHeight = RowHeightSize.md,
+    headerHeight = RowHeightSize.md,
     sortOptions,
     hideHeaderActions = false,
     fixed = true,
@@ -51,7 +52,7 @@ const Table = React.forwardRef(function Table(
     columnsWidths,
     updateColumnsWidths,
     sortFields,
-    setSortFields,
+    hiddenRows,
     groups,
     isLoading,
     ...props
@@ -314,7 +315,7 @@ const Table = React.forwardRef(function Table(
       scrollTop: tableContainerRef.current.scrollTop,
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
-      itemHeight: 32,
+      itemHeight: rowHeight,
       groupMargin: 8,
     });
 
@@ -374,7 +375,7 @@ const Table = React.forwardRef(function Table(
         scrollTop: tableContainerRef.current.scrollTop,
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
-        itemHeight: 32,
+        itemHeight: rowHeight,
         groupMargin: 8,
       });
 
@@ -388,7 +389,7 @@ const Table = React.forwardRef(function Table(
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
-          itemHeight: 32,
+          itemHeight: rowHeight,
           groupMargin: 8,
         });
 
@@ -447,10 +448,18 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='manage-calumn' />
-                        <span onClick={onManageColumns}>Manage Columns</span>
+                        <span>Manage Columns</span>
                       </Button>
                     )}
-                    component={<ManageColumns columnsData={columns} />}
+                    component={
+                      <ManageColumns
+                        columnsData={columns.filter(
+                          (item: any) =>
+                            item.key !== '#' && item.key !== 'actions',
+                        )}
+                        onManageColumns={onManageColumns}
+                      />
+                    }
                   />
                 )}
                 {onRowsChange && (
@@ -472,10 +481,10 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='eye-outline-hide' />
-                        <span onClick={onSort}>Hide Rows</span>
+                        <span>Hide Rows</span>
                       </Button>
                     )}
-                    component={<HideRows />}
+                    component={<HideRows toggleRowsVisibility={onRowsChange} />}
                   />
                 )}
                 {onSort && (
@@ -498,10 +507,16 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='sort-outside' />
-                        <span onClick={onSort}>Sort</span>
+                        <span>Sort</span>
                       </Button>
                     )}
-                    component={<SortPopover sortOptions={sortOptions} />}
+                    component={
+                      <SortPopover
+                        sortOptions={sortOptions}
+                        sortFields={sortFields}
+                        onSort={onSort}
+                      />
+                    }
                   />
                 )}
                 {onRowHeightChange && (
@@ -524,10 +539,15 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='row-height' />
-                        <span onClick={onRowHeightChange}>Row Height</span>
+                        <span>Row Height</span>
                       </Button>
                     )}
-                    component={<RowHeight />}
+                    component={
+                      <RowHeight
+                        rowHeight={rowHeight}
+                        onRowHeightChange={onRowHeightChange}
+                      />
+                    }
                   />
                 )}
               </div>
@@ -565,7 +585,8 @@ const Table = React.forwardRef(function Table(
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}
                       sortFields={sortFields}
-                      setSortFields={setSortFields}
+                      setSortFields={onSort}
+                      hiddenRows={hiddenRows}
                       data={rowData}
                       columns={columnsData}
                       groups={groups}

@@ -17,6 +17,7 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ChartTypeEnum } from 'utils/d3';
 import Icon from 'components/Icon/Icon';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 import './Metrics.scss';
 
@@ -131,7 +132,7 @@ function Metrics(
                   }
                 />
               ) : (
-                !props.requestIsPending && (
+                props.requestIsPending === false && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."
@@ -158,7 +159,9 @@ function Metrics(
               {!isEmpty(props.tableData) ? (
                 <Table
                   custom
-                  key={`${Array.isArray(props.tableData)}`}
+                  key={`${Array.isArray(props.tableData)}-${
+                    props.tableRowHeight
+                  }`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
@@ -166,13 +169,22 @@ function Metrics(
                   topHeader
                   groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
+                  rowHeightMode={
+                    props.tableRowHeight === RowHeightSize.sm
+                      ? 'small'
+                      : props.tableRowHeight === RowHeightSize.md
+                      ? 'medium'
+                      : 'large'
+                  }
                   sortOptions={props.groupingSelectOptions}
+                  sortFields={props.sortFields}
+                  hiddenRows={props.hiddenMetrics}
                   // Table actions
-                  onSort={() => null}
+                  onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}
-                  onManageColumns={() => null}
-                  onRowHeightChange={() => null}
-                  onRowsChange={() => null}
+                  onManageColumns={props.onColumnsOrderChange}
+                  onRowHeightChange={props.onRowHeightChange}
+                  onRowsChange={props.onMetricVisibilityChange}
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
                 />

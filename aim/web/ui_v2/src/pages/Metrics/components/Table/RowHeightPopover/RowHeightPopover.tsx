@@ -1,16 +1,30 @@
 import React from 'react';
 import { MenuItem } from '@material-ui/core';
-
-import { RowHeightEnum } from 'config/enums/tableEnums';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 import './RowHeightPopover.scss';
 
-function RowHeightPopover() {
+function RowHeightPopover({ rowHeight, onRowHeightChange }: any) {
   return (
     <div className='RowHeight'>
-      {Object.values(RowHeightEnum).map((value) => (
-        <MenuItem key={value}>{value}</MenuItem>
-      ))}
+      <MenuItem
+        selected={rowHeight === RowHeightSize.sm}
+        onClick={() => onRowHeightChange(RowHeightSize.sm)}
+      >
+        Short
+      </MenuItem>
+      <MenuItem
+        selected={rowHeight === RowHeightSize.md}
+        onClick={() => onRowHeightChange(RowHeightSize.md)}
+      >
+        Medium
+      </MenuItem>
+      <MenuItem
+        selected={rowHeight === RowHeightSize.lg}
+        onClick={() => onRowHeightChange(RowHeightSize.lg)}
+      >
+        Large
+      </MenuItem>
     </div>
   );
 }

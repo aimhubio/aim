@@ -1,13 +1,19 @@
 import React from 'react';
-import { MenuItem, MenuList } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import './HideRowsPopover.scss';
 
-function HideRowsPopover(): React.FunctionComponentElement<React.ReactNode> {
+function HideRowsPopover({
+  toggleRowsVisibility,
+}: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='HideRowsPopover'>
-      <MenuItem>Visualize All Rows</MenuItem>
-      <MenuItem>Hide All Rows</MenuItem>
+      <MenuItem onClick={() => toggleRowsVisibility([])}>
+        Visualize All Rows
+      </MenuItem>
+      <MenuItem onClick={() => toggleRowsVisibility(['all'])}>
+        Hide All Rows
+      </MenuItem>
     </div>
   );
 }

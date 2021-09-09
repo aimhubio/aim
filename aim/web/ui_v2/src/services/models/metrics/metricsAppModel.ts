@@ -31,7 +31,7 @@ import {
 } from 'utils/encoder/streamEncoding';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import filterMetricData from 'utils/filterMetricData';
-import { RowHeight } from 'config/table/tableConfigs';
+import { RowHeightSize } from 'config/table/tableConfigs';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import JsonToCSV from 'utils/JsonToCSV';
 
@@ -78,10 +78,12 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
-const model = createModel<Partial<IMetricAppModelState>>({});
+const model = createModel<Partial<IMetricAppModelState>>({
+  requestIsPending: true,
+});
 let tooltipData: ITooltipData = {};
 
-function getConfig() {
+function getConfig(): IMetricAppConfig {
   return {
     grouping: {
       color: [],
@@ -152,7 +154,15 @@ function getConfig() {
       advancedQuery: '',
     },
     table: {
-      rowHeight: RowHeight.md,
+      rowHeight: RowHeightSize.md,
+      sortFields: [],
+      hiddenMetrics: [],
+      hiddenColumns: [],
+      columnsOrder: {
+        left: [],
+        middle: [],
+        right: [],
+      },
     },
   };
 }
@@ -264,6 +274,7 @@ function getMetricsData() {
     call: async () => {
       if (query === '') {
         model.setState({
+          requestIsPending: false,
           queryIsEmpty: true,
         });
       } else {
@@ -421,16 +432,21 @@ function processData(data: IRun<IMetricTrace>[]): {
             data: values,
           });
         }
+        const metricKey = encode({
+          runHash: run.hash,
+          metricName: trace.metric_name,
+          traceContext: trace.context,
+        });
         return createMetricModel({
           ...trace,
           run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
-          key: encode({
-            runHash: run.hash,
-            metricName: trace.metric_name,
-            traceContext: trace.context,
-          }),
+          key: metricKey,
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
+          isHidden:
+            configData!.table.hiddenMetrics![0] === 'all'
+              ? true
+              : configData!.table.hiddenMetrics!.includes(metricKey),
           data: {
             values,
             steps,
@@ -446,7 +462,18 @@ function processData(data: IRun<IMetricTrace>[]): {
     );
   });
 
-  const processedData = groupData(metrics);
+  const processedData = groupData(
+    _.orderBy(
+      metrics,
+      configData?.table?.sortFields?.map(
+        (f) =>
+          function (metric) {
+            return _.get(metric, f[0], '');
+          },
+      ) ?? [],
+      configData?.table?.sortFields?.map((f) => f[1]) ?? [],
+    ),
+  );
   const uniqParams = _.uniq(params);
 
   setTooltipData(processedData, uniqParams);
@@ -869,30 +896,32 @@ function getDataAsLines(
   const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
   const lines = processedData
     .map((metricsCollection: IMetricsCollection<IMetric>) =>
-      metricsCollection.data.map((metric: IMetric) => {
-        let yValues;
-        if (smoothingAlgorithm && smoothingFactor) {
-          yValues = getSmoothenedData({
-            smoothingAlgorithm,
-            smoothingFactor,
-            data: metric.data.yValues,
-          });
-        } else {
-          yValues = metric.data.yValues;
-        }
-        return {
-          ...metric,
-          groupKey: metricsCollection.key,
-          color: metricsCollection.color ?? metric.color,
-          dasharray: metricsCollection.dasharray ?? metric.color,
-          chartIndex: metricsCollection.chartIndex,
-          selectors: [metric.key, metric.key, metric.run.hash],
-          data: {
-            xValues: metric.data.xValues,
-            yValues,
-          },
-        };
-      }),
+      metricsCollection.data
+        .filter((metric) => !metric.isHidden)
+        .map((metric: IMetric) => {
+          let yValues;
+          if (smoothingAlgorithm && smoothingFactor) {
+            yValues = getSmoothenedData({
+              smoothingAlgorithm,
+              smoothingFactor,
+              data: metric.data.yValues,
+            });
+          } else {
+            yValues = metric.data.yValues;
+          }
+          return {
+            ...metric,
+            groupKey: metricsCollection.key,
+            color: metricsCollection.color ?? metric.color,
+            dasharray: metricsCollection.dasharray ?? metric.color,
+            chartIndex: metricsCollection.chartIndex,
+            selectors: [metric.key, metric.key, metric.run.hash],
+            data: {
+              xValues: metric.data.xValues,
+              yValues,
+            },
+          };
+        }),
     )
     .flat();
 
@@ -951,27 +980,24 @@ function getDataAsTableRows(
               .index;
       const rowValues: IMetricTableRowData = {
         key: metric.key,
+        isHidden: metric.isHidden,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
-        run: metric.run.props.name ?? '-',
+        run: metric.run.props.name,
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
-        value: `${
-          closestIndex === null ? '-' : metric.data.values[closestIndex] ?? '-'
-        }`,
-        step: `${
-          closestIndex === null ? '-' : metric.data.steps[closestIndex] ?? '-'
-        }`,
-        epoch: `${
-          closestIndex === null ? '-' : metric.data.epochs[closestIndex] ?? '-'
-        }`,
-        time: `${
+        value:
+          closestIndex === null ? '-' : `${metric.data.values[closestIndex]}`,
+        step:
+          closestIndex === null ? '-' : `${metric.data.steps[closestIndex]}`,
+        epoch:
+          closestIndex === null ? '-' : `${metric.data.epochs[closestIndex]}`,
+        time:
           closestIndex === null
             ? '-'
-            : metric.data.timestamps[closestIndex] ?? '-'
-        }`,
+            : `${metric.data.timestamps[closestIndex]}`,
         parentId: groupKey,
       };
       rowIndex++;
@@ -986,7 +1012,11 @@ function getDataAsTableRows(
         'time',
       ].forEach((key) => {
         if (columnsValues.hasOwnProperty(key)) {
-          if (!_.some(columnsValues[key], rowValues[key])) {
+          if (
+            _.findIndex(columnsValues[key], (value) =>
+              _.isEqual(rowValues[key], value),
+            ) === -1
+          ) {
             columnsValues[key].push(rowValues[key]);
           }
         } else {
@@ -998,7 +1028,11 @@ function getDataAsTableRows(
         const value = _.get(metric.run.params, paramKey, '-');
         rowValues[paramKey] = value;
         if (columnsValues.hasOwnProperty(paramKey)) {
-          if (!columnsValues[paramKey].includes(value)) {
+          if (
+            _.findIndex(columnsValues[paramKey], (paramValue) =>
+              _.isEqual(value, paramValue),
+            ) === -1
+          ) {
             columnsValues[paramKey].push(value);
           }
         } else {
@@ -1184,7 +1218,11 @@ function updateModelData(configData: IMetricAppConfig): void {
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getMetricsTableColumns(params, data[0]?.config);
+  const tableColumns = getMetricsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+  );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData,
@@ -1433,6 +1471,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     processedData.params,
     processedData.data[0]?.config,
+    model.getState()?.config?.table.columnsOrder!,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -1640,7 +1679,11 @@ function setModelData(
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: getDataAsTableRows(data, null, params),
-    tableColumns: getMetricsTableColumns(params, data[0]?.config),
+    tableColumns: getMetricsTableColumns(
+      params,
+      data[0]?.config,
+      configData.table.columnsOrder!,
+    ),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
@@ -1712,6 +1755,74 @@ function toggleSelectAdvancedMode() {
   }
 }
 
+function onRowHeightChange(height: RowHeightSize) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    model.setState({
+      config: {
+        ...configData,
+        table: {
+          ...configData.table,
+          rowHeight: height,
+        },
+      },
+    });
+  }
+}
+
+function onSortFieldsChange(sortFields: [string, any][]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        sortFields: sortFields,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
+function onMetricVisibilityChange(metricsKeys: string[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        hiddenMetrics: metricsKeys,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
+function onColumnsVisibilityChange(columns: string[]) {}
+
+function onColumnsOrderChange(columnsOrder: any) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        columnsOrder: columnsOrder,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1751,6 +1862,11 @@ const metricAppModel = {
   updateSelectStateUrl,
   onChangeTooltip,
   onExportTableData,
+  onRowHeightChange,
+  onSortFieldsChange,
+  onMetricVisibilityChange,
+  onColumnsVisibilityChange,
+  onColumnsOrderChange,
 };
 
 export default metricAppModel;
