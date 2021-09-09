@@ -33,6 +33,7 @@ export interface IMetricAppModelState {
   aggregatedData: IAggregatedData[];
   tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
+  sameValueColumns: string[];
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];

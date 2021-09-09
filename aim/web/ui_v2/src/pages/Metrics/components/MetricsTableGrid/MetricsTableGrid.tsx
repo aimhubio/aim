@@ -11,12 +11,13 @@ function getMetricsTableColumns(
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
+  hiddenColumns: string[],
   aggregationMethods?: {
     area: AggregationAreaMethods;
     line: AggregationLineMethods;
   },
 ): ITableColumn[] {
-  const columns = [
+  let columns = [
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -134,6 +135,11 @@ function getMetricsTableColumns(
       }
     });
   }
+
+  columns = columns.map((col) => ({
+    ...col,
+    isHidden: hiddenColumns.includes(col.key),
+  }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
