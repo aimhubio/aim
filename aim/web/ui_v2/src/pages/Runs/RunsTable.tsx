@@ -60,7 +60,6 @@ function RunsTable({
           hiddenRows={hiddenRuns}
           // Table actions
           columnsOrder={columnsOrder}
-          onRowsChange={onRowsChange}
           onManageColumns={onManageColumns}
           onRowHeightChange={onRowHeightChange}
           onExport={onExportTableData}
