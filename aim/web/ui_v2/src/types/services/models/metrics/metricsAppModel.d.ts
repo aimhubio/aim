@@ -47,7 +47,7 @@ export interface IChartTitle {
 }
 
 export interface IAggregatedData extends IAggregationData {
-  key: string;
+  key?: string;
   color: string;
   dasharray: string;
   chartIndex: number;
@@ -69,6 +69,7 @@ export interface ITooltipContent {
 
 export interface IMetricsCollection<T> {
   key?: string;
+  groupKey?: string;
   config: { [key: string]: string } | null;
   color: string | null;
   dasharray: string | null;

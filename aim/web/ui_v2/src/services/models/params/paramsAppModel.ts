@@ -896,7 +896,6 @@ function getDataAsTableRows(
     }
   });
 
-  console.log(rows);
   return rows;
 }
 
