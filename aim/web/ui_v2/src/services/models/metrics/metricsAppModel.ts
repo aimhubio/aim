@@ -932,15 +932,19 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
-): IMetricTableRowData[] | any {
+): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
-    return [];
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
   }
 
   const rows: IMetricTableRowData[] | any =
     processedData[0]?.config !== null ? {} : [];
 
   let rowIndex = 0;
+  const sameValueColumns: string[] = [];
 
   processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
     const groupKey = metricsCollection.key;
@@ -1049,6 +1053,9 @@ function getDataAsTableRows(
 
     if (metricsCollection.config !== null) {
       for (let columnKey in columnsValues) {
+        if (columnsValues[columnKey].length === 1) {
+          sameValueColumns.push(columnKey);
+        }
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length > 1
             ? 'Mix'
@@ -1057,7 +1064,7 @@ function getDataAsTableRows(
     }
   });
 
-  return rows;
+  return { rows, sameValueColumns };
 }
 
 function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
@@ -1222,10 +1229,11 @@ function updateModelData(configData: IMetricAppConfig): void {
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
-    newData: tableData,
+    newData: tableData.rows,
     newColumns: tableColumns,
   });
   model.setState({
@@ -1234,8 +1242,9 @@ function updateModelData(configData: IMetricAppConfig): void {
     lineChartData: getDataAsLines(data),
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
-    tableData,
+    tableData: tableData.rows,
     tableColumns,
+    sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
@@ -1368,7 +1377,10 @@ function onActivePointChange(
     model.getState()!.params!,
   );
   if (tableRef) {
-    tableRef.current?.updateData({ newData: tableData, dynamicData: true });
+    tableRef.current?.updateData({
+      newData: tableData.rows,
+      dynamicData: true,
+    });
     tableRef.current?.setHoveredRow?.(activePoint.key);
     tableRef.current?.setActiveRow?.(
       focusedStateActive ? activePoint.key : null,
@@ -1402,7 +1414,7 @@ function onActivePointChange(
   }
 
   model.setState({
-    tableData,
+    tableData: tableData.rows,
     config: configData,
   });
 }
@@ -1463,7 +1475,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
 
-  const tableData: IMetricTableRowData[] = getDataAsTableRows(
+  const tableData = getDataAsTableRows(
     processedData.data,
     null,
     processedData.params,
@@ -1472,6 +1484,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     processedData.params,
     processedData.data[0]?.config,
     model.getState()?.config?.table.columnsOrder!,
+    model.getState()?.config?.table.hiddenColumns!,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -1493,7 +1506,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     emptyRow[column] = '--';
   });
 
-  const dataToExport = tableData?.reduce(
+  const dataToExport = tableData.rows?.reduce(
     (
       accArray: { [key: string]: string }[],
       rowData: IMetricTableRowData,
@@ -1504,7 +1517,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
           const filteredRow = getFilteredRow(filteredHeader, row);
           accArray = accArray.concat(filteredRow);
         });
-        if (tableData.length - 1 !== rowDataIndex) {
+        if (tableData.rows.length - 1 !== rowDataIndex) {
           accArray = accArray.concat(emptyRow);
         }
       } else {
@@ -1669,6 +1682,7 @@ function setModelData(
   if (configData) {
     setAggregationEnabled(configData);
   }
+  const tableData = getDataAsTableRows(data, null, params);
   model.setState({
     requestIsPending: false,
     rawData,
@@ -1678,12 +1692,14 @@ function setModelData(
     lineChartData: getDataAsLines(data),
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
-    tableData: getDataAsTableRows(data, null, params),
+    tableData: tableData.rows,
     tableColumns: getMetricsTableColumns(
       params,
       data[0]?.config,
       configData.table.columnsOrder!,
+      configData.table.hiddenColumns!,
     ),
+    sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
   });
 }
@@ -1804,7 +1820,29 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
   }
 }
 
-function onColumnsVisibilityChange(columns: string[]) {}
+function onColumnsVisibilityChange(hiddenColumns: string[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const configUpdate = {
+      ...configData,
+      table: {
+        ...configData.table,
+        hiddenColumns: hiddenColumns,
+      },
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    updateModelData(configUpdate);
+  }
+}
+
+function onTableDiffShow() {
+  const sameValueColumns = model.getState()?.sameValueColumns;
+  if (sameValueColumns) {
+    onColumnsVisibilityChange(sameValueColumns);
+  }
+}
 
 function onColumnsOrderChange(columnsOrder: any) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
@@ -1866,6 +1904,7 @@ const metricAppModel = {
   onSortFieldsChange,
   onMetricVisibilityChange,
   onColumnsVisibilityChange,
+  onTableDiffShow,
   onColumnsOrderChange,
 };
 

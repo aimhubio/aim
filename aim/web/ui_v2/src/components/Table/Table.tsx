@@ -27,6 +27,8 @@ import './Table.scss';
 const Table = React.forwardRef(function Table(
   {
     onManageColumns,
+    onColumnsVisibilityChange,
+    onTableDiffShow,
     onSort,
     onRowsChange,
     onExport,
@@ -643,4 +645,4 @@ const Table = React.forwardRef(function Table(
   );
 });
 
-export default React.memo(Table);
+export default React.memo(Table, () => true);

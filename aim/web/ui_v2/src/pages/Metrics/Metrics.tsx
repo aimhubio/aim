@@ -183,6 +183,8 @@ function Metrics(
                   onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}
                   onManageColumns={props.onColumnsOrderChange}
+                  onColumnsVisibilityChange={props.onColumnsVisibilityChange}
+                  onTableDiffShow={props.onTableDiffShow}
                   onRowHeightChange={props.onRowHeightChange}
                   onRowsChange={props.onMetricVisibilityChange}
                   onRowHover={props.onTableRowHover}
