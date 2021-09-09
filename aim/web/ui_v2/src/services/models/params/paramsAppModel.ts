@@ -502,7 +502,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
         color: null,
         dasharray: null,
         chartIndex: 0,
-        data: data,
+        data,
       },
     ];
   }
@@ -525,6 +525,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
       groupValues[groupKey].data.push(data[i]);
     } else {
       groupValues[groupKey] = {
+        key: groupKey,
         config: groupValue,
         color: null,
         dasharray: null,
@@ -820,6 +821,7 @@ function getDataAsTableRows(
           chartIndex: metricsCollection.chartIndex + 1,
         },
         key: groupKey!,
+        groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
         experiment: '',
@@ -894,6 +896,7 @@ function getDataAsTableRows(
     }
   });
 
+  console.log(rows);
   return rows;
 }
 
