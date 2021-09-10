@@ -62,26 +62,26 @@ function getConfig() {
   return {
     grouping: {
       color: [],
-      style: [],
+      stroke: [],
       chart: [],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
-        style: false,
+        stroke: false,
         chart: false,
       },
       isApplied: {
         color: true,
-        style: true,
+        stroke: true,
         chart: true,
       },
       persistence: {
         color: false,
-        style: false,
+        stroke: false,
       },
       seed: {
         color: 10,
-        style: 10,
+        stroke: 10,
       },
       paletteIndex: 0,
       selectOptions: [],
@@ -423,7 +423,7 @@ function getDataAsLines(
 
 function getGroupConfig(
   metricsCollection: IMetricsCollection<IParam>,
-  groupingItems: GroupNameType[] = ['color', 'style', 'chart'],
+  groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
 ) {
   const configData = model.getState()?.config;
   let groupConfig: { [key: string]: {} } = {};
@@ -512,11 +512,11 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
   const grouping = model.getState()!.config!.grouping;
   const { paletteIndex } = grouping;
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
   const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
   if (
     groupByColor.length === 0 &&
-    groupByStyle.length === 0 &&
+    groupByStroke.length === 0 &&
     groupByChart.length === 0
   ) {
     return [
@@ -535,7 +535,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
   } = {};
 
   const groupingFields = _.uniq(
-    groupByColor.concat(groupByStyle).concat(groupByChart),
+    groupByColor.concat(groupByStroke).concat(groupByChart),
   );
 
   for (let i = 0; i < data.length; i++) {
@@ -596,10 +596,10 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
       }
     }
 
-    if (groupByStyle.length > 0) {
-      const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
+    if (groupByStroke.length > 0) {
+      const dasharrayConfig = _.pick(groupValue.config, groupByStroke);
       const dasharrayKey = encode(dasharrayConfig);
-      if (grouping.persistence.style && grouping.isApplied.style) {
+      if (grouping.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
           groupValues,
           groupKey,
@@ -948,7 +948,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
   }
 }
 
-function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
+function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {

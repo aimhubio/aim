@@ -99,25 +99,25 @@ export interface IAggregationData {
 interface IMetricAppConfig {
   grouping: {
     color: string[];
-    style: string[];
+    stroke: string[];
     chart: string[];
     reverseMode: {
       color: boolean;
-      style: boolean;
+      stroke: boolean;
       chart: boolean;
     };
     isApplied: {
       color: boolean;
-      style: boolean;
+      stroke: boolean;
       chart: boolean;
     };
     persistence: {
       color: boolean;
-      style: boolean;
+      stroke: boolean;
     };
     seed: {
       color: number;
-      style: number;
+      stroke: number;
     };
     paletteIndex: number;
   };
@@ -231,7 +231,7 @@ export interface IGetGroupingPersistIndex {
   grouping: IMetricAppConfig['grouping'];
 }
 
-export type GroupNameType = 'color' | 'style' | 'chart';
+export type GroupNameType = 'color' | 'stroke' | 'chart';
 export interface IGroupingSelectOption {
   label: string;
   group: string;
