@@ -9,7 +9,7 @@ import { IconName } from 'types/components/Icon/Icon';
 import './groupingItemStyle.scss';
 
 const icons = {
-  style: 'line-style',
+  stroke: 'line-style',
   chart: 'chart-group',
   color: 'coloring',
 };

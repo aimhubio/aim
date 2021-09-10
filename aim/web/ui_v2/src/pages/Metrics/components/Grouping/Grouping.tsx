@@ -1,7 +1,7 @@
 import React from 'react';
 
 import GroupingItem from '../GroupingItem/GroupingItem';
-import StylePopoverAdvanced from 'pages/Metrics/components/StylePopoverAdvanced/StylePopoverAdvanced';
+import StrokePopoverAdvanced from 'pages/Metrics/components/StrokePopover/StrokePopoverAdvanced';
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
@@ -18,8 +18,8 @@ const groupingPopovers = [
   {
     title: 'Select Fields For Grouping by stroke style',
     advancedTitle: 'stroke style advanced options',
-    groupName: 'style',
-    AdvancedComponent: StylePopoverAdvanced,
+    groupName: 'stroke',
+    AdvancedComponent: StrokePopoverAdvanced,
   },
   {
     title: 'Select fields to divide into charts',
@@ -57,7 +57,7 @@ function Grouping({
                   <AdvancedComponent
                     onPersistenceChange={onGroupingPersistenceChange}
                     persistence={
-                      groupingData?.persistence[groupName as 'color' | 'style']
+                      groupingData?.persistence[groupName as 'color' | 'stroke']
                     }
                     {...(groupName === 'color' && {
                       onGroupingPaletteChange,

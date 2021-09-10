@@ -18,10 +18,9 @@ import {
   IGroupingSelectOption,
   GroupNameType,
 } from 'types/services/models/metrics/metricsAppModel';
+import Icon from 'components/Icon/Icon';
 
 import './groupingPopoverStyle.scss';
-import { ScaleEnum } from '../../utils/d3';
-import Icon from '../Icon/Icon';
 
 function GroupingPopover({
   groupName,
@@ -50,12 +49,7 @@ function GroupingPopover({
     return data;
   }, [groupName, groupingData]);
 
-  function handleGroupingMode(
-    // e: React.ChangeEvent<HTMLInputElement>,
-    // checked: boolean,
-    val: string | number,
-    id: any,
-  ) {
+  function handleGroupingMode(val: string | number, id: any) {
     onGroupingModeChange({
       groupName,
       value: val === 'Reverse',
@@ -70,7 +64,7 @@ function GroupingPopover({
       <div className='GroupingPopover__container'>
         <div className='GroupingPopover__container__select'>
           <h3 className='GroupingPopover__subtitle'>
-            Select Fields for grouping by Stroke style
+            Select Fields for grouping by {groupName}
           </h3>
           <Autocomplete
             id='select-metrics'

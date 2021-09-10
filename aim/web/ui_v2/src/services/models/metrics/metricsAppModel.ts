@@ -87,26 +87,26 @@ function getConfig(): IMetricAppConfig {
   return {
     grouping: {
       color: [],
-      style: [],
+      stroke: [],
       chart: [],
       // TODO refactor boolean value types objects into one
       reverseMode: {
         color: false,
-        style: false,
+        stroke: false,
         chart: false,
       },
       isApplied: {
         color: true,
-        style: true,
+        stroke: true,
         chart: true,
       },
       persistence: {
         color: false,
-        style: false,
+        stroke: false,
       },
       seed: {
         color: 10,
-        style: 10,
+        stroke: 10,
       },
       paletteIndex: 0,
     },
@@ -534,11 +534,11 @@ function getGroupingPersistIndex({
 
 function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
   const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
   if (
     groupByColor.length === 0 &&
-    groupByStyle.length === 0 &&
+    groupByStroke.length === 0 &&
     groupByChart.length === 0
   ) {
     return false;
@@ -551,11 +551,11 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   const grouping = configData!.grouping;
   const { paletteIndex } = grouping;
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStyle = getFilteredGroupingOptions(grouping, 'style');
+  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
   const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
   if (
     groupByColor.length === 0 &&
-    groupByStyle.length === 0 &&
+    groupByStroke.length === 0 &&
     groupByChart.length === 0
   ) {
     return alignData([
@@ -574,7 +574,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   } = {};
 
   const groupingFields = _.uniq(
-    groupByColor.concat(groupByStyle).concat(groupByChart),
+    groupByColor.concat(groupByStroke).concat(groupByChart),
   );
 
   for (let i = 0; i < data.length; i++) {
@@ -635,10 +635,10 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
       }
     }
 
-    if (groupByStyle.length > 0) {
-      const dasharrayConfig = _.pick(groupValue.config, groupByStyle);
+    if (groupByStroke.length > 0) {
+      const dasharrayConfig = _.pick(groupValue.config, groupByStroke);
       const dasharrayKey = encode(dasharrayConfig);
-      if (grouping.persistence.style && grouping.isApplied.style) {
+      if (grouping.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
           groupValues,
           groupKey,
@@ -1084,7 +1084,7 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
 
 function getGroupConfig(
   metricsCollection: IMetricsCollection<IMetric>,
-  groupingItems: GroupNameType[] = ['color', 'style', 'chart'],
+  groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
 ) {
   const configData = model.getState()?.config;
   let groupConfig: { [key: string]: {} } = {};
@@ -1333,7 +1333,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
   }
 }
 
-function onGroupingPersistenceChange(groupName: 'style' | 'color'): void {
+function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {

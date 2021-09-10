@@ -11,12 +11,12 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
-import { isEmpty, size } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import Table from 'components/Table/Table';
 import Icon from 'components/Icon/Icon';
+import { RowHeightSize } from 'config/table/tableConfigs';
 
 import './Params.scss';
-import { RowHeightSize } from 'config/table/tableConfigs';
 
 const Params = ({
   curveInterpolation,
