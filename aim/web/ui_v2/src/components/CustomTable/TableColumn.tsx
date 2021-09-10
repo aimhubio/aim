@@ -56,7 +56,7 @@ function Column({
     } else {
       newWidth = evt.pageX - startingPoint.current;
     }
-    if (newWidth > 85) {
+    if (newWidth > 85 && newWidth < 500) {
       widthClone.current = newWidth;
       setMaxWidth(newWidth);
     }

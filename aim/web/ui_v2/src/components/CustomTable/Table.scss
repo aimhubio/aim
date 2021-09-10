@@ -8,7 +8,7 @@ $grey-darker: #24292e;
 $grey-bg: #f7f7f7;
 $grey-lighter: #e8e8e8;
 $grey-light-xx: #d4d4d4;
-$primary: #1C2852FF;
+$primary: #1c2852ff;
 $primary-dark: #243969;
 $primary-darker: #142447;
 $primary-bg: #f7faff;
@@ -94,6 +94,7 @@ $group-margin: 8px;
   width: stretch;
   width: -webkit-fill-available;
   width: -moz-available;
+  max-width: 500px;
 
   &:last-of-type {
     .Table__cell,
