@@ -16,7 +16,6 @@ import getFormattedValue from 'utils/formattedValue';
 import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
-import { decode } from 'utils/encoder/encoder';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
