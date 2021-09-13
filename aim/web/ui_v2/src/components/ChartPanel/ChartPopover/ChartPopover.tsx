@@ -76,6 +76,7 @@ function ChartPopover({
     <Popover
       id={id || 'popover'}
       open={open}
+      disableEnforceFocus={true}
       anchorReference='anchorPosition'
       anchorPosition={popoverPos}
       className={`ChartPopover ${className}`}
