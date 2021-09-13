@@ -11,12 +11,12 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
-import { isEmpty, size } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import Table from 'components/Table/Table';
 import Icon from 'components/Icon/Icon';
-
-import './Params.scss';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import './Params.scss';
 
 const Params = ({
   curveInterpolation,
@@ -63,6 +63,8 @@ const Params = ({
   onSortFieldsChange,
   onChangeTooltip,
   sortFields,
+  notifyData,
+  onNotificationDelete,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -191,6 +193,12 @@ const Params = ({
           </div>
         </div>
       </section>
+      {notifyData?.length > 0 && (
+        <NotificationContainer
+          handleClose={onNotificationDelete}
+          data={notifyData}
+        />
+      )}
     </div>
   );
 };

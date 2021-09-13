@@ -16,6 +16,7 @@ const PATHS = {
   METRICS: '/metrics',
   METRICS_ID: '/metrics/:appId',
   PARAMS: '/params',
+  PARAMS_ID: '/params/:appId',
   TAGS: '/tags',
   BOOKMARKS: '/bookmarks',
   RUN_DETAIL: '/runs/:runHash',
@@ -66,6 +67,12 @@ const routes = {
     showInSidebar: true,
     displayName: 'Params',
     icon: 'params',
+  },
+  PARAMS_ID: {
+    path: PATHS.PARAMS_ID,
+    component: Params,
+    showInSidebar: false,
+    displayName: 'MetricsId',
   },
   BOOKMARKS: {
     path: PATHS.BOOKMARKS,

@@ -34,6 +34,8 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   groupingSelectOptions: IGroupingSelectOption[];
   hiddenMetrics: string[];
   sortFields: [string, 'asc' | 'desc' | boolean][];
+  notifyData: INotification[];
+  onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (
     activePoint: IActivePoint,
