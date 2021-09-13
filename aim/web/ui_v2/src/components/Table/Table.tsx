@@ -23,6 +23,7 @@ import Icon from 'components/Icon/Icon';
 import TableLoader from '../TableLoader/TableLoader';
 
 import './Table.scss';
+import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 
 const Table = React.forwardRef(function Table(
   {
@@ -35,6 +36,7 @@ const Table = React.forwardRef(function Table(
     onRowHeightChange,
     onRowHover,
     onRowClick,
+    onTableResizeModeChange,
     custom,
     data,
     columns,
@@ -60,6 +62,9 @@ const Table = React.forwardRef(function Table(
     isLoading,
     showRowClickBehaviour = true,
     showResizeContainerActionBar = true,
+    resizeMode,
+    tableELemRef,
+    chartElemRef,
     ...props
   }: ITableProps,
   ref,
@@ -449,13 +454,12 @@ const Table = React.forwardRef(function Table(
         <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
           {!hideHeaderActions && (
             <div className='Table__header__popovers__container'>
-              {/* {showResizeContainerActionBar && (
-                <div className='Table__header__select__resize'>
-                  <Icon name='table-resize-hide' />
-                  <Icon name='table-resize-resizable' />
-                  <Icon name='table-resize-maximize' />
-                </div>
-              )} */}
+              {showResizeContainerActionBar && (
+                <ResizeModeActions
+                  resizeMode={resizeMode}
+                  onTableResizeModeChange={onTableResizeModeChange}
+                />
+              )}
               <div className='flex fac Table__header__popovers__buttons'>
                 {onManageColumns && (
                   <ControlPopover
@@ -470,6 +474,7 @@ const Table = React.forwardRef(function Table(
                     }}
                     anchor={({ onAnchorClick, opened }) => (
                       <Button
+                        color='secondary'
                         type='text'
                         onClick={onAnchorClick}
                         className={`Table__header__item ${
@@ -507,6 +512,7 @@ const Table = React.forwardRef(function Table(
                     anchor={({ onAnchorClick, opened }) => (
                       <Button
                         type='text'
+                        color='secondary'
                         onClick={onAnchorClick}
                         className={`Table__header__item ${
                           opened ? 'opened' : ''
@@ -533,6 +539,7 @@ const Table = React.forwardRef(function Table(
                     anchor={({ onAnchorClick, opened }) => (
                       <Button
                         type='text'
+                        color='secondary'
                         onClick={onAnchorClick}
                         className={`Table__header__item ${
                           opened ? 'opened' : ''
@@ -565,6 +572,7 @@ const Table = React.forwardRef(function Table(
                     anchor={({ onAnchorClick, opened }) => (
                       <Button
                         type='text'
+                        color='secondary'
                         onClick={onAnchorClick}
                         className={`Table__header__item ${
                           opened ? 'opened' : ''

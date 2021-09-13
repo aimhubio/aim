@@ -32,6 +32,7 @@ import {
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -156,6 +157,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         projectsData?.metrics as IProjectParamsMetrics['metrics']
       }
       requestIsPending={metricsData?.requestIsPending as boolean}
+      resizeMode={metricsData?.config?.table.resizeMode as ResizeModeEnum}
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
@@ -191,6 +193,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
       onTableDiffShow={metricAppModel.onTableDiffShow}
+      onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
     />
   );
 }

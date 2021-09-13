@@ -17,6 +17,8 @@ import Icon from 'components/Icon/Icon';
 import { RowHeightSize } from 'config/table/tableConfigs';
 
 import './Params.scss';
+import ResizePanel from 'components/ResizePanel/ResizePanel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 const Params = ({
   curveInterpolation,
@@ -44,6 +46,10 @@ const Params = ({
   onTableRowClick,
   onColumnsOrderChange,
   onRowHeightChange,
+  onParamVisibilityChange,
+  onSortFieldsChange,
+  sortFields,
+  resizeMode,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -59,10 +65,8 @@ const Params = ({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
-  onParamVisibilityChange,
-  onSortFieldsChange,
   onChangeTooltip,
-  sortFields,
+  onTableResizeModeChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -105,90 +109,110 @@ const Params = ({
               onGroupingPersistenceChange={onGroupingPersistenceChange}
             />
           </div>
-          <div ref={chartElemRef} className='Params__chart__container'>
-            <BusyLoaderWrapper
-              isLoading={isParamsLoading}
-              loaderComponent={<ChartLoader />}
+          {resizeMode !== ResizeModeEnum.MaxHeight && (
+            <div
+              ref={chartElemRef}
+              style={{ flex: '0.5 1 0' }}
+              className={`Params__chart__container${
+                resizeMode === ResizeModeEnum.Hide ? '__fullHeight' : ''
+              }`}
             >
-              {!!highPlotData?.[0]?.data?.length ? (
-                <ChartPanel
-                  ref={chartPanelRef}
-                  key={highPlotData?.[0]?.data?.length}
-                  chartType={ChartTypeEnum.HighPlot}
-                  data={highPlotData}
-                  focusedState={focusedState}
-                  onActivePointChange={onActivePointChange}
-                  tooltip={tooltip}
-                  panelResizing={panelResizing}
-                  chartProps={chartProps}
-                  controls={
-                    <Controls
-                      curveInterpolation={curveInterpolation}
-                      isVisibleColorIndicator={isVisibleColorIndicator}
-                      selectOptions={groupingSelectOptions}
-                      tooltip={tooltip}
-                      onCurveInterpolationChange={onCurveInterpolationChange}
-                      onColorIndicatorChange={onColorIndicatorChange}
-                      onChangeTooltip={onChangeTooltip}
-                    />
-                  }
-                />
-              ) : (
-                !isParamsLoading && (
-                  <EmptyComponent
-                    size='big'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+              <BusyLoaderWrapper
+                isLoading={isParamsLoading}
+                loaderComponent={<ChartLoader />}
+              >
+                {!!highPlotData?.[0]?.data?.length ? (
+                  <ChartPanel
+                    ref={chartPanelRef}
+                    key={highPlotData?.[0]?.data?.length}
+                    chartType={ChartTypeEnum.HighPlot}
+                    data={highPlotData}
+                    focusedState={focusedState}
+                    onActivePointChange={onActivePointChange}
+                    tooltip={tooltip}
+                    panelResizing={panelResizing}
+                    chartProps={chartProps}
+                    controls={
+                      <Controls
+                        curveInterpolation={curveInterpolation}
+                        isVisibleColorIndicator={isVisibleColorIndicator}
+                        selectOptions={groupingSelectOptions}
+                        tooltip={tooltip}
+                        onCurveInterpolationChange={onCurveInterpolationChange}
+                        onColorIndicatorChange={onColorIndicatorChange}
+                        onChangeTooltip={onChangeTooltip}
+                      />
+                    }
                   />
-                )
-              )}
-            </BusyLoaderWrapper>
-          </div>
-          <div
-            className={`Params__resize ${panelResizing ? 'resizing' : ''}`}
-            ref={resizeElemRef}
-          >
-            <Icon name='more-horizontal' />
-          </div>
-          <div ref={tableElemRef} className='Params__table__container'>
-            <BusyLoaderWrapper
-              isLoading={isParamsLoading}
-              className='Params__loader'
-              height='100%'
-              loaderComponent={<TableLoader />}
+                ) : (
+                  !isParamsLoading && (
+                    <EmptyComponent
+                      size='big'
+                      content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                    />
+                  )
+                )}
+              </BusyLoaderWrapper>
+            </div>
+          )}
+          <ResizePanel
+            panelResizing={panelResizing}
+            resizeElemRef={resizeElemRef}
+            resizeMode={resizeMode}
+            onTableResizeModeChange={onTableResizeModeChange}
+          />
+          {resizeMode !== ResizeModeEnum.Hide && (
+            <div
+              ref={tableElemRef}
+              style={{ flex: '0.5 1 0' }}
+              className={`Params__table__container${
+                resizeMode === ResizeModeEnum.MaxHeight ? '__fullHeight' : ''
+              }`}
             >
-              {!isEmpty(tableData) ? (
-                <Table
-                  custom
-                  key={`${Array.isArray(tableData)}-${tableRowHeight}`}
-                  ref={tableRef}
-                  data={tableData}
-                  columns={tableColumns}
-                  // Table options
-                  topHeader
-                  groups={!Array.isArray(tableData)}
-                  rowHeight={tableRowHeight}
-                  rowHeightMode={
-                    tableRowHeight === RowHeightSize.sm
-                      ? 'small'
-                      : tableRowHeight === RowHeightSize.md
-                      ? 'medium'
-                      : 'large'
-                  }
-                  sortOptions={groupingSelectOptions}
-                  sortFields={sortFields}
-                  hiddenRows={hiddenMetrics}
-                  // Table actions
-                  onSort={onSortFieldsChange}
-                  onExport={onExportTableData}
-                  onManageColumns={onColumnsOrderChange}
-                  onRowHeightChange={onRowHeightChange}
-                  onRowsChange={onParamVisibilityChange}
-                  onRowHover={onTableRowHover}
-                  onRowClick={onTableRowClick}
-                />
-              ) : null}
-            </BusyLoaderWrapper>
-          </div>
+              <BusyLoaderWrapper
+                isLoading={isParamsLoading}
+                className='Params__loader'
+                height='100%'
+                loaderComponent={<TableLoader />}
+              >
+                {!isEmpty(tableData) ? (
+                  <Table
+                    custom
+                    key={`${Array.isArray(
+                      tableData,
+                    )}-${tableRowHeight}-${resizeMode}`}
+                    ref={tableRef}
+                    data={tableData}
+                    columns={tableColumns}
+                    // Table options
+                    topHeader
+                    groups={!Array.isArray(tableData)}
+                    rowHeight={tableRowHeight}
+                    rowHeightMode={
+                      tableRowHeight === RowHeightSize.sm
+                        ? 'small'
+                        : tableRowHeight === RowHeightSize.md
+                        ? 'medium'
+                        : 'large'
+                    }
+                    sortOptions={groupingSelectOptions}
+                    sortFields={sortFields}
+                    hiddenRows={hiddenMetrics}
+                    resizeMode={resizeMode}
+                    // Table actions
+                    onSort={onSortFieldsChange}
+                    onExport={onExportTableData}
+                    onManageColumns={onColumnsOrderChange}
+                    onRowHeightChange={onRowHeightChange}
+                    onRowsChange={onParamVisibilityChange}
+                    onRowHover={onTableRowHover}
+                    onRowClick={onTableRowClick}
+                    onTableResizeModeChange={onTableResizeModeChange}
+                  />
+                ) : null}
+              </BusyLoaderWrapper>
+            </div>
+          )}
         </div>
       </section>
     </div>

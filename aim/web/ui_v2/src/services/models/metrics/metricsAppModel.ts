@@ -77,6 +77,7 @@ import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -154,6 +155,7 @@ function getConfig(): IMetricAppConfig {
       advancedQuery: '',
     },
     table: {
+      resizeMode: ResizeModeEnum.Resizable,
       rowHeight: RowHeightSize.md,
       sortFields: [],
       hiddenMetrics: [],
@@ -1615,6 +1617,7 @@ async function onAlignmentMetricChange(metric: string) {
     model.setState({ config: configData });
   }
   if (modelState?.rawData && configData) {
+    model.setState({ requestIsPending: true });
     const runs = modelState?.rawData?.map((item) => {
       const traces = item.traces.map(({ context, metric_name, slice }) => ({
         context,
@@ -1881,6 +1884,25 @@ function onColumnsOrderChange(columnsOrder: any) {
   }
 }
 
+function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      resizeMode: mode,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -1927,6 +1949,7 @@ const metricAppModel = {
   onTableDiffShow,
   onColumnsOrderChange,
   getQueryStringFromSelect,
+  onTableResizeModeChange,
 };
 
 export default metricAppModel;

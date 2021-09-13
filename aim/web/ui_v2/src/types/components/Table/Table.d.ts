@@ -1,5 +1,7 @@
-import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
 import React from 'react';
+import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
+import { IMetricProps } from 'types/pages/metrics/Metrics';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export interface ITableProps {
   custom?: boolean;
@@ -15,6 +17,7 @@ export interface ITableProps {
   onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange?: (height: RowHeightSize) => void;
+  onTableResizeModeChange?: IMetricProps['onTableResizeModeChange'];
   data: any[];
   columns: any[];
   navBarItems?: {
@@ -45,7 +48,8 @@ export interface ITableProps {
   isInfiniteLoading?: boolean;
   allowInfiniteLoading?: boolean;
   showRowClickBehaviour?: boolean;
-  showResizeContainerActionBar?: booelan;
+  showResizeContainerActionBar?: boolean;
+  resizeMode?: ResizeModeEnum;
 }
 
 export interface ITableRef {

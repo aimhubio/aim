@@ -59,12 +59,18 @@
       width: 100%;
       height: 100%;
     }
+    &__fullHeight {
+      flex: 1 100% !important;
+    }
   }
 
   .Params__table__container {
     -webkit-box-flex: 0.5;
     -ms-flex: 0.5 1 0px;
     flex: 0.5 1 0;
+    &__fullHeight {
+      flex: 1 100% !important;
+    }
   }
 }
 
