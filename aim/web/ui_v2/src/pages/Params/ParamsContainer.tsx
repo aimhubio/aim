@@ -29,12 +29,25 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   );
 
   React.useEffect(() => {
-    const paramsRequestRef = paramsAppModel.getParamsData();
+    let appRequestRef: {
+      call: () => Promise<any>;
+      abort: () => void;
+    };
+    const paramsRequestRef: {
+      call: () => Promise<any>;
+      abort: () => void;
+    } = paramsAppModel.getParamsData();
     paramsAppModel.initialize(route.params.appId);
+
+    if (route.params.appId) {
+      appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
+      appRequestRef.call().then(() => paramsAppModel.getParamsData().call());
+    }
 
     paramsRequestRef.call();
     return () => {
       paramsRequestRef.abort();
+      appRequestRef?.abort();
     };
   }, []);
 
@@ -87,6 +100,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
       hiddenMetrics={paramsData?.config?.table.hiddenMetrics!}
+      notifyData={paramsData?.notifyData}
       tableRowHeight={paramsData?.config?.table.rowHeight as RowHeightSize}
       requestIsPending={paramsData?.requestIsPending}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
