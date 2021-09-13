@@ -11,6 +11,7 @@ function ControlPopover({
   anchor,
   anchorOrigin,
   transformOrigin,
+  open = true,
 }: IControlPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
@@ -26,11 +27,17 @@ function ControlPopover({
     setAnchorEl(null);
   }, []);
 
+  React.useEffect(() => {
+    if (!open) {
+      setAnchorEl(null);
+    }
+  }, [open]);
+
   return (
     <>
-      {anchor({ onAnchorClick, opened: !!anchorEl })}
+      {anchor({ onAnchorClick, opened: open && !!anchorEl })}
       <Popover
-        open={!!anchorEl}
+        open={open && !!anchorEl}
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorPosition={{ left: 20, top: 0 }}

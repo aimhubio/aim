@@ -3,17 +3,17 @@ import { Box, Switch } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 
-import './StylePopoverAdvanced.scss';
+import './StrokePopoverAdvanced.scss';
 
-function StylePopoverAdvanced({
+function StrokePopoverAdvanced({
   onPersistenceChange,
   persistence,
 }: IGroupingPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box className='StylePopoverAdvanced'>
-      <div className='StylePopoverAdvanced__container'>
+    <Box className='StrokePopoverAdvanced'>
+      <div className='StrokePopoverAdvanced__container'>
         <h3 className='subtitle'>Stroke Style persistence</h3>
-        <span className='StylePopoverAdvanced__container__span'>
+        <span className='StrokePopoverAdvanced__container__span'>
           Enable persistent mode for stroke styles so that each group always has
           the same stroke style regardless to its order
         </span>
@@ -22,7 +22,7 @@ function StylePopoverAdvanced({
             color='primary'
             defaultChecked={persistence}
             value={persistence}
-            onChange={() => onPersistenceChange('style')}
+            onChange={() => onPersistenceChange('stroke')}
           />
           <span className='ColorPopoverAdvanced__container__span'>Enable</span>
         </div>
@@ -31,4 +31,4 @@ function StylePopoverAdvanced({
   );
 }
 
-export default StylePopoverAdvanced;
+export default StrokePopoverAdvanced;

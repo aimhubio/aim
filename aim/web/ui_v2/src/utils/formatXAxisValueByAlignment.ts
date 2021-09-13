@@ -12,7 +12,7 @@ function formatXAxisValueByAlignment({
   humanizerConfig?: {};
 }) {
   let formattedXAxisValue;
-  if (xAxisTickValue) {
+  if (xAxisTickValue || xAxisTickValue === 0) {
     switch (type) {
       case AlignmentOptions.RELATIVE_TIME:
         formattedXAxisValue = shortEnglishHumanizer(
@@ -32,7 +32,7 @@ function formatXAxisValueByAlignment({
     }
   }
 
-  return formattedXAxisValue || '--';
+  return formattedXAxisValue ?? '--';
 }
 
 export default formatXAxisValueByAlignment;

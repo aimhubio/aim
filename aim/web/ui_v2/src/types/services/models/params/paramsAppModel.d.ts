@@ -17,25 +17,25 @@ export interface IParam {
 interface IParamsAppConfig {
   grouping: {
     color: string[];
-    style: string[];
+    stroke: string[];
     chart: string[];
     reverseMode: {
       color: boolean;
-      style: boolean;
+      stroke: boolean;
       chart: boolean;
     };
     isApplied: {
       color: boolean;
-      style: boolean;
+      stroke: boolean;
       chart: boolean;
     };
     persistence: {
       color: boolean;
-      style: boolean;
+      stroke: boolean;
     };
     seed: {
       color: number;
-      style: number;
+      stroke: number;
     };
     paletteIndex: number;
     selectOptions: IGroupingSelectOption[];

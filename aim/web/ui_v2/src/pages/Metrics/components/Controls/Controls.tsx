@@ -22,15 +22,9 @@ function Controls(
       <div>
         <ControlPopover
           title='Select Aggregation Method'
+          open={!!props.aggregationConfig.isEnabled}
           anchor={({ onAnchorClick, opened }) => (
             <div
-              onClick={() => {
-                if (props.aggregationConfig.isEnabled) {
-                  props.onAggregationConfigChange({
-                    isApplied: !props.aggregationConfig?.isApplied,
-                  });
-                }
-              }}
               className={`Controls__anchor ${
                 props.aggregationConfig.isApplied ? 'active outlined' : ''
               } ${props.aggregationConfig.isEnabled ? '' : 'disabled'}`}
@@ -40,6 +34,7 @@ function Controls(
                   className={`Controls__anchor__arrow ${
                     opened ? 'Controls__anchor__arrow__opened' : ''
                   }`}
+                  onClick={onAnchorClick}
                 >
                   <Icon name='arrow-left' onClick={onAnchorClick} />
                 </span>
@@ -49,16 +44,21 @@ function Controls(
                   props.aggregationConfig.isApplied ? 'active' : ''
                 }`}
                 name='aggregation'
+                onClick={() => {
+                  if (props.aggregationConfig.isEnabled) {
+                    props.onAggregationConfigChange({
+                      isApplied: !props.aggregationConfig?.isApplied,
+                    });
+                  }
+                }}
               />
             </div>
           )}
           component={
-            props.aggregationConfig.isEnabled ? (
-              <AggregationPopup
-                aggregationConfig={props.aggregationConfig}
-                onChange={props.onAggregationConfigChange}
-              />
-            ) : null
+            <AggregationPopup
+              aggregationConfig={props.aggregationConfig}
+              onChange={props.onAggregationConfigChange}
+            />
           }
         />
       </div>
@@ -240,6 +240,7 @@ function Controls(
       <div>
         <ControlPopover
           title='Select Option To Zoom Out'
+          open={!!props.zoom?.history.length}
           anchor={({ onAnchorClick, opened }) => (
             <div
               className={`Controls__anchor ${
@@ -270,12 +271,10 @@ function Controls(
             </div>
           )}
           component={
-            props.zoom?.history.length ? (
-              <ZoomOutPopup
-                zoomHistory={props.zoom?.history}
-                onChange={props.onZoomChange}
-              />
-            ) : null
+            <ZoomOutPopup
+              zoomHistory={props.zoom?.history}
+              onChange={props.onZoomChange}
+            />
           }
         />
       </div>
