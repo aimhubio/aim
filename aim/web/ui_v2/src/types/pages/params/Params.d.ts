@@ -52,6 +52,8 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tableColumns: any;
   tableRowHeight: any;
   resizeMode: ResizeModeEnum;
+  notifyData: INotification[];
+  onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (
     activePoint: IActivePoint,

@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import moment from 'moment';
 import { Box, Paper, Tab, Tabs } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -39,9 +39,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         <AppBar
           title={
             <div className='RunDetail__runDetailContainer__appBarTitleBox'>
-              <p className='RunDetail__runDetailContainer__appBarTitleBox__pageName'>
+              <NavLink
+                className='RunDetail__runDetailContainer__appBarTitleBox__pageName'
+                to='/runs'
+              >
                 {'Runs'}
-              </p>
+              </NavLink>
               /
               <p className='RunDetail__runDetailContainer__appBarTitleBox__runHash'>
                 {runHash}

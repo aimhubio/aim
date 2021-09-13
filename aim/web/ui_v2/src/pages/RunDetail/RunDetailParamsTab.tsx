@@ -3,6 +3,7 @@ import ReactJson from 'react-json-view';
 import { IRunDetailParamsTabProps } from 'types/pages/runs/Runs';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import { isEmpty } from 'lodash-es';
 
 function RunDetailParamsTab({
   runParams,
@@ -10,12 +11,12 @@ function RunDetailParamsTab({
 }: IRunDetailParamsTabProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <BusyLoaderWrapper
-      isLoading={isRunInfoLoading}
+      isLoading={isRunInfoLoading || !runParams}
       className='runDetailParamsTabLoader'
       height='100%'
     >
       <div className='RunDetailParamsTab'>
-        {runParams ? (
+        {!isEmpty(runParams) ? (
           <ReactJson name={false} theme='bright:inverted' src={runParams} />
         ) : (
           <EmptyComponent

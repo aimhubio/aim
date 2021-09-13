@@ -15,7 +15,7 @@ import { isEmpty } from 'lodash-es';
 import Table from 'components/Table/Table';
 import Icon from 'components/Icon/Icon';
 import { RowHeightSize } from 'config/table/tableConfigs';
-
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import './Params.scss';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -50,6 +50,7 @@ const Params = ({
   onSortFieldsChange,
   sortFields,
   resizeMode,
+  notifyData,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -67,6 +68,7 @@ const Params = ({
   onResetConfigData,
   onChangeTooltip,
   onTableResizeModeChange,
+  onNotificationDelete,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -215,6 +217,12 @@ const Params = ({
           )}
         </div>
       </section>
+      {notifyData?.length > 0 && (
+        <NotificationContainer
+          handleClose={onNotificationDelete}
+          data={notifyData}
+        />
+      )}
     </div>
   );
 };

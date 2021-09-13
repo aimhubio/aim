@@ -59,6 +59,11 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
 
+let appRequestRef: {
+  call: () => Promise<IAppData>;
+  abort: () => void;
+};
+
 function getConfig() {
   return {
     grouping: {
@@ -141,6 +146,23 @@ function initialize(appId: string): void {
     window.history.pushState(null, '', url);
     setDefaultAppConfigData();
   }
+}
+
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
+  return {
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData.state);
+      model.setState({
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
+  };
 }
 
 function setDefaultAppConfigData() {
@@ -967,7 +989,9 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
-    const data: IAppData | any = await appsService.createApp(configData).call();
+    const data: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'params' })
+      .call();
     if (data.id) {
       dashboardService
         .createDashboard({ app_id: data.id, name, description })
@@ -996,7 +1020,7 @@ function onBookmarkUpdate(id: string) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData) {
     appsService
-      .updateApp(id, configData)
+      .updateApp(id, { state: configData, type: 'params' })
       .call()
       .then((res: IDashboardData | any) => {
         if (res.id) {
@@ -1290,6 +1314,7 @@ const paramsAppModel = {
   onParamVisibilityChange,
   onColumnsOrderChange,
   onTableResizeModeChange,
+  getAppConfigData,
 };
 
 export default paramsAppModel;
