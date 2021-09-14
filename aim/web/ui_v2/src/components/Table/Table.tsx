@@ -71,12 +71,12 @@ const Table = React.forwardRef(function Table(
   const hoveredRowKey = React.useRef(null);
   const activeRowKey = React.useRef(null);
   const tableContainerRef = React.useRef();
-  const dataRef = React.useRef(data);
-  const columnsRef = React.useRef(columns);
+  const dataRef = React.useRef(data ?? []);
+  const columnsRef = React.useRef(columns ?? []);
   const hiddenColumnsRef = React.useRef(hiddenColumns);
 
-  const [rowData, setRowData] = React.useState(data);
-  const [columnsData, setColumnsData] = React.useState(columns);
+  const [rowData, setRowData] = React.useState(data ?? []);
+  const [columnsData, setColumnsData] = React.useState(columns ?? []);
   const [expanded, setExpanded] = React.useState({});
   const scrollTopMutableRef = React.useRef({ top: 0 });
 
