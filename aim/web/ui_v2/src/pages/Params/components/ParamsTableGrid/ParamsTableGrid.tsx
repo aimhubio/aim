@@ -6,8 +6,9 @@ function getParamsTableColumns(
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
+  hiddenColumns: string[],
 ): ITableColumn[] {
-  const columns = [
+  let columns = [
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -64,6 +65,10 @@ function getParamsTableColumns(
   //     return 0;
   //   });
   // }
+  columns = columns.map((col) => ({
+    ...col,
+    isHidden: hiddenColumns.includes(col.key),
+  }));
   if (groupFields) {
     columns.push({
       key: '#',

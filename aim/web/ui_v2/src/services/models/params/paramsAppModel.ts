@@ -3,7 +3,7 @@ import _, { isEmpty } from 'lodash-es';
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
 import { saveAs } from 'file-saver';
-import { encode } from 'utils/encoder/encoder';
+import { encode, decode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
 import {
@@ -170,14 +170,47 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+  const tableConfigHash = getItem('paramsTable');
+  const table = tableConfigHash
+    ? JSON.parse(decode(tableConfigHash))
+    : getConfig().table;
   const configData: IParamsAppConfig | any = _.merge(getConfig(), {
     chart,
     grouping,
     select,
+    table,
   });
 
   model.setState({
     config: configData,
+  });
+}
+
+function updateModelData(configData: IParamsAppConfig): void {
+  const { data, params } = processData(
+    model.getState()?.rawData as IRun<IParamTrace>[],
+  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableColumns = getParamsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+  );
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData,
+    newColumns: tableColumns,
+    hiddenColumns: configData.table.hiddenColumns!,
+  });
+  model.setState({
+    config: configData,
+    data,
+    highPlotData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    tableData,
+    tableColumns,
   });
 }
 
@@ -218,6 +251,7 @@ function getParamsData() {
             params,
             data[0]?.config,
             configData.table.columnsOrder!,
+            configData.table.hiddenColumns!,
           ),
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -827,32 +861,6 @@ function onGroupingReset(groupName: GroupNameType) {
   }
 }
 
-function updateModelData(configData: IParamsAppConfig): void {
-  const { data, params } = processData(
-    model.getState()?.rawData as IRun<IParamTrace>[],
-  );
-  const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getParamsTableColumns(
-    params,
-    data[0]?.config,
-    configData.table.columnsOrder!,
-  );
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef.current?.updateData({
-    newData: tableData,
-    newColumns: tableColumns,
-  });
-  model.setState({
-    config: configData,
-    data,
-    highPlotData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
-    tableData,
-    tableColumns,
-  });
-}
-
 function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   xValue: number | string | null = null,
@@ -1092,6 +1100,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     processedData.params,
     processedData.data[0]?.config,
     model.getState()?.config.table.columnsOrder!,
+    model.getState()?.config?.table.hiddenColumns!,
   );
   // TODO need to filter excludedFields and sort column order
   const excludedFields: string[] = [];
@@ -1195,15 +1204,17 @@ function updateUrlParam(
 function onRowHeightChange(height: RowHeightSize) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      rowHeight: height,
+    };
     model.setState({
       config: {
         ...configData,
-        table: {
-          ...configData.table,
-          rowHeight: height,
-        },
+        table,
       },
     });
+    setItem('paramsTable', encode(table));
   }
 }
 
@@ -1227,35 +1238,60 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 function onParamVisibilityChange(metricsKeys: string[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      hiddenMetrics: metricsKeys,
+    };
     const configUpdate = {
       ...configData,
-      table: {
-        ...configData.table,
-        hiddenMetrics: metricsKeys,
-      },
+      table,
     };
     model.setState({
       config: configUpdate,
     });
+    setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
 }
 
-function onColumnsVisibilityChange(columns: string[]) {}
-
-function onColumnsOrderChange(columnsOrder: any) {
+function onColumnsVisibilityChange(hiddenColumns: string[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      hiddenColumns:
+        hiddenColumns[0] === 'all'
+          ? columnsData.map((col: any) => col.key)
+          : hiddenColumns,
+    };
     const configUpdate = {
       ...configData,
-      table: {
-        ...configData.table,
-        columnsOrder: columnsOrder,
-      },
+      table,
     };
     model.setState({
       config: configUpdate,
     });
+    setItem('paramsTable', encode(table));
+    updateModelData(configUpdate);
+  }
+}
+
+function onColumnsOrderChange(columnsOrder: any) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      columnsOrder: columnsOrder,
+    };
+    const configUpdate = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config: configUpdate,
+    });
+    setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
 }
@@ -1292,6 +1328,7 @@ const paramsAppModel = {
   onSortFieldsChange,
   onParamVisibilityChange,
   onColumnsOrderChange,
+  onColumnsVisibilityChange,
   getAppConfigData,
 };
 

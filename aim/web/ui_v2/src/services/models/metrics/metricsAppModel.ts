@@ -1837,19 +1837,22 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      hiddenColumns:
+        hiddenColumns[0] === 'all'
+          ? columnsData.map((col) => col.key)
+          : hiddenColumns,
+    };
     const configUpdate = {
       ...configData,
-      table: {
-        ...configData.table,
-        hiddenColumns:
-          hiddenColumns[0] === 'all'
-            ? columnsData.map((col) => col.key)
-            : hiddenColumns,
-      },
+      table,
     };
     model.setState({
       config: configUpdate,
     });
+    setItem('metricsTable', encode(table));
+
     updateModelData(configUpdate);
   }
 }
