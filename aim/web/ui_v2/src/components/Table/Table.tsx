@@ -63,8 +63,6 @@ const Table = React.forwardRef(function Table(
     showRowClickBehaviour = true,
     showResizeContainerActionBar = true,
     resizeMode,
-    tableELemRef,
-    chartElemRef,
     ...props
   }: ITableProps,
   ref,

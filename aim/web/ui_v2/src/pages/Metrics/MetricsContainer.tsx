@@ -42,7 +42,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
-  const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
+  const metricsData = useModel<Partial<IMetricAppModelState> | any>(
+    metricAppModel,
+  );
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
 
   const panelResizing = usePanelResize(
@@ -50,6 +52,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
+    metricsData?.config?.table.resizeMode || ResizeModeEnum.Resizable,
   );
 
   React.useEffect(() => {

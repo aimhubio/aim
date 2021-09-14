@@ -32,14 +32,16 @@
 
   .Metrics__chart__container {
     min-height: 372px;
-    &__fullHeight {
-      flex: 1 100% !important;
+    flex: 0.5 1 0;
+    &__hide {
+      display: none;
     }
   }
 
   .Metrics__table__container {
-    &__fullHeight {
-      flex: 1 100% !important;
+    flex: 0.5 1 0;
+    &__hide {
+      display: none;
     }
   }
 }
