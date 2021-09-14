@@ -30,6 +30,7 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { ILine } from 'types/components/LineChart/LineChart';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -65,6 +66,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   requestIsPending: boolean;
+  resizeMode: ResizeModeEnum;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onDisplayOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
@@ -99,11 +101,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;
-  onSortFieldsChange: (fileds: []) => void;
+  onSortFieldsChange: (fields: []) => void;
   onMetricVisibilityChange: (metricKeys: string[]) => void;
   onColumnsOrderChange: (order: any) => void;
   onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
   onTableDiffShow: () => void;
+  onTableResizeModeChange: (mode: ResizeModeEnum) => void;
 }
 
 export interface IOnSmoothingChange {

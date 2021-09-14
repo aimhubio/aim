@@ -21,8 +21,6 @@
 
   .Metrics__fullHeight {
     height: 100%;
-    // height: -moz-available; /* WebKit-based browsers will ignore this. */
-    // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   }
 
   .Metrics__section__div {
@@ -31,40 +29,20 @@
     justify-content: center;
   }
 
-  .Metrics__resize {
-    cursor: row-resize;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    height: 0.5rem;
-    border-top: 0.125rem solid tint( $primary-color, 90);
-    border-bottom: 0.125rem solid  tint( $primary-color, 90);
-    background-color: tint( $primary-color, 90);
-    transition: all .15s ease-out;
-    transition-delay: .3s;
-    i {
-      transition: all .15s ease-out;
-      transition-delay: .3s;
-    }
-    &:hover, &.resizing {
-      background-color: tint( $primary-color, 25);
-      i {
-        opacity: 0;
-      }
-    }
-  }
 
   .Metrics__chart__container {
-    -webkit-box-flex: 0.5;
-    -ms-flex: 0.5 1 0;
-    flex: 0.5 1 0;
     min-height: 372px;
+    flex: 0.5 1 0;
+    &__hide {
+      display: none;
+    }
   }
 
   .Metrics__table__container {
-    -webkit-box-flex: 0.5;
-    -ms-flex: 0.5 1 0px;
     flex: 0.5 1 0;
+    &__hide {
+      display: none;
+    }
   }
 }
 

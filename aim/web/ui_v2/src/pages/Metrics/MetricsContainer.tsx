@@ -32,6 +32,7 @@ import {
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -41,7 +42,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
-  const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
+  const metricsData = useModel<Partial<IMetricAppModelState> | any>(
+    metricAppModel,
+  );
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
 
   const panelResizing = usePanelResize(
@@ -49,6 +52,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
+    metricsData?.config?.table.resizeMode || ResizeModeEnum.Resizable,
   );
 
   React.useEffect(() => {
@@ -156,6 +160,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         projectsData?.metrics as IProjectParamsMetrics['metrics']
       }
       requestIsPending={metricsData?.requestIsPending as boolean}
+      resizeMode={metricsData?.config?.table.resizeMode as ResizeModeEnum}
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
@@ -191,6 +196,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
       onTableDiffShow={metricAppModel.onTableDiffShow}
+      onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
     />
   );
 }

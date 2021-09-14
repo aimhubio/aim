@@ -59,18 +59,24 @@
       width: 100%;
       height: 100%;
     }
+    &__hide {
+      display: none;
+    }
   }
 
   .Params__table__container {
     -webkit-box-flex: 0.5;
     -ms-flex: 0.5 1 0px;
     flex: 0.5 1 0;
+    &__hide {
+      display: none;
+    }
   }
 }
 
 .Params__SelectForm__Grouping__container {
   display: flex;
-  border-bottom: 1px solid #e8f1fc;
+  border-bottom: 0.0625rem solid #e8f1fc;
 }
 
 .Metrics__controls__container {

@@ -16,8 +16,9 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ChartTypeEnum } from 'utils/d3';
-import Icon from 'components/Icon/Icon';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import ResizePanel from 'components/ResizePanel/ResizePanel';
 
 import './Metrics.scss';
 
@@ -83,7 +84,12 @@ function Metrics(
               onGroupingPersistenceChange={props.onGroupingPersistenceChange}
             />
           </div>
-          <div ref={props.chartElemRef} className='Metrics__chart__container'>
+          <div
+            ref={props.chartElemRef}
+            className={`Metrics__chart__container${
+              props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+            }`}
+          >
             <BusyLoaderWrapper
               isLoading={props.requestIsPending}
               className='Metrics__loader'
@@ -141,15 +147,18 @@ function Metrics(
               )}
             </BusyLoaderWrapper>
           </div>
+          <ResizePanel
+            panelResizing={props.panelResizing}
+            resizeElemRef={props.resizeElemRef}
+            resizeMode={props.resizeMode}
+            onTableResizeModeChange={props.onTableResizeModeChange}
+          />
           <div
-            className={`Metrics__resize ${
-              props.panelResizing ? 'resizing' : ''
+            ref={props.tableElemRef}
+            className={`Metrics__table__container${
+              props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
             }`}
-            ref={props.resizeElemRef}
           >
-            <Icon name='more-horizontal' />
-          </div>
-          <div ref={props.tableElemRef} className='Metrics__table__container'>
             <BusyLoaderWrapper
               isLoading={props.requestIsPending}
               className='Metrics__loader'
@@ -161,7 +170,7 @@ function Metrics(
                   custom
                   key={`${Array.isArray(props.tableData)}-${
                     props.tableRowHeight
-                  }`}
+                  }-${props.resizeMode}`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
@@ -180,6 +189,7 @@ function Metrics(
                   sortFields={props.sortFields}
                   hiddenRows={props.hiddenMetrics}
                   hiddenColumns={props.hiddenColumns}
+                  resizeMode={props.resizeMode}
                   // Table actions
                   onSort={props.onSortFieldsChange}
                   onExport={props.onExportTableData}
@@ -190,6 +200,7 @@ function Metrics(
                   onRowsChange={props.onMetricVisibilityChange}
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
+                  onTableResizeModeChange={props.onTableResizeModeChange}
                 />
               ) : null}
             </BusyLoaderWrapper>

@@ -13,10 +13,11 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
 import { isEmpty } from 'lodash-es';
 import Table from 'components/Table/Table';
-import Icon from 'components/Icon/Icon';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import './Params.scss';
+import ResizePanel from 'components/ResizePanel/ResizePanel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 const Params = ({
   curveInterpolation,
@@ -44,6 +45,11 @@ const Params = ({
   onTableRowClick,
   onColumnsOrderChange,
   onRowHeightChange,
+  onParamVisibilityChange,
+  onSortFieldsChange,
+  sortFields,
+  resizeMode,
+  notifyData,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -59,11 +65,8 @@ const Params = ({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
-  onParamVisibilityChange,
-  onSortFieldsChange,
   onChangeTooltip,
-  sortFields,
-  notifyData,
+  onTableResizeModeChange,
   onNotificationDelete,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
@@ -107,7 +110,13 @@ const Params = ({
               onGroupingPersistenceChange={onGroupingPersistenceChange}
             />
           </div>
-          <div ref={chartElemRef} className='Params__chart__container'>
+
+          <div
+            ref={chartElemRef}
+            className={`Params__chart__container${
+              resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+            }`}
+          >
             <BusyLoaderWrapper
               isLoading={isParamsLoading}
               loaderComponent={<ChartLoader />}
@@ -145,13 +154,19 @@ const Params = ({
               )}
             </BusyLoaderWrapper>
           </div>
+          <ResizePanel
+            panelResizing={panelResizing}
+            resizeElemRef={resizeElemRef}
+            resizeMode={resizeMode}
+            onTableResizeModeChange={onTableResizeModeChange}
+          />
+
           <div
-            className={`Params__resize ${panelResizing ? 'resizing' : ''}`}
-            ref={resizeElemRef}
+            ref={tableElemRef}
+            className={`Params__table__container${
+              resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+            }`}
           >
-            <Icon name='more-horizontal' />
-          </div>
-          <div ref={tableElemRef} className='Params__table__container'>
             <BusyLoaderWrapper
               isLoading={isParamsLoading}
               className='Params__loader'
@@ -161,7 +176,9 @@ const Params = ({
               {!isEmpty(tableData) ? (
                 <Table
                   custom
-                  key={`${Array.isArray(tableData)}-${tableRowHeight}`}
+                  key={`${Array.isArray(
+                    tableData,
+                  )}-${tableRowHeight}-${resizeMode}`}
                   ref={tableRef}
                   data={tableData}
                   columns={tableColumns}
@@ -179,6 +196,7 @@ const Params = ({
                   sortOptions={groupingSelectOptions}
                   sortFields={sortFields}
                   hiddenRows={hiddenMetrics}
+                  resizeMode={resizeMode}
                   // Table actions
                   onSort={onSortFieldsChange}
                   onExport={onExportTableData}
@@ -187,6 +205,7 @@ const Params = ({
                   onRowsChange={onParamVisibilityChange}
                   onRowHover={onTableRowHover}
                   onRowClick={onTableRowClick}
+                  onTableResizeModeChange={onTableResizeModeChange}
                 />
               ) : null}
             </BusyLoaderWrapper>

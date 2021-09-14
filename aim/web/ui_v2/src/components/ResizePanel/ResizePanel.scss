@@ -1,0 +1,36 @@
+@use 'src/styles/abstracts' as *;
+
+.ResizePanel {
+  cursor: row-resize;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: 0.5rem;
+  border-top: 0.125rem solid tint($primary-color, 90);
+  border-bottom: 0.125rem solid tint($primary-color, 90);
+  background-color: tint($primary-color, 90);
+  transition: all 0.15s ease-out;
+  transition-delay: 0.3s;
+  i {
+    transition: all 0.15s ease-out;
+    transition-delay: 0.3s;
+  }
+  &:hover,
+  &.resizing {
+    background-color: tint($primary-color, 25);
+    i {
+      opacity: 0;
+    }
+  }
+  &__fullHeight {
+    background-color: tint($cuddle, 90);
+    border-top: $border-main;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__hidden {
+      display: none;
+  }
+}
