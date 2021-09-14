@@ -38,6 +38,9 @@ const light: ThemeOptions = {
     primary: {
       main: '#1473E6',
     },
+    secondary: {
+      main: '#1c2852',
+    },
     text: {
       primary: '#1C2852',
     },

@@ -54,6 +54,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import JsonToCSV from 'utils/JsonToCSV';
 import moment from 'moment';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -112,6 +113,7 @@ function getConfig() {
       query: '',
     },
     table: {
+      resizeMode: ResizeModeEnum.Resizable,
       rowHeight: RowHeightSize.md,
       sortFields: [],
       hiddenMetrics: [],
@@ -1296,6 +1298,25 @@ function onColumnsOrderChange(columnsOrder: any) {
   }
 }
 
+function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      resizeMode: mode,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('paramsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1329,6 +1350,7 @@ const paramsAppModel = {
   onParamVisibilityChange,
   onColumnsOrderChange,
   onColumnsVisibilityChange,
+  onTableResizeModeChange,
   getAppConfigData,
 };
 

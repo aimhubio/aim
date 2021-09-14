@@ -65,7 +65,7 @@ class Container(ContainerView):
         self._lock_path: Optional[Path] = None
         self._progress_path: Optional[Path] = None
         if not self.read_only:
-            self.preload()
+            self.writable_db
         # TODO check if Containers are reopenable
 
     @property

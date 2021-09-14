@@ -12,13 +12,14 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { useRouteMatch } from 'react-router-dom';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const paramsData = useModel(paramsAppModel);
+  const paramsData = useModel<any>(paramsAppModel);
   const route = useRouteMatch<any>();
 
   const panelResizing = usePanelResize(
@@ -26,6 +27,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
+    paramsData?.config?.table.resizeMode || ResizeModeEnum.Resizable,
   );
 
   React.useEffect(() => {
@@ -100,6 +102,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
       hiddenColumns={paramsData?.config?.table.hiddenColumns!}
+      resizeMode={paramsData?.config?.table.resizeMode}
       hiddenMetrics={paramsData?.config?.table.hiddenMetrics!}
       notifyData={paramsData?.notifyData}
       tableRowHeight={paramsData?.config?.table.rowHeight as RowHeightSize}
@@ -129,6 +132,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
+      onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}
     />
   );
 }
