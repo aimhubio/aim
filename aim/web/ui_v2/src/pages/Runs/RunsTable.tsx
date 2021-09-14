@@ -14,10 +14,11 @@ function RunsTable({
   getLastRunsData,
   isLatest,
   data,
-  onRowsChange,
+  onColumnsVisibilityChange,
+  onTableDiffShow,
   onManageColumns,
   onRowHeightChange,
-  hiddenRuns,
+  hiddenColumns,
   columnsOrder,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
@@ -48,19 +49,19 @@ function RunsTable({
           infiniteLoadHandler={handleInfiniteLoad}
           showResizeContainerActionBar={false}
           emptyText={'No runs found'}
-          key={`${columns?.length}-${size(runsList)}`}
           ref={tableRef}
           data={data}
           columns={columns}
           isLoading={isRunsDataLoading}
           // Table options
           topHeader
-          groups={!Array.isArray(runsList)}
           rowHeight={tableRowHeight}
-          hiddenColumns={hiddenRuns}
-          // Table actions
+          hiddenColumns={hiddenColumns}
           columnsOrder={columnsOrder}
+          // Table actions
           onManageColumns={onManageColumns}
+          onColumnsVisibilityChange={onColumnsVisibilityChange}
+          onTableDiffShow={onTableDiffShow}
           onRowHeightChange={onRowHeightChange}
           onExport={onExportTableData}
         />
