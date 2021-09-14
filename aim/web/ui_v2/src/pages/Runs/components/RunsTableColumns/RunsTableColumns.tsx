@@ -5,8 +5,9 @@ function getRunsTableColumns(
   runColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
+  hiddenColumns: string[],
 ): ITableColumn[] {
-  const columns: ITableColumn[] = [
+  let columns: ITableColumn[] = [
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -59,6 +60,11 @@ function getRunsTableColumns(
       }
     });
   }
+
+  columns = columns.map((col) => ({
+    ...col,
+    isHidden: hiddenColumns.includes(col.key),
+  }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {

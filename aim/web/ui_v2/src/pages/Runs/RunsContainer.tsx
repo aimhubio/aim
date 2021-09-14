@@ -28,7 +28,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Runs
-      hiddenRuns={runsData?.config?.table.hiddenMetrics!}
       tableData={runsData?.tableData}
       tableColumns={runsData?.tableColumns}
       isRunsDataLoading={runsData?.requestIsPending}
@@ -37,6 +36,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRowHeight={runsData?.config?.table?.rowHeight}
       tableRef={tableRef}
       columnsOrder={runsData?.config?.table.columnsOrder}
+      hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
       query={runsData?.config?.select?.query}
       updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
       onExportTableData={runsAppModel.onExportTableData}
@@ -45,8 +45,9 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onNotificationDelete={runsAppModel.onNotificationDelete}
       notifyData={runsData?.notifyData}
       onRowHeightChange={runsAppModel.onRowHeightChange}
-      onRowsChange={runsAppModel.onRunsVisibilityChange}
       onManageColumns={runsAppModel.onColumnsOrderChange}
+      onColumnsVisibilityChange={runsAppModel.onColumnsVisibilityChange}
+      onTableDiffShow={runsAppModel.onTableDiffShow}
     />
   );
 }
