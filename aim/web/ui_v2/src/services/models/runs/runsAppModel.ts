@@ -1,3 +1,8 @@
+import React from 'react';
+import _ from 'lodash-es';
+import moment from 'moment';
+import { saveAs } from 'file-saver';
+
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
 import {
@@ -16,7 +21,6 @@ import { IParam } from 'types/services/models/params/paramsAppModel';
 import getObjectPaths from 'utils/getObjectPaths';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import _ from 'lodash-es';
 import { encode, decode } from 'utils/encoder/encoder';
 import { IMetric } from '../../../types/services/models/metrics/metricModel';
 import {
@@ -38,14 +42,12 @@ import { CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
 import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
-import React from 'react';
 import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from '../../../utils/JsonToCSV';
-import { saveAs } from 'file-saver';
-import moment from 'moment';
 
+// TODO need to implement state type
 const model = createModel<Partial<any>>({
   requestIsPending: true,
   infiniteIsPending: false,
@@ -364,7 +366,7 @@ function getFilteredRow(
     if (Array.isArray(value)) {
       value = value.join(', ');
     } else if (typeof value !== 'string') {
-      value = JSON.stringify(value);
+      value = value || value === 0 ? JSON.stringify(value) : '-';
     }
 
     if (column.startsWith('params.')) {
@@ -378,65 +380,54 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const processedData = processData(
+  // TODO need to get data and params from state not from processData
+  const { data, params } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-
-  const tableData = getDataAsTableRows(
-    processedData.data,
-    null,
-    processedData.params,
-  );
+  const tableData = getDataAsTableRows(data, null, params);
+  const configData = model.getState()?.config;
   const tableColumns: ITableColumn[] = getRunsTableColumns(
-    processedData.params,
-    processedData.data[0]?.config,
-    model.getState()?.config?.table.columnsOrder!,
-    model.getState()?.config?.table.hiddenColumns!,
+    params,
+    data[0]?.config,
+    configData?.table.columnsOrder!,
+    configData?.table.hiddenColumns!,
   );
-  // TODO need to filter excludedFields and sort column order
-  const excludedFields: string[] = [];
+  const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
-      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
+      acc.concat(
+        excludedFields.indexOf(column.key) === -1 && !column.isHidden
+          ? column.key
+          : [],
+      ),
     [],
   );
-  // const flattenOrders = Object.keys(columnsOrder).reduce(
-  //   (acc, key) => acc.concat(columnsOrder[key]),
-  //   [],
-  // );
-  // filteredHeader.sort(
-  //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
-  // );
 
   let emptyRow: { [key: string]: string } = {};
   filteredHeader.forEach((column: string) => {
     emptyRow[column] = '--';
   });
 
-  const dataToExport = tableData.rows?.reduce(
-    (
-      accArray: { [key: string]: string }[],
-      rowData: IMetricTableRowData,
-      rowDataIndex: number,
-    ) => {
-      if (rowData?.children?.length > 0) {
-        rowData.children.forEach((row: IMetricTableRowData) => {
-          const filteredRow = getFilteredRow(filteredHeader, row);
-          accArray = accArray.concat(filteredRow);
-        });
-        if (tableData.rows.length - 1 !== rowDataIndex) {
-          accArray = accArray.concat(emptyRow);
-        }
-      } else {
-        const filteredRow = getFilteredRow(filteredHeader, rowData);
-        accArray = accArray.concat(filteredRow);
+  const groupedRows: IMetricTableRowData[][] =
+    data.length > 1
+      ? Object.keys(tableData.rows).map(
+          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+        )
+      : [tableData.rows];
+
+  const dataToExport: { [key: string]: string }[] = [];
+
+  groupedRows.forEach(
+    (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
+      groupedRow.forEach((row: IMetricTableRowData) => {
+        const filteredRow = getFilteredRow(filteredHeader, row);
+        dataToExport.push(filteredRow);
+      });
+      if (groupedRows.length - 1 !== groupedRowIndex) {
+        dataToExport.push(emptyRow);
       }
-
-      return accArray;
     },
-    [],
   );
-
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
@@ -667,10 +658,14 @@ function getDataAsTableRows(
   processedData: any,
   xValue: number | string | null = null,
   paramKeys: string[],
-): { rows: any[] | any; sameValueColumns: string[] } {
+): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
-    return { rows: [], sameValueColumns: [] };
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
   }
+
   const rows: any = processedData[0]?.config !== null ? {} : [];
   let rowIndex = 0;
   const sameValueColumns: string[] = [];
@@ -825,7 +820,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getRunsTableColumns(
+  const tableColumns: ITableColumn[] = getRunsTableColumns(
     params,
     data[0]?.config,
     configData.table.columnsOrder!,

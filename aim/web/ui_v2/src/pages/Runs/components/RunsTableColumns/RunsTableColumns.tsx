@@ -81,6 +81,8 @@ function getRunsTableColumns(
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
     } else if (!columnsOrder.includes(a.key)) {
+      return 1;
+    } else if (!columnsOrder.includes(b.key)) {
       return -1;
     }
     return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as _ from 'lodash-es';
+import _ from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 
@@ -1001,15 +1001,21 @@ function getDataAsTableRows(
         metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         value:
-          closestIndex === null ? '-' : `${metric.data.values[closestIndex]}`,
+          closestIndex === null
+            ? '-'
+            : `${metric.data.values[closestIndex] ?? '-'}`,
         step:
-          closestIndex === null ? '-' : `${metric.data.steps[closestIndex]}`,
+          closestIndex === null
+            ? '-'
+            : `${metric.data.steps[closestIndex] ?? '-'}`,
         epoch:
-          closestIndex === null ? '-' : `${metric.data.epochs[closestIndex]}`,
+          closestIndex === null
+            ? '-'
+            : `${metric.data.epochs[closestIndex] ?? '-'}`,
         time:
           closestIndex === null
             ? '-'
-            : `${metric.data.timestamps[closestIndex]}`,
+            : `${metric.data.timestamps[closestIndex] ?? '-'}`,
         parentId: groupKey,
       };
       rowIndex++;
@@ -1233,7 +1239,11 @@ function updateModelData(configData: IMetricAppConfig): void {
   const { data, params } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(data, null, params);
+  const tableData = getDataAsTableRows(
+    data,
+    configData?.chart?.focusedState.xValue ?? null,
+    params,
+  );
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
@@ -1380,12 +1390,10 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  const tableData = getDataAsTableRows(
-    model.getState()!.data!,
-    activePoint.xValue,
-    model.getState()!.params!,
-  );
+  const { data, params, refs, config } =
+    model.getState() as IMetricAppModelState;
+  const tableRef: any = refs?.tableRef;
+  const tableData = getDataAsTableRows(data, activePoint.xValue, params);
   if (tableRef) {
     tableRef.current?.updateData({
       newData: tableData.rows,
@@ -1399,7 +1407,7 @@ function onActivePointChange(
       tableRef.current?.scrollToRow?.(activePoint.key);
     }
   }
-  let configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let configData: IMetricAppConfig = config;
   if (configData?.chart) {
     configData = {
       ...configData,
@@ -1467,7 +1475,7 @@ function getFilteredRow(
     if (Array.isArray(value)) {
       value = value.join(', ');
     } else if (typeof value !== 'string') {
-      value = JSON.stringify(value);
+      value = value || value === 0 ? JSON.stringify(value) : '-';
     }
 
     if (column.startsWith('params.')) {
@@ -1481,63 +1489,55 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const processedData = processData(
-    model.getState()?.rawData as IRun<IMetricTrace>[],
-  );
+  const { data, params, config } = model.getState() as IMetricAppModelState;
 
   const tableData = getDataAsTableRows(
-    processedData.data,
-    null,
-    processedData.params,
+    data,
+    config?.chart?.focusedState.xValue ?? null,
+    params,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
-    processedData.params,
-    processedData.data[0]?.config,
-    model.getState()?.config?.table.columnsOrder!,
-    model.getState()?.config?.table.hiddenColumns!,
+    params,
+    data[0]?.config,
+    config?.table.columnsOrder!,
+    config?.table.hiddenColumns!,
   );
-  // TODO need to filter excludedFields and sort column order
-  const excludedFields: string[] = [];
+
+  const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
-      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
+      acc.concat(
+        excludedFields.indexOf(column.key) === -1 && !column.isHidden
+          ? column.key
+          : [],
+      ),
     [],
   );
-  // const flattenOrders = Object.keys(columnsOrder).reduce(
-  //   (acc, key) => acc.concat(columnsOrder[key]),
-  //   [],
-  // );
-  // filteredHeader.sort(
-  //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
-  // );
 
   let emptyRow: { [key: string]: string } = {};
   filteredHeader.forEach((column: string) => {
     emptyRow[column] = '--';
   });
 
-  const dataToExport = tableData.rows?.reduce(
-    (
-      accArray: { [key: string]: string }[],
-      rowData: IMetricTableRowData,
-      rowDataIndex: number,
-    ) => {
-      if (rowData?.children?.length > 0) {
-        rowData.children.forEach((row: IMetricTableRowData) => {
-          const filteredRow = getFilteredRow(filteredHeader, row);
-          accArray = accArray.concat(filteredRow);
-        });
-        if (tableData.rows.length - 1 !== rowDataIndex) {
-          accArray = accArray.concat(emptyRow);
-        }
-      } else {
-        const filteredRow = getFilteredRow(filteredHeader, rowData);
-        accArray = accArray.concat(filteredRow);
-      }
+  const groupedRows: IMetricTableRowData[][] =
+    data.length > 1
+      ? Object.keys(tableData.rows).map(
+          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+        )
+      : [tableData.rows];
 
-      return accArray;
+  const dataToExport: { [key: string]: string }[] = [];
+
+  groupedRows.forEach(
+    (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
+      groupedRow.forEach((row: IMetricTableRowData) => {
+        const filteredRow = getFilteredRow(filteredHeader, row);
+        dataToExport.push(filteredRow);
+      });
+      if (groupedRows.length - 1 !== groupedRowIndex) {
+        dataToExport.push(emptyRow);
+      }
     },
-    [],
   );
 
   const blob = new Blob([JsonToCSV(dataToExport)], {
@@ -1693,7 +1693,11 @@ function setModelData(
   if (configData) {
     setAggregationEnabled(configData);
   }
-  const tableData = getDataAsTableRows(data, null, params);
+  const tableData = getDataAsTableRows(
+    data,
+    configData?.chart?.focusedState.xValue ?? null,
+    params,
+  );
   model.setState({
     requestIsPending: false,
     rawData,
