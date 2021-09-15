@@ -1,21 +1,38 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { IRoute, routes } from 'routes/routes';
+import routes, { IRoute } from 'routes/routes';
 import { Drawer } from '@material-ui/core';
 
-import { ThemeContext } from 'components/Theme/Theme';
-import Icon from 'components/Icon/Icon';
-import { IThemeContextValues } from 'types/components/Theme/Theme';
 import { IconName } from 'types/components/Icon/Icon';
+import Icon from 'components/Icon/Icon';
+import { PathEnum } from 'config/enums/sideBarEnum';
 
 import logoImg from 'assets/logo.svg';
 
 import './Sidebar.scss';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
-  const { dark, handleTheme } = React.useContext(
-    ThemeContext,
-  ) as IThemeContextValues;
+  function getPathFromStorage(route: PathEnum): PathEnum | string {
+    switch (route) {
+      case PathEnum.Metrics:
+        if (localStorage.getItem('metricsUrl')) {
+          return localStorage.getItem('metricsUrl') || '';
+        }
+        return route;
+      case PathEnum.Params:
+        if (localStorage.getItem('paramsUrl')) {
+          return localStorage.getItem('paramsUrl') || '';
+        }
+        return route;
+      case PathEnum.Runs:
+        if (localStorage.getItem('runsUrl')) {
+          return localStorage.getItem('runsUrl') || '';
+        }
+        return route;
+      default:
+        return route;
+    }
+  }
 
   return (
     <div className='Sidebar__container'>
@@ -41,7 +58,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               showInSidebar && (
                 <NavLink
                   key={index}
-                  to={path}
+                  to={() => getPathFromStorage(path)}
                   exact={true}
                   activeClassName={'Sidebar__anchor__active'}
                   className='Sidebar__anchor'

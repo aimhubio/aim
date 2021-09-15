@@ -14,6 +14,7 @@ import BookmarkForm from '../BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
+import Icon from 'components/Icon/Icon';
 
 import './MetricsBar.scss';
 
@@ -47,7 +48,7 @@ function MetricsBar({
             <div onClick={onAnchorClick} className='MetricsBar__item__bookmark'>
               <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
               <span>
-                <i className='icon-bookmark' />
+                <Icon name='bookmarks' />
               </span>
             </div>
           )}
@@ -69,7 +70,7 @@ function MetricsBar({
         >
           <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
           <span>
-            <i className='icon-bookmarks' />
+            <Icon name='bookmarks' />
           </span>
         </div>
       )}
@@ -79,7 +80,7 @@ function MetricsBar({
           title='Menu'
           anchor={({ onAnchorClick }) => (
             <span onClick={onAnchorClick}>
-              <i className='icon-menu' />
+              <Icon name='menu' />
             </span>
           )}
           component={

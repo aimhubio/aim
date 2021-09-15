@@ -1,4 +1,5 @@
 import React from 'react';
+import { PathEnum } from '../config/enums/sideBarEnum';
 
 const Runs = React.lazy(() => import('pages/Runs/RunsContainer'));
 const RunDetail = React.lazy(() => import('pages/RunDetail/RunDetail'));
@@ -10,20 +11,8 @@ const Bookmarks = React.lazy(
 const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
 
-const PATHS = {
-  HOME: '/',
-  RUNS: '/runs',
-  METRICS: '/metrics',
-  METRICS_ID: '/metrics/:appId',
-  PARAMS: '/params',
-  PARAMS_ID: '/params/:appId',
-  TAGS: '/tags',
-  BOOKMARKS: '/bookmarks',
-  RUN_DETAIL: '/runs/:runHash',
-};
-
 export interface IRoute {
-  path: string;
+  path: PathEnum;
   component:
     | React.LazyExoticComponent<
         () => React.FunctionComponentElement<React.ReactNode>
@@ -36,64 +25,64 @@ export interface IRoute {
 
 const routes = {
   HOME: {
-    path: PATHS.HOME,
+    path: PathEnum.Home,
     component: Home,
     showInSidebar: false,
     displayName: null,
   },
   RUNS: {
-    path: PATHS.RUNS,
+    path: PathEnum.Runs,
     component: Runs,
     showInSidebar: true,
     displayName: 'Runs',
     icon: 'runs',
   },
   METRICS: {
-    path: PATHS.METRICS,
+    path: PathEnum.Metrics,
     component: Metrics,
     showInSidebar: true,
     displayName: 'Metrics',
     icon: 'metrics',
   },
   METRICS_ID: {
-    path: PATHS.METRICS_ID,
+    path: PathEnum.Metrics_Id,
     component: Metrics,
     showInSidebar: false,
     displayName: 'MetricsId',
   },
   PARAMS: {
-    path: PATHS.PARAMS,
+    path: PathEnum.Params,
     component: Params,
     showInSidebar: true,
     displayName: 'Params',
     icon: 'params',
   },
   PARAMS_ID: {
-    path: PATHS.PARAMS_ID,
+    path: PathEnum.Params_Id,
     component: Params,
     showInSidebar: false,
     displayName: 'MetricsId',
   },
   BOOKMARKS: {
-    path: PATHS.BOOKMARKS,
+    path: PathEnum.Bookmarks,
     component: Bookmarks,
     showInSidebar: true,
     displayName: 'Bookmarks',
     icon: 'bookmarks',
   },
   TAGS: {
-    path: PATHS.TAGS,
+    path: PathEnum.Tags,
     component: TagsContainer,
     showInSidebar: true,
     displayName: 'Tags',
     icon: 'tags',
   },
   RUN_DETAIL: {
-    path: PATHS.RUN_DETAIL,
+    path: PathEnum.Run_Detail,
     component: RunDetail,
     showInSidebar: false,
     displayName: 'Run Detail',
   },
 };
 
-export { PATHS, routes };
+export default routes;

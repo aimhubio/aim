@@ -13,7 +13,7 @@ function BusyLoaderWrapper({
   width = '100%',
   height = 'auto',
   loaderComponent,
-}: IBusyLoaderWrapperProps): React.FunctionComponentElement<React.ReactNode> {
+}: IBusyLoaderWrapperProps): React.FunctionComponentElement<React.ReactNode> | null {
   function loaderRender(): React.ReactElement {
     switch (loaderType) {
       case 'skeleton': {
@@ -30,9 +30,7 @@ function BusyLoaderWrapper({
     </div>
   ) : children ? (
     children
-  ) : (
-    <div></div>
-  );
+  ) : null;
 }
 
 export default React.memo(BusyLoaderWrapper);
