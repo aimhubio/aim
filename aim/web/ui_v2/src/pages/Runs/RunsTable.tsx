@@ -36,9 +36,6 @@ function RunsTable({
 
   return (
     <div className='Runs__RunList__runListBox'>
-      <div className='Runs__RunList__runListBox__titleBox'>
-        <span className='Runs__RunList__runListBox__titleBox__title'>Runs</span>
-      </div>
       <div className='RunsTable'>
         <Table
           custom

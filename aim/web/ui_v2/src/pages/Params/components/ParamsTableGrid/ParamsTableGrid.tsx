@@ -1,12 +1,19 @@
 import React from 'react';
+import { Link as RouteLink } from 'react-router-dom';
+import { Link } from '@material-ui/core';
+import { merge } from 'lodash-es';
+
+import TagLabel from 'components/TagLabel/TagLabel';
+import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { PathEnum } from 'config/enums/sideBarEnum';
 
 function getParamsTableColumns(
+  metricsColumns: any,
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
-  metricsColumns: any,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -32,22 +39,12 @@ function getParamsTableColumns(
         : null,
     },
   ].concat(
-    paramColumns.map((param) => ({
-      key: param,
-      content: <span>{param}</span>,
-      topHeader: 'Params',
-      pin: order?.left?.includes(param)
-        ? 'left'
-        : order?.right?.includes(param)
-        ? 'right'
-        : null,
-    })),
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
       acc = [
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
           key: `${key}_${metricContext}`,
-          content: <span>{metricContext}</span>,
+          content: <TagLabel color={COLORS[0][0]} label={metricContext} />,
           topHeader: key,
           pin: order?.left?.includes(`${key}_${metricContext}`)
             ? 'left'
@@ -58,6 +55,16 @@ function getParamsTableColumns(
       ];
       return acc;
     }, []),
+    paramColumns.map((param) => ({
+      key: param,
+      content: <span>{param}</span>,
+      topHeader: 'Params',
+      pin: order?.left?.includes(param)
+        ? 'left'
+        : order?.right?.includes(param)
+        ? 'right'
+        : null,
+    })),
   );
 
   if (groupFields) {
@@ -106,4 +113,48 @@ function getParamsTableColumns(
   return columns;
 }
 
-export { getParamsTableColumns };
+function paramsTableRowRenderer(
+  rowData: any,
+  groupHeaderRow = false,
+  columns: string[] = [],
+) {
+  if (groupHeaderRow) {
+    const row: { [key: string]: any } = {};
+    for (let i = 0; i < columns.length; i++) {
+      const col = columns[i];
+      if (Array.isArray(rowData[col])) {
+        row[col] = {
+          content: (
+            <TagLabel
+              color={COLORS[0][0]}
+              label={`${rowData[col].length} values`}
+            />
+          ),
+        };
+      }
+    }
+
+    return merge({}, rowData, row);
+  } else {
+    const row = {
+      experiment: rowData.experiment,
+      run: {
+        content: (
+          <Link
+            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
+            component={RouteLink}
+          >
+            {rowData.run}
+          </Link>
+        ),
+      },
+      actions: {
+        content: null,
+      },
+    };
+
+    return merge({}, rowData, row);
+  }
+}
+
+export { getParamsTableColumns, paramsTableRowRenderer };

@@ -51,7 +51,10 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { getParamsTableColumns } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
+import {
+  getParamsTableColumns,
+  paramsTableRowRenderer,
+} from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -261,11 +264,11 @@ function getParamsData() {
           config: configData,
           tableData: tableData.rows,
           tableColumns: getParamsTableColumns(
+            metricsColumns,
             params,
             data[0]?.config,
             configData.table.columnsOrder!,
             configData.table.hiddenColumns!,
-            metricsColumns,
           ),
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -893,11 +896,11 @@ function updateModelData(configData: IParamsAppConfig): void {
   );
   const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableColumns = getParamsTableColumns(
+    metricsColumns,
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
-    metricsColumns,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -979,6 +982,7 @@ function getDataAsTableRows(
       });
       const rowValues: any = {
         key: metric.key,
+        runHash: metric.run.hash,
         isHidden: metric.isHidden,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
@@ -1021,9 +1025,9 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(rowValues);
+        rows[groupKey!].items.push(paramsTableRowRenderer(rowValues));
       } else {
-        rows.push(rowValues);
+        rows.push(paramsTableRowRenderer(rowValues));
       }
     });
 
@@ -1034,10 +1038,18 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
-          columnsValues[columnKey].length > 1
-            ? 'Mix'
-            : columnsValues[columnKey][0];
+          columnsValues[columnKey].length === 1
+            ? columnsValues[columnKey][0]
+            : columnsValues[columnKey];
       }
+    }
+
+    if (metricsCollection.config !== null) {
+      rows[groupKey!].data = paramsTableRowRenderer(
+        rows[groupKey!].data,
+        true,
+        Object.keys(columnsValues),
+      );
     }
   });
 
@@ -1172,11 +1184,11 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
   const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableColumns: ITableColumn[] = getParamsTableColumns(
+    metricsColumns,
     params,
     data[0]?.config,
     config.table.columnsOrder!,
     config.table.hiddenColumns!,
-    metricsColumns,
   );
   const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(

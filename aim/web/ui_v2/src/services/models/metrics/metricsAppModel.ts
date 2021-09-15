@@ -1114,12 +1114,13 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
     }
-
-    rows[groupKey!].data = metricsTableRowRenderer(
-      rows[groupKey!].data,
-      true,
-      Object.keys(columnsValues),
-    );
+    if (metricsCollection.config !== null) {
+      rows[groupKey!].data = metricsTableRowRenderer(
+        rows[groupKey!].data,
+        true,
+        Object.keys(columnsValues),
+      );
+    }
   });
 
   return { rows, sameValueColumns };

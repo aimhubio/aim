@@ -424,9 +424,16 @@ const Table = React.forwardRef(function Table(
           props.infiniteLoadHandler &&
           isDownScrolling
         ) {
-          const index = windowEdges.endIndex - 15 - 3; // 15: offset, 3: header rows
-          if (index + 5 >= rowData.length) {
-            props.infiniteLoadHandler(index);
+          // const index = windowEdges.endIndex - 15 - 3; // 15: offset, 3: header rows
+          // if (index + 5 >= rowData.length) {
+          //   props.infiniteLoadHandler(index);
+          // }
+
+          if (
+            target.scrollTop + target.offsetHeight >
+            target.scrollHeight - 2 * rowHeight
+          ) {
+            props.infiniteLoadHandler();
           }
         }
       }, 100);
