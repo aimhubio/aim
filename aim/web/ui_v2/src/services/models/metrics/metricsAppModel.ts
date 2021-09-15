@@ -12,7 +12,10 @@ import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
-import { getMetricsTableColumns } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
+import {
+  getMetricsTableColumns,
+  metricsTableRowRenderer,
+} from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
@@ -992,6 +995,7 @@ function getDataAsTableRows(
               .index;
       const rowValues: IMetricTableRowData = {
         key: metric.key,
+        runHash: metric.run.hash,
         isHidden: metric.isHidden,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
@@ -1007,9 +1011,7 @@ function getDataAsTableRows(
         epoch:
           closestIndex === null ? '-' : `${metric.data.epochs[closestIndex]}`,
         time:
-          closestIndex === null
-            ? '-'
-            : `${metric.data.timestamps[closestIndex]}`,
+          closestIndex !== null ? metric.data.timestamps[closestIndex] : null,
         parentId: groupKey,
       };
       rowIndex++;
@@ -1038,7 +1040,8 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = value;
+        rowValues[paramKey] =
+          typeof value === 'string' ? value : JSON.stringify(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (
             _.findIndex(columnsValues[paramKey], (paramValue) =>
@@ -1053,9 +1056,9 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(rowValues);
+        rows[groupKey!].items.push(metricsTableRowRenderer(rowValues));
       } else {
-        rows.push(rowValues);
+        rows.push(metricsTableRowRenderer(rowValues));
       }
     });
 
@@ -1066,11 +1069,17 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
-          columnsValues[columnKey].length > 1
-            ? 'Mix'
-            : columnsValues[columnKey][0];
+          columnsValues[columnKey].length === 1
+            ? columnsValues[columnKey][0]
+            : columnsValues[columnKey];
       }
     }
+
+    rows[groupKey!].data = metricsTableRowRenderer(
+      rows[groupKey!].data,
+      true,
+      Object.keys(columnsValues),
+    );
   });
 
   return { rows, sameValueColumns };
