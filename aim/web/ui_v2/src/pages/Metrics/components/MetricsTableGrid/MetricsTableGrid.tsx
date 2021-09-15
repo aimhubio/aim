@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { Link as RouteLink } from 'react-router-dom';
+import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
@@ -218,7 +219,10 @@ function metricsTableRowRenderer(
       experiment: rowData.experiment,
       run: {
         content: (
-          <Link to={PATHS.RUN_DETAIL.replace(':runHash', rowData.runHash)}>
+          <Link
+            to={PATHS.RUN_DETAIL.replace(':runHash', rowData.runHash)}
+            component={RouteLink}
+          >
             {rowData.run}
           </Link>
         ),

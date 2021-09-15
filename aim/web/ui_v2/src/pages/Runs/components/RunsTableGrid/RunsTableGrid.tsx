@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouteLink } from 'react-router-dom';
+import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
 import TagLabel from 'components/TagLabel/TagLabel';
@@ -141,7 +142,10 @@ function runsTableRowRenderer(
       experiment: rowData.experiment,
       run: {
         content: (
-          <Link to={PATHS.RUN_DETAIL.replace(':runHash', rowData.runHash)}>
+          <Link
+            to={PATHS.RUN_DETAIL.replace(':runHash', rowData.runHash)}
+            component={RouteLink}
+          >
             {rowData.run}
           </Link>
         ),
