@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
 from aim.storage.treeview import TreeView
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.storage.types import AimObject, AimObjectKey, AimObjectPath, SafeNone
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run
@@ -26,7 +26,13 @@ class RunView:
             return self[item]
 
     def __getitem__(self, key):
-        return AimObjectProxy(lambda: self.meta_run_attrs_tree.collect(key), view=self.meta_run_attrs_tree.view(key))
+        def safe_collect():
+            try:
+                return self.meta_run_attrs_tree.collect(key)
+            except Exception:
+                return SafeNone()
+
+        return AimObjectProxy(safe_collect, view=self.meta_run_attrs_tree.view(key))
 
     def get(
         self,

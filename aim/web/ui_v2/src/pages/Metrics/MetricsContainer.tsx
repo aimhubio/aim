@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
+
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';

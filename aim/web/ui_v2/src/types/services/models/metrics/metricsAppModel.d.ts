@@ -32,7 +32,7 @@ export interface IMetricAppModelState {
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
   aggregatedData: IAggregatedData[];
-  tableData: IMetricTableRowData[];
+  tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
   params: string[];
@@ -204,7 +204,7 @@ export interface IMetricTableRowData {
   value: string;
   step: string;
   epoch: string;
-  time: string;
+  time: number | null;
   [key: string]: any;
 }
 

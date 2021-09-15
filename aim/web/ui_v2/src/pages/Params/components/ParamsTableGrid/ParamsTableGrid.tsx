@@ -1,5 +1,4 @@
-import * as React from 'react';
-
+import React from 'react';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 function getParamsTableColumns(
@@ -7,6 +6,7 @@ function getParamsTableColumns(
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
+  metricsColumns: any,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -42,6 +42,22 @@ function getParamsTableColumns(
         ? 'right'
         : null,
     })),
+    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
+      acc = [
+        ...acc,
+        ...Object.keys(metricsColumns[key]).map((metricContext) => ({
+          key: `${key}_${metricContext}`,
+          content: <span>{metricContext}</span>,
+          topHeader: key,
+          pin: order?.left?.includes(`${key}_${metricContext}`)
+            ? 'left'
+            : order?.right?.includes(`${key}_${metricContext}`)
+            ? 'right'
+            : null,
+        })),
+      ];
+      return acc;
+    }, []),
   );
 
   if (groupFields) {

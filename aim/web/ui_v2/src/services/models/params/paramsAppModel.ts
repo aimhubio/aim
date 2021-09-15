@@ -38,7 +38,6 @@ import {
   IChartTitle,
   IChartTitleData,
   IMetricTableRowData,
-  IMetricAppModelState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
 import {
@@ -131,7 +130,7 @@ function getConfig() {
 }
 
 let getRunsRequestRef: {
-  call: () => Promise<any>;
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
 };
 
@@ -145,12 +144,47 @@ function initialize(appId: string): void {
     groupingSelectOptions: [],
   });
   if (!appId) {
-    const url = getItem('paramsUrl');
-    window.history.pushState(null, '', url);
     setDefaultAppConfigData();
   }
 }
+function resetModelOnError(detail?: any) {
+  model.setState({
+    data: [],
+    rowData: [],
+    highPlotData: [],
+    chartTitleData: null,
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns: [],
+    tableData: [],
+    isParamsLoading: false,
+  });
 
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
 function getAppConfigData(appId: string) {
   if (appRequestRef) {
     appRequestRef.abort();
@@ -198,7 +232,7 @@ function getParamsData() {
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (!_.isEmpty(select?.params)) {
         model.setState({ isParamsLoading: true });
-        const stream = await getRunsRequestRef.call();
+        const stream = await getRunsRequestRef.call(exceptionHandler);
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
@@ -208,7 +242,7 @@ function getParamsData() {
         for await (let [keys, val] of objects) {
           runData.push({ ...(val as any), hash: keys[0] });
         }
-        const { data, params } = processData(runData);
+        const { data, params, metricsColumns } = processData(runData);
         const configData = model.getState()?.config;
         if (configData) {
           configData.grouping.selectOptions = [
@@ -216,12 +250,13 @@ function getParamsData() {
           ];
         }
 
-        const tableData = getDataAsTableRows(data, null, params);
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
           chartTitleData: getChartTitleData(data),
           params,
+          metricsColumns,
           rawData: runData,
           config: configData,
           tableData: tableData.rows,
@@ -230,6 +265,7 @@ function getParamsData() {
             data[0]?.config,
             configData.table.columnsOrder!,
             configData.table.hiddenColumns!,
+            metricsColumns,
           ),
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -300,15 +336,23 @@ function getChartTitleData(
 function processData(data: IRun<IParamTrace>[]): {
   data: IMetricsCollection<IParam>[];
   params: string[];
+  metricsColumns: any;
 } {
   const configData = model.getState()?.config;
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
+  const metricsColumns: any = {};
+
   data.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(getObjectPaths(run.params, run.params));
-
+    run.traces.forEach((trace) => {
+      metricsColumns[trace.metric_name] = {
+        ...metricsColumns[trace.metric_name],
+        [contextToString(trace.context) as string]: '-',
+      };
+    });
     runs.push({
       run,
       isHidden:
@@ -324,10 +368,10 @@ function processData(data: IRun<IParamTrace>[]): {
   const uniqParams = _.uniq(params);
 
   setTooltipData(processedData, uniqParams);
-
   return {
     data: processedData,
     params: uniqParams,
+    metricsColumns,
   };
 }
 
@@ -691,8 +735,9 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const { data, params, refs, config } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, null, params);
+  const { data, params, refs, config, metricsColumns } =
+    model.getState() as any;
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableRef: any = refs?.tableRef;
   if (tableRef) {
     tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -843,20 +888,22 @@ function onGroupingReset(groupName: GroupNameType) {
 }
 
 function updateModelData(configData: IParamsAppConfig): void {
-  const { data, params } = processData(
+  const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
-  const tableData = getDataAsTableRows(data, null, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableColumns = getParamsTableColumns(
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
+    metricsColumns,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
+    hiddenColumns: configData.table.hiddenColumns!,
   });
   model.setState({
     config: configData,
@@ -870,8 +917,8 @@ function updateModelData(configData: IParamsAppConfig): void {
 }
 
 function getDataAsTableRows(
-  processedData: IMetricsCollection<IParam>[],
-  xValue: number | string | null = null,
+  processedData: IMetricsCollection<any>[],
+  metricsColumns: any,
   paramKeys: string[],
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
@@ -880,7 +927,17 @@ function getDataAsTableRows(
       sameValueColumns: [],
     };
   }
-
+  const initialMetricsRowData = Object.keys(metricsColumns).reduce(
+    (acc: any, key: string) => {
+      const groupByMetricName: any = {};
+      Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
+        groupByMetricName[`${key}_${metricContext}`] = '-';
+      });
+      acc = { ...acc, ...groupByMetricName };
+      return acc;
+    },
+    {},
+  );
   const rows: IMetricTableRowData[] | any =
     processedData[0]?.config !== null ? {} : [];
 
@@ -914,6 +971,12 @@ function getDataAsTableRows(
     }
 
     metricsCollection.data.forEach((metric: any) => {
+      const metricsRowValues = { ...initialMetricsRowData };
+      metric.run.traces.map((trace: any) => {
+        metricsRowValues[
+          `${trace.metric_name}_${contextToString(trace.context)}`
+        ] = trace.last_value.last;
+      });
       const rowValues: any = {
         key: metric.key,
         isHidden: metric.isHidden,
@@ -923,6 +986,7 @@ function getDataAsTableRows(
         experiment: metric.run.props.experiment ?? 'default',
         run: metric.run.props.name ?? '-',
         metric: metric.metric_name,
+        ...metricsRowValues,
       };
       rowIndex++;
 
@@ -1105,14 +1169,14 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config } = model.getState() as any;
-
-  const tableData = getDataAsTableRows(data, null, params);
+  const { data, params, config, metricsColumns } = model.getState() as any;
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     params,
     data[0]?.config,
     config.table.columnsOrder!,
     config.table.hiddenColumns!,
+    metricsColumns,
   );
   const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(

@@ -1,11 +1,16 @@
 import React from 'react';
-import { Chip } from '@material-ui/core';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { merge } from 'lodash-es';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
+import COLORS from 'config/colors/colors';
+import TagLabel from 'components/TagLabel/TagLabel';
+import { PathEnum } from 'config/enums/sideBarEnum';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -166,13 +171,78 @@ function getMetricsTableColumns(
   return columns;
 }
 
-function getMetricsTableRowContent(rowsData: any, groups: boolean) {
-  let rowsContent = groups ? {} : [];
-
-  if (groups) {
-    for (let groupKey in rowsData) {
+function metricsTableRowRenderer(
+  rowData: any,
+  groupHeaderRow = false,
+  columns: string[] = [],
+) {
+  if (groupHeaderRow) {
+    const row: { [key: string]: any } = {};
+    for (let i = 0; i < columns.length; i++) {
+      const col = columns[i];
+      if (col === 'context') {
+        row[col] = {
+          content: rowData.context.map((item: string) => (
+            <TagLabel key={item} color={COLORS[0][0]} label={item} />
+          )),
+        };
+      } else if (['value', 'step', 'epoch'].includes(col)) {
+        row[col] =
+          rowData[col] === null
+            ? '-'
+            : Array.isArray(rowData[col])
+            ? ''
+            : rowData[col];
+      } else if (col === 'time') {
+        row[col] =
+          rowData.time === null
+            ? '-'
+            : Array.isArray(rowData.time)
+            ? ''
+            : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
+      } else if (Array.isArray(rowData[col])) {
+        row[col] = {
+          content: (
+            <TagLabel
+              color={COLORS[0][0]}
+              label={`${rowData[col].length} values`}
+            />
+          ),
+        };
+      }
     }
+
+    return merge({}, rowData, row);
+  } else {
+    const row = {
+      experiment: rowData.experiment,
+      run: {
+        content: (
+          <Link to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}>
+            {rowData.run}
+          </Link>
+        ),
+      },
+      metric: rowData.metric,
+      context: {
+        content: rowData.context.map((item: string) => (
+          <TagLabel key={item} color={COLORS[0][0]} label={item} />
+        )),
+      },
+      value: rowData.value,
+      step: rowData.step,
+      epoch: rowData.epoch,
+      time:
+        rowData.time === null
+          ? '-'
+          : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
+      actions: {
+        content: null,
+      },
+    };
+
+    return merge({}, rowData, row);
   }
 }
 
-export { getMetricsTableColumns, getMetricsTableRowContent };
+export { getMetricsTableColumns, metricsTableRowRenderer };

@@ -12,7 +12,10 @@ import { decode, encode } from 'utils/encoder/encoder';
 import getClosestValue from 'utils/getClosestValue';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
-import { getMetricsTableColumns } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
+import {
+  getMetricsTableColumns,
+  metricsTableRowRenderer,
+} from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
@@ -182,8 +185,6 @@ function initialize(appId: string): void {
     groupingSelectOptions: [],
   });
   if (!appId) {
-    const url = getItem('metricsUrl');
-    window.history.pushState(null, '', url);
     setDefaultAppConfigData();
   }
 }
@@ -237,7 +238,9 @@ function getQueryStringFromSelect(
     if (selectData.advancedMode) {
       query = selectData.advancedQuery;
     } else {
-      query = `(${selectData.metrics
+      query = `${
+        selectData.query ? `${selectData.query} and ` : ''
+      }(${selectData.metrics
         .map((metric) =>
           metric.value.context === null
             ? `(metric.name == "${metric.value.metric_name}")`
@@ -250,9 +253,7 @@ function getQueryStringFromSelect(
                   }")`,
               )}`,
         )
-        .join(' or ')})${
-        selectData.query ? ` and ${selectData.query}` : ''
-      }`.trim();
+        .join(' or ')})`.trim();
     }
   }
 
@@ -260,9 +261,47 @@ function getQueryStringFromSelect(
 }
 
 let metricsRequestRef: {
-  call: () => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
+  call: (
+    exceptionHandler: (detail: any) => void,
+  ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
 };
+function resetModelOnError(detail?: any) {
+  model.setState({
+    data: [],
+    params: [],
+    lineChartData: [],
+    aggregatedData: [],
+    tableData: [],
+    tableColumns: [],
+    requestIsPending: false,
+  });
+
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
 
 function getMetricsData() {
   if (metricsRequestRef) {
@@ -288,7 +327,7 @@ function getMetricsData() {
           requestIsPending: true,
           queryIsEmpty: false,
         });
-        const stream = await metricsRequestRef.call();
+        const stream = await metricsRequestRef.call(exceptionHandler);
         const runData = await getRunData(stream);
         if (configData) {
           setModelData(runData, configData);
@@ -990,6 +1029,7 @@ function getDataAsTableRows(
               .index;
       const rowValues: IMetricTableRowData = {
         key: metric.key,
+        runHash: metric.run.hash,
         isHidden: metric.isHidden,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
@@ -1011,9 +1051,7 @@ function getDataAsTableRows(
             ? '-'
             : `${metric.data.epochs[closestIndex] ?? '-'}`,
         time:
-          closestIndex === null
-            ? '-'
-            : `${metric.data.timestamps[closestIndex] ?? '-'}`,
+          closestIndex !== null ? metric.data.timestamps[closestIndex] : null,
         parentId: groupKey,
       };
       rowIndex++;
@@ -1042,7 +1080,8 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = value;
+        rowValues[paramKey] =
+          typeof value === 'string' ? value : JSON.stringify(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (
             _.findIndex(columnsValues[paramKey], (paramValue) =>
@@ -1057,9 +1096,9 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(rowValues);
+        rows[groupKey!].items.push(metricsTableRowRenderer(rowValues));
       } else {
-        rows.push(rowValues);
+        rows.push(metricsTableRowRenderer(rowValues));
       }
     });
 
@@ -1070,11 +1109,17 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
-          columnsValues[columnKey].length > 1
-            ? 'Mix'
-            : columnsValues[columnKey][0];
+          columnsValues[columnKey].length === 1
+            ? columnsValues[columnKey][0]
+            : columnsValues[columnKey];
       }
     }
+
+    rows[groupKey!].data = metricsTableRowRenderer(
+      rows[groupKey!].data,
+      true,
+      Object.keys(columnsValues),
+    );
   });
 
   return { rows, sameValueColumns };
