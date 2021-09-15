@@ -131,7 +131,7 @@ function getConfig() {
 }
 
 let getRunsRequestRef: {
-  call: () => Promise<any>;
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
 };
 
@@ -150,7 +150,44 @@ function initialize(appId: string): void {
     setDefaultAppConfigData();
   }
 }
+function resetModelOnError(detail?: any) {
+  model.setState({
+    data: [],
+    rowData: [],
+    highPlotData: [],
+    chartTitleData: null,
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns: [],
+    tableData: [],
+    isParamsLoading: false,
+  });
 
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
 function getAppConfigData(appId: string) {
   if (appRequestRef) {
     appRequestRef.abort();
@@ -198,7 +235,7 @@ function getParamsData() {
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (!_.isEmpty(select?.params)) {
         model.setState({ isParamsLoading: true });
-        const stream = await getRunsRequestRef.call();
+        const stream = await getRunsRequestRef.call(exceptionHandler);
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
