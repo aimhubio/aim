@@ -6,7 +6,15 @@ export default interface IControlPopoverProps extends Partial<PopoverProps> {
     onAnchorClick: (event: React.MouseEvent<HTMLElement>) => void;
     opened?: boolean;
   }) => React.FunctionComponentElement<React.ReactNode> | HTMLElement | null;
-  component: React.FunctionComponentElement<React.ReactNode> | null;
+  component:
+    | ((params: {
+        handleClose?: () => void;
+        opened?: boolean;
+      }) =>
+        | React.FunctionComponentElement<React.ReactNode>
+        | HTMLElement
+        | null)
+    | React.FunctionComponentElement<React.ReactNode>;
   title?: string;
   open?: boolean;
 }

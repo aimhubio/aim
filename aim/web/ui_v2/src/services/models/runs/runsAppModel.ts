@@ -140,6 +140,49 @@ function getConfig() {
   };
 }
 
+function resetModelOnError(detail?: any) {
+  const modelState = model.getState();
+  model.setState({
+    data: [],
+    rowData: [],
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns: [],
+    tableData: [],
+    config: {
+      ...modelState?.config,
+      pagination: {
+        ...initialPaginationConfig,
+      },
+    },
+  });
+
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
+
 function prepareModelStateToCall(isInitial: boolean) {
   const config = model.getState()?.config;
   if (isInitial) {
@@ -181,7 +224,7 @@ function getRunsData(isInitial = true) {
   return {
     call: async () => {
       try {
-        const stream = await call();
+        const stream = await call(exceptionHandler);
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
@@ -190,7 +233,6 @@ function getRunsData(isInitial = true) {
         const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
           ? []
           : modelState?.rowData;
-
         let count = 0;
         for await (let [keys, val] of objects) {
           if (isInitial) {
@@ -231,7 +273,6 @@ function getRunsData(isInitial = true) {
             },
           },
         });
-
         setTimeout(() => {
           const tableRef: any = model.getState()?.refs?.tableRef;
           tableRef.current?.updateData({
@@ -241,33 +282,7 @@ function getRunsData(isInitial = true) {
           });
         }, 0);
       } catch (e) {
-        model.setState({
-          data: [],
-          rowData: [],
-          requestIsPending: false,
-          infiniteIsPending: false,
-          tableColumns: [],
-          tableData: [],
-          config: {
-            ...modelState?.config,
-            pagination: {
-              ...initialPaginationConfig,
-            },
-          },
-        });
-        onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: 'Invalid syntax at query statement',
-        });
-
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: [],
-            newColumns: [],
-          });
-        }, 0);
+        console.error(e);
       }
     },
     abort,
@@ -365,6 +380,7 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
+  // TODO need to get data and params from state not from processData
   const { data, params } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
@@ -614,7 +630,6 @@ function processData(data: any[]): {
   data: any[];
   params: string[];
 } {
-  const configData = model.getState()?.config;
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
@@ -624,10 +639,7 @@ function processData(data: any[]): {
 
     runs.push({
       run,
-      isHidden:
-        configData!.table.hiddenMetrics![0] === 'all'
-          ? true
-          : configData!.table.hiddenMetrics!.includes(run.hash),
+      isHidden: false,
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
