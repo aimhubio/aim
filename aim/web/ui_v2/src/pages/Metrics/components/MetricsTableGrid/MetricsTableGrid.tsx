@@ -17,7 +17,7 @@ function getMetricsTableColumns(
     line: AggregationLineMethods;
   },
 ): ITableColumn[] {
-  let columns = [
+  let columns: ITableColumn[] = [
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -156,6 +156,8 @@ function getMetricsTableColumns(
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
     } else if (!columnsOrder.includes(a.key)) {
+      return 1;
+    } else if (!columnsOrder.includes(b.key)) {
       return -1;
     }
     return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);

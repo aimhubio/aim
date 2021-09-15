@@ -5,4 +5,5 @@ export interface ITableColumn {
   content: React.ReactNode | string;
   topHeader: string;
   pin?: string | null;
+  isHidden?: boolean;
 }

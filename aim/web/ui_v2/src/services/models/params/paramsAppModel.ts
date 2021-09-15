@@ -1,8 +1,10 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
+import moment from 'moment';
+import { saveAs } from 'file-saver';
+
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
-import { saveAs } from 'file-saver';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
@@ -36,6 +38,7 @@ import {
   IChartTitle,
   IChartTitleData,
   IMetricTableRowData,
+  IMetricAppModelState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
 import {
@@ -52,9 +55,9 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { getParamsTableColumns } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
-import moment from 'moment';
 import { RowHeightSize } from 'config/table/tableConfigs';
 
+// TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
 
@@ -186,7 +189,7 @@ function getParamsData() {
     call: async () => {
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
-      if (!isEmpty(select?.params)) {
+      if (!_.isEmpty(select?.params)) {
         model.setState({ isParamsLoading: true });
         const stream = await getRunsRequestRef.call();
         let gen = adjustable_reader(stream);
@@ -206,6 +209,7 @@ function getParamsData() {
           ];
         }
 
+        const tableData = getDataAsTableRows(data, null, params);
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
@@ -213,11 +217,12 @@ function getParamsData() {
           params,
           rawData: runData,
           config: configData,
-          tableData: getDataAsTableRows(data, null, params),
+          tableData: tableData.rows,
           tableColumns: getParamsTableColumns(
             params,
             data[0]?.config,
             configData.table.columnsOrder!,
+            configData.table.hiddenColumns!,
           ),
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -679,43 +684,46 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const configData: IParamsAppConfig = model.getState()?.config;
-  if (configData?.chart) {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    if (tableRef) {
-      tableRef.current?.setHoveredRow?.(activePoint.key);
-      tableRef.current?.setActiveRow?.(
-        focusedStateActive ? activePoint.key : null,
-      );
-      if (focusedStateActive) {
-        tableRef.current?.scrollToRow?.(activePoint.key);
-      }
+  const { data, params, refs, config } = model.getState() as any;
+  const tableData = getDataAsTableRows(data, null, params);
+  const tableRef: any = refs?.tableRef;
+  if (tableRef) {
+    tableRef.current?.setHoveredRow?.(activePoint.key);
+    tableRef.current?.setActiveRow?.(
+      focusedStateActive ? activePoint.key : null,
+    );
+    if (focusedStateActive) {
+      tableRef.current?.scrollToRow?.(activePoint.key);
     }
-    model.getState()?.refs?.tableRef?.current?.setHoveredRow(activePoint.key);
-    let chart =
-      focusedStateActive !== configData.chart.focusedState.active
-        ? { ...configData.chart }
-        : configData.chart;
-
-    chart.focusedState = {
-      active: !!focusedStateActive,
-      key: activePoint.key,
-      xValue: activePoint.xValue,
-      yValue: activePoint.yValue,
-      chartIndex: activePoint.chartIndex,
-    };
-    chart.tooltip = {
-      ...configData.chart.tooltip,
-      content: filterTooltipContent(
-        tooltipData[activePoint.key],
-        configData?.chart.tooltip.selectedParams,
-      ),
-    };
-
-    model.setState({
-      config: { ...configData, chart },
-    });
   }
+  let configData: IParamsAppConfig = config;
+  if (configData?.chart) {
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        focusedState: {
+          active: focusedStateActive,
+          key: activePoint.key,
+          xValue: activePoint.xValue,
+          yValue: activePoint.yValue,
+          chartIndex: activePoint.chartIndex,
+        },
+        tooltip: {
+          ...configData.chart.tooltip,
+          content: filterTooltipContent(
+            tooltipData[activePoint.key],
+            configData?.chart.tooltip.selectedParams,
+          ),
+        },
+      },
+    };
+  }
+
+  model.setState({
+    tableData: tableData.rows,
+    config: configData,
+  });
 }
 
 function onParamsSelectChange(data: any[]) {
@@ -836,10 +844,11 @@ function updateModelData(configData: IParamsAppConfig): void {
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
-    newData: tableData,
+    newData: tableData.rows,
     newColumns: tableColumns,
   });
   model.setState({
@@ -848,26 +857,30 @@ function updateModelData(configData: IParamsAppConfig): void {
     highPlotData: getDataAsLines(data),
     chartTitleData: getChartTitleData(data),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
-    tableData,
+    tableData: tableData.rows,
     tableColumns,
   });
 }
 
 function getDataAsTableRows(
-  processedData: IMetricsCollection<any>[],
+  processedData: IMetricsCollection<IParam>[],
   xValue: number | string | null = null,
   paramKeys: string[],
-): IMetricTableRowData[] | any {
+): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
-    return [];
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
   }
 
   const rows: IMetricTableRowData[] | any =
     processedData[0]?.config !== null ? {} : [];
 
   let rowIndex = 0;
+  const sameValueColumns: string[] = [];
 
-  processedData.forEach((metricsCollection: IMetricsCollection<any>) => {
+  processedData.forEach((metricsCollection: IMetricsCollection<IParam>) => {
     const groupKey = metricsCollection.key;
     const columnsValues: { [key: string]: string[] } = {};
 
@@ -943,8 +956,12 @@ function getDataAsTableRows(
       }
     });
 
-    if (metricsCollection.config !== null) {
-      for (let columnKey in columnsValues) {
+    for (let columnKey in columnsValues) {
+      if (columnsValues[columnKey].length === 1) {
+        sameValueColumns.push(columnKey);
+      }
+
+      if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length > 1
             ? 'Mix'
@@ -953,7 +970,7 @@ function getDataAsTableRows(
     }
   });
 
-  return rows;
+  return { rows, sameValueColumns };
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
@@ -1067,7 +1084,7 @@ function getFilteredRow(
     if (Array.isArray(value)) {
       value = value.join(', ');
     } else if (typeof value !== 'string') {
-      value = JSON.stringify(value);
+      value = value || value === 0 ? JSON.stringify(value) : '-';
     }
 
     if (column.startsWith('params.')) {
@@ -1081,23 +1098,23 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const processedData = processData(model.getState()?.rawData as IRun<any>[]);
+  const { data, params, config } = model.getState() as any;
 
-  const tableData: IMetricTableRowData[] = getDataAsTableRows(
-    processedData.data,
-    null,
-    processedData.params,
-  );
+  const tableData = getDataAsTableRows(data, null, params);
   const tableColumns: ITableColumn[] = getParamsTableColumns(
-    processedData.params,
-    processedData.data[0]?.config,
-    model.getState()?.config.table.columnsOrder!,
+    params,
+    data[0]?.config,
+    config.table.columnsOrder!,
+    config.table.hiddenColumns!,
   );
-  // TODO need to filter excludedFields and sort column order
-  const excludedFields: string[] = [];
+  const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
-      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
+      acc.concat(
+        excludedFields.indexOf(column.key) === -1 && !column.isHidden
+          ? column.key
+          : [],
+      ),
     [],
   );
 
@@ -1106,34 +1123,31 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     emptyRow[column] = '--';
   });
 
-  const dataToExport = tableData?.reduce(
-    (
-      accArray: { [key: string]: string }[],
-      rowData: IMetricTableRowData,
-      rowDataIndex: number,
-    ) => {
-      if (rowData?.children?.length > 0) {
-        rowData.children.forEach((row: IMetricTableRowData) => {
-          const filteredRow = getFilteredRow(filteredHeader, row);
-          accArray = accArray.concat(filteredRow);
-        });
-        if (tableData.length - 1 !== rowDataIndex) {
-          accArray = accArray.concat(emptyRow);
-        }
-      } else {
-        const filteredRow = getFilteredRow(filteredHeader, rowData);
-        accArray = accArray.concat(filteredRow);
-      }
+  const groupedRows: IMetricTableRowData[][] =
+    data.length > 1
+      ? Object.keys(tableData.rows).map(
+          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+        )
+      : [tableData.rows];
 
-      return accArray;
+  const dataToExport: { [key: string]: string }[] = [];
+
+  groupedRows.forEach(
+    (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
+      groupedRow.forEach((row: IMetricTableRowData) => {
+        const filteredRow = getFilteredRow(filteredHeader, row);
+        dataToExport.push(filteredRow);
+      });
+      if (groupedRows.length - 1 !== groupedRowIndex) {
+        dataToExport.push(emptyRow);
+      }
     },
-    [],
   );
 
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
-  saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
 }
 
 function onNotificationDelete(id: number) {
