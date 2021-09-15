@@ -31,7 +31,7 @@
 
 
   .Metrics__chart__container {
-    min-height: 372px;
+    min-height: 18.75rem;
     flex: 0.5 1 0;
     &__hide {
       display: none;
@@ -40,6 +40,7 @@
 
   .Metrics__table__container {
     flex: 0.5 1 0;
+    min-height: 13rem;
     &__hide {
       display: none;
     }
@@ -48,7 +49,7 @@
 
 .Metrics__SelectForm__Grouping__container {
   display: flex;
-  border-bottom: 1px solid #e8f1fc;
+  border-bottom: 0.0625rem solid #e8f1fc;
 }
 
 .Metrics__controls__container {
