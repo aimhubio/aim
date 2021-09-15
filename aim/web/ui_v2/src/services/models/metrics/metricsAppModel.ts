@@ -239,7 +239,9 @@ function getQueryStringFromSelect(
     if (selectData.advancedMode) {
       query = selectData.advancedQuery;
     } else {
-      query = `(${selectData.metrics
+      query = `${
+        selectData.query ? `${selectData.query} and ` : ''
+      }(${selectData.metrics
         .map((metric) =>
           metric.value.context === null
             ? `(metric.name == "${metric.value.metric_name}")`
@@ -252,9 +254,7 @@ function getQueryStringFromSelect(
                   }")`,
               )}`,
         )
-        .join(' or ')})${
-        selectData.query ? ` and ${selectData.query}` : ''
-      }`.trim();
+        .join(' or ')})`.trim();
     }
   }
 
@@ -262,9 +262,47 @@ function getQueryStringFromSelect(
 }
 
 let metricsRequestRef: {
-  call: () => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
+  call: (
+    exceptionHandler: (detail: any) => void,
+  ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
 };
+function resetModelOnError(detail?: any) {
+  model.setState({
+    data: [],
+    params: [],
+    lineChartData: [],
+    aggregatedData: [],
+    tableData: [],
+    tableColumns: [],
+    requestIsPending: false,
+  });
+
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
 
 function getMetricsData() {
   if (metricsRequestRef) {
@@ -290,7 +328,7 @@ function getMetricsData() {
           requestIsPending: true,
           queryIsEmpty: false,
         });
-        const stream = await metricsRequestRef.call();
+        const stream = await metricsRequestRef.call(exceptionHandler);
         const runData = await getRunData(stream);
         if (configData) {
           setModelData(runData, configData);
