@@ -75,5 +75,17 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
+  onRowHeightChange: any;
+  onColumnsVisibilityChange: any;
+  onSortFieldsChange: any;
+  onParamVisibilityChange: any;
+  onColumnsOrderChange: any;
+  tableData: any;
+  tableRowHeight?: any;
+  onTableRowHover?: any;
+  onTableRowClick?: any;
+  tableColumns: any;
+  tableRowHeight: any;
+  hiddenColumns: any;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
 }

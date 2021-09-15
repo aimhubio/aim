@@ -210,7 +210,7 @@ function SelectForm({
                       orientation='vertical'
                       flexItem
                     />
-                    <Box className='SelectForm__tags'>
+                    <Box className='SelectForm__tags ScrollBar__hidden'>
                       {selectedParamsData?.params?.map(
                         (tag: ISelectParamsOption) => {
                           return (

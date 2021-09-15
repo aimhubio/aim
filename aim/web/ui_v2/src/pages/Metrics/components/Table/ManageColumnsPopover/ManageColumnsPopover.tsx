@@ -144,7 +144,7 @@ function ManageColumnsPopover({
                     key={index}
                     data={data}
                     index={index}
-                    isHidden={hiddenColumns.includes(data)}
+                    isHidden={!!hiddenColumns?.includes(data)}
                     onClick={() =>
                       onColumnsVisibilityChange(
                         hiddenColumns.includes(data)
@@ -188,7 +188,7 @@ function ManageColumnsPopover({
                       key={index}
                       data={data}
                       index={index}
-                      isHidden={hiddenColumns.includes(data)}
+                      isHidden={!!hiddenColumns?.includes(data)}
                       onClick={() =>
                         onColumnsVisibilityChange(
                           hiddenColumns.includes(data)
@@ -225,7 +225,7 @@ function ManageColumnsPopover({
                       key={index}
                       data={data}
                       index={index}
-                      isHidden={hiddenColumns.includes(data)}
+                      isHidden={!!hiddenColumns?.includes(data)}
                       onClick={() =>
                         onColumnsVisibilityChange(
                           hiddenColumns.includes(data)

@@ -10,6 +10,7 @@ import ChartPopover from './ChartPopover/ChartPopover';
 import PopoverContent from './PopoverContent/PopoverContent';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   IActivePoint,
   ISyncHoverStateParams,
@@ -29,24 +30,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
-
-  const onChangePopoverPosition = React.useCallback(
-    (pos: PopoverPosition | null) => {
-      if (
-        props.tooltip.display ||
-        props.focusedState.active ||
-        props.zoom?.active
-      ) {
-        setPopoverPosition(pos?.top && pos.left ? pos : null);
-      }
-    },
-    [
-      props.tooltip.display,
-      props.focusedState.active,
-      props.zoom?.active,
-      setPopoverPosition,
-    ],
-  );
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
@@ -77,7 +60,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           props.onActivePointChange(activePoint, focusedStateActive);
         }
 
-        onChangePopoverPosition({
+        setPopoverPosition({
           top: activePoint.topPos - (containerRef.current?.scrollTop || 0),
           left: activePoint.leftPos - (containerRef.current?.scrollLeft || 0),
         });
@@ -87,20 +70,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRefs.forEach((chartRef) => {
           chartRef.current?.clearHoverAttributes?.();
         });
-        onChangePopoverPosition(null);
+        setPopoverPosition(null);
       }
     },
-    [
-      chartRefs,
-      props.chartType,
-      props.onActivePointChange,
-      onChangePopoverPosition,
-    ],
+    [chartRefs, props.chartType, props.onActivePointChange, setPopoverPosition],
   );
 
   const onScroll = React.useCallback((): void => {
     if (popoverPosition) {
-      onChangePopoverPosition({
+      setPopoverPosition({
         top:
           (activePointRef.current?.topPos || 0) -
           (containerRef.current?.scrollTop || 0),
@@ -109,7 +87,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           (containerRef.current?.scrollLeft || 0),
       });
     }
-  }, [popoverPosition, onChangePopoverPosition]);
+  }, [popoverPosition]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -187,14 +165,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               })}
             </Grid>
             <ChartPopover
+              containerRef={containerRef}
               popoverPosition={popoverPosition}
               open={
+                props.resizeMode !== ResizeModeEnum.MaxHeight &&
                 props.data.length > 0 &&
                 !props.panelResizing &&
                 !props.zoom?.active &&
                 (props.tooltip.display || props.focusedState.active)
               }
-              containerRef={containerRef}
             >
               <PopoverContent
                 chartType={props.chartType}

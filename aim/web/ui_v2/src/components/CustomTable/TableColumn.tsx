@@ -401,52 +401,56 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
 
 function GroupActions({ expand, expanded, groupKeys, groupKey }) {
   return (
-    <Popover
-      target={<Icon name='more-horizontal' />}
-      targetClassName='Table__action'
-      content={(opened, setOpened) => (
+    <ControlPopover
+      anchor={({ onAnchorClick }) => (
+        <Icon
+          className='Table__action__anchor'
+          onClick={onAnchorClick}
+          name='more-horizontal'
+        />
+      )}
+      component={({ handleClose }) => (
         <div className='Table__action__popup__body'>
-          <div
+          <MenuItem
             className='Table__action__popup__item'
-            onClick={(evt) => {
+            onClick={() => {
+              handleClose();
               expand(groupKey);
-              setOpened(false);
             }}
           >
             <Icon
               name={expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'}
             />
-            <Typography small>
+            <span>
               {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
-            </Typography>
-          </div>
+            </span>
+          </MenuItem>
           {(expanded[groupKey] || groupKeys.some((key) => !!expanded[key])) && (
-            <div
+            <MenuItem
               className='Table__action__popup__item'
-              onClick={(evt) => {
+              onClick={() => {
+                handleClose();
                 expand('collapse_all');
-                setOpened(false);
               }}
             >
               <Icon name='collapse-inside' />
-              <Typography small>Collapse all</Typography>
-            </div>
+              <span>Collapse all</span>
+            </MenuItem>
           )}
           {(!expanded[groupKey] || groupKeys.some((key) => !expanded[key])) && (
-            <div
+            <MenuItem
               className='Table__action__popup__item'
-              onClick={(evt) => {
+              onClick={() => {
+                handleClose();
                 expand('expand_all');
-                setOpened(false);
               }}
             >
               <Icon name='collapse-outside' />
-              <Typography small>Expand all</Typography>
-            </div>
+              <span>Expand all</span>
+            </MenuItem>
           )}
         </div>
       )}
-      popupClassName='Table__action__popup'
     />
   );
 }

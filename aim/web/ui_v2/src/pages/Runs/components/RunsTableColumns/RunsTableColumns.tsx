@@ -6,6 +6,7 @@ function getRunsTableColumns(
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
+  metricsColumns: any,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -43,6 +44,22 @@ function getRunsTableColumns(
         ? 'right'
         : null,
     })),
+    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
+      acc = [
+        ...acc,
+        ...Object.keys(metricsColumns[key]).map((metricContext) => ({
+          key: `${key}_${metricContext}`,
+          content: <span>{metricContext}</span>,
+          topHeader: key,
+          pin: order?.left?.includes(`${key}_${metricContext}`)
+            ? 'left'
+            : order?.right?.includes(`${key}_${metricContext}`)
+            ? 'right'
+            : null,
+        })),
+      ];
+      return acc;
+    }, []),
   );
   if (groupFields) {
     columns.push({
@@ -81,6 +98,8 @@ function getRunsTableColumns(
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
     } else if (!columnsOrder.includes(a.key)) {
+      return 1;
+    } else if (!columnsOrder.includes(b.key)) {
       return -1;
     }
     return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);

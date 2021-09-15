@@ -680,4 +680,16 @@ const Table = React.forwardRef(function Table(
   );
 });
 
-export default React.memo(Table, () => true);
+function propsComparator(
+  prevProps: ITableProps,
+  nextProps: ITableProps,
+): boolean {
+  // add custom here checks here
+  if (prevProps.isLoading !== nextProps.isLoading) {
+    return false;
+  }
+
+  return true;
+}
+
+export default React.memo(Table, propsComparator);

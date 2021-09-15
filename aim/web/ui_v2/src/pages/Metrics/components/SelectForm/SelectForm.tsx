@@ -244,7 +244,7 @@ function SelectForm({
                       flexItem
                     />
                   )}
-                  <Box className='SelectForm__tags ScrollBar__hidden'>
+                  <Box className='Metrics__SelectForm__tags ScrollBar__hidden'>
                     {selectedMetricsData?.metrics?.map(
                       (tag: ISelectMetricsOption) => {
                         return (

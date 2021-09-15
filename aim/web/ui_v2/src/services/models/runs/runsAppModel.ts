@@ -1,3 +1,8 @@
+import React from 'react';
+import _ from 'lodash-es';
+import moment from 'moment';
+import { saveAs } from 'file-saver';
+
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
 import {
@@ -16,7 +21,6 @@ import { IParam } from 'types/services/models/params/paramsAppModel';
 import getObjectPaths from 'utils/getObjectPaths';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import _ from 'lodash-es';
 import { encode, decode } from 'utils/encoder/encoder';
 import { IMetric } from '../../../types/services/models/metrics/metricModel';
 import {
@@ -38,14 +42,13 @@ import { CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
 import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
-import React from 'react';
 import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from '../../../utils/JsonToCSV';
-import { saveAs } from 'file-saver';
-import moment from 'moment';
+import contextToString from 'utils/contextToString';
 
+// TODO need to implement state type
 const model = createModel<Partial<any>>({
   requestIsPending: true,
   infiniteIsPending: false,
@@ -138,6 +141,49 @@ function getConfig() {
   };
 }
 
+function resetModelOnError(detail?: any) {
+  const modelState = model.getState();
+  model.setState({
+    data: [],
+    rowData: [],
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns: [],
+    tableData: [],
+    config: {
+      ...modelState?.config,
+      pagination: {
+        ...initialPaginationConfig,
+      },
+    },
+  });
+
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
+
 function prepareModelStateToCall(isInitial: boolean) {
   const config = model.getState()?.config;
   if (isInitial) {
@@ -179,7 +225,7 @@ function getRunsData(isInitial = true) {
   return {
     call: async () => {
       try {
-        const stream = await call();
+        const stream = await call(exceptionHandler);
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
@@ -188,7 +234,6 @@ function getRunsData(isInitial = true) {
         const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
           ? []
           : modelState?.rowData;
-
         let count = 0;
         for await (let [keys, val] of objects) {
           if (isInitial) {
@@ -202,14 +247,15 @@ function getRunsData(isInitial = true) {
           }
           count++;
         }
-        const { data, params } = processData(runsData);
+        const { data, params, metricsColumns } = processData(runsData);
 
-        const tableData = getDataAsTableRows(data, null, params);
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
           params,
           data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
+          metricsColumns,
         );
 
         model.setState({
@@ -229,7 +275,6 @@ function getRunsData(isInitial = true) {
             },
           },
         });
-
         setTimeout(() => {
           const tableRef: any = model.getState()?.refs?.tableRef;
           tableRef.current?.updateData({
@@ -239,33 +284,7 @@ function getRunsData(isInitial = true) {
           });
         }, 0);
       } catch (e) {
-        model.setState({
-          data: [],
-          rowData: [],
-          requestIsPending: false,
-          infiniteIsPending: false,
-          tableColumns: [],
-          tableData: [],
-          config: {
-            ...modelState?.config,
-            pagination: {
-              ...initialPaginationConfig,
-            },
-          },
-        });
-        onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: 'Invalid syntax at query statement',
-        });
-
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: [],
-            newColumns: [],
-          });
-        }, 0);
+        console.error(e);
       }
     },
     abort,
@@ -349,7 +368,7 @@ function getFilteredRow(
     if (Array.isArray(value)) {
       value = value.join(', ');
     } else if (typeof value !== 'string') {
-      value = JSON.stringify(value);
+      value = value || value === 0 ? JSON.stringify(value) : '-';
     }
 
     if (column.startsWith('params.')) {
@@ -363,65 +382,55 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const processedData = processData(
+  // TODO need to get data and params from state not from processData
+  const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-
-  const tableData = getDataAsTableRows(
-    processedData.data,
-    null,
-    processedData.params,
-  );
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const configData = model.getState()?.config;
   const tableColumns: ITableColumn[] = getRunsTableColumns(
-    processedData.params,
-    processedData.data[0]?.config,
-    model.getState()?.config?.table.columnsOrder!,
-    model.getState()?.config?.table.hiddenColumns!,
+    params,
+    data[0]?.config,
+    configData?.table.columnsOrder!,
+    configData?.table.hiddenColumns!,
+    metricsColumns,
   );
-  // TODO need to filter excludedFields and sort column order
-  const excludedFields: string[] = [];
+  const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(
     (acc: string[], column: ITableColumn) =>
-      acc.concat(excludedFields.indexOf(column.key) === -1 ? column.key : []),
+      acc.concat(
+        excludedFields.indexOf(column.key) === -1 && !column.isHidden
+          ? column.key
+          : [],
+      ),
     [],
   );
-  // const flattenOrders = Object.keys(columnsOrder).reduce(
-  //   (acc, key) => acc.concat(columnsOrder[key]),
-  //   [],
-  // );
-  // filteredHeader.sort(
-  //   (a, b) => flattenOrders.indexOf(a) - flattenOrders.indexOf(b),
-  // );
 
   let emptyRow: { [key: string]: string } = {};
   filteredHeader.forEach((column: string) => {
     emptyRow[column] = '--';
   });
 
-  const dataToExport = tableData.rows?.reduce(
-    (
-      accArray: { [key: string]: string }[],
-      rowData: IMetricTableRowData,
-      rowDataIndex: number,
-    ) => {
-      if (rowData?.children?.length > 0) {
-        rowData.children.forEach((row: IMetricTableRowData) => {
-          const filteredRow = getFilteredRow(filteredHeader, row);
-          accArray = accArray.concat(filteredRow);
-        });
-        if (tableData.rows.length - 1 !== rowDataIndex) {
-          accArray = accArray.concat(emptyRow);
-        }
-      } else {
-        const filteredRow = getFilteredRow(filteredHeader, rowData);
-        accArray = accArray.concat(filteredRow);
+  const groupedRows: IMetricTableRowData[][] =
+    data.length > 1
+      ? Object.keys(tableData.rows).map(
+          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+        )
+      : [tableData.rows];
+
+  const dataToExport: { [key: string]: string }[] = [];
+
+  groupedRows.forEach(
+    (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
+      groupedRow.forEach((row: IMetricTableRowData) => {
+        const filteredRow = getFilteredRow(filteredHeader, row);
+        dataToExport.push(filteredRow);
+      });
+      if (groupedRows.length - 1 !== groupedRowIndex) {
+        dataToExport.push(emptyRow);
       }
-
-      return accArray;
     },
-    [],
   );
-
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
@@ -623,21 +632,25 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
 function processData(data: any[]): {
   data: any[];
   params: string[];
+  metricsColumns: any;
 } {
-  const configData = model.getState()?.config;
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
+  const metricsColumns: any = {};
+
   data.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(getObjectPaths(run.params, run.params));
-
+    run.traces.forEach((trace) => {
+      metricsColumns[trace.metric_name] = {
+        ...metricsColumns[trace.metric_name],
+        [contextToString(trace.context) as string]: '-',
+      };
+    });
     runs.push({
       run,
-      isHidden:
-        configData!.table.hiddenMetrics![0] === 'all'
-          ? true
-          : configData!.table.hiddenMetrics!.includes(run.hash),
+      isHidden: false,
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
@@ -649,17 +662,32 @@ function processData(data: any[]): {
   return {
     data: processedData,
     params: uniqParams,
+    metricsColumns,
   };
 }
 
 function getDataAsTableRows(
   processedData: any,
-  xValue: number | string | null = null,
+  metricsColumns: any,
   paramKeys: string[],
-): { rows: any[] | any; sameValueColumns: string[] } {
+): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
-    return { rows: [], sameValueColumns: [] };
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
   }
+  const initialMetricsRowData = Object.keys(metricsColumns).reduce(
+    (acc: any, key: string) => {
+      const groupByMetricName: any = {};
+      Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
+        groupByMetricName[`${key}_${metricContext}`] = '-';
+      });
+      acc = { ...acc, ...groupByMetricName };
+      return acc;
+    },
+    {},
+  );
   const rows: any = processedData[0]?.config !== null ? {} : [];
   let rowIndex = 0;
   const sameValueColumns: string[] = [];
@@ -687,6 +715,12 @@ function getDataAsTableRows(
       };
     }
     metricsCollection.data.forEach((metric: any) => {
+      const metricsRowValues = { ...initialMetricsRowData };
+      metric.run.traces.map((trace: any) => {
+        metricsRowValues[
+          `${trace.metric_name}_${contextToString(trace.context)}`
+        ] = trace.last_value.last;
+      });
       const rowValues: any = {
         key: metric.key,
         index: rowIndex,
@@ -695,6 +729,7 @@ function getDataAsTableRows(
         experiment: metric.run.props.experiment ?? 'default',
         run: metric.run.props.name ?? '-',
         metric: metric.metric_name,
+        ...metricsRowValues,
       };
       rowIndex++;
       [
@@ -810,15 +845,16 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
-  const { data, params } = processData(
+  const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(data, null, params);
-  const tableColumns = getRunsTableColumns(
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableColumns: ITableColumn[] = getRunsTableColumns(
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
+    metricsColumns,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({

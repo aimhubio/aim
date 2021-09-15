@@ -9,6 +9,7 @@ function usePanelResize(
   resizeMode: ResizeModeEnum,
 ) {
   const [panelResizing, setPanelResizing] = React.useState<boolean>(false);
+  const frameRef = React.useRef<any>();
 
   const handleResize = React.useCallback(() => {
     document.addEventListener('mousemove', startResize);
@@ -18,7 +19,7 @@ function usePanelResize(
   const startResize = React.useCallback((event: MouseEvent): void => {
     wrapperRef.current.style.userSelect = 'none';
     wrapperRef.current.style.cursor = 'row-resize';
-    requestAnimationFrame(() => {
+    frameRef.current = requestAnimationFrame(() => {
       if (bottomPanelRef.current && topPanelRef.current && wrapperRef.current) {
         setPanelResizing(true);
         const containerHeight: number =
@@ -40,6 +41,7 @@ function usePanelResize(
   }, []);
 
   const endResize = React.useCallback(() => {
+    cancelAnimationFrame(frameRef.current);
     setPanelResizing(false);
     wrapperRef.current.style.userSelect = 'unset';
     wrapperRef.current.style.cursor = 'unset';

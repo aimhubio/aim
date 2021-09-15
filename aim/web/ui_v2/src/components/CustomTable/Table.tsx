@@ -233,7 +233,10 @@ function Table(props) {
                 headerMeta={props.headerMeta}
                 isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
                 hideColumn={() =>
-                  props.setExcludedFields([...props.excludedFields, col.key])
+                  props.setExcludedFields?.([
+                    ...(props.excludedFields || []),
+                    col.key,
+                  ])
                 }
                 paneFirstColumn={index === 0}
                 paneLastColumn={index === leftPane.length - 1}
@@ -279,7 +282,10 @@ function Table(props) {
               headerMeta={props.headerMeta}
               isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
               hideColumn={() =>
-                props.setExcludedFields([...props.excludedFields, col.key])
+                props.setExcludedFields?.([
+                  ...(props.excludedFields || []),
+                  col.key,
+                ])
               }
               paneFirstColumn={index === 0}
               paneLastColumn={index === middlePane.length - 1}
@@ -336,7 +342,10 @@ function Table(props) {
                 headerMeta={props.headerMeta}
                 isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
                 hideColumn={() =>
-                  props.setExcludedFields([...props.excludedFields, col.key])
+                  props.setExcludedFields?.([
+                    ...(props.excludedFields || []),
+                    col.key,
+                  ])
                 }
                 paneFirstColumn={index === 0}
                 paneLastColumn={index === rightPane.length - 1}

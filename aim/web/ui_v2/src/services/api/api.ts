@@ -9,11 +9,28 @@ function createAPIRequestWrapper<ResponseDataType>(
   const signal = controller.signal;
 
   return {
-    call: () =>
+    call: (exceptionHandler?: (error: ResponseDataType) => any) =>
       new Promise((resolve: (data: ResponseDataType) => void, reject) => {
         fetch(`${API_HOST}/${url}`, { ...options, signal })
-          .then((response) => (stream ? response.body : response.json()))
-          .then((data) => resolve(data))
+          .then(async (response) => {
+            try {
+              if (response.status >= 400) {
+                const body = await response.json();
+
+                if (typeof exceptionHandler === 'function') {
+                  exceptionHandler(body.detail);
+                }
+
+                // return reject(body.detail); @TODO delete comment, after handling
+                return;
+              }
+              const data = stream ? response.body : await response.json();
+
+              resolve(data);
+            } catch (err) {
+              reject(err);
+            }
+          })
           .catch((err) => {
             if (err.name === 'AbortError') {
               // Fetch aborted

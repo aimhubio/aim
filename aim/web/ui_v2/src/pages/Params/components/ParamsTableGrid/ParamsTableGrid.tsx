@@ -1,13 +1,14 @@
-import * as React from 'react';
-
+import React from 'react';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 function getParamsTableColumns(
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
+  hiddenColumns: string[],
+  metricsColumns: any,
 ): ITableColumn[] {
-  const columns = [
+  let columns: ITableColumn[] = [
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -41,33 +42,27 @@ function getParamsTableColumns(
         ? 'right'
         : null,
     })),
+    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
+      acc = [
+        ...acc,
+        ...Object.keys(metricsColumns[key]).map((metricContext) => ({
+          key: `${key}_${metricContext}`,
+          content: <span>{metricContext}</span>,
+          topHeader: key,
+          pin: order?.left?.includes(`${key}_${metricContext}`)
+            ? 'left'
+            : order?.right?.includes(`${key}_${metricContext}`)
+            ? 'right'
+            : null,
+        })),
+      ];
+      return acc;
+    }, []),
   );
 
-  // if (groupFields) {
-  //   Object.keys(groupFields).forEach((field) => {
-  //     const key = field.replace('run.params.', '');
-  //     const column = columns.find((col) => col.key === key);
-  //     if (!!column) {
-  //       column.pin = 'left';
-  //       column.topHeader = 'Grouping';
-  //     }
-  //   });
-  //   columns.sort((a, b) => {
-  //     if (a.key === '#') {
-  //       return -1;
-  //     } else if (
-  //       groupFields.hasOwnProperty(a.key) ||
-  //       groupFields.hasOwnProperty(`run.params.${a.key}`)
-  //     ) {
-  //       return -1;
-  //     }
-  //     return 0;
-  //   });
-  // }
   if (groupFields) {
     columns.push({
       key: '#',
-      //@ts-ignore
       content: '#',
       topHeader: 'Grouping',
       pin: 'left',
@@ -81,6 +76,12 @@ function getParamsTableColumns(
       }
     });
   }
+
+  columns = columns.map((col) => ({
+    ...col,
+    isHidden: hiddenColumns.includes(col.key),
+  }));
+
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
     if (a.key === '#') {
@@ -96,6 +97,8 @@ function getParamsTableColumns(
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
     } else if (!columnsOrder.includes(a.key)) {
+      return 1;
+    } else if (!columnsOrder.includes(b.key)) {
       return -1;
     }
     return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
