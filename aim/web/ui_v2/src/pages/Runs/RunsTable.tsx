@@ -1,12 +1,11 @@
 import React from 'react';
-import { size } from 'lodash-es';
 import Table from 'components/Table/Table';
 import { IRunsTableProps } from 'types/pages/runs/Runs';
+import { CircularProgress } from '@material-ui/core';
 
 function RunsTable({
   isRunsDataLoading,
   isInfiniteLoading,
-  runsList,
   tableRef,
   columns,
   tableRowHeight,
@@ -29,9 +28,9 @@ function RunsTable({
   }, []);
 
   function handleInfiniteLoad(row: any) {
-    if (!isLatest) {
+    if (!isLatest && !isInfiniteLoading) {
       getLatestRunsDataRequestRef.current = getLastRunsData(row);
-      getLatestRunsDataRequestRef.current.call().catch();
+      getLatestRunsDataRequestRef.current?.call().catch();
     }
   }
 
@@ -66,6 +65,11 @@ function RunsTable({
           onExport={onExportTableData}
         />
       </div>
+      {isInfiniteLoading && (
+        <div className='Infinite_Loader'>
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 }
