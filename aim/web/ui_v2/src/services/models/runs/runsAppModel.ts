@@ -46,6 +46,7 @@ import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from '../../../utils/JsonToCSV';
+import contextToString from 'utils/contextToString';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -246,14 +247,15 @@ function getRunsData(isInitial = true) {
           }
           count++;
         }
-        const { data, params } = processData(runsData);
+        const { data, params, metricsColumns } = processData(runsData);
 
-        const tableData = getDataAsTableRows(data, null, params);
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
           params,
           data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
+          metricsColumns,
         );
 
         model.setState({
@@ -381,16 +383,17 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   // TODO need to get data and params from state not from processData
-  const { data, params } = processData(
+  const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(data, null, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
   const configData = model.getState()?.config;
   const tableColumns: ITableColumn[] = getRunsTableColumns(
     params,
     data[0]?.config,
     configData?.table.columnsOrder!,
     configData?.table.hiddenColumns!,
+    metricsColumns,
   );
   const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(
@@ -629,14 +632,22 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
 function processData(data: any[]): {
   data: any[];
   params: string[];
+  metricsColumns: any;
 } {
   const grouping = model.getState()?.config?.grouping;
   let runs: IParam[] = [];
   let params: string[] = [];
   const paletteIndex: number = grouping?.paletteIndex || 0;
+  const metricsColumns: any = {};
+
   data.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(getObjectPaths(run.params, run.params));
-
+    run.traces.forEach((trace) => {
+      metricsColumns[trace.metric_name] = {
+        ...metricsColumns[trace.metric_name],
+        [contextToString(trace.context) as string]: '-',
+      };
+    });
     runs.push({
       run,
       isHidden: false,
@@ -651,12 +662,13 @@ function processData(data: any[]): {
   return {
     data: processedData,
     params: uniqParams,
+    metricsColumns,
   };
 }
 
 function getDataAsTableRows(
   processedData: any,
-  xValue: number | string | null = null,
+  metricsColumns: any,
   paramKeys: string[],
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
@@ -665,7 +677,17 @@ function getDataAsTableRows(
       sameValueColumns: [],
     };
   }
-
+  const initialMetricsRowData = Object.keys(metricsColumns).reduce(
+    (acc: any, key: string) => {
+      const groupByMetricName: any = {};
+      Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
+        groupByMetricName[`${key}_${metricContext}`] = '-';
+      });
+      acc = { ...acc, ...groupByMetricName };
+      return acc;
+    },
+    {},
+  );
   const rows: any = processedData[0]?.config !== null ? {} : [];
   let rowIndex = 0;
   const sameValueColumns: string[] = [];
@@ -693,6 +715,12 @@ function getDataAsTableRows(
       };
     }
     metricsCollection.data.forEach((metric: any) => {
+      const metricsRowValues = { ...initialMetricsRowData };
+      metric.run.traces.map((trace: any) => {
+        metricsRowValues[
+          `${trace.metric_name}_${contextToString(trace.context)}`
+        ] = trace.last_value.last;
+      });
       const rowValues: any = {
         key: metric.key,
         index: rowIndex,
@@ -701,6 +729,7 @@ function getDataAsTableRows(
         experiment: metric.run.props.experiment ?? 'default',
         run: metric.run.props.name ?? '-',
         metric: metric.metric_name,
+        ...metricsRowValues,
       };
       rowIndex++;
       [
@@ -816,15 +845,16 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
-  const { data, params } = processData(
+  const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(data, null, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableColumns: ITableColumn[] = getRunsTableColumns(
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
+    metricsColumns,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
