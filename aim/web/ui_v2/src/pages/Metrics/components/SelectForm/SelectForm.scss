@@ -10,11 +10,12 @@
   flex: 1;
 }
 
-.SelectForm__tags {
+.Metrics__SelectForm__tags {
   display: flex;
   align-items: center;
   overflow: auto;
-  max-width: 70em;
+  width: calc(100vw - 43.325rem);
+  min-width: 12rem;
 }
 
 .SelectForm__metric__select {
@@ -44,8 +45,8 @@
   margin-top: 0.5em;
 
   button {
-      border: $border-main;
-      width: 2em;
+    border: $border-main;
+    width: 2em;
     &:nth-child(2) {
       margin: 0 0.25rem;
     }
@@ -62,13 +63,12 @@
   border-radius: $radius-main;
   z-index: 1;
   color: #586069;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   .MuiAutocomplete-paper {
     box-shadow: unset;
     margin: unset;
   }
 }
-
 
 .SelectForm__clearAll {
   height: 24px;

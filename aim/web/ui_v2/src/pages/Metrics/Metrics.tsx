@@ -109,6 +109,7 @@ function Metrics(
                   zoom={props.zoom}
                   onActivePointChange={props.onActivePointChange}
                   chartProps={chartProps}
+                  resizeMode={props.resizeMode}
                   controls={
                     <Controls
                       selectOptions={props.groupingSelectOptions}
