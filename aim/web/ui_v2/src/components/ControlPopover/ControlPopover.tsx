@@ -57,7 +57,11 @@ function ControlPopover({
       >
         <div className='ControlPopover__container'>
           {title && <div className='ControlPopover__title'>{title}</div>}
-          <div className='ControlPopover__component'>{component}</div>
+          <div className='ControlPopover__component'>
+            {typeof component === 'function'
+              ? component({ handleClose, opened: open && !!anchorEl })
+              : component}
+          </div>
         </div>
       </Popover>
     </>
