@@ -16,7 +16,6 @@ import {
   IParamTrace,
   IRun,
 } from 'types/services/models/metrics/runModel';
-import { getRunsTableColumns } from 'pages/Runs/components/RunsTableColumns/RunsTableColumns';
 import { IParam } from 'types/services/models/params/paramsAppModel';
 import getObjectPaths from 'utils/getObjectPaths';
 import COLORS from 'config/colors/colors';
@@ -47,6 +46,10 @@ import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from '../../../utils/JsonToCSV';
 import contextToString from 'utils/contextToString';
+import {
+  getRunsTableColumns,
+  runsTableRowRenderer,
+} from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -251,11 +254,11 @@ function getRunsData(isInitial = true) {
 
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
+          metricsColumns,
           params,
           data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
-          metricsColumns,
         );
 
         model.setState({
@@ -392,11 +395,11 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const tableData = getDataAsTableRows(data, metricsColumns, params);
   const configData = model.getState()?.config;
   const tableColumns: ITableColumn[] = getRunsTableColumns(
+    metricsColumns,
     params,
     data[0]?.config,
     configData?.table.columnsOrder!,
     configData?.table.hiddenColumns!,
-    metricsColumns,
   );
   const excludedFields: string[] = ['#', 'actions'];
   const filteredHeader: string[] = tableColumns.reduce(
@@ -726,6 +729,7 @@ function getDataAsTableRows(
       });
       const rowValues: any = {
         key: metric.key,
+        runHash: metric.run.hash,
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
@@ -764,9 +768,9 @@ function getDataAsTableRows(
         }
       });
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(rowValues);
+        rows[groupKey!].items.push(runsTableRowRenderer(rowValues));
       } else {
-        rows.push(rowValues);
+        rows.push(runsTableRowRenderer(rowValues));
       }
     });
 
@@ -777,9 +781,17 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
-          columnsValues[columnKey].length > 1
-            ? 'Mix'
-            : columnsValues[columnKey][0];
+          columnsValues[columnKey].length === 1
+            ? columnsValues[columnKey][0]
+            : columnsValues[columnKey];
+      }
+
+      if (metricsCollection.config !== null) {
+        rows[groupKey!].data = runsTableRowRenderer(
+          rows[groupKey!].data,
+          true,
+          Object.keys(columnsValues),
+        );
       }
     }
   });
@@ -853,11 +865,11 @@ function updateModelData(configData: IMetricAppConfig): void {
   );
   const tableData = getDataAsTableRows(data, metricsColumns, params);
   const tableColumns: ITableColumn[] = getRunsTableColumns(
+    metricsColumns,
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
-    metricsColumns,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
