@@ -12,6 +12,7 @@ import {
   IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export interface IChartPanelProps {
   chartType: ChartTypeEnum;
@@ -35,6 +36,7 @@ export interface IChartPanelProps {
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
+  resizeMode: ResizeModeEnum;
 }
 
 export interface IChartPanelRef {

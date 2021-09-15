@@ -10,11 +10,12 @@
   flex: 1;
 }
 
-.SelectForm__tags {
+.SelectForm__tags { 
   display: flex;
   align-items: center;
   overflow: auto;
-  max-width: 70em;
+  width: calc(100vw - 40.325rem);
+  min-width: 15rem;
 }
 
 .SelectForm__metric__select {
@@ -45,14 +46,13 @@
   margin-top: 0.5em;
 }
 
-
 .SelectForm__Popper {
   border: $border-main;
   width: 40%;
   border-radius: $radius-main;
   z-index: 1;
   color: #586069;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   .MuiAutocomplete-paper {
     box-shadow: unset;
     margin: unset;

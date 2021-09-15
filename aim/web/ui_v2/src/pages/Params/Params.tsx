@@ -132,6 +132,7 @@ const Params = ({
                   tooltip={tooltip}
                   panelResizing={panelResizing}
                   chartProps={chartProps}
+                  resizeMode={resizeMode}
                   controls={
                     <Controls
                       curveInterpolation={curveInterpolation}
