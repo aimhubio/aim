@@ -3,8 +3,6 @@ import useModel from 'hooks/model/useModel';
 import Runs from './Runs';
 import { ITableRef } from '../../types/components/Table/Table';
 import runsAppModel from '../../services/models/runs/runsAppModel';
-import tagsAppModel from '../../services/models/tags/tagsAppModel';
-import metricAppModel from '../../services/models/metrics/metricsAppModel';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);

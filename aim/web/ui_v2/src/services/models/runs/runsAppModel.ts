@@ -292,13 +292,16 @@ function getRunsData(isInitial = true) {
 function getLastRunsData(lastRow: any) {
   const modelData = model.getState();
   const infiniteIsPending = modelData?.infiniteIsPending;
-  if (!infiniteIsPending) {
+  const isLatest = modelData?.config.pagination.isLatest;
+
+  if (!infiniteIsPending && !isLatest) {
+    const lastRowKey = modelData?.rowData[modelData?.rowData.length - 1].hash;
     model.setState({
       config: {
         ...modelData?.config,
         pagination: {
           ...modelData?.config.pagination,
-          offset: lastRow.key,
+          offset: lastRowKey,
         },
       },
     });
