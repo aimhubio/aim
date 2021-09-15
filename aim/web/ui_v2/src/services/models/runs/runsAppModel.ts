@@ -46,7 +46,6 @@ import getUrlWithParam from '../../../utils/getUrlWithParam';
 import { setItem, getItem } from '../../../utils/storage';
 import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from '../../../utils/JsonToCSV';
-import { getParamsTableColumns } from '../../../pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -130,7 +129,6 @@ function getConfig() {
     table: {
       rowHeight: RowHeightSize.md,
       sortFields: [],
-      hiddenMetrics: [],
       hiddenColumns: [],
       columnsOrder: {
         left: [],
@@ -223,6 +221,7 @@ function getRunsData(isInitial = true) {
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
+          sameValueColumns: tableData.sameValueColumns,
           config: {
             ...modelState?.config,
             pagination: {
@@ -238,6 +237,7 @@ function getRunsData(isInitial = true) {
           tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
+            hiddenColumns: configData.table.hiddenColumns!,
           });
         }, 0);
       } catch (e) {
@@ -370,7 +370,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   );
   const tableData = getDataAsTableRows(data, null, params);
   const configData = model.getState()?.config;
-  const tableColumns: ITableColumn[] = getParamsTableColumns(
+  const tableColumns: ITableColumn[] = getRunsTableColumns(
     params,
     data[0]?.config,
     configData?.table.columnsOrder!,
@@ -802,6 +802,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
 }
+
 function updateModelData(configData: IMetricAppConfig): void {
   const { data, params } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
@@ -817,12 +818,14 @@ function updateModelData(configData: IMetricAppConfig): void {
   tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
+    hiddenColumns: configData.table.hiddenColumns!,
   });
   model.setState({
     config: configData,
     data,
     tableData: tableData.rows,
     tableColumns,
+    sameValueColumns: tableData.sameValueColumns,
   });
 }
 
@@ -844,22 +847,34 @@ function onRowHeightChange(height: RowHeightSize) {
   }
 }
 
-function onRunsVisibilityChange(metricsKeys: string[]) {
+function onColumnsVisibilityChange(hiddenColumns: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
     const table = {
       ...configData.table,
-      hiddenMetrics: metricsKeys,
+      hiddenColumns:
+        hiddenColumns[0] === 'all'
+          ? columnsData.map((col: any) => col.key)
+          : hiddenColumns,
     };
-    const config = {
+    const configUpdate = {
       ...configData,
       table,
     };
     model.setState({
-      config,
+      config: configUpdate,
     });
+
     setItem('runsTable', encode(table));
-    updateModelData(config);
+    updateModelData(configUpdate);
+  }
+}
+
+function onTableDiffShow() {
+  const sameValueColumns = model.getState()?.sameValueColumns;
+  if (sameValueColumns) {
+    onColumnsVisibilityChange(sameValueColumns);
   }
 }
 
@@ -875,7 +890,8 @@ const runAppModel = {
   onColumnsOrderChange,
   updateSelectStateUrl,
   onSelectRunQueryChange,
-  onRunsVisibilityChange,
+  onColumnsVisibilityChange,
+  onTableDiffShow,
 };
 
 export default runAppModel;

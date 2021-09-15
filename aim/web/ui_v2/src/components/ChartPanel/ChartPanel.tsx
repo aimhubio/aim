@@ -10,6 +10,7 @@ import ChartPopover from './ChartPopover/ChartPopover';
 import PopoverContent from './PopoverContent/PopoverContent';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   IActivePoint,
   ISyncHoverStateParams,
@@ -186,9 +187,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 );
               })}
             </Grid>
+
             <ChartPopover
               popoverPosition={popoverPosition}
               open={
+                props.resizeMode !== ResizeModeEnum.MaxHeight &&
                 props.data.length > 0 &&
                 !props.panelResizing &&
                 !props.zoom?.active &&

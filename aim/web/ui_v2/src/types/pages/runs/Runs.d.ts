@@ -37,12 +37,13 @@ export interface IRunsTableProps {
   runsList: ITagProps[];
   isRunsDataLoading: boolean;
   isInfiniteLoading: boolean;
-  hiddenRuns: any;
+  hiddenColumns: string[];
   columns: any;
   tableRowHeight: number;
   onExportTableData: () => void;
   onManageColumns: () => void;
-  onRowsChange: () => void;
+  onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
+  onTableDiffShow: () => void;
   onRowHeightChange: () => void;
   getLastRunsData: (row: any) => void;
   isLatest?: boolean;

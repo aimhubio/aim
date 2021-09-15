@@ -18,6 +18,7 @@ import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { ITableRef } from 'components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -34,6 +35,23 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   groupingSelectOptions: IGroupingSelectOption[];
   hiddenMetrics: string[];
   sortFields: [string, 'asc' | 'desc' | boolean][];
+  focusedState: IFocusedState;
+  isVisibleColorIndicator: boolean;
+  tooltip: IChartTooltip;
+  chartTitleData: IChartTitleData;
+  selectedParamsData: IParamsAppConfig['select'];
+  requestIsPending: boolean;
+  onRowHeightChange: any;
+  onSortFieldsChange: any;
+  onParamVisibilityChange: any;
+  onColumnsOrderChange: any;
+  tableData: any;
+  tableRowHeight?: any;
+  onTableRowHover?: any;
+  onTableRowClick?: any;
+  tableColumns: any;
+  tableRowHeight: any;
+  resizeMode: ResizeModeEnum;
   notifyData: INotification[];
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
@@ -41,14 +59,8 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
     activePoint: IActivePoint,
     focusedStateActive: boolean = false,
   ) => void;
-  focusedState: IFocusedState;
   onColorIndicatorChange: () => void;
-  isVisibleColorIndicator: boolean;
-  tooltip: IChartTooltip;
-  chartTitleData: IChartTitleData;
   onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
-  selectedParamsData: IParamsAppConfig['select'];
-  requestIsPending: boolean;
   onSelectRunQueryChange: (query: string) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
@@ -64,6 +76,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: any;
+  onColumnsVisibilityChange: any;
   onSortFieldsChange: any;
   onParamVisibilityChange: any;
   onColumnsOrderChange: any;
@@ -73,4 +86,6 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onTableRowClick?: any;
   tableColumns: any;
   tableRowHeight: any;
+  hiddenColumns: any;
+  onTableResizeModeChange: (mode: ResizeModeEnum) => void;
 }

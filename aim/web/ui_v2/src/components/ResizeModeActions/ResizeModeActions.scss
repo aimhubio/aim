@@ -1,0 +1,23 @@
+.ResizeModeActions {
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 0.0625rem solid #e8f1fd;
+  margin-right: 1rem;
+
+  button {
+    &:nth-child(2) {
+      margin: 0 0.25rem;
+    }
+  }
+
+  &__fullHeight {
+    padding: 0.25rem;
+    button {
+      &:nth-child(2) {
+        margin: 0 0.25rem;
+      }
+    }
+  }
+}

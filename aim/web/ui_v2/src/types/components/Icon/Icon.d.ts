@@ -8,7 +8,7 @@ export interface IIconProps extends React.BaseHTMLAttributes<any> {
   color?: string;
 }
 
-type IconName =
+export type IconName =
   | 'close-rectangle'
   | 'close'
   | 'eye-fill-show'

@@ -9,4 +9,10 @@ enum HideRowsEnum {
   Visualize = 'visualize',
 }
 
-export { RowHeightEnum, HideRowsEnum };
+enum ResizeModeEnum {
+  Hide = 'hide',
+  Resizable = 'resizable',
+  MaxHeight = 'maxHeight',
+}
+
+export { RowHeightEnum, HideRowsEnum, ResizeModeEnum };

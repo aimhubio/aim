@@ -77,6 +77,7 @@ import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -154,6 +155,7 @@ function getConfig(): IMetricAppConfig {
       advancedQuery: '',
     },
     table: {
+      resizeMode: ResizeModeEnum.Resizable,
       rowHeight: RowHeightSize.md,
       sortFields: [],
       hiddenMetrics: [],
@@ -1615,6 +1617,7 @@ async function onAlignmentMetricChange(metric: string) {
     model.setState({ config: configData });
   }
   if (modelState?.rawData && configData) {
+    model.setState({ requestIsPending: true });
     const runs = modelState?.rawData?.map((item) => {
       const traces = item.traces.map(({ context, metric_name, slice }) => ({
         context,
@@ -1804,16 +1807,18 @@ function onRowHeightChange(height: RowHeightSize) {
 function onSortFieldsChange(sortFields: [string, any][]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      sortFields: sortFields,
+    };
     const configUpdate = {
       ...configData,
-      table: {
-        ...configData.table,
-        sortFields: sortFields,
-      },
+      table,
     };
     model.setState({
       config: configUpdate,
     });
+    setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
 }
@@ -1841,19 +1846,21 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
+    const table = {
+      ...configData.table,
+      hiddenColumns:
+        hiddenColumns[0] === 'all'
+          ? columnsData.map((col) => col.key)
+          : hiddenColumns,
+    };
     const configUpdate = {
       ...configData,
-      table: {
-        ...configData.table,
-        hiddenColumns:
-          hiddenColumns[0] === 'all'
-            ? columnsData.map((col) => col.key)
-            : hiddenColumns,
-      },
+      table,
     };
     model.setState({
       config: configUpdate,
     });
+    setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
 }
@@ -1877,6 +1884,25 @@ function onColumnsOrderChange(columnsOrder: any) {
       table,
     };
 
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
+function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      resizeMode: mode,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
     model.setState({
       config,
     });
@@ -1931,6 +1957,7 @@ const metricAppModel = {
   onTableDiffShow,
   onColumnsOrderChange,
   getQueryStringFromSelect,
+  onTableResizeModeChange,
 };
 
 export default metricAppModel;

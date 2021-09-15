@@ -11,12 +11,13 @@ import {
 import { CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
-import { IMetricTrace, IRun, ITraceData } from './runModel';
+import { IMetricTrace, IRun } from './runModel';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export interface IMetricAppModelState {
   refs: {
@@ -141,6 +142,7 @@ interface IMetricAppConfig {
     advancedQuery: string;
   };
   table: {
+    resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
     sortFields?: [string, boolean | 'asc' | 'desc'][];
     hiddenMetrics?: string[];
