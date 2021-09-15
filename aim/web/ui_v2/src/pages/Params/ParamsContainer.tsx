@@ -101,6 +101,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
+      hiddenColumns={paramsData?.config?.table.hiddenColumns!}
       resizeMode={paramsData?.config?.table.resizeMode}
       hiddenMetrics={paramsData?.config?.table.hiddenMetrics!}
       notifyData={paramsData?.notifyData}
@@ -130,6 +131,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortFieldsChange={paramsAppModel.onSortFieldsChange}
       onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
+      onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
       onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}
     />
   );
