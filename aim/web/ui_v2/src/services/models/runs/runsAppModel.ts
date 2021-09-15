@@ -139,6 +139,49 @@ function getConfig() {
   };
 }
 
+function resetModelOnError(detail?: any) {
+  const modelState = model.getState();
+  model.setState({
+    data: [],
+    rowData: [],
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns: [],
+    tableData: [],
+    config: {
+      ...modelState?.config,
+      pagination: {
+        ...initialPaginationConfig,
+      },
+    },
+  });
+
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: [],
+      newColumns: [],
+    });
+  }, 0);
+}
+
+function exceptionHandler(detail: any) {
+  let message = detail.message || 'Something went wrong';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
+
 function prepareModelStateToCall(isInitial: boolean) {
   const config = model.getState()?.config;
   if (isInitial) {
@@ -180,7 +223,7 @@ function getRunsData(isInitial = true) {
   return {
     call: async () => {
       try {
-        const stream = await call();
+        const stream = await call(exceptionHandler);
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
@@ -189,7 +232,6 @@ function getRunsData(isInitial = true) {
         const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
           ? []
           : modelState?.rowData;
-
         let count = 0;
         for await (let [keys, val] of objects) {
           if (isInitial) {
@@ -228,7 +270,6 @@ function getRunsData(isInitial = true) {
             },
           },
         });
-
         setTimeout(() => {
           const tableRef: any = model.getState()?.refs?.tableRef;
           tableRef.current?.updateData({
@@ -237,33 +278,7 @@ function getRunsData(isInitial = true) {
           });
         }, 0);
       } catch (e) {
-        model.setState({
-          data: [],
-          rowData: [],
-          requestIsPending: false,
-          infiniteIsPending: false,
-          tableColumns: [],
-          tableData: [],
-          config: {
-            ...modelState?.config,
-            pagination: {
-              ...initialPaginationConfig,
-            },
-          },
-        });
-        onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: 'Invalid syntax at query statement',
-        });
-
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: [],
-            newColumns: [],
-          });
-        }, 0);
+        console.error(e);
       }
     },
     abort,
