@@ -50,8 +50,8 @@
     -webkit-box-flex: 0.5;
     -ms-flex: 0.5 1 0;
     flex: 0.5 1 0;
-    min-height: 372px;
-    border-bottom: 1px solid #e8f1fc;
+    min-height: 18.75rem;
+    border-bottom: 0.0625rem solid #e8f1fc;
     &__emptyBox {
       display: flex;
       align-items: center;
@@ -66,8 +66,9 @@
 
   .Params__table__container {
     -webkit-box-flex: 0.5;
-    -ms-flex: 0.5 1 0px;
+    -ms-flex: 0.5 1 0;
     flex: 0.5 1 0;
+    min-height: 13rem;
     &__hide {
       display: none;
     }
