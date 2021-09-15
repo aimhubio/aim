@@ -13,6 +13,7 @@ import { IControlProps } from 'types/pages/metrics/components/Controls/Controls'
 import Icon from 'components/Icon/Icon';
 
 import './Controls.scss';
+import { Tooltip } from '@material-ui/core';
 
 function Controls(
   props: IControlProps,
@@ -24,35 +25,43 @@ function Controls(
           title='Select Aggregation Method'
           open={!!props.aggregationConfig.isEnabled}
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              className={`Controls__anchor ${
-                props.aggregationConfig.isApplied ? 'active outlined' : ''
-              } ${props.aggregationConfig.isEnabled ? '' : 'disabled'}`}
+            <Tooltip
+              title={
+                props.aggregationConfig.isApplied
+                  ? 'Deaggregate Metrics'
+                  : 'Aggregate Metrics'
+              }
             >
-              {props.aggregationConfig.isEnabled ? (
-                <span
-                  className={`Controls__anchor__arrow ${
-                    opened ? 'Controls__anchor__arrow__opened' : ''
+              <div
+                className={`Controls__anchor ${
+                  props.aggregationConfig.isApplied ? 'active outlined' : ''
+                } ${props.aggregationConfig.isEnabled ? '' : 'disabled'}`}
+              >
+                {props.aggregationConfig.isEnabled ? (
+                  <span
+                    className={`Controls__anchor__arrow ${
+                      opened ? 'Controls__anchor__arrow__opened' : ''
+                    }`}
+                    onClick={onAnchorClick}
+                  >
+                    <Icon name='arrow-left' onClick={onAnchorClick} />
+                  </span>
+                ) : null}
+                <Icon
+                  className={`Controls__icon ${
+                    props.aggregationConfig.isApplied ? 'active' : ''
                   }`}
-                  onClick={onAnchorClick}
-                >
-                  <Icon name='arrow-left' onClick={onAnchorClick} />
-                </span>
-              ) : null}
-              <Icon
-                className={`Controls__icon ${
-                  props.aggregationConfig.isApplied ? 'active' : ''
-                }`}
-                name='aggregation'
-                onClick={() => {
-                  if (props.aggregationConfig.isEnabled) {
-                    props.onAggregationConfigChange({
-                      isApplied: !props.aggregationConfig?.isApplied,
-                    });
-                  }
-                }}
-              />
-            </div>
+                  name='aggregation'
+                  onClick={() => {
+                    if (props.aggregationConfig.isEnabled) {
+                      props.onAggregationConfigChange({
+                        isApplied: !props.aggregationConfig?.isApplied,
+                      });
+                    }
+                  }}
+                />
+              </div>
+            </Tooltip>
           )}
           component={
             <AggregationPopup
@@ -66,15 +75,17 @@ function Controls(
         <ControlPopover
           title='Align X-Axis by'
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              onClick={onAnchorClick}
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='x-axis'
-              />
-            </div>
+            <Tooltip title='Align X-Axis'>
+              <div
+                onClick={onAnchorClick}
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='x-axis'
+                />
+              </div>
+            </Tooltip>
           )}
           component={
             <AlignmentPopover
@@ -90,15 +101,17 @@ function Controls(
         <ControlPopover
           title='Axes Scale'
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              onClick={onAnchorClick}
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='axes-scale'
-              />
-            </div>
+            <Tooltip title='Axes Scale'>
+              <div
+                onClick={onAnchorClick}
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='axes-scale'
+                />
+              </div>
+            </Tooltip>
           )}
           component={
             <AxesScalePopover
@@ -112,15 +125,17 @@ function Controls(
         <ControlPopover
           title='Chart Smoothing Options'
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              onClick={onAnchorClick}
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='smoothing'
-              />
-            </div>
+            <Tooltip title='Chart Smoothing Options'>
+              <div
+                onClick={onAnchorClick}
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='smoothing'
+                />
+              </div>
+            </Tooltip>
           )}
           component={
             <SmootheningPopup
@@ -132,36 +147,44 @@ function Controls(
           }
         />
       </div>
-      <div
-        className={`Controls__anchor ${
-          props.displayOutliers ? 'active outlined' : ''
-        }`}
-        onClick={props.onDisplayOutliersChange}
+      <Tooltip
+        title={
+          props.displayOutliers ? 'Outliers Are Ignored' : 'Ignore Outliers'
+        }
       >
-        {props.displayOutliers ? (
-          <Icon
-            className={`Controls__icon ${
-              props.displayOutliers ? 'active' : ''
-            }`}
-            name='ignore-outliers'
-          />
-        ) : (
-          <Icon className='Controls__icon' name='ignore-outliers' />
-        )}
-      </div>
+        <div
+          className={`Controls__anchor ${
+            props.displayOutliers ? 'active outlined' : ''
+          }`}
+          onClick={props.onDisplayOutliersChange}
+        >
+          {props.displayOutliers ? (
+            <Icon
+              className={`Controls__icon ${
+                props.displayOutliers ? 'active' : ''
+              }`}
+              name='ignore-outliers'
+            />
+          ) : (
+            <Icon className='Controls__icon' name='ignore-outliers' />
+          )}
+        </div>
+      </Tooltip>
       <div>
         <ControlPopover
           title='Highlight Modes'
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-              onClick={onAnchorClick}
-            >
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='highlight-mode'
-              />
-            </div>
+            <Tooltip title='Highlight Modes'>
+              <div
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                onClick={onAnchorClick}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='highlight-mode'
+                />
+              </div>
+            </Tooltip>
           )}
           component={
             <HighlightModePopup
@@ -175,16 +198,17 @@ function Controls(
         <ControlPopover
           title='Select Tooltip Params'
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              onClick={onAnchorClick}
-              className={`Controls__anchor ${opened ? 'active' : ''}`}
-            >
-              {/*TODO need to change icon */}
-              <Icon
-                className={`Controls__icon ${opened ? 'active' : ''}`}
-                name='cursor'
-              />
-            </div>
+            <Tooltip title='Tooltip Params'>
+              <div
+                onClick={onAnchorClick}
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='cursor'
+                />
+              </div>
+            </Tooltip>
           )}
           component={
             <TooltipContentPopover
@@ -200,34 +224,36 @@ function Controls(
         <ControlPopover
           title='Select Zoom Mode'
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              className={`Controls__anchor ${
-                props.zoom?.active ? 'active' : ''
-              }`}
-            >
-              <span
-                className={`Controls__anchor__arrow ${
-                  opened ? 'Controls__anchor__arrow__opened' : ''
+            <Tooltip title='Zoom In'>
+              <div
+                className={`Controls__anchor ${
+                  props.zoom?.active ? 'active' : ''
                 }`}
-                onClick={onAnchorClick}
               >
-                <Icon name='arrow-left' />
-              </span>
-              <span
-                onClick={() => {
-                  if (props.zoom) {
-                    props.onZoomChange?.({ active: !props.zoom.active });
-                  }
-                }}
-              >
-                <Icon
-                  className={`Controls__icon ${
-                    props.zoom?.active ? 'active' : ''
+                <span
+                  className={`Controls__anchor__arrow ${
+                    opened ? 'Controls__anchor__arrow__opened' : ''
                   }`}
-                  name='zoom-in'
-                />
-              </span>
-            </div>
+                  onClick={onAnchorClick}
+                >
+                  <Icon name='arrow-left' />
+                </span>
+                <span
+                  onClick={() => {
+                    if (props.zoom) {
+                      props.onZoomChange?.({ active: !props.zoom.active });
+                    }
+                  }}
+                >
+                  <Icon
+                    className={`Controls__icon ${
+                      props.zoom?.active ? 'active' : ''
+                    }`}
+                    name='zoom-in'
+                  />
+                </span>
+              </div>
+            </Tooltip>
           )}
           component={
             <ZoomInPopup
@@ -242,33 +268,35 @@ function Controls(
           title='Select Option To Zoom Out'
           open={!!props.zoom?.history.length}
           anchor={({ onAnchorClick, opened }) => (
-            <div
-              className={`Controls__anchor ${
-                props.zoom?.history.length ? '' : 'disabled'
-              }`}
-            >
-              {props.zoom?.history.length ? (
-                <span
-                  className={`Controls__anchor__arrow ${
-                    opened ? 'Controls__anchor__arrow__opened' : ''
-                  }`}
-                  onClick={onAnchorClick}
-                >
-                  <Icon name='arrow-left' />
-                </span>
-              ) : null}
-              <span
-                onClick={() => {
-                  if (props.zoom?.history.length) {
-                    props.onZoomChange?.({
-                      history: [...props.zoom.history].slice(0, -1),
-                    });
-                  }
-                }}
+            <Tooltip title='Zoom Out'>
+              <div
+                className={`Controls__anchor ${
+                  props.zoom?.history.length ? '' : 'disabled'
+                }`}
               >
-                <Icon className='Controls__icon' name='zoom-out' />
-              </span>
-            </div>
+                {props.zoom?.history.length ? (
+                  <span
+                    className={`Controls__anchor__arrow ${
+                      opened ? 'Controls__anchor__arrow__opened' : ''
+                    }`}
+                    onClick={onAnchorClick}
+                  >
+                    <Icon name='arrow-left' />
+                  </span>
+                ) : null}
+                <span
+                  onClick={() => {
+                    if (props.zoom?.history.length) {
+                      props.onZoomChange?.({
+                        history: [...props.zoom.history].slice(0, -1),
+                      });
+                    }
+                  }}
+                >
+                  <Icon className='Controls__icon' name='zoom-out' />
+                </span>
+              </div>
+            </Tooltip>
           )}
           component={
             <ZoomOutPopup
