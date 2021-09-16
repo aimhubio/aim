@@ -29,7 +29,6 @@
     justify-content: center;
   }
 
-
   .Metrics__chart__container {
     min-height: 18.75rem;
     flex: 0.5 1 0;
@@ -56,4 +55,36 @@
   width: 3.75rem;
   max-height: 100%;
   overflow-y: auto;
+}
+
+.Metrics__table__aggregationColumn__cell {
+  display: flex;
+  flex: 1;
+
+  span {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:nth-of-type(2) {
+      padding: 0 0.5rem;
+      margin: 0 0.5rem;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+  }
+}
+
+.Table__cell--header {
+  .Metrics__table__aggregationColumn__cell {
+    span:nth-of-type(2) {
+      padding-left: 0;
+      margin-left: 0rem;
+      padding-right: 0.5rem;
+      margin-right: -1rem;
+    }
+  }
 }

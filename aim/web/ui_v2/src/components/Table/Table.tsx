@@ -276,7 +276,16 @@ const Table = React.forwardRef(function Table(
             if (!!groupHeaderRowCell) {
               const groupRow = dataRef.current[groupKey];
               if (!!groupRow && !!groupRow.data) {
-                groupHeaderRowCell.textContent = groupRow.data[colKey];
+                if (colKey === 'value') {
+                  groupHeaderRowCell.children[0].children[0].children[0].textContent =
+                    groupRow.data.aggregation.area.min;
+                  groupHeaderRowCell.children[0].children[0].children[1].textContent =
+                    groupRow.data.aggregation.line;
+                  groupHeaderRowCell.children[0].children[0].children[2].textContent =
+                    groupRow.data.aggregation.area.max;
+                } else {
+                  groupHeaderRowCell.textContent = groupRow.data[colKey];
+                }
                 if (expandedGroups.current.includes(groupKey)) {
                   groupRow.items.forEach((row) => {
                     if (row.index > endIndex.current) {

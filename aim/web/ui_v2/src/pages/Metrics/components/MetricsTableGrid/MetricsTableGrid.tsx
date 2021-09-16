@@ -69,8 +69,24 @@ function getMetricsTableColumns(
     },
     {
       key: 'value',
-      content: <span>Value</span>,
-      topHeader: 'Metrics',
+      content: groupFields ? (
+        <div className='Metrics__table__aggregationColumn__cell'>
+          <span>Area Min</span>
+          <span>
+            {aggregationMethods!.line === AggregationLineMethods.MEAN
+              ? 'Mean'
+              : aggregationMethods!.line === AggregationLineMethods.MEDIAN
+              ? 'Median'
+              : aggregationMethods!.line === AggregationLineMethods.MIN
+              ? 'Min'
+              : 'Max'}
+          </span>
+          <span>Area Max</span>
+        </div>
+      ) : (
+        <span>Value</span>
+      ),
+      topHeader: groupFields ? 'Value' : 'Metrics',
       pin: order?.left?.includes('value')
         ? 'left'
         : order?.right?.includes('value')
@@ -185,11 +201,27 @@ function metricsTableRowRenderer(
       const col = columns[i];
       if (col === 'context') {
         row[col] = {
-          content: rowData.context.map((item: string) => (
-            <TagLabel key={item} color={COLORS[0][0]} label={item} />
-          )),
+          content:
+            rowData.context.length > 1 ? (
+              <TagLabel
+                color={COLORS[0][0]}
+                label={`${rowData.context.length} values`}
+              />
+            ) : (
+              <TagLabel color={COLORS[0][0]} label={rowData.context} />
+            ),
         };
-      } else if (['value', 'step', 'epoch'].includes(col)) {
+      } else if (col === 'value') {
+        row.value = {
+          content: (
+            <div className='Metrics__table__aggregationColumn__cell'>
+              <span>{rowData.aggregation.area.min}</span>
+              <span>{rowData.aggregation.line}</span>
+              <span>{rowData.aggregation.area.max}</span>
+            </div>
+          ),
+        };
+      } else if (['step', 'epoch'].includes(col)) {
         row[col] =
           rowData[col] === null
             ? '-'

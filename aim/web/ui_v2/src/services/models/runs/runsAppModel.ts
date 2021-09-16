@@ -792,7 +792,7 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
 
-      if (metricsCollection.config !== null && isRawData) {
+      if (metricsCollection.config !== null && !isRawData) {
         rows[groupKey!].data = runsTableRowRenderer(
           rows[groupKey!].data,
           true,

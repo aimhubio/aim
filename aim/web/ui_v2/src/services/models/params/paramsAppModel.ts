@@ -1065,7 +1065,7 @@ function getDataAsTableRows(
       }
     }
 
-    if (metricsCollection.config !== null && isRawData) {
+    if (metricsCollection.config !== null && !isRawData) {
       rows[groupKey!].data = paramsTableRowRenderer(
         rows[groupKey!].data,
         {},
