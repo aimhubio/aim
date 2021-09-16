@@ -70,6 +70,7 @@ const Params = ({
   onTableResizeModeChange,
   onNotificationDelete,
   onColumnsVisibilityChange,
+  onTableDiffShow,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -211,6 +212,7 @@ const Params = ({
                   onRowHover={onTableRowHover}
                   onRowClick={onTableRowClick}
                   onTableResizeModeChange={onTableResizeModeChange}
+                  onTableDiffShow={onTableDiffShow}
                 />
               ) : null}
             </BusyLoaderWrapper>

@@ -493,10 +493,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           key: metricKey,
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-          isHidden:
-            configData!.table.hiddenMetrics![0] === 'all'
-              ? true
-              : configData!.table.hiddenMetrics!.includes(metricKey),
+          isHidden: configData!.table.hiddenMetrics!.includes(metricKey),
           data: {
             values,
             steps,
@@ -1889,10 +1886,18 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 
 function onMetricVisibilityChange(metricsKeys: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
+  const processedData = model.getState()?.data;
+  if (configData?.table && processedData) {
     const table = {
       ...configData.table,
-      hiddenMetrics: metricsKeys,
+      hiddenMetrics:
+        metricsKeys[0] === 'all'
+          ? Object.values(processedData)
+              .map((metricCollection) =>
+                metricCollection.data.map((metric) => metric.key),
+              )
+              .flat()
+          : metricsKeys,
     };
     const config = {
       ...configData,
