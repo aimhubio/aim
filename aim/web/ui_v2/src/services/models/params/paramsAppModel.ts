@@ -272,6 +272,7 @@ function getParamsData() {
             configData.table.columnsOrder!,
             configData.table.hiddenColumns!,
           ),
+          sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
@@ -918,6 +919,7 @@ function updateModelData(configData: IParamsAppConfig): void {
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
     tableData: tableData.rows,
     tableColumns,
+    sameValueColumns: tableData.sameValueColumns,
   });
 }
 
@@ -1406,6 +1408,13 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
   }
 }
 
+function onTableDiffShow() {
+  const sameValueColumns = model.getState()?.sameValueColumns;
+  if (sameValueColumns) {
+    onColumnsVisibilityChange(sameValueColumns);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1441,6 +1450,7 @@ const paramsAppModel = {
   onColumnsVisibilityChange,
   onTableResizeModeChange,
   getAppConfigData,
+  onTableDiffShow,
 };
 
 export default paramsAppModel;
