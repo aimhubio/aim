@@ -5,7 +5,7 @@ import { Drawer } from '@material-ui/core';
 
 import { IconName } from 'types/components/Icon/Icon';
 import Icon from 'components/Icon/Icon';
-import { PathEnum } from 'config/enums/sideBarEnum';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import logoImg from 'assets/logo.svg';
 

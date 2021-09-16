@@ -6,7 +6,7 @@ import { merge } from 'lodash-es';
 import TagLabel from 'components/TagLabel/TagLabel';
 import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { PathEnum } from 'config/enums/sideBarEnum';
+import { PathEnum } from 'config/enums/routesEnum';
 
 function getRunsTableColumns(
   metricsColumns: any,

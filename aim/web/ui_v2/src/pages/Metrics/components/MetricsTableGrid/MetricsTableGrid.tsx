@@ -11,7 +11,7 @@ import {
 } from 'utils/aggregateGroupData';
 import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
-import { PathEnum } from 'config/enums/sideBarEnum';
+import { PathEnum } from 'config/enums/routesEnum';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],

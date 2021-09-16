@@ -1,5 +1,5 @@
 import React from 'react';
-import { PathEnum } from '../config/enums/sideBarEnum';
+import { PathEnum } from '../config/enums/routesEnum';
 
 const Runs = React.lazy(() => import('pages/Runs/RunsContainer'));
 const RunDetail = React.lazy(() => import('pages/RunDetail/RunDetail'));

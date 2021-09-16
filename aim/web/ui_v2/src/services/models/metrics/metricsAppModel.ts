@@ -82,7 +82,9 @@ import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
-const model = createModel<Partial<IMetricAppModelState>>({});
+const model = createModel<Partial<IMetricAppModelState>>({
+  requestIsPending: true,
+});
 let tooltipData: ITooltipData = {};
 
 function getConfig(): IMetricAppConfig {
