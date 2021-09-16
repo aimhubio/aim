@@ -38,6 +38,12 @@ function getParamsTableColumns(
         ? 'right'
         : null,
     },
+    {
+      key: 'actions',
+      content: '',
+      topHeader: '',
+      pin: 'right',
+    },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
       acc = [

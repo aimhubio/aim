@@ -247,6 +247,17 @@ $group-margin: 8px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  &.actions {
+    padding: 0;
+    width: 32px;
+    div {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
 
 .Table__cell--header {
