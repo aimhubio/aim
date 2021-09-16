@@ -179,6 +179,8 @@ function exceptionHandler(detail: any) {
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  } else {
+    message = 'Something went wrong';
   }
 
   onNotificationAdd({
