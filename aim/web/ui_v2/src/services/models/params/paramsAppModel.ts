@@ -924,6 +924,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   metricsColumns: any,
   paramKeys: string[],
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1027,9 +1028,11 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(paramsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          isRawData ? rowValues : paramsTableRowRenderer(rowValues),
+        );
       } else {
-        rows.push(paramsTableRowRenderer(rowValues));
+        rows.push(isRawData ? rowValues : paramsTableRowRenderer(rowValues));
       }
     });
 
@@ -1046,7 +1049,7 @@ function getDataAsTableRows(
       }
     }
 
-    if (metricsCollection.config !== null) {
+    if (metricsCollection.config !== null && isRawData) {
       rows[groupKey!].data = paramsTableRowRenderer(
         rows[groupKey!].data,
         true,
@@ -1184,7 +1187,7 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
     params,
