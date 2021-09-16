@@ -705,7 +705,19 @@ function propsComparator(
     return false;
   }
 
+  if (prevProps.data !== nextProps.data) {
+    return false;
+  }
+
   if (prevProps.rowHeight !== nextProps.rowHeight) {
+    return false;
+  }
+
+  if (prevProps.sortFields !== nextProps.sortFields) {
+    return false;
+  }
+
+  if (prevProps.resizeMode !== nextProps.resizeMode) {
     return false;
   }
 
