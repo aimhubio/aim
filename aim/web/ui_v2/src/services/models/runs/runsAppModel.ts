@@ -676,7 +676,7 @@ function getDataAsTableRows(
   processedData: any,
   metricsColumns: any,
   paramKeys: string[],
-  rawData?: boolean,
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -770,10 +770,10 @@ function getDataAsTableRows(
       });
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
-          rawData ? rowValues : runsTableRowRenderer(rowValues),
+          isRawData ? rowValues : runsTableRowRenderer(rowValues),
         );
       } else {
-        rows.push(rawData ? rowValues : runsTableRowRenderer(rowValues));
+        rows.push(isRawData ? rowValues : runsTableRowRenderer(rowValues));
       }
     });
 
@@ -789,7 +789,7 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
 
-      if (metricsCollection.config !== null && rawData) {
+      if (metricsCollection.config !== null && isRawData) {
         rows[groupKey!].data = runsTableRowRenderer(
           rows[groupKey!].data,
           true,

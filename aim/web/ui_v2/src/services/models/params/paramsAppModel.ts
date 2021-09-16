@@ -59,7 +59,6 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import JsonToCSV from 'utils/JsonToCSV';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { metricsTableRowRenderer } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
@@ -926,7 +925,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   metricsColumns: any,
   paramKeys: string[],
-  rawData?: boolean,
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1030,10 +1029,10 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
-          rawData ? rowValues : paramsTableRowRenderer(rowValues),
+          isRawData ? rowValues : paramsTableRowRenderer(rowValues),
         );
       } else {
-        rows.push(rawData ? rowValues : paramsTableRowRenderer(rowValues));
+        rows.push(isRawData ? rowValues : paramsTableRowRenderer(rowValues));
       }
     });
 
@@ -1050,7 +1049,7 @@ function getDataAsTableRows(
       }
     }
 
-    if (metricsCollection.config !== null && rawData) {
+    if (metricsCollection.config !== null && isRawData) {
       rows[groupKey!].data = paramsTableRowRenderer(
         rows[groupKey!].data,
         true,
