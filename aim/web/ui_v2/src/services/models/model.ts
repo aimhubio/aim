@@ -7,6 +7,7 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
     UPDATE: [],
   };
   return {
+    // @TODO think to change model structure and remove init step from model lifecycle
     init: () => {
       state = Object.assign({}, initialState);
       (subscriptions.INIT || []).forEach((fn) => fn(initialState));

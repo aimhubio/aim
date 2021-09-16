@@ -2,14 +2,57 @@ import React, { memo, useMemo } from 'react';
 import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
 import { useFormik } from 'formik';
+import { makeStyles } from '@material-ui/core';
 import { Button, TextField } from '@material-ui/core';
 
 import COLORS from 'config/colors/colors';
-import tagsService from 'services/api/tags/tagsService';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
 
 import './TagForm.scss';
+
+const useStyles = makeStyles({
+  tagColor: {
+    border: ({ colorName, color }: { color: string; colorName: string }) =>
+      `1px solid ${colorName === color ? color : 'transparent'}`,
+    '&:hover, &:focus': {
+      border: ({ colorName }: { colorName: string }) =>
+        `1px solid ${colorName} !important;`,
+      backgroundColor: 'inherit',
+    },
+  },
+});
+
+type TagColorWrapperProp = {
+  colorName: string;
+  onColorButtonClick: (colorName: string) => void;
+  color: string;
+};
+
+function TagColorWrapper({
+  colorName,
+  onColorButtonClick,
+  color,
+}: TagColorWrapperProp) {
+  const { tagColor } = useStyles({ color, colorName });
+  return (
+    <Button
+      className={`TagForm__tagFormContainer__colorContainer__colorBox__colorButton ${tagColor}`}
+      onClick={() => onColorButtonClick(colorName)}
+    >
+      <>
+        <span
+          className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton__content'
+          style={{ background: colorName }}
+        ></span>
+        <span
+          className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton__circle'
+          style={{ background: colorName }}
+        ></span>
+      </>
+    </Button>
+  );
+}
 
 function TagForm({
   tagData,
@@ -54,26 +97,13 @@ function TagForm({
 
   const colors = useMemo(
     () =>
-      COLORS[0].map((colorName) => (
-        <Button
-          className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton'
+      COLORS[0].map((colorName, index) => (
+        <TagColorWrapper
           key={colorName}
-          onClick={() => onColorButtonClick(colorName)}
-          style={{
-            border: `1px solid ${colorName === color ? color : 'transparent'}`,
-          }}
-        >
-          <>
-            <span
-              className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton__content'
-              style={{ background: colorName }}
-            ></span>
-            <span
-              className='TagForm__tagFormContainer__colorContainer__colorBox__colorButton__circle'
-              style={{ background: colorName }}
-            ></span>
-          </>
-        </Button>
+          color={color}
+          colorName={colorName}
+          onColorButtonClick={onColorButtonClick}
+        />
       )),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [color],
