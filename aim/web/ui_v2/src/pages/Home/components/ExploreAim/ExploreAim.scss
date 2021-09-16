@@ -29,6 +29,9 @@
   &:last-child {
     margin-bottom: 0;
   }
+  &:visited {
+    color: unset;
+  };
   &:hover {
     border-color: #1473E6;
     i {
