@@ -361,10 +361,7 @@ function processData(data: IRun<IParamTrace>[]): {
     });
     runs.push({
       run,
-      isHidden:
-        configData!.table.hiddenMetrics![0] === 'all'
-          ? true
-          : configData!.table.hiddenMetrics!.includes(run.hash),
+      isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
@@ -1330,10 +1327,18 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 
 function onParamVisibilityChange(metricsKeys: string[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
+  const processedData: IMetricsCollection<IParam>[] = model.getState()?.data;
+  if (configData?.table && processedData) {
     const table = {
       ...configData.table,
-      hiddenMetrics: metricsKeys,
+      hiddenMetrics:
+        metricsKeys[0] === 'all'
+          ? Object.values(processedData)
+              .map((metricCollection) =>
+                metricCollection.data.map((metric) => metric.key),
+              )
+              .flat()
+          : metricsKeys,
     };
     const configUpdate = {
       ...configData,
