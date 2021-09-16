@@ -26,26 +26,28 @@ $text-scale-ratio: 1.2;
 $text-sm: $text-base-unit / $text-scale-ratio;
 $text-md: $text-base-unit;
 
-$cell-height: 32px;
-$group-margin: 8px;
+:root {
+  --cell-height: 24px;
+  --group-margin: 4px;
+}
 
 .Table__container {
   height: 100%;
   width: 100%;
   box-sizing: border-box;
   background: #fff;
+  &--small {
+    --cell-height: 28px;
+    --group-margin: 6px;
+  }
+  &--medium {
+    --cell-height: 32px;
+    --group-margin: 8px;
+  }
 
-  &.Table__container--small {
-    $cell-height: 28px;
-    $group-margin: 6px;
-  }
-  &.Table__container--medium {
-    $cell-height: 32px;
-    $group-margin: 8px;
-  }
-  &.Table__container--large {
-    $cell-height: 36px;
-    $group-margin: 10px;
+  &--large {
+    --cell-height: 36px;
+    --group-margin: 10px;
   }
 }
 
@@ -186,7 +188,7 @@ $group-margin: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  height: $cell-height;
+  height: var(--cell-height);
 
   &.placeholder {
     border-right: unset;
@@ -201,7 +203,7 @@ $group-margin: 8px;
 
     &.expanded {
       position: sticky;
-      top: 2 * $cell-height;
+      top: calc(2 * var(--cell-height));
     }
 
     &.expandable:hover {
@@ -251,7 +253,7 @@ $group-margin: 8px;
 
 .Table__cell--header {
   position: sticky;
-  top: $cell-height;
+  top: var(--cell-height);
   flex: none;
   background-color: $cell-color-dark;
   padding: $space-xxs $space-sm;
@@ -336,7 +338,7 @@ $group-margin: 8px;
 }
 
 .Table__group {
-  margin-top: $group-margin;
+  margin-top: var(--group-margin);
   background-color: #fff;
   border-top: 1px solid $border-color;
 
@@ -347,12 +349,12 @@ $group-margin: 8px;
 
 .Table--grouped {
   .Table__pane {
-    padding-bottom: $group-margin;
+    padding-bottom: var(--group-margin);
     &:first-of-type {
       .Table__column {
         &:first-of-type {
           .Table__group {
-            margin-left: $group-margin;
+            margin-left: var(--group-margin);
             border-left: 1px solid $border-color;
             border-top-left-radius: $border-radius;
             border-bottom-left-radius: $border-radius;
@@ -372,7 +374,7 @@ $group-margin: 8px;
       .Table__column {
         &:last-of-type {
           .Table__group {
-            margin-right: $group-margin;
+            margin-right: var(--group-margin);
             border-right: 1px solid $border-color;
             border-top-right-radius: $border-radius;
             border-bottom-right-radius: $border-radius;
