@@ -168,6 +168,7 @@ class Run(StructuredRunMixin):
 
     _idx_to_ctx: Dict[int, Context] = dict()
     _props_cache_hint: str = None
+    _finalize_message_shown = False
 
     def __init__(self, hashname: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
@@ -461,7 +462,14 @@ class Run(StructuredRunMixin):
         logger.debug(f'finalizing {self}')
         self.finalize()
 
+    @classmethod
+    def finalize_msg(cls):
+        if not cls._finalize_message_shown:
+            logger.warning('Finalizing runs.')
+            cls._finalize_message_shown = True
+
     def finalize(self):
+        self.finalize_msg()
         self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',
                                          read_only=False,
