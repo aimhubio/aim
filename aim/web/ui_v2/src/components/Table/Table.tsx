@@ -696,6 +696,10 @@ function propsComparator(
     return false;
   }
 
+  if (prevProps.rowHeight !== nextProps.rowHeight) {
+    return false;
+  }
+
   return true;
 }
 
