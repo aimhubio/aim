@@ -133,6 +133,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
       onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}
+      onTableDiffShow={paramsAppModel.onTableDiffShow}
     />
   );
 }

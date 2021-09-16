@@ -272,6 +272,7 @@ function getParamsData() {
             configData.table.columnsOrder!,
             configData.table.hiddenColumns!,
           ),
+          sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
@@ -360,10 +361,7 @@ function processData(data: IRun<IParamTrace>[]): {
     });
     runs.push({
       run,
-      isHidden:
-        configData!.table.hiddenMetrics![0] === 'all'
-          ? true
-          : configData!.table.hiddenMetrics!.includes(run.hash),
+      isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
@@ -918,6 +916,7 @@ function updateModelData(configData: IParamsAppConfig): void {
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
     tableData: tableData.rows,
     tableColumns,
+    sameValueColumns: tableData.sameValueColumns,
   });
 }
 
@@ -1328,10 +1327,18 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 
 function onParamVisibilityChange(metricsKeys: string[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
+  const processedData: IMetricsCollection<IParam>[] = model.getState()?.data;
+  if (configData?.table && processedData) {
     const table = {
       ...configData.table,
-      hiddenMetrics: metricsKeys,
+      hiddenMetrics:
+        metricsKeys[0] === 'all'
+          ? Object.values(processedData)
+              .map((metricCollection) =>
+                metricCollection.data.map((metric) => metric.key),
+              )
+              .flat()
+          : metricsKeys,
     };
     const configUpdate = {
       ...configData,
@@ -1406,6 +1413,13 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
   }
 }
 
+function onTableDiffShow() {
+  const sameValueColumns = model.getState()?.sameValueColumns;
+  if (sameValueColumns) {
+    onColumnsVisibilityChange(sameValueColumns);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1441,6 +1455,7 @@ const paramsAppModel = {
   onColumnsVisibilityChange,
   onTableResizeModeChange,
   getAppConfigData,
+  onTableDiffShow,
 };
 
 export default paramsAppModel;
