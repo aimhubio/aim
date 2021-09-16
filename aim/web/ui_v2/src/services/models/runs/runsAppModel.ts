@@ -392,7 +392,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
   const configData = model.getState()?.config;
   const tableColumns: ITableColumn[] = getRunsTableColumns(
     metricsColumns,
@@ -676,6 +676,7 @@ function getDataAsTableRows(
   processedData: any,
   metricsColumns: any,
   paramKeys: string[],
+  rawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -768,9 +769,11 @@ function getDataAsTableRows(
         }
       });
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(runsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          rawData ? rowValues : runsTableRowRenderer(rowValues),
+        );
       } else {
-        rows.push(runsTableRowRenderer(rowValues));
+        rows.push(rawData ? rowValues : runsTableRowRenderer(rowValues));
       }
     });
 
@@ -786,7 +789,7 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
 
-      if (metricsCollection.config !== null) {
+      if (metricsCollection.config !== null && rawData) {
         rows[groupKey!].data = runsTableRowRenderer(
           rows[groupKey!].data,
           true,

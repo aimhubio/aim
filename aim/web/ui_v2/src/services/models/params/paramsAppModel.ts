@@ -59,6 +59,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import JsonToCSV from 'utils/JsonToCSV';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { metricsTableRowRenderer } from '../../../pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
@@ -925,6 +926,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   metricsColumns: any,
   paramKeys: string[],
+  rawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1027,9 +1029,11 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(paramsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          rawData ? rowValues : paramsTableRowRenderer(rowValues),
+        );
       } else {
-        rows.push(paramsTableRowRenderer(rowValues));
+        rows.push(rawData ? rowValues : paramsTableRowRenderer(rowValues));
       }
     });
 
@@ -1046,7 +1050,7 @@ function getDataAsTableRows(
       }
     }
 
-    if (metricsCollection.config !== null) {
+    if (metricsCollection.config !== null && rawData) {
       rows[groupKey!].data = paramsTableRowRenderer(
         rows[groupKey!].data,
         true,
@@ -1184,7 +1188,7 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
     params,

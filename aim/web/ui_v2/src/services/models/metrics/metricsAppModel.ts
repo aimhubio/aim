@@ -981,6 +981,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
+  rawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1100,9 +1101,11 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(metricsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          rawData ? rowValues : metricsTableRowRenderer(rowValues),
+        );
       } else {
-        rows.push(metricsTableRowRenderer(rowValues));
+        rows.push(rawData ? rowValues : metricsTableRowRenderer(rowValues));
       }
     });
 
@@ -1118,7 +1121,7 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
     }
-    if (metricsCollection.config !== null) {
+    if (metricsCollection.config !== null && rawData) {
       rows[groupKey!].data = metricsTableRowRenderer(
         rows[groupKey!].data,
         true,
@@ -1543,6 +1546,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     data,
     config?.chart?.focusedState.xValue ?? null,
     params,
+    true,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
