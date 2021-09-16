@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Button from 'components/Button/Button';
 import { debounce, isEmpty, isNil } from 'lodash-es';

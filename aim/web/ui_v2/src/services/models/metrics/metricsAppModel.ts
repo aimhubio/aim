@@ -268,6 +268,7 @@ let metricsRequestRef: {
   ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
 };
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],
@@ -1099,10 +1100,26 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
-          isRawData ? rowValues : metricsTableRowRenderer(rowValues),
+          isRawData
+            ? rowValues
+            : metricsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
         );
       } else {
-        rows.push(isRawData ? rowValues : metricsTableRowRenderer(rowValues));
+        rows.push(
+          isRawData
+            ? rowValues
+            : metricsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
+        );
       }
     });
 
@@ -1121,6 +1138,7 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null && isRawData) {
       rows[groupKey!].data = metricsTableRowRenderer(
         rows[groupKey!].data,
+        {},
         true,
         Object.keys(columnsValues),
       );
@@ -1886,6 +1904,33 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
               )
               .flat()
           : metricsKeys,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
+function onRowVisibilityChange(metricKey: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    let hiddenMetrics = configData?.table?.hiddenMetrics || [];
+    if (hiddenMetrics?.includes(metricKey)) {
+      hiddenMetrics = hiddenMetrics.filter(
+        (hiddenMetric) => hiddenMetric !== metricKey,
+      );
+    } else {
+      hiddenMetrics = [...hiddenMetrics, metricKey];
+    }
+    const table = {
+      ...configData.table,
+      hiddenMetrics,
     };
     const config = {
       ...configData,

@@ -12,6 +12,7 @@ import {
 import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { PathEnum } from 'config/enums/routesEnum';
+import Icon from 'components/Icon/Icon';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -174,6 +175,7 @@ function getMetricsTableColumns(
 
 function metricsTableRowRenderer(
   rowData: any,
+  actions?: { [key: string]: (e: any) => void },
   groupHeaderRow = false,
   columns: string[] = [],
 ) {
@@ -241,7 +243,17 @@ function metricsTableRowRenderer(
           ? '-'
           : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
       actions: {
-        content: null,
+        content: (
+          <div
+            onClick={actions?.toggleVisibility}
+            role='button'
+            aria-pressed='false'
+          >
+            <Icon
+              name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
+            />
+          </div>
+        ),
       },
     };
 
