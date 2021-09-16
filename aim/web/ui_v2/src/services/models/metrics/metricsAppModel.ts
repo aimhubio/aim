@@ -168,6 +168,7 @@ function getConfig(): IMetricAppConfig {
         middle: [],
         right: [],
       },
+      height: '',
     },
   };
 }
@@ -2013,6 +2014,25 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
   }
 }
 
+function onTableResizeEnd(tableHeight: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      height: tableHeight,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -2060,6 +2080,7 @@ const metricAppModel = {
   onColumnsOrderChange,
   getQueryStringFromSelect,
   onTableResizeModeChange,
+  onTableResizeEnd,
 };
 
 export default metricAppModel;

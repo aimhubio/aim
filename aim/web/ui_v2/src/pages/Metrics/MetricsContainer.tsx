@@ -52,7 +52,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    metricsData?.config?.table.resizeMode || ResizeModeEnum.Resizable,
+    metricsData?.config?.table || {},
+    metricAppModel.onTableResizeEnd,
   );
 
   React.useEffect(() => {
