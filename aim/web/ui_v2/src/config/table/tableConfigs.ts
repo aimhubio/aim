@@ -3,3 +3,18 @@ export enum RowHeightSize {
   md = 32,
   lg = 36,
 }
+
+export const rowCeilSizeConfig = {
+  28: {
+    groupMargin: 6,
+    name: 'small',
+  },
+  32: {
+    groupMargin: 8,
+    name: 'medium',
+  },
+  36: {
+    groupMargin: 10,
+    name: 'large',
+  },
+};

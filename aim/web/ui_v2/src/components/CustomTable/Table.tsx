@@ -6,6 +6,7 @@ import './Table.scss';
 import React, { useRef, useState, useEffect } from 'react';
 import _ from 'lodash-es';
 import classNames from 'classnames';
+import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
 
@@ -191,7 +192,8 @@ function Table(props) {
     <div
       className={classNames({
         Table__container: true,
-        [`Table__container--${props.rowHeightMode}`]: true,
+        [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
+          true,
       })}
     >
       <div

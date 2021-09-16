@@ -168,6 +168,7 @@ function getConfig(): IMetricAppConfig {
         middle: [],
         right: [],
       },
+      height: '',
     },
   };
 }
@@ -187,8 +188,6 @@ function initialize(appId: string): void {
     groupingSelectOptions: [],
   });
   if (!appId) {
-    const url = getItem('metricsUrl');
-    window.history.pushState(null, '', url);
     setDefaultAppConfigData();
   }
 }
@@ -270,6 +269,7 @@ let metricsRequestRef: {
   ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
   abort: () => void;
 };
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],
@@ -295,6 +295,8 @@ function exceptionHandler(detail: any) {
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  } else {
+    message = 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -492,10 +494,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           key: metricKey,
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-          isHidden:
-            configData!.table.hiddenMetrics![0] === 'all'
-              ? true
-              : configData!.table.hiddenMetrics!.includes(metricKey),
+          isHidden: configData!.table.hiddenMetrics!.includes(metricKey),
           data: {
             values,
             steps,
@@ -981,6 +980,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1008,6 +1008,13 @@ function getDataAsTableRows(
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
+        aggregation: {
+          area: {
+            min: '',
+            max: '',
+          },
+          line: '',
+        },
         experiment: '',
         run: '',
         metric: '',
@@ -1060,6 +1067,16 @@ function getDataAsTableRows(
       };
       rowIndex++;
 
+      if (metricsCollection.config !== null && closestIndex !== null) {
+        rows[groupKey!].data.aggregation = {
+          area: {
+            min: metricsCollection.aggregation!.area.min?.yValues[closestIndex],
+            max: metricsCollection.aggregation!.area.max?.yValues[closestIndex],
+          },
+          line: metricsCollection.aggregation!.line?.yValues[closestIndex],
+        };
+      }
+
       [
         'experiment',
         'run',
@@ -1100,9 +1117,27 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(metricsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          isRawData
+            ? rowValues
+            : metricsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
+        );
       } else {
-        rows.push(metricsTableRowRenderer(rowValues));
+        rows.push(
+          isRawData
+            ? rowValues
+            : metricsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
+        );
       }
     });
 
@@ -1118,11 +1153,12 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
     }
-    if (metricsCollection.config !== null) {
+    if (metricsCollection.config !== null && !isRawData) {
       rows[groupKey!].data = metricsTableRowRenderer(
         rows[groupKey!].data,
+        {},
         true,
-        Object.keys(columnsValues),
+        ['value'].concat(Object.keys(columnsValues)),
       );
     }
   });
@@ -1297,6 +1333,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
+    configData?.chart?.aggregationConfig.methods,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -1543,12 +1580,14 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     data,
     config?.chart?.focusedState.xValue ?? null,
     params,
+    true,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
     data[0]?.config,
     config?.table.columnsOrder!,
     config?.table.hiddenColumns!,
+    config?.chart?.aggregationConfig.methods,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1761,6 +1800,7 @@ function setModelData(
       data[0]?.config,
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
+      configData?.chart?.aggregationConfig.methods,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -1873,10 +1913,45 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 
 function onMetricVisibilityChange(metricsKeys: string[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
+  const processedData = model.getState()?.data;
+  if (configData?.table && processedData) {
     const table = {
       ...configData.table,
-      hiddenMetrics: metricsKeys,
+      hiddenMetrics:
+        metricsKeys[0] === 'all'
+          ? Object.values(processedData)
+              .map((metricCollection) =>
+                metricCollection.data.map((metric) => metric.key),
+              )
+              .flat()
+          : metricsKeys,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
+function onRowVisibilityChange(metricKey: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    let hiddenMetrics = configData?.table?.hiddenMetrics || [];
+    if (hiddenMetrics?.includes(metricKey)) {
+      hiddenMetrics = hiddenMetrics.filter(
+        (hiddenMetric) => hiddenMetric !== metricKey,
+      );
+    } else {
+      hiddenMetrics = [...hiddenMetrics, metricKey];
+    }
+    const table = {
+      ...configData.table,
+      hiddenMetrics,
     };
     const config = {
       ...configData,
@@ -1959,6 +2034,25 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
   }
 }
 
+function onTableResizeEnd(tableHeight: string) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      height: tableHeight,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -2006,6 +2100,7 @@ const metricAppModel = {
   onColumnsOrderChange,
   getQueryStringFromSelect,
   onTableResizeModeChange,
+  onTableResizeEnd,
 };
 
 export default metricAppModel;

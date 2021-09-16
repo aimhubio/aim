@@ -175,6 +175,8 @@ function exceptionHandler(detail: any) {
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  } else {
+    message = 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -392,7 +394,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
   const configData = model.getState()?.config;
   const tableColumns: ITableColumn[] = getRunsTableColumns(
     metricsColumns,
@@ -676,6 +678,7 @@ function getDataAsTableRows(
   processedData: any,
   metricsColumns: any,
   paramKeys: string[],
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -758,7 +761,8 @@ function getDataAsTableRows(
       });
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = value;
+        rowValues[paramKey] =
+          typeof value === 'string' ? value : JSON.stringify(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);
@@ -768,9 +772,11 @@ function getDataAsTableRows(
         }
       });
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(runsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          isRawData ? rowValues : runsTableRowRenderer(rowValues),
+        );
       } else {
-        rows.push(runsTableRowRenderer(rowValues));
+        rows.push(isRawData ? rowValues : runsTableRowRenderer(rowValues));
       }
     });
 
@@ -786,7 +792,7 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
 
-      if (metricsCollection.config !== null) {
+      if (metricsCollection.config !== null && !isRawData) {
         rows[groupKey!].data = runsTableRowRenderer(
           rows[groupKey!].data,
           true,

@@ -1,12 +1,13 @@
 import { IModel } from 'types/services/models/model';
 
 function createModel<StateType>(initialState: StateType): IModel<StateType> {
-  let state: StateType | null = null;
+  let state: StateType | null = initialState;
   const subscriptions: { [key: string]: { (data: StateType): void }[] } = {
     INIT: [],
     UPDATE: [],
   };
   return {
+    // @TODO think to change model structure and remove init step from model lifecycle
     init: () => {
       state = Object.assign({}, initialState);
       (subscriptions.INIT || []).forEach((fn) => fn(initialState));
@@ -14,7 +15,7 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
     destroy: () => {
       subscriptions.INIT = [];
       subscriptions.UPDATE = [];
-      state = null;
+      state = initialState;
     },
     getState: () => Object.assign({}, state),
     setState: (stateUpdate: StateType) => {

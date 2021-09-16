@@ -47,13 +47,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     metricAppModel,
   );
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
-
   const panelResizing = usePanelResize(
     wrapperElemRef,
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    metricsData?.config?.table.resizeMode || ResizeModeEnum.Resizable,
+    metricsData?.config?.table || {},
+    metricAppModel.onTableResizeEnd,
   );
 
   React.useEffect(() => {
@@ -160,7 +160,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       projectsDataMetrics={
         projectsData?.metrics as IProjectParamsMetrics['metrics']
       }
-      requestIsPending={metricsData?.requestIsPending as boolean}
+      requestIsPending={metricsData?.requestIsPending}
       resizeMode={metricsData?.config?.table.resizeMode as ResizeModeEnum}
       //methods
       onChangeTooltip={metricAppModel.onChangeTooltip}

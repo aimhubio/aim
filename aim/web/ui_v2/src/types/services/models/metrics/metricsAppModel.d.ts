@@ -152,6 +152,7 @@ interface IMetricAppConfig {
       middle: string[];
       right: string[];
     };
+    height: string;
   };
 }
 

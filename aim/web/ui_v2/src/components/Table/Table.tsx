@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Button from 'components/Button/Button';
 import { debounce, isEmpty, isNil } from 'lodash-es';
@@ -18,7 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import { RowHeightSize, rowCeilSizeConfig } from 'config/table/tableConfigs';
 import Icon from 'components/Icon/Icon';
 import TableLoader from '../TableLoader/TableLoader';
 
@@ -276,7 +276,16 @@ const Table = React.forwardRef(function Table(
             if (!!groupHeaderRowCell) {
               const groupRow = dataRef.current[groupKey];
               if (!!groupRow && !!groupRow.data) {
-                groupHeaderRowCell.textContent = groupRow.data[colKey];
+                if (colKey === 'value') {
+                  groupHeaderRowCell.children[0].children[0].children[0].textContent =
+                    groupRow.data.aggregation.area.min;
+                  groupHeaderRowCell.children[0].children[0].children[1].textContent =
+                    groupRow.data.aggregation.line;
+                  groupHeaderRowCell.children[0].children[0].children[2].textContent =
+                    groupRow.data.aggregation.area.max;
+                } else {
+                  groupHeaderRowCell.textContent = groupRow.data[colKey];
+                }
                 if (expandedGroups.current.includes(groupKey)) {
                   groupRow.items.forEach((row) => {
                     if (row.index > endIndex.current) {
@@ -332,7 +341,7 @@ const Table = React.forwardRef(function Table(
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
       itemHeight: rowHeight,
-      groupMargin: 8,
+      groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
     });
 
     startIndex.current = windowEdges.startIndex;
@@ -394,7 +403,7 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: 8,
+        groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
       });
 
       startIndex.current = windowEdges.startIndex;
@@ -408,7 +417,7 @@ const Table = React.forwardRef(function Table(
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
           itemHeight: rowHeight,
-          groupMargin: 8,
+          groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
         });
 
         startIndex.current = windowEdges.startIndex;
@@ -624,7 +633,7 @@ const Table = React.forwardRef(function Table(
                       excludedFields={excludedFields}
                       setExcludedFields={setExcludedFields}
                       alwaysVisibleColumns={alwaysVisibleColumns}
-                      rowHeightMode={rowHeightMode}
+                      rowHeightMode={rowHeight}
                       updateColumns={() => null}
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}
@@ -693,6 +702,10 @@ function propsComparator(
 ): boolean {
   // add custom here checks here
   if (prevProps.isLoading !== nextProps.isLoading) {
+    return false;
+  }
+
+  if (prevProps.rowHeight !== nextProps.rowHeight) {
     return false;
   }
 

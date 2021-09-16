@@ -147,8 +147,6 @@ function initialize(appId: string): void {
     groupingSelectOptions: [],
   });
   if (!appId) {
-    const url = getItem('paramsUrl');
-    window.history.pushState(null, '', url);
     setDefaultAppConfigData();
   }
 }
@@ -179,6 +177,8 @@ function exceptionHandler(detail: any) {
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  } else {
+    message = 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -272,6 +272,7 @@ function getParamsData() {
             configData.table.columnsOrder!,
             configData.table.hiddenColumns!,
           ),
+          sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
@@ -360,10 +361,7 @@ function processData(data: IRun<IParamTrace>[]): {
     });
     runs.push({
       run,
-      isHidden:
-        configData!.table.hiddenMetrics![0] === 'all'
-          ? true
-          : configData!.table.hiddenMetrics!.includes(run.hash),
+      isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
       color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
       key: run.hash,
       dasharray: DASH_ARRAYS[0],
@@ -920,6 +918,7 @@ function updateModelData(configData: IParamsAppConfig): void {
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
     tableData: tableData.rows,
     tableColumns,
+    sameValueColumns: tableData.sameValueColumns,
   });
 }
 
@@ -927,6 +926,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   metricsColumns: any,
   paramKeys: string[],
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1030,9 +1030,27 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(paramsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          isRawData
+            ? rowValues
+            : paramsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
+        );
       } else {
-        rows.push(paramsTableRowRenderer(rowValues));
+        rows.push(
+          isRawData
+            ? rowValues
+            : paramsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
+        );
       }
     });
 
@@ -1049,9 +1067,10 @@ function getDataAsTableRows(
       }
     }
 
-    if (metricsCollection.config !== null) {
+    if (metricsCollection.config !== null && !isRawData) {
       rows[groupKey!].data = paramsTableRowRenderer(
         rows[groupKey!].data,
+        {},
         true,
         Object.keys(columnsValues),
       );
@@ -1187,7 +1206,7 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
     params,
@@ -1330,10 +1349,18 @@ function onSortFieldsChange(sortFields: [string, any][]) {
 
 function onParamVisibilityChange(metricsKeys: string[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
+  const processedData: IMetricsCollection<IParam>[] = model.getState()?.data;
+  if (configData?.table && processedData) {
     const table = {
       ...configData.table,
-      hiddenMetrics: metricsKeys,
+      hiddenMetrics:
+        metricsKeys[0] === 'all'
+          ? Object.values(processedData)
+              .map((metricCollection) =>
+                metricCollection.data.map((metric) => metric.key),
+              )
+              .flat()
+          : metricsKeys,
     };
     const configUpdate = {
       ...configData,
@@ -1408,6 +1435,59 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
   }
 }
 
+function onTableDiffShow() {
+  const sameValueColumns = model.getState()?.sameValueColumns;
+  if (sameValueColumns) {
+    onColumnsVisibilityChange(sameValueColumns);
+  }
+}
+
+function onRowVisibilityChange(metricKey: string) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    let hiddenMetrics = configData?.table?.hiddenMetrics || [];
+    if (hiddenMetrics?.includes(metricKey)) {
+      hiddenMetrics = hiddenMetrics.filter(
+        (hiddenMetric: any) => hiddenMetric !== metricKey,
+      );
+    } else {
+      hiddenMetrics = [...hiddenMetrics, metricKey];
+    }
+    const table = {
+      ...configData.table,
+      hiddenMetrics,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('paramsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
+function onTableResizeEnd(tableHeight: string) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      height: tableHeight,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1443,6 +1523,8 @@ const paramsAppModel = {
   onColumnsVisibilityChange,
   onTableResizeModeChange,
   getAppConfigData,
+  onTableDiffShow,
+  onTableResizeEnd,
 };
 
 export default paramsAppModel;

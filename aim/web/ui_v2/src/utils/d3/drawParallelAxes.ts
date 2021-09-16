@@ -9,7 +9,7 @@ import {
   gradientStartColor,
   gradientEndColor,
 } from 'utils/d3';
-import getInnerTextFromHtml from '../getInnerTextFromHtml';
+import getInnerTextFromHtml from 'utils/getInnerTextFromHtml';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -97,7 +97,7 @@ function drawParallelAxes({
           `
             <div title='${getInnerTextFromHtml(displayName)}'
                 class='xAxisLabel__container xAxisLabel__container__${dimensionType} 
-                ${i === first ? 'left' : ''} ${i === last ? 'right' : ''}' 
+                ${i === first ? 'left' : i === last ? 'right' : ''}' 
             >
                <div class='xAxisLabel'>
                   ${displayName}
