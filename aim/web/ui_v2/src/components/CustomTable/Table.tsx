@@ -303,7 +303,6 @@ function Table(props) {
         </div>
         {rightPane.length > 0 && (
           <div className='Table__pane Table__pane--right'>
-            {console.log(rightPane)}
             {rightPane.map((col, index) => (
               <Column
                 key={col.key}

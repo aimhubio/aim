@@ -5,14 +5,13 @@ import './HideRowsPopover.scss';
 
 function HideRowsPopover({
   toggleRowsVisibility,
-  rowDataKeys,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='HideRowsPopover'>
       <MenuItem onClick={() => toggleRowsVisibility([])}>
         Visualize All Rows
       </MenuItem>
-      <MenuItem onClick={() => toggleRowsVisibility([...rowDataKeys])}>
+      <MenuItem onClick={() => toggleRowsVisibility(['all'])}>
         Hide All Rows
       </MenuItem>
     </div>

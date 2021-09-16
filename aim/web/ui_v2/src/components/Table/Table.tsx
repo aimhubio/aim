@@ -90,7 +90,6 @@ const Table = React.forwardRef(function Table(
     scrollToRow: scrollToRow,
   }));
 
-  const rowDataKeys = useMemo(() => rowData?.map((row) => row.key), [rowData]);
   function calculateWindow({
     scrollTop,
     offsetHeight,
@@ -528,12 +527,7 @@ const Table = React.forwardRef(function Table(
                         <span>Hide Rows</span>
                       </Button>
                     )}
-                    component={
-                      <HideRows
-                        rowDataKeys={rowDataKeys}
-                        toggleRowsVisibility={onRowsChange}
-                      />
-                    }
+                    component={<HideRows toggleRowsVisibility={onRowsChange} />}
                   />
                 )}
                 {onSort && (

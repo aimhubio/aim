@@ -1027,9 +1027,23 @@ function getDataAsTableRows(
       });
 
       if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(paramsTableRowRenderer(rowValues));
+        rows[groupKey!].items.push(
+          paramsTableRowRenderer(rowValues, {
+            toggleVisibility: (e) => {
+              e.stopPropagation();
+              onRowVisibilityChange(rowValues.key);
+            },
+          }),
+        );
       } else {
-        rows.push(paramsTableRowRenderer(rowValues));
+        rows.push(
+          paramsTableRowRenderer(rowValues, {
+            toggleVisibility: (e) => {
+              e.stopPropagation();
+              onRowVisibilityChange(rowValues.key);
+            },
+          }),
+        );
       }
     });
 
@@ -1049,6 +1063,7 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null) {
       rows[groupKey!].data = paramsTableRowRenderer(
         rows[groupKey!].data,
+        {},
         true,
         Object.keys(columnsValues),
       );
@@ -1420,6 +1435,32 @@ function onTableDiffShow() {
   }
 }
 
+function onRowVisibilityChange(metricKey: string) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    let hiddenMetrics = configData?.table?.hiddenMetrics || [];
+    if (hiddenMetrics?.includes(metricKey)) {
+      hiddenMetrics = hiddenMetrics.filter(
+        (hiddenMetric: any) => hiddenMetric !== metricKey,
+      );
+    } else {
+      hiddenMetrics = [...hiddenMetrics, metricKey];
+    }
+    const table = {
+      ...configData.table,
+      hiddenMetrics,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('paramsTable', encode(table));
+    updateModelData(config);
+  }
+}
 const paramsAppModel = {
   ...model,
   initialize,

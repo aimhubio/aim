@@ -7,6 +7,7 @@ import TagLabel from 'components/TagLabel/TagLabel';
 import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
+import Icon from 'components/Icon/Icon';
 
 function getParamsTableColumns(
   metricsColumns: any,
@@ -121,6 +122,7 @@ function getParamsTableColumns(
 
 function paramsTableRowRenderer(
   rowData: any,
+  actions?: { [key: string]: (e: any) => void },
   groupHeaderRow = false,
   columns: string[] = [],
 ) {
@@ -155,7 +157,17 @@ function paramsTableRowRenderer(
         ),
       },
       actions: {
-        content: null,
+        content: (
+          <div
+            onClick={actions?.toggleVisibility}
+            role='button'
+            aria-pressed='false'
+          >
+            <Icon
+              name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
+            />
+          </div>
+        ),
       },
     };
 
