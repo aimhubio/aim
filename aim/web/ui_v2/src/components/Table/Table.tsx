@@ -18,7 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import { RowHeightSize, rowCeilSizeConfig } from 'config/table/tableConfigs';
 import Icon from 'components/Icon/Icon';
 import TableLoader from '../TableLoader/TableLoader';
 
@@ -332,7 +332,7 @@ const Table = React.forwardRef(function Table(
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
       itemHeight: rowHeight,
-      groupMargin: 8,
+      groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
     });
 
     startIndex.current = windowEdges.startIndex;
@@ -394,7 +394,7 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: 8,
+        groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
       });
 
       startIndex.current = windowEdges.startIndex;
@@ -408,7 +408,7 @@ const Table = React.forwardRef(function Table(
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
           itemHeight: rowHeight,
-          groupMargin: 8,
+          groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
         });
 
         startIndex.current = windowEdges.startIndex;
@@ -624,7 +624,7 @@ const Table = React.forwardRef(function Table(
                       excludedFields={excludedFields}
                       setExcludedFields={setExcludedFields}
                       alwaysVisibleColumns={alwaysVisibleColumns}
-                      rowHeightMode={rowHeightMode}
+                      rowHeightMode={rowHeight}
                       updateColumns={() => null}
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}
