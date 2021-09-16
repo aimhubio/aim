@@ -84,6 +84,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       attributesRef,
       axesRef,
       dimensions: data.dimensions,
+      plotBoxRef,
     });
     if (attributesRef?.current.xScale && attributesRef.current.yScale) {
       drawParallelLines({

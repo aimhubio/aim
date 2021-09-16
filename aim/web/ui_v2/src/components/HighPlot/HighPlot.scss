@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .HighPlot__container {
   background-color: white;
   height: 100%;
@@ -17,31 +19,46 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .xAxisLabel {
-      width: 100px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      position: relative;
-      padding-left: 10px;
-      &::after {
-        content: '';
-        position: absolute;
-        top: 5px;
-        left: 0px;
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: #2bc784;
+
+    .xAxisLabel__container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.left {
+        justify-content: flex-start;
       }
-      &__metric {
-        &::after {
-          background: #1473e6;
+      &.right {
+        justify-content: flex-end;
+      }
+
+      .xAxisLabel {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: $text-sm;
+
+        span {
+          &:nth-of-type(2){
+            font-style: italic;
+          }
         }
       }
-      span {
-        &:first-child {
-          margin-right: 5px;
+
+      &::before {
+        content: "";
+        display: inline-block;
+        flex-shrink: 0;
+        width: 6px;
+        height: 6px;
+        background-color: #2bc784;
+        border-radius: 50%;
+        margin: 4px 5px 4px 0;
+      }
+
+      &__metric {
+        &::before {
+          background-color: #1473e6;
         }
       }
     }

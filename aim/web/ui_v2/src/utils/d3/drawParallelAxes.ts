@@ -9,6 +9,7 @@ import {
   gradientStartColor,
   gradientEndColor,
 } from 'utils/d3';
+import getInnerTextFromHtml from '../getInnerTextFromHtml';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -16,6 +17,7 @@ function drawParallelAxes({
   attributesRef,
   axesRef,
   dimensions,
+  plotBoxRef,
 }: IDrawParallelAxesProps): void {
   if (!axesNodeRef?.current) {
     return;
@@ -31,45 +33,77 @@ function drawParallelAxes({
 
   const yScale: YScaleType = {};
 
+  function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
+    const yAxis = d3.axisLeft(yScale);
+    const ticksCount = Math.floor(plotBoxRef.current.height / 20);
+    yAxis.ticks(ticksCount > 3 ? (ticksCount < 20 ? ticksCount : 20) : 3);
+    return yAxis;
+  }
+
   keysOfDimensions.forEach((keyOfDimension: string, i: number) => {
     const { domainData, scaleType, displayName, dimensionType } =
       dimensions[keyOfDimension];
+    const first = 0;
+    const last = keysOfDimensions.length - 1;
+
     const tmpYScale = getAxisScale({
       domainData,
       scaleType,
       rangeData: [height - margin.top - margin.bottom, 0],
     });
     yScale[keyOfDimension] = tmpYScale;
-    const tickWidth = i === 0 ? 40 : width / keysOfDimensions.length - 10;
+    const tickWidth = i === first ? 40 : plotBoxRef.current.width / last - 20;
+    const titleWidth = plotBoxRef.current.width / last;
+
+    const yAxis = getFormattedYAxis(tmpYScale);
     const axes = axesNodeRef.current
       ?.append('g')
       .attr('class', 'Axis')
       .data([keyOfDimension])
       .attr('transform', `translate(${xScale(keyOfDimension)})`)
-      .call(d3.axisLeft(tmpYScale));
+      .call(yAxis);
 
     axes
       .selectAll('.tick')
       .append('foreignObject')
-      .attr('x', -tickWidth - 20)
+      .attr('x', -tickWidth - 10)
       .attr('y', -8)
       .attr('height', 12)
-      .attr('width', tickWidth + 30)
+      .attr('width', tickWidth)
       .html(
         (d: string) =>
-          `<div style='width: ${
-            tickWidth + 10
-          }px' class='yAxisLabel' title='${d}'>${d}</div>`,
+          `<div style='width: ${tickWidth}px' class='yAxisLabel' title='${d}'>${d}</div>`,
       );
+
+    const dimensionTitleWidth =
+      i === first || i === last ? titleWidth : titleWidth * 2;
 
     axes
       .append('foreignObject')
-      .attr('width', 160)
+      .attr('width', dimensionTitleWidth)
       .attr('height', 20)
-      .attr('transform', `translate(-60, ${i % 2 === 0 ? -20 : -40})`)
+      .attr(
+        'transform',
+        `translate(${
+          i === first
+            ? 0
+            : i === last
+            ? -dimensionTitleWidth
+            : -dimensionTitleWidth / 2
+        }, ${i % 2 === 0 ? -25 : -40})`,
+      )
       .html(
         () =>
-          `<div class='xAxisLabel xAxisLabel__${dimensionType}'>${displayName}</div>`,
+          `
+            <div title='${getInnerTextFromHtml(displayName)}'
+                class='xAxisLabel__container xAxisLabel__container__${dimensionType} 
+                ${i === first ? 'left' : ''} ${i === last ? 'right' : ''}' 
+            >
+               <div class='xAxisLabel'>
+                  ${displayName}
+               </div>
+            </div>
+          `,
       );
     axesRef.current.yAxes[keyOfDimension] = axes;
   });
