@@ -979,6 +979,7 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
+  isRawData?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1099,21 +1100,25 @@ function getDataAsTableRows(
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
-          metricsTableRowRenderer(rowValues, {
-            toggleVisibility: (e) => {
-              e.stopPropagation();
-              onRowVisibilityChange(rowValues.key);
-            },
-          }),
+          isRawData
+            ? rowValues
+            : metricsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
         );
       } else {
         rows.push(
-          metricsTableRowRenderer(rowValues, {
-            toggleVisibility: (e) => {
-              e.stopPropagation();
-              onRowVisibilityChange(rowValues.key);
-            },
-          }),
+          isRawData
+            ? rowValues
+            : metricsTableRowRenderer(rowValues, {
+                toggleVisibility: (e) => {
+                  e.stopPropagation();
+                  onRowVisibilityChange(rowValues.key);
+                },
+              }),
         );
       }
     });
@@ -1130,7 +1135,7 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
     }
-    if (metricsCollection.config !== null) {
+    if (metricsCollection.config !== null && isRawData) {
       rows[groupKey!].data = metricsTableRowRenderer(
         rows[groupKey!].data,
         {},
@@ -1556,6 +1561,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     data,
     config?.chart?.focusedState.xValue ?? null,
     params,
+    true,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
