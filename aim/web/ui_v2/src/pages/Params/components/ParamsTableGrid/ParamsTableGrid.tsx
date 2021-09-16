@@ -6,7 +6,7 @@ import { merge } from 'lodash-es';
 import TagLabel from 'components/TagLabel/TagLabel';
 import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { PATHS } from 'routes/routes';
+import { PathEnum } from 'config/enums/routesEnum';
 
 function getParamsTableColumns(
   metricsColumns: any,
@@ -141,7 +141,7 @@ function paramsTableRowRenderer(
       run: {
         content: (
           <Link
-            to={PATHS.RUN_DETAIL.replace(':runHash', rowData.runHash)}
+            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
             component={RouteLink}
           >
             {rowData.run}

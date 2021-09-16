@@ -9,9 +9,9 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { PATHS } from 'routes/routes';
 import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
+import { PathEnum } from 'config/enums/routesEnum';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -220,7 +220,7 @@ function metricsTableRowRenderer(
       run: {
         content: (
           <Link
-            to={PATHS.RUN_DETAIL.replace(':runHash', rowData.runHash)}
+            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
             component={RouteLink}
           >
             {rowData.run}

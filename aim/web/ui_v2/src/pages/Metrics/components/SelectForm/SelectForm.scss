@@ -2,7 +2,7 @@
 
 .SelectForm__container {
   flex: 1;
-  padding: 1em 1.5em;
+  padding: 0.625rem 1.5em;
   display: flex;
 }
 
@@ -22,7 +22,7 @@
   width: 100%;
 
   input {
-    padding: 8px;
+    padding: 0.5rem;
     font-size: $text-md;
     border-bottom: $border-main;
   }
@@ -90,7 +90,7 @@
     left: -59px;
     top: -2px;
     color: white;
-    border-radius: 8px;
+    border-radius: $border-radius-lg;
     pointer-events: none;
   }
 
