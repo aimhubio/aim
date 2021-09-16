@@ -12,7 +12,6 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { useRouteMatch } from 'react-router-dom';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -27,7 +26,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    paramsData?.config?.table.resizeMode || ResizeModeEnum.Resizable,
+    paramsData?.config?.table || {},
+    paramsAppModel.onTableResizeEnd,
   );
 
   React.useEffect(() => {

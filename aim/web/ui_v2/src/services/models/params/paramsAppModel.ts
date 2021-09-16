@@ -1466,6 +1466,26 @@ function onRowVisibilityChange(metricKey: string) {
     updateModelData(config);
   }
 }
+
+function onTableResizeEnd(tableHeight: string) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      height: tableHeight,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1502,6 +1522,7 @@ const paramsAppModel = {
   onTableResizeModeChange,
   getAppConfigData,
   onTableDiffShow,
+  onTableResizeEnd,
 };
 
 export default paramsAppModel;

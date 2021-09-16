@@ -1,19 +1,21 @@
 import React from 'react';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
 
 function usePanelResize(
   wrapperRef: React.MutableRefObject<HTMLElement | any>,
   topPanelRef: React.MutableRefObject<HTMLElement | any>,
   bottomPanelRef: React.MutableRefObject<HTMLElement | any>,
   resizeElemRef: React.MutableRefObject<HTMLElement | any>,
-  resizeMode: ResizeModeEnum,
+  tableConfig: IMetricAppConfig['table'],
+  onResizeEnd: (height: string) => void,
 ) {
   const [panelResizing, setPanelResizing] = React.useState<boolean>(false);
   const frameRef = React.useRef<any>();
 
   const startResize = React.useCallback(
     (event: MouseEvent): void => {
-      if (resizeMode !== ResizeModeEnum.Hide) {
+      if (tableConfig?.resizeMode !== ResizeModeEnum.Hide) {
         wrapperRef.current.style.userSelect = 'none';
         wrapperRef.current.style.cursor = 'row-resize';
         frameRef.current = requestAnimationFrame(() => {
@@ -42,7 +44,7 @@ function usePanelResize(
         });
       }
     },
-    [bottomPanelRef, topPanelRef, wrapperRef, resizeMode],
+    [bottomPanelRef, topPanelRef, wrapperRef, tableConfig?.resizeMode],
   );
 
   const endResize = React.useCallback(() => {
@@ -51,7 +53,8 @@ function usePanelResize(
     wrapperRef.current.style.userSelect = 'unset';
     wrapperRef.current.style.cursor = 'unset';
     document.removeEventListener('mousemove', startResize);
-  }, [startResize, wrapperRef]);
+    onResizeEnd(topPanelRef.current.style.flex.split(' ')[0]);
+  }, [onResizeEnd, startResize, topPanelRef, wrapperRef]);
 
   const handleResize = React.useCallback(() => {
     document.addEventListener('mousemove', startResize);
@@ -60,6 +63,7 @@ function usePanelResize(
 
   const handleResizeModeChange = React.useCallback(
     (mode: ResizeModeEnum) => {
+      const tableHeight: number = +tableConfig?.height || 0.5;
       if (topPanelRef.current && bottomPanelRef.current) {
         switch (mode) {
           case ResizeModeEnum.Hide:
@@ -67,8 +71,8 @@ function usePanelResize(
             bottomPanelRef.current.style.flex = 'unset';
             break;
           case ResizeModeEnum.Resizable:
-            topPanelRef.current.style.flex = '0.5 1 0';
-            bottomPanelRef.current.style.flex = '0.5 1 0';
+            topPanelRef.current.style.flex = `${tableHeight} 1 0`;
+            bottomPanelRef.current.style.flex = `${1 - tableHeight} 1 0`;
             break;
           case ResizeModeEnum.MaxHeight:
             topPanelRef.current.style.flex = 'unset';
@@ -79,11 +83,11 @@ function usePanelResize(
         }
       }
     },
-    [bottomPanelRef, topPanelRef],
+    [bottomPanelRef, tableConfig?.height, topPanelRef],
   );
   React.useEffect(() => {
     resizeElemRef.current.addEventListener('mousedown', handleResize);
-    handleResizeModeChange(resizeMode);
+    handleResizeModeChange(tableConfig?.resizeMode);
     return () => {
       setPanelResizing(false);
       resizeElemRef.current?.removeEventListener('mousedown', handleResize);
@@ -94,12 +98,12 @@ function usePanelResize(
     handleResize,
     handleResizeModeChange,
     resizeElemRef,
-    resizeMode,
+    tableConfig?.resizeMode,
   ]);
 
   React.useEffect(() => {
-    handleResizeModeChange(resizeMode);
-  }, [resizeMode, handleResizeModeChange]);
+    handleResizeModeChange(tableConfig?.resizeMode);
+  }, [tableConfig?.resizeMode, handleResizeModeChange]);
 
   return panelResizing;
 }
