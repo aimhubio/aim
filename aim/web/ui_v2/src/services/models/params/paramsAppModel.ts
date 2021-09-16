@@ -1017,7 +1017,8 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = value;
+        rowValues[paramKey] =
+          typeof value === 'string' ? value : JSON.stringify(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);
