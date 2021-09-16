@@ -11,7 +11,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange }: any) {
         selected={rowHeight === RowHeightSize.sm}
         onClick={() => onRowHeightChange(RowHeightSize.sm)}
       >
-        Short
+        Small
       </MenuItem>
       <MenuItem
         selected={rowHeight === RowHeightSize.md}
