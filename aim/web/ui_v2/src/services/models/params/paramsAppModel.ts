@@ -147,8 +147,6 @@ function initialize(appId: string): void {
     groupingSelectOptions: [],
   });
   if (!appId) {
-    const url = getItem('paramsUrl');
-    window.history.pushState(null, '', url);
     setDefaultAppConfigData();
   }
 }

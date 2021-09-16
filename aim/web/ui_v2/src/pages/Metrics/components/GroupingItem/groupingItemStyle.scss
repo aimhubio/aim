@@ -5,7 +5,9 @@
   flex-direction: column;
   margin-right: 0.375em;
   cursor: pointer;
-
+  &:last-child {
+    margin-right: 0;
+  }
   span {
     margin-top: 0.5em;
     font-size: 0.75em;

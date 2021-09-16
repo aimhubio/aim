@@ -1,7 +1,7 @@
 import { IModel } from 'types/services/models/model';
 
 function createModel<StateType>(initialState: StateType): IModel<StateType> {
-  let state: StateType | null = null;
+  let state: StateType | null = initialState;
   const subscriptions: { [key: string]: { (data: StateType): void }[] } = {
     INIT: [],
     UPDATE: [],
@@ -14,7 +14,7 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
     destroy: () => {
       subscriptions.INIT = [];
       subscriptions.UPDATE = [];
-      state = null;
+      state = initialState;
     },
     getState: () => Object.assign({}, state),
     setState: (stateUpdate: StateType) => {

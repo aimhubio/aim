@@ -5,7 +5,7 @@ import { Box } from '@material-ui/core';
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
-import { routes } from 'routes/routes';
+import routes from 'routes/routes';
 
 import './App.scss';
 
