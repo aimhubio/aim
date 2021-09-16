@@ -1008,6 +1008,13 @@ function getDataAsTableRows(
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
         color: metricsCollection.color,
         dasharray: metricsCollection.dasharray,
+        aggregation: {
+          area: {
+            min: '',
+            max: '',
+          },
+          line: '',
+        },
         experiment: '',
         run: '',
         metric: '',
@@ -1059,6 +1066,16 @@ function getDataAsTableRows(
         parentId: groupKey,
       };
       rowIndex++;
+
+      if (metricsCollection.config !== null && closestIndex !== null) {
+        rows[groupKey!].data.aggregation = {
+          area: {
+            min: metricsCollection.aggregation!.area.min?.yValues[closestIndex],
+            max: metricsCollection.aggregation!.area.max?.yValues[closestIndex],
+          },
+          line: metricsCollection.aggregation!.line?.yValues[closestIndex],
+        };
+      }
 
       [
         'experiment',
@@ -1136,12 +1153,12 @@ function getDataAsTableRows(
             : columnsValues[columnKey];
       }
     }
-    if (metricsCollection.config !== null && isRawData) {
+    if (metricsCollection.config !== null && !isRawData) {
       rows[groupKey!].data = metricsTableRowRenderer(
         rows[groupKey!].data,
         {},
         true,
-        Object.keys(columnsValues),
+        ['value'].concat(Object.keys(columnsValues)),
       );
     }
   });
@@ -1316,6 +1333,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
+    configData?.chart?.aggregationConfig.methods,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -1569,6 +1587,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     data[0]?.config,
     config?.table.columnsOrder!,
     config?.table.hiddenColumns!,
+    config?.chart?.aggregationConfig.methods,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1781,6 +1800,7 @@ function setModelData(
       data[0]?.config,
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
+      configData?.chart?.aggregationConfig.methods,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
