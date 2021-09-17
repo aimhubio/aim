@@ -537,6 +537,7 @@ function setTooltipData(
     const groupConfig = getGroupConfig(metricsCollection);
     for (let param of metricsCollection.data) {
       data[param.key] = {
+        runHash: param.run.hash,
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
