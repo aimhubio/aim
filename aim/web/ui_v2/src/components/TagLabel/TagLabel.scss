@@ -3,7 +3,6 @@
 .TagLabel {
   height: 1.75rem;
   border-radius: 0.375rem;
-  margin-right: 0.5rem;
   padding: 0 0.5rem;
   font-style: normal;
   font-weight: 500;
@@ -21,5 +20,22 @@
 
   span {
     font-size: $text-md;
+  }
+
+  
+  &__small {
+    height: 1.25rem;
+    padding: 0 0.35rem;
+    font-style: normal;
+    font-weight: 500;
+
+    span {
+      font-size: $text-sm;
+    }
+
+    i {
+      padding-left: 0;
+      font-size: 0.5625rem;
+    }
   }
 }
