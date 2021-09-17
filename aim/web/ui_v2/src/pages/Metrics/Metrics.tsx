@@ -169,9 +169,6 @@ function Metrics(
               {!isEmpty(props.tableData) ? (
                 <Table
                   custom
-                  key={`${Array.isArray(props.tableData)}-${
-                    props.tableRowHeight
-                  }-${props.resizeMode}`}
                   ref={props.tableRef}
                   data={props.tableData}
                   columns={props.tableColumns}
