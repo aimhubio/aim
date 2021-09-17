@@ -220,6 +220,11 @@ class Run(StructuredRunMixin):
 
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
+            try:
+                self.meta_run_attrs_tree.first()
+            except (KeyError, StopIteration):
+                # no run params are set. use empty dict
+                self[...] = {}
             self.props.finalized_at = None
             self._prepare_resource_tracker(system_tracking_interval)
         if experiment:
