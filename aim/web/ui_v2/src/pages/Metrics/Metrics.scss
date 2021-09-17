@@ -62,8 +62,9 @@
   flex: 1;
 
   span {
-    display: flex;
-    flex: 1;
+    display: inline-block;
+    width: 120px;
+    min-width: 120px;
     justify-content: center;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -80,11 +81,8 @@
 
 .Table__cell--header {
   .Metrics__table__aggregationColumn__cell {
-    span:nth-of-type(2) {
-      padding-left: 0;
-      margin-left: 0rem;
-      padding-right: 0.5rem;
-      margin-right: -1rem;
+    span:last-of-type {
+      width: calc(120px - 1rem);
     }
   }
 }
