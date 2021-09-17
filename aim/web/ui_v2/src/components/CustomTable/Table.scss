@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 $cell-color-dark: #f5f5f5;
 $border-color: #e6e6e6;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
@@ -14,12 +16,7 @@ $primary-darker: #142447;
 $primary-bg: #f7faff;
 $primary-lighter: #dfe6f7;
 $primary-light: #7a94cc;
-$space-unit: 1rem;
-$space-xxs: $space-unit * 0.375;
-$space-xs: $space-unit * 0.5;
-$space-sm: $space-unit * 0.75;
-$space-md: $space-unit * 1.25;
-$space-xs: $space-unit * 0.5;
+
 
 $text-base-unit: 1rem;
 $text-scale-ratio: 1.2;
@@ -117,7 +114,7 @@ $text-md: $text-base-unit;
   border-radius: 50%;
   transition: background-color ease 110ms;
   user-select: none;
-  color: $grey-dark;
+  // color: $grey-dark;
 
   &:hover {
     background-color: $grey-lighter;
@@ -237,7 +234,7 @@ $text-md: $text-base-unit;
   }
 
   &.active {
-    background-color: $primary-lighter;
+    background-color: tint($primary, 50);
   }
 
   &.hidden {
