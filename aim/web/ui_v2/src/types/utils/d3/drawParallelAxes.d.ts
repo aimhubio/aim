@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { ScaleType } from 'types/components/LineChart/LineChart';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 
@@ -22,4 +24,5 @@ export interface IDrawParallelAxesProps {
   attributesRef: React.MutableRefObject<>;
   axesRef: React.MutableRefObject<>;
   dimensions: IDimensionsType;
+  plotBoxRef: React.MutableRefObject<>;
 }
