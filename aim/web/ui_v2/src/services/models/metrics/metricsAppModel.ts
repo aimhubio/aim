@@ -1328,12 +1328,14 @@ function updateModelData(configData: IMetricAppConfig): void {
     configData?.chart?.focusedState.xValue ?? null,
     params,
   );
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
     configData?.chart?.aggregationConfig.methods,
+    configData.table.sortFields,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -1350,7 +1352,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    groupingSelectOptions,
   });
 }
 

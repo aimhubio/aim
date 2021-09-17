@@ -49,3 +49,9 @@
     margin-right: 0.625rem;
   }
 }
+
+.TableColumn__SortIcon {
+  font-size: $text-md;
+  cursor: pointer;
+  margin: 0 8px;
+}
