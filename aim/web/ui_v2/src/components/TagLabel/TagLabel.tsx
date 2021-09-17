@@ -10,6 +10,7 @@ function TagLabel({
   label,
   color,
   onDelete,
+  size = 'medium',
 }: ITagLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Chip
@@ -19,7 +20,7 @@ function TagLabel({
         border: `0.0625rem solid ${color}`,
       }}
       size='small'
-      className='TagLabel'
+      className={`TagLabel TagLabel${'__' + size}`}
       label={label}
       data-name={label}
       deleteIcon={<Icon color={color} name='close' />}

@@ -204,11 +204,16 @@ function metricsTableRowRenderer(
           content:
             rowData.context.length > 1 ? (
               <TagLabel
+                size='small'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
-              <TagLabel color={COLORS[0][0]} label={rowData.context} />
+              <TagLabel
+                size='small'
+                color={COLORS[0][0]}
+                label={rowData.context}
+              />
             ),
         };
       } else if (col === 'value') {
@@ -239,6 +244,7 @@ function metricsTableRowRenderer(
         row[col] = {
           content: (
             <TagLabel
+              size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />
@@ -264,7 +270,7 @@ function metricsTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <TagLabel key={item} color={COLORS[0][0]} label={item} />
+          <TagLabel size='small' key={item} color={COLORS[0][0]} label={item} />
         )),
       },
       value: rowData.value,

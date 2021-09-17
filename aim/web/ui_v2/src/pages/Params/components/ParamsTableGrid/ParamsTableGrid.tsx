@@ -51,7 +51,9 @@ function getParamsTableColumns(
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
           key: `${key}_${metricContext}`,
-          content: <TagLabel color={COLORS[0][0]} label={metricContext} />,
+          content: (
+            <TagLabel size='small' color={COLORS[0][0]} label={metricContext} />
+          ),
           topHeader: key,
           pin: order?.left?.includes(`${key}_${metricContext}`)
             ? 'left'
@@ -134,6 +136,7 @@ function paramsTableRowRenderer(
         row[col] = {
           content: (
             <TagLabel
+              size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />

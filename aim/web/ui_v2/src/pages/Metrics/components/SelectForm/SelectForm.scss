@@ -16,6 +16,10 @@
   overflow: auto;
   width: calc(100vw - 43.325rem);
   min-width: 12rem;
+
+  .TagLabel {
+    margin-left: 0.5rem;
+  }
 }
 
 .SelectForm__metric__select {
