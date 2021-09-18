@@ -28,7 +28,7 @@ function Tags({
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
-    analytics.trackEvent('[Tags][Tabs] Tab change');
+    analytics.trackEvent('[Tags] Tab change');
   };
 
   useEffect(() => {

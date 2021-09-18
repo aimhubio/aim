@@ -41,7 +41,7 @@ async function onBookmarkDelete(id: string) {
       listData: newListData,
       isLoading: false,
     });
-    analytics.trackEvent('[Bookmarks] Delete');
+    analytics.trackEvent('[Bookmarks] Delete a bookmark');
   } catch (err) {
     console.log(err);
   }

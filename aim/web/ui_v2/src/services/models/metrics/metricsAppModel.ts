@@ -397,7 +397,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent('[MetricsExplorer][Bookmarks] create');
+  analytics.trackEvent('[MetricsExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -416,7 +416,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[MetricsExplorer][Bookmarks] update');
+  analytics.trackEvent('[MetricsExplorer] Update bookmark');
 }
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {

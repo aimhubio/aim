@@ -20,7 +20,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     const runsRequestRef = runsAppModel.initialize();
     runsRequestRef.call();
-    analytics.pageView('[Runs]');
+    analytics.pageView('[RunsExplorer]');
     return () => {
       runsRequestRef.abort();
     };

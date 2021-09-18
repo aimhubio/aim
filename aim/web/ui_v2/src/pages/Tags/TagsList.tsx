@@ -67,7 +67,7 @@ function TagsList({
       openTagDetailOverLay();
     }
     setTagDetailId(id);
-    analytics.trackEvent('[Tags][TagList] Open tag detail');
+    analytics.trackEvent('[Tags] Open tag detail page');
   }
 
   return (

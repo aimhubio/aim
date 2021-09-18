@@ -444,7 +444,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[Runs][Table] Export data');
+  analytics.trackEvent('[RunsExplorer][Table] Export data');
 }
 
 function onNotificationDelete(id: number) {
@@ -865,7 +865,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('runsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Columns order change');
+  analytics.trackEvent('[RunsExplorer][Table] Columns order change');
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -911,7 +911,7 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('runsTable', encode(table));
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Row height change');
+  analytics.trackEvent('[RunsExplorer][Table] Row height change');
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -936,7 +936,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('runsTable', encode(table));
     updateModelData(configUpdate);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Columns visibility change');
+  analytics.trackEvent('[RunsExplorer][Table] Columns visibility change');
 }
 
 function onTableDiffShow() {
