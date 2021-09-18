@@ -10,12 +10,16 @@
   flex: 1;
 }
 
-.SelectForm__tags { 
+.SelectForm__tags {
   display: flex;
   align-items: center;
   overflow: auto;
   width: calc(100vw - 40.325rem);
   min-width: 15rem;
+
+  .TagLabel {
+    margin-left: 0.5rem;
+  }
 }
 
 .SelectForm__metric__select {

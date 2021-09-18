@@ -27,8 +27,8 @@ $text-sm: $text-base-unit / $text-scale-ratio;
 $text-md: $text-base-unit;
 
 :root {
-  --cell-height: 24px;
-  --group-margin: 4px;
+  --cell-height: 32px;
+  --group-margin: 6px;
 }
 
 .Table__container {
@@ -38,16 +38,16 @@ $text-md: $text-base-unit;
   background: #fff;
   &--small {
     --cell-height: 28px;
-    --group-margin: 6px;
+    --group-margin: 4px;
   }
   &--medium {
     --cell-height: 32px;
-    --group-margin: 8px;
+    --group-margin: 6px;
   }
 
   &--large {
     --cell-height: 36px;
-    --group-margin: 10px;
+    --group-margin: 8px;
   }
 }
 

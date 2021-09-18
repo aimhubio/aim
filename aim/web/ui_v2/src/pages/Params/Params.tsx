@@ -180,9 +180,6 @@ const Params = ({
               {!isEmpty(tableData) ? (
                 <Table
                   custom
-                  key={`${Array.isArray(
-                    tableData,
-                  )}-${tableRowHeight}-${resizeMode}`}
                   ref={tableRef}
                   data={tableData}
                   columns={tableColumns}

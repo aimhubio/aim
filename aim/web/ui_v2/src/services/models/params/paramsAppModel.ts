@@ -430,7 +430,9 @@ function getDataAsLines(
                         scaleType: 'linear',
                         displayName: `<span>${
                           value.param_name
-                        }</span><span>${contextToString(trace.context)}</span>`,
+                        }</span> <span>${contextToString(
+                          trace.context,
+                        )}</span>`,
                         dimensionType: 'metric',
                       };
                     }
