@@ -46,7 +46,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => paramsAppModel.getParamsData().call());
     }
-    analytics.pageView('[Params]');
+    analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
       paramsRequestRef.abort();
