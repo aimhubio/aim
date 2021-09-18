@@ -80,7 +80,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
     const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
-    analytics.pageView('[Metrics]');
+    analytics.pageView('[MetricsExplorer]');
     return () => {
       metricsRequestRef.abort();
       if (appRequestRef) {
