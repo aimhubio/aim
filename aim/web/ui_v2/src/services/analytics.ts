@@ -2,7 +2,7 @@
 export const SEGMENT_DEMO_WRITE_KEY = 'Rj1I4AisLSvsvAnPW7OqkoYBUTXJRBHK';
 export const SEGMENT_WRITE_KEY = 'LBnAonwto541z4Dn4ntGJScCsYNRdIC3';
 export function isDev() {
-  return window.app?.env === 'dev';
+  return process.env.NODE_ENV === 'development';
 }
 
 const enabled = () => {
