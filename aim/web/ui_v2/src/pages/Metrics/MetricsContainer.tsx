@@ -34,6 +34,7 @@ import {
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import * as analytics from 'services/analytics';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -79,6 +80,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
     const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
+    analytics.pageView('[Metrics]');
     return () => {
       metricsRequestRef.abort();
       if (appRequestRef) {

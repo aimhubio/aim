@@ -5,6 +5,7 @@ import { ITagsProps } from 'types/pages/tags/Tags';
 import TabPanel from 'components/TabPanel/TabPanel';
 import TagsList from './TagsList';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import * as analytics from 'services/analytics';
 import './Tags.scss';
 
 function Tags({
@@ -27,6 +28,7 @@ function Tags({
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
+    analytics.trackEvent('[Tags][Tabs] Tab change');
   };
 
   useEffect(() => {

@@ -13,6 +13,7 @@ import RunDetailSettingsTab from './RunDetailSettingsTab';
 import AppBar from 'components/AppBar/AppBar';
 import TagLabel from 'components/TagLabel/TagLabel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import * as analytics from 'services/analytics';
 
 import './RunDetail.scss';
 
@@ -32,6 +33,10 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       runsRequestRef.abort();
     };
   }, [runHash]);
+
+  React.useEffect(() => {
+    analytics.pageView('[RunDetail]');
+  }, []);
 
   return (
     <section className='RunDetail container'>

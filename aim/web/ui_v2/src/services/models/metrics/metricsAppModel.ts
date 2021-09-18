@@ -81,6 +81,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import * as analytics from 'services/analytics';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -396,6 +397,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
+  analytics.trackEvent('[Metrics][Bookmarks] create');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -414,6 +416,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
+  analytics.trackEvent('[Metrics][Bookmarks] update');
 }
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
@@ -1240,6 +1243,7 @@ function onHighlightModeChange(mode: HighlightEnum): void {
       },
     });
   }
+  analytics.trackEvent('[Metrics][Chart] Highlight mode change');
 }
 
 function onZoomChange(zoom: Partial<IChartZoom>): void {
@@ -1258,6 +1262,7 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
       },
     });
   }
+  analytics.trackEvent('[Metrics][Chart] Zoom change');
 }
 
 function onAggregationConfigChange(
@@ -1274,6 +1279,7 @@ function onAggregationConfigChange(
     };
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Chart] Aggregation config change');
 }
 
 function onSmoothingChange(props: IOnSmoothingChange) {
@@ -1282,6 +1288,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
     configData.chart = { ...configData.chart, ...props };
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Chart] Smoothing change');
 }
 
 function onDisplayOutliersChange(): void {
@@ -1290,6 +1297,7 @@ function onDisplayOutliersChange(): void {
     configData.chart.displayOutliers = !configData?.chart.displayOutliers;
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Chart] Display outliers change');
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
@@ -1298,6 +1306,7 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
     configData.chart.axesScaleType = params;
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Chart] Axes scale type change');
 }
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
@@ -1306,6 +1315,7 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   if (!isAppliedGrouping) {
     configData.chart.aggregationConfig.isApplied = false;
   }
+  analytics.trackEvent('[Metrics][Chart] Aggregation enable');
 }
 
 function resetChartZoom(configData: IMetricAppConfig): void {
@@ -1317,6 +1327,7 @@ function resetChartZoom(configData: IMetricAppConfig): void {
       history: [],
     },
   };
+  analytics.trackEvent('[Metrics][Chart] Zoom reset');
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -1365,6 +1376,7 @@ function onGroupingSelectChange({
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Select change');
 }
 
 function onGroupingModeChange({
@@ -1383,6 +1395,7 @@ function onGroupingModeChange({
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Mode change');
 }
 
 function onGroupingPaletteChange(index: number): void {
@@ -1395,6 +1408,7 @@ function onGroupingPaletteChange(index: number): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Palette change');
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -1413,6 +1427,7 @@ function onGroupingReset(groupName: GroupNameType) {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Reset');
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
@@ -1428,6 +1443,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Apply change');
 }
 
 function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
@@ -1443,6 +1459,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Persistence change');
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1469,6 +1486,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
     model.setState({ config: configData });
   }
+  analytics.trackEvent('[Metrics][Chart] Tooltip change');
 }
 
 function onActivePointChange(
@@ -1631,6 +1649,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  analytics.trackEvent('[Metrics][Table] Export data');
 }
 
 function updateGroupingStateUrl(): void {
@@ -1691,6 +1710,7 @@ function onResetConfigData(): void {
     configData.chart = { ...getConfig().chart };
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Grouping] Reset config');
 }
 
 async function onAlignmentMetricChange(metric: string) {
@@ -1754,6 +1774,7 @@ async function onAlignmentMetricChange(metric: string) {
     }
     setModelData(rawData, configData);
   }
+  analytics.trackEvent('[Metrics][Chart] Alignment metrics change');
 }
 
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
@@ -1821,6 +1842,7 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent('[Metrics][Chart] Alignment type change');
 }
 
 function onMetricsSelectChange(data: ISelectMetricsOption[]) {
@@ -1872,6 +1894,7 @@ function toggleSelectAdvancedMode() {
       },
     });
   }
+  analytics.trackEvent('[Metrics][SelectForm] Advanced query toggle');
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1890,6 +1913,7 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('metricsTable', encode(table));
   }
+  analytics.trackEvent('[Metrics][Table] Row height change');
 }
 
 function onSortFieldsChange(sortFields: [string, any][]) {
@@ -1909,6 +1933,7 @@ function onSortFieldsChange(sortFields: [string, any][]) {
     setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
+  analytics.trackEvent('[Metrics][Table] Sort fields change');
 }
 
 function onMetricVisibilityChange(metricsKeys: string[]) {
@@ -1936,6 +1961,7 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent('[Metrics][Table] Rows visibility change');
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1963,6 +1989,7 @@ function onRowVisibilityChange(metricKey: string) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent('[Metrics][Table] Row visibility change');
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -1986,6 +2013,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
+  analytics.trackEvent('[Metrics][Table] Column visibility change');
 }
 
 function onTableDiffShow() {
@@ -2013,6 +2041,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent('[Metrics][Table] Column order change');
 }
 
 function onTableResizeModeChange(mode: ResizeModeEnum): void {
@@ -2032,6 +2061,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent('[Metrics][Table] Resize mode change');
 }
 
 function onTableResizeEnd(tableHeight: string) {

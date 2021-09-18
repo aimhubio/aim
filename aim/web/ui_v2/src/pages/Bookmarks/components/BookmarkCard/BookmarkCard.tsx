@@ -9,6 +9,7 @@ import Button from 'components/Button/Button';
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 import TagLabel from 'components/TagLabel/TagLabel';
+import * as analytics from 'services/analytics';
 
 import './BookmarkCard.scss';
 
@@ -46,7 +47,13 @@ function BookmarkCard({
           <span className='BookmarkCard__title'>{name}</span>
           <div className='flex fac fjc'>
             <NavLink to={`/${type}/${app_id}`}>
-              <Button size='small' variant='outlined'>
+              <Button
+                size='small'
+                variant='outlined'
+                onClick={() =>
+                  analytics.trackEvent('[Bookmarks] View bookmark')
+                }
+              >
                 View Bookmark
               </Button>
             </NavLink>
