@@ -11,28 +11,19 @@ import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 import Column from './TableColumn';
 
 function Table(props) {
-  const columns =
-    !!props.excludedFields && props.excludedFields.length
-      ? props.columns.filter((c) => props.excludedFields.indexOf(c.key) === -1)
-      : props.columns;
+  const columns = props.columns;
 
-  let leftCols =
-    props.columnsOrder?.left?.filter(
-      (colKey) => columns.findIndex((col) => colKey === col.key) > -1,
-    ) ?? columns.filter((col) => col.pin === 'left').map((col) => col.key);
+  let leftCols = columns
+    .filter((col) => col.pin === 'left')
+    .map((col) => col.key);
 
-  let midCols =
-    props.columnsOrder?.middle?.filter(
-      (colKey) => columns.findIndex((col) => colKey === col.key) > -1,
-    ) ??
-    columns
-      .filter((col) => col.pin !== 'left' && col.pin !== 'right')
-      .map((col) => col.key);
+  let midCols = columns
+    .filter((col) => col.pin !== 'left' && col.pin !== 'right')
+    .map((col) => col.key);
 
-  let rightCols =
-    props.columnsOrder?.right?.filter(
-      (colKey) => columns.findIndex((col) => colKey === col.key) > -1,
-    ) ?? columns.filter((col) => col.pin === 'right').map((col) => col.key);
+  let rightCols = columns
+    .filter((col) => col.pin === 'right')
+    .map((col) => col.key);
 
   let [expanded, setExpanded] = useState({});
 
@@ -101,7 +92,11 @@ function Table(props) {
   }
 
   function togglePin(colKey, side) {
-    const columnsOrderClone = _.cloneDeep(props.columnsOrder);
+    const columnsOrderClone = {
+      left: leftCols,
+      middle: midCols,
+      right: rightCols,
+    };
     if (side === 'left') {
       if (columnsOrderClone.left.includes(colKey)) {
         columnsOrderClone.left.splice(
@@ -163,7 +158,11 @@ function Table(props) {
   }
 
   function moveColumn(colKey, pane, from, direction) {
-    const columnsOrderClone = _.cloneDeep(props.columnsOrder);
+    const columnsOrderClone = {
+      left: leftCols,
+      middle: midCols,
+      right: rightCols,
+    };
     let to;
     switch (direction) {
       case 'left':
