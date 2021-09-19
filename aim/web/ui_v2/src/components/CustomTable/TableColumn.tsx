@@ -136,10 +136,7 @@ function Column({
                   {!isAlwaysVisible && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        hideColumn();
-                        setOpened(false);
-                      }}
+                      onClick={hideColumn}
                     >
                       <Icon name='eye-outline-hide' />
                       <span>Hide column</span>
@@ -148,10 +145,7 @@ function Column({
                   {(pinnedTo === 'left' || pinnedTo === 'right') && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        togglePin(col.key, null);
-                        setOpened(false);
-                      }}
+                      onClick={() => togglePin(col.key, null)}
                     >
                       <Icon name='pin' />
                       <span>Unpin</span>
@@ -160,10 +154,7 @@ function Column({
                   {pinnedTo !== 'left' && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        togglePin(col.key, 'left');
-                        setOpened(false);
-                      }}
+                      onClick={() => togglePin(col.key, 'left')}
                     >
                       <Icon name='pin-left' />
                       <span>Pin to left</span>
@@ -172,10 +163,7 @@ function Column({
                   {pinnedTo !== 'right' && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        togglePin(col.key, 'right');
-                        setOpened(false);
-                      }}
+                      onClick={() => togglePin(col.key, 'right')}
                     >
                       <Icon name='pin-right' />
                       <span>Pin to right</span>
@@ -184,10 +172,7 @@ function Column({
                   {!paneFirstColumn && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        moveColumn('left');
-                        setOpened(false);
-                      }}
+                      onClick={() => moveColumn('left')}
                     >
                       <Icon fontSize={10} name='arrow-left' />
                       <span>Move left</span>
@@ -196,10 +181,7 @@ function Column({
                   {!paneLastColumn && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        moveColumn('right');
-                        setOpened(false);
-                      }}
+                      onClick={() => moveColumn('right')}
                     >
                       <Icon fontSize={10} name='arrow-right' />
                       <span>Move right</span>
@@ -208,10 +190,7 @@ function Column({
                   {pinnedTo === null && !paneFirstColumn && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        moveColumn('start');
-                        setOpened(false);
-                      }}
+                      onClick={() => moveColumn('start')}
                     >
                       <Icon fontSize={10} name='move-to-left' />
                       <span>Move to start</span>
@@ -220,10 +199,7 @@ function Column({
                   {pinnedTo === null && !paneLastColumn && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        moveColumn('end');
-                        setOpened(false);
-                      }}
+                      onClick={() => moveColumn('end')}
                     >
                       <Icon fontSize={10} name='move-to-right' />
                       <span>Move to end</span>
@@ -232,10 +208,7 @@ function Column({
                   {sortable && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        sortByColumn('asc');
-                        setOpened(false);
-                      }}
+                      onClick={() => sortByColumn('asc')}
                     >
                       <Icon name='sort-outside' />
                       <span>
@@ -246,10 +219,7 @@ function Column({
                   {sortable && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        sortByColumn('desc');
-                        setOpened(false);
-                      }}
+                      onClick={() => sortByColumn('desc')}
                     >
                       <Icon name='sort-outside' />
                       <span>
@@ -260,10 +230,7 @@ function Column({
                   {width !== undefined && (
                     <MenuItem
                       className='Table__action__popup__item'
-                      onClick={(evt) => {
-                        resetWidth();
-                        setOpened(false);
-                      }}
+                      onClick={resetWidth}
                     >
                       <Icon name='reset-width-outside' />
                       <span>Reset width</span>
@@ -272,15 +239,6 @@ function Column({
                 </div>
               }
             />
-            {/*<Popover*/}
-            {/*  target={<Icon name='more-vertical' />}*/}
-            {/*  targetClassName='Table__action'*/}
-            {/*  tooltip='Column actions'*/}
-            {/*  content={(opened, setOpened) => (*/}
-            {/*    */}
-            {/*  )}*/}
-            {/*  popupClassName='Table__action__popup'*/}
-            {/*/>*/}
             <div
               className={classNames({
                 Table__column__resizeHandler: true,
