@@ -19,6 +19,19 @@ $white: #ffffff;
 $pico: #1c2852;
 $grayish: #dee6f3;
 $cuddle: #bdcee8;
+$denim: $primary-color;
+
+$grey: #586069;
+$grey-dark: #484f56;
+$grey-darker: #24292e;
+$grey-bg: #f7f7f7;
+$grey-lighter: #e8e8e8;
+$grey-light-xx: #d4d4d4;
+$primary-dark: #243969;
+$primary-darker: #142447;
+$primary-bg: #f7faff;
+$primary-lighter: #dfe6f7;
+$primary-light: #7a94cc;
 //border
 $border-color-main: tint($primary-color, 90);
 $border-main: 0.0625rem solid $border-color-main;

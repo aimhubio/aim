@@ -286,6 +286,7 @@ function metricsTableRowRenderer(
             onClick={actions?.toggleVisibility}
             role='button'
             aria-pressed='false'
+            className='Table__action__icon'
           >
             <Icon
               name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
