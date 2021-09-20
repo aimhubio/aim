@@ -741,11 +741,11 @@ function onCurveInterpolationChange(): void {
     updateModelData({ ...configData, chart });
   }
   analytics.trackEvent(
-    `[ParamsExplorer][Chart] Set interpolation mode to ${
+    `[ParamsExplorer][Chart] Set interpolation mode to "${
       configData.chart.curveInterpolation === CurveEnum.Linear
         ? 'cubic'
         : 'linear'
-    }`,
+    }"`,
   );
 }
 
@@ -893,9 +893,9 @@ function onGroupingPaletteChange(index: number): void {
     updateModelData(configData);
   }
   analytics.trackEvent(
-    `[ParamsExplorer] Set color palette to ${
+    `[ParamsExplorer] Set color palette to "${
       index === 0 ? '8 distinct colors' : '24 colors'
-    }`,
+    }"`,
   );
 }
 
@@ -1363,9 +1363,9 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('paramsTable', encode(table));
   }
   analytics.trackEvent(
-    `[ParamsExplorer][Table] Set table row height to ${RowHeightEnum[
+    `[ParamsExplorer][Table] Set table row height to "${RowHeightEnum[
       height
-    ].toLowerCase()}`,
+    ].toLowerCase()}"`,
   );
 }
 

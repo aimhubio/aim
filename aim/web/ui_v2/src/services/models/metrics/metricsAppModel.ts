@@ -1270,9 +1270,9 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
   }
   if (!isNil(zoom.mode)) {
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set zoom mode to ${
+      `[MetricsExplorer][Chart] Set zoom mode to "${
         zoom.mode === 0 ? 'single' : 'multiple'
-      }`,
+      }"`,
     );
   }
 }
@@ -1293,14 +1293,14 @@ function onAggregationConfigChange(
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set aggregation area to ${AggregationAreaMethods[
+      `[MetricsExplorer][Chart] Set aggregation area to "${AggregationAreaMethods[
         aggregationConfig.methods.area
-      ].toLowerCase()}`,
+      ].toLowerCase()}"`,
     );
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set aggregation line to ${AggregationAreaMethods[
+      `[MetricsExplorer][Chart] Set aggregation line to "${AggregationAreaMethods[
         aggregationConfig.methods.line
-      ].toLowerCase()}`,
+      ].toLowerCase()}"`,
     );
   } else {
     analytics.trackEvent(
@@ -1327,7 +1327,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
     );
   } else {
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set smoothening algorithm to ${configData?.chart.smoothingAlgorithm}`,
+      `[MetricsExplorer][Chart] Set smoothening algorithm to "${configData?.chart.smoothingAlgorithm}"`,
       { smoothingFactor: props.smoothingFactor },
     );
   }
@@ -1353,10 +1353,10 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
     updateModelData(configData);
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set X axis scale type ${params.xAxis}`,
+    `[MetricsExplorer][Chart] Set X axis scale type "${params.xAxis}"`,
   );
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set Y axis scale type ${params.yAxis}`,
+    `[MetricsExplorer][Chart] Set Y axis scale type "${params.yAxis}"`,
   );
 }
 
@@ -1464,9 +1464,9 @@ function onGroupingPaletteChange(index: number): void {
     updateModelData(configData);
   }
   analytics.trackEvent(
-    `[MetricsExplorer] Set color palette to ${
+    `[MetricsExplorer] Set color palette to "${
       index === 0 ? '8 distinct colors' : '24 colors'
-    }`,
+    }"`,
   );
 }
 
@@ -1985,9 +1985,9 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('metricsTable', encode(table));
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Table] Set table row height to ${RowHeightEnum[
+    `[MetricsExplorer][Table] Set table row height to "${RowHeightEnum[
       height
-    ].toLowerCase()}`,
+    ].toLowerCase()}"`,
   );
 }
 

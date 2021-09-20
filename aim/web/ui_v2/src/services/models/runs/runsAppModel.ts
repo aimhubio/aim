@@ -919,7 +919,7 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('runsTable', encode(table));
   }
   analytics.trackEvent(
-    `[RunsExplorer][Table] Set table row height to ${RowHeightEnum[height]}`,
+    `[RunsExplorer][Table] Set table row height to "${RowHeightEnum[height]}"`,
   );
 }
 
