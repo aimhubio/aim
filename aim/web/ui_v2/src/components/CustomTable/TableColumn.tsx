@@ -3,10 +3,9 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { MenuItem, Typography } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import Cell from './TableCell';
-import Popover from './TablePopover';
 import Icon from 'components/Icon/Icon';
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -100,9 +99,7 @@ function Column({
             borderRight: showTopHeaderBorder ? '' : 'none',
           }}
         >
-          {showTopHeaderContent && col.topHeader && (
-            <Typography>{col.topHeader}</Typography>
-          )}
+          {showTopHeaderContent && col.topHeader && <p>{col.topHeader}</p>}
         </div>
       )}
       <div
