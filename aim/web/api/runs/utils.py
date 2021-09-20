@@ -85,7 +85,7 @@ def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> 
     return result
 
 
-async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str) -> bytes:
+def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str) -> bytes:
     for run_data in requested_runs:
         run_hashname = run_data.run_id
         requested_traces = run_data.traces
@@ -118,7 +118,7 @@ async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_
         yield collect_run_streamable_data(encoded_tree)
 
 
-async def metric_search_result_streamer(traces: MetricCollection, steps_num: int, x_axis: Optional[str]) -> bytes:
+def metric_search_result_streamer(traces: MetricCollection, steps_num: int, x_axis: Optional[str]) -> bytes:
     for run_trace_collection in traces.iter_runs():
         run = None
         traces_list = []
@@ -158,7 +158,7 @@ async def metric_search_result_streamer(traces: MetricCollection, steps_num: int
             yield collect_run_streamable_data(encoded_tree)
 
 
-async def run_search_result_streamer(runs: MetricCollection, limit: int) -> bytes:
+def run_search_result_streamer(runs: MetricCollection, limit: int) -> bytes:
     run_count = 0
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
