@@ -8,6 +8,7 @@ import { MenuItem, Tooltip } from '@material-ui/core';
 import Cell from './TableCell';
 import Icon from 'components/Icon/Icon';
 import ControlPopover from '../ControlPopover/ControlPopover';
+import Button from 'components/Button/Button';
 
 function Column({
   topHeader,
@@ -115,18 +116,27 @@ function Column({
             <ControlPopover
               anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'center',
+                horizontal: 'left',
               }}
               transformOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
               }}
-              anchor={({ onAnchorClick, opened }) => (
-                <Icon
-                  className='Table__action__anchor'
-                  onClick={onAnchorClick}
-                  name='more-vertical'
-                />
+              anchor={({ onAnchorClick }) => (
+                <Tooltip title='Column actions'>
+                  <div>
+                    <Button
+                      withOnlyIcon
+                      onClick={onAnchorClick}
+                      color='secondary'
+                    >
+                      <Icon
+                        className='Table__action__anchor'
+                        name='more-vertical'
+                      />
+                    </Button>
+                  </div>
+                </Tooltip>
               )}
               component={
                 <div className='Table__action__popup__body'>
@@ -403,11 +413,13 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
   return (
     <ControlPopover
       anchor={({ onAnchorClick }) => (
-        <Icon
-          className='Table__action__anchor'
-          onClick={onAnchorClick}
-          name='more-horizontal'
-        />
+        <Tooltip title='Expand options'>
+          <div>
+            <Button color='secondary' withOnlyIcon onClick={onAnchorClick}>
+              <Icon className='Table__action__anchor' name='more-horizontal' />
+            </Button>
+          </div>
+        </Tooltip>
       )}
       component={({ handleClose }) => (
         <div className='Table__action__popup__body'>
