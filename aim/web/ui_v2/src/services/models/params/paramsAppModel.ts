@@ -255,7 +255,13 @@ function getParamsData() {
           ];
         }
 
-        const tableData = getDataAsTableRows(data, metricsColumns, params);
+        const tableData = getDataAsTableRows(
+          data,
+          metricsColumns,
+          params,
+          false,
+          configData,
+        );
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
@@ -755,7 +761,13 @@ function onActivePointChange(
 ): void {
   const { data, params, refs, config, metricsColumns } =
     model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    config,
+  );
   const tableRef: any = refs?.tableRef;
   if (tableRef) {
     tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -921,7 +933,13 @@ function updateModelData(configData: IParamsAppConfig): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    configData,
+  );
   const tableColumns = getParamsTableColumns(
     metricsColumns,
     params,
@@ -951,7 +969,8 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   metricsColumns: any,
   paramKeys: string[],
-  isRawData?: boolean,
+  isRawData: boolean,
+  config: IParamsAppConfig,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -983,7 +1002,14 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null) {
       const groupHeaderRow = {
         meta: {
-          chartIndex: metricsCollection.chartIndex + 1,
+          chartIndex:
+            config.grouping.chart.length > 0 ||
+            config.grouping.reverseMode.chart
+              ? metricsCollection.chartIndex + 1
+              : null,
+          color: metricsCollection.color,
+          dasharray: metricsCollection.dasharray,
+          itemsCount: metricsCollection.data.length,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1010,6 +1036,9 @@ function getDataAsTableRows(
         ] = trace.last_value.last;
       });
       const rowValues: any = {
+        rowMeta: {
+          color: metricsCollection.color ?? metric.color,
+        },
         key: metric.key,
         runHash: metric.run.hash,
         isHidden: metric.isHidden,
@@ -1239,7 +1268,13 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    true,
+    config,
+  );
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
     params,

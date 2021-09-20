@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: tint($cuddle, 50);
+  border: 0.0625rem solid $cuddle-50;
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -58,7 +58,7 @@
   overflow: auto;
 
   .TagLabel {
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 }
 

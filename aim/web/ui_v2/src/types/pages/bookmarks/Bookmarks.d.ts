@@ -10,6 +10,6 @@ export interface IBookmarksProps {
 }
 
 interface IBookmarksData extends IDashboardData {
-  select: IMetricAppConfig['select'];
+  select: IMetricAppConfig['select'] | any;
   type: string;
 }
