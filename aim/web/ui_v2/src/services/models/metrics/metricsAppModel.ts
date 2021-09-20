@@ -397,7 +397,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent('[MetricsExplorer] Create bookmark state');
+  analytics.trackEvent('[MetricsExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -416,7 +416,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[MetricsExplorer] Update bookmark state');
+  analytics.trackEvent('[MetricsExplorer] Update bookmark');
 }
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
@@ -1246,7 +1246,9 @@ function onHighlightModeChange(mode: HighlightEnum): void {
     });
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set highlight mode to ${HighlightEnum[mode]}`,
+    `[MetricsExplorer][Chart] Set highlight mode to "${HighlightEnum[
+      mode
+    ].toLowerCase()}"`,
   );
 }
 
@@ -1291,14 +1293,14 @@ function onAggregationConfigChange(
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set aggregation area to ${
-        AggregationAreaMethods[aggregationConfig.methods.area]
-      }`,
+      `[MetricsExplorer][Chart] Set aggregation area to ${AggregationAreaMethods[
+        aggregationConfig.methods.area
+      ].toLowerCase()}`,
     );
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set aggregation line to ${
-        AggregationAreaMethods[aggregationConfig.methods.line]
-      }`,
+      `[MetricsExplorer][Chart] Set aggregation line to ${AggregationAreaMethods[
+        aggregationConfig.methods.line
+      ].toLowerCase()}`,
     );
   } else {
     analytics.trackEvent(
@@ -1325,7 +1327,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
     );
   } else {
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] algorithm ${configData?.chart.smoothingAlgorithm}`,
+      `[MetricsExplorer][Chart] Set smoothening algorithm to ${configData?.chart.smoothingAlgorithm}`,
       { smoothingFactor: props.smoothingFactor },
     );
   }
@@ -1351,10 +1353,10 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
     updateModelData(configData);
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] set X axis scale type ${params.xAxis}`,
+    `[MetricsExplorer][Chart] Set X axis scale type ${params.xAxis}`,
   );
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] set Y axis scale type ${params.yAxis}`,
+    `[MetricsExplorer][Chart] Set Y axis scale type ${params.yAxis}`,
   );
 }
 
@@ -1709,7 +1711,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[MetricsExplorer] Export to CSV');
+  analytics.trackEvent('[MetricsExplorer] Export runs data to CSV');
 }
 
 function updateGroupingStateUrl(): void {
@@ -1834,7 +1836,7 @@ async function onAlignmentMetricChange(metric: string) {
     setModelData(rawData, configData);
   }
   analytics.trackEvent(
-    '[MetricsExplorer][Chart] Set X axis alignment metric name',
+    '[MetricsExplorer][Chart] Align X axis by another metric',
   );
 }
 
@@ -1904,9 +1906,9 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
     updateModelData(configData);
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set X axis alignment type to ${AlignmentOptions[
+    `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
       type
-    ].toLowerCase()}`,
+    ].toLowerCase()}"`,
   );
 }
 
@@ -1960,9 +1962,9 @@ function toggleSelectAdvancedMode() {
     });
   }
   analytics.trackEvent(
-    `[MetricsExplorer] ${
-      !configData?.select.advancedMode ? 'Show' : 'Hide'
-    } advanced query `,
+    `[MetricsExplorer] Turn ${
+      !configData?.select.advancedMode ? 'on' : 'off'
+    } the advanced mode of select form`,
   );
 }
 
@@ -1983,7 +1985,9 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('metricsTable', encode(table));
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Table] Set table row height to ${RowHeightEnum[height]}`,
+    `[MetricsExplorer][Table] Set table row height to ${RowHeightEnum[
+      height
+    ].toLowerCase()}`,
   );
 }
 
@@ -2105,7 +2109,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
-  analytics.trackEvent('[ParamsExplorer][Table] Show table columns diff');
+  analytics.trackEvent('[MetricsExplorer][Table] Show table columns diff');
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
@@ -2131,7 +2135,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     isEmpty(columnsOrder?.middle) &&
     isEmpty(columnsOrder?.right)
   ) {
-    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
+    analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
   }
 }
 

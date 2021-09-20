@@ -725,7 +725,7 @@ function onColorIndicatorChange(): void {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] ${
-      configData.chart.isVisibleColorIndicator ? 'Hide' : 'Show'
+      configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
     } color indicator`,
   );
 }
@@ -1166,7 +1166,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         });
     }
   }
-  analytics.trackEvent('[ParamsExplorer] Create bookmark state');
+  analytics.trackEvent('[ParamsExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -1185,7 +1185,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[ParamsExplorer] Update bookmark state');
+  analytics.trackEvent('[ParamsExplorer] Update bookmark');
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1288,7 +1288,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[ParamsExplorer] Export to CSV');
+  analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -1363,7 +1363,9 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('paramsTable', encode(table));
   }
   analytics.trackEvent(
-    `[ParamsExplorer][Table] Set table row height to ${RowHeightEnum[height]}`,
+    `[ParamsExplorer][Table] Set table row height to ${RowHeightEnum[
+      height
+    ].toLowerCase()}`,
   );
 }
 

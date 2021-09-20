@@ -445,7 +445,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[RunsExplorer][Table] Export to CSV');
+  analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -871,7 +871,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     isEmpty(columnsOrder?.middle) &&
     isEmpty(columnsOrder?.right)
   ) {
-    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
+    analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
   }
 }
 
