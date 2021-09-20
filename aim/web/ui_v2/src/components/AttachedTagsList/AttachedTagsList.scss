@@ -1,0 +1,62 @@
+@use "../../styles/abstracts/index" as *;
+
+.AttachedTagsList {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: $text-sm;
+  line-height: 15px;
+  margin-top: 0.5rem;
+
+  &__title {
+    text-transform: uppercase;
+    color: tint($pico, 50);
+    font-family: 'Inter Regular';
+  }
+
+  &__noAttachedTags {
+    font-size: 0.688rem;
+    color: tint($pico, 30);
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+
+    .TagLabel {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &__ControlPopover__anchor {
+     .icon-edit {
+       width: 24px;
+       height: 24px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+     }
+
+     .icon-edit:hover {
+       color: $primary-color
+     }
+
+     &.active{
+       color: $primary-color
+     }
+   }
+
+  &__ControlPopover__attach {
+    .icon-plus {
+      margin-right: 8px;
+    }
+  }
+
+  &__ControlPopover__title {
+    text-transform: uppercase;
+    color: tint($pico, 50);
+    background: inherit;
+    font-family: 'Inter Regular';
+    border: unset;
+  }
+}

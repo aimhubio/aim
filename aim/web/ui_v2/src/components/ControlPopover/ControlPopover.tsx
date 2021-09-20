@@ -8,6 +8,7 @@ import './ControlPopover.scss';
 function ControlPopover({
   component,
   title,
+  titleClassName = '',
   anchor,
   anchorOrigin,
   transformOrigin,
@@ -56,7 +57,11 @@ function ControlPopover({
         PaperProps={{ className: 'ControlPopover' }}
       >
         <div className='ControlPopover__container'>
-          {title && <div className='ControlPopover__title'>{title}</div>}
+          {title && (
+            <div className={`ControlPopover__title ${titleClassName}`}>
+              {title}
+            </div>
+          )}
           <div className='ControlPopover__component'>
             {typeof component === 'function'
               ? component({ handleClose, opened: open && !!anchorEl })
