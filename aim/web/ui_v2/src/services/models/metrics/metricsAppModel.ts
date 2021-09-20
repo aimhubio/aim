@@ -2204,9 +2204,9 @@ function updateSortFields(sortFields: SortField[]) {
     updateModelData(configUpdate);
   }
   analytics.trackEvent(
-      `[MetricsExplorer][Table] ${
-          isEmpty(sortFields) ? 'Reset' : 'Apply'
-      } table sorting by a key`,
+    `[MetricsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
   );
 }
 
