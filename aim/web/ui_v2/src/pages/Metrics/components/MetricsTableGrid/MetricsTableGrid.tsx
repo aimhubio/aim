@@ -240,9 +240,9 @@ function metricsTableRowRenderer(
         row.value = {
           content: (
             <div className='Metrics__table__aggregationColumn__cell'>
-              <span>{rowData.aggregation.area.min}</span>
-              <span>{rowData.aggregation.line}</span>
-              <span>{rowData.aggregation.area.max}</span>
+              <span key='min'>{rowData.aggregation.area.min}</span>
+              <span key='line'>{rowData.aggregation.line}</span>
+              <span key='max'>{rowData.aggregation.area.max}</span>
             </div>
           ),
         };
