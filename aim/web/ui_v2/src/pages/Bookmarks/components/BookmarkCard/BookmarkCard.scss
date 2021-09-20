@@ -4,10 +4,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid #dee6f3;
-  border-radius: 0.5em;
-  padding: 1.5em;
-  margin-bottom: 1em;
+  border: 0.0625rem solid $cuddle-50;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .BookmarkCard__delete {
@@ -22,7 +22,7 @@
   flex: 1 1;
 
   p {
-    margin-top: 0.25em;
+    margin-top: 0.25rem;
     font-weight: normal;
     font-size: $text-sm;
   }
@@ -43,21 +43,25 @@
 }
 
 .BookmarkCard__bottom {
-  margin-top: 0.75em;
+  margin-top: 0.75rem;
 
   strong {
     color: #243969;
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
   }
 }
 
 .BookmarkCard__selected__metrics {
-  margin-top: 1em;
+  margin-top: 1rem;
   width: 100%;
   white-space: nowrap;
   overflow: auto;
+
+  .TagLabel {
+    margin-right: 0.5rem;
+  }
 }
 
 .BookmarkCard__run__expression {
-  margin-right: 45px;
+  margin-right: 2.8125rem;
 }

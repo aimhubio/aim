@@ -8,6 +8,8 @@ import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
 import Icon from 'components/Icon/Icon';
+import TableSortIcons from '../../../../components/Table/TableSortIcons';
+import { SortField } from '../../../../types/services/models/metrics/metricsAppModel';
 
 function getParamsTableColumns(
   metricsColumns: any,
@@ -15,6 +17,8 @@ function getParamsTableColumns(
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
+  sortFields?: any[],
+  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -51,7 +55,9 @@ function getParamsTableColumns(
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
           key: `${key}_${metricContext}`,
-          content: <TagLabel color={COLORS[0][0]} label={metricContext} />,
+          content: (
+            <TagLabel size='small' color={COLORS[0][0]} label={metricContext} />
+          ),
           topHeader: key,
           pin: order?.left?.includes(`${key}_${metricContext}`)
             ? 'left'
@@ -62,22 +68,39 @@ function getParamsTableColumns(
       ];
       return acc;
     }, []),
-    paramColumns.map((param) => ({
-      key: param,
-      content: <span>{param}</span>,
-      topHeader: 'Params',
-      pin: order?.left?.includes(param)
-        ? 'left'
-        : order?.right?.includes(param)
-        ? 'right'
-        : null,
-    })),
+    paramColumns.map((param) => {
+      const sortItem: SortField = sortFields?.find(
+        (value) => value[0] === `run.params.${param}`,
+      );
+
+      return {
+        key: param,
+        content: (
+          <span>
+            {param}
+            {onSort && (
+              <TableSortIcons
+                onSort={() => onSort(`run.params.${param}`)}
+                sortFields={sortFields}
+                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+              />
+            )}
+          </span>
+        ),
+        topHeader: 'Params',
+        pin: order?.left?.includes(param)
+          ? 'left'
+          : order?.right?.includes(param)
+          ? 'right'
+          : null,
+      };
+    }),
   );
 
   if (groupFields) {
     columns.push({
       key: '#',
-      content: '#',
+      content: <span style={{ textAlign: 'right' }}>#</span>,
       topHeader: 'Grouping',
       pin: 'left',
     });
@@ -134,6 +157,7 @@ function paramsTableRowRenderer(
         row[col] = {
           content: (
             <TagLabel
+              size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />

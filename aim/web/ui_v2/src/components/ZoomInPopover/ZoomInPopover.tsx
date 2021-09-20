@@ -5,8 +5,8 @@ import { IZoomInPopoverProps } from 'types/components/ZoomInPopover/ZoomInPopove
 import './ZoomInPopover.scss';
 
 export enum ZoomEnum {
-  SINGLE,
-  MULTIPLE,
+  SINGLE = 0,
+  MULTIPLE = 1,
 }
 
 function ZoomInPopover({

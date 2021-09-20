@@ -9,18 +9,18 @@ import { ScaleEnum } from './d3';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 
 export enum AggregationAreaMethods {
-  NONE,
-  MIN_MAX,
-  STD_DEV,
-  STD_ERR,
-  CONF_INT,
+  NONE = 0,
+  MIN_MAX = 1,
+  STD_DEV = 2,
+  STD_ERR = 3,
+  CONF_INT = 4,
 }
 
 export enum AggregationLineMethods {
-  MEAN,
-  MEDIAN,
-  MIN,
-  MAX,
+  MEAN = 0,
+  MEDIAN = 1,
+  MIN = 2,
+  MAX = 3,
 }
 
 export function aggregateGroupData({

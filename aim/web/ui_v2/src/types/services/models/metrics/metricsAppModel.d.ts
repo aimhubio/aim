@@ -97,6 +97,8 @@ export interface IAggregationData {
   } | null;
 }
 
+export type SortField = [string, 'asc' | 'desc'];
+
 interface IMetricAppConfig {
   grouping: {
     color: string[];
@@ -144,7 +146,7 @@ interface IMetricAppConfig {
   table: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
-    sortFields?: [string, boolean | 'asc' | 'desc'][];
+    sortFields?: SortField[];
     hiddenMetrics?: string[];
     hiddenColumns?: string[];
     columnsOrder?: {

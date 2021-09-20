@@ -7,6 +7,7 @@ export interface ITagLabelProps {
   color: string;
   iconName?: IconName;
   variant?: 'default' | 'outlined';
+  size?: 'small' | 'medium';
   onDelete?: (label: string) => void;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 }

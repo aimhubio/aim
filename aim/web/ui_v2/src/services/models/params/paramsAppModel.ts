@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash-es';
+import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
@@ -38,6 +38,7 @@ import {
   IChartTitle,
   IChartTitleData,
   IMetricTableRowData,
+  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
 import {
@@ -58,8 +59,8 @@ import {
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-
+import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import * as analytics from 'services/analytics';
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -255,7 +256,15 @@ function getParamsData() {
           ];
         }
 
-        const tableData = getDataAsTableRows(data, metricsColumns, params);
+        const tableData = getDataAsTableRows(
+          data,
+          metricsColumns,
+          params,
+          false,
+          configData,
+        );
+        const sortFields = model.getState()?.config?.table.sortFields;
+
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
@@ -271,6 +280,8 @@ function getParamsData() {
             data[0]?.config,
             configData.table.columnsOrder!,
             configData.table.hiddenColumns!,
+            sortFields,
+            onSortChange,
           ),
           sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
@@ -367,7 +378,19 @@ function processData(data: IRun<IParamTrace>[]): {
       dasharray: DASH_ARRAYS[0],
     });
   });
-  const processedData = groupData(runs);
+
+  const processedData = groupData(
+    _.orderBy(
+      runs,
+      configData?.table?.sortFields?.map(
+        (f: any) =>
+          function (run: IParam) {
+            return _.get(run, f[0], '');
+          },
+      ) ?? [],
+      configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
+    ),
+  );
   const uniqParams = _.uniq(params);
 
   setTooltipData(processedData, uniqParams);
@@ -723,6 +746,11 @@ function onColorIndicatorChange(): void {
     chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
     updateModelData({ ...configData, chart });
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Chart] ${
+      configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
+    } color indicator`,
+  );
 }
 
 function onCurveInterpolationChange(): void {
@@ -735,6 +763,13 @@ function onCurveInterpolationChange(): void {
         : CurveEnum.Linear;
     updateModelData({ ...configData, chart });
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Chart] Set interpolation mode to "${
+      configData.chart.curveInterpolation === CurveEnum.Linear
+        ? 'cubic'
+        : 'linear'
+    }"`,
+  );
 }
 
 function onActivePointChange(
@@ -743,7 +778,13 @@ function onActivePointChange(
 ): void {
   const { data, params, refs, config, metricsColumns } =
     model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    config,
+  );
   const tableRef: any = refs?.tableRef;
   if (tableRef) {
     tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -849,6 +890,7 @@ function onGroupingSelectChange({
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData);
   }
+  analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
 }
 
 function onGroupingModeChange({
@@ -863,6 +905,11 @@ function onGroupingModeChange({
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer] ${
+      value ? 'Disable' : 'Enable'
+    } grouping by ${groupName} reverse mode`,
+  );
 }
 
 function onGroupingPaletteChange(index: number): void {
@@ -874,6 +921,11 @@ function onGroupingPaletteChange(index: number): void {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer] Set color palette to "${
+      index === 0 ? '8 distinct colors' : '24 colors'
+    }"`,
+  );
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -891,19 +943,28 @@ function onGroupingReset(groupName: GroupNameType) {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent('[ParamsExplorer] Reset grouping');
 }
 
 function updateModelData(configData: IParamsAppConfig): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
-  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    configData,
+  );
   const tableColumns = getParamsTableColumns(
     metricsColumns,
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
+    configData.table.sortFields,
+    onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -927,7 +988,8 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<any>[],
   metricsColumns: any,
   paramKeys: string[],
-  isRawData?: boolean,
+  isRawData: boolean,
+  config: IParamsAppConfig,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -959,7 +1021,14 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null) {
       const groupHeaderRow = {
         meta: {
-          chartIndex: metricsCollection.chartIndex + 1,
+          chartIndex:
+            config.grouping.chart.length > 0 ||
+            config.grouping.reverseMode.chart
+              ? metricsCollection.chartIndex + 1
+              : null,
+          color: metricsCollection.color,
+          dasharray: metricsCollection.dasharray,
+          itemsCount: metricsCollection.data.length,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -986,6 +1055,9 @@ function getDataAsTableRows(
         ] = trace.last_value.last;
       });
       const rowValues: any = {
+        rowMeta: {
+          color: metricsCollection.color ?? metric.color,
+        },
         key: metric.key,
         runHash: metric.run.hash,
         isHidden: metric.isHidden,
@@ -1107,6 +1179,11 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer] ${
+      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
+    } ${groupName} persistence`,
+  );
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
@@ -1137,6 +1214,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         });
     }
   }
+  analytics.trackEvent('[ParamsExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -1155,6 +1233,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
+  analytics.trackEvent('[ParamsExplorer] Update bookmark');
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1181,6 +1260,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
     model.setState({ config: configData });
   }
+  analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }
 
 function getFilteredRow(
@@ -1207,7 +1287,13 @@ function getFilteredRow(
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, metricsColumns, params, true);
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    true,
+    config,
+  );
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
     params,
@@ -1256,6 +1342,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -1274,9 +1361,14 @@ function onNotificationAdd(notification: INotification) {
 }
 
 function onResetConfigData(): void {
-  model.setState({
-    config: getConfig(),
-  });
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    configData.grouping = {
+      ...getConfig().grouping,
+    };
+    configData.chart = { ...getConfig().chart };
+    updateModelData(configData);
+  }
 }
 
 function updateGroupingStateUrl(): void {
@@ -1329,6 +1421,11 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('paramsTable', encode(table));
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] Set table row height to "${RowHeightEnum[
+      height
+    ].toLowerCase()}"`,
+  );
 }
 
 function onSortFieldsChange(sortFields: [string, any][]) {
@@ -1346,6 +1443,11 @@ function onSortFieldsChange(sortFields: [string, any][]) {
     });
     updateModelData(configUpdate);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
+  );
 }
 
 function onParamVisibilityChange(metricsKeys: string[]) {
@@ -1373,6 +1475,13 @@ function onParamVisibilityChange(metricsKeys: string[]) {
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] ${
+      metricsKeys[0] === 'all'
+        ? 'Visualize all hidden metrics from table'
+        : 'Hide all metrics from table'
+    }`,
+  );
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -1396,6 +1505,11 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
+  if (hiddenColumns[0] === 'all') {
+    analytics.trackEvent('[ParamsExplorer][Table] Hide all table columns');
+  } else if (isEmpty(hiddenColumns)) {
+    analytics.trackEvent('[ParamsExplorer][Table] Show all table columns');
+  }
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
@@ -1414,6 +1528,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     });
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
+  }
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
   }
 }
 
@@ -1434,6 +1555,9 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     setItem('paramsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] Set table view mode to "${mode}"`,
+  );
 }
 
 function onTableDiffShow() {
@@ -1441,6 +1565,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
+  analytics.trackEvent('[ParamsExplorer][Table] Show table columns diff');
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1489,6 +1614,84 @@ function onTableResizeEnd(tableHeight: string) {
   }
 }
 
+// internal function to update config.table.sortFields and cache data
+function updateSortFields(sortFields: SortField[]) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      sortFields,
+    };
+    const configUpdate = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config: configUpdate,
+    });
+
+    setItem('paramsTable', encode(table));
+    updateModelData(configUpdate);
+  }
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
+  );
+}
+
+// set empty array to config.table.sortFields
+function onSortReset() {
+  updateSortFields([]);
+}
+
+/**
+ * function onSortChange has 3 major functionalities
+ *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)
+ *    2. if value param passed 'asc' or 'desc', the function will replace the sort option of the field in sortFields
+ *    3. if value param passed 'none', the function will delete the field from sortFields
+ * @param {String} field  - the name of the field (i.e params.dataset.preproc)
+ * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
+ */
+function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const sortFields = configData?.table.sortFields || [];
+
+  const existField = sortFields?.find((d: SortField) => d[0] === field);
+  let newFields: SortField[] = [];
+
+  if (value && existField) {
+    if (value === 'none') {
+      // delete
+      newFields = sortFields?.filter(
+        ([name]: SortField) => name !== existField[0],
+      );
+    } else {
+      newFields = sortFields.map(([name, v]: SortField) =>
+        name === existField[0] ? [name, value] : [name, v],
+      );
+    }
+  } else {
+    if (existField) {
+      if (existField[1] === 'asc') {
+        // replace to desc
+        newFields = sortFields?.map(([name, value]: SortField) => {
+          return name === existField[0] ? [name, 'desc'] : [name, value];
+        });
+      } else {
+        // delete field
+        newFields = sortFields?.filter(
+          ([name]: SortField) => name !== existField[0],
+        );
+      }
+    } else {
+      // add field
+      newFields = [...sortFields, [field, 'asc']];
+    }
+  }
+  updateSortFields(newFields);
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1526,6 +1729,8 @@ const paramsAppModel = {
   getAppConfigData,
   onTableDiffShow,
   onTableResizeEnd,
+  onSortReset,
+  onSortChange,
 };
 
 export default paramsAppModel;

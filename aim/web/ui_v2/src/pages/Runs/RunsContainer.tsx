@@ -3,6 +3,7 @@ import useModel from 'hooks/model/useModel';
 import Runs from './Runs';
 import { ITableRef } from '../../types/components/Table/Table';
 import runsAppModel from '../../services/models/runs/runsAppModel';
+import * as analytics from 'services/analytics';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -19,6 +20,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     const runsRequestRef = runsAppModel.initialize();
     runsRequestRef.call();
+    analytics.pageView('[RunsExplorer]');
     return () => {
       runsRequestRef.abort();
     };
