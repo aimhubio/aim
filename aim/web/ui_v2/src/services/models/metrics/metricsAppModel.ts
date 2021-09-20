@@ -605,7 +605,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
         config: null,
         color: null,
         dasharray: null,
-        chartIndex: -1,
+        chartIndex: 0,
         data: data,
       },
     ]);
@@ -633,7 +633,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
         config: groupValue,
         color: null,
         dasharray: null,
-        chartIndex: -1,
+        chartIndex: 0,
         data: [data[i]],
       };
     }
@@ -980,7 +980,8 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
-  isRawData?: boolean,
+  isRawData: boolean,
+  config: IMetricAppConfig,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1002,7 +1003,11 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null) {
       const groupHeaderRow = {
         meta: {
-          chartIndex: metricsCollection.chartIndex + 1,
+          chartIndex:
+            config.grouping.chart.length > 0 ||
+            config.grouping.reverseMode.chart
+              ? metricsCollection.chartIndex + 1
+              : null,
           color: metricsCollection.color,
           dasharray: metricsCollection.dasharray,
           itemsCount: metricsCollection.data.length,
@@ -1335,6 +1340,8 @@ function updateModelData(configData: IMetricAppConfig): void {
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
+    false,
+    configData,
   );
   const tableColumns = getMetricsTableColumns(
     params,
@@ -1486,7 +1493,13 @@ function onActivePointChange(
   const { data, params, refs, config } =
     model.getState() as IMetricAppModelState;
   const tableRef: any = refs?.tableRef;
-  const tableData = getDataAsTableRows(data, activePoint.xValue, params);
+  const tableData = getDataAsTableRows(
+    data,
+    activePoint.xValue,
+    params,
+    false,
+    config,
+  );
   if (tableRef) {
     tableRef.current?.updateData({
       newData: tableData.rows,
@@ -1589,6 +1602,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     config?.chart?.focusedState.xValue ?? null,
     params,
     true,
+    config,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
@@ -1792,6 +1806,8 @@ function setModelData(
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
+    false,
+    configData,
   );
   model.setState({
     requestIsPending: false,

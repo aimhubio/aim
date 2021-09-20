@@ -1,30 +1,9 @@
-$cell-color-dark: #f5f5f5;
-$border-color: #e6e6e6;
+@use 'src/styles/abstracts' as *;
+
+$border-color: $cuddle-50;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
 $border-radius: 0.2rem;
-$grey: #586069;
-$grey-dark: #484f56;
-$grey-darker: #24292e;
-$grey-bg: #f7f7f7;
-$grey-lighter: #e8e8e8;
-$grey-light-xx: #d4d4d4;
-$primary: #1c2852ff;
-$primary-dark: #243969;
-$primary-darker: #142447;
-$primary-bg: #f7faff;
-$primary-lighter: #dfe6f7;
-$primary-light: #7a94cc;
-$space-unit: 1rem;
-$space-xxs: $space-unit * 0.375;
-$space-xs: $space-unit * 0.5;
-$space-sm: $space-unit * 0.75;
-$space-md: $space-unit * 1.25;
-$space-xs: $space-unit * 0.5;
 
-$text-base-unit: 1rem;
-$text-scale-ratio: 1.2;
-$text-sm: $text-base-unit / $text-scale-ratio;
-$text-md: $text-base-unit;
 
 :root {
   --cell-height: 32px;
@@ -71,6 +50,11 @@ $text-md: $text-base-unit;
   z-index: 0;
 }
 
+
+.Table__action__icon {
+  color: $primary-color;
+}
+
 .Table__pane--left,
 .Table__pane--right {
   position: sticky;
@@ -80,12 +64,12 @@ $text-md: $text-base-unit;
 
 .Table__pane--left {
   left: 0;
-  box-shadow: 1px 0 3px 0 #aaa;
+  box-shadow: 1px 0 3px 0 $cuddle;
 }
 
 .Table__pane--right {
   right: 0;
-  box-shadow: -1px 0 3px 0 #aaa;
+  box-shadow: -1px 0 3px 0 $cuddle;
 }
 
 .Table__column {
@@ -117,7 +101,6 @@ $text-md: $text-base-unit;
   border-radius: 50%;
   transition: background-color ease 110ms;
   user-select: none;
-  color: $grey-dark;
 
   &:hover {
     background-color: $grey-lighter;
@@ -151,7 +134,7 @@ $text-md: $text-base-unit;
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: $primary;
+  color: $primary-color;
   transition: background-color 110ms ease;
   user-select: none;
 
@@ -177,8 +160,7 @@ $text-md: $text-base-unit;
 .Table__cell {
   display: flex;
   align-items: center;
-  font-size: $text-sm;
-  color: $grey;
+  font-size: $text-md;
   padding: 0 $space-sm;
   border-bottom: 1px solid $border-color;
   border-right: 1px solid $border-color;
@@ -196,18 +178,19 @@ $text-md: $text-base-unit;
 
   &.Table__group__header__cell {
     position: relative;
-    background-color: #fcfcfc;
+    background-color: $cuddle-10;
     border-color: $border-color;
     z-index: 1;
     transition: background-color 0.2s ease-out;
 
     &.expanded {
       position: sticky;
+      background-color: $cuddle-20;
       top: calc(2 * var(--cell-height));
     }
 
     &.expandable:hover {
-      background-color: #f3f3f3;
+      background-color: $cuddle-30;
     }
   }
 
@@ -235,11 +218,11 @@ $text-md: $text-base-unit;
   }
 
   &.active {
-    background-color: $primary-lighter;
+    background-color: tint($primary-color, 95);
   }
 
   &.hidden {
-    background-color: #eee !important;
+    background-color: $pico-10 !important;
   }
 
   & > * {
@@ -262,11 +245,11 @@ $text-md: $text-base-unit;
   position: sticky;
   top: var(--cell-height);
   flex: none;
-  background-color: $cell-color-dark;
+  background-color: $cuddle-20;
   padding: $space-xxs $space-sm;
-  font-size: $text-md;
+  font-size: $text-lg;
   border-color: $border-color;
-  color: $grey-dark;
+  font-family: 'Inter SemiBold', sans-serif;
   font-weight: bold;
   z-index: 3;
   overflow: visible;
@@ -282,7 +265,7 @@ $text-md: $text-base-unit;
   top: 0;
   width: 3px;
   height: 100%;
-  background-color: $primary;
+  background-color: $primary-color;
   z-index: 10;
   cursor: col-resize;
   opacity: 0;
@@ -301,9 +284,9 @@ $text-md: $text-base-unit;
 
 .Table__cell--topHeader {
   top: 0;
-  background-color: $grey-bg;
-  font-size: $text-sm;
-  font-weight: 500;
+  background-color: $cuddle-20;
+  font-size: $text-lg;
+  font-family: 'Inter SemiBold', sans-serif;
   letter-spacing: 0.05rem;
   border-top: 1px solid $border-color;
 }
@@ -323,7 +306,7 @@ $text-md: $text-base-unit;
   background-color: $primary-bg;
   border: 1px solid $primary-lighter;
   border-radius: $border-radius;
-  color: $primary;
+  color: $primary-color;
   cursor: pointer;
   opacity: 1;
   user-select: none;
@@ -331,7 +314,7 @@ $text-md: $text-base-unit;
 
   &:hover,
   &.active {
-    border-color: $primary-light;
+   background-color: $primary-color-5;
   }
 
   &.disabled {
@@ -346,7 +329,7 @@ $text-md: $text-base-unit;
 
 .Table__group {
   margin-top: var(--group-margin);
-  background-color: #fff;
+  background-color: $cuddle-10;
   border-top: 1px solid $border-color;
 
   .Table__cell:last-of-type {
