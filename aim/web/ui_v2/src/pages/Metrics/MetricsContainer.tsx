@@ -164,7 +164,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       requestIsPending={metricsData?.requestIsPending}
       resizeMode={metricsData?.config?.table.resizeMode as ResizeModeEnum}
-      //methods
+      // methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
       onZoomChange={metricAppModel.onZoomChange}
