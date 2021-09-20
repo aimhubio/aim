@@ -130,7 +130,8 @@ cpdef inline decode_path(bytes buffer):
         `['foo', 19, 'α-γ']`
     """
     path = []
-    for item in split_path(buffer, len(buffer)):
+    cdef vector[pair[int64, int64]] segments = split_path(buffer, len(buffer))
+    for item in segments:
         if item.second == 0:
             # In this case the pair only encodes a single integer
             path.append(item.first)
