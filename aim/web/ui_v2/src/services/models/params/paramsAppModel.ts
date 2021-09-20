@@ -1309,9 +1309,14 @@ function onNotificationAdd(notification: INotification) {
 }
 
 function onResetConfigData(): void {
-  model.setState({
-    config: getConfig(),
-  });
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    configData.grouping = {
+      ...getConfig().grouping,
+    };
+    configData.chart = { ...getConfig().chart };
+    updateModelData(configData);
+  }
 }
 
 function updateGroupingStateUrl(): void {
