@@ -15,7 +15,7 @@ export default function TableSortIcons(props: Props) {
     </span>
   ) : (
     <span className='TableColumn__SortIcon' onClick={props.onSort}>
-      {<Icon name='back-up' color='#E6E6E6' />}
+      {<Icon name='back-up' color='#bcbcbc' />}
     </span>
   );
 }
