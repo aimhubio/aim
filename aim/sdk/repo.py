@@ -66,7 +66,7 @@ class Repo:
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[ContainerConfig, ContainerView] = WeakValueDictionary()
+        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self.structured_db = DB.from_path(self.path)
         if init:
@@ -192,10 +192,10 @@ class Repo:
         if container is None:
             path = os.path.join(self.path, name)
             if from_union:
-                container = UnionContainer(path, read_only=read_only)
+                container = RocksUnionContainer(path, read_only=read_only)
                 self.persistent_pool[container_config] = container
             else:
-                container = Container(path, read_only=read_only)
+                container = RocksContainer(path, read_only=read_only)
             self.container_pool[container_config] = container
 
         return container

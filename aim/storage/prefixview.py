@@ -1,25 +1,20 @@
-import aimrocks
-
-from aim.storage.containerview import ContainerView
+from aim.storage.container import Container
 from aim.storage.treeview import TreeView
 
 from typing import Iterator, Tuple
 
 
-class PrefixView(ContainerView):
+class PrefixView(Container):
     """
     View to Container given by key prefix
     """
-
-    # TODO implement queue
 
     def __init__(
         self,
         *,
         prefix: bytes = b'',
-        container: ContainerView,
-        # TODO writable_container: ContainerView = None,
-        read_only: bool = None  # TODO container may be in write mode but we may view it in read-only
+        container: Container,
+        read_only: bool = None
     ) -> None:
         self.prefix = prefix
         self.container = container
@@ -32,7 +27,7 @@ class PrefixView(ContainerView):
         except Exception:
             pass
 
-    def finalize(self, *, index: ContainerView):
+    def finalize(self, *, index: Container):
         prefix = self.absolute_path()
         # Shadowing
         index.batch_delete(prefix)
@@ -42,14 +37,14 @@ class PrefixView(ContainerView):
         self,
         *args: bytes
     ) -> bytes:
-        return ContainerView.path_join(prefix=self.prefix, *args)
+        return Container.path_join(prefix=self.prefix, *args)
 
     def batch_set(
         self,
         key: bytes,
         value: bytes,
         *,
-        store_batch: aimrocks.WriteBatch = None
+        store_batch = None
     ) -> None:
         path = self.absolute_path(key)
         self.container.batch_set(path, value, store_batch=store_batch)
@@ -79,7 +74,7 @@ class PrefixView(ContainerView):
     def batch_delete(
         self,
         key: bytes,
-        store_batch: aimrocks.WriteBatch = None
+        store_batch = None
     ):
         path = self.absolute_path(key)
         return self.container.batch_delete(path, store_batch=store_batch)
@@ -187,7 +182,7 @@ class PrefixView(ContainerView):
     def view(
         self,
         prefix: bytes = b''
-    ) -> ContainerView:
+    ) -> Container:
         # TODO *args instead?
         return self.container.view(self.prefix + prefix)
 
