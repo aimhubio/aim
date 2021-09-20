@@ -195,7 +195,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
       onExportTableData={metricAppModel.onExportTableData}
       onRowHeightChange={metricAppModel.onRowHeightChange}
-      onSortFieldsChange={metricAppModel.onSortFieldsChange}
+      onSortChange={metricAppModel.onSortChange}
+      onSortReset={metricAppModel.onSortReset}
       onMetricVisibilityChange={metricAppModel.onMetricVisibilityChange}
       onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}

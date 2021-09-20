@@ -62,6 +62,7 @@ const Table = React.forwardRef(function Table(
     showRowClickBehaviour = true,
     showResizeContainerActionBar = true,
     resizeMode,
+    onSortReset,
     ...props
   }: ITableProps,
   ref,
@@ -567,6 +568,7 @@ const Table = React.forwardRef(function Table(
                         sortOptions={sortOptions}
                         sortFields={sortFields}
                         onSort={onSort}
+                        onReset={onSortReset}
                       />
                     }
                   />

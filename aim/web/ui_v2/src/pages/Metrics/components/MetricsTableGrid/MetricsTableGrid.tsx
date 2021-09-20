@@ -3,7 +3,8 @@ import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
-
+import Icon from 'components/Icon/Icon';
+import TableSortIcons from 'components/Table/TableSortIcons';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   AggregationAreaMethods,
@@ -12,7 +13,7 @@ import {
 import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { PathEnum } from 'config/enums/routesEnum';
-import Icon from 'components/Icon/Icon';
+import { SortField } from 'types/services/models/metrics/metricsAppModel';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -23,6 +24,8 @@ function getMetricsTableColumns(
     area: AggregationAreaMethods;
     line: AggregationLineMethods;
   },
+  sortFields?: any[],
+  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -130,16 +133,33 @@ function getMetricsTableColumns(
       pin: 'right',
     },
   ].concat(
-    paramColumns.map((param) => ({
-      key: param,
-      content: <span>{param}</span>,
-      topHeader: 'Params',
-      pin: order?.left?.includes(param)
-        ? 'left'
-        : order?.right?.includes(param)
-        ? 'right'
-        : null,
-    })),
+    paramColumns.map((param) => {
+      const sortItem: SortField = sortFields?.find(
+        (value) => value[0] === `run.params.${param}`,
+      );
+
+      return {
+        key: param,
+        content: (
+          <span>
+            {param}
+            {onSort && (
+              <TableSortIcons
+                onSort={() => onSort(`run.params.${param}`)}
+                sortFields={sortFields}
+                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+              />
+            )}
+          </span>
+        ),
+        topHeader: 'Params',
+        pin: order?.left?.includes(param)
+          ? 'left'
+          : order?.right?.includes(param)
+          ? 'right'
+          : null,
+      };
+    }),
   );
 
   if (groupFields) {

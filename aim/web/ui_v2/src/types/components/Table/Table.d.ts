@@ -13,13 +13,12 @@ export interface ITableProps {
   onManageColumns?: (order: any) => void;
   onColumnsVisibilityChange?: (hiddenColumns: string[]) => void;
   onTableDiffShow?: () => void;
-  onSort?: (sortFields: []) => void;
+  onSort?: (field: string, value: 'asc' | 'desc' | 'none') => void;
+  onSortReset?: () => void;
   onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange?: (height: RowHeightSize) => void;
   onTableResizeModeChange?: IMetricProps['onTableResizeModeChange'];
-  data: any[];
-  columns: any[];
   navBarItems?: {
     name: string;
     callBack: () => void;
