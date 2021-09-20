@@ -184,10 +184,6 @@ function Table(props) {
     props.updateColumns(columnsOrderClone);
   }
 
-  function sortByColumn(colKey, order) {
-    props.setSortFields([...props.sortFields, [colKey, order]]);
-  }
-
   return (
     <div
       className={classNames({
@@ -249,7 +245,7 @@ function Table(props) {
                     (f) => f[0] === col.sortableKey,
                   ) === -1
                 }
-                sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+                sortByColumn={(order) => props.onSort(col.sortableKey, order)}
                 onRowHover={props.onRowHover}
                 onRowClick={props.onRowClick}
               />
@@ -297,7 +293,7 @@ function Table(props) {
                 props.sortFields.findIndex((f) => f[0] === col.sortableKey) ===
                   -1
               }
-              sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+              sortByColumn={(order) => props.onSort(col.sortableKey, order)}
               onRowHover={props.onRowHover}
               onRowClick={props.onRowClick}
             />
@@ -358,7 +354,7 @@ function Table(props) {
                     (f) => f[0] === col.sortableKey,
                   ) === -1
                 }
-                sortByColumn={(order) => sortByColumn(col.sortableKey, order)}
+                sortByColumn={(order) => props.onSort(col.sortableKey, order)}
                 onRowHover={props.onRowHover}
                 onRowClick={props.onRowClick}
               />

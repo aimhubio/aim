@@ -168,6 +168,7 @@ function Metrics(
             >
               {!isEmpty(props.tableData) ? (
                 <Table
+                  // deletable
                   custom
                   ref={props.tableRef}
                   data={props.tableData}
@@ -189,7 +190,8 @@ function Metrics(
                   hiddenColumns={props.hiddenColumns}
                   resizeMode={props.resizeMode}
                   // Table actions
-                  onSort={props.onSortFieldsChange}
+                  onSort={props.onSortChange}
+                  onSortReset={props.onSortReset}
                   onExport={props.onExportTableData}
                   onManageColumns={props.onColumnsOrderChange}
                   onColumnsVisibilityChange={props.onColumnsVisibilityChange}

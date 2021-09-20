@@ -59,6 +59,7 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
+  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
@@ -1336,6 +1337,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     configData.table.hiddenColumns!,
     configData?.chart?.aggregationConfig.methods,
     configData.table.sortFields,
+    onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -1778,6 +1780,7 @@ function setModelData(
   rawData: IRun<IMetricTrace>[],
   configData: IMetricAppConfig,
 ) {
+  const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
   if (configData) {
     setAggregationEnabled(configData);
@@ -1803,6 +1806,8 @@ function setModelData(
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
       configData?.chart?.aggregationConfig.methods,
+      sortFields,
+      onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -1891,25 +1896,6 @@ function onRowHeightChange(height: RowHeightSize) {
       config,
     });
     setItem('metricsTable', encode(table));
-  }
-}
-
-function onSortFieldsChange(sortFields: [string, any][]) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      sortFields: sortFields,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('metricsTable', encode(table));
-    updateModelData(configUpdate);
   }
 }
 
@@ -2055,6 +2041,79 @@ function onTableResizeEnd(tableHeight: string) {
   }
 }
 
+// internal function to update config.table.sortFields and cache data
+function updateSortFields(sortFields: SortField[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      sortFields,
+    };
+    const configUpdate = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config: configUpdate,
+    });
+
+    setItem('metricsTable', encode(table));
+    updateModelData(configUpdate);
+  }
+}
+
+// set empty array to config.table.sortFields
+function onSortReset() {
+  updateSortFields([]);
+}
+
+/**
+ * function onSortChange has 3 major functionalities
+ *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)
+ *    2. if value param passed 'asc' or 'desc', the function will replace the sort option of the field in sortFields
+ *    3. if value param passed 'none', the function will delete the field from sortFields
+ * @param {String} field  - the name of the field (i.e params.dataset.preproc)
+ * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
+ */
+function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const sortFields = configData?.table.sortFields || [];
+
+  const existField = sortFields?.find((d: SortField) => d[0] === field);
+  let newFields: SortField[] = [];
+
+  if (value && existField) {
+    if (value === 'none') {
+      // delete
+      newFields = sortFields?.filter(
+        ([name]: SortField) => name !== existField[0],
+      );
+    } else {
+      newFields = sortFields.map(([name, v]: SortField) =>
+        name === existField[0] ? [name, value] : [name, v],
+      );
+    }
+  } else {
+    if (existField) {
+      if (existField[1] === 'asc') {
+        // replace to desc
+        newFields = sortFields?.map(([name, value]: SortField) => {
+          return name === existField[0] ? [name, 'desc'] : [name, value];
+        });
+      } else {
+        // delete field
+        newFields = sortFields?.filter(
+          ([name]: SortField) => name !== existField[0],
+        );
+      }
+    } else {
+      // add field
+      newFields = [...sortFields, [field, 'asc']];
+    }
+  }
+  updateSortFields(newFields);
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -2095,7 +2154,6 @@ const metricAppModel = {
   onChangeTooltip,
   onExportTableData,
   onRowHeightChange,
-  onSortFieldsChange,
   onMetricVisibilityChange,
   onColumnsVisibilityChange,
   onTableDiffShow,
@@ -2103,6 +2161,8 @@ const metricAppModel = {
   getQueryStringFromSelect,
   onTableResizeModeChange,
   onTableResizeEnd,
+  onSortReset,
+  onSortChange,
 };
 
 export default metricAppModel;

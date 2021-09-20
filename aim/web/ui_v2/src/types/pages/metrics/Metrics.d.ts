@@ -101,7 +101,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;
-  onSortFieldsChange: (fields: []) => void;
+  onSortReset: () => void;
+  onSortChange?: (field: string, value?: 'asc' | 'desc' | 'none') => void;
   onMetricVisibilityChange: (metricKeys: string[]) => void;
   onColumnsOrderChange: (order: any) => void;
   onColumnsVisibilityChange: (hiddenColumns: string[]) => void;

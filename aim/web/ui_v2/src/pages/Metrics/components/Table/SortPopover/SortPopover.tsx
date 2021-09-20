@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Checkbox, TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete, AutocompleteChangeDetails } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
@@ -17,13 +17,23 @@ function SortPopover({
   sortOptions,
   sortFields,
   onSort,
+  onReset,
 }: ISortPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  function onChange(e: object, values: IGroupingSelectOption[]): void {
-    onSort(values.map((v) => [v.value, 'asc']));
+  function onChange(
+    e: object,
+    values: IGroupingSelectOption[],
+    d: unknown,
+    option?: AutocompleteChangeDetails<IGroupingSelectOption>,
+  ) {
+    if (option) {
+      onSort(option?.option.value, 'none');
+    } else {
+      // if there is a 1 selected option, the option param is null  [material]
+      onSort(sortFields[0][0], 'none');
+    }
   }
-
   function handleDelete(field: string): void {
-    onSort(sortFields.filter((f) => f[0] !== field));
+    onSort(field, 'none');
   }
 
   const selectOptions: IGroupingSelectOption[] = React.useMemo(() => {
@@ -32,10 +42,6 @@ function SortPopover({
     );
     return filtered;
   }, [sortOptions]);
-
-  const handleResetSorting = React.useCallback(() => {
-    onSort([]);
-  }, [sortFields]);
 
   return (
     <div className='SortPopover__container'>
@@ -94,13 +100,9 @@ function SortPopover({
             </div>
             <ToggleButton
               className='TooltipContentPopover__toggle__button'
-              onChange={(value) =>
-                onSort(
-                  sortFields.map((f) =>
-                    f[0] === field[0] ? [f[0], value as any] : f,
-                  ),
-                )
-              }
+              onChange={(value) => {
+                onSort && onSort(field[0], value);
+              }}
               leftLabel={'Asc'}
               rightLabel={'Desc'}
               leftValue={'asc'}
@@ -112,7 +114,7 @@ function SortPopover({
         ))}
       </div>
       <div className='SortPopover__reset__sorting'>
-        <Button onClick={handleResetSorting} variant='outlined' size='small'>
+        <Button onClick={onReset} variant='outlined' size='small'>
           Reset Sorting
         </Button>
       </div>
@@ -120,4 +122,4 @@ function SortPopover({
   );
 }
 
-export default SortPopover;
+export default React.memo<ISortPopoverProps>(SortPopover);
