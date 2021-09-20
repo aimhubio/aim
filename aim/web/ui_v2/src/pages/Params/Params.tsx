@@ -71,6 +71,7 @@ const Params = ({
   onNotificationDelete,
   onColumnsVisibilityChange,
   onTableDiffShow,
+  onSortReset,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -200,6 +201,7 @@ const Params = ({
                   hiddenColumns={hiddenColumns}
                   resizeMode={resizeMode}
                   // Table actions
+                  onSortReset={onSortReset}
                   onSort={onSortFieldsChange}
                   onExport={onExportTableData}
                   onColumnsVisibilityChange={onColumnsVisibilityChange}

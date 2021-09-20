@@ -128,12 +128,13 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableRowClick={paramsAppModel.onTableRowClick}
       onExportTableData={paramsAppModel.onExportTableData}
       onRowHeightChange={paramsAppModel.onRowHeightChange}
-      onSortFieldsChange={paramsAppModel.onSortFieldsChange}
       onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
       onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}
       onTableDiffShow={paramsAppModel.onTableDiffShow}
+      onSortReset={paramsAppModel.onSortReset}
+      onSortFieldsChange={paramsAppModel.onSortChange}
     />
   );
 }
