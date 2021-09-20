@@ -33,6 +33,9 @@ function Cell({
           (typeof item === 'object' && item?.props?.onClick)
             ? 'pointer'
             : 'inherit',
+        ...(metadata?.color && {
+          boxShadow: `inset 3px 0 0 0 ${metadata.color}`,
+        }),
         ...(typeof item === 'object' &&
           item?.hasOwnProperty('style') &&
           item?.style),
@@ -43,7 +46,6 @@ function Cell({
       }
       onClick={item?.props?.onClick ? item.props.onClick : onRowClick}
     >
-      {metadata && <div className='Table__cell__rowMeta'>{metadata}</div>}
       {isConfigColumn || placeholder ? (
         ''
       ) : (
