@@ -100,6 +100,6 @@ def remove_test_data():
 
     repo_path_base = repo.path
     shutil.rmtree(os.path.join(repo_path_base, 'meta'), ignore_errors=True)
-    shutil.rmtree(os.path.join(repo_path_base, 'trcs'), ignore_errors=True)
+    shutil.rmtree(os.path.join(repo_path_base, 'seqs'), ignore_errors=True)
     shutil.rmtree(os.path.join(repo_path_base, 'locks'), ignore_errors=True)
     shutil.rmtree(os.path.join(repo_path_base, 'progress'), ignore_errors=True)

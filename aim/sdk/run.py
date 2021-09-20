@@ -213,8 +213,8 @@ class Run(StructuredRunMixin):
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
-            'trcs', hashname, read_only=read_only
-        ).tree().view('trcs').view('chunks').view(hashname)
+            'seqs', hashname, read_only=read_only
+        ).tree().view('seqs').view('chunks').view(hashname)
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
