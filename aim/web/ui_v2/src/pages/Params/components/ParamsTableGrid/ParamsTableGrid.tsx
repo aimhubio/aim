@@ -79,7 +79,7 @@ function getParamsTableColumns(
   if (groupFields) {
     columns.push({
       key: '#',
-      content: '#',
+      content: <span style={{ textAlign: 'right' }}>#</span>,
       topHeader: 'Grouping',
       pin: 'left',
     });
