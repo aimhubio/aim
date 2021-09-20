@@ -33,7 +33,7 @@ runs_router = APIRouter()
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
                  responses={403: {'model': QuerySyntaxErrorOut}})
-async def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
+def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
     # Get project
     project = Project()
     if not project.exists():
@@ -56,7 +56,7 @@ async def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset
 
 
 @runs_router.post('/search/metric/align/', response_model=RunMetricCustomAlignApiOut)
-async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
+def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     # Get project
     project = Project()
     if not project.exists():
@@ -71,7 +71,7 @@ async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut,
                  responses={403: {'model': QuerySyntaxErrorOut}})
-async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
+def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:
