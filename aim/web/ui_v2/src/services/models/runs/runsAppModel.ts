@@ -51,6 +51,7 @@ import {
   runsTableRowRenderer,
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 import * as analytics from 'services/analytics';
+import { RowHeightEnum } from 'config/enums/tableEnums';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -444,7 +445,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[RunsExplorer][Table] Export data');
+  analytics.trackEvent('[RunsExplorer][Table] Export to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -911,7 +912,9 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('runsTable', encode(table));
   }
-  analytics.trackEvent('[RunsExplorer][Table] Row height change');
+  analytics.trackEvent(
+    `[RunsExplorer][Table] Set table row height to ${RowHeightEnum[height]}`,
+  );
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {

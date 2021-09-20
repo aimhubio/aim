@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash-es';
+import _, { isEmpty, isNil } from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 
@@ -80,7 +80,7 @@ import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 
 const model = createModel<Partial<IMetricAppModelState>>({
@@ -397,7 +397,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent('[MetricsExplorer] Create bookmark');
+  analytics.trackEvent('[MetricsExplorer] Create bookmark state');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -416,7 +416,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[MetricsExplorer] Update bookmark');
+  analytics.trackEvent('[MetricsExplorer] Update bookmark state');
 }
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
@@ -1243,7 +1243,9 @@ function onHighlightModeChange(mode: HighlightEnum): void {
       },
     });
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Highlight mode change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set highlight mode to ${HighlightEnum[mode]}`,
+  );
 }
 
 function onZoomChange(zoom: Partial<IChartZoom>): void {
@@ -1262,7 +1264,13 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
       },
     });
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Zoom change');
+  if (!isNil(zoom.mode)) {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set zoom mode to ${
+        zoom.mode === 0 ? 'single' : 'multiple'
+      }`,
+    );
+  }
 }
 
 function onAggregationConfigChange(
@@ -1279,7 +1287,26 @@ function onAggregationConfigChange(
     };
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Aggregation config change');
+  if (aggregationConfig.methods) {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set aggregation area to ${
+        AggregationAreaMethods[aggregationConfig.methods.area]
+      }`,
+    );
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set aggregation line to ${
+        AggregationAreaMethods[aggregationConfig.methods.line]
+      }`,
+    );
+  } else {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] ${
+        aggregationConfig.isApplied
+          ? 'Aggregate metrics'
+          : 'Deaggregate metrics'
+      }`,
+    );
+  }
 }
 
 function onSmoothingChange(props: IOnSmoothingChange) {
@@ -1288,7 +1315,18 @@ function onSmoothingChange(props: IOnSmoothingChange) {
     configData.chart = { ...configData.chart, ...props };
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Smoothing change');
+  if (props.curveInterpolation) {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set interpolation mode to "${
+        props.curveInterpolation === CurveEnum.Linear ? 'linear' : 'cubic'
+      }"`,
+    );
+  } else {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] algorithm ${configData?.chart.smoothingAlgorithm}`,
+      { smoothingFactor: props.smoothingFactor },
+    );
+  }
 }
 
 function onDisplayOutliersChange(): void {
@@ -1297,7 +1335,11 @@ function onDisplayOutliersChange(): void {
     configData.chart.displayOutliers = !configData?.chart.displayOutliers;
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Display outliers change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] ${
+      !configData?.chart.displayOutliers ? 'Display' : 'Hide'
+    } outliers`,
+  );
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
@@ -1306,7 +1348,12 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
     configData.chart.axesScaleType = params;
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Axes scale type change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] set X axis scale type ${params.xAxis}`,
+  );
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] set Y axis scale type ${params.yAxis}`,
+  );
 }
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
@@ -1315,7 +1362,7 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   if (!isAppliedGrouping) {
     configData.chart.aggregationConfig.isApplied = false;
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Aggregation enable');
+  analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
 }
 
 function resetChartZoom(configData: IMetricAppConfig): void {
@@ -1327,7 +1374,7 @@ function resetChartZoom(configData: IMetricAppConfig): void {
       history: [],
     },
   };
-  analytics.trackEvent('[MetricsExplorer][Chart] Zoom reset');
+  analytics.trackEvent('[MetricsExplorer][Chart] Reset zoom');
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -1376,7 +1423,7 @@ function onGroupingSelectChange({
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Select change');
+  analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
 }
 
 function onGroupingModeChange({
@@ -1395,7 +1442,11 @@ function onGroupingModeChange({
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Mode change');
+  analytics.trackEvent(
+    `[MetricsExplorer] ${
+      value ? 'Disable' : 'Enable'
+    } grouping by ${groupName} reverse mode`,
+  );
 }
 
 function onGroupingPaletteChange(index: number): void {
@@ -1408,7 +1459,11 @@ function onGroupingPaletteChange(index: number): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Palette change');
+  analytics.trackEvent(
+    `[MetricsExplorer] Set color palette to ${
+      index === 0 ? '8 distinct colors' : '24 colors'
+    }`,
+  );
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -1427,7 +1482,7 @@ function onGroupingReset(groupName: GroupNameType) {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Reset');
+  analytics.trackEvent('[MetricsExplorer] Reset grouping');
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
@@ -1443,7 +1498,6 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Apply change');
 }
 
 function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
@@ -1459,7 +1513,11 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Persistence change');
+  analytics.trackEvent(
+    `[MetricsExplorer] ${
+      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
+    } ${groupName} persistence`,
+  );
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1486,7 +1544,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
     model.setState({ config: configData });
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Tooltip change');
+  analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
 
 function onActivePointChange(
@@ -1649,7 +1707,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[MetricsExplorer][Table] Export data');
+  analytics.trackEvent('[MetricsExplorer] Export to CSV');
 }
 
 function updateGroupingStateUrl(): void {
@@ -1710,7 +1768,6 @@ function onResetConfigData(): void {
     configData.chart = { ...getConfig().chart };
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Grouping] Reset config');
 }
 
 async function onAlignmentMetricChange(metric: string) {
@@ -1894,7 +1951,11 @@ function toggleSelectAdvancedMode() {
       },
     });
   }
-  analytics.trackEvent('[MetricsExplorer][SelectForm] Advanced query toggle');
+  analytics.trackEvent(
+    `[MetricsExplorer] ${
+      !configData?.select.advancedMode ? 'Show' : 'Hide'
+    } advanced query `,
+  );
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1913,7 +1974,9 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('metricsTable', encode(table));
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Row height change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] Set table row height to ${RowHeightEnum[height]}`,
+  );
 }
 
 function onSortFieldsChange(sortFields: [string, any][]) {
@@ -1933,7 +1996,11 @@ function onSortFieldsChange(sortFields: [string, any][]) {
     setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Sort fields change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
+  );
 }
 
 function onMetricVisibilityChange(metricsKeys: string[]) {
@@ -1961,7 +2028,13 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Rows visibility change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] ${
+      metricsKeys[0] === 'all'
+        ? 'Visualize all hidden metrics from table'
+        : 'Hide all metrics from table'
+    }`,
+  );
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1989,7 +2062,6 @@ function onRowVisibilityChange(metricKey: string) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Row visibility change');
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -2013,7 +2085,11 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Column visibility change');
+  if (hiddenColumns[0] === 'all') {
+    analytics.trackEvent('[MetricsExplorer][Table] Hide all table columns');
+  } else if (isEmpty(hiddenColumns)) {
+    analytics.trackEvent('[MetricsExplorer][Table] Show all table columns');
+  }
 }
 
 function onTableDiffShow() {
@@ -2041,6 +2117,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  console.log(columnsOrder);
   analytics.trackEvent('[MetricsExplorer][Table] Column order change');
 }
 
@@ -2061,7 +2138,9 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[MetricsExplorer][Table] Resize mode change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
+  );
 }
 
 function onTableResizeEnd(tableHeight: string) {
