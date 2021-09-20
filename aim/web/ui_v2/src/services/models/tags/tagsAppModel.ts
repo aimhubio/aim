@@ -2,6 +2,7 @@ import tagsService from 'services/api/tags/tagsService';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITagProps } from 'types/pages/tags/Tags';
 import createModel from '../model';
+import * as analytics from 'services/analytics';
 
 const model = createModel<any>({
   isTagsDataLoading: false,
@@ -103,6 +104,9 @@ function archiveTag(id: string, archived: boolean = false) {
           ? 'Tag successfully archived'
           : 'Tag successfully unarchive',
       });
+      analytics.trackEvent(
+        archived ? '[Tags] Archive Tag' : '[Tags] Unarchive Tag',
+      );
     });
 }
 
@@ -124,6 +128,7 @@ function createTag(body: object) {
           message: res.detail,
         });
       }
+      analytics.trackEvent('[Tags] Create Tag');
       return res;
     });
 }
@@ -146,6 +151,7 @@ function updateTag(body: object, id: string) {
           message: res.detail,
         });
       }
+      analytics.trackEvent('[Tags] Update Tag');
       return res;
     });
 }
@@ -160,6 +166,7 @@ function deleteTag(id: string) {
         severity: 'success',
         message: 'Tag successfully deleted',
       });
+      analytics.trackEvent('[Tags] Delete Tag');
     });
 }
 

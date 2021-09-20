@@ -34,6 +34,7 @@ import {
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import * as analytics from 'services/analytics';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -73,12 +74,14 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
     if (route.params.appId) {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call();
+      appRequestRef.call().then(() => metricAppModel.getMetricsData().call());
+    } else {
+      metricAppModel.setDefaultAppConfigData();
     }
-    metricAppModel.setDefaultAppConfigData();
 
     const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
+    analytics.pageView('[MetricsExplorer]');
     return () => {
       metricsRequestRef.abort();
       if (appRequestRef) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash-es';
+import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
@@ -59,8 +59,8 @@ import {
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-
+import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import * as analytics from 'services/analytics';
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -746,6 +746,11 @@ function onColorIndicatorChange(): void {
     chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
     updateModelData({ ...configData, chart });
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Chart] ${
+      configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
+    } color indicator`,
+  );
 }
 
 function onCurveInterpolationChange(): void {
@@ -758,6 +763,13 @@ function onCurveInterpolationChange(): void {
         : CurveEnum.Linear;
     updateModelData({ ...configData, chart });
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Chart] Set interpolation mode to "${
+      configData.chart.curveInterpolation === CurveEnum.Linear
+        ? 'cubic'
+        : 'linear'
+    }"`,
+  );
 }
 
 function onActivePointChange(
@@ -878,6 +890,7 @@ function onGroupingSelectChange({
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData);
   }
+  analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
 }
 
 function onGroupingModeChange({
@@ -892,6 +905,11 @@ function onGroupingModeChange({
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer] ${
+      value ? 'Disable' : 'Enable'
+    } grouping by ${groupName} reverse mode`,
+  );
 }
 
 function onGroupingPaletteChange(index: number): void {
@@ -903,6 +921,11 @@ function onGroupingPaletteChange(index: number): void {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer] Set color palette to "${
+      index === 0 ? '8 distinct colors' : '24 colors'
+    }"`,
+  );
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -920,6 +943,7 @@ function onGroupingReset(groupName: GroupNameType) {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent('[ParamsExplorer] Reset grouping');
 }
 
 function updateModelData(configData: IParamsAppConfig): void {
@@ -1155,6 +1179,11 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer] ${
+      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
+    } ${groupName} persistence`,
+  );
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
@@ -1185,6 +1214,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         });
     }
   }
+  analytics.trackEvent('[ParamsExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -1203,6 +1233,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
+  analytics.trackEvent('[ParamsExplorer] Update bookmark');
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1229,6 +1260,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
     model.setState({ config: configData });
   }
+  analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }
 
 function getFilteredRow(
@@ -1310,6 +1342,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -1328,9 +1361,14 @@ function onNotificationAdd(notification: INotification) {
 }
 
 function onResetConfigData(): void {
-  model.setState({
-    config: getConfig(),
-  });
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData) {
+    configData.grouping = {
+      ...getConfig().grouping,
+    };
+    configData.chart = { ...getConfig().chart };
+    updateModelData(configData);
+  }
 }
 
 function updateGroupingStateUrl(): void {
@@ -1383,6 +1421,11 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('paramsTable', encode(table));
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] Set table row height to "${RowHeightEnum[
+      height
+    ].toLowerCase()}"`,
+  );
 }
 
 function onSortFieldsChange(sortFields: [string, any][]) {
@@ -1400,6 +1443,11 @@ function onSortFieldsChange(sortFields: [string, any][]) {
     });
     updateModelData(configUpdate);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
+  );
 }
 
 function onParamVisibilityChange(metricsKeys: string[]) {
@@ -1427,6 +1475,13 @@ function onParamVisibilityChange(metricsKeys: string[]) {
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] ${
+      metricsKeys[0] === 'all'
+        ? 'Visualize all hidden metrics from table'
+        : 'Hide all metrics from table'
+    }`,
+  );
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -1450,6 +1505,11 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
+  if (hiddenColumns[0] === 'all') {
+    analytics.trackEvent('[ParamsExplorer][Table] Hide all table columns');
+  } else if (isEmpty(hiddenColumns)) {
+    analytics.trackEvent('[ParamsExplorer][Table] Show all table columns');
+  }
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
@@ -1468,6 +1528,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     });
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
+  }
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
   }
 }
 
@@ -1488,6 +1555,9 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     setItem('paramsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] Set table view mode to "${mode}"`,
+  );
 }
 
 function onTableDiffShow() {
@@ -1495,6 +1565,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
+  analytics.trackEvent('[ParamsExplorer][Table] Show table columns diff');
 }
 
 function onRowVisibilityChange(metricKey: string) {
