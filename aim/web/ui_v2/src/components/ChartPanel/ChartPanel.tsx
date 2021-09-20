@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Grid, PopoverPosition, GridSize, Typography } from '@material-ui/core';
 import _ from 'lodash-es';
 
@@ -30,6 +30,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
+  const popoverContentRef = useRef<any>({});
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
@@ -166,6 +167,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             </Grid>
             <ChartPopover
               containerRef={containerRef}
+              popoverContentRef={popoverContentRef}
               popoverPosition={popoverPosition}
               open={
                 props.resizeMode !== ResizeModeEnum.MaxHeight &&
@@ -176,6 +178,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               }
             >
               <PopoverContent
+                popoverContentRef={popoverContentRef}
                 chartType={props.chartType}
                 tooltipContent={props.tooltip.content}
                 focusedState={props.focusedState}

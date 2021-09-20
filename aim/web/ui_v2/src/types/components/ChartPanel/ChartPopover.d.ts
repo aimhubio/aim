@@ -8,4 +8,5 @@ export interface IChartPopover {
   className?: string;
   id?: string;
   containerRef?: React.RefObject<HTMLDivElement>;
+  popoverContentRef?: React.RefObject<HTMLDivElement>;
 }
