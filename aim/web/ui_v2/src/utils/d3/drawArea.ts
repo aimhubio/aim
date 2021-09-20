@@ -44,13 +44,13 @@ function drawArea(props: IDrawAreaProps): void {
     height: height - margin.top - margin.bottom,
   };
 
-  visArea.style('width', '100%').style('height', '100%');
+  visArea.style('width', `${width}px`).style('height', `${height}px`);
 
   svgNodeRef.current = visArea
     .append('svg')
     .attr('id', 'svg-area')
-    .attr('width', '100%')
-    .attr('height', '100%')
+    .attr('width', `${width}px`)
+    .attr('height', `${height}px`)
     .attr('pointer-events', 'all')
     .attr('xmlns', 'http://www.w3.org/2000/svg');
 

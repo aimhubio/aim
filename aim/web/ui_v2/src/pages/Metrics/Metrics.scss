@@ -30,7 +30,7 @@
   }
 
   .Metrics__chart__container {
-    min-height: 18.75rem;
+    min-height: 11.25rem;
     flex: 0.5 1 0;
     &__hide {
       display: none;
@@ -39,7 +39,7 @@
 
   .Metrics__table__container {
     flex: 0.5 1 0;
-    min-height: 13rem;
+    min-height: 11rem;
     &__hide {
       display: none;
     }
