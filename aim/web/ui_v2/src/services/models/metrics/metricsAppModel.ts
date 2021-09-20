@@ -1205,8 +1205,10 @@ function setTooltipData(
 
   for (let metricsCollection of processedData) {
     const groupConfig = getGroupConfig(metricsCollection);
+
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
+        runHash: metric.run.hash,
         metricName: metric.metric_name,
         metricContext: metric.context,
         groupConfig,
