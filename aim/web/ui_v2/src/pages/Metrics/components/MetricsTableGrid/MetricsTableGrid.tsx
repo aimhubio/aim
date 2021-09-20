@@ -13,7 +13,7 @@ import {
 import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { PathEnum } from 'config/enums/routesEnum';
-import { SortField } from '../../../../types/services/models/metrics/metricsAppModel';
+import { SortField } from 'types/services/models/metrics/metricsAppModel';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -165,7 +165,7 @@ function getMetricsTableColumns(
   if (groupFields) {
     columns.push({
       key: '#',
-      content: '#',
+      content: <span style={{ textAlign: 'right' }}>#</span>,
       topHeader: 'Grouping',
       pin: 'left',
     });
@@ -224,11 +224,16 @@ function metricsTableRowRenderer(
           content:
             rowData.context.length > 1 ? (
               <TagLabel
+                size='small'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
-              <TagLabel color={COLORS[0][0]} label={rowData.context} />
+              <TagLabel
+                size='small'
+                color={COLORS[0][0]}
+                label={rowData.context}
+              />
             ),
         };
       } else if (col === 'value') {
@@ -259,6 +264,7 @@ function metricsTableRowRenderer(
         row[col] = {
           content: (
             <TagLabel
+              size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />
@@ -284,7 +290,7 @@ function metricsTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <TagLabel key={item} color={COLORS[0][0]} label={item} />
+          <TagLabel key={item} size='small' color={COLORS[0][0]} label={item} />
         )),
       },
       value: rowData.value,
@@ -300,6 +306,7 @@ function metricsTableRowRenderer(
             onClick={actions?.toggleVisibility}
             role='button'
             aria-pressed='false'
+            className='Table__action__icon'
           >
             <Icon
               name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}

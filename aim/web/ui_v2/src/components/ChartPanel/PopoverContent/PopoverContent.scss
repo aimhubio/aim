@@ -1,5 +1,46 @@
+@use "src/styles/abstracts" as *;
+
 .PopoverContent__container {
   position: relative;
   overflow: auto;
   max-height: inherit;
+  font-size: $text-sm;
+  line-height: 15px;
+  color: tint($pico, 20);
+
+  .PopoverContent {
+    &__value {
+      margin-top: 5px;
+    }
+
+    &__runDetails {
+      display: flex;
+      align-items: center;
+
+      .icon-link {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+      }
+    }
+
+    &__divider {
+      background: tint($primary-color, 85);
+    }
+
+    &__subtitle1 {
+      color: tint($pico, 50);
+      text-transform: uppercase;
+    }
+
+    &__subtitle2 {
+      font-family: 'Inter SemiBold', sans-serif;
+      text-transform: capitalize;
+      color: $text-color;
+      margin-top: 8px;
+    }
+  }
 }

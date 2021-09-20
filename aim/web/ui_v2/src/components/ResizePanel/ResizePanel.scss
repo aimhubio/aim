@@ -6,9 +6,9 @@
   display: flex;
   align-items: center;
   height: 0.5rem;
-  border-top: 0.125rem solid tint($primary-color, 90);
-  border-bottom: 0.125rem solid tint($primary-color, 90);
-  background-color: tint($primary-color, 90);
+  border-top: 0.125rem solid $primary-color-10;
+  border-bottom: 0.125rem solid $primary-color-10;
+  background-color: $primary-color-5;
   transition: all 0.15s ease-out;
   transition-delay: 0.3s;
   i {
