@@ -25,6 +25,7 @@ function PopoverContent({
   focusedState,
   chartType,
   alignmentConfig,
+  popoverContentRef,
 }: IPopoverContentProps) {
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -65,6 +66,7 @@ function PopoverContent({
   const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
   return (
     <Paper
+      ref={popoverContentRef}
       className='PopoverContent__container'
       style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
     >
