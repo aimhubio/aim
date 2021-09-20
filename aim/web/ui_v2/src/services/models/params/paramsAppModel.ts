@@ -1633,6 +1633,11 @@ function updateSortFields(sortFields: SortField[]) {
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
+  );
 }
 
 // set empty array to config.table.sortFields
