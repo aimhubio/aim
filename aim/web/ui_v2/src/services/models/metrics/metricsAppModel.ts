@@ -605,7 +605,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
         config: null,
         color: null,
         dasharray: null,
-        chartIndex: 0,
+        chartIndex: -1,
         data: data,
       },
     ]);
@@ -633,7 +633,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
         config: groupValue,
         color: null,
         dasharray: null,
-        chartIndex: 0,
+        chartIndex: -1,
         data: [data[i]],
       };
     }
@@ -1003,6 +1003,9 @@ function getDataAsTableRows(
       const groupHeaderRow = {
         meta: {
           chartIndex: metricsCollection.chartIndex + 1,
+          color: metricsCollection.color,
+          dasharray: metricsCollection.dasharray,
+          itemsCount: metricsCollection.data.length,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1039,6 +1042,9 @@ function getDataAsTableRows(
           : getClosestValue(metric.data.xValues as number[], xValue as number)
               .index;
       const rowValues: IMetricTableRowData = {
+        rowMeta: {
+          color: metricsCollection.color ?? metric.color,
+        },
         key: metric.key,
         runHash: metric.run.hash,
         isHidden: metric.isHidden,
