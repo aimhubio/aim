@@ -32,7 +32,7 @@ runs_router = APIRouter()
 
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
-                 responses={403: {'model': QuerySyntaxErrorOut}})
+                 responses={400: {'model': QuerySyntaxErrorOut}})
 def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
     # Get project
     project = Project()
@@ -43,7 +43,7 @@ def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Opti
     try:
         syntax_error_check(query)
     except SyntaxError as se:
-        raise HTTPException(status_code=403, detail={
+        raise HTTPException(status_code=400, detail={
             "name": "SyntaxError",
             "statement": se.text,
             "line": se.lineno,
@@ -70,7 +70,7 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
 
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut,
-                 responses={403: {'model': QuerySyntaxErrorOut}})
+                 responses={400: {'model': QuerySyntaxErrorOut}})
 def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
     steps_num = p
 
@@ -86,7 +86,7 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
     try:
         syntax_error_check(query)
     except SyntaxError as se:
-        raise HTTPException(status_code=403, detail={
+        raise HTTPException(status_code=400, detail={
             "name": "SyntaxError",
             "statement": se.text,
             "line": se.lineno,

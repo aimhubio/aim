@@ -51,7 +51,6 @@ const Table = React.forwardRef(function Table(
     setExcludedFields,
     alwaysVisibleColumns,
     rowHeightMode,
-    columnsOrder,
     hiddenColumns,
     updateColumns,
     columnsWidths,
@@ -63,6 +62,7 @@ const Table = React.forwardRef(function Table(
     showRowClickBehaviour = true,
     showResizeContainerActionBar = true,
     resizeMode,
+    onSortReset,
     ...props
   }: ITableProps,
   ref,
@@ -568,6 +568,7 @@ const Table = React.forwardRef(function Table(
                         sortOptions={sortOptions}
                         sortFields={sortFields}
                         onSort={onSort}
+                        onReset={onSortReset}
                       />
                     }
                   />
@@ -630,15 +631,15 @@ const Table = React.forwardRef(function Table(
                   <div style={{ width, height }}>
                     <CustomTable
                       expanded={expanded}
-                      excludedFields={excludedFields}
-                      setExcludedFields={setExcludedFields}
                       alwaysVisibleColumns={alwaysVisibleColumns}
                       rowHeightMode={rowHeight}
-                      updateColumns={() => null}
+                      updateColumns={onManageColumns}
                       columnsWidths={columnsWidths}
                       updateColumnsWidths={() => null}
                       sortFields={sortFields}
                       setSortFields={onSort}
+                      excludedFields={hiddenColumns}
+                      setExcludedFields={onColumnsVisibilityChange}
                       hiddenRows={hiddenRows}
                       data={rowData}
                       columns={columnsData.filter((col) => !col.isHidden)}

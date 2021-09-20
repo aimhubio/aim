@@ -19,6 +19,7 @@ import { ITableRef } from 'components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import paramsAppModel from '../../../services/models/params/paramsAppModel';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -89,4 +90,5 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tableRowHeight: any;
   hiddenColumns: any;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
+  onSortReset: () => void;
 }

@@ -20,12 +20,18 @@ function BookmarkForm({
   onBookmarkCreate,
 }: IBookmarkFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [state, setState] = useState<IBookmarkFormState>(initialState);
+  const [hasError, setHasError] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
 
   function onSubmit(): void {
-    if (state.name && state.description) {
+    if (state.name) {
       onBookmarkCreate(state);
+      setHasError(false);
       setState({ name: '', description: '' });
       onClose();
+    } else {
+      setHasError(true);
+      setIsTouched(true);
     }
   }
 
@@ -34,10 +40,25 @@ function BookmarkForm({
     const newState = { ...state };
     newState[id as keyof IBookmarkFormState] = value;
     setState(newState);
+    if (id === 'name') {
+      !isTouched && setIsTouched(true);
+      setHasError(!value);
+    }
+  }
+
+  function handleClose() {
+    onClose();
+    setHasError(false);
+    setIsTouched(false);
+    setState(initialState);
   }
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby='form-dialog-title'>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby='form-dialog-title'
+    >
       <DialogTitle id='form-dialog-title'>Add Bookmark</DialogTitle>
       <DialogContent>
         <TextField
@@ -50,6 +71,8 @@ function BookmarkForm({
           variant='outlined'
           margin='dense'
           fullWidth
+          error={isTouched && hasError}
+          helperText={isTouched && hasError ? 'Name is required' : ''}
         />
         <TextField
           id='description'

@@ -3,7 +3,8 @@ import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
-
+import Icon from 'components/Icon/Icon';
+import TableSortIcons from 'components/Table/TableSortIcons';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   AggregationAreaMethods,
@@ -12,7 +13,7 @@ import {
 import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { PathEnum } from 'config/enums/routesEnum';
-import Icon from 'components/Icon/Icon';
+import { SortField } from 'types/services/models/metrics/metricsAppModel';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -23,6 +24,8 @@ function getMetricsTableColumns(
     area: AggregationAreaMethods;
     line: AggregationLineMethods;
   },
+  sortFields?: any[],
+  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -130,22 +133,39 @@ function getMetricsTableColumns(
       pin: 'right',
     },
   ].concat(
-    paramColumns.map((param) => ({
-      key: param,
-      content: <span>{param}</span>,
-      topHeader: 'Params',
-      pin: order?.left?.includes(param)
-        ? 'left'
-        : order?.right?.includes(param)
-        ? 'right'
-        : null,
-    })),
+    paramColumns.map((param) => {
+      const sortItem: SortField = sortFields?.find(
+        (value) => value[0] === `run.params.${param}`,
+      );
+
+      return {
+        key: param,
+        content: (
+          <span>
+            {param}
+            {onSort && (
+              <TableSortIcons
+                onSort={() => onSort(`run.params.${param}`)}
+                sortFields={sortFields}
+                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+              />
+            )}
+          </span>
+        ),
+        topHeader: 'Params',
+        pin: order?.left?.includes(param)
+          ? 'left'
+          : order?.right?.includes(param)
+          ? 'right'
+          : null,
+      };
+    }),
   );
 
   if (groupFields) {
     columns.push({
       key: '#',
-      content: '#',
+      content: <span style={{ textAlign: 'right' }}>#</span>,
       topHeader: 'Grouping',
       pin: 'left',
     });
@@ -220,9 +240,9 @@ function metricsTableRowRenderer(
         row.value = {
           content: (
             <div className='Metrics__table__aggregationColumn__cell'>
-              <span>{rowData.aggregation.area.min}</span>
-              <span>{rowData.aggregation.line}</span>
-              <span>{rowData.aggregation.area.max}</span>
+              <span key='min'>{rowData.aggregation.area.min}</span>
+              <span key='line'>{rowData.aggregation.line}</span>
+              <span key='max'>{rowData.aggregation.area.max}</span>
             </div>
           ),
         };
@@ -270,7 +290,7 @@ function metricsTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <TagLabel size='small' key={item} color={COLORS[0][0]} label={item} />
+          <TagLabel key={item} size='small' color={COLORS[0][0]} label={item} />
         )),
       },
       value: rowData.value,
@@ -286,6 +306,7 @@ function metricsTableRowRenderer(
             onClick={actions?.toggleVisibility}
             role='button'
             aria-pressed='false'
+            className='Table__action__icon'
           >
             <Icon
               name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}

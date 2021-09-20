@@ -12,6 +12,7 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { useRouteMatch } from 'react-router-dom';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import * as analytics from 'services/analytics';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -45,7 +46,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => paramsAppModel.getParamsData().call());
     }
-
+    analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
       paramsRequestRef.abort();
@@ -128,12 +129,13 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableRowClick={paramsAppModel.onTableRowClick}
       onExportTableData={paramsAppModel.onExportTableData}
       onRowHeightChange={paramsAppModel.onRowHeightChange}
-      onSortFieldsChange={paramsAppModel.onSortFieldsChange}
       onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
       onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}
       onTableDiffShow={paramsAppModel.onTableDiffShow}
+      onSortReset={paramsAppModel.onSortReset}
+      onSortFieldsChange={paramsAppModel.onSortChange}
     />
   );
 }

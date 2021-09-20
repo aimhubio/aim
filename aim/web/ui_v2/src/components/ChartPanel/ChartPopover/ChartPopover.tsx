@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Popover, PopoverPosition } from '@material-ui/core';
 import { isEqual } from 'lodash-es';
 
-import './ChartPopover.scss';
 import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
+
+import './ChartPopover.scss';
 
 function ChartPopover({
   id,
@@ -12,6 +13,7 @@ function ChartPopover({
   className = '',
   children,
   containerRef,
+  popoverContentRef,
 }: IChartPopover): JSX.Element | null {
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
@@ -22,18 +24,39 @@ function ChartPopover({
       let left;
       let top;
 
-      if (pos.left < containerRect.left) {
+      if (
+        pos.left + (popoverContentRef?.current?.offsetWidth || 0) <
+        containerRect.left
+      ) {
         left = containerRect.left;
-      } else if (pos.left > containerRect.left + containerRect.width) {
-        left = containerRect.left + containerRect.width;
+      } else if (
+        pos.left + (popoverContentRef?.current?.offsetWidth || 0) >
+        containerRect.left +
+          containerRect.width -
+          (popoverContentRef?.current?.offsetWidth || 0)
+      ) {
+        left =
+          containerRect.left +
+          containerRect.width -
+          (popoverContentRef?.current?.offsetWidth || 0);
       } else {
         left = pos.left;
       }
 
-      if (pos.top < containerRect.top) {
-        top = containerRect.top;
-      } else if (pos.top > containerRect.top + containerRect.height) {
-        top = containerRect.top + containerRect.height;
+      if (
+        pos.top + (popoverContentRef?.current?.offsetHeight || 0) <
+        containerRect.top
+      ) {
+        top =
+          containerRect.top - (popoverContentRef?.current?.offsetHeight || 0);
+      } else if (
+        pos.top + (popoverContentRef?.current?.offsetHeight || 0) >
+        containerRect.top + containerRect.height
+      ) {
+        top =
+          containerRect.top +
+          containerRect.height -
+          (popoverContentRef?.current?.offsetHeight || 0);
       } else {
         top = pos.top;
       }
@@ -43,7 +66,10 @@ function ChartPopover({
         top,
       };
     },
-    [],
+    [
+      popoverContentRef?.current?.offsetHeight,
+      popoverContentRef?.current?.offsetWidth,
+    ],
   );
 
   const onPopoverPositionChange = React.useCallback(

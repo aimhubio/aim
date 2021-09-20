@@ -1,5 +1,5 @@
 @function tint($color, $percentage) {
-  @return mix(white, $color, $percentage);
+  @return mix(transparent, $color, $percentage);
 }
 
 @function shade($color, $percentage) {

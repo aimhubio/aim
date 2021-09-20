@@ -3,6 +3,7 @@ import useModel from 'hooks/model/useModel';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
 import Tags from './Tags';
+import * as analytics from 'services/analytics';
 
 const tagsRequestRef = tagsAppModel.getTagsData();
 
@@ -12,6 +13,7 @@ function TagsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     tagsAppModel.initialize();
     tagsRequestRef.call();
+    analytics.pageView('[Tags]');
   }, []);
   return (
     <Tags

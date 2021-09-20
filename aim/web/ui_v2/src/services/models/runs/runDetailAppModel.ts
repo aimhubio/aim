@@ -1,6 +1,8 @@
 import runsService from 'services/api/runs/runsService';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IRunBatch } from 'types/pages/runs/Runs';
+import * as analytics from 'services/analytics';
+
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({
@@ -99,6 +101,9 @@ function archiveRun(id: string, archived: boolean = false) {
           message: 'Something went wrong',
         });
       }
+      analytics.trackEvent(
+        archived ? '[RunDetail] Archive Run' : '[RunDetail] Unarchive Run',
+      );
     });
 }
 

@@ -1,8 +1,7 @@
 import React from 'react';
-import _ from 'lodash-es';
+import _, { isEmpty, isNil } from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
-
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
@@ -59,6 +58,7 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
+  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
@@ -80,7 +80,8 @@ import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import * as analytics from 'services/analytics';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -396,6 +397,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
+  analytics.trackEvent('[MetricsExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -414,6 +416,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
+  analytics.trackEvent('[MetricsExplorer] Update bookmark');
 }
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
@@ -980,7 +983,8 @@ function getDataAsTableRows(
   processedData: IMetricsCollection<IMetric>[],
   xValue: number | string | null = null,
   paramKeys: string[],
-  isRawData?: boolean,
+  isRawData: boolean,
+  config: IMetricAppConfig,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1002,7 +1006,14 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null) {
       const groupHeaderRow = {
         meta: {
-          chartIndex: metricsCollection.chartIndex + 1,
+          chartIndex:
+            config.grouping.chart.length > 0 ||
+            config.grouping.reverseMode.chart
+              ? metricsCollection.chartIndex + 1
+              : null,
+          color: metricsCollection.color,
+          dasharray: metricsCollection.dasharray,
+          itemsCount: metricsCollection.data.length,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1039,6 +1050,9 @@ function getDataAsTableRows(
           : getClosestValue(metric.data.xValues as number[], xValue as number)
               .index;
       const rowValues: IMetricTableRowData = {
+        rowMeta: {
+          color: metricsCollection.color ?? metric.color,
+        },
         key: metric.key,
         runHash: metric.run.hash,
         isHidden: metric.isHidden,
@@ -1205,8 +1219,10 @@ function setTooltipData(
 
   for (let metricsCollection of processedData) {
     const groupConfig = getGroupConfig(metricsCollection);
+
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
+        runHash: metric.run.hash,
         metricName: metric.metric_name,
         metricContext: metric.context,
         groupConfig,
@@ -1240,6 +1256,11 @@ function onHighlightModeChange(mode: HighlightEnum): void {
       },
     });
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set highlight mode to "${HighlightEnum[
+      mode
+    ].toLowerCase()}"`,
+  );
 }
 
 function onZoomChange(zoom: Partial<IChartZoom>): void {
@@ -1258,6 +1279,13 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
       },
     });
   }
+  if (!isNil(zoom.mode)) {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set zoom mode to "${
+        zoom.mode === 0 ? 'single' : 'multiple'
+      }"`,
+    );
+  }
 }
 
 function onAggregationConfigChange(
@@ -1274,6 +1302,26 @@ function onAggregationConfigChange(
     };
     updateModelData(configData);
   }
+  if (aggregationConfig.methods) {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set aggregation area to "${AggregationAreaMethods[
+        aggregationConfig.methods.area
+      ].toLowerCase()}"`,
+    );
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set aggregation line to "${AggregationAreaMethods[
+        aggregationConfig.methods.line
+      ].toLowerCase()}"`,
+    );
+  } else {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] ${
+        aggregationConfig.isApplied
+          ? 'Aggregate metrics'
+          : 'Deaggregate metrics'
+      }`,
+    );
+  }
 }
 
 function onSmoothingChange(props: IOnSmoothingChange) {
@@ -1281,6 +1329,18 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...props };
     updateModelData(configData);
+  }
+  if (props.curveInterpolation) {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set interpolation mode to "${
+        props.curveInterpolation === CurveEnum.Linear ? 'linear' : 'cubic'
+      }"`,
+    );
+  } else {
+    analytics.trackEvent(
+      `[MetricsExplorer][Chart] Set smoothening algorithm to "${configData?.chart.smoothingAlgorithm}"`,
+      { smoothingFactor: props.smoothingFactor },
+    );
   }
 }
 
@@ -1290,6 +1350,11 @@ function onDisplayOutliersChange(): void {
     configData.chart.displayOutliers = !configData?.chart.displayOutliers;
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] ${
+      !configData?.chart.displayOutliers ? 'Display' : 'Hide'
+    } outliers`,
+  );
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
@@ -1298,6 +1363,12 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
     configData.chart.axesScaleType = params;
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set X axis scale type "${params.xAxis}"`,
+  );
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set Y axis scale type "${params.yAxis}"`,
+  );
 }
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
@@ -1306,6 +1377,7 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   if (!isAppliedGrouping) {
     configData.chart.aggregationConfig.isApplied = false;
   }
+  analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
 }
 
 function resetChartZoom(configData: IMetricAppConfig): void {
@@ -1317,6 +1389,7 @@ function resetChartZoom(configData: IMetricAppConfig): void {
       history: [],
     },
   };
+  analytics.trackEvent('[MetricsExplorer][Chart] Reset zoom');
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -1327,13 +1400,18 @@ function updateModelData(configData: IMetricAppConfig): void {
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
+    false,
+    configData,
   );
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
     configData?.chart?.aggregationConfig.methods,
+    configData.table.sortFields,
+    onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -1350,7 +1428,7 @@ function updateModelData(configData: IMetricAppConfig): void {
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    groupingSelectOptions,
   });
 }
 
@@ -1365,6 +1443,7 @@ function onGroupingSelectChange({
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
 }
 
 function onGroupingModeChange({
@@ -1383,6 +1462,11 @@ function onGroupingModeChange({
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer] ${
+      value ? 'Disable' : 'Enable'
+    } grouping by ${groupName} reverse mode`,
+  );
 }
 
 function onGroupingPaletteChange(index: number): void {
@@ -1395,6 +1479,11 @@ function onGroupingPaletteChange(index: number): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer] Set color palette to "${
+      index === 0 ? '8 distinct colors' : '24 colors'
+    }"`,
+  );
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -1413,6 +1502,7 @@ function onGroupingReset(groupName: GroupNameType) {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent('[MetricsExplorer] Reset grouping');
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
@@ -1443,6 +1533,11 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer] ${
+      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
+    } ${groupName} persistence`,
+  );
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1469,6 +1564,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
     model.setState({ config: configData });
   }
+  analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
 
 function onActivePointChange(
@@ -1478,7 +1574,13 @@ function onActivePointChange(
   const { data, params, refs, config } =
     model.getState() as IMetricAppModelState;
   const tableRef: any = refs?.tableRef;
-  const tableData = getDataAsTableRows(data, activePoint.xValue, params);
+  const tableData = getDataAsTableRows(
+    data,
+    activePoint.xValue,
+    params,
+    false,
+    config,
+  );
   if (tableRef) {
     tableRef.current?.updateData({
       newData: tableData.rows,
@@ -1581,6 +1683,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     config?.chart?.focusedState.xValue ?? null,
     params,
     true,
+    config,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
@@ -1631,6 +1734,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  analytics.trackEvent('[MetricsExplorer] Export runs data to CSV');
 }
 
 function updateGroupingStateUrl(): void {
@@ -1754,6 +1858,9 @@ async function onAlignmentMetricChange(metric: string) {
     }
     setModelData(rawData, configData);
   }
+  analytics.trackEvent(
+    '[MetricsExplorer][Chart] Align X axis by another metric',
+  );
 }
 
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
@@ -1776,6 +1883,7 @@ function setModelData(
   rawData: IRun<IMetricTrace>[],
   configData: IMetricAppConfig,
 ) {
+  const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
   if (configData) {
     setAggregationEnabled(configData);
@@ -1784,6 +1892,8 @@ function setModelData(
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
+    false,
+    configData,
   );
   model.setState({
     requestIsPending: false,
@@ -1801,6 +1911,8 @@ function setModelData(
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
       configData?.chart?.aggregationConfig.methods,
+      sortFields,
+      onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
@@ -1821,6 +1933,11 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
     };
     updateModelData(configData);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
+      type
+    ].toLowerCase()}"`,
+  );
 }
 
 function onMetricsSelectChange(data: ISelectMetricsOption[]) {
@@ -1872,6 +1989,11 @@ function toggleSelectAdvancedMode() {
       },
     });
   }
+  analytics.trackEvent(
+    `[MetricsExplorer] Turn ${
+      !configData?.select.advancedMode ? 'on' : 'off'
+    } the advanced mode of select form`,
+  );
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1890,25 +2012,11 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('metricsTable', encode(table));
   }
-}
-
-function onSortFieldsChange(sortFields: [string, any][]) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      sortFields: sortFields,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('metricsTable', encode(table));
-    updateModelData(configUpdate);
-  }
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] Set table row height to "${RowHeightEnum[
+      height
+    ].toLowerCase()}"`,
+  );
 }
 
 function onMetricVisibilityChange(metricsKeys: string[]) {
@@ -1936,6 +2044,13 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] ${
+      metricsKeys[0] === 'all'
+        ? 'Visualize all hidden metrics from table'
+        : 'Hide all metrics from table'
+    }`,
+  );
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1986,6 +2101,11 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('metricsTable', encode(table));
     updateModelData(configUpdate);
   }
+  if (hiddenColumns[0] === 'all') {
+    analytics.trackEvent('[MetricsExplorer][Table] Hide all table columns');
+  } else if (isEmpty(hiddenColumns)) {
+    analytics.trackEvent('[MetricsExplorer][Table] Show all table columns');
+  }
 }
 
 function onTableDiffShow() {
@@ -1993,6 +2113,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
+  analytics.trackEvent('[MetricsExplorer][Table] Show table columns diff');
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
@@ -2013,6 +2134,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
+  }
 }
 
 function onTableResizeModeChange(mode: ResizeModeEnum): void {
@@ -2032,6 +2160,9 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
+  );
 }
 
 function onTableResizeEnd(tableHeight: string) {
@@ -2051,6 +2182,84 @@ function onTableResizeEnd(tableHeight: string) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
+}
+
+// internal function to update config.table.sortFields and cache data
+function updateSortFields(sortFields: SortField[]) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      sortFields,
+    };
+    const configUpdate = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config: configUpdate,
+    });
+
+    setItem('metricsTable', encode(table));
+    updateModelData(configUpdate);
+  }
+  analytics.trackEvent(
+    `[MetricsExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } table sorting by a key`,
+  );
+}
+
+// set empty array to config.table.sortFields
+function onSortReset() {
+  updateSortFields([]);
+}
+
+/**
+ * function onSortChange has 3 major functionalities
+ *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)
+ *    2. if value param passed 'asc' or 'desc', the function will replace the sort option of the field in sortFields
+ *    3. if value param passed 'none', the function will delete the field from sortFields
+ * @param {String} field  - the name of the field (i.e params.dataset.preproc)
+ * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
+ */
+function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const sortFields = configData?.table.sortFields || [];
+
+  const existField = sortFields?.find((d: SortField) => d[0] === field);
+  let newFields: SortField[] = [];
+
+  if (value && existField) {
+    if (value === 'none') {
+      // delete
+      newFields = sortFields?.filter(
+        ([name]: SortField) => name !== existField[0],
+      );
+    } else {
+      newFields = sortFields.map(([name, v]: SortField) =>
+        name === existField[0] ? [name, value] : [name, v],
+      );
+    }
+  } else {
+    if (existField) {
+      if (existField[1] === 'asc') {
+        // replace to desc
+        newFields = sortFields?.map(([name, value]: SortField) => {
+          return name === existField[0] ? [name, 'desc'] : [name, value];
+        });
+      } else {
+        // delete field
+        newFields = sortFields?.filter(
+          ([name]: SortField) => name !== existField[0],
+        );
+      }
+    } else {
+      // add field
+      newFields = [...sortFields, [field, 'asc']];
+    }
+  }
+  updateSortFields(newFields);
 }
 
 const metricAppModel = {
@@ -2093,7 +2302,6 @@ const metricAppModel = {
   onChangeTooltip,
   onExportTableData,
   onRowHeightChange,
-  onSortFieldsChange,
   onMetricVisibilityChange,
   onColumnsVisibilityChange,
   onTableDiffShow,
@@ -2101,6 +2309,8 @@ const metricAppModel = {
   getQueryStringFromSelect,
   onTableResizeModeChange,
   onTableResizeEnd,
+  onSortReset,
+  onSortChange,
 };
 
 export default metricAppModel;

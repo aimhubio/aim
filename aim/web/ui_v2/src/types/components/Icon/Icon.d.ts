@@ -86,4 +86,5 @@ export type IconName =
   | 'Runs'
   | 'check-rectangle'
   | 'check-circle'
-  | 'check';
+  | 'check'
+  | 'link';

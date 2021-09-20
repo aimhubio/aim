@@ -6,6 +6,7 @@ import { Tooltip } from '@material-ui/core';
 import './HeatMapStyle.scss';
 import { useHistory } from 'react-router-dom';
 import { encode } from 'utils/encoder/encoder';
+import * as analytics from 'services/analytics';
 
 const cellScales: number[] = [0, 1, 2, 3, 4];
 function HeatMap({
@@ -142,7 +143,7 @@ function HeatMap({
             startDate / 1000
           } and run.creation_time <= ${endDate / 1000}`,
         });
-
+        analytics.trackEvent('[Home][HeatMap] Activity cell click');
         history.push(`/runs?search=${search}`);
       }
     }

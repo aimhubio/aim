@@ -16,5 +16,6 @@ export default interface IControlPopoverProps extends Partial<PopoverProps> {
         | null)
     | React.FunctionComponentElement<React.ReactNode>;
   title?: string;
+  titleClassName?: string;
   open?: boolean;
 }
