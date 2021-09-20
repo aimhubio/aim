@@ -1122,7 +1122,6 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
 function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
-    console.log(groupName);
     configData.grouping = {
       ...configData.grouping,
       persistence: {
@@ -1469,7 +1468,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('paramsTable', encode(table));
     updateModelData(configUpdate);
   }
-  analytics.trackEvent('[ParamsExplorer][Table] Columns order change');
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
+  }
 }
 
 function onTableResizeModeChange(mode: ResizeModeEnum): void {
@@ -1489,7 +1494,9 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     setItem('paramsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[ParamsExplorer][Table] Resize mode change');
+  analytics.trackEvent(
+    `[ParamsExplorer][Table] Set table view mode to "${mode}"`,
+  );
 }
 
 function onTableDiffShow() {
@@ -1497,6 +1504,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
+  analytics.trackEvent('[ParamsExplorer][Table] Show table columns diff');
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1543,7 +1551,6 @@ function onTableResizeEnd(tableHeight: string) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[ParamsExplorer][Table] Resize end');
 }
 
 const paramsAppModel = {

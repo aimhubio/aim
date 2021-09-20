@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash-es';
+import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
@@ -866,7 +866,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('runsTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent('[RunsExplorer][Table] Columns order change');
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
+  }
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -939,7 +945,11 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     setItem('runsTable', encode(table));
     updateModelData(configUpdate);
   }
-  analytics.trackEvent('[RunsExplorer][Table] Columns visibility change');
+  if (hiddenColumns[0] === 'all') {
+    analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
+  } else if (isEmpty(hiddenColumns)) {
+    analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
+  }
 }
 
 function onTableDiffShow() {

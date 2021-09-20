@@ -1833,7 +1833,9 @@ async function onAlignmentMetricChange(metric: string) {
     }
     setModelData(rawData, configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Alignment metrics change');
+  analytics.trackEvent(
+    '[MetricsExplorer][Chart] Set X axis alignment metric name',
+  );
 }
 
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
@@ -1901,7 +1903,11 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
     };
     updateModelData(configData);
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Alignment type change');
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set X axis alignment type to ${AlignmentOptions[
+      type
+    ].toLowerCase()}`,
+  );
 }
 
 function onMetricsSelectChange(data: ISelectMetricsOption[]) {
@@ -2099,6 +2105,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
+  analytics.trackEvent('[ParamsExplorer][Table] Show table columns diff');
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
@@ -2119,8 +2126,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('metricsTable', encode(table));
     updateModelData(config);
   }
-  console.log(columnsOrder);
-  analytics.trackEvent('[MetricsExplorer][Table] Column order change');
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
+  }
 }
 
 function onTableResizeModeChange(mode: ResizeModeEnum): void {
