@@ -378,7 +378,19 @@ function processData(data: IRun<IParamTrace>[]): {
       dasharray: DASH_ARRAYS[0],
     });
   });
-  const processedData = groupData(runs);
+
+  const processedData = groupData(
+    _.orderBy(
+      runs,
+      configData?.table?.sortFields?.map(
+        (f: any) =>
+          function (run: IParam) {
+            return _.get(run, f[0], '');
+          },
+      ) ?? [],
+      configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
+    ),
+  );
   const uniqParams = _.uniq(params);
 
   setTooltipData(processedData, uniqParams);
