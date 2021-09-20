@@ -1,0 +1,38 @@
+@use "../../styles/abstracts/index" as *;
+
+.SelectTag {
+  width: 237px;
+
+  &__tags {
+    padding: 0 1rem;
+
+    .TagLabel {
+      margin: 0;
+    }
+
+    .icon-check {
+      padding: 0;
+    }
+
+    &__tagLabel {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      margin-right: 0.5rem;
+
+      &.outlined {
+        border: 1px solid #1473E6;
+        padding: 3px;
+        border-radius: 9px;
+      }
+    }
+  }
+
+  &__createTag__container {
+    padding: 0.625rem 1rem;
+    text-align: center;
+  }
+
+  &__divider {
+    background: tint($primary-color, 85);
+  }
+}

@@ -9,6 +9,8 @@
   color: tint($pico, 20);
 
   .PopoverContent {
+    padding-bottom: 3px;
+
     &__value {
       margin-top: 5px;
     }

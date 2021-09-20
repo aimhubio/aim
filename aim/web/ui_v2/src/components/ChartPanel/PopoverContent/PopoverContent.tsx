@@ -1,13 +1,6 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import {
-  Box,
-  Divider,
-  Link,
-  Paper,
-  Typography,
-  capitalize,
-} from '@material-ui/core';
+import { Box, Divider, Link, Paper, capitalize } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
@@ -15,7 +8,7 @@ import formatXAxisValueByAlignment from 'utils/formatXAxisValueByAlignment';
 import { ChartTypeEnum } from 'utils/d3';
 import { PathEnum } from 'config/enums/routesEnum';
 import Icon from 'components/Icon/Icon';
-
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 
 import './PopoverContent.scss';
@@ -27,11 +20,13 @@ function PopoverContent({
   alignmentConfig,
   popoverContentRef,
 }: IPopoverContentProps) {
+  const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
+
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
       case ChartTypeEnum.LineChart:
         return (
-          <Box paddingX={1} paddingY={0.625}>
+          <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
               {capitalize(tooltipContent.metricName)}:{' '}
               {focusedState?.yValue ?? '--'}
@@ -49,7 +44,7 @@ function PopoverContent({
       case ChartTypeEnum.HighPlot:
         const [metric, context] = (focusedState?.xValue as string)?.split('-');
         return (
-          <Box paddingX={1} paddingY={0.625}>
+          <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
               Value: {focusedState?.yValue ?? '--'}
             </div>
@@ -63,7 +58,6 @@ function PopoverContent({
     }
   }
 
-  const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
   return (
     <Paper
       ref={popoverContentRef}
@@ -75,7 +69,7 @@ function PopoverContent({
         {_.isEmpty(groupConfig) ? null : (
           <Box mt={0.5}>
             <Divider className='PopoverContent__divider' />
-            <Box paddingX={1} paddingY={0.625}>
+            <Box paddingX='1rem' paddingY='0.625rem'>
               <div className='PopoverContent__subtitle1'>Group Config</div>
               {Object.keys(groupConfig).map((groupConfigKey: string) =>
                 _.isEmpty(groupConfig[groupConfigKey]) ? null : (
@@ -98,7 +92,7 @@ function PopoverContent({
         {_.isEmpty(params) ? null : (
           <Box mt={0.5}>
             <Divider className='PopoverContent__divider' />
-            <Box paddingX={1} paddingY={0.625}>
+            <Box paddingX='1rem' paddingY='0.625rem'>
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
@@ -110,19 +104,28 @@ function PopoverContent({
           </Box>
         )}
         {focusedState?.active && runHash ? (
-          <Box>
-            <Divider className='PopoverContent__divider' />
-            <Box paddingX={1} paddingY={0.625}>
-              <Link
-                to={PathEnum.Run_Detail.replace(':runHash', runHash)}
-                component={RouteLink}
-                className='PopoverContent__runDetails'
-              >
-                <Icon name='link' />
-                <div>Run Details</div>
-              </Link>
+          <>
+            <Box>
+              <Divider className='PopoverContent__divider' />
+              <Box paddingX='1rem' paddingY='0.625rem'>
+                <Link
+                  to={PathEnum.Run_Detail.replace(':runHash', runHash)}
+                  component={RouteLink}
+                  className='PopoverContent__runDetails'
+                  underline='none'
+                >
+                  <Icon name='link' />
+                  <div>Run Details</div>
+                </Link>
+              </Box>
             </Box>
-          </Box>
+            <Box>
+              <Divider className='PopoverContent__divider' />
+              <Box paddingX='1rem' paddingY='0.625rem'>
+                <AttachedTagsList runHash={runHash} />
+              </Box>
+            </Box>
+          </>
         ) : null}
       </Box>
     </Paper>
