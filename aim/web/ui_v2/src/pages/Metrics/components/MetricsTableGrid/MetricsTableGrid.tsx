@@ -145,7 +145,7 @@ function getMetricsTableColumns(
   if (groupFields) {
     columns.push({
       key: '#',
-      content: '#',
+      content: <span style={{ textAlign: 'right' }}>#</span>,
       topHeader: 'Grouping',
       pin: 'left',
     });
@@ -270,7 +270,7 @@ function metricsTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <TagLabel size='small' key={item} color={COLORS[0][0]} label={item} />
+          <TagLabel key={item} size='small' color={COLORS[0][0]} label={item} />
         )),
       },
       value: rowData.value,

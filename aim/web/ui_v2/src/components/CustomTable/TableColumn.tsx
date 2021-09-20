@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { MenuItem, Typography } from '@material-ui/core';
+import { MenuItem, Typography, Tooltip } from '@material-ui/core';
 
 import Cell from './TableCell';
 import Popover from './TablePopover';
@@ -262,8 +262,16 @@ function Column({
                     expanded: expanded[groupKey],
                     expandable: true,
                   })}
+                  style={
+                    data[groupKey].data.meta.color
+                      ? {
+                          boxShadow: `inset 3px 0 0 0 ${data[groupKey].data.meta.color}`,
+                        }
+                      : null
+                  }
                 >
                   <GroupConfig
+                    config={data[groupKey].data.meta}
                     expand={expand}
                     expanded={expanded}
                     groupKey={groupKey}
@@ -325,6 +333,8 @@ function Column({
                       className={`rowKey-${item.key}${
                         item.isHidden ? ' hidden' : ''
                       }`}
+                      isConfigColumn={col.key === '#'}
+                      metadata={firstColumn ? item.rowMeta : null}
                       onRowHover={() => onRowHover(item)}
                       onRowClick={() => onRowClick(item)}
                     />
@@ -351,8 +361,43 @@ function Column({
 
 function GroupConfig({ config, expand, expanded, groupKey }) {
   return (
-    <div className='Table__action' onClick={(evt) => expand(groupKey)}>
+    <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
       <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+      {config.chartIndex !== null && config.chartIndex !== 0 && (
+        <Tooltip title='Group chart index'>
+          <span className='Table__group__config__chart'>
+            {config.chartIndex}
+          </span>
+        </Tooltip>
+      )}
+      {config.dasharray !== null && (
+        <Tooltip title='Group stroke style'>
+          <svg
+            className='Table__group__config__stroke'
+            style={{
+              borderColor: config.color ? config.color : '#3b5896',
+            }}
+          >
+            <line
+              x1='0'
+              y1='50%'
+              x2='100%'
+              y2='50%'
+              style={{
+                strokeDasharray: config.dasharray
+                  .split(' ')
+                  .map((elem) => (elem / 5) * 3)
+                  .join(' '),
+              }}
+            />
+          </svg>
+        </Tooltip>
+      )}
+      <Tooltip title={`${config.itemsCount} items in the group`}>
+        <span className='Table__group__config__itemsCount'>
+          {config.itemsCount}
+        </span>
+      </Tooltip>
     </div>
   );
 }
