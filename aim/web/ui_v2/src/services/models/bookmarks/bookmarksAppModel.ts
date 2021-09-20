@@ -3,6 +3,7 @@ import dashboardService from 'services/api/dashboard/dashboardService';
 import appsService from 'services/api/apps/appsService';
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
 import { IBookmarksData } from 'types/pages/bookmarks/Bookmarks';
+import * as analytics from 'services/analytics';
 
 const model = createModel<Partial<IBookmarksAppModelState>>({
   isLoading: true,
@@ -40,6 +41,7 @@ async function onBookmarkDelete(id: string) {
       listData: newListData,
       isLoading: false,
     });
+    analytics.trackEvent('[Bookmarks] Delete a bookmark');
   } catch (err) {
     console.log(err);
   }

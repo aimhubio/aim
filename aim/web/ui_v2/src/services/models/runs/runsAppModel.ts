@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash-es';
+import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
@@ -50,6 +50,8 @@ import {
   getRunsTableColumns,
   runsTableRowRenderer,
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
+import * as analytics from 'services/analytics';
+import { RowHeightEnum } from 'config/enums/tableEnums';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -443,6 +445,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -863,6 +866,13 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('runsTable', encode(table));
     updateModelData(config);
   }
+  if (
+    isEmpty(columnsOrder?.left) &&
+    isEmpty(columnsOrder?.middle) &&
+    isEmpty(columnsOrder?.right)
+  ) {
+    analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
+  }
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -908,6 +918,9 @@ function onRowHeightChange(height: RowHeightSize) {
     });
     setItem('runsTable', encode(table));
   }
+  analytics.trackEvent(
+    `[RunsExplorer][Table] Set table row height to "${RowHeightEnum[height]}"`,
+  );
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -931,6 +944,11 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
 
     setItem('runsTable', encode(table));
     updateModelData(configUpdate);
+  }
+  if (hiddenColumns[0] === 'all') {
+    analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
+  } else if (isEmpty(hiddenColumns)) {
+    analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
   }
 }
 
