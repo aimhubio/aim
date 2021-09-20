@@ -19,7 +19,7 @@ from aim.storage.encoding.encoding_native import (
     decode_double,
     decode_utf_8_str,
 )
-from aim.storage.encoding.encoding_native import decode_path
+from aim.storage.encoding.encoding_native import decode_path  # noqa F401
 from aim.storage.utils import ArrayFlag, ObjectFlag
 from aim.storage.types import AimObjectKey, AimObjectPath
 
