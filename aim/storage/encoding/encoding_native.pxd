@@ -4,21 +4,34 @@
 # cython: cdivision=True
 # cython: nonecheck=False
 
-import cython
 from libcpp.vector cimport vector
 from libcpp.pair cimport pair
 
-import struct
 
-ctypedef long long ll
+cpdef enum:
+    PATH_SENTINEL_CODE = 0xfe
 
-cdef ll q(const unsigned char* b) nogil
-cdef vector[pair[ll, ll]] split_path(const unsigned char* buffer, ll N) nogil
+ctypedef long long int64
+
+cpdef bytes encode_int64_big_endian(int64 value)
+
+cpdef bytes encode_int64(int64 value)
+
+cpdef int64 decode_int64_big_endian(const unsigned char* b) nogil
+
+cpdef int64 decode_int64(const unsigned char* buffer) nogil
+
+cpdef vector[pair[int64, int64]] split_path(
+    const unsigned char* buffer,
+    int64 length
+) nogil
+
 cpdef decode_path(bytes buffer)
-cpdef bytes encode_int(long long value)
-cpdef long decode_int(const unsigned char* buffer) nogil
-cpdef bytes encode_float(double value)
-cpdef double decode_float(const unsigned char* bytes) nogil
 
-cpdef bytes encode_str(str value)
-cpdef str decode_str(bytes buffer)
+cpdef bytes encode_double(double value)
+
+cpdef double decode_double(const unsigned char* bytes) nogil
+
+cpdef bytes encode_utf_8_str(str value)
+
+cpdef str decode_utf_8_str(bytes buffer)
