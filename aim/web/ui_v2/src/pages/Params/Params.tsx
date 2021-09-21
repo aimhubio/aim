@@ -40,6 +40,7 @@ const Params = ({
   tableColumns,
   tableRef,
   tableData,
+  columnsWidths,
   tableRowHeight,
   onTableRowHover,
   onTableRowClick,
@@ -72,6 +73,7 @@ const Params = ({
   onColumnsVisibilityChange,
   onTableDiffShow,
   onSortReset,
+  updateColumnsWidths,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -200,6 +202,7 @@ const Params = ({
                   hiddenRows={hiddenMetrics}
                   hiddenColumns={hiddenColumns}
                   resizeMode={resizeMode}
+                  columnsWidths={columnsWidths}
                   // Table actions
                   onSortReset={onSortReset}
                   onSort={onSortFieldsChange}
@@ -212,6 +215,7 @@ const Params = ({
                   onRowClick={onTableRowClick}
                   onTableResizeModeChange={onTableResizeModeChange}
                   onTableDiffShow={onTableDiffShow}
+                  updateColumnsWidths={updateColumnsWidths}
                 />
               ) : null}
             </BusyLoaderWrapper>

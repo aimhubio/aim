@@ -635,7 +635,7 @@ const Table = React.forwardRef(function Table(
                       rowHeightMode={rowHeight}
                       updateColumns={onManageColumns}
                       columnsWidths={columnsWidths}
-                      updateColumnsWidths={() => null}
+                      updateColumnsWidths={updateColumnsWidths}
                       sortFields={sortFields}
                       setSortFields={onSort}
                       excludedFields={hiddenColumns}

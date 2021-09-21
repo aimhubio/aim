@@ -124,6 +124,7 @@ function getConfig() {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      columnsWidths: {},
       columnsOrder: {
         left: [],
         middle: [],
@@ -1692,6 +1693,27 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
   updateSortFields(newFields);
 }
 
+function updateColumnsWidths(key: string, width: number) {
+  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    let columnsWidths = configData?.table?.columnsWidths;
+    columnsWidths[key] = width;
+    const table = {
+      ...configData.table,
+      columnsWidths,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('paramsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const paramsAppModel = {
   ...model,
   initialize,
@@ -1731,6 +1753,7 @@ const paramsAppModel = {
   onTableResizeEnd,
   onSortReset,
   onSortChange,
+  updateColumnsWidths,
 };
 
 export default paramsAppModel;
