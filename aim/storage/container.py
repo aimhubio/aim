@@ -55,7 +55,7 @@ class Container:
         return prefix + b''.join(args)
 
     @abstractmethod
-    def get(self, key: bytes, default = None) -> bytes:
+    def get(self, key: bytes, default=None) -> bytes:
         """Returns the value by the given `key` if it exists else `default`.
 
         The `default` is :obj:`None` by default.

@@ -77,7 +77,7 @@ class PrefixView(Container):
     def get(
         self,
         key: bytes,
-        default = None
+        default=None
     ) -> bytes:
         """Returns the value by the given `key` if it exists else `default`.
 
@@ -99,7 +99,7 @@ class PrefixView(Container):
         key: bytes,
         value: bytes,
         *,
-        store_batch = None
+        store_batch=None
     ) -> None:
         """Set a value for given key, optionally store in a batch.
 
@@ -125,7 +125,7 @@ class PrefixView(Container):
         self,
         key: bytes,
         *,
-        store_batch = None
+        store_batch=None
     ):
         """Delete a key-value record by the given key,
         optionally store in a batch.
@@ -151,7 +151,7 @@ class PrefixView(Container):
         self,
         begin: bytes,
         end: bytes,
-        store_batch = None
+        store_batch=None
     ):
         """Delete all the records in the given `[begin, end)` key range."""
         begin_path = self.absolute_path(begin)

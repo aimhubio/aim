@@ -4,9 +4,7 @@ from filelock import FileLock
 
 import aimrocks
 
-from aim.storage import encoding as E
-
-from typing import Iterator, Optional, Tuple, Union
+from typing import Iterator, Optional, Tuple
 
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
@@ -147,7 +145,7 @@ class RocksContainer(Container):
     def get(
         self,
         key: bytes,
-        default = None
+        default=None
     ) -> bytes:
         """Returns the value by the given `key` if it exists else `default`.
 
@@ -446,6 +444,7 @@ class RocksContainer(Container):
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
+        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
         it.seek(prefix + b'\x00')
 
         key, value = next(it)
@@ -482,6 +481,7 @@ class RocksContainer(Container):
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
+        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
         it.seek_for_prev(prefix + b'\xff')
 
         key, value = it.get()
