@@ -965,7 +965,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   if (configData?.table && configData?.table?.columnsWidths) {
     let columnsWidths = configData?.table?.columnsWidths;
     if (isReset) {
-      delete columnsWidths[key];
+      columnsWidths = _.omit(columnsWidths, [key]);
     } else {
       columnsWidths = { ...columnsWidths, [key]: width };
     }
