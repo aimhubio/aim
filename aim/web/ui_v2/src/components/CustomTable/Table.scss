@@ -53,6 +53,7 @@ $border-radius: 0.2rem;
 
 .Table__action__icon {
   color: $primary-color;
+  margin: 0.125rem 0.25rem;
 }
 
 .Table__pane--left,
@@ -86,6 +87,7 @@ $border-radius: 0.2rem;
     .Table__cell,
     .Table__group__config__cell {
       border-right: none;
+      padding: 0;
     }
   }
 }
@@ -247,7 +249,7 @@ $border-radius: 0.2rem;
   flex: none;
   background-color: $cuddle-20;
   padding: $space-xxs $space-sm;
-  font-size: $text-lg;
+  font-size: $text-md;
   border-color: $border-color;
   font-family: 'Inter SemiBold', sans-serif;
   font-weight: bold;
@@ -256,6 +258,7 @@ $border-radius: 0.2rem;
 
   & > *:first-child {
     flex: 1;
+    margin-right: 0.25rem;
   }
 }
 
@@ -285,7 +288,7 @@ $border-radius: 0.2rem;
 .Table__cell--topHeader {
   top: 0;
   background-color: $cuddle-20;
-  font-size: $text-lg;
+  font-size: $text-md;
   font-family: 'Inter SemiBold', sans-serif;
   letter-spacing: 0.05rem;
   border-top: 1px solid $border-color;

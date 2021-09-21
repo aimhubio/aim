@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -17,6 +16,7 @@ import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/Metr
 import Icon from 'components/Icon/Icon';
 
 import './MetricsBar.scss';
+import Button from 'components/Button/Button';
 
 function MetricsBar({
   onBookmarkCreate,
@@ -64,14 +64,15 @@ function MetricsBar({
           }
         />
       ) : (
-        <div
-          onClick={() => handleBookmarkClick('create')}
-          className='MetricsBar__item__bookmark'
-        >
+        <div className='MetricsBar__item__bookmark'>
           <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-          <span>
+          <Button
+            color='secondary'
+            onClick={() => handleBookmarkClick('create')}
+            withOnlyIcon
+          >
             <Icon name='bookmarks' />
-          </span>
+          </Button>
         </div>
       )}
 
@@ -79,9 +80,9 @@ function MetricsBar({
         <ControlPopover
           title='Menu'
           anchor={({ onAnchorClick }) => (
-            <span onClick={onAnchorClick}>
+            <Button withOnlyIcon color='secondary' onClick={onAnchorClick}>
               <Icon name='menu' />
-            </span>
+            </Button>
           )}
           component={
             <div className='MetricsBar__popover'>

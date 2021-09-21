@@ -36,6 +36,8 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               isRunsDataLoading={props.isRunsDataLoading}
               tableRef={props.tableRef}
               getLastRunsData={props.getLastRunsData}
+              columnsWidths={props.columnsWidths}
+              updateColumnsWidths={props.updateColumnsWidths}
             />
           </div>
         </div>

@@ -8,8 +8,9 @@ import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
 import Icon from 'components/Icon/Icon';
-import TableSortIcons from '../../../../components/Table/TableSortIcons';
-import { SortField } from '../../../../types/services/models/metrics/metricsAppModel';
+import TableSortIcons from 'components/Table/TableSortIcons';
+import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import Button from 'components/Button/Button';
 
 function getParamsTableColumns(
   metricsColumns: any,
@@ -182,15 +183,17 @@ function paramsTableRowRenderer(
       },
       actions: {
         content: (
-          <div
+          <Button
+            withOnlyIcon={true}
             onClick={actions?.toggleVisibility}
+            className='Table__action__icon'
             role='button'
             aria-pressed='false'
           >
             <Icon
               name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
             />
-          </div>
+          </Button>
         ),
       },
     };

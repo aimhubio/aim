@@ -194,6 +194,7 @@ function Metrics(
                   hiddenRows={props.hiddenMetrics}
                   hiddenColumns={props.hiddenColumns}
                   resizeMode={props.resizeMode}
+                  columnsWidths={props.columnsWidths}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}
@@ -206,6 +207,7 @@ function Metrics(
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
                   onTableResizeModeChange={props.onTableResizeModeChange}
+                  updateColumnsWidths={props.updateColumnsWidths}
                 />
               ) : null}
             </BusyLoaderWrapper>

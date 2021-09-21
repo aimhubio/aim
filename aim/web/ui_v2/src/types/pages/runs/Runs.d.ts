@@ -48,4 +48,6 @@ export interface IRunsTableProps {
   getLastRunsData: (row: any) => void;
   isLatest?: boolean;
   data: any;
+  columnsWidths: { [key: string]: number };
+  updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
 }

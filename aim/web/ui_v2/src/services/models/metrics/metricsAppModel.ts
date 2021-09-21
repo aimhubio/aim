@@ -164,6 +164,7 @@ function getConfig(): IMetricAppConfig {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      columnsWidths: {},
       columnsOrder: {
         left: [],
         middle: [],
@@ -2262,6 +2263,31 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
   updateSortFields(newFields);
 }
 
+function updateColumnsWidths(key: string, width: number, isReset: boolean) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table && configData?.table?.columnsWidths) {
+    let columnsWidths = configData?.table?.columnsWidths;
+    if (isReset) {
+      columnsWidths = _.omit(columnsWidths, [key]);
+    } else {
+      columnsWidths = { ...columnsWidths, [key]: width };
+    }
+    const table = {
+      ...configData.table,
+      columnsWidths,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('metricsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -2311,6 +2337,7 @@ const metricAppModel = {
   onTableResizeEnd,
   onSortReset,
   onSortChange,
+  updateColumnsWidths,
 };
 
 export default metricAppModel;
