@@ -960,11 +960,15 @@ function onTableDiffShow() {
   }
 }
 
-function updateColumnsWidths(key: string, width: number) {
+function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
+  if (configData?.table && configData?.table?.columnsWidths) {
     let columnsWidths = configData?.table?.columnsWidths;
-    columnsWidths = { ...columnsWidths, [key]: width };
+    if (isReset) {
+      delete columnsWidths[key];
+    } else {
+      columnsWidths = { ...columnsWidths, [key]: width };
+    }
     const table = {
       ...configData.table,
       columnsWidths,

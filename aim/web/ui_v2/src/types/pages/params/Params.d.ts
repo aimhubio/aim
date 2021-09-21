@@ -91,6 +91,6 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   hiddenColumns: any;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   onSortReset: () => void;
-  updateColumnsWidths: (key: string, width: number) => void;
+  updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   columnsWidths: { [key: string]: number };
 }

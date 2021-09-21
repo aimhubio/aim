@@ -49,5 +49,5 @@ export interface IRunsTableProps {
   isLatest?: boolean;
   data: any;
   columnsWidths: { [key: string]: number };
-  updateColumnsWidths: (key: string, width: number) => void;
+  updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
 }
