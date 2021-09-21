@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
-import Icon from 'components/Icon/Icon';
+
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
@@ -14,6 +14,8 @@ import COLORS from 'config/colors/colors';
 import TagLabel from 'components/TagLabel/TagLabel';
 import { PathEnum } from 'config/enums/routesEnum';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import Icon from 'components/Icon/Icon';
+import Button from 'components/Button/Button';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -302,16 +304,17 @@ function metricsTableRowRenderer(
           : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
       actions: {
         content: (
-          <div
+          <Button
+            withOnlyIcon={true}
             onClick={actions?.toggleVisibility}
+            className='Table__action__icon'
             role='button'
             aria-pressed='false'
-            className='Table__action__icon'
           >
             <Icon
               name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
             />
-          </div>
+          </Button>
         ),
       },
     };
