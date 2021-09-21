@@ -162,6 +162,9 @@ const Params = ({
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
+            className={`Params__ResizePanel${
+              isParamsLoading || highPlotData?.[0]?.data?.length ? '' : '__hide'
+            }`}
             panelResizing={panelResizing}
             resizeElemRef={resizeElemRef}
             resizeMode={resizeMode}

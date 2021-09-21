@@ -12,11 +12,12 @@ function ResizePanel({
   resizeElemRef,
   resizeMode,
   onTableResizeModeChange,
+  className,
 }: IResizePanelProps): React.FunctionComponentElement<React.ReactNode> | null {
   return (
     <div
       ref={resizeElemRef}
-      className={`ResizePanel${
+      className={`${className || ''} ResizePanel${
         resizeMode === ResizeModeEnum.Hide && !panelResizing
           ? '__fullHeight'
           : resizeMode !== ResizeModeEnum.Resizable

@@ -37,6 +37,12 @@
     }
   }
 
+  .Metrics__ResizePanel {
+    &__hide {
+      display: none;
+    }
+  }
+
   .Metrics__table__container {
     flex: 0.5 1 0;
     min-height: 11rem;

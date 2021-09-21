@@ -5,4 +5,5 @@ export interface IResizePanelProps {
   resizeElemRef: IMetricProps['resizeElemRef'];
   resizeMode: IMetricProps['resizeMode'];
   onTableResizeModeChange: IMetricProps['onTableResizeModeChange'];
+  className?: string;
 }

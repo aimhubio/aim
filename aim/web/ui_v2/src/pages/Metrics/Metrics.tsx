@@ -149,6 +149,11 @@ function Metrics(
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
+            className={`Metrics__ResizePanel${
+              props.requestIsPending || props.lineChartData?.[0]?.length
+                ? ''
+                : '__hide'
+            }`}
             panelResizing={props.panelResizing}
             resizeElemRef={props.resizeElemRef}
             resizeMode={props.resizeMode}
