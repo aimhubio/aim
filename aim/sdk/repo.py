@@ -7,9 +7,6 @@ from collections import defaultdict
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
-import cachetools
-import cachetools.func
-
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
@@ -76,7 +73,6 @@ class Repo:
             self.structured_db.run_upgrades()
 
     @property
-    @cachetools.func.ttl_cache(maxsize=1, ttl=600)
     def meta_tree(self):
         return self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
