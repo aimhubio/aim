@@ -19,6 +19,8 @@ function RunsTable({
   onRowHeightChange,
   hiddenColumns,
   columnsOrder,
+  columnsWidths,
+  updateColumnsWidths,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
   React.useEffect(() => {
@@ -54,11 +56,13 @@ function RunsTable({
           rowHeight={tableRowHeight}
           hiddenColumns={hiddenColumns}
           columnsOrder={columnsOrder}
+          columnsWidths={columnsWidths}
           // Table actions
           onManageColumns={onManageColumns}
           onColumnsVisibilityChange={onColumnsVisibilityChange}
           onTableDiffShow={onTableDiffShow}
           onRowHeightChange={onRowHeightChange}
+          updateColumnsWidths={updateColumnsWidths}
           onExport={onExportTableData}
         />
       </div>

@@ -107,6 +107,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       hiddenMetrics={paramsData?.config?.table.hiddenMetrics!}
       notifyData={paramsData?.notifyData}
       tableRowHeight={paramsData?.config?.table.rowHeight as RowHeightSize}
+      columnsWidths={paramsData?.config?.table.columnsWidths}
       requestIsPending={paramsData?.requestIsPending}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
@@ -122,6 +123,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onBookmarkCreate={paramsAppModel.onBookmarkCreate}
       onBookmarkUpdate={paramsAppModel.onBookmarkUpdate}
       onNotificationAdd={paramsAppModel.onNotificationAdd}
+      updateColumnsWidths={paramsAppModel.updateColumnsWidths}
       onNotificationDelete={paramsAppModel.onNotificationDelete}
       onResetConfigData={paramsAppModel.onResetConfigData}
       onChangeTooltip={paramsAppModel.onChangeTooltip}

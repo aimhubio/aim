@@ -165,6 +165,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       requestIsPending={metricsData?.requestIsPending}
       resizeMode={metricsData?.config?.table.resizeMode as ResizeModeEnum}
+      columnsWidths={metricsData?.config?.table.columnsWidths}
       // methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
@@ -173,6 +174,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSmoothingChange={metricAppModel.onSmoothingChange}
       onTableRowHover={metricAppModel.onTableRowHover}
       onTableRowClick={metricAppModel.onTableRowClick}
+      updateColumnsWidths={metricAppModel.updateColumnsWidths}
       onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
       onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
       onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
