@@ -7,15 +7,18 @@ from collections import defaultdict
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
+import cachetools
+import cachetools.func
+
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
 from aim.sdk.data_version import DATA_VERSION
 
-from aim.storage.union import UnionContainer
 from aim.storage.container import Container
-from aim.storage.containerview import ContainerView
+from aim.storage.rockscontainer import RocksContainer
+from aim.storage.union import RocksUnionContainer
 
 from aim.storage.structured.db import DB
 
@@ -73,6 +76,7 @@ class Repo:
             self.structured_db.run_upgrades()
 
     @property
+    @cachetools.func.ttl_cache(maxsize=1, ttl=600)
     def meta_tree(self):
         return self.request('meta', read_only=True, from_union=True).tree().view('meta')
 
