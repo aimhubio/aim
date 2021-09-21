@@ -149,6 +149,7 @@ interface IMetricAppConfig {
     sortFields?: SortField[];
     hiddenMetrics?: string[];
     hiddenColumns?: string[];
+    columnsWidths?: { [key: string]: number };
     columnsOrder?: {
       left: string[];
       middle: string[];

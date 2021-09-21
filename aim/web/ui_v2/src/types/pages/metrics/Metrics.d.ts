@@ -108,6 +108,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
   onTableDiffShow: () => void;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
+  updateColumnsWidths: (key: string, width: number) => void;
+  columnsWidths: { [key: string]: number };
 }
 
 export interface IOnSmoothingChange {

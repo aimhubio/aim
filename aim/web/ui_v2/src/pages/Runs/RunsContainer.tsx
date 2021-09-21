@@ -38,8 +38,10 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       columnsOrder={runsData?.config?.table.columnsOrder}
       hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
       query={runsData?.config?.select?.query}
+      columnsWidths={runsData?.config?.table.columnsWidths}
       updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
       onExportTableData={runsAppModel.onExportTableData}
+      updateColumnsWidths={runsAppModel.updateColumnsWidths}
       getLastRunsData={runsAppModel.getLastRunsData}
       isInfiniteLoading={runsData?.infiniteIsPending}
       onNotificationDelete={runsAppModel.onNotificationDelete}

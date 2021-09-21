@@ -136,6 +136,7 @@ function getConfig() {
       rowHeight: RowHeightSize.md,
       sortFields: [],
       hiddenColumns: [],
+      columnsWidths: {},
       columnsOrder: {
         left: [],
         middle: [],
@@ -959,6 +960,27 @@ function onTableDiffShow() {
   }
 }
 
+function updateColumnsWidths(key: string, width: number) {
+  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  if (configData?.table) {
+    let columnsWidths = configData?.table?.columnsWidths;
+    columnsWidths = { ...columnsWidths, [key]: width };
+    const table = {
+      ...configData.table,
+      columnsWidths,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('runsTable', encode(table));
+    updateModelData(config);
+  }
+}
+
 const runAppModel = {
   ...model,
   initialize,
@@ -973,6 +995,7 @@ const runAppModel = {
   onSelectRunQueryChange,
   onColumnsVisibilityChange,
   onTableDiffShow,
+  updateColumnsWidths,
 };
 
 export default runAppModel;
