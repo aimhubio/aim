@@ -18,13 +18,7 @@ logger = logging.getLogger(__name__)
 
 class RocksContainer(Container):
     """
-    Containers are sets of {key: values}.
-    Ideally we want to query not separate Containers
-    but Unions of Containers instead.
-
-    Each Container corresponds to a single RocksDB database.
-
-    Containers satisfy Dict properties per run.
+    TODO Rocks-specific docs
     """
     def __init__(
         self,
@@ -100,6 +94,11 @@ class RocksContainer(Container):
         return db
 
     def finalize(self, *, index: Container):
+        """Finalize the Container.
+
+        Store the collection of `(key, value)` records in the :obj:`Container`
+        `index` for fast reads.
+        """
         if not self._progress_path:
             return
 
@@ -110,6 +109,7 @@ class RocksContainer(Container):
         self._progress_path = None
 
     def close(self):
+        """Close all the resources."""
         if self._lock is not None:
             self._lock.release()
             self._lock = None
@@ -118,65 +118,156 @@ class RocksContainer(Container):
             self._db = None
 
     def __del__(self):
+        """Automatically close all the resources after being garbage-collected"""
         self.close()
 
     def preload(self):
+        """Preload the Container in the read mode."""
         self.db
 
     def tree(self) -> 'TreeView':
+        """Return a :obj:`TreeView` which enables hierarchical view and access
+        to the container records.
+
+        This is achieved by prefixing groups and using `PATH_SENTINEL` as a
+        separator for keys.
+
+        For example, if the Container contents are:
+            `{
+                b'e.y': b'012',
+                b'meta.x': b'123',
+                b'meta.z': b'x',
+                b'zzz': b'oOo'
+            }`, and the path sentinel is `b'.'` then `tree = container.tree()`
+            will behave as a (possibly deep) dict-like object:
+            `tree[b'meta'][b'x'] == b'123'`
+        """
         return TreeView(self)
 
-    def batch_set(
+    def get(
+        self,
+        key: bytes,
+        default = None
+    ) -> bytes:
+        """Returns the value by the given `key` if it exists else `default`.
+
+        The `default` is :obj:`None` by default.
+        """
+        raise NotImplementedError
+
+    def __getitem__(
+        self,
+        key: bytes
+    ) -> bytes:
+        """Returns the value by the given `key`."""
+        return self.db.get(key=key)
+
+    def set(
         self,
         key: bytes,
         value: bytes,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
-        if store_batch is None:
-            store_batch = self.writable_db
-        store_batch.put(key=key, value=value)
+        """Set a value for given key, optionally store in a batch.
+
+        If `store_batch` is provided, instead of the `(key, value)` being added
+        to the collection immediately, the operation is stored in a batch in
+        order to be executed in a whole with other write operations.
+
+        See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
+        more details.
+        """
+        if store_batch is not None:
+            target = store_batch
+        else:
+            target = self.writable_db
+
+        target.put(key=key, value=value)
 
     def __setitem__(
         self,
         key: bytes,
         value: bytes
     ):
+        """Set a value for given key."""
         self.writable_db.put(key=key, value=value)
 
-    def __getitem__(
+    def delete(
         self,
-        key: bytes
-    ) -> bytes:
-        return self.db.get(key=key)
+        key: bytes,
+        *,
+        store_batch: aimrocks.WriteBatch = None
+    ):
+        """Delete a key-value record by the given key,
+        optionally store in a batch.
+
+        If `store_batch` is provided, instead of the `(key, value)` being added
+        to the collection immediately, the operation is stored in a batch in
+        order to be executed in a whole with other write operations.
+
+        See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
+        more details.
+        """
+        if store_batch is not None:
+            target = store_batch
+        else:
+            target = self.writable_db
+
+        target.delete(key)
 
     def __delitem__(
         self,
         key: bytes
     ) -> None:
+        """Delete a key-value record by the given key."""
         return self.writable_db.delete(key)
 
-    def batch_delete(
+    def delete_range(
         self,
-        prefix: bytes,
+        begin: bytes,
+        end: bytes,
+        *,
         store_batch: aimrocks.WriteBatch = None
     ):
-        if store_batch is None:
-            batch = aimrocks.WriteBatch()
-        else:
-            batch = store_batch
+        """Delete all the records in the given `[begin, end)` key range,
+        optionally store in a batch.
 
-        batch.delete_range((prefix, prefix + b'\xff'))
+        If `store_batch` is provided, instead of the `(key, value)` being added
+        to the collection immediately, the operation is stored in a batch in
+        order to be executed in a whole with other write operations.
 
-        if not store_batch:
-            self.writable_db.write(batch)
+        See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
+        more details.
+        """
+        if store_batch is not None:
+            target = store_batch
         else:
-            return batch
+            target = self.writable_db
+
+        target.delete_range((begin, end))
 
     def items(
         self,
         prefix: bytes = b''
     ) -> Iterator[Tuple[bytes, bytes]]:
+        """Iterate over all the key-value records in the prefix key range.
+
+        The iteration is always performed in lexiographic order w.r.t keys.
+        If `prefix` is provided, iterate only over those records that have key
+        starting with the `prefix`.
+
+        For example, if `prefix == b'meta.'`, and the Container consists of:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }`, the method will yield `(b'meta.x', b'123')` and `(b'meta.z', b'x')`
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range
+        """
         # TODO return ValuesView, not iterator
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
         it.seek(prefix)
@@ -189,6 +280,19 @@ class RocksContainer(Container):
         self,
         prefix: bytes = b''
     ):
+        """A bi-directional generator to walk over the collection of records on
+        any arbitrary order. The `prefix` sent to the generator (lets call it
+        a `walker`) seeks for lower-bound key in the collection.
+
+        In other words, if the Container contents are:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }` and `walker = container.walk()` then:
+        `walker.send(b'meta') == b'meta.x'`, `walker.send(b'e.y') == b'e.y'`
+        """
         it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
         it.seek(prefix)
 
@@ -201,35 +305,27 @@ class RocksContainer(Container):
             jump = yield key
             it.seek(jump)
 
-    def iterlevel(
-        self,
-        prefix: bytes = b''
-    ) -> Iterator[Tuple[bytes, bytes]]:
-        # TODO return ValuesView, not iterator
-        # TODO broken right now
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        it.seek(prefix)
-
-        key, val = next(it)
-
-        while True:
-            try:
-                key, val = next(it)
-            except StopIteration:
-                break
-
-            if not key.startswith(prefix):
-                break
-
-            next_range = key[:-1] + bytes([key[-1] + 1])
-            it.seek(next_range)
-
-            yield key, val
-
     def keys(
         self,
         prefix: bytes = b''
     ):
+        """Iterate over all the keys in the prefix range.
+
+        The iteration is always performed in lexiographic order.
+        If `prefix` is provided, iterate only over keys starting with
+        the `prefix`.
+
+        For example, if `prefix == b'meta.'`, and the Container consists of:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }`, the method will yield `b'meta.x'` and `b'meta.z'`
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range
+        """
         # TODO return KeyView, not iterator
         it: Iterator[Tuple[bytes, bytes]] = self.db.iterkeys()
         it.seek(prefix)
@@ -240,9 +336,25 @@ class RocksContainer(Container):
 
     def values(
         self,
-        prefix: bytes
+        prefix: bytes = b''
     ):
-        # not vraz thing to implement
+        """Iterate over all the values in the given prefix key range.
+
+        The iteration is always performed in lexiographic order w.r.t keys.
+        If `prefix` is provided, iterate only over those record values that have
+        key starting with the `prefix`.
+
+        For example, if `prefix == b'meta.'`, and the Container consists of:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }`, the method will yield `b'123'` and `b'x'`
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range
+        """
         raise NotImplementedError
 
     def update(
@@ -252,30 +364,62 @@ class RocksContainer(Container):
 
     def view(
         self,
-        prefix: Union[
-            bytes,
-            Tuple[Union[int, str], ...]
-        ]
+        prefix: bytes = b''
     ) -> 'Container':
-        if not isinstance(prefix, bytes):
-            prefix = E.encode_path(prefix)
+        """Return a view (even mutable ones) that enable access to the container
+        but with modifications.
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range of the
+                view-container. The resulting container will share an access to
+                only records in the `prefix` key range, but with `prefix`-es
+                stripped from them.
+
+                For example, if the Container contents are:
+                `{
+                    b'e.y': b'012',
+                    b'meta.x': b'123',
+                    b'meta.z': b'x',
+                    b'zzz': b'oOo'
+                }`, then `container.view(prefix=b'meta.')` will behave (almost)
+                exactly as an Container:
+                `{
+                    b'x': b'123',
+                    b'z': b'x',
+                }`
+        """
         return PrefixView(prefix=prefix, container=self)
 
     def batch(
         self
     ) -> aimrocks.WriteBatch:
+        """Creates a new batch object to store operations in before executing
+        using :obj:`RocksContainer.commit`.
+
+        The operations :obj:`RocksContainer.set`, :obj:`RocksContainer.delete`,
+        :obj:`RocksContainer.delete_range` are supported.
+
+        See more at :obj:`RocksContainer.commit`
+        """
         return aimrocks.WriteBatch()
 
     def commit(
         self,
         batch: aimrocks.WriteBatch
     ):
+        """Execute the accumulated write operations in the given `batch`.
+
+        The `RocksContainer` features atomic writes for batches.
+        """
         self.writable_db.write(batch)
 
     def next_key(
         self,
         prefix: bytes = b''
     ) -> bytes:
+        """Returns the key that comes (lexicographically) right after the
+        provided `key`.
+        """
         it: Iterator[bytes] = self.db.iterkeys()
         it.seek(prefix + b'\x00')
         key = next(it)
@@ -289,6 +433,9 @@ class RocksContainer(Container):
         self,
         prefix: bytes = b''
     ) -> bytes:
+        """Returns the value for the key that comes (lexicographically) right
+        after the provided `key`.
+        """
         key, value = self.next_key_value(prefix)
         return value
 
@@ -296,7 +443,9 @@ class RocksContainer(Container):
         self,
         prefix: bytes = b''
     ) -> Tuple[bytes, bytes]:
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        """Returns `(key, value)` for the key that comes (lexicographically)
+        right after the provided `key`.
+        """
         it.seek(prefix + b'\x00')
 
         key, value = next(it)
@@ -310,6 +459,9 @@ class RocksContainer(Container):
         self,
         prefix: bytes = b''
     ) -> bytes:
+        """Returns the key that comes (lexicographically) right before the
+        provided `key`.
+        """
         key, value = self.prev_key_value(prefix)
         return key
 
@@ -317,14 +469,19 @@ class RocksContainer(Container):
         self,
         prefix: bytes = b''
     ) -> bytes:
+        """Returns the value for the key that comes (lexicographically) right
+        before the provided `key`.
+        """
         key, value = self.prev_key_value(prefix)
         return value
 
     def prev_key_value(
         self,
-        prefix: bytes
+        prefix: bytes = b''
     ) -> Tuple[bytes, bytes]:
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        """Returns `(key, value)` for the key that comes (lexicographically)
+        right before the provided `key`.
+        """
         it.seek_for_prev(prefix + b'\xff')
 
         key, value = it.get()

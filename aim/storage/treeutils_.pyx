@@ -1,6 +1,4 @@
-from aim.storage.encoding import encode as E_encode
-from aim.storage.encoding import decode as E_decode
-from aim.storage.encoding import encode_path as E_encode_path
+from aim.storage import encoding
 from aim.storage.encoding.encoding_native cimport decode_path
 
 from aim.storage.types import AimObject, AimObjectPath
@@ -161,8 +159,8 @@ def encode_paths_vals(
     paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]]
 ) -> Iterator[Tuple[bytes, bytes]]:
     for path, val in paths_vals:
-        path = E_encode_path(path)
-        val = E_encode(val)
+        path = encoding.encode_path(path)
+        val = encoding.encode(val)
         yield path, val
 
 
@@ -197,7 +195,7 @@ cdef class DecodePathsVals(object):
         while True:
             encoded_path, encoded_val = next(self.paths_vals)
             path = decode_path(encoded_path)
-            val = E_decode(encoded_val)
+            val = encoding.decode(encoded_val)
 
             if self.current_path is None:
                 if path:

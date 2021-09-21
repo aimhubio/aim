@@ -84,7 +84,7 @@ class TreeView:
         if not isinstance(path, (tuple, list)):
             path = (path,)
         encoded_path = E.encode_path(path)
-        return self.container.batch_delete(encoded_path)
+        return self.container.delete_range(encoded_path, encoded_path + b'\xff')
 
     def __setitem__(
         self,
@@ -98,9 +98,11 @@ class TreeView:
 
         batch = self.container.batch()
         encoded_path = E.encode_path(path)
-        self.container.batch_delete(encoded_path, batch)
+        self.container.delete_range(encoded_path, encoded_path + b'\xff',
+                                    store_batch=batch)
         for key, val in treeutils.encode_tree(value):
-            self.container.batch_set(encoded_path + key, val, store_batch=batch)
+            self.container.set(encoded_path + key, val,
+                               store_batch=batch)
         self.container.commit(batch)
 
     def keys(
