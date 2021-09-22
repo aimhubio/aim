@@ -1182,14 +1182,6 @@ function getDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
-function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
-  const modelState = model.getState();
-  if (modelState?.refs) {
-    modelState.refs = Object.assign(modelState.refs, refElement);
-    model.setState({ refs: modelState.refs });
-  }
-}
-
 function getGroupConfig(
   metricsCollection: IMetricsCollection<IMetric>,
   groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
@@ -2295,7 +2287,6 @@ const metricAppModel = {
   getMetricsData,
   getAppConfigData,
   getDataAsTableRows,
-  setComponentRefs,
   setDefaultAppConfigData,
   onHighlightModeChange,
   onZoomChange,

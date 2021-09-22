@@ -821,14 +821,6 @@ function onSelectRunQueryChange(query: string) {
   }
 }
 
-function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
-  const modelState = model.getState();
-  if (modelState?.refs) {
-    modelState.refs = Object.assign(modelState.refs, refElement);
-    model.setState({ refs: modelState.refs });
-  }
-}
-
 function updateUrlParam(
   paramName: string,
   data: Record<string, unknown>,
@@ -990,7 +982,6 @@ const runAppModel = {
   initialize,
   getRunsData,
   getLastRunsData,
-  setComponentRefs,
   onExportTableData,
   onRowHeightChange,
   onNotificationDelete,

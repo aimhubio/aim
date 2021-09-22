@@ -35,6 +35,7 @@ import {
 } from 'types/services/models/projects/projectsModel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import setComponentRefs from 'utils/app/setComponentRefs';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -59,10 +60,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      metricAppModel.setComponentRefs({
-        tableRef,
-        chartPanelRef,
-      });
+      setComponentRefs(
+        {
+          tableRef,
+          chartPanelRef,
+        },
+        metricAppModel,
+      );
     }
   }, [metricsData?.rawData]);
 

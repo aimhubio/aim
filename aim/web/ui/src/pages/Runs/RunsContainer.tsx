@@ -4,6 +4,7 @@ import Runs from './Runs';
 import { ITableRef } from '../../types/components/Table/Table';
 import runsAppModel from '../../services/models/runs/runsAppModel';
 import * as analytics from 'services/analytics';
+import setComponentRefs from 'utils/app/setComponentRefs';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -11,9 +12,12 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current) {
-      runsAppModel.setComponentRefs({
-        tableRef,
-      });
+      setComponentRefs(
+        {
+          tableRef,
+        },
+        runsAppModel,
+      );
     }
   }, [runsData?.data]);
 
