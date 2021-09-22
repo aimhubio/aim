@@ -548,16 +548,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function setActiveLineAndCircle(
-    lineKey?: string,
+    lineKey: string,
     focusedStateActive: boolean = false,
     force: boolean = false,
   ): void {
-    if (!lineKey) {
-      safeSyncHoverState({ activePoint: null });
-    } else if (
-      attributesRef.current.xStep ||
-      attributesRef.current.xStep === 0
-    ) {
+    if (attributesRef.current.xStep || attributesRef.current.xStep === 0) {
       const mouseX = attributesRef.current.xScale(attributesRef.current.xStep);
       // get nearestCircles depends on previous xStep
       const nearestCirclesByXStep = getNearestCircles(mouseX);

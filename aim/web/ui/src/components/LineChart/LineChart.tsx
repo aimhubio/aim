@@ -219,7 +219,7 @@ const LineChart = React.forwardRef(function LineChart(
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
-      lineKey?: string,
+      lineKey: string,
       focusedStateActive: boolean = false,
       force: boolean = false,
     ) => {
