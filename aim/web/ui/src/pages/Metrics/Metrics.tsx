@@ -30,7 +30,7 @@ function Metrics(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
         curveInterpolation: props.curveInterpolation,
-        displayOutliers: props.displayOutliers,
+        ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
         aggregatedData: props.aggregatedData?.filter(
           (data) => data.chartIndex === index,
@@ -46,7 +46,7 @@ function Metrics(
     props.lineChartData,
     props.axesScaleType,
     props.curveInterpolation,
-    props.displayOutliers,
+    props.ignoreOutliers,
     props.highlightMode,
     props.zoom,
     props.chartTitleData,
@@ -117,14 +117,14 @@ function Metrics(
                       smoothingAlgorithm={props.smoothingAlgorithm}
                       smoothingFactor={props.smoothingFactor}
                       curveInterpolation={props.curveInterpolation}
-                      displayOutliers={props.displayOutliers}
+                      ignoreOutliers={props.ignoreOutliers}
                       zoom={props.zoom}
                       highlightMode={props.highlightMode}
                       aggregationConfig={props.aggregationConfig}
                       axesScaleType={props.axesScaleType}
                       alignmentConfig={props.alignmentConfig}
                       onChangeTooltip={props.onChangeTooltip}
-                      onDisplayOutliersChange={props.onDisplayOutliersChange}
+                      onIgnoreOutliersChange={props.onIgnoreOutliersChange}
                       onZoomChange={props.onZoomChange}
                       onHighlightModeChange={props.onHighlightModeChange}
                       onAxesScaleTypeChange={props.onAxesScaleTypeChange}

@@ -45,7 +45,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
-  displayOutliers: boolean;
+  ignoreOutliers: boolean;
   zoom: IChartZoom;
   curveInterpolation: CurveEnum;
   axesScaleType: IAxesScaleState;
@@ -68,7 +68,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
-  onDisplayOutliersChange: () => void;
+  onIgnoreOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,

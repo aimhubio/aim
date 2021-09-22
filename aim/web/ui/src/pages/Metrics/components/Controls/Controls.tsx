@@ -12,9 +12,9 @@ import TooltipContentPopover from 'components/TooltipContentPopover/TooltipConte
 // @ts-ignore
 import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
 import Icon from 'components/Icon/Icon';
+import { Tooltip } from '@material-ui/core';
 
 import './Controls.scss';
-import { Tooltip } from '@material-ui/core';
 
 function Controls(
   props: IControlProps,
@@ -150,19 +150,19 @@ function Controls(
       </div>
       <Tooltip
         title={
-          props.displayOutliers ? 'Outliers Are Ignored' : 'Ignore Outliers'
+          props.ignoreOutliers ? 'Outliers Are Ignored' : 'Ignore Outliers'
         }
       >
         <div
           className={`Controls__anchor ${
-            props.displayOutliers ? 'active outlined' : ''
+            props.ignoreOutliers ? 'active outlined' : ''
           }`}
-          onClick={props.onDisplayOutliersChange}
+          onClick={props.onIgnoreOutliersChange}
         >
-          {props.displayOutliers ? (
+          {props.ignoreOutliers ? (
             <Icon
               className={`Controls__icon ${
-                props.displayOutliers ? 'active' : ''
+                props.ignoreOutliers ? 'active' : ''
               }`}
               name='ignore-outliers'
             />

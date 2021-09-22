@@ -5,7 +5,7 @@ import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { removeOutliers } from 'utils/removeOutliers';
 import { ILine } from 'types/components/LineChart/LineChart';
 
-function processData(data: ILine[], displayOutliers: boolean): IProcessData {
+function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
   let xValues: number[] = [];
   let yValues: number[] = [];
 
@@ -31,7 +31,7 @@ function processData(data: ILine[], displayOutliers: boolean): IProcessData {
   xValues = _.uniq(xValues);
   yValues = _.uniq(yValues);
 
-  if (!displayOutliers) {
+  if (ignoreOutliers) {
     yValues = removeOutliers(yValues, 4);
   }
 
