@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Grid, PopoverPosition, GridSize, Typography } from '@material-ui/core';
 import _ from 'lodash-es';
 
@@ -30,7 +30,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
-  const popoverContentRef = useRef<any>({});
+  const popoverContentRef = React.useRef<HTMLDivElement>(null);
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
@@ -61,10 +61,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           props.onActivePointChange(activePoint, focusedStateActive);
         }
 
-        setPopoverPosition({
-          top: activePoint.topPos - (containerRef.current?.scrollTop || 0),
-          left: activePoint.leftPos - (containerRef.current?.scrollLeft || 0),
-        });
+        if (activePointRef.current && containerRef.current) {
+          setPopoverPosition({
+            top: activePointRef.current.topPos - containerRef.current.scrollTop,
+            left:
+              activePointRef.current.leftPos - containerRef.current.scrollLeft,
+          });
+        } else {
+          setPopoverPosition(null);
+        }
       }
       // on MouseLeave
       else {
@@ -79,14 +84,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const onScroll = React.useCallback((): void => {
     if (popoverPosition) {
-      setPopoverPosition({
-        top:
-          (activePointRef.current?.topPos || 0) -
-          (containerRef.current?.scrollTop || 0),
-        left:
-          (activePointRef.current?.leftPos || 0) -
-          (containerRef.current?.scrollLeft || 0),
-      });
+      if (activePointRef.current && containerRef.current) {
+        setPopoverPosition({
+          top: activePointRef.current.topPos - containerRef.current.scrollTop,
+          left:
+            activePointRef.current.leftPos - containerRef.current.scrollLeft,
+        });
+      } else {
+        setPopoverPosition(null);
+      }
     }
   }, [popoverPosition]);
 
@@ -178,7 +184,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               }
             >
               <PopoverContent
-                popoverContentRef={popoverContentRef}
                 chartType={props.chartType}
                 tooltipContent={props.tooltip.content}
                 focusedState={props.focusedState}
