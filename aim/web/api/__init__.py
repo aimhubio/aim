@@ -15,7 +15,6 @@ def create_app():
         allow_credentials=True,
         max_age=86400
     )
-    app.add_middleware(GZipMiddleware)
 
     from aim.web.api.runs.views import runs_router
     from aim.web.api.tags.views import tags_router
@@ -23,14 +22,22 @@ def create_app():
     from aim.web.api.dashboard_apps.views import dashboard_apps_router
     from aim.web.api.dashboards.views import dashboards_router
     from aim.web.api.projects.views import projects_router
-    from aim.web.api.views import general_router
+    from aim.web.api.views import statics_router
 
-    app.include_router(dashboard_apps_router, prefix='/api/apps')
-    app.include_router(dashboards_router, prefix='/api/dashboards')
-    app.include_router(experiment_router, prefix='/api/experiments')
-    app.include_router(projects_router, prefix='/api/projects')
-    app.include_router(runs_router, prefix='/api/runs')
-    app.include_router(tags_router, prefix='/api/tags')
-    app.include_router(general_router)
+    api_app = FastAPI()
+    api_app.add_middleware(GZipMiddleware)
+
+    api_app.include_router(dashboard_apps_router, prefix='/apps')
+    api_app.include_router(dashboards_router, prefix='/dashboards')
+    api_app.include_router(experiment_router, prefix='/experiments')
+    api_app.include_router(projects_router, prefix='/projects')
+    api_app.include_router(runs_router, prefix='/runs')
+    api_app.include_router(tags_router, prefix='/tags')
+    app.mount('/api', api_app)
+
+    static_files_app = FastAPI()
+
+    static_files_app.include_router(statics_router)
+    app.mount('/', static_files_app)
 
     return app
