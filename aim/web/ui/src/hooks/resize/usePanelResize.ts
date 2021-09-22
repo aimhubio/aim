@@ -11,14 +11,14 @@ function usePanelResize(
   onResizeEnd: (height: string) => void,
 ) {
   const [panelResizing, setPanelResizing] = React.useState<boolean>(false);
-  const frameRef = React.useRef<any>();
+  const frameRef = React.useRef<number>();
 
   const startResize = React.useCallback(
     (event: MouseEvent): void => {
       if (tableConfig?.resizeMode !== ResizeModeEnum.Hide) {
         wrapperRef.current.style.userSelect = 'none';
         wrapperRef.current.style.cursor = 'row-resize';
-        frameRef.current = requestAnimationFrame(() => {
+        frameRef.current = window.requestAnimationFrame(() => {
           if (
             bottomPanelRef.current &&
             topPanelRef.current &&
@@ -48,7 +48,9 @@ function usePanelResize(
   );
 
   const endResize = React.useCallback(() => {
-    cancelAnimationFrame(frameRef.current);
+    if (frameRef.current) {
+      window.cancelAnimationFrame(frameRef.current);
+    }
     setPanelResizing(false);
     wrapperRef.current.style.userSelect = 'unset';
     wrapperRef.current.style.cursor = 'unset';
