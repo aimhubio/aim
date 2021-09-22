@@ -86,7 +86,10 @@ function Column({
   }, []);
   return (
     <div
-      className='Table__column Table__column--data'
+      className={classNames({
+        Table__column: true,
+        'Table__column--actions': col.key === 'actions',
+      })}
       style={{
         minWidth: maxWidth,
         maxWidth,
