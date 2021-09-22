@@ -1,4 +1,5 @@
 import React from 'react';
+
 import _, { isEmpty, isNil } from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
@@ -117,7 +118,7 @@ function getConfig(): IMetricAppConfig {
     },
     chart: {
       highlightMode: HighlightEnum.Off,
-      displayOutliers: true,
+      ignoreOutliers: true,
       zoom: {
         active: false,
         mode: ZoomEnum.SINGLE,
@@ -1345,15 +1346,15 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   }
 }
 
-function onDisplayOutliersChange(): void {
+function onIgnoreOutliersChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
-    configData.chart.displayOutliers = !configData?.chart.displayOutliers;
+    configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
     updateModelData(configData);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] ${
-      !configData?.chart.displayOutliers ? 'Display' : 'Hide'
+      !configData?.chart.ignoreOutliers ? 'Ignore' : 'Display'
     } outliers`,
   );
 }
@@ -2299,7 +2300,7 @@ const metricAppModel = {
   onHighlightModeChange,
   onZoomChange,
   onSmoothingChange,
-  onDisplayOutliersChange,
+  onIgnoreOutliersChange,
   onAxesScaleTypeChange,
   onAggregationConfigChange,
   onActivePointChange,

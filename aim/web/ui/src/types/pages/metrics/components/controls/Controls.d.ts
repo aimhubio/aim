@@ -16,7 +16,7 @@ import { IProjectParamsMetrics } from 'types/services/models/projects/projectsMo
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IChartTooltip;
-  displayOutliers: boolean;
+  ignoreOutliers: boolean;
   zoom?: IChartZoom;
   highlightMode: HighlightEnum;
   aggregationConfig: IAggregationConfig;
@@ -27,7 +27,7 @@ export interface IControlProps {
   alignmentConfig: IAlignmentConfig;
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
-  onDisplayOutliersChange: () => void;
+  onIgnoreOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;

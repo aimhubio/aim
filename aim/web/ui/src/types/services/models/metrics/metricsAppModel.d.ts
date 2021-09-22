@@ -126,7 +126,7 @@ interface IMetricAppConfig {
   };
   chart: {
     highlightMode: HighlightEnum;
-    displayOutliers: boolean;
+    ignoreOutliers: boolean;
     zoom: IChartZoom;
     axesScaleType: IAxesScaleState;
     curveInterpolation: CurveEnum;

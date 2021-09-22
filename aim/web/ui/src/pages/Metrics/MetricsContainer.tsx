@@ -125,7 +125,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       panelResizing={panelResizing}
       lineChartData={metricsData?.lineChartData as ILine[][]}
       chartTitleData={metricsData?.chartTitleData as IChartTitleData}
-      displayOutliers={metricsData?.config?.chart.displayOutliers as boolean}
+      ignoreOutliers={metricsData?.config?.chart.ignoreOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
@@ -168,7 +168,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       columnsWidths={metricsData?.config?.table.columnsWidths}
       // methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
-      onDisplayOutliersChange={metricAppModel.onDisplayOutliersChange}
+      onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
       onZoomChange={metricAppModel.onZoomChange}
       onHighlightModeChange={metricAppModel.onHighlightModeChange}
       onSmoothingChange={metricAppModel.onSmoothingChange}
