@@ -20,7 +20,7 @@ jobs:
           ref: main
 
       - name: Build UI
-        working-directory: ./aim/web/ui_v2
+        working-directory: ./aim/web/ui
         run: |
           npm i
           CI=false npm run build
@@ -61,7 +61,7 @@ jobs:
           ref: main
 
       - name: Build UI
-        working-directory: ./aim/web/ui_v2
+        working-directory: ./aim/web/ui
         run: |
           npm i
           CI=false npm run build
