@@ -44,7 +44,7 @@ function TagRunsTable({
       tableRef.current?.updateData({
         // eslint-disable-next-line react/prop-types
         newData: runsList.map((run: ITagRun) => ({
-          runs: { name: run.experiment, id: run.run_id },
+          runs: { name: run.run_id, id: run.run_id },
           createdDate: moment(run.creation_time).format('DD-MM-YY HH:mm'),
         })),
         newColumns: tableColumns,

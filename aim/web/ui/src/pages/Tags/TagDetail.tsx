@@ -11,6 +11,7 @@ import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
 
 import './Tags.scss';
+import TagLabel from 'components/TagLabel/TagLabel';
 
 function TagDetail({
   id,
@@ -43,22 +44,11 @@ function TagDetail({
           width='auto'
         >
           {tagInfo && (
-            <div className='TagContainer__tagBox'>
-              <div
-                className='TagContainer__tagBox__tag'
-                style={{
-                  borderColor: tagInfo?.color,
-                  background: hexToRgbA(tagInfo?.color, 0.1),
-                }}
-              >
-                <span
-                  className='TagContainer__tagBox__tag__content'
-                  style={{ color: tagInfo?.color }}
-                >
-                  {tagInfo?.name}
-                </span>
-              </div>
-            </div>
+            <TagLabel
+              size='medium'
+              color={tagInfo?.color}
+              label={tagInfo?.name}
+            />
           )}
         </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>
