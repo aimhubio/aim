@@ -32,7 +32,7 @@ def package_files(directory):
     return paths
 
 
-ui_files = package_files('aim/web/ui_v2/build')
+ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
 storage_migration_files = package_files('aim/storage/migrations')
 version_files = ['../aim/VERSION', ]
