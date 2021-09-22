@@ -818,6 +818,10 @@ function onActivePointChange(
         },
       },
     };
+
+    if (config.chart.focusedState.active !== focusedStateActive) {
+      updateURL(configData);
+    }
   }
 
   model.setState({
@@ -829,11 +833,15 @@ function onActivePointChange(
 function onParamsSelectChange(data: any[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, params: data },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, params: data },
-      },
+      config: newConfig,
     });
   }
 }
@@ -841,11 +849,15 @@ function onParamsSelectChange(data: any[]) {
 function onSelectRunQueryChange(query: string) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -947,7 +959,10 @@ function onGroupingReset(groupName: GroupNameType) {
   analytics.trackEvent('[ParamsExplorer] Reset grouping');
 }
 
-function updateModelData(configData: IParamsAppConfig): void {
+function updateModelData(
+  configData: IParamsAppConfig = model.getState()!.config!,
+  shouldURLUpdate?: boolean,
+): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
@@ -973,6 +988,11 @@ function updateModelData(configData: IParamsAppConfig): void {
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
   });
+
+  if (shouldURLUpdate) {
+    updateURL(configData);
+  }
+
   model.setState({
     config: configData,
     data,
@@ -1372,38 +1392,28 @@ function onResetConfigData(): void {
   }
 }
 
-function updateGroupingStateUrl(): void {
-  const groupingData = model.getState()?.config?.grouping;
-  if (groupingData) {
-    updateUrlParam('grouping', groupingData);
+/**
+ * function updateURL has 2 major functionalities:
+ *    1. Keeps URL in sync with the app config
+ *    2. Stores updated URL in localStorage if App is not in the bookmark state
+ * @param {IMetricAppConfig} configData - the current state of the app config
+ */
+function updateURL(configData = model.getState()!.config!) {
+  const { grouping, chart, select } = configData;
+  const url: string = getUrlWithParam(
+    ['grouping', 'chart', 'select'],
+    [encode(grouping), encode(chart), encode(select)],
+  );
+
+  if (url === `${window.location.pathname}${window.location.search}`) {
+    return;
   }
-}
 
-function updateChartStateUrl(): void {
-  const chartData = model.getState()?.config?.chart;
-
-  if (chartData) {
-    updateUrlParam('chart', chartData);
-  }
-}
-
-function updateSelectStateUrl(): void {
-  const selectData = model.getState()?.config?.select;
-  if (selectData) {
-    updateUrlParam('select', selectData);
-  }
-}
-
-function updateUrlParam(
-  paramName: string,
-  data: Record<string, unknown>,
-): void {
-  const encodedUrl: string = encode(data);
-  const url: string = getUrlWithParam(paramName, encodedUrl);
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('paramsUrl', url);
   }
+
   window.history.pushState(null, '', url);
 }
 
@@ -1741,9 +1751,6 @@ const paramsAppModel = {
   onNotificationDelete,
   onChangeTooltip,
   onExportTableData,
-  updateChartStateUrl,
-  updateSelectStateUrl,
-  updateGroupingStateUrl,
   onTableRowHover,
   onTableRowClick,
   setDefaultAppConfigData,
@@ -1758,6 +1765,8 @@ const paramsAppModel = {
   onSortReset,
   onSortChange,
   updateColumnsWidths,
+  updateURL,
+  updateModelData,
 };
 
 export default paramsAppModel;
