@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { Chip } from '@material-ui/core';
+
 import Icon from '../Icon/Icon';
 import { ITagLabelProps } from 'types/components/TagLabel/TagLabel';
 

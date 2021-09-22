@@ -3,15 +3,14 @@ import { isEmpty } from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
-import hexToRgbA from 'utils/haxToRgba';
 import TagRunsTable from './TagRunsTable';
-import { ITagDetailProps } from 'types/pages/tags/Tags';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
+import TagLabel from 'components/TagLabel/TagLabel';
+import { ITagDetailProps } from 'types/pages/tags/Tags';
 
 import './Tags.scss';
-import TagLabel from 'components/TagLabel/TagLabel';
 
 function TagDetail({
   id,
