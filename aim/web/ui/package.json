@@ -51,7 +51,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && gzipper c -i js,css,html ./build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
@@ -127,6 +127,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "gzipper": "^5.0.1",
     "jss-plugin-template": "^10.7.1",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0"
