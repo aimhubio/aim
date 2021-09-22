@@ -28,6 +28,9 @@ function createAPIRequestWrapper<ResponseDataType>(
 
               resolve(data);
             } catch (err) {
+              if (typeof exceptionHandler === 'function') {
+                exceptionHandler(err);
+              }
               reject(err);
             }
           })
@@ -35,6 +38,9 @@ function createAPIRequestWrapper<ResponseDataType>(
             if (err.name === 'AbortError') {
               // Fetch aborted
             } else {
+              if (typeof exceptionHandler === 'function') {
+                exceptionHandler(err);
+              }
               reject(err);
             }
           });

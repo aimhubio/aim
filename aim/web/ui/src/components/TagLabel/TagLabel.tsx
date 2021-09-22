@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { Chip } from '@material-ui/core';
+
 import Icon from '../Icon/Icon';
 import { ITagLabelProps } from 'types/components/TagLabel/TagLabel';
 
@@ -15,14 +15,16 @@ function TagLabel({
   onDelete,
   onClick,
   size = 'medium',
+  maxWidth = 'auto',
 }: ITagLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Chip
       id={id}
       style={{
         backgroundColor: `${color}1a`,
-        color: color,
+        color,
         border: `0.0625rem solid ${color}`,
+        maxWidth,
       }}
       size='small'
       className={`TagLabel TagLabel${'__' + size}`}
