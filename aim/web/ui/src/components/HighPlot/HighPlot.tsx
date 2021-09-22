@@ -141,7 +141,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       attributesRef.current.focusedState = focusedState;
     },
     setActiveLineAndCircle: (
-      lineKey?: string,
+      lineKey: string,
       focusedStateActive: boolean = false,
       force: boolean = false,
     ) => {

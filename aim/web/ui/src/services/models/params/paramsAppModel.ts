@@ -318,7 +318,7 @@ function onTableRowClick(rowKey?: string): void {
     focusedStateActive = false;
   }
   chartPanelRef?.current?.setActiveLineAndCircle(
-    rowKey,
+    rowKey || configData?.chart?.focusedState?.key,
     focusedStateActive,
     true,
   );
