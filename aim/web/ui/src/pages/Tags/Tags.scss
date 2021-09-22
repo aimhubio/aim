@@ -214,8 +214,8 @@
       display: flex;
       align-items: center;
       &__runIconBox {
-        width: 1em;
-        height: 1em;
+        width: 1rem;
+        height: 1rem;
         border-radius: 50%;
         border: 1px solid $primary-color;
         display: flex;
@@ -338,7 +338,6 @@
   }
 }
 
-
 .TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper {
   padding: 8px;
   border-radius: 6px;
@@ -349,6 +348,6 @@
   color: $primary-color;
   cursor: pointer;
   &:hover {
-    background-color:rgba(28, 40, 82, 0.05);
+    background-color: rgba(28, 40, 82, 0.05);
   }
 }
