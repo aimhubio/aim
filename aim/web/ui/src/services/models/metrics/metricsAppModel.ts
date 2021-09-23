@@ -50,7 +50,6 @@ import {
   IChartTooltip,
   IChartZoom,
   IDashboardData,
-  IGetGroupingPersistIndex,
   IGroupingSelectOption,
   IMetricAppConfig,
   IMetricAppModelState,
@@ -75,6 +74,7 @@ import {
   AlignmentNotificationsEnum,
   BookmarkNotificationsEnum,
 } from 'config/notification-messages/notificationMessages';
+import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
@@ -83,6 +83,11 @@ import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import { getFilteredGroupingOptions } from 'utils/app/getFilteredGroupingOptions';
+import isGroupingApplied from 'utils/app/isGroupingApplied';
+import getGroupConfig from 'utils/app/getGroupConfig';
+import resetChartZoom from 'utils/app/resetChartZoom';
+import getFilteredRow from 'utils/app/getFilteredRow';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -537,69 +542,13 @@ function processData(data: IRun<IMetricTrace>[]): {
   };
 }
 
-function getFilteredGroupingOptions(
-  grouping: IMetricAppConfig['grouping'],
-  groupName: GroupNameType,
-): string[] {
-  const { reverseMode, isApplied } = grouping;
-  const groupingSelectOptions = model.getState()?.groupingSelectOptions;
-  if (groupingSelectOptions) {
-    const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-      .map((item) => item.value);
-    return isApplied[groupName]
-      ? reverseMode[groupName]
-        ? filteredOptions
-        : grouping[groupName]
-      : [];
-  } else {
-    return [];
-  }
-}
-
-function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
-  grouping,
-}: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
-  let index = BigInt(0);
-  for (let i = 0; i < configHash.length; i++) {
-    const charCode = configHash.charCodeAt(i);
-    if (charCode > 47 && charCode < 58) {
-      index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
-      );
-    } else if (charCode > 96 && charCode < 103) {
-      index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
-      );
-    }
-  }
-  return index;
-}
-
-function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
-  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
-  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
-  if (
-    groupByColor.length === 0 &&
-    groupByStroke.length === 0 &&
-    groupByChart.length === 0
-  ) {
-    return false;
-  }
-  return true;
-}
-
 function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   const configData = model.getState()!.config;
   const grouping = configData!.grouping;
   const { paletteIndex } = grouping;
-  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
-  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
+  const groupByColor = getFilteredGroupingOptions('color', model);
+  const groupByStroke = getFilteredGroupingOptions('stroke', model);
+  const groupByChart = getFilteredGroupingOptions('chart', model);
   if (
     groupByColor.length === 0 &&
     groupByStroke.length === 0 &&
@@ -1182,29 +1131,6 @@ function getDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
-function getGroupConfig(
-  metricsCollection: IMetricsCollection<IMetric>,
-  groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
-) {
-  const configData = model.getState()?.config;
-  let groupConfig: { [key: string]: {} } = {};
-
-  for (let groupItemKey of groupingItems) {
-    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
-    if (groupItem.length) {
-      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
-        Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: JSON.stringify(
-            _.get(metricsCollection.config, paramKey, '-'),
-          ),
-        });
-        return acc;
-      }, {});
-    }
-  }
-  return groupConfig;
-}
-
 function setTooltipData(
   processedData: IMetricsCollection<IMetric>[],
   paramKeys: string[],
@@ -1212,7 +1138,7 @@ function setTooltipData(
   const data: { [key: string]: any } = {};
 
   for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig(metricsCollection);
+    const groupConfig = getGroupConfig(metricsCollection, model);
 
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
@@ -1238,6 +1164,7 @@ function setTooltipData(
 //Chart Methods
 
 function onHighlightModeChange(mode: HighlightEnum): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     model.setState({
@@ -1366,24 +1293,12 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 }
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
-  const isAppliedGrouping = isGroupingApplied(configData.grouping);
+  const isAppliedGrouping = isGroupingApplied(model);
   configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
   if (!isAppliedGrouping) {
     configData.chart.aggregationConfig.isApplied = false;
   }
   analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
-}
-
-function resetChartZoom(configData: IMetricAppConfig): void {
-  configData.chart = {
-    ...configData.chart,
-    zoom: {
-      ...configData.chart.zoom,
-      active: false,
-      history: [],
-    },
-  };
-  analytics.trackEvent('[MetricsExplorer][Chart] Reset zoom');
 }
 
 function updateModelData(configData: IMetricAppConfig): void {
@@ -1430,10 +1345,10 @@ function onGroupingSelectChange({
   groupName,
   list,
 }: IOnGroupingSelectChangeParams) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.grouping) {
+  let configData: IMetricAppConfig | any = model.getState()?.config;
+  if (configData) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
-    resetChartZoom(configData);
+    configData = resetChartZoom(configData, 'Metrics');
     setAggregationEnabled(configData);
     updateModelData(configData);
   }
@@ -1451,7 +1366,7 @@ function onGroupingModeChange({
       [groupName]: value,
     };
     if (groupName === 'chart') {
-      resetChartZoom(configData);
+      resetChartZoom(configData, 'Metrics');
     }
     setAggregationEnabled(configData);
     updateModelData(configData);
@@ -1647,28 +1562,6 @@ function onTableRowClick(rowKey?: string): void {
   );
 }
 
-function getFilteredRow(
-  columnKeys: string[],
-  row: IMetricTableRowData,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
-}
-
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config } = model.getState() as IMetricAppModelState;
 
@@ -1715,7 +1608,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   groupedRows.forEach(
     (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
       groupedRow.forEach((row: IMetricTableRowData) => {
-        const filteredRow = getFilteredRow(filteredHeader, row);
+        const filteredRow = getFilteredRow<IMetricTableRowData>(
+          filteredHeader,
+          row,
+        );
         dataToExport.push(filteredRow);
       });
       if (groupedRows.length - 1 !== groupedRowIndex) {
@@ -2144,6 +2040,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       ...configData.table,
       resizeMode: mode,
     };
+
     const config = {
       ...configData,
       table,
@@ -2152,7 +2049,6 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
@@ -2174,7 +2070,6 @@ function onTableResizeEnd(tableHeight: string) {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
 }
 
@@ -2277,7 +2172,6 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
 }
 

@@ -5,13 +5,13 @@ import { saveAs } from 'file-saver';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
-import { encode, decode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import COLORS from 'config/colors/colors';
@@ -24,23 +24,22 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
-  IGroupingSelectOption,
   GroupNameType,
   IAppData,
+  IChartTitle,
+  IChartTitleData,
+  IChartTooltip,
   IDashboardData,
-  IGetGroupingPersistIndex,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricsCollection,
+  IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
-  IChartTooltip,
-  IChartTitle,
-  IChartTitleData,
-  IMetricTableRowData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IParam,
   IParamsAppConfig,
@@ -61,6 +60,9 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
+import getGroupConfig from 'utils/app/getGroupConfig';
+import getFilteredRow from 'utils/app/getFilteredRow';
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -528,37 +530,14 @@ function getDataAsLines(
   });
 }
 
-function getGroupConfig(
-  metricsCollection: IMetricsCollection<IParam>,
-  groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
-) {
-  const configData = model.getState()?.config;
-  let groupConfig: { [key: string]: {} } = {};
-
-  for (let groupItemKey of groupingItems) {
-    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
-    if (groupItem.length) {
-      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
-        Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: JSON.stringify(
-            _.get(metricsCollection.config, paramKey, '-'),
-          ),
-        });
-        return acc;
-      }, {});
-    }
-  }
-  return groupConfig;
-}
-
-function setTooltipData(
+function setTooltipData( // separated
   processedData: IMetricsCollection<IParam>[],
   paramKeys: string[],
 ): void {
   const data: { [key: string]: any } = {};
 
   for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig(metricsCollection);
+    const groupConfig = getGroupConfig(metricsCollection, model);
     for (let param of metricsCollection.data) {
       data[param.key] = {
         runHash: param.run.hash,
@@ -578,29 +557,7 @@ function setTooltipData(
   tooltipData = data;
 }
 
-function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
-  grouping,
-}: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
-  let index = BigInt(0);
-  for (let i = 0; i < configHash.length; i++) {
-    const charCode = configHash.charCodeAt(i);
-    if (charCode > 47 && charCode < 58) {
-      index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
-      );
-    } else if (charCode > 96 && charCode < 103) {
-      index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
-      );
-    }
-  }
-  return index;
-}
-
-function getFilteredGroupingOptions(
+function getFilteredGroupingOptions( // separated
   grouping: IParamsAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
@@ -1264,28 +1221,6 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
   analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }
 
-function getFilteredRow(
-  columnKeys: string[],
-  row: IMetricTableRowData,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
-}
-
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, metricsColumns } = model.getState() as any;
   const tableData = getDataAsTableRows(
@@ -1330,7 +1265,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   groupedRows.forEach(
     (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
       groupedRow.forEach((row: IMetricTableRowData) => {
-        const filteredRow = getFilteredRow(filteredHeader, row);
+        const filteredRow = getFilteredRow<IMetricTableRowData>(
+          filteredHeader,
+          row,
+        );
         dataToExport.push(filteredRow);
       });
       if (groupedRows.length - 1 !== groupedRowIndex) {

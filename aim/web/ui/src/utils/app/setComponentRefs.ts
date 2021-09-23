@@ -1,12 +1,16 @@
-import { IModel } from 'types/services/models/model';
+import { ISetComponentRefsParams } from 'types/utils/app/setComponentsRefs';
 
-export default function setComponentRefs(
-  refElement: React.MutableRefObject<any> | object,
-  model: IModel<any>,
-) {
-  const modelState = model.getState();
+/**
+ *
+ * @param {ISetComponentRefsParams<T>}
+ */
+
+export default function setComponentRefs<T>(
+  params: ISetComponentRefsParams<T>,
+): void {
+  const modelState = params.model.getState();
   if (modelState?.refs) {
-    modelState.refs = Object.assign(modelState.refs, refElement);
-    model.setState({ refs: modelState.refs });
+    modelState.refs = Object.assign(modelState.refs, params.refElement);
+    params.model.setState({ refs: modelState.refs });
   }
 }

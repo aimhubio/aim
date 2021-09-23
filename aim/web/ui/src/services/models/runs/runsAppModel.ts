@@ -7,8 +7,8 @@ import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import {
@@ -20,31 +20,30 @@ import { IParam } from 'types/services/models/params/paramsAppModel';
 import getObjectPaths from 'utils/getObjectPaths';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { encode, decode } from 'utils/encoder/encoder';
-import { IMetric } from '../../../types/services/models/metrics/metricModel';
+import { decode, encode } from 'utils/encoder/encoder';
+import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
   GroupNameType,
-  IGetGroupingPersistIndex,
   IMetricAppConfig,
   IMetricsCollection,
   IMetricTableRowData,
-} from '../../../types/services/models/metrics/metricsAppModel';
+} from 'types/services/models/metrics/metricsAppModel';
 import {
   aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
 } from '../../../utils/aggregateGroupData';
-import { AlignmentOptions } from '../../../config/alignment/alignmentOptions';
-import { INotification } from '../../../types/components/NotificationContainer/NotificationContainer';
-import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
-import { CurveEnum, ScaleEnum } from '../../../utils/d3';
-import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
-import { RowHeightSize } from '../../../config/table/tableConfigs';
-import getStateFromUrl from '../../../utils/getStateFromUrl';
-import getUrlWithParam from '../../../utils/getUrlWithParam';
-import { setItem, getItem } from '../../../utils/storage';
-import { ITableColumn } from '../../../types/pages/metrics/components/TableColumns/TableColumns';
-import JsonToCSV from '../../../utils/JsonToCSV';
+import { AlignmentOptions } from 'config/alignment/alignmentOptions';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { RowHeightSize } from 'config/table/tableConfigs';
+import getStateFromUrl from 'utils/getStateFromUrl';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import { getItem, setItem } from 'utils/storage';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import JsonToCSV from 'utils/JsonToCSV';
 import contextToString from 'utils/contextToString';
 import {
   getRunsTableColumns,
@@ -52,6 +51,8 @@ import {
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 import * as analytics from 'services/analytics';
 import { RowHeightEnum } from 'config/enums/tableEnums';
+import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
+import getFilteredRow from 'utils/app/getFilteredRow';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -370,28 +371,6 @@ function initialize(appId: string = '') {
   return getRunsData();
 }
 
-function getFilteredRow(
-  columnKeys: string[],
-  row: IMetricTableRowData,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
-}
-
 function onExportTableData(e: React.ChangeEvent<any>): void {
   // TODO need to get data and params from state not from processData
   const { data, params, metricsColumns } = processData(
@@ -434,7 +413,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   groupedRows.forEach(
     (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
       groupedRow.forEach((row: IMetricTableRowData) => {
-        const filteredRow = getFilteredRow(filteredHeader, row);
+        const filteredRow = getFilteredRow<IMetricTableRowData>(
+          filteredHeader,
+          row,
+        );
         dataToExport.push(filteredRow);
       });
       if (groupedRows.length - 1 !== groupedRowIndex) {
@@ -482,28 +464,6 @@ function getFilteredGroupingOptions(
   } else {
     return [];
   }
-}
-
-function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
-  grouping,
-}: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
-  let index = BigInt(0);
-  for (let i = 0; i < configHash.length; i++) {
-    const charCode = configHash.charCodeAt(i);
-    if (charCode > 47 && charCode < 58) {
-      index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
-      );
-    } else if (charCode > 96 && charCode < 103) {
-      index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
-      );
-    }
-  }
-  return index;
 }
 
 function groupData(data: any): IMetricsCollection<IMetric>[] {

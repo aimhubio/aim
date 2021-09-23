@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import useModel from 'hooks/model/useModel';
 import Runs from './Runs';
-import { ITableRef } from '../../types/components/Table/Table';
-import runsAppModel from '../../services/models/runs/runsAppModel';
+import { ITableRef } from 'types/components/Table/Table';
+import runsAppModel from 'services/models/runs/runsAppModel';
 import * as analytics from 'services/analytics';
 import setComponentRefs from 'utils/app/setComponentRefs';
 
@@ -12,12 +12,12 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current) {
-      setComponentRefs(
-        {
+      setComponentRefs({
+        refElement: {
           tableRef,
         },
-        runsAppModel,
-      );
+        model: runsAppModel,
+      });
     }
   }, [runsData?.data]);
 

@@ -16,16 +16,16 @@ import {
   IAggregationConfig,
   IAlignmentConfig,
   IAppData,
+  IChartTitleData,
   IChartTooltip,
+  IChartZoom,
+  IFocusedState,
   IGroupingSelectOption,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
-  IChartTitleData,
-  IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -60,13 +60,13 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      setComponentRefs(
-        {
+      setComponentRefs<IMetricAppModelState>({
+        model: metricAppModel,
+        refElement: {
           tableRef,
           chartPanelRef,
         },
-        metricAppModel,
-      );
+      });
     }
   }, [metricsData?.rawData]);
 
