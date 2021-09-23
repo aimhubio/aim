@@ -27,7 +27,7 @@ function TagsTable({
       width: 200,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         const { name, color } = cellData;
-        return <TagLabel label={name} color={color} key={i} />;
+        return <TagLabel label={name} color={color} key={i} maxWidth='100%' />;
       },
     },
     {
@@ -37,7 +37,7 @@ function TagsTable({
       width: 150,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         return (
-          <Button className='TagsTable__runContainer__runBox'>
+          <div className='TagsTable__runContainer__runBox'>
             <div className='TagsTable__runContainer__runBox'>
               <span className='TagsTable__runContainer__runBox__runIconBox'>
                 <span className='TagsTable__runContainer__runBox__runIconBox__runIcon'></span>
@@ -46,7 +46,7 @@ function TagsTable({
                 {cellData.count} Runs
               </span>
             </div>
-          </Button>
+          </div>
         );
       },
     },

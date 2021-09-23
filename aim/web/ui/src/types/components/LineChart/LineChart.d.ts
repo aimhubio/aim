@@ -66,7 +66,7 @@ export interface IAttributesRef {
   yScale?: IGetAxisScale;
   updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
   setActiveLineAndCircle?: (
-    lineKey?: string,
+    lineKey: string,
     focusedStateActive: boolean = false,
     force: boolean = false,
   ) => void;
