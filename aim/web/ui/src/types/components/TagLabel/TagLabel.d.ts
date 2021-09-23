@@ -10,4 +10,5 @@ export interface ITagLabelProps {
   size?: 'small' | 'medium';
   onDelete?: (label: string) => void;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+  maxWidth?: string;
 }

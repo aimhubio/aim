@@ -32,6 +32,8 @@ const drawParallelHoverAttributes = ({
   axesNodeRef,
 }: IDrawParallelHoverAttributesProps) => {
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
+  let requestId = 0;
+
   const { margin } = visBoxRef.current;
   const svgArea = d3.select(visAreaRef.current).select('svg');
   const keysOfDimensions = Object.keys(dimensions);
@@ -247,57 +249,50 @@ const drawParallelHoverAttributes = ({
   }
 
   function setActiveLineAndCircle(
-    lineKey?: string,
+    lineKey: string,
     focusedStateActive: boolean = false,
     force: boolean = false,
   ): void {
-    if (!lineKey) {
-      safeSyncHoverState({
-        activePoint: attributesRef.current?.activePoint || null,
-        focusedStateActive: false,
-      });
-    } else {
-      let xPos = 0;
-      const xStep = attributesRef.current.xScale.step();
-      let closestCircle;
-      let nearestCircles;
-      while (xPos <= attributesRef.current.xScale.range()[1]) {
-        nearestCircles = getNearestCircles(xPos);
-        closestCircle = nearestCircles.find((c) => c.key === lineKey);
-        if (closestCircle) {
-          break;
-        }
-        xPos += xStep;
+    let xPos = 0;
+    const xStep = attributesRef.current.xScale.step();
+    let closestCircle;
+    let nearestCircles;
+    while (xPos <= attributesRef.current.xScale.range()[1]) {
+      nearestCircles = getNearestCircles(xPos);
+      closestCircle = nearestCircles.find((c) => c.key === lineKey);
+      if (closestCircle) {
+        break;
       }
+      xPos += xStep;
+    }
 
-      if (closestCircle?.key !== attributesRef.current?.lineKey || force) {
-        const lineCirclesOfClosestCircle = closestCircle
-          ? //@ts-ignore
-            getLineCirclesOfClosestCircle(closestCircle, nearestCircles)
-          : [];
-        linesNodeRef.current.classed('highlight', false);
-        // previous line
-        clearActiveLine(attributesRef.current.lineKey);
-        // new line
-        //@ts-ignore
-        drawActiveLine(closestCircle?.key);
-        if (closestCircle) {
-          const activePoint = getActivePoint(closestCircle);
-          drawParallelCircles(
-            //@ts-ignore
-            nearestCircles,
-            lineCirclesOfClosestCircle,
-            closestCircle,
-          );
-          if (focusedStateActive) {
-            drawFocusedCircle(closestCircle?.key);
-          }
-          safeSyncHoverState({ activePoint, focusedStateActive });
-          attributesRef.current.activePoint = activePoint;
-          attributesRef.current.lineKey = closestCircle.key;
-          attributesRef.current.x = closestCircle.x + margin.left;
-          attributesRef.current.y = closestCircle.y + margin.top;
+    if (closestCircle?.key !== attributesRef.current?.lineKey || force) {
+      const lineCirclesOfClosestCircle = closestCircle
+        ? //@ts-ignore
+          getLineCirclesOfClosestCircle(closestCircle, nearestCircles)
+        : [];
+      linesNodeRef.current.classed('highlight', false);
+      // previous line
+      clearActiveLine(attributesRef.current.lineKey);
+      // new line
+      //@ts-ignore
+      drawActiveLine(closestCircle?.key);
+      if (closestCircle) {
+        const activePoint = getActivePoint(closestCircle);
+        drawParallelCircles(
+          //@ts-ignore
+          nearestCircles,
+          lineCirclesOfClosestCircle,
+          closestCircle,
+        );
+        if (focusedStateActive) {
+          drawFocusedCircle(closestCircle?.key);
         }
+        safeSyncHoverState({ activePoint, focusedStateActive });
+        attributesRef.current.activePoint = activePoint;
+        attributesRef.current.lineKey = closestCircle.key;
+        attributesRef.current.x = closestCircle.x + margin.left;
+        attributesRef.current.y = closestCircle.y + margin.top;
       }
     }
   }
@@ -386,7 +381,9 @@ const drawParallelHoverAttributes = ({
       return;
     }
     const mouse = d3.pointer(event);
-    updateFocusedChart({ mouse });
+    requestId = window.requestAnimationFrame(() => {
+      updateFocusedChart({ mouse });
+    });
   }
 
   function drawActiveLine(key: string): void {
@@ -439,6 +436,9 @@ const drawParallelHoverAttributes = ({
         .selectAll(`[id=Circle-${attributesRef.current?.lineKey}line]`)
         .remove();
 
+      if (requestId) {
+        window.cancelAnimationFrame(requestId);
+      }
       clearHoverAttributes();
       safeSyncHoverState({ activePoint: null });
     }

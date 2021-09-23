@@ -1,19 +1,17 @@
-import aimrocks
-
 from aim.storage import encoding as E
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag
-from aim.storage.containerview import ContainerView
+from aim.storage.container import Container
 from aim.storage import treeutils
-from aim.storage.arrayview import ContainerArrayView
+from aim.storage.arrayview import TreeArrayView
 
 from typing import Any, Iterator, Tuple, Union
 
 
-class TreeView:  # TODO implement (MutableMapping):
+class TreeView:
     def __init__(
         self,
-        container: ContainerView
+        container: Container
     ) -> None:
         self.container = container
 
@@ -25,7 +23,7 @@ class TreeView:  # TODO implement (MutableMapping):
     def finalize(
         self,
         *,
-        index: 'ContainerView'
+        index: 'Container'
     ):
         self.container.finalize(index=index)
 
@@ -86,7 +84,7 @@ class TreeView:  # TODO implement (MutableMapping):
         if not isinstance(path, (tuple, list)):
             path = (path,)
         encoded_path = E.encode_path(path)
-        return self.container.batch_delete(encoded_path)
+        return self.container.delete_range(encoded_path, encoded_path + b'\xff')
 
     def __setitem__(
         self,
@@ -97,13 +95,14 @@ class TreeView:  # TODO implement (MutableMapping):
             path = ()
         if not isinstance(path, (tuple, list)):
             path = (path,)
-        # move rocksdb to lower layers
-        batch = aimrocks.WriteBatch()
+
+        batch = self.container.batch()
         encoded_path = E.encode_path(path)
-        # TODO implement read-modify or in cython, low-level
-        self.container.batch_delete(encoded_path, batch)
+        self.container.delete_range(encoded_path, encoded_path + b'\xff',
+                                    store_batch=batch)
         for key, val in treeutils.encode_tree(value):
-            self.container.batch_set(encoded_path + key, val, store_batch=batch)
+            self.container.set(encoded_path + key, val,
+                               store_batch=batch)
         self.container.commit(batch)
 
     def keys(
@@ -161,8 +160,8 @@ class TreeView:  # TODO implement (MutableMapping):
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> ContainerArrayView:
-        return ContainerArrayView(self.view(path))
+    ) -> TreeArrayView:
+        return TreeArrayView(self.view(path))
 
     def first(
         self,
@@ -187,22 +186,3 @@ class TreeView:  # TODO implement (MutableMapping):
         if not p:
             raise KeyError
         return p[0]
-
-    # __iter__
-    # __len__
-    # __contains__
-    # keys
-    # items
-    # values
-    # get
-    # __eq__
-    # __ne__
-    # __setitem__
-    # __delitem__
-    # __iter__
-    # __len__
-    # pop
-    # popitem
-    # clear
-    # update
-    # and setdefault

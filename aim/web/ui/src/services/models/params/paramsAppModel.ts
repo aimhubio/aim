@@ -177,12 +177,12 @@ function resetModelOnError(detail?: any) {
 }
 
 function exceptionHandler(detail: any) {
-  let message = detail.message || 'Something went wrong';
+  let message = '';
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
   } else {
-    message = 'Something went wrong';
+    message = detail.message || 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -320,7 +320,7 @@ function onTableRowClick(rowKey?: string): void {
     focusedStateActive = false;
   }
   chartPanelRef?.current?.setActiveLineAndCircle(
-    rowKey,
+    rowKey || configData?.chart?.focusedState?.key,
     focusedStateActive,
     true,
   );

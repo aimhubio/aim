@@ -46,6 +46,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
+  let requestId = 0;
 
   const { margin, width, height } = visBoxRef.current;
 
@@ -548,16 +549,11 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function setActiveLineAndCircle(
-    lineKey?: string,
+    lineKey: string,
     focusedStateActive: boolean = false,
     force: boolean = false,
   ): void {
-    if (!lineKey) {
-      safeSyncHoverState({ activePoint: null });
-    } else if (
-      attributesRef.current.xStep ||
-      attributesRef.current.xStep === 0
-    ) {
+    if (attributesRef.current.xStep || attributesRef.current.xStep === 0) {
       const mouseX = attributesRef.current.xScale(attributesRef.current.xStep);
       // get nearestCircles depends on previous xStep
       const nearestCirclesByXStep = getNearestCircles(mouseX);
@@ -630,14 +626,15 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       return;
     }
     const mousePos = d3.pointer(event);
-
     if (isMouseInVisArea(mousePos[0], mousePos[1])) {
-      updateFocusedChart({
-        mousePos: [
-          Math.floor(mousePos[0]) - margin.left,
-          Math.floor(mousePos[1]) - margin.top,
-        ],
-        focusedStateActive: false,
+      requestId = window.requestAnimationFrame(() => {
+        updateFocusedChart({
+          mousePos: [
+            Math.floor(mousePos[0]) - margin.left,
+            Math.floor(mousePos[1]) - margin.top,
+          ],
+          focusedStateActive: false,
+        });
       });
     }
   }
@@ -649,8 +646,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const mousePos = d3.pointer(event);
 
     if (!isMouseInVisArea(mousePos[0], mousePos[1])) {
+      if (requestId) {
+        window.cancelAnimationFrame(requestId);
+      }
       clearHoverAttributes();
-
       safeSyncHoverState({ activePoint: null });
     }
   }
