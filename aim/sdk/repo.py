@@ -9,7 +9,7 @@ from weakref import WeakValueDictionary
 
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
-from aim.sdk.utils import search_aim_repo, clean_repo_path
+from aim.sdk.utils import search_aim_repo, clean_repo_path, mount_remote_repo, unmount_remote_repo
 from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
 from aim.sdk.data_version import DATA_VERSION
 
@@ -54,7 +54,12 @@ class Repo:
         if read_only is not None:
             raise NotImplementedError
         self.read_only = read_only
-        self.root_path = path
+        self._remote_path = None
+        if path.startswith('ssh://'):
+            self._remote_path = path
+            self.root_path = mount_remote_repo(path)
+        else:
+            self.root_path = path
         self.path = os.path.join(path, AIM_REPO_NAME)
 
         if init:
@@ -330,3 +335,7 @@ class Repo:
             return meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
+
+    def __del__(self):
+        if self._remote_path:
+            unmount_remote_repo(self.root_path)
