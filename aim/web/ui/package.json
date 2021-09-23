@@ -55,7 +55,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "analize-bundles": "node tasks/bundle-analizer.js"
+    "analize-bundles": "node tasks/bundle-analyzer.js"
   },
   "homepage": "/static-files",
   "eslintConfig": {
