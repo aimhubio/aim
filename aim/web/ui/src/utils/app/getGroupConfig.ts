@@ -3,11 +3,11 @@ import {
   GroupNameType,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IModel } from 'types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 
-export default function getGroupConfig(
+export default function getGroupConfig<T extends State>(
   metricsCollection: IMetricsCollection<any>,
-  model: IModel<any>,
+  model: IModel<T>,
 ) {
   const groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'];
   const configData = model.getState()?.config;

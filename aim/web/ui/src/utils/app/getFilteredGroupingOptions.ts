@@ -1,9 +1,9 @@
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
-import { IModel } from 'types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 
-export function getFilteredGroupingOptions(
+export function getFilteredGroupingOptions<T extends State>(
   groupName: GroupNameType,
-  model: IModel<any>,
+  model: IModel<T>,
 ): string[] {
   const modelState = model.getState();
   const grouping = modelState?.config?.grouping;

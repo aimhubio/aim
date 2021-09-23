@@ -1,9 +1,16 @@
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+
 export type State = {
   config?: Record<string, any>;
   table?: Record<string, any>;
+  groupingSelectOptions?: Record<string, any>[];
+  tableColumns?: Record<string, any>[];
+  data?: Record<string, any>[];
+  rawData?: Record<string, any>[];
+  notifyData?: INotification[];
 };
 
-export interface IModel<StateType extends State> {
+export interface IModel<StateType extends Partial<State>> {
   init: () => void;
   destroy: () => void;
   getState: () => StateType;

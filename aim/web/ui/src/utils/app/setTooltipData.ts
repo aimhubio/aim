@@ -4,16 +4,16 @@ import {
   IMetricsCollection,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IModel } from 'types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 import { IParam } from 'types/services/models/params/paramsAppModel';
 import getGroupConfig from './getGroupConfig';
 
 let tooltipData: ITooltipData = {};
 
-export default function setTooltipData(
+export default function setTooltipData<T extends State>(
   processedData: IMetricsCollection<IMetric | IParam | any>[],
   paramKeys: string[],
-  model: IModel<any>,
+  model: IModel<T>,
 ): void {
   const data: { [key: string]: any } = {};
 

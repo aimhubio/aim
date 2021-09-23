@@ -1135,10 +1135,14 @@ function setTooltipData(
   processedData: IMetricsCollection<IMetric>[],
   paramKeys: string[],
 ): void {
+  // separated
   const data: { [key: string]: any } = {};
 
   for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig(metricsCollection, model);
+    const groupConfig = getGroupConfig<Partial<IMetricAppModelState>>(
+      metricsCollection,
+      model,
+    );
 
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
@@ -1266,6 +1270,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
 }
 
 function onIgnoreOutliersChange(): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
@@ -1293,7 +1298,8 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 }
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
-  const isAppliedGrouping = isGroupingApplied(model);
+  const isAppliedGrouping =
+    isGroupingApplied<Partial<IMetricAppModelState>>(model);
   configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
   if (!isAppliedGrouping) {
     configData.chart.aggregationConfig.isApplied = false;
@@ -1662,12 +1668,14 @@ function updateUrlParam(
 }
 
 function onNotificationDelete(id: number) {
+  // separated
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
   model.setState({ notifyData });
 }
 
 function onNotificationAdd(notification: INotification) {
+  // separated
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData, notification];
   model.setState({ notifyData });
@@ -1677,6 +1685,7 @@ function onNotificationAdd(notification: INotification) {
 }
 
 function onResetConfigData(): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
     configData.grouping = {
@@ -1688,6 +1697,7 @@ function onResetConfigData(): void {
 }
 
 async function onAlignmentMetricChange(metric: string) {
+  // separated
   const modelState = model.getState();
   const configData = modelState?.config;
   if (configData?.chart) {
@@ -1754,6 +1764,7 @@ async function onAlignmentMetricChange(metric: string) {
 }
 
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
+  // separated
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
   let decodedPairs = decodePathsVals(buffer_pairs);
@@ -1810,6 +1821,7 @@ function setModelData(
 }
 
 function onAlignmentTypeChange(type: AlignmentOptions): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     const alignmentConfig = { ...configData.chart.alignmentConfig, type };
@@ -1831,6 +1843,7 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
 }
 
 function onMetricsSelectChange(data: ISelectMetricsOption[]) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
     model.setState({
@@ -1843,6 +1856,7 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
 }
 
 function onSelectRunQueryChange(query: string) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
     model.setState({
@@ -1855,6 +1869,7 @@ function onSelectRunQueryChange(query: string) {
 }
 
 function onSelectAdvancedQueryChange(query: string) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
     model.setState({
@@ -1867,6 +1882,7 @@ function onSelectAdvancedQueryChange(query: string) {
 }
 
 function toggleSelectAdvancedMode() {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
     model.setState({
@@ -1887,6 +1903,7 @@ function toggleSelectAdvancedMode() {
 }
 
 function onRowHeightChange(height: RowHeightSize) {
+  //separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     const table = {
@@ -1910,6 +1927,7 @@ function onRowHeightChange(height: RowHeightSize) {
 }
 
 function onMetricVisibilityChange(metricsKeys: string[]) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const processedData = model.getState()?.data;
   if (configData?.table && processedData) {
@@ -1944,6 +1962,7 @@ function onMetricVisibilityChange(metricsKeys: string[]) {
 }
 
 function onRowVisibilityChange(metricKey: string) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     let hiddenMetrics = configData?.table?.hiddenMetrics || [];
@@ -1971,6 +1990,7 @@ function onRowVisibilityChange(metricKey: string) {
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
@@ -1999,6 +2019,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
 }
 
 function onTableDiffShow() {
+  //separated
   const sameValueColumns = model.getState()?.sameValueColumns;
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
@@ -2007,6 +2028,7 @@ function onTableDiffShow() {
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     const table = {
@@ -2034,6 +2056,7 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     const table = {
@@ -2056,6 +2079,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
 }
 
 function onTableResizeEnd(tableHeight: string) {
+  //separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     const table = {
@@ -2075,6 +2099,7 @@ function onTableResizeEnd(tableHeight: string) {
 
 // internal function to update config.table.sortFields and cache data
 function updateSortFields(sortFields: SortField[]) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     const table = {
@@ -2113,6 +2138,7 @@ function onSortReset() {
  * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
  */
 function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   const sortFields = configData?.table.sortFields || [];
 
@@ -2152,6 +2178,7 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
 }
 
 function updateColumnsWidths(key: string, width: number, isReset: boolean) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table && configData?.table?.columnsWidths) {
     let columnsWidths = configData?.table?.columnsWidths;

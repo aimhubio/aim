@@ -1,10 +1,10 @@
 import * as analytics from 'services/analytics';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { IModel } from 'types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 
-export default function onHighlightModeChange(
+export default function onHighlightModeChange<T extends State>(
   mode: HighlightEnum,
-  model: IModel<any>,
+  model: IModel<T>,
   page: string,
 ): void {
   const configData = model.getState()?.config;

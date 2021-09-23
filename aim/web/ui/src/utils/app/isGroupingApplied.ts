@@ -1,7 +1,9 @@
 import { getFilteredGroupingOptions } from './getFilteredGroupingOptions';
-import { IModel } from 'types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 
-export default function isGroupingApplied(model: IModel<any>): boolean {
+export default function isGroupingApplied<T extends State>(
+  model: IModel<T>,
+): boolean {
   const groupByColor = getFilteredGroupingOptions('color', model);
   const groupByStroke = getFilteredGroupingOptions('stroke', model);
   const groupByChart = getFilteredGroupingOptions('chart', model);

@@ -1,7 +1,7 @@
 import { IModel } from 'services/models/model';
 
-export interface IOnTableResizeEndParams {
+export interface IOnTableResizeEndParams<T extends State> {
   tableHeight: string;
-  model: IModel<any>;
+  model: IModel<T>;
   page: string;
 }

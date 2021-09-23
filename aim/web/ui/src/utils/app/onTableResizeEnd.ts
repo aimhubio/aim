@@ -1,8 +1,11 @@
 import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import { IOnTableResizeEndParams } from 'types/utils/app/onTableResizeEnd';
+import { State } from 'types/services/models/model';
 
-export function onTableResizeEnd(params: IOnTableResizeEndParams): void {
+export function onTableResizeEnd<T extends State>(
+  params: IOnTableResizeEndParams<T>,
+): void {
   const configData = params.model.getState()?.config;
   if (configData?.table) {
     const table = {
