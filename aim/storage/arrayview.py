@@ -138,7 +138,7 @@ class ArrayView(Generic[T]):
         ...
 
 
-class ContainerArrayView(ArrayView[T]):
+class TreeArrayView(ArrayView[T]):
     def __init__(
         self,
         tree: 'TreeView',
