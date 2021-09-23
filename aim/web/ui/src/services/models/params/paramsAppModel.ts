@@ -745,7 +745,7 @@ function onColorIndicatorChange(): void {
   if (configData?.chart) {
     const chart = { ...configData.chart };
     chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
-    updateModelData({ ...configData, chart });
+    updateModelData({ ...configData, chart }, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] ${
@@ -762,7 +762,7 @@ function onCurveInterpolationChange(): void {
       configData.chart.curveInterpolation === CurveEnum.Linear
         ? CurveEnum.MonotoneX
         : CurveEnum.Linear;
-    updateModelData({ ...configData, chart });
+    updateModelData({ ...configData, chart }, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] Set interpolation mode to "${
@@ -901,7 +901,7 @@ function onGroupingSelectChange({
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
 }
@@ -916,7 +916,7 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
@@ -932,7 +932,7 @@ function onGroupingPaletteChange(index: number): void {
       ...configData.grouping,
       paletteIndex: index,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] Set color palette to "${
@@ -954,7 +954,7 @@ function onGroupingReset(groupName: GroupNameType) {
       persistence: { ...persistence, [groupName]: false },
       isApplied: { ...isApplied, [groupName]: true },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent('[ParamsExplorer] Reset grouping');
 }
@@ -1184,7 +1184,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
         [groupName]: !configData.grouping.isApplied[groupName],
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1198,7 +1198,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
         [groupName]: !configData.grouping.persistence[groupName],
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
@@ -1388,7 +1388,7 @@ function onResetConfigData(): void {
       ...getConfig().grouping,
     };
     configData.chart = { ...getConfig().chart };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1396,7 +1396,7 @@ function onResetConfigData(): void {
  * function updateURL has 2 major functionalities:
  *    1. Keeps URL in sync with the app config
  *    2. Stores updated URL in localStorage if App is not in the bookmark state
- * @param {IMetricAppConfig} configData - the current state of the app config
+ * @param {IParamsAppConfig} configData - the current state of the app config
  */
 function updateURL(configData = model.getState()!.config!) {
   const { grouping, chart, select } = configData;
