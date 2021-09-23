@@ -41,11 +41,14 @@ function drawAxes(props: IDrawAxesProps): void {
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
           const delta = Math.floor(xValues.length / ticksCount);
-          const ticks =
-            delta > 1 ? xValues.filter((_, i) => i % delta === 0) : xValues;
 
-          // TODO need to check
-          xAxis.ticks(ticksCount).tickValues(ticks);
+          const ticks =
+            delta > 1
+              ? xValues.filter(
+                  (x, i) => i % delta === 0 && Math.round(x) - x === 0,
+                )
+              : xValues.filter((x) => Math.round(x) - x === 0);
+          xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1).tickValues(ticks);
         }
         break;
       case AlignmentOptions.RELATIVE_TIME:

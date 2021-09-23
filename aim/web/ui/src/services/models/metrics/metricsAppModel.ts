@@ -767,7 +767,7 @@ function alignData(
             xValues: [
               ...metric.data.epochs.map(
                 (epoch, i) =>
-                  epoch -
+                  epoch +
                   (epochs[epoch].length > 1
                     ? (0.99 / epochs[epoch].length) *
                       epochs[epoch].indexOf(metric.data.steps[i])

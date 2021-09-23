@@ -57,7 +57,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   const axesRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
-  const requestIdRef = React.useRef<number>();
+  const rafIDRef = React.useRef<number>();
 
   const draw = React.useCallback((): void => {
     drawParallelArea({
@@ -162,25 +162,25 @@ const HighPlot = React.forwardRef(function HighPlot(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        requestIdRef.current = window.requestAnimationFrame(renderChart);
+        rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
     [renderChart],
   );
 
-  const returnCallback = React.useCallback(() => {
-    if (requestIdRef.current) {
-      window.cancelAnimationFrame(requestIdRef.current);
+  const observerReturnCallback = React.useCallback(() => {
+    if (rafIDRef.current) {
+      window.cancelAnimationFrame(rafIDRef.current);
     }
   }, []);
 
-  useResizeObserver(resizeObserverCallback, parentRef, returnCallback);
+  useResizeObserver(resizeObserverCallback, parentRef, observerReturnCallback);
 
   React.useEffect(() => {
-    requestIdRef.current = window.requestAnimationFrame(renderChart);
+    rafIDRef.current = window.requestAnimationFrame(renderChart);
     return () => {
-      if (requestIdRef.current) {
-        window.cancelAnimationFrame(requestIdRef.current);
+      if (rafIDRef.current) {
+        window.cancelAnimationFrame(rafIDRef.current);
       }
     };
   }, [renderChart]);

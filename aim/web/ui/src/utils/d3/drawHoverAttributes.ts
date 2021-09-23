@@ -46,7 +46,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
-  let requestId = 0;
+  let rafID = 0;
 
   const { margin, width, height } = visBoxRef.current;
 
@@ -627,7 +627,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     }
     const mousePos = d3.pointer(event);
     if (isMouseInVisArea(mousePos[0], mousePos[1])) {
-      requestId = window.requestAnimationFrame(() => {
+      rafID = window.requestAnimationFrame(() => {
         updateFocusedChart({
           mousePos: [
             Math.floor(mousePos[0]) - margin.left,
@@ -646,8 +646,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const mousePos = d3.pointer(event);
 
     if (!isMouseInVisArea(mousePos[0], mousePos[1])) {
-      if (requestId) {
-        window.cancelAnimationFrame(requestId);
+      if (rafID) {
+        window.cancelAnimationFrame(rafID);
       }
       clearHoverAttributes();
       safeSyncHoverState({ activePoint: null });

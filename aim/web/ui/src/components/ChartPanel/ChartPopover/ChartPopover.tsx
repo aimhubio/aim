@@ -34,11 +34,10 @@ function ChartPopover({
         setPopoverPos(pos);
       }
     },
-    [containerRef?.current, popoverContentRef?.current],
+    [containerRef, popoverContentRef],
   );
 
   React.useEffect(() => {
-    debugger;
     onPopoverPositionChange(popoverPosition);
   }, [popoverPosition, onPopoverPositionChange]);
 
