@@ -76,8 +76,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
     if (route.params.appId) {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => metricAppModel.getMetricsData().call());
-      metricAppModel.setDefaultAppConfigData();
+      appRequestRef.call().then(() => {
+        metricAppModel.getMetricsData().call();
+        metricAppModel.setDefaultAppConfigData();
+      });
     } else {
       metricAppModel.setDefaultAppConfigData();
     }
@@ -97,7 +99,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     if (!!metricsData.config) {
       if (
-        metricsData.config.grouping !== getStateFromUrl('groupong') ||
+        metricsData.config.grouping !== getStateFromUrl('grouping') ||
         metricsData.config.chart !== getStateFromUrl('chart') ||
         metricsData.config.select !== getStateFromUrl('select')
       ) {

@@ -46,8 +46,14 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => paramsAppModel.getParamsData().call());
+      appRequestRef.call().then(() => {
+        paramsAppModel.getParamsData().call();
+        paramsAppModel.setDefaultAppConfigData();
+      });
+    } else {
+      paramsAppModel.setDefaultAppConfigData();
     }
+
     analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
@@ -60,7 +66,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     if (!!paramsData.config) {
       if (
-        paramsData.config.grouping !== getStateFromUrl('groupong') ||
+        paramsData.config.grouping !== getStateFromUrl('grouping') ||
         paramsData.config.chart !== getStateFromUrl('chart') ||
         paramsData.config.select !== getStateFromUrl('select')
       ) {
