@@ -122,6 +122,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     let xAxisValueText;
 
     switch (alignmentConfig?.type) {
+      case AlignmentOptions.EPOCH:
+        xAxisValueText = Math.floor(xAxisTickValue);
+        break;
       case AlignmentOptions.RELATIVE_TIME:
         xAxisValueText = shortEnglishHumanizer(
           Math.round(xAxisTickValue * 1000),

@@ -14,6 +14,9 @@ function formatXAxisValueByAlignment({
   let formattedXAxisValue;
   if (xAxisTickValue || xAxisTickValue === 0) {
     switch (type) {
+      case AlignmentOptions.EPOCH:
+        formattedXAxisValue = Math.floor(xAxisTickValue);
+        break;
       case AlignmentOptions.RELATIVE_TIME:
         formattedXAxisValue = shortEnglishHumanizer(
           Math.round(xAxisTickValue * 1000),

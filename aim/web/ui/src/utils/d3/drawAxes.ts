@@ -40,14 +40,8 @@ function drawAxes(props: IDrawAxesProps): void {
           xAlignmentText = XAlignmentEnum.Epoch + 's';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
-          const delta = Math.floor(xValues.length / ticksCount);
+          const ticks = xValues.filter((x) => Math.round(x) - x === 0);
 
-          const ticks =
-            delta > 1
-              ? xValues.filter(
-                  (x, i) => i % delta === 0 && Math.round(x) - x === 0,
-                )
-              : xValues.filter((x) => Math.round(x) - x === 0);
           xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1).tickValues(ticks);
         }
         break;
