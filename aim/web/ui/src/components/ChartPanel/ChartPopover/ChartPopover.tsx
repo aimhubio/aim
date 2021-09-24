@@ -38,7 +38,6 @@ function ChartPopover({
   );
 
   React.useEffect(() => {
-    debugger;
     onPopoverPositionChange(popoverPosition);
   }, [popoverPosition, onPopoverPositionChange]);
 
