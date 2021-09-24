@@ -8,6 +8,8 @@ export type State = {
   data?: Record<string, any>[];
   rawData?: Record<string, any>[];
   notifyData?: INotification[];
+  refs?: Record<string, any>;
+  params?: Record<string, any>;
 };
 
 export interface IModel<StateType extends Partial<State>> {

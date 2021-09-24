@@ -1436,6 +1436,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
 }
 
 function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {
@@ -1456,6 +1457,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+  // separated
   let configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;
@@ -1486,6 +1488,7 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
+  // separated
   const { data, params, refs, config } =
     model.getState() as IMetricAppModelState;
   const tableRef: any = refs?.tableRef;
@@ -1542,6 +1545,7 @@ function onActivePointChange(
 //Table Methods
 
 function onTableRowHover(rowKey?: string): void {
+  //separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
@@ -1552,6 +1556,7 @@ function onTableRowHover(rowKey?: string): void {
 }
 
 function onTableRowClick(rowKey?: string): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()!.config!;
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
   let focusedStateActive = !!rowKey;
