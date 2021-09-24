@@ -75,7 +75,7 @@ const LineChart = React.forwardRef(function LineChart(
   const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
-  const requestIdRef = React.useRef<number>();
+  const rafIDRef = React.useRef<number>();
 
   function draw() {
     const { processedData, min, max, xValues } = processData(
@@ -190,7 +190,7 @@ const LineChart = React.forwardRef(function LineChart(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        requestIdRef.current = window.requestAnimationFrame(renderChart);
+        rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
     [
@@ -204,19 +204,19 @@ const LineChart = React.forwardRef(function LineChart(
     ],
   );
 
-  const returnCallback = React.useCallback(() => {
-    if (requestIdRef.current) {
-      window.cancelAnimationFrame(requestIdRef.current);
+  const observerReturnCallback = React.useCallback(() => {
+    if (rafIDRef.current) {
+      window.cancelAnimationFrame(rafIDRef.current);
     }
   }, []);
 
-  useResizeObserver(resizeObserverCallback, parentRef, returnCallback);
+  useResizeObserver(resizeObserverCallback, parentRef, observerReturnCallback);
 
   React.useEffect(() => {
-    requestIdRef.current = window.requestAnimationFrame(renderChart);
+    rafIDRef.current = window.requestAnimationFrame(renderChart);
     return () => {
-      if (requestIdRef.current) {
-        window.cancelAnimationFrame(requestIdRef.current);
+      if (rafIDRef.current) {
+        window.cancelAnimationFrame(rafIDRef.current);
       }
     };
   }, [
