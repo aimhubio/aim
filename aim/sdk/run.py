@@ -176,6 +176,7 @@ class Run(StructuredRunMixin):
                  experiment: Optional[str] = None,
                  system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
         hashname = hashname or generate_run_hash()
+        self._finalized = False
 
         if repo is None:
             from aim.sdk.repo import Repo
@@ -320,7 +321,22 @@ class Run(StructuredRunMixin):
 
         Appends the tracked value to metric series specified by `name` and `context`.
         """
+
+        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
+        # not the actual implementation execution time.
         track_time = time()
+        self.repo.tracking_queue.register_task(self._track_impl, value, track_time, name, step, epoch, context=context)
+
+    def _track_impl(
+        self,
+        value,
+        track_time: float,
+        name: str,
+        step: int = None,
+        epoch: int = None,
+        *,
+        context: AimObject = None,
+    ):
         # TODO move to Metric
         if context is None:
             context = {}
@@ -474,7 +490,12 @@ class Run(StructuredRunMixin):
             cls._finalize_message_shown = True
 
     def finalize(self):
+        if self._finalized:
+            return
+        self._finalized = True
         self.finalize_msg()
+        self.repo.tracking_queue.wait_for_finish()
+
         self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',
                                          read_only=False,

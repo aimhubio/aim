@@ -7,6 +7,8 @@ from collections import defaultdict
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
+from aim.ext.task_queue.queue import TaskQueue
+
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
@@ -49,6 +51,8 @@ class Repo:
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
+
+    tracking_queue = TaskQueue('metric_tracking')  # single thread task queue for Run.track
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
