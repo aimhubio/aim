@@ -117,9 +117,15 @@ query = "0.001 >= run.hparams.lr >= 0.0001"
 
 ## Tutorials
 
-TODO
+### Tutorial 1
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PytorchLightning/lightning-tutorials/blob/publication/.notebooks/course_UvA-DL/01-introduction-to-pytorch.ipynb)
+
+A tutorial borrowed from Pytorch Lightning docs temporarily.
+
+### Basic Mnist example
+
 
 ## Examples
 
 TODO
-
