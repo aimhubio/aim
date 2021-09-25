@@ -1,7 +1,8 @@
 @use 'styles/abstracts/index' as *;
 
 .MetricsBar__item__bookmark {
-  margin-right: 0.75em;
+  margin-right: 0.25rem;
+  padding: 0 0.5rem !important;
 }
 
 .MetricsBar__item__bookmark__span {

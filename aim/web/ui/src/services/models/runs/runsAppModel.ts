@@ -1000,6 +1000,7 @@ const runAppModel = {
   onColumnsVisibilityChange,
   onTableDiffShow,
   updateColumnsWidths,
+  setDefaultAppConfigData,
 };
 
 export default runAppModel;

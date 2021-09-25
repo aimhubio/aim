@@ -3,7 +3,7 @@
 .AppBar__container {
   display: flex;
   align-items: center;
-  height: 2.5em;
+  min-height: 2.5rem;
   border-bottom: $border-main;
   border-left: $border-main;
   border-right: $border-main;
