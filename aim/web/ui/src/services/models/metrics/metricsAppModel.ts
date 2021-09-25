@@ -88,6 +88,7 @@ import isGroupingApplied from 'utils/app/isGroupingApplied';
 import getGroupConfig from 'utils/app/getGroupConfig';
 import resetChartZoom from 'utils/app/resetChartZoom';
 import getFilteredRow from 'utils/app/getFilteredRow';
+import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -279,6 +280,7 @@ let metricsRequestRef: {
 };
 
 function resetModelOnError(detail?: any) {
+  // separated
   model.setState({
     data: [],
     params: [],
@@ -298,7 +300,8 @@ function resetModelOnError(detail?: any) {
   }, 0);
 }
 
-function exceptionHandler(detail: any) {
+function exceptionHandler(detail: any): void {
+  //separated
   let message = '';
 
   if (detail.name === 'SyntaxError') {
@@ -380,6 +383,7 @@ function getChartTitleData(
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService
@@ -408,6 +412,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
 }
 
 function onBookmarkUpdate(id: string) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
     appsService
@@ -424,38 +429,6 @@ function onBookmarkUpdate(id: string) {
       });
   }
   analytics.trackEvent('[MetricsExplorer] Update bookmark');
-}
-
-function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
-    value: `run.params.${param}`,
-    group: 'params',
-    label: param,
-  }));
-
-  return [
-    ...paramsOptions,
-    {
-      group: 'Other',
-      label: 'experiment',
-      value: 'run.props.experiment',
-    },
-    {
-      group: 'Other',
-      label: 'run.hash',
-      value: 'run.hash',
-    },
-    {
-      group: 'Other',
-      label: 'metric',
-      value: 'metric_name',
-    },
-    {
-      group: 'context',
-      label: 'subset',
-      value: 'context.subset',
-    },
-  ];
 }
 
 function processData(data: IRun<IMetricTrace>[]): {
@@ -1189,6 +1162,7 @@ function onHighlightModeChange(mode: HighlightEnum): void {
 }
 
 function onZoomChange(zoom: Partial<IChartZoom>): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     model.setState({
@@ -1216,6 +1190,7 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
 function onAggregationConfigChange(
   aggregationConfig: Partial<IAggregationConfig>,
 ): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart && !_.isEmpty(aggregationConfig)) {
     configData.chart = {
@@ -1250,6 +1225,7 @@ function onAggregationConfigChange(
 }
 
 function onSmoothingChange(props: IOnSmoothingChange) {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...props };
@@ -1284,6 +1260,7 @@ function onIgnoreOutliersChange(): void {
 }
 
 function onAxesScaleTypeChange(params: IAxesScaleState): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.axesScaleType = params;
@@ -1298,6 +1275,7 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 }
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
+  // separated
   const isAppliedGrouping =
     isGroupingApplied<Partial<IMetricAppModelState>>(model);
   configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
@@ -1351,6 +1329,7 @@ function onGroupingSelectChange({
   groupName,
   list,
 }: IOnGroupingSelectChangeParams) {
+  // separated
   let configData: IMetricAppConfig | any = model.getState()?.config;
   if (configData) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
@@ -1365,7 +1344,8 @@ function onGroupingModeChange({
   groupName,
   value,
 }: IOnGroupingModeChangeParams): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  // separated
+  const configData = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {
       ...configData.grouping.reverseMode,
@@ -1385,6 +1365,7 @@ function onGroupingModeChange({
 }
 
 function onGroupingPaletteChange(index: number): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {
@@ -1402,6 +1383,7 @@ function onGroupingPaletteChange(index: number): void {
 }
 
 function onGroupingReset(groupName: GroupNameType) {
+  //separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     const { reverseMode, paletteIndex, isApplied, persistence } =
@@ -1421,6 +1403,7 @@ function onGroupingReset(groupName: GroupNameType) {
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
+  // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {

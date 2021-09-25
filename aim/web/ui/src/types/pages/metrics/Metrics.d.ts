@@ -31,6 +31,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { IModel } from 'types/services/models/model';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -116,4 +117,6 @@ export interface IOnSmoothingChange {
   smoothingAlgorithm?: SmoothingAlgorithmEnum;
   smoothingFactor?: number;
   curveInterpolation?: CurveEnum;
+  model?: IModel<any>;
+  appName?: string;
 }

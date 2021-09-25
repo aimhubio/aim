@@ -63,6 +63,8 @@ import * as analytics from 'services/analytics';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getGroupConfig from 'utils/app/getGroupConfig';
 import getFilteredRow from 'utils/app/getFilteredRow';
+import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
+
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -805,38 +807,6 @@ function onSelectRunQueryChange(query: string) {
       },
     });
   }
-}
-
-function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
-    value: `run.params.${param}`,
-    group: 'params',
-    label: param,
-  }));
-
-  return [
-    ...paramsOptions,
-    {
-      group: 'Other',
-      label: 'experiment_name',
-      value: 'run.experiment_name',
-    },
-    {
-      group: 'Other',
-      label: 'run.hash',
-      value: 'run.params.status.hash',
-    },
-    {
-      group: 'Other',
-      label: 'metric_name',
-      value: 'metric_name',
-    },
-    {
-      group: 'context',
-      label: 'subset',
-      value: 'context.subset',
-    },
-  ];
 }
 
 function onGroupingSelectChange({

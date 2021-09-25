@@ -18,6 +18,7 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { IModel } from '../model';
 
 export interface IMetricAppModelState {
   refs: {
