@@ -37,12 +37,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         font-size: $text-sm;
-
-        span {
-          &:nth-of-type(2){
-            font-style: italic;
-          }
-        }
       }
 
       &::before {
