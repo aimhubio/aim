@@ -8,14 +8,15 @@ import { setItem } from 'utils/storage';
  * @param {string} key - key of table column
  * @param {number} width - width of table column
  * @param {boolean} isReset - checking if in columns should be reset
- * @param {IModel<T extends State>} model - instance of create model
+ * @param {IModel<M extends State>} model - instance of create model
  */
 
-export default function updateColumnsWidths<T extends State>(
+export default function updateColumnsWidths<M extends State>(
   key: string,
   width: number,
   isReset: boolean,
-  model: IModel<T>,
+  model: IModel<M>,
+  appName: string,
 ) {
   const configData = model.getState()?.config;
   if (configData?.table && configData?.table?.columnsWidths) {
@@ -36,6 +37,6 @@ export default function updateColumnsWidths<T extends State>(
     model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
+    setItem(`${appName.toLowerCase}Table`, encode(table));
   }
 }

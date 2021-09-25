@@ -1,35 +1,29 @@
 import * as analytics from 'services/analytics';
-import { isEmpty } from 'lodash-es';
 
-import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import { isEmpty } from 'lodash';
 import { IModel, State } from 'types/services/models/model';
-import { encode } from 'utils/encoder/encoder';
-import { setItem } from 'utils/storage';
 
-export default function updateSortFields<M extends State>(
-  sortFields: SortField[],
+export default function onSortFieldsChange<M extends State>(
+  sortFields: [string, any][],
   model: IModel<M>,
-  page: string,
+  appName: string,
 ) {
   const configData = model.getState()?.config;
   if (configData?.table) {
-    const table = {
-      ...configData.table,
-      sortFields,
-    };
     const configUpdate = {
       ...configData,
-      table,
+      table: {
+        ...configData.table,
+        sortFields: sortFields,
+      },
     };
     model.setState({
       config: configUpdate,
     });
-
-    setItem(`${page}Table`, encode(table));
     // updateModelData(configUpdate);
   }
   analytics.trackEvent(
-    `[${page}Explorer][Table] ${
+    `[${appName}Explorer][Table] ${
       isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );

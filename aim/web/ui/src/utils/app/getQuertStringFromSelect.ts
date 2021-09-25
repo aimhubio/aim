@@ -1,0 +1,31 @@
+import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
+
+export default function getQueryStringFromSelect<S>(
+  selectData: IMetricAppConfig['select'] | undefined,
+) {
+  let query = '';
+  if (selectData !== undefined) {
+    if (selectData.advancedMode) {
+      query = selectData.advancedQuery;
+    } else {
+      query = `${
+        selectData.query ? `${selectData.query} and ` : ''
+      }(${selectData.metrics
+        .map((metric) =>
+          metric.value.context === null
+            ? `(metric.name == "${metric.value.metric_name}")`
+            : `${Object.keys(metric.value.context).map(
+                (item) =>
+                  `(metric.name == "${
+                    metric.value.metric_name
+                  }" and metric.context.${item} == "${
+                    (metric.value.context as any)[item]
+                  }")`,
+              )}`,
+        )
+        .join(' or ')})`.trim();
+    }
+  }
+
+  return query;
+}

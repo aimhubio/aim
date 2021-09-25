@@ -6,9 +6,9 @@ import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
 
-export default function onRowHeightChange<T extends State>(
+export default function onRowHeightChange<M extends State>(
   height: RowHeightSize,
-  model: IModel<T>,
+  model: IModel<M>,
   appName: string,
 ) {
   const configData = model.getState()?.config;

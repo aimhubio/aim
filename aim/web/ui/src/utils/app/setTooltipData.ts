@@ -10,10 +10,10 @@ import getGroupConfig from './getGroupConfig';
 
 let tooltipData: ITooltipData = {};
 
-export default function setTooltipData<T extends State>(
+export default function setTooltipData<M extends State>(
   processedData: IMetricsCollection<IMetric | IParam | any>[],
   paramKeys: string[],
-  model: IModel<T>,
+  model: IModel<M>,
 ): void {
   const data: { [key: string]: any } = {};
 

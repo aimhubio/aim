@@ -41,16 +41,12 @@ import JsonToCSV from 'utils/JsonToCSV';
 // Types
 import {
   GroupNameType,
-  IAggregatedData,
   IAggregationConfig,
   IAlignMetricsDataParams,
   IAppData,
-  IChartTitle,
-  IChartTitleData,
   IChartTooltip,
   IChartZoom,
   IDashboardData,
-  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
@@ -89,6 +85,9 @@ import getGroupConfig from 'utils/app/getGroupConfig';
 import resetChartZoom from 'utils/app/resetChartZoom';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
+import getAggregatedData from 'utils/app/getAggregatedData';
+import getChartTitleData from 'utils/app/getChartTitleData';
+import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -242,36 +241,6 @@ function getAppConfigData(appId: string) {
   };
 }
 
-function getQueryStringFromSelect(
-  selectData: IMetricAppConfig['select'] | undefined,
-) {
-  let query = '';
-  if (selectData !== undefined) {
-    if (selectData.advancedMode) {
-      query = selectData.advancedQuery;
-    } else {
-      query = `${
-        selectData.query ? `${selectData.query} and ` : ''
-      }(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(metric.name == "${
-                    metric.value.metric_name
-                  }" and metric.context.${item} == "${
-                    (metric.value.context as any)[item]
-                  }")`,
-              )}`,
-        )
-        .join(' or ')})`.trim();
-    }
-  }
-
-  return query;
-}
-
 let metricsRequestRef: {
   call: (
     exceptionHandler: (detail: any) => void,
@@ -353,33 +322,6 @@ function getMetricsData() {
     },
     abort: metricsRequestRef.abort,
   };
-}
-
-function getChartTitleData(
-  processedData: IMetricsCollection<IMetric>[],
-  configData: IMetricAppConfig | any = model.getState()?.config,
-): IChartTitleData {
-  if (!processedData) {
-    return {};
-  }
-  const groupData = configData?.grouping;
-  let chartTitleData: IChartTitleData = {};
-  processedData.forEach((metricsCollection) => {
-    if (!chartTitleData[metricsCollection.chartIndex]) {
-      chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
-        (acc: IChartTitle, groupItemKey: string) => {
-          if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
-              metricsCollection.config[groupItemKey] || 'None',
-            );
-          }
-          return acc;
-        },
-        {},
-      );
-    }
-  });
-  return chartTitleData;
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
@@ -689,7 +631,7 @@ function alignData(
             xValues: [
               ...metric.data.epochs.map(
                 (epoch, i) =>
-                  epoch -
+                  epoch +
                   (epochs[epoch].length > 1
                     ? (0.99 / epochs[epoch].length) *
                       epochs[epoch].indexOf(metric.data.steps[i])
@@ -829,36 +771,6 @@ function alignData(
       throw new Error('Unknown value for X axis alignment');
   }
   return data;
-}
-
-function getAggregatedData(
-  processedData: IMetricsCollection<IMetric>[],
-  configData = model.getState()?.config as IMetricAppConfig,
-): IAggregatedData[] {
-  if (!processedData) {
-    return [];
-  }
-  const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
-
-  let aggregatedData: IAggregatedData[] = [];
-
-  processedData.forEach((metricsCollection, index) => {
-    aggregatedData.push({
-      key: metricsCollection.key,
-      area: {
-        min: metricsCollection.aggregation?.area.min || null,
-        max: metricsCollection.aggregation?.area.max || null,
-      },
-      line: metricsCollection.aggregation?.line || null,
-      chartIndex: metricsCollection.chartIndex || 0,
-      color:
-        metricsCollection.color ||
-        COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-      dasharray: metricsCollection.dasharray || '0',
-    });
-  });
-
-  return aggregatedData;
 }
 
 function getDataAsLines(
@@ -1200,7 +1112,7 @@ function onAggregationConfigChange(
         ...aggregationConfig,
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(
@@ -1229,7 +1141,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...props };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   if (props.curveInterpolation) {
     analytics.trackEvent(
@@ -1250,7 +1162,7 @@ function onIgnoreOutliersChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] ${
@@ -1264,7 +1176,7 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.axesScaleType = params;
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] Set X axis scale type "${params.xAxis}"`,
@@ -1285,7 +1197,10 @@ function setAggregationEnabled(configData: IMetricAppConfig): void {
   analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
 }
 
-function updateModelData(configData: IMetricAppConfig): void {
+function updateModelData(
+  configData: IMetricAppConfig = model.getState()!.config!,
+  shouldURLUpdate?: boolean,
+): void {
   const { data, params } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
@@ -1312,12 +1227,23 @@ function updateModelData(configData: IMetricAppConfig): void {
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
   });
+
+  if (shouldURLUpdate) {
+    updateURL(configData);
+  }
+
   model.setState({
     config: configData,
     data,
     lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
-    aggregatedData: getAggregatedData(data),
+    chartTitleData: getChartTitleData<IMetric, Partial<IMetricAppModelState>>(
+      data,
+      model,
+    ),
+    aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>(
+      data,
+      model,
+    ),
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
@@ -1335,7 +1261,7 @@ function onGroupingSelectChange({
     configData.grouping = { ...configData.grouping, [groupName]: list };
     configData = resetChartZoom(configData, 'Metrics');
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
 }
@@ -1355,7 +1281,7 @@ function onGroupingModeChange({
       resetChartZoom(configData, 'Metrics');
     }
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${
@@ -1373,7 +1299,7 @@ function onGroupingPaletteChange(index: number): void {
       paletteIndex: index,
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] Set color palette to "${
@@ -1397,7 +1323,7 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent('[MetricsExplorer] Reset grouping');
 }
@@ -1414,7 +1340,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
       },
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1430,7 +1356,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
       },
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${
@@ -1517,6 +1443,10 @@ function onActivePointChange(
         },
       },
     };
+
+    if (config.chart.focusedState.active !== focusedStateActive) {
+      updateURL(configData);
+    }
   }
 
   model.setState({
@@ -1525,7 +1455,7 @@ function onActivePointChange(
   });
 }
 
-//Table Methods
+// Table Methods
 
 function onTableRowHover(rowKey?: string): void {
   //separated
@@ -1621,37 +1551,28 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   analytics.trackEvent('[MetricsExplorer] Export runs data to CSV');
 }
 
-function updateGroupingStateUrl(): void {
-  const groupingData = model.getState()?.config?.grouping;
-  if (groupingData) {
-    updateUrlParam('grouping', groupingData);
-  }
-}
+/**
+ * function updateURL has 2 major functionalities:
+ *    1. Keeps URL in sync with the app config
+ *    2. Stores updated URL in localStorage if App is not in the bookmark state
+ * @param {IMetricAppConfig} configData - the current state of the app config
+ */
+function updateURL(configData = model.getState()!.config!) {
+  const { grouping, chart, select } = configData;
+  const url: string = getUrlWithParam(
+    ['grouping', 'chart', 'select'],
+    [encode(grouping), encode(chart), encode(select)],
+  );
 
-function updateChartStateUrl(): void {
-  const chartData = model.getState()?.config?.chart;
-  if (chartData) {
-    updateUrlParam('chart', chartData);
+  if (url === `${window.location.pathname}${window.location.search}`) {
+    return;
   }
-}
 
-function updateSelectStateUrl(): void {
-  const selectData = model.getState()?.config?.select;
-  if (selectData) {
-    updateUrlParam('select', selectData);
-  }
-}
-
-function updateUrlParam(
-  paramName: string,
-  data: Record<string, unknown>,
-): void {
-  const encodedUrl: string = encode(data);
-  const url: string = getUrlWithParam(paramName, encodedUrl);
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('metricsUrl', url);
   }
+
   window.history.pushState(null, '', url);
 }
 
@@ -1680,7 +1601,7 @@ function onResetConfigData(): void {
       ...getConfig().grouping,
     };
     configData.chart = { ...getConfig().chart };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1791,8 +1712,14 @@ function setModelData(
     params,
     data,
     lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
-    aggregatedData: getAggregatedData(data),
+    chartTitleData: getChartTitleData<IMetric, Partial<IMetricAppModelState>>(
+      data,
+      model,
+    ),
+    aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>(
+      data,
+      model,
+    ),
     tableData: tableData.rows,
     tableColumns: getMetricsTableColumns(
       params,
@@ -1821,7 +1748,7 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
       ...configData.chart,
       alignmentConfig,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
@@ -1834,11 +1761,15 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, metrics: data },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, metrics: data },
-      },
+      config: newConfig,
     });
   }
 }
@@ -1847,11 +1778,15 @@ function onSelectRunQueryChange(query: string) {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -1860,11 +1795,15 @@ function onSelectAdvancedQueryChange(query: string) {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, advancedQuery: query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, advancedQuery: query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -1873,14 +1812,18 @@ function toggleSelectAdvancedMode() {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
-    model.setState({
-      config: {
-        ...configData,
-        select: {
-          ...configData.select,
-          advancedMode: !configData.select.advancedMode,
-        },
+    const newConfig = {
+      ...configData,
+      select: {
+        ...configData.select,
+        advancedMode: !configData.select.advancedMode,
       },
+    };
+
+    updateURL(newConfig);
+
+    model.setState({
+      config: newConfig,
     });
   }
   analytics.trackEvent(
@@ -2213,8 +2156,6 @@ const metricAppModel = {
   onGroupingApplyChange,
   onGroupingPersistenceChange,
   onBookmarkCreate,
-  updateGroupingStateUrl,
-  updateChartStateUrl,
   onNotificationDelete,
   onNotificationAdd,
   onBookmarkUpdate,
@@ -2225,7 +2166,6 @@ const metricAppModel = {
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
-  updateSelectStateUrl,
   onChangeTooltip,
   onExportTableData,
   onRowHeightChange,
@@ -2233,12 +2173,13 @@ const metricAppModel = {
   onColumnsVisibilityChange,
   onTableDiffShow,
   onColumnsOrderChange,
-  getQueryStringFromSelect,
   onTableResizeModeChange,
   onTableResizeEnd,
   onSortReset,
   onSortChange,
   updateColumnsWidths,
+  updateURL,
+  updateModelData,
 };
 
 export default metricAppModel;

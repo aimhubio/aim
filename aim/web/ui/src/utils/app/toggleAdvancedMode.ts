@@ -2,8 +2,8 @@ import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 
-export default function toggleSelectAdvancedMode<T extends State>(
-  model: IModel<T>,
+export default function toggleSelectAdvancedMode<M extends State>(
+  model: IModel<M>,
   appName: string,
 ) {
   const configData = model.getState()?.config;

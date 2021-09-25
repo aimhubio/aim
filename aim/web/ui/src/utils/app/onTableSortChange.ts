@@ -9,9 +9,9 @@ import updateTableSortFields from 'utils/app/updateTableSortFields';
  * @param {String} field  - the name of the field (i.e params.dataset.preproc)
  * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
  */
-export default function onTableSortChange<T extends State>(
+export default function onTableSortChange<M extends State>(
   field: string,
-  model: IModel<T>,
+  model: IModel<M>,
   value?: 'asc' | 'desc' | 'none',
 ) {
   const configData = model.getState().config;

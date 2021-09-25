@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, MenuItem } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 import { IAggregationPopoverProps } from 'types/components/AggregationPopover/AggregationPopover';
 import {
   AggregationAreaMethods,

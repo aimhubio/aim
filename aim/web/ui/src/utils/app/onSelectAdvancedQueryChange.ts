@@ -1,8 +1,8 @@
 import { IModel, State } from 'types/services/models/model';
 
-export default function onSelectAdvancedQueryChange<T extends State>(
+export default function onSelectAdvancedQueryChange<M extends State>(
   query: string,
-  model: IModel<T>,
+  model: IModel<M>,
 ) {
   const configData = model.getState()?.config;
   if (configData?.select) {

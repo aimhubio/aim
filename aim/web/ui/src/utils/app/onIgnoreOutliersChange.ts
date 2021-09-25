@@ -3,11 +3,11 @@ import { IModel, State } from 'types/services/models/model';
 
 /**
  *
- * @param  {IModel<T extends State>} model - instance of createModel
+ * @param  {IModel<M extends State>} model - instance of createModel
  */
 
-export default function onIgnoreOutliersChange<T extends State>(
-  model: IModel<T>,
+export default function onIgnoreOutliersChange<M extends State>(
+  model: IModel<M>,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {

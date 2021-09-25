@@ -2,9 +2,9 @@ import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
 
-export default function onRowVisibilityChange<T extends State>(
+export default function onRowVisibilityChange<M extends State>(
   metricKey: string,
-  model: IModel<T>,
+  model: IModel<M>,
   appName: string,
 ) {
   const configData = model.getState()?.config;

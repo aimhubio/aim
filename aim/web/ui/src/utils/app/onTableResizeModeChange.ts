@@ -5,8 +5,8 @@ import { encode } from '../encoder/encoder';
 import { IOnTableResizeModeChangeParams } from 'types/utils/app/onTableResizeModeChange';
 import { State } from 'types/services/models/model';
 
-export default function onTableResizeModeChange<T extends State>(
-  params: IOnTableResizeModeChangeParams<T>,
+export default function onTableResizeModeChange<M extends State>(
+  params: IOnTableResizeModeChangeParams<M>,
 ): void {
   const configData: IMetricAppConfig | undefined =
     params.model.getState()?.config;
@@ -23,9 +23,9 @@ export default function onTableResizeModeChange<T extends State>(
     params.model.setState({
       config,
     });
-    setItem(`${params.page}Table`, encode(table));
+    setItem(`${params.appName}Table`, encode(table));
   }
   analytics.trackEvent(
-    `[${params.page}Explorer][Table] Set table view mode to "${params.mode}"`,
+    `[${params.appName}Explorer][Table] Set table view mode to "${params.mode}"`,
   );
 }

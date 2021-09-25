@@ -2,8 +2,8 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { IModel } from 'services/models/model';
 import { State } from 'types/services/models/model';
 
-export interface IOnTableResizeModeChangeParams<T extends State> {
+export interface IOnTableResizeModeChangeParams<M extends State> {
   mode: ResizeModeEnum;
-  model: IModel<T>;
-  page: string;
+  model: IModel<M>;
+  appName: string;
 }

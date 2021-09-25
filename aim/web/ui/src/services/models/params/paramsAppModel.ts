@@ -26,11 +26,8 @@ import { CurveEnum } from 'utils/d3';
 import {
   GroupNameType,
   IAppData,
-  IChartTitle,
-  IChartTitleData,
   IChartTooltip,
   IDashboardData,
-  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricsCollection,
   IMetricTableRowData,
@@ -64,6 +61,7 @@ import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getGroupConfig from 'utils/app/getGroupConfig';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
+import getChartTitleData from 'utils/app/getChartTitleData';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
@@ -273,7 +271,7 @@ function getParamsData() {
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
-          chartTitleData: getChartTitleData(data),
+          chartTitleData: getChartTitleData<IParam, any>(data, model),
           params,
           metricsColumns,
           rawData: runData,
@@ -326,33 +324,6 @@ function onTableRowClick(rowKey?: string): void {
     focusedStateActive,
     true,
   );
-}
-
-function getChartTitleData(
-  processedData: IMetricsCollection<IParam>[],
-  configData: any = model.getState()?.config,
-): IChartTitleData {
-  if (!processedData) {
-    return {};
-  }
-  const groupData = configData?.grouping;
-  let chartTitleData: IChartTitleData = {};
-  processedData.forEach((metricsCollection) => {
-    if (!chartTitleData[metricsCollection.chartIndex]) {
-      chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
-        (acc: IChartTitle, groupItemKey: string) => {
-          if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
-              metricsCollection.config[groupItemKey] || 'None',
-            );
-            return acc;
-          }
-        },
-        {},
-      );
-    }
-  });
-  return chartTitleData;
 }
 
 function processData(data: IRun<IParamTrace>[]): {
@@ -704,7 +675,7 @@ function onColorIndicatorChange(): void {
   if (configData?.chart) {
     const chart = { ...configData.chart };
     chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
-    updateModelData({ ...configData, chart });
+    updateModelData({ ...configData, chart }, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] ${
@@ -714,6 +685,7 @@ function onColorIndicatorChange(): void {
 }
 
 function onCurveInterpolationChange(): void {
+  // separated
   const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
     const chart = { ...configData.chart };
@@ -721,7 +693,7 @@ function onCurveInterpolationChange(): void {
       configData.chart.curveInterpolation === CurveEnum.Linear
         ? CurveEnum.MonotoneX
         : CurveEnum.Linear;
-    updateModelData({ ...configData, chart });
+    updateModelData({ ...configData, chart }, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] Set interpolation mode to "${
@@ -777,6 +749,10 @@ function onActivePointChange(
         },
       },
     };
+
+    if (config.chart.focusedState.active !== focusedStateActive) {
+      updateURL(configData);
+    }
   }
 
   model.setState({
@@ -788,11 +764,15 @@ function onActivePointChange(
 function onParamsSelectChange(data: any[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, params: data },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, params: data },
-      },
+      config: newConfig,
     });
   }
 }
@@ -800,11 +780,15 @@ function onParamsSelectChange(data: any[]) {
 function onSelectRunQueryChange(query: string) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -816,7 +800,7 @@ function onGroupingSelectChange({
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
 }
@@ -831,7 +815,7 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
@@ -847,7 +831,7 @@ function onGroupingPaletteChange(index: number): void {
       ...configData.grouping,
       paletteIndex: index,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] Set color palette to "${
@@ -869,12 +853,15 @@ function onGroupingReset(groupName: GroupNameType) {
       persistence: { ...persistence, [groupName]: false },
       isApplied: { ...isApplied, [groupName]: true },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent('[ParamsExplorer] Reset grouping');
 }
 
-function updateModelData(configData: IParamsAppConfig): void {
+function updateModelData(
+  configData: IParamsAppConfig = model.getState()!.config!,
+  shouldURLUpdate?: boolean,
+): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
@@ -900,11 +887,16 @@ function updateModelData(configData: IParamsAppConfig): void {
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
   });
+
+  if (shouldURLUpdate) {
+    updateURL(configData);
+  }
+
   model.setState({
     config: configData,
     data,
     highPlotData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
+    chartTitleData: getChartTitleData<IParam, any>(data, model),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
     tableData: tableData.rows,
     tableColumns,
@@ -1091,7 +1083,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
         [groupName]: !configData.grouping.isApplied[groupName],
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1105,7 +1097,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
         [groupName]: !configData.grouping.persistence[groupName],
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
@@ -1276,42 +1268,32 @@ function onResetConfigData(): void {
       ...getConfig().grouping,
     };
     configData.chart = { ...getConfig().chart };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
-function updateGroupingStateUrl(): void {
-  const groupingData = model.getState()?.config?.grouping;
-  if (groupingData) {
-    updateUrlParam('grouping', groupingData);
+/**
+ * function updateURL has 2 major functionalities:
+ *    1. Keeps URL in sync with the app config
+ *    2. Stores updated URL in localStorage if App is not in the bookmark state
+ * @param {IParamsAppConfig} configData - the current state of the app config
+ */
+function updateURL(configData = model.getState()!.config!) {
+  const { grouping, chart, select } = configData;
+  const url: string = getUrlWithParam(
+    ['grouping', 'chart', 'select'],
+    [encode(grouping), encode(chart), encode(select)],
+  );
+
+  if (url === `${window.location.pathname}${window.location.search}`) {
+    return;
   }
-}
 
-function updateChartStateUrl(): void {
-  const chartData = model.getState()?.config?.chart;
-
-  if (chartData) {
-    updateUrlParam('chart', chartData);
-  }
-}
-
-function updateSelectStateUrl(): void {
-  const selectData = model.getState()?.config?.select;
-  if (selectData) {
-    updateUrlParam('select', selectData);
-  }
-}
-
-function updateUrlParam(
-  paramName: string,
-  data: Record<string, unknown>,
-): void {
-  const encodedUrl: string = encode(data);
-  const url: string = getUrlWithParam(paramName, encodedUrl);
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('paramsUrl', url);
   }
+
   window.history.pushState(null, '', url);
 }
 
@@ -1338,6 +1320,7 @@ function onRowHeightChange(height: RowHeightSize) {
 }
 
 function onSortFieldsChange(sortFields: [string, any][]) {
+  // separated
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
     const configUpdate = {
@@ -1649,9 +1632,6 @@ const paramsAppModel = {
   onNotificationDelete,
   onChangeTooltip,
   onExportTableData,
-  updateChartStateUrl,
-  updateSelectStateUrl,
-  updateGroupingStateUrl,
   onTableRowHover,
   onTableRowClick,
   setDefaultAppConfigData,
@@ -1666,6 +1646,8 @@ const paramsAppModel = {
   onSortReset,
   onSortChange,
   updateColumnsWidths,
+  updateURL,
+  updateModelData,
 };
 
 export default paramsAppModel;

@@ -1,8 +1,8 @@
 import { getFilteredGroupingOptions } from './getFilteredGroupingOptions';
 import { IModel, State } from 'types/services/models/model';
 
-export default function isGroupingApplied<T extends State>(
-  model: IModel<T>,
+export default function isGroupingApplied<M extends State>(
+  model: IModel<M>,
 ): boolean {
   const groupByColor = getFilteredGroupingOptions('color', model);
   const groupByStroke = getFilteredGroupingOptions('stroke', model);

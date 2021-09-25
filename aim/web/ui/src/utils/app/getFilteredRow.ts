@@ -1,6 +1,6 @@
-export default function getFilteredRow<T extends Record<string, any>>(
+export default function getFilteredRow<R extends Record<string, any>>(
   columnKeys: string[],
-  row: T,
+  row: R,
 ): { [key: string]: string } {
   return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
     let value = row[column];

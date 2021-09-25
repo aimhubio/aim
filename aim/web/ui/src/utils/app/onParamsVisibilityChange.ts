@@ -4,7 +4,7 @@ import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
 
-export default function onMetricVisibilityChange<M extends State>(
+export default function onParamVisibilityChange<M extends State>(
   metricsKeys: string[],
   model: IModel<M>,
 ) {
@@ -17,25 +17,23 @@ export default function onMetricVisibilityChange<M extends State>(
         metricsKeys[0] === 'all'
           ? Object.values(processedData)
               .map((metricCollection) =>
-                metricCollection.data.map(
-                  (metric: Record<string, any>) => metric.key,
-                ),
+                metricCollection.data.map((metric: any) => metric.key),
               )
               .flat()
           : metricsKeys,
     };
-    const config = {
+    const configUpdate = {
       ...configData,
       table,
     };
     model.setState({
-      config,
+      config: configUpdate,
     });
-    setItem('metricsTable', encode(table));
-    // updateModelData(config);
+    setItem('paramsTable', encode(table));
+    // updateModelData(configUpdate);
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Table] ${
+    `[ParamsExplorer][Table] ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'

@@ -5,9 +5,9 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 
-export default function getGroupConfig<T extends State>(
+export default function getGroupConfig<M extends State>(
   metricsCollection: IMetricsCollection<any>,
-  model: IModel<T>,
+  model: IModel<M>,
 ) {
   const groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'];
   const configData = model.getState()?.config;

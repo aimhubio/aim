@@ -32,7 +32,7 @@ import {
   aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
-} from '../../../utils/aggregateGroupData';
+} from 'utils/aggregateGroupData';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -951,6 +951,7 @@ const runAppModel = {
   onColumnsVisibilityChange,
   onTableDiffShow,
   updateColumnsWidths,
+  setDefaultAppConfigData,
 };
 
 export default runAppModel;
