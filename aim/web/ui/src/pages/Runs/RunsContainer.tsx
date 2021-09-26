@@ -1,12 +1,12 @@
 import React, { memo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import useModel from 'hooks/model/useModel';
-import Runs from './Runs';
-import { ITableRef } from '../../types/components/Table/Table';
-import runsAppModel from '../../services/models/runs/runsAppModel';
 import * as analytics from 'services/analytics';
+import useModel from 'hooks/model/useModel';
+import { ITableRef } from 'types/components/Table/Table';
+import runsAppModel from 'services/models/runs/runsAppModel';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import Runs from './Runs';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);

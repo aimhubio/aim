@@ -58,7 +58,7 @@ function BookmarkCard({
               </Button>
             </NavLink>
             <span className='BookmarkCard__delete'>
-              <Button variant='text' withOnlyIcon onClick={handleOpenModal}>
+              <Button color='secondary' withOnlyIcon onClick={handleOpenModal}>
                 <Icon name='delete' />
               </Button>
             </span>
