@@ -7,9 +7,10 @@ from collections import defaultdict
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
+from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
-from aim.sdk.utils import search_aim_repo, clean_repo_path, mount_remote_repo, unmount_remote_repo
+from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
 from aim.sdk.data_version import DATA_VERSION
 
