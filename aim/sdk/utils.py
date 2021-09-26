@@ -1,6 +1,7 @@
 import os
 import pathlib
 import platform
+import psutil
 import shutil
 import subprocess
 import time
@@ -12,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_username():
+    """
+    Utility function to retrieve the current username
+    """
     if os.environ.get('LOGNAME'):
         return os.environ.get('LOGNAME')
     if os.environ.get('LNAME'):
@@ -25,6 +29,10 @@ def get_username():
 
 
 def check_sshfs_installation():
+    """
+    Utility function to check sshfs installation and user permission to execute sshfs.
+    Raises errors with hints to install sshfs based on the platform
+    """
     cmd = ['which', 'sshfs']
     child = subprocess.Popen(
         cmd,
@@ -33,8 +41,8 @@ def check_sshfs_installation():
         stderr=subprocess.PIPE,
         universal_newlines=True,
     )
-    child.communicate()
-    sshfs_executable = str(child.stdout)
+    child_std_out, _ = child.communicate()
+    sshfs_executable = child_std_out.rstrip()
     exit_code = child.wait()
     if exit_code != 0:
         if platform.system().lower() == 'darwin':
@@ -50,24 +58,35 @@ def check_sshfs_installation():
                                              'apt-get update\n'
                                              'apt-get install sshfs')
 
+    # check user permission to execute sshfs
     if not os.access(sshfs_executable, os.EX_OK):
         username = get_username()
         raise PermissionError(f'User {username} does not have sufficient permissions to run sshfs command.')
 
 
-def check_directory_permissions(path: str, unmount: bool = False):
+def check_directory_permissions(path: str, mount_root: Optional[str] = '', unmount: bool = False):
+    """
+    Utility function to check user write permissions on given path.
+    Optionally can unmount the the given path.
+    """
     if not os.access(path, os.W_OK):
         username = get_username()
         if unmount:
-            unmount_remote_repo(path)
+            unmount_remote_repo(path, mount_root)
         raise PermissionError(f'User {username} does not have write permissions on path: {path}.')
 
 
 def extract_remote_user_pwd_host_repo(path: str) -> Tuple[Optional[str], Optional[str], Optional[str], str]:
-    # path should follow this format 'ssh://[user:password@][host]:remote_repo_path'
+    """
+    Utility function to extract user, password, host and remote repo path from given remote path.
+    Arg path should follow the following format: 'ssh://[user:password@][host]:remote_repo_path'
+    Falls back to environment variables if some of the extractables are missing
+    """
     assert path.startswith('ssh://')
+    # strip the 'ssh://' prefix
     path = path[6:]
 
+    # split user:password and host:remote_repo_path pairs
     initial_split = path.split('@', maxsplit=1)
 
     user = None
@@ -81,16 +100,18 @@ def extract_remote_user_pwd_host_repo(path: str) -> Tuple[Optional[str], Optiona
         host_path_split = initial_split[1].split(':', maxsplit=1)
         user_pwd_split = initial_split[0].split(':', maxsplit=1)
 
+    # split user and password
     if user_pwd_split:
         user = user_pwd_split[0]
         if len(user_pwd_split) > 1:
             password = user_pwd_split[1]
 
+    # split host and remote path
     if len(host_path_split) == 1:
         remote_path = host_path_split[0]
     else:
         host = host_path_split[0]
-        remote_path = [1]
+        remote_path = host_path_split[1]
 
     # fallback to env variables
     if not user and os.environ.get('AIM_REMOTE_REPO_USER'):
@@ -103,13 +124,19 @@ def extract_remote_user_pwd_host_repo(path: str) -> Tuple[Optional[str], Optiona
     return user, password, host, remote_path
 
 
-def mount_remote_repo(remote_path: str) -> str:
+def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
+    """
+    Utility function to mount remote repository path to local  '/tmp/<timestamp>/<remote_repo_name>' directory
+    """
+
     check_sshfs_installation()
 
     user, pwd, host, remote_repo_path = extract_remote_user_pwd_host_repo(remote_path)
 
+    # check if the current user has permissions to perform write operations on /tmp dir
     check_directory_permissions(path='/tmp')
-    mount_point = f'/tmp/{int(time.time())}/{remote_repo_path}'
+    mount_root = f'/tmp/{int(time.time())}/'
+    mount_point = os.path.join(mount_root, remote_repo_path)
     os.makedirs(mount_point, exist_ok=True)
 
     login_options = f'{host}:{remote_repo_path}'
@@ -120,35 +147,39 @@ def mount_remote_repo(remote_path: str) -> str:
             login_options = f'{user}@{login_options}'
 
     # TODO: experiment on sshfs options to find an optimal set
-    sshfs_options = 'allow_other,default_permissions,nonempty'
+    # construct sshfs options, use IdentityFile if provided by the user
+    sshfs_options = 'allow_other,default_permissions'
     identity_file = os.environ.get('AIM_REMOTE_REPO_KEY_FILE')
     if identity_file:
         sshfs_options = f'{sshfs_options},IdentityFile={identity_file}'
 
-    cmd = ['sshfs', '-o', sshfs_options, login_options, mount_point]
-    child = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-    )
-    child.communicate()
-    exit_code = child.wait()
-
-    if exit_code != 0:
-        shutil.rmtree(mount_point)
+    # try mounting using sshfs
+    cmd = ['sshfs', login_options, mount_point, '-o', sshfs_options]
+    sshfs_cmd = subprocess.Popen(cmd, stderr=subprocess.PIPE)
+    # redirect sdterr to pipe and check if errors occurred, if not let the sshfs process run in the background
+    # otherwise raise an error, kill the process and cleanup the local mount point
+    if sshfs_cmd.stderr.readline():
+        # if mounting fails remove local mount point created by Aim
+        # and print the command that was used, so it'll be easier for the user to perform manual mounting
+        sshfs_cmd.kill()
+        shutil.rmtree(mount_root)
         raise subprocess.SubprocessError(f'Could not mount remote repository using command: \n'
                                          f'{" ".join(cmd)} \n'
                                          f'Please try to mount manually '
                                          f'and use the local mount point as a usual repo path.')
 
-    check_directory_permissions(mount_point, unmount=True)
+    # check if the user has permissions to perform write operations on local mount point (which means that the
+    # remote user also can perform write operations on remote repo path as well)
+    # unmount the local mount point in case of failure
+    check_directory_permissions(mount_point, mount_root, unmount=True)
 
-    return mount_point
+    return mount_root, mount_point
 
 
-def unmount_remote_repo(mount_point: str):
+def unmount_remote_repo(mount_point: str, mount_root: str):
+    """
+    Utility function to unmount remote repo
+    """
     cmd = ['umount', mount_point]
     child = subprocess.Popen(
         cmd,
@@ -160,11 +191,12 @@ def unmount_remote_repo(mount_point: str):
     child.communicate()
     exit_code = child.wait()
     if exit_code != 0:
+        # in case of failure log warning so the user can unmount manually if needed
         logger.warning(f'Could not unmount path: {mount_point}.\n'
                        f'Please unmount manually using command:\n'
                        f'{" ".join(cmd)}')
     else:
-        shutil.rmtree(mount_point)
+        shutil.rmtree(mount_root)
 
 
 def search_aim_repo(path):
