@@ -48,7 +48,6 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
         paramsAppModel.getParamsData().call();
-        paramsAppModel.setDefaultAppConfigData();
       });
     } else {
       paramsAppModel.setDefaultAppConfigData();
