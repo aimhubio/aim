@@ -769,13 +769,6 @@ function onActivePointChange(
 ): void {
   const { data, params, refs, config, metricsColumns } =
     model.getState() as any;
-  const tableData = getDataAsTableRows(
-    data,
-    metricsColumns,
-    params,
-    false,
-    config,
-  );
   const tableRef: any = refs?.tableRef;
   if (tableRef) {
     tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -815,7 +808,6 @@ function onActivePointChange(
   }
 
   model.setState({
-    tableData: tableData.rows,
     config: configData,
   });
 }
