@@ -428,7 +428,7 @@ function getDataAsLines(
                 dimension[label] = {
                   values: new Set(),
                   scaleType: 'linear',
-                  displayName: `<span>${label}</span>`,
+                  displayName: label,
                   dimensionType: 'param',
                 };
               }
@@ -453,11 +453,9 @@ function getDataAsLines(
                       dimension[formattedContext] = {
                         values: new Set().add(trace.last_value.last),
                         scaleType: 'linear',
-                        displayName: `<span>${
-                          value.param_name
-                        }</span> <span>${contextToString(
+                        displayName: `${value.param_name} ${contextToString(
                           trace.context,
-                        )}</span>`,
+                        )}`,
                         dimensionType: 'metric',
                       };
                     }
