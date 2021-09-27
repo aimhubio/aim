@@ -1,17 +1,59 @@
-.. Aim SDK documentation master file, created by
-   sphinx-quickstart on Wed Sep  1 10:56:48 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Aim
+===
 
-Welcome to Aim SDK's documentation!
-===================================
+.. mdinclude:: md/overview.md
+
+.. raw:: html
+
+   <div style="display:none">
+
+.. toctree::
+   :maxdepth: 1
+   :name: start
+   :caption: Quick Start
+
+   md/overview.md
+   md/quick-start/3_steps.md
+   md/quick-start/first_run.md
+   md/quick-start/basic_query.md
+   md/quick-start/integrations.md
+   md/quick-start/why_aim.md
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :name: api
+   :caption: References
 
-   overview
-   reference
+   api_references
+   cli_references
+
+.. toctree::
+   :maxdepth: 2
+   :name: guides
+   :caption: Usage Guides
+
+   integration_guides
+   ql_guides
+   ui_guides
+
+.. toctree::
+   :maxdepth: 2
+   :name: tutorials
+   :caption: Tutorials
+
+   md/guides/tutorials/tutorial_1.md
+
+.. toctree::
+   :maxdepth: 1
+   :name: Community
+   :caption: Community
+
+   generated/CHANGELOG.md
+
+.. raw:: html
+
+   </div>
 
 Indices and tables
 ==================
