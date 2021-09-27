@@ -47,7 +47,7 @@ def check_sshfs_installation():
             raise subprocess.SubprocessError('Could not find sshfs installation. \n'
                                              'To install sshfs please run the following commands:\n'
                                              'brew install macfuse \n'
-                                             'brew install brew install gromgit/fuse/sshfs\n'
+                                             'brew install gromgit/fuse/sshfs\n'
                                              'or alternatively follow the instructions here:'
                                              'https://osxfuse.github.io/')
         else:
@@ -133,8 +133,8 @@ def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
 
     # check if the current user has permissions to perform write operations on /tmp dir
     check_directory_permissions(path='/tmp')
-    mount_root = f'/tmp/{int(time.time())}/'
-    mount_point = os.path.join(mount_root, remote_repo_path)
+    mount_root = f'/tmp/{int(time.time())}'
+    mount_point = f'{mount_root}/{remote_repo_path}'
     os.makedirs(mount_point, exist_ok=True)
 
     login_options = f'{host}:{remote_repo_path}'
@@ -153,14 +153,14 @@ def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
 
     # try mounting using sshfs
     cmd = ['sshfs', login_options, mount_point, '-o', sshfs_options]
-    sshfs_cmd = subprocess.Popen(cmd, stderr=subprocess.PIPE)
+    sshfs_process = subprocess.Popen(cmd, stderr=subprocess.PIPE)
     # redirect sdterr to pipe and check if errors occurred, if not let the sshfs process run in the background
     # otherwise raise an error, kill the process and cleanup the local mount point
-    if sshfs_cmd.stderr.readline():
+    if sshfs_process.stderr.readline():
         # if mounting fails remove local mount point created by Aim
         # and print the command that was used, so it'll be easier for the user to perform manual mounting
-        sshfs_cmd.kill()
-        shutil.rmtree(mount_root)
+        sshfs_process.wait()
+        unmount_remote_repo(mount_point, mount_root)
         raise subprocess.SubprocessError(f'Could not mount remote repository using command: \n'
                                          f'{" ".join(cmd)} \n'
                                          f'Please try to mount manually '
@@ -176,8 +176,12 @@ def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
 
 def unmount_remote_repo(mount_point: str, mount_root: str):
     """
-    Utility function to unmount remote repo
+    Utility function to unmount remote repo and cleanup local directories created by Aim for mounting
     """
+    if not os.path.ismount(mount_point):
+        shutil.rmtree(mount_root)
+        return
+
     cmd = ['umount', mount_point]
     child = subprocess.Popen(
         cmd,
