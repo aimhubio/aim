@@ -1,16 +1,6 @@
 aim.sdk subpackage
 ==================
 
-.. toctree::
-   :maxdepth: 4
-
-   aim.sdk.repo
-   aim.sdk.run
-   aim.sdk.metric
-
-Submodules
-----------
-
 aim.sdk.repo module
 -------------------
 
