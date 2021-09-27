@@ -83,7 +83,7 @@ import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import { formatValues } from 'utils/formatValues';
+import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -1118,7 +1118,7 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = formatValues(value);
+        rowValues[paramKey] = formatValue(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (
             _.findIndex(columnsValues[paramKey], (paramValue) =>

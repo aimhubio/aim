@@ -1,4 +1,4 @@
-export function formatValues(value: any, undefinedValue: any = '-') {
+export function formatValue(value: any, undefinedValue: any = '-') {
   if (value === undefined) {
     return undefinedValue;
   }
