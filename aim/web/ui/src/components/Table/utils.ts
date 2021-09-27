@@ -30,26 +30,6 @@ export function normalizeColumns(elements) {
   return columns;
 }
 
-export function formatTableRowValue(value) {
-  if (value === undefined) {
-    return '-';
-  }
-  if (value === null) {
-    return 'None';
-  }
-  if (value === true) {
-    return 'True';
-  }
-  if (value === false) {
-    return 'False';
-  }
-  if (typeof value === 'number' || typeof value === 'string') {
-    return value;
-  }
-
-  return JSON.stringify(value);
-}
-
 export function isObjectEqual(objA, objB, ignoreFunction = true) {
   if (objA === objB) return true;
   if (objA === null && objB === null) return true;

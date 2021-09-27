@@ -58,10 +58,10 @@ import {
 } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
+import { formatValues } from 'utils/formatValues';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import { formatTableRowValue } from 'components/Table/utils';
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -463,16 +463,7 @@ function getDataAsLines(
                 });
               } else {
                 const paramValue = _.get(run.run.params, label);
-                if (paramValue === undefined) {
-                  values[label] = null;
-                } else if (paramValue === null) {
-                  values[label] = 'None';
-                } else if (typeof paramValue === 'string') {
-                  values[label] = `"${paramValue}"`;
-                } else {
-                  // TODO need to fix type
-                  values[label] = paramValue as any;
-                }
+                values[label] = formatValues(paramValue, null);
                 if (values[label] !== null) {
                   if (typeof values[label] === 'string') {
                     dimension[label].scaleType = 'point';
@@ -1072,7 +1063,7 @@ function getDataAsTableRows(
       metric.run.traces.map((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
-        ] = formatTableRowValue(trace.last_value.last);
+        ] = formatValues(trace.last_value.last);
       });
       const rowValues: any = {
         rowMeta: {
@@ -1111,7 +1102,7 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = formatTableRowValue(value);
+        rowValues[paramKey] = formatValues(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);
