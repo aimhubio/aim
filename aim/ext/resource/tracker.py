@@ -86,7 +86,7 @@ class ResourceTracker(object):
                 self._track_func()(
                     usage,
                     name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
-                    gpu=gpu_idx,
+                    context={'gpu': gpu_idx}
                 )
 
     def _stat_collector(self):
