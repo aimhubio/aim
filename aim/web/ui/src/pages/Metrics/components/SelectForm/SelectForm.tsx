@@ -19,6 +19,7 @@ import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
+import contextToString from 'utils/contextToString';
 
 import {
   ISelectMetricsOption,
@@ -110,9 +111,7 @@ function SelectForm({
 
         for (let val of projectsData.metrics[key]) {
           if (!isEmpty(val)) {
-            let label: string = Object.keys(val)
-              .map((item) => `${item}="${val[item]}"`)
-              .join(', ');
+            let label = contextToString(val);
             data.push({
               label: `${key} ${label}`,
               group: key,
