@@ -1,6 +1,6 @@
 # Overview
 
-Aim SDK package provides easy way to log training metadata across multiple runs, and fast intuitive Query Language for accessing saved data.
+Aim package logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 
 <div align="center">
 
@@ -36,4 +36,4 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 
 </div>
 
-Aim is an open-source comparison tool for AI experiments. With more resources and complex models more experiments are ran than ever. Use Aim to deeply inspect thousands of hyperparameter-sensitive training runs at once.
+Aim is open-source, self-hosted AI experiment tracking tool. Use Aim to deeply inspect hundreds of hyperparameter-sensitive training runs at once.

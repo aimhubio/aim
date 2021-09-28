@@ -1,12 +1,14 @@
 ## Aim in 3 steps
 
-1. Make sure aim `3.0.0` or upper installed:
+You only need these three steps to get started with Aim
+
+1. Install Aim v3.x:
 
 ```shell
 pip install aim>=3.0.0
 ```
 
-2. Initialize aim repository:
+2. Simple integration with your training code:
 
 ```python
 from aim import Run
@@ -26,7 +28,7 @@ for i in range(1000):
 
 ```
 
-3. Start the aim UI to observe the run
+3. Start UP the aim UI to observe the run:
 
 ```shell
 aim up
