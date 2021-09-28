@@ -17,7 +17,6 @@ Aim
    md/quick-start/first_run.md
    md/quick-start/basic_query.md
    md/quick-start/integrations.md
-   md/quick-start/why_aim.md
 
 
 .. toctree::
