@@ -27,9 +27,9 @@ import {
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import Icon from 'components/Icon/Icon';
 import TagLabel from 'components/TagLabel/TagLabel';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 import './SelectForm.scss';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function SelectForm({
   onParamsSelectChange,
@@ -179,6 +179,7 @@ function SelectForm({
                         ref={params.InputProps.ref}
                         inputProps={params.inputProps}
                         autoFocus={true}
+                        spellCheck={false}
                         className='SelectForm__metric__select'
                       />
                     )}
@@ -248,18 +249,19 @@ function SelectForm({
           </Button>
         </Box>
 
-        <Box mt={0.875}>
+        <div className='Params__SelectForm__TextField'>
           <TextField
             fullWidth
             size='small'
             variant='outlined'
             className='TextField'
+            spellCheck={false}
             inputProps={{ style: { height: '0.687rem' } }}
             placeholder='Run expression'
             value={selectedParamsData?.query}
             onChange={({ target }) => onSelectRunQueryChange(target.value)}
           />
-        </Box>
+        </div>
       </div>
     </div>
   );

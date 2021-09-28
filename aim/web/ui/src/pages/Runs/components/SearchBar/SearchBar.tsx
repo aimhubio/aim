@@ -33,6 +33,7 @@ function SearchBar({
         size='small'
         placeholder='Runs'
         variant='outlined'
+        spellCheck={false}
         InputProps={{
           className: 'Runs_Search_Bar__Input',
           startAdornment: (
