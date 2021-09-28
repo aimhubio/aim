@@ -57,7 +57,11 @@ function getParamsTableColumns(
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
           key: `${key}_${metricContext}`,
           content: (
-            <TagLabel size='small' color={COLORS[0][0]} label={metricContext} />
+            <TagLabel
+              size='small'
+              color={COLORS[0][0]}
+              label={metricContext === '' ? 'No context' : metricContext}
+            />
           ),
           topHeader: key,
           pin: order?.left?.includes(`${key}_${metricContext}`)

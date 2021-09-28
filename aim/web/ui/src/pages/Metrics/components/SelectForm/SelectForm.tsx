@@ -13,11 +13,13 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
+import { isEmpty } from 'lodash-es';
 
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
+import contextToString from 'utils/contextToString';
 
 import {
   ISelectMetricsOption,
@@ -108,19 +110,19 @@ function SelectForm({
         index++;
 
         for (let val of projectsData.metrics[key]) {
-          let label: string = Object.keys(val)
-            .map((item) => `${item}="${val[item]}"`)
-            .join(', ');
-          data.push({
-            label: `${key} ${label}`,
-            group: key,
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              metric_name: key,
-              context: val,
-            },
-          });
-          index++;
+          if (!isEmpty(val)) {
+            let label = contextToString(val);
+            data.push({
+              label: `${key} ${label}`,
+              group: key,
+              color: COLORS[0][index % COLORS[0].length],
+              value: {
+                metric_name: key,
+                context: val,
+              },
+            });
+            index++;
+          }
         }
       }
     }
