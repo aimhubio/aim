@@ -988,6 +988,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IMetricAppConfig,
+  dynamicUpdate?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1116,21 +1117,23 @@ function getDataAsTableRows(
         }
       });
 
-      paramKeys.forEach((paramKey) => {
-        const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = formatValue(value);
-        if (columnsValues.hasOwnProperty(paramKey)) {
-          if (
-            _.findIndex(columnsValues[paramKey], (paramValue) =>
-              _.isEqual(value, paramValue),
-            ) === -1
-          ) {
-            columnsValues[paramKey].push(value);
+      if (!dynamicUpdate) {
+        paramKeys.forEach((paramKey) => {
+          const value = _.get(metric.run.params, paramKey, '-');
+          rowValues[paramKey] = formatValue(value);
+          if (columnsValues.hasOwnProperty(paramKey)) {
+            if (
+              _.findIndex(columnsValues[paramKey], (paramValue) =>
+                _.isEqual(value, paramValue),
+              ) === -1
+            ) {
+              columnsValues[paramKey].push(value);
+            }
+          } else {
+            columnsValues[paramKey] = [value];
           }
-        } else {
-          columnsValues[paramKey] = [value];
-        }
-      });
+        });
+      }
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
@@ -1592,6 +1595,7 @@ function onActivePointChange(
       params,
       false,
       config,
+      true,
     );
     if (tableRef) {
       tableRef.current?.updateData({
@@ -1635,7 +1639,6 @@ function onActivePointChange(
     }
   }
   model.setState({
-    ...(tableData && { ...tableData }),
     config: configData,
   });
 }

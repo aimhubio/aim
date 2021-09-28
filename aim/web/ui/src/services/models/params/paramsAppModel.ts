@@ -767,11 +767,8 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const { data, params, refs, config, metricsColumns } =
-    model.getState() as any;
-  let tableData = null;
+  const { refs, config } = model.getState() as any;
   if (config.table.resizeMode !== ResizeModeEnum.Hide) {
-    tableData = getDataAsTableRows(data, metricsColumns, params, false, config);
     const tableRef: any = refs?.tableRef;
     if (tableRef) {
       tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -812,7 +809,6 @@ function onActivePointChange(
   }
 
   model.setState({
-    ...(tableData && { ...tableData }),
     config: configData,
   });
 }
