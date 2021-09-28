@@ -13,13 +13,11 @@ import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent
 
 import './PopoverContent.scss';
 
-function PopoverContent({
-  tooltipContent,
-  focusedState,
-  chartType,
-  alignmentConfig,
-  popoverContentRef,
-}: IPopoverContentProps) {
+const PopoverContent = React.forwardRef(function PopoverContent(
+  props: IPopoverContentProps,
+  ref,
+): React.FunctionComponentElement<React.ReactNode> {
+  const { tooltipContent, focusedState, chartType, alignmentConfig } = props;
   const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
 
   function renderPopoverHeader(): React.ReactNode {
@@ -60,7 +58,7 @@ function PopoverContent({
 
   return (
     <Paper
-      ref={popoverContentRef}
+      ref={ref}
       className='PopoverContent__container'
       style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
     >
@@ -130,6 +128,6 @@ function PopoverContent({
       </Box>
     </Paper>
   );
-}
+});
 
 export default React.memo(PopoverContent);

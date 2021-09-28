@@ -2,13 +2,14 @@
 
 .PopoverContent__container {
   position: relative;
-  overflow: auto;
   max-height: inherit;
   font-size: $text-sm;
   line-height: 15px;
   color: tint($pico, 20);
 
   .PopoverContent {
+    max-height: inherit;
+    overflow: auto;
     padding-bottom: 3px;
 
     &__value {

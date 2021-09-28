@@ -5,6 +5,9 @@
     margin: 1em;
     width: 230px;
     max-height: 250px;
+    &__hide {
+      visibility: hidden;
+    }
   }
 }
 

@@ -5,7 +5,7 @@ function getPositionBasedOnOverflow(
   containerRect?: DOMRect,
   contentRect: DOMRect | { width: number; height: number } = {
     width: 230,
-    height: 250,
+    height: 200,
   },
 ): PopoverPosition {
   if (!containerRect || !contentRect) {
