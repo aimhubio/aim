@@ -46,10 +46,10 @@ repo = Repo(".")
 ```python
 query = "metric.name == \"loss\""
 
-# Get collection of metrics and runs
+# Get collection of metrics
 for run_metrics_collection in repo.query_metrics(query).iter_runs():
     for metric in run_metrics_collection:
-        # Get all params
+        # Get run params
         params = metric.run[...]
         # Get metric values
         steps, metric_values = metric.values.sparse_numpy()
