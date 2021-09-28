@@ -58,10 +58,6 @@ function SearchBar({
         size='small'
         startIcon={<SearchIcon color='inherit' />}
         disabled={isRunsDataLoading}
-        style={{
-          height: 32,
-          border: '1px solid #BDCEE8',
-        }}
       >
         Search
       </Button>
