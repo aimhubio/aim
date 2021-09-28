@@ -1,4 +1,4 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 .SelectForm__container {
   flex: 1;
@@ -39,6 +39,13 @@
   flex-direction: column;
 }
 
+.Params__SelectForm__TextField {
+  margin-top: 0.875rem;
+  input {
+    font-family: monospace;
+  }
+}
+
 .Params__SelectForm__search__button {
   width: 100px;
   margin-left: 10px;
@@ -75,7 +82,7 @@
   position: relative;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     width: 50px;
     height: 30px;

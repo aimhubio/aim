@@ -3,6 +3,7 @@ import logging
 import datetime
 from time import time
 from collections import Counter
+from copy import deepcopy
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.metric import SingleRunMetricCollection
@@ -169,6 +170,7 @@ class Run(StructuredRunMixin):
     _idx_to_ctx: Dict[int, Context] = dict()
     _props_cache_hint: str = None
     _finalize_message_shown = False
+    _track_warning_shown = False
 
     def __init__(self, hashname: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
@@ -176,6 +178,7 @@ class Run(StructuredRunMixin):
                  experiment: Optional[str] = None,
                  system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
         hashname = hashname or generate_run_hash()
+        self._finalized = False
 
         if repo is None:
             from aim.sdk.repo import Repo
@@ -320,7 +323,26 @@ class Run(StructuredRunMixin):
 
         Appends the tracked value to metric series specified by `name` and `context`.
         """
+
+        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
+        # not the actual implementation execution time.
         track_time = time()
+        val = deepcopy(value)
+        track_rate_warning = self.repo.tracking_queue.register_task(
+            self._track_impl, val, track_time, name, step, epoch, context=context)
+        if track_rate_warning:
+            self.track_rate_warn()
+
+    def _track_impl(
+        self,
+        value,
+        track_time: float,
+        name: str,
+        step: int = None,
+        epoch: int = None,
+        *,
+        context: AimObject = None,
+    ):
         # TODO move to Metric
         if context is None:
             context = {}
@@ -473,8 +495,21 @@ class Run(StructuredRunMixin):
             logger.warning('Finalizing runs.')
             cls._finalize_message_shown = True
 
+    @classmethod
+    def track_rate_warn(cls):
+        if not cls._track_warning_shown:
+            # TODO [AT] add link to FAQ section in docs.
+            logger.warning('Tracking task queue is almost full which might cause performance degradation. '
+                           'Consider tracking at lower pace.')
+            cls._track_warning_shown = True
+
     def finalize(self):
+        if self._finalized:
+            return
+        self._finalized = True
         self.finalize_msg()
+        self.repo.tracking_queue.wait_for_finish()
+
         self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',
                                          read_only=False,

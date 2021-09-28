@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Box, Divider, Link, Paper, capitalize } from '@material-ui/core';
+import { Box, Divider, Link, Paper } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
@@ -26,8 +26,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         return (
           <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
-              {capitalize(tooltipContent.metricName)}:{' '}
-              {focusedState?.yValue ?? '--'}
+              {tooltipContent.metricName}: {focusedState?.yValue ?? '--'}
             </div>
             <div className='PopoverContent__value'>
               Step:{' '}
@@ -77,8 +76,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                     </div>
                     {Object.keys(groupConfig[groupConfigKey]).map((item) => (
                       <div key={item} className='PopoverContent__value'>
-                        {capitalize(item)}:{' '}
-                        {groupConfig[groupConfigKey][item] ?? '--'}
+                        {item}: {groupConfig[groupConfigKey][item] ?? '--'}
                       </div>
                     ))}
                   </React.Fragment>
@@ -94,8 +92,12 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
-                  {capitalize(paramKey)}:{' '}
-                  {JSON.stringify(params[paramKey]) ?? '--'}
+                  {paramKey}:{' '}
+                  {params[paramKey]
+                    ? typeof params[paramKey] !== 'string'
+                      ? JSON.stringify(params[paramKey])
+                      : params[paramKey]
+                    : '--'}
                 </div>
               ))}
             </Box>

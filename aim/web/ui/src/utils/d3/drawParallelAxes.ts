@@ -9,7 +9,6 @@ import {
   gradientStartColor,
   gradientEndColor,
 } from 'utils/d3';
-import getInnerTextFromHtml from 'utils/getInnerTextFromHtml';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -92,19 +91,20 @@ function drawParallelAxes({
             : -dimensionTitleWidth / 2
         }, ${i % 2 === 0 ? -25 : -40})`,
       )
-      .html(
-        () =>
-          `
-            <div title='${getInnerTextFromHtml(displayName)}'
+      .html(() => {
+        const [label1, label2 = ''] = displayName.split(' ');
+        const styledLabel2 = label2
+          ? `<span style='font-style: italic'>${label2}</span>`
+          : '';
+        return `
+            <div title='${displayName}'
                 class='xAxisLabel__container xAxisLabel__container__${dimensionType} 
                 ${i === first ? 'left' : i === last ? 'right' : ''}' 
             >
-               <div class='xAxisLabel'>
-                  ${displayName}
-               </div>
+               <div class='xAxisLabel'>${label1} ${styledLabel2}</div>
             </div>
-          `,
-      );
+          `;
+      });
     axesRef.current.yAxes[keyOfDimension] = axes;
   });
 

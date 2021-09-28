@@ -12,18 +12,18 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
   );
-  const popoverContentRef = React.useRef<HTMLDivElement>();
+  const popoverContentRef = React.useRef<HTMLDivElement>(null);
   const frameIDRef = React.useRef<number>(0);
 
   function onPopoverPositionChange(popoverPos: PopoverPosition | null): void {
     if (popoverPos === null) {
       setPopoverPos(null);
-    } else {
+    } else if (popoverContentRef.current && props.containerRef?.current) {
       // Popover viewport need to be overflowed by chart container
       const pos = getPositionBasedOnOverflow(
         popoverPos,
-        props.containerRef?.current?.getBoundingClientRect(),
-        popoverContentRef?.current?.getBoundingClientRect(),
+        props.containerRef.current.getBoundingClientRect(),
+        popoverContentRef.current.getBoundingClientRect(),
       );
 
       setPopoverPos(pos);
@@ -41,10 +41,12 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
     };
   }, []);
 
-  React.useEffect(() => {
-    frameIDRef.current = window.requestAnimationFrame(() => {
-      onPopoverPositionChange(props.popoverPosition);
-    });
+  React.useLayoutEffect(() => {
+    if (open && props.popoverPosition) {
+      frameIDRef.current = window.requestAnimationFrame(() => {
+        onPopoverPositionChange(props.popoverPosition);
+      });
+    }
   }, [
     props.popoverPosition,
     props.containerRef?.current,
