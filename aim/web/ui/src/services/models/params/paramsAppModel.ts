@@ -853,27 +853,17 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Other',
-      label: 'experiment_name',
-      value: 'run.experiment_name',
+      group: 'Run',
+      label: 'run.experiment',
+      value: 'run.props.experiment',
     },
     {
-      group: 'Other',
+      group: 'Run',
       label: 'run.hash',
-      value: 'run.params.status.hash',
+      value: 'run.hash',
     },
-    {
-      group: 'Other',
-      label: 'metric_name',
-      value: 'metric_name',
-    },
-    {
-      group: 'context',
-      label: 'subset',
-      value: 'context.subset',
-    },
+    ...paramsOptions,
   ];
 }
 
