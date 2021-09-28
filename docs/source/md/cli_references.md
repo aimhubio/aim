@@ -10,7 +10,7 @@ Here are the set of commands supported:
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `up`          | Runs Aim web UI for the given repo                                   |
-| `upgrade`     | Upgrades legacy Aim repository to a new format                       |
+| `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`                   |
 
 ### init
 __**This step is optional.**__
@@ -55,7 +55,7 @@ $ aim upgrade [ARGS] SUBCOMMAND
 
 **upgrade subcommands**
 
-Upgrade `aim` repository from `pre-3.0.0` to `3.0.0+`.
+Upgrade `aim` repository from `2.x` to `3.0`.
 ```shell
 $ aim ugrade 2to3 [ARGS]
 ```
