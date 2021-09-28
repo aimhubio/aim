@@ -130,6 +130,7 @@ function Column({
                   <div>
                     <Button
                       withOnlyIcon
+                      size='small'
                       onClick={onAnchorClick}
                       color='secondary'
                     >

@@ -2,9 +2,9 @@
 
 Aim SDK package provides easy way to log training metadata across multiple runs, and fast intuitive Query Language for accessing saved data.
 
-## Quick Start
+## Getting Started
 
-### Prerequisites
+### Aim in 3 steps
 1. Make sure aim `3.0.0` or upper installed:
    
 ```shell
@@ -13,11 +13,30 @@ pip install aim>=3.0.0
 
 2. Initialize aim repository:
    
-```shell
-aim init
+```python
+from aim import Run
+
+# Initialize new run
+r = Run()
+# Long run parameters
+r["foo"] = {
+    "bar": 1,
+    "baz": 2,
+}
+# Log metrics
+for i in range(1000):
+    r.track(i, name="metric_name")
+
+
 ```
 
-### Creating your first run
+3. Start the aim UI to observe the run
+```shell
+aim up
+
+```
+
+### Tracking your first run
 
 ```python
 from aim.sdk.run import Run
@@ -34,7 +53,7 @@ for i in range(100):
 ```
 Congratulations! Your first run is ready!
 
-### Query metric series
+### Retrieving runs & metrics from SDK
 
 ```python
 from aim.sdk.repo import Repo
@@ -52,6 +71,18 @@ for metric in metrics:
 ```
 
 You can find more examples of `Aim SDK` usage [here][getting_started_examples].
+
+### Crash cource on Aim UI
+
+TODO
+
+### Integrations
+
+TODO
+
+### Why track your runs with Aim?
+
+TODO
 
 ### Aim SDK Query language
 
@@ -83,4 +114,3 @@ query = "0.001 >= run.hparams.lr >= 0.0001"
 ```
 
 [getting_started_examples]: https://github.com/aimhubio/aim/tree/main/examples
-

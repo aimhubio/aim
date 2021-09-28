@@ -58,6 +58,7 @@ import {
 } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
+import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
@@ -427,7 +428,7 @@ function getDataAsLines(
                 dimension[label] = {
                   values: new Set(),
                   scaleType: 'linear',
-                  displayName: `<span>${label}</span>`,
+                  displayName: label,
                   dimensionType: 'param',
                 };
               }
@@ -452,11 +453,9 @@ function getDataAsLines(
                       dimension[formattedContext] = {
                         values: new Set().add(trace.last_value.last),
                         scaleType: 'linear',
-                        displayName: `<span>${
-                          value.param_name
-                        }</span> <span>${contextToString(
+                        displayName: `${value.param_name} ${contextToString(
                           trace.context,
-                        )}</span>`,
+                        )}`,
                         dimensionType: 'metric',
                       };
                     }
@@ -464,16 +463,7 @@ function getDataAsLines(
                 });
               } else {
                 const paramValue = _.get(run.run.params, label);
-                if (paramValue === undefined) {
-                  values[label] = null;
-                } else if (paramValue === null) {
-                  values[label] = 'None';
-                } else if (typeof paramValue === 'string') {
-                  values[label] = `"${paramValue}"`;
-                } else {
-                  // TODO need to fix type
-                  values[label] = paramValue as any;
-                }
+                values[label] = formatValue(paramValue, null);
                 if (values[label] !== null) {
                   if (typeof values[label] === 'string') {
                     dimension[label].scaleType = 'point';
@@ -779,21 +769,18 @@ function onActivePointChange(
 ): void {
   const { data, params, refs, config, metricsColumns } =
     model.getState() as any;
-  const tableData = getDataAsTableRows(
-    data,
-    metricsColumns,
-    params,
-    false,
-    config,
-  );
-  const tableRef: any = refs?.tableRef;
-  if (tableRef) {
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
-    );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+  let tableData = null;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    tableData = getDataAsTableRows(data, metricsColumns, params, false, config);
+    const tableRef: any = refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IParamsAppConfig = config;
@@ -825,7 +812,7 @@ function onActivePointChange(
   }
 
   model.setState({
-    tableData: tableData.rows,
+    ...(tableData && { ...tableData }),
     config: configData,
   });
 }
@@ -1073,7 +1060,7 @@ function getDataAsTableRows(
       metric.run.traces.map((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
-        ] = trace.last_value.last;
+        ] = formatValue(trace.last_value.last);
       });
       const rowValues: any = {
         rowMeta: {
@@ -1112,8 +1099,7 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
+        rowValues[paramKey] = formatValue(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);

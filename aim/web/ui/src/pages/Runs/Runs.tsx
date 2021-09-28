@@ -1,10 +1,10 @@
 import React from 'react';
 import RunsTable from './RunsTable';
-
-import './Runs.scss';
 import RunsBar from './components/RunsBar/RunsBar';
 import SearchBar from './components/SearchBar/SearchBar';
-import NotificationContainer from '../../components/NotificationContainer/NotificationContainer';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
+import './Runs.scss';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
   return (
