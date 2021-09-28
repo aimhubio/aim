@@ -17,8 +17,8 @@ def search_aim_repo(path):
         path = os.path.dirname(path)
 
 
-def generate_run_hash():
-    return hex(hash(uuid.uuid4()))[2:9]
+def generate_run_hash(hash_length=12):
+    return hex(hash(uuid.uuid4()))[2:hash_length+2]
 
 
 def clean_repo_path(repo_path: Union[str, pathlib.Path]) -> str:
