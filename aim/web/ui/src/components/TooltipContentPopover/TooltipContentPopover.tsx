@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, TextField, Typography } from '@material-ui/core';
+import { Checkbox, TextField, Typography, Chip } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
@@ -92,6 +92,18 @@ function TooltipContentPopover({
                   {option.label}
                 </Typography>
               </React.Fragment>
+            )}
+            renderTags={(value, getTagProps) => (
+              <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                {value.map((selected, i) => (
+                  <Chip
+                    key={i}
+                    {...getTagProps({ index: i })}
+                    label={selected.label}
+                    size='small'
+                  />
+                ))}
+              </div>
             )}
           />
         </div>

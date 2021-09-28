@@ -5,6 +5,7 @@ import {
   AccordionSummary,
   Checkbox,
   TextField,
+  Chip,
 } from '@material-ui/core';
 import {
   CheckBox as CheckBoxIcon,
@@ -89,6 +90,18 @@ function GroupingPopover({
                 label='Select Params'
                 placeholder='Select'
               />
+            )}
+            renderTags={(value, getTagProps) => (
+              <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                {value.map((selected, i) => (
+                  <Chip
+                    key={i}
+                    {...getTagProps({ index: i })}
+                    label={selected.label}
+                    size='small'
+                  />
+                ))}
+              </div>
             )}
             renderOption={(option, { selected }) => (
               <React.Fragment>
