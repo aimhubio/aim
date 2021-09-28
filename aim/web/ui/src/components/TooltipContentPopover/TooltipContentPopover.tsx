@@ -44,7 +44,12 @@ function TooltipContentPopover({
         data.push(option);
       }
     });
-    return data;
+
+    // Sort selected values by the order of their application
+    return data.sort(
+      (a, b) =>
+        selectedParams.indexOf(a.value) - selectedParams.indexOf(b.value),
+    );
   }, [selectOptions, selectedParams]);
 
   const paramsOptions = React.useMemo(() => {
