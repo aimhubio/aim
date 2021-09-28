@@ -10,7 +10,6 @@ import { PathEnum } from 'config/enums/routesEnum';
 import logoImg from 'assets/logo.svg';
 
 import './Sidebar.scss';
-import { Match } from '@testing-library/dom';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   function getPathFromStorage(route: PathEnum): PathEnum | string {

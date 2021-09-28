@@ -1,4 +1,4 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 .SelectForm__container {
   flex: 1;
@@ -26,9 +26,24 @@
   width: 100%;
 
   input {
+    font-family: monospace;
     padding: 0.5rem;
     font-size: $text-md;
     border-bottom: $border-main;
+  }
+}
+
+.SelectForm__TextField {
+  margin-top: 0.875rem;
+  input {
+    font-family: monospace;
+  }
+}
+
+.SelectForm__textarea {
+  flex: 1;
+  textarea {
+    font-family: monospace;
   }
 }
 
@@ -86,7 +101,7 @@
   position: relative;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     width: 50px;
     height: 30px;

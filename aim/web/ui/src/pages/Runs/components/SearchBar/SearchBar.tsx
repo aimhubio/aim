@@ -33,6 +33,7 @@ function SearchBar({
         size='small'
         placeholder='Runs'
         variant='outlined'
+        spellCheck={false}
         InputProps={{
           startAdornment: (
             <img src={searchImg} alt='visible' style={{ marginRight: 10 }} />

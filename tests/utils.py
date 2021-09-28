@@ -11,8 +11,6 @@ from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 from aim.storage.structured.sql_engine.models import Base as StructuredBase
 from aim.web.api.db import get_contexted_session
-from aim.web.api.dashboards import models
-from aim.web.api.dashboard_apps import models
 from aim.web.api.db import Base as ApiBase
 
 
@@ -67,28 +65,28 @@ def fill_up_test_data():
     metrics = ['loss', 'accuracy']
 
     with repo.structured_db:
-        try:
-            for idx, hash_name in enumerate(run_hashes):
-                run = Run(hashname=hash_name, repo=repo, system_tracking_interval=None)
-                run['hparams'] = create_run_params()
-                run['run_index'] = idx
-                run['start_time'] = datetime.datetime.utcnow().isoformat()
-                run['name'] = f'Run # {idx}'
-                run.name = run['name']
-
-                metric_contexts = itertools.product(metrics, contexts)
-                for metric_context in metric_contexts:
-                    metric = metric_context[0]
-                    context = metric_context[1]
-                    if metric == 'accuracy' and 'subset' in context:
-                        continue
-                    else:
-                        # track 100 values per run
-                        for step in range(100):
-                            val = 1.0 - 1.0 / (step + 1)
-                            run.track(val, name=metric, step=step, epoch=1, context=context)
-        finally:
-            del run
+        runs = []
+        for idx, hash_name in enumerate(run_hashes):
+            run = Run(hashname=hash_name, repo=repo, system_tracking_interval=None)
+            run['hparams'] = create_run_params()
+            run['run_index'] = idx
+            run['start_time'] = datetime.datetime.utcnow().isoformat()
+            run['name'] = f'Run # {idx}'
+            run.name = run['name']
+            runs.append(run)
+            metric_contexts = itertools.product(metrics, contexts)
+            for metric_context in metric_contexts:
+                metric = metric_context[0]
+                context = metric_context[1]
+                if metric == 'accuracy' and 'subset' in context:
+                    continue
+                else:
+                    # track 100 values per run
+                    for step in range(100):
+                        val = 1.0 - 1.0 / (step + 1)
+                        run.track(val, name=metric, step=step, epoch=1, context=context)
+        for run in runs:
+            run.finalize()
 
 
 def remove_test_data():
