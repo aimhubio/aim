@@ -10,6 +10,7 @@ Here are the set of commands supported:
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `up`          | Runs Aim web UI for the given repo                                   |
+| `upgrade`     | Upgrades legacy Aim repository to a new format                       |
 
 ### init
 __**This step is optional.**__
@@ -41,5 +42,28 @@ $ aim up [ARGS]
 | `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 | `--dev`                           | Run UI in development mode.                                   |
+
+### upgrade
+Upgrade Aim repository containing data logged with older version of Aim.
+```shell
+$ aim upgrade [ARGS] SUBCOMMAND
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+#### upgrade subcommands
+Upgrade `aim` repository from `pre-3.0.0` to `3.0.0+`.
+```shell
+$ aim ugrade 2to3 [ARGS]
+```
+
+| Args                  | Description                                                          |
+| ----------------------| -------------------------------------------------------------------- |
+| `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data. |
+| `--skip-checks`       | Use this flag to skip new repository consistency checks. |
+| `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`.|
+
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]
