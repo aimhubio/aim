@@ -53,7 +53,8 @@ $ aim upgrade [ARGS] SUBCOMMAND
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
-#### upgrade subcommands
+**upgrade subcommands**
+
 Upgrade `aim` repository from `pre-3.0.0` to `3.0.0+`.
 ```shell
 $ aim ugrade 2to3 [ARGS]
