@@ -1637,7 +1637,8 @@ function onActivePointChange(
 
     if (
       config.chart.focusedState.active !== focusedStateActive ||
-      activePoint.key !== config.chart.focusedState.key
+      (config.chart.focusedState.active &&
+        activePoint.key !== config.chart.focusedState.key)
     ) {
       updateURL(configData);
     }
