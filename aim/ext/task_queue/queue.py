@@ -64,5 +64,4 @@ class TaskQueue(object):
         logger.debug('No pending tasks left.')
 
     def __del__(self):
-        print('del task queue')
         self.stop_workers()
