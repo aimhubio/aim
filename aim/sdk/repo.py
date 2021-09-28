@@ -52,7 +52,7 @@ class Repo:
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
-    tracking_queue = TaskQueue('metric_tracking')  # single thread task queue for Run.track
+    tracking_queue = TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:

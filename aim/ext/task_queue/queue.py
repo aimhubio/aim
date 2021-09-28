@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 class TaskQueue(object):
     def __init__(self, name, num_workers=1, max_backlog=0):
         self.name = name
+        self.max_backlog = max_backlog
         self.num_workers = num_workers
 
         self._queue = queue.Queue(maxsize=max_backlog)
@@ -25,10 +26,15 @@ class TaskQueue(object):
             thread.start()
 
     def register_task(self, task_func, *args, **kwargs):
+        warn_queue_full = False
         if self._stopped:
             logger.debug('Cannot register task: task queue is stopped.')
         else:
+            backlog_size = self._queue.qsize()
+            if backlog_size > self.max_backlog * 0.8:  # queue is 80% full
+                warn_queue_full = True
             self._queue.put((task_func, args, kwargs))
+        return warn_queue_full
 
     def worker(self):
         while True:
