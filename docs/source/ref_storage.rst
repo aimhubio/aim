@@ -1,4 +1,4 @@
-aim.storage subpackage
+Aim Storage
 ======================
 
 

@@ -1587,25 +1587,28 @@ function onActivePointChange(
   const { data, params, refs, config } =
     model.getState() as IMetricAppModelState;
   const tableRef: any = refs?.tableRef;
-  const tableData = getDataAsTableRows(
-    data,
-    activePoint.xValue,
-    params,
-    false,
-    config,
-    true,
-  );
-  if (tableRef) {
-    tableRef.current?.updateData({
-      newData: tableData.rows,
-      dynamicData: true,
-    });
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
+  let tableData = null;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    tableData = getDataAsTableRows(
+      data,
+      activePoint.xValue,
+      params,
+      false,
+      config,
+      true,
     );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+    if (tableRef) {
+      tableRef.current?.updateData({
+        newData: tableData.rows,
+        dynamicData: true,
+      });
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IMetricAppConfig = config;
@@ -1635,9 +1638,7 @@ function onActivePointChange(
       updateURL(configData);
     }
   }
-
   model.setState({
-    // tableData: tableData.rows,
     config: configData,
   });
 }
