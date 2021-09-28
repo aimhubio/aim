@@ -9,8 +9,8 @@ Here are the set of commands supported:
 | --------------| -------------------------------------------------------------------- |
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
-| `experiment`  | Creates a new experiment to group similar training runs into.        |
 | `up`          | Runs Aim web UI for the given repo                                   |
+| `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`                   |
 
 ### init
 __**This step is optional.**__
@@ -30,20 +30,6 @@ Display the Aim version installed.
 $ aim version
 ```
 
-### experiment
-Create new experiments to organize the training runs. Here is how it works:
-```shell
-$ aim experiment COMMAND [ARGS]
-```
-| Command    | Args                            | Description                                               |
-| -----------| ------------------------------- | --------------------------------------------------------- |
-| `add`      | `-n` &#124; `--name <exp_name>` | Add new experiment with a given name.                     |
-| `checkout` | `-n` &#124; `--name <exp_name>` | Switch/checkout to an experiment with given name.         |
-| `ls`       |                                 | List all the experiments of the repo.                     |
-| `rm`       | `-n` &#124; `--name <exp_name>` | Remove an experiment with the given name.                 |
-
-***Disclaimer:*** Removing the experiment also removes the recorded experiment runs data.
-
 ### up
 Start the Aim web UI locally.
 ```shell
@@ -55,9 +41,30 @@ $ aim up [ARGS]
 | `-h` &#124; `--host <host>`       | Specify host address.                                     |
 | `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
-| `--tf_logs <logs_dir_path>`       | Use Aim to search and compare TensorBoard experiments. More details in [TensorBoard Experiments](#tensorboard-experiments) |
 | `--dev`                           | Run UI in development mode.                                   |
 
-***Please make sure to run `aim up` in the directory where `.aim` is located.***
+### upgrade
+Upgrade Aim repository containing data logged with older version of Aim.
+```shell
+$ aim upgrade [ARGS] SUBCOMMAND
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+**upgrade subcommands**
+
+Upgrade `aim` repository from `2.x` to `3.0`.
+```shell
+$ aim ugrade 2to3 [ARGS]
+```
+
+| Args                  | Description                                                          |
+| ----------------------| -------------------------------------------------------------------- |
+| `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data. |
+| `--skip-checks`       | Use this flag to skip new repository consistency checks. |
+| `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`.|
+
 
 Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]

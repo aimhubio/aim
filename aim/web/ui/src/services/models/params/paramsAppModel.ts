@@ -769,21 +769,18 @@ function onActivePointChange(
 ): void {
   const { data, params, refs, config, metricsColumns } =
     model.getState() as any;
-  const tableData = getDataAsTableRows(
-    data,
-    metricsColumns,
-    params,
-    false,
-    config,
-  );
-  const tableRef: any = refs?.tableRef;
-  if (tableRef) {
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
-    );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+  let tableData = null;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    tableData = getDataAsTableRows(data, metricsColumns, params, false, config);
+    const tableRef: any = refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IParamsAppConfig = config;
@@ -815,7 +812,7 @@ function onActivePointChange(
   }
 
   model.setState({
-    tableData: tableData.rows,
+    ...(tableData && { ...tableData }),
     config: configData,
   });
 }
