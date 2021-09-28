@@ -803,7 +803,12 @@ function onActivePointChange(
       },
     };
 
-    if (config.chart.focusedState.active !== focusedStateActive) {
+    if (
+      config.chart.focusedState.active !== focusedStateActive ||
+      (config.chart.focusedState.active &&
+        (activePoint.key !== config.chart.focusedState.key ||
+          activePoint.xValue !== config.chart.focusedState.xValue))
+    ) {
       updateURL(configData);
     }
   }
@@ -1252,6 +1257,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }

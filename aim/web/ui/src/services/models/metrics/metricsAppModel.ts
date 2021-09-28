@@ -1576,6 +1576,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
@@ -1634,7 +1635,11 @@ function onActivePointChange(
       },
     };
 
-    if (config.chart.focusedState.active !== focusedStateActive) {
+    if (
+      config.chart.focusedState.active !== focusedStateActive ||
+      (config.chart.focusedState.active &&
+        activePoint.key !== config.chart.focusedState.key)
+    ) {
       updateURL(configData);
     }
   }
