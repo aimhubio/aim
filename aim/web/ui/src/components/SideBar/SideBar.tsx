@@ -10,6 +10,7 @@ import { PathEnum } from 'config/enums/routesEnum';
 import logoImg from 'assets/logo.svg';
 
 import './Sidebar.scss';
+import { Match } from '@testing-library/dom';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   function getPathFromStorage(route: PathEnum): PathEnum | string {
@@ -60,6 +61,10 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                   key={index}
                   to={() => getPathFromStorage(path)}
                   exact={true}
+                  isActive={(m, location) => {
+                    let split = location.pathname.split('/');
+                    return split.includes(path.split('/')[1]);
+                  }}
                   activeClassName={'Sidebar__anchor__active'}
                   className='Sidebar__anchor'
                 >

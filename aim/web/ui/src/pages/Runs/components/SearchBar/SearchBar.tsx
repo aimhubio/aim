@@ -34,7 +34,6 @@ function SearchBar({
         placeholder='Runs'
         variant='outlined'
         InputProps={{
-          className: 'Runs_Search_Bar__Input',
           startAdornment: (
             <img src={searchImg} alt='visible' style={{ marginRight: 10 }} />
           ),
@@ -44,7 +43,7 @@ function SearchBar({
             }
           },
           disabled: isRunsDataLoading,
-          style: { height: '1.845rem', border: '1px solid #BDCEE8' },
+          style: { height: '1.845rem' },
         }}
         onChange={({ target }) => onSearchInputChange(target.value)}
         value={searchValue || ''}

@@ -253,7 +253,6 @@ function SelectForm({
             fullWidth
             size='small'
             variant='outlined'
-            className='TextField'
             inputProps={{ style: { height: '0.687rem' } }}
             placeholder='Run expression'
             value={selectedParamsData?.query}
