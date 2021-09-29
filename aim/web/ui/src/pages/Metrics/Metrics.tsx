@@ -94,7 +94,7 @@ function Metrics(
               isLoading={props.requestIsPending}
               className='Metrics__loader'
               height='100%'
-              loaderComponent={<ChartLoader />}
+              loaderComponent={<ChartLoader controlsCount={9} />}
             >
               {!!props.lineChartData?.[0]?.length ? (
                 <ChartPanel

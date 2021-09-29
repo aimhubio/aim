@@ -62,6 +62,7 @@ import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import { getQueriesForElement } from '@testing-library/dom';
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: false });
 let tooltipData: ITooltipData = {};
@@ -238,7 +239,12 @@ function getParamsData() {
     call: async () => {
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
-      if (!_.isEmpty(select?.params)) {
+      if (_.isEmpty(select?.params)) {
+        model.setState({
+          highPlotData: [],
+          tableData: [],
+        });
+      } else {
         model.setState({ isParamsLoading: true });
         const stream = await getRunsRequestRef.call(exceptionHandler);
         let gen = adjustable_reader(stream);

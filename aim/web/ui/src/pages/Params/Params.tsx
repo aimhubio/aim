@@ -125,6 +125,7 @@ const Params = ({
             }`}
           >
             <BusyLoaderWrapper
+              height='100%'
               isLoading={isParamsLoading}
               loaderComponent={<ChartLoader />}
             >

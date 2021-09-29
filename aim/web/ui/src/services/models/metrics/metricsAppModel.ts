@@ -86,7 +86,7 @@ import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
-  requestIsPending: true,
+  // requestIsPending: true,
 });
 let tooltipData: ITooltipData = {};
 
@@ -327,10 +327,12 @@ function getMetricsData() {
   });
   return {
     call: async () => {
-      if (query === '') {
+      if (query === '()') {
         model.setState({
           requestIsPending: false,
           queryIsEmpty: true,
+          tableData: [],
+          lineChartData: [],
         });
       } else {
         model.setState({
