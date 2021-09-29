@@ -31,7 +31,12 @@ function ResizePanel({
           onTableResizeModeChange={onTableResizeModeChange}
         />
       ) : (
-        <Icon name='more-horizontal' />
+        <div className='ResizePanel__dots'>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       )}
     </div>
   );

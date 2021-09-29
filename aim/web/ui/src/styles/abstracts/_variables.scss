@@ -1,4 +1,4 @@
-@use './functions' as *;
+@use "./functions" as *;
 
 $primary-color: #1473e6;
 $error-color: #e64e48;
@@ -79,11 +79,13 @@ $breakpoints: (
 );
 
 // tinted colors
-$primary-color-10: #E8F1FC;
-$primary-color-5: #F3F8FE;
+$primary-color-10: #e8f1fc;
+$primary-color-5: #f3f8fe;
+$primary-color-50: #89b9f2;
 
 $pico-100: #1C2852;
 $pico-80: #414B6D;
+$pico-70: #606986;
 $pico-10: #E8EAEE;
 $pico-5: #F4F4F6;
 
