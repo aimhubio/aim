@@ -66,6 +66,8 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/build/
+docs/source/generated
 
 # PyBuilder
 target/
@@ -116,3 +118,8 @@ examples/.aim
 examples/.git
 
 coverage_html_report/
+
+# generated cpp files
+aim/storage/treeutils_.cpp
+aim/storage/encoding/encoding_native.cpp
+aim/storage/hashing/c_hash.cpp

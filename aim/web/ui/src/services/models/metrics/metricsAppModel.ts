@@ -88,6 +88,7 @@ import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
 import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
+import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: true,
@@ -821,6 +822,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IMetricAppConfig,
+  dynamicUpdate?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -949,22 +951,23 @@ function getDataAsTableRows(
         }
       });
 
-      paramKeys.forEach((paramKey) => {
-        const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
-        if (columnsValues.hasOwnProperty(paramKey)) {
-          if (
-            _.findIndex(columnsValues[paramKey], (paramValue) =>
-              _.isEqual(value, paramValue),
-            ) === -1
-          ) {
-            columnsValues[paramKey].push(value);
+      if (!dynamicUpdate) {
+        paramKeys.forEach((paramKey) => {
+          const value = _.get(metric.run.params, paramKey, '-');
+          rowValues[paramKey] = formatValue(value);
+          if (columnsValues.hasOwnProperty(paramKey)) {
+            if (
+              _.findIndex(columnsValues[paramKey], (paramValue) =>
+                _.isEqual(value, paramValue),
+              ) === -1
+            ) {
+              columnsValues[paramKey].push(value);
+            }
+          } else {
+            columnsValues[paramKey] = [value];
           }
-        } else {
-          columnsValues[paramKey] = [value];
-        }
-      });
+        });
+      }
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
@@ -1389,6 +1392,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
@@ -1401,24 +1405,28 @@ function onActivePointChange(
   const { data, params, refs, config } =
     model.getState() as IMetricAppModelState;
   const tableRef: any = refs?.tableRef;
-  const tableData = getDataAsTableRows(
-    data,
-    activePoint.xValue,
-    params,
-    false,
-    config,
-  );
-  if (tableRef) {
-    tableRef.current?.updateData({
-      newData: tableData.rows,
-      dynamicData: true,
-    });
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
+  let tableData = null;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    tableData = getDataAsTableRows(
+      data,
+      activePoint.xValue,
+      params,
+      false,
+      config,
+      true,
     );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+    if (tableRef) {
+      tableRef.current?.updateData({
+        newData: tableData.rows,
+        dynamicData: true,
+      });
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IMetricAppConfig = config;
@@ -1444,13 +1452,15 @@ function onActivePointChange(
       },
     };
 
-    if (config.chart.focusedState.active !== focusedStateActive) {
+    if (
+      config.chart.focusedState.active !== focusedStateActive ||
+      (config.chart.focusedState.active &&
+        activePoint.key !== config.chart.focusedState.key)
+    ) {
       updateURL(configData);
     }
   }
-
   model.setState({
-    tableData: tableData.rows,
     config: configData,
   });
 }

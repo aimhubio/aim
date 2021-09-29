@@ -45,12 +45,15 @@ function MetricsBar({
         <ControlPopover
           title='Bookmark'
           anchor={({ onAnchorClick }) => (
-            <div onClick={onAnchorClick} className='MetricsBar__item__bookmark'>
+            <Button
+              color='secondary'
+              className='MetricsBar__item__bookmark'
+              size='small'
+              onClick={onAnchorClick}
+            >
               <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-              <span>
-                <Icon name='bookmarks' />
-              </span>
-            </div>
+              <Icon name='bookmarks' />
+            </Button>
           )}
           component={
             <div className='MetricsBar__popover'>

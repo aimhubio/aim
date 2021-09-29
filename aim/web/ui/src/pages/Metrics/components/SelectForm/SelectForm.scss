@@ -26,9 +26,17 @@
   width: 100%;
 
   input {
+    font-family: monospace;
     padding: 0.5rem;
     font-size: $text-md;
     border-bottom: $border-main;
+  }
+}
+
+.SelectForm__TextField {
+  margin-top: 0.875rem;
+  input {
+    font-family: monospace;
   }
 }
 

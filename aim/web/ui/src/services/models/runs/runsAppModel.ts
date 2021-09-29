@@ -53,6 +53,7 @@ import * as analytics from 'services/analytics';
 import { RowHeightEnum } from 'config/enums/tableEnums';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getFilteredRow from 'utils/app/getFilteredRow';
+import { formatValue } from 'utils/formatValue';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -692,7 +693,7 @@ function getDataAsTableRows(
       metric.run.traces.map((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
-        ] = trace.last_value.last;
+        ] = formatValue(trace.last_value.last);
       });
       const rowValues: any = {
         key: metric.key,
@@ -725,8 +726,7 @@ function getDataAsTableRows(
       });
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
+        rowValues[paramKey] = formatValue(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);

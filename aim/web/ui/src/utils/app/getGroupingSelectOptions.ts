@@ -12,23 +12,23 @@ export default function getGroupingSelectOptions(
   return [
     ...paramsOptions,
     {
-      group: 'Other',
-      label: 'experiment',
+      group: 'Run',
+      label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Other',
+      group: 'Run',
       label: 'run.hash',
       value: 'run.hash',
     },
     {
-      group: 'Other',
+      group: 'metric',
       label: 'metric',
       value: 'metric_name',
     },
     {
-      group: 'context',
-      label: 'subset',
+      group: 'metric',
+      label: 'context.subset',
       value: 'context.subset',
     },
   ];

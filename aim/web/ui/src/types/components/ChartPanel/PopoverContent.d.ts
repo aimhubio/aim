@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   IAlignmentConfig,
   IFocusedState,
@@ -11,5 +10,4 @@ export interface IPopoverContentProps {
   focusedState: IFocusedState;
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
-  popoverContentRef?: React.RefObject<HTMLDivElement>;
 }

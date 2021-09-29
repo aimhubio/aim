@@ -28,6 +28,7 @@ import {
   IAppData,
   IChartTooltip,
   IDashboardData,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricsCollection,
   IMetricTableRowData,
@@ -54,13 +55,14 @@ import {
 } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
+import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getGroupConfig from 'utils/app/getGroupConfig';
 import getFilteredRow from 'utils/app/getFilteredRow';
-import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
+// import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getChartTitleData from 'utils/app/getChartTitleData';
 
 // TODO need to implement state type
@@ -402,7 +404,7 @@ function getDataAsLines(
                 dimension[label] = {
                   values: new Set(),
                   scaleType: 'linear',
-                  displayName: `<span>${label}</span>`,
+                  displayName: label,
                   dimensionType: 'param',
                 };
               }
@@ -427,11 +429,9 @@ function getDataAsLines(
                       dimension[formattedContext] = {
                         values: new Set().add(trace.last_value.last),
                         scaleType: 'linear',
-                        displayName: `<span>${
-                          value.param_name
-                        }</span> <span>${contextToString(
+                        displayName: `${value.param_name} ${contextToString(
                           trace.context,
-                        )}</span>`,
+                        )}`,
                         dimensionType: 'metric',
                       };
                     }
@@ -439,16 +439,7 @@ function getDataAsLines(
                 });
               } else {
                 const paramValue = _.get(run.run.params, label);
-                if (paramValue === undefined) {
-                  values[label] = null;
-                } else if (paramValue === null) {
-                  values[label] = 'None';
-                } else if (typeof paramValue === 'string') {
-                  values[label] = `"${paramValue}"`;
-                } else {
-                  // TODO need to fix type
-                  values[label] = paramValue as any;
-                }
+                values[label] = formatValue(paramValue, null);
                 if (values[label] !== null) {
                   if (typeof values[label] === 'string') {
                     dimension[label].scaleType = 'point';
@@ -708,23 +699,17 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const { data, params, refs, config, metricsColumns } =
-    model.getState() as any;
-  const tableData = getDataAsTableRows(
-    data,
-    metricsColumns,
-    params,
-    false,
-    config,
-  );
-  const tableRef: any = refs?.tableRef;
-  if (tableRef) {
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
-    );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+  const { refs, config } = model.getState() as any;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    const tableRef: any = refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IParamsAppConfig = config;
@@ -750,13 +735,17 @@ function onActivePointChange(
       },
     };
 
-    if (config.chart.focusedState.active !== focusedStateActive) {
+    if (
+      config.chart.focusedState.active !== focusedStateActive ||
+      (config.chart.focusedState.active &&
+        (activePoint.key !== config.chart.focusedState.key ||
+          activePoint.xValue !== config.chart.focusedState.xValue))
+    ) {
       updateURL(configData);
     }
   }
 
   model.setState({
-    tableData: tableData.rows,
     config: configData,
   });
 }
@@ -791,6 +780,28 @@ function onSelectRunQueryChange(query: string) {
       config: newConfig,
     });
   }
+}
+
+function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
+  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    value: `run.params.${param}`,
+    group: 'params',
+    label: param,
+  }));
+
+  return [
+    {
+      group: 'Run',
+      label: 'run.experiment',
+      value: 'run.props.experiment',
+    },
+    {
+      group: 'Run',
+      label: 'run.hash',
+      value: 'run.hash',
+    },
+    ...paramsOptions,
+  ];
 }
 
 function onGroupingSelectChange({
@@ -972,7 +983,7 @@ function getDataAsTableRows(
       metric.run.traces.map((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
-        ] = trace.last_value.last;
+        ] = formatValue(trace.last_value.last);
       });
       const rowValues: any = {
         rowMeta: {
@@ -1011,8 +1022,7 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
+        rowValues[paramKey] = formatValue(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);
@@ -1179,6 +1189,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }
