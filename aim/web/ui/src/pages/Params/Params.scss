@@ -13,13 +13,10 @@
   min-width: 50rem;
   .Params__fullHeight {
     height: 100%;
-    // height: -moz-available; /* WebKit-based browsers will ignore this. */
-    // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   }
   .Params__section__div {
     display: flex;
     flex-direction: column;
-    justify-content: center;
   }
 
   .Params__ResizePanel {

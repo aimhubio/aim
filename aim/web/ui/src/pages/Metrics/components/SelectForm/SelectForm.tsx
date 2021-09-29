@@ -153,7 +153,7 @@ function SelectForm({
             alignItems='center'
           >
             {selectedMetricsData?.advancedMode ? (
-              <Box flex={1} flexWrap='nowrap'>
+              <div className='SelectForm__textarea'>
                 <TextField
                   fullWidth
                   multiline
@@ -169,7 +169,7 @@ function SelectForm({
                     onSelectAdvancedQueryChange(target.value)
                   }
                 />
-              </Box>
+              </div>
             ) : (
               <>
                 <Box display='flex' alignItems='center'>
@@ -282,7 +282,6 @@ function SelectForm({
               fullWidth
               size='small'
               variant='outlined'
-              className='TextField'
               spellCheck={false}
               inputProps={{ style: { height: '0.687rem' } }}
               placeholder='Run expression'

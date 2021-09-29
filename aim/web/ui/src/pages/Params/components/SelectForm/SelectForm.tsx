@@ -254,7 +254,6 @@ function SelectForm({
             fullWidth
             size='small'
             variant='outlined'
-            className='TextField'
             spellCheck={false}
             inputProps={{ style: { height: '0.687rem' } }}
             placeholder='Run expression'
