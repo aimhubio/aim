@@ -283,7 +283,7 @@ function SelectForm({
               variant='outlined'
               spellCheck={false}
               inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Run expression'
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
               value={selectedMetricsData?.query ?? ''}
               onChange={({ target }) => onSelectRunQueryChange(target.value)}
             />
