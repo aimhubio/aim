@@ -292,9 +292,10 @@ class Repo:
             :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
         """
         db = self.structured_db
-        db.invalidate_caches()
-        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        self.run_props_cache_hint = 'runs_cache'
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        self.run_props_cache_hint = cache_name
         return QueryRunMetricCollection(self, query, paginated, offset)
 
     @property
@@ -314,9 +315,10 @@ class Repo:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         db = self.structured_db
-        db.invalidate_caches()
-        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        self.run_props_cache_hint = 'runs_cache'
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        self.run_props_cache_hint = cache_name
         return QueryMetricCollection(repo=self, query=query)
 
     def _get_meta_tree(self):

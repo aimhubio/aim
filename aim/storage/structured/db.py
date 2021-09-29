@@ -97,5 +97,9 @@ class DB(ObjectFactory):
             return
         self._caches[cache_name] = ObjectCache(callback, key_func)
 
-    def invalidate_caches(self):
+    def invalidate_all_caches(self):
         self._caches.clear()
+
+    def invalidate_cache(self, cache_name):
+        if self._caches.get(cache_name):
+            del self._caches[cache_name]
