@@ -15,7 +15,7 @@ function Bookmarks({
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Bookmarks'>
-      <AppBar title='Bookmarks List' />
+      <AppBar title='Bookmarks' />
       <div className='Bookmarks__list container'>
         <BusyLoaderWrapper isLoading={isLoading}>
           {data?.length > 0 &&
