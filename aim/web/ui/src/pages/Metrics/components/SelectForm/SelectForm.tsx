@@ -241,12 +241,15 @@ function SelectForm({
                       }}
                     />
                   </Popper>
-                  {selectedMetricsData?.metrics.length > 0 && (
-                    <Divider
-                      style={{ margin: '0 1rem' }}
-                      orientation='vertical'
-                      flexItem
-                    />
+                  <Divider
+                    style={{ margin: '0 1rem' }}
+                    orientation='vertical'
+                    flexItem
+                  />
+                  {selectedMetricsData?.metrics.length === 0 && (
+                    <span className='SelectForm__tags__empty'>
+                      No metrics are selected
+                    </span>
                   )}
                   <Box className='Metrics__SelectForm__tags ScrollBar__hidden'>
                     {selectedMetricsData?.metrics?.map(
@@ -263,7 +266,7 @@ function SelectForm({
                     )}
                   </Box>
                 </Box>
-                {selectedMetricsData?.metrics.length > 0 && (
+                {selectedMetricsData?.metrics.length > 1 && (
                   <span
                     onClick={() => onMetricsSelectChange([])}
                     className='SelectForm__clearAll'

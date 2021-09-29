@@ -204,31 +204,34 @@ function SelectForm({
                     }}
                   />
                 </Popper>
+                <Divider
+                  style={{ margin: '0 1em' }}
+                  orientation='vertical'
+                  flexItem
+                />
+                {selectedParamsData?.params.length === 0 && (
+                  <span className='SelectForm__tags__empty'>
+                    No params are selected
+                  </span>
+                )}
                 {selectedParamsData?.params.length > 0 && (
-                  <>
-                    <Divider
-                      style={{ margin: '0 1em' }}
-                      orientation='vertical'
-                      flexItem
-                    />
-                    <Box className='SelectForm__tags ScrollBar__hidden'>
-                      {selectedParamsData?.params?.map(
-                        (tag: ISelectParamsOption) => {
-                          return (
-                            <TagLabel
-                              key={tag.label}
-                              color={tag.color}
-                              label={tag.label}
-                              onDelete={handleDelete}
-                            />
-                          );
-                        },
-                      )}
-                    </Box>
-                  </>
+                  <Box className='SelectForm__tags ScrollBar__hidden'>
+                    {selectedParamsData?.params?.map(
+                      (tag: ISelectParamsOption) => {
+                        return (
+                          <TagLabel
+                            key={tag.label}
+                            color={tag.color}
+                            label={tag.label}
+                            onDelete={handleDelete}
+                          />
+                        );
+                      },
+                    )}
+                  </Box>
                 )}
               </Box>
-              {selectedParamsData?.params.length > 0 && (
+              {selectedParamsData?.params.length > 1 && (
                 <span
                   onClick={() => onParamsSelectChange([])}
                   className='SelectForm__clearAll'

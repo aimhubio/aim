@@ -12,18 +12,30 @@
   flex-direction: column;
   justify-content: space-between;
   padding-right: 1rem;
+  /* TODO [GA]: Override MUI default styles in a nice way */
+  .MuiBox-root {
+    justify-content: flex-start;
+  }
 }
 
 .Metrics__SelectForm__tags {
   display: flex;
   align-items: center;
   overflow: auto;
-  width: calc(100vw - 43.325rem);
+  max-width: calc(100vw - 40rem);
   min-width: 12rem;
 
   .TagLabel {
     margin-right: 0.5rem;
+    &:last-child {
+      margin-right: 20px;
+    }
   }
+}
+
+.SelectForm__tags__empty {
+  font-size: $text-md;
+  color: $grey;
 }
 
 .SelectForm__metric__select {
@@ -109,13 +121,14 @@
   &:after {
     content: "";
     position: absolute;
-    width: 50px;
-    height: 30px;
-    box-shadow: inset -20px 0px 20px 0px;
-    left: -59px;
-    top: -2px;
+    width: 20px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 92%);
+    left: -20px;
+    top: -5px;
+    border-radius: 0;
     color: white;
-    border-radius: $border-radius-lg;
     pointer-events: none;
   }
 
