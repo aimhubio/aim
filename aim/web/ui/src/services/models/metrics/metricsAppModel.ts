@@ -86,7 +86,7 @@ import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
-  requestIsPending: true,
+  requestIsPending: null,
 });
 let tooltipData: ITooltipData = {};
 
@@ -327,10 +327,12 @@ function getMetricsData() {
   });
   return {
     call: async () => {
-      if (query === '') {
+      if (query === '()') {
         model.setState({
           requestIsPending: false,
           queryIsEmpty: true,
+          tableData: [],
+          lineChartData: [],
         });
       } else {
         model.setState({
@@ -2189,7 +2191,6 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
@@ -2211,7 +2212,6 @@ function onTableResizeEnd(tableHeight: string) {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
 }
 

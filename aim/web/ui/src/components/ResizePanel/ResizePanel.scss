@@ -1,4 +1,4 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 .ResizePanel {
   cursor: row-resize;
@@ -6,8 +6,8 @@
   display: flex;
   align-items: center;
   height: 0.5rem;
-  border-top: 0.125rem solid $primary-color-10;
-  border-bottom: 0.125rem solid $primary-color-10;
+  // border-top: 0.125rem solid $primary-color-10;
+  // border-bottom: 0.125rem solid $primary-color-10;
   background-color: $primary-color-10;
   transition: all 0.15s ease-out;
   transition-delay: 0.3s;
@@ -17,8 +17,8 @@
   }
   &:hover,
   &.resizing {
-    background-color: tint($primary-color, 25);
-    i {
+    background-color: $primary-color-50;
+    .ResizePanel__dots {
       opacity: 0;
     }
   }
@@ -31,6 +31,22 @@
   }
 
   &__hidden {
-      display: none;
+    display: none;
+  }
+
+  &__dots {
+    display: flex;
+    transition: 0.18s ease-out;
+    transition-delay: 0.3s;
+    span {
+      width: 0.25rem;
+      height: 0.25rem;
+      background-color: $pico-70;
+      display: inline-block;
+      margin-right: 0.25rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 }
