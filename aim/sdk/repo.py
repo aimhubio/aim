@@ -80,6 +80,7 @@ class Repo:
         self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self.structured_db = DB.from_path(self.path)
+        self._run_props_cache_hint = None
         if init:
             self.structured_db.run_upgrades()
 
@@ -291,9 +292,19 @@ class Repo:
             :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
         """
         db = self.structured_db
-        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        Run.set_props_cache_hint('runs_cache')
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        self.run_props_cache_hint = cache_name
         return QueryRunMetricCollection(self, query, paginated, offset)
+
+    @property
+    def run_props_cache_hint(self):
+        return self._run_props_cache_hint
+
+    @run_props_cache_hint.setter
+    def run_props_cache_hint(self, cache: str):
+        self._run_props_cache_hint = cache
 
     def query_metrics(self, query: str = '') -> QueryMetricCollection:
         """Get metrics satisfying query expression.
@@ -304,8 +315,10 @@ class Repo:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         db = self.structured_db
-        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        Run.set_props_cache_hint('runs_cache')
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        self.run_props_cache_hint = cache_name
         return QueryMetricCollection(repo=self, query=query)
 
     def _get_meta_tree(self):

@@ -19,8 +19,8 @@ class TestBase(unittest.TestCase):
         remove_test_data()
 
     def tearDown(self) -> None:
-        self.repo.structured_db.invalidate_caches()
-        Run.set_props_cache_hint(None)
+        self.repo.structured_db.invalidate_all_caches()
+        self.repo.run_props_cache_hint = None
 
 
 class ApiTestBase(TestBase):
