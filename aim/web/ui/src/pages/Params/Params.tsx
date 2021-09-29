@@ -154,7 +154,7 @@ const Params = ({
                   }
                 />
               ) : (
-                !isParamsLoading && (
+                isParamsLoading === false && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."

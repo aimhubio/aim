@@ -62,9 +62,8 @@ import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import { getQueriesForElement } from '@testing-library/dom';
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: false });
+const model = createModel<Partial<any>>({ isParamsLoading: null });
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
@@ -243,6 +242,7 @@ function getParamsData() {
         model.setState({
           highPlotData: [],
           tableData: [],
+          isParamsLoading: false,
         });
       } else {
         model.setState({ isParamsLoading: true });

@@ -86,7 +86,7 @@ import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
-  // requestIsPending: true,
+  requestIsPending: null,
 });
 let tooltipData: ITooltipData = {};
 
