@@ -45,6 +45,10 @@
 
 .SelectForm__textarea {
   flex: 1;
+  .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
+    padding-top: 7.5px;
+    padding-bottom: 7.5px;
+  }
   textarea {
     font-family: monospace;
   }
