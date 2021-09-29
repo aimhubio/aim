@@ -2191,7 +2191,6 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
@@ -2213,7 +2212,6 @@ function onTableResizeEnd(tableHeight: string) {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
 }
 
