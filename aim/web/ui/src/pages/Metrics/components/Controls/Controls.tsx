@@ -37,6 +37,13 @@ function Controls(
                 className={`Controls__anchor ${
                   props.aggregationConfig.isApplied ? 'active outlined' : ''
                 } ${props.aggregationConfig.isEnabled ? '' : 'disabled'}`}
+                onClick={() => {
+                  if (props.aggregationConfig.isEnabled) {
+                    props.onAggregationConfigChange({
+                      isApplied: !props.aggregationConfig?.isApplied,
+                    });
+                  }
+                }}
               >
                 {props.aggregationConfig.isEnabled ? (
                   <span
@@ -53,13 +60,6 @@ function Controls(
                     props.aggregationConfig.isApplied ? 'active' : ''
                   }`}
                   name='aggregation'
-                  onClick={() => {
-                    if (props.aggregationConfig.isEnabled) {
-                      props.onAggregationConfigChange({
-                        isApplied: !props.aggregationConfig?.isApplied,
-                      });
-                    }
-                  }}
                 />
               </div>
             </Tooltip>
