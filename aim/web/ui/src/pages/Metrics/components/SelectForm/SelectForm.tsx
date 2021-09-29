@@ -173,7 +173,7 @@ function SelectForm({
               <>
                 <Box display='flex' alignItems='center'>
                   <Button
-                    variant='outlined'
+                    variant='contained'
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
@@ -290,7 +290,7 @@ function SelectForm({
           </div>
         )}
       </div>
-      <Divider style={{ margin: '0 1.5rem' }} orientation='vertical' flexItem />
+
       <div className='SelectForm__search__container'>
         <Button
           fullWidth

@@ -130,7 +130,7 @@ function SelectForm({
   const id = open ? 'select-metric' : undefined;
   return (
     <div className='SelectForm__container'>
-      <div className='SelectForm__metrics__container'>
+      <div className='SelectForm__params__container'>
         <Box display='flex'>
           <Box
             width='100%'
@@ -141,7 +141,7 @@ function SelectForm({
             <>
               <Box display='flex' alignItems='center'>
                 <Button
-                  variant='outlined'
+                  variant='contained'
                   color='primary'
                   onClick={handleClick}
                   aria-describedby={id}
@@ -180,7 +180,7 @@ function SelectForm({
                         inputProps={params.inputProps}
                         autoFocus={true}
                         spellCheck={false}
-                        className='SelectForm__metric__select'
+                        className='SelectForm__param__select'
                       />
                     )}
                     renderOption={(option) => {

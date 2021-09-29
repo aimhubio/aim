@@ -2,12 +2,16 @@
 
 .SelectForm__container {
   flex: 1;
-  padding: 0.5rem 1.5em;
+  padding: 0.725rem 1.5em;
   display: flex;
 }
 
 .SelectForm__metrics__container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 1rem;
 }
 
 .Metrics__SelectForm__tags {
@@ -34,7 +38,6 @@
 }
 
 .SelectForm__TextField {
-  margin-top: 0.875rem;
   input {
     font-family: monospace;
   }
@@ -50,7 +53,7 @@
 .SelectForm__search__container {
   width: 103px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
 }
 
@@ -61,7 +64,6 @@
 .SelectForm__search__actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5em;
 
   button {
     border: $border-main;
