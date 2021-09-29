@@ -292,6 +292,7 @@ class Repo:
             :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
         """
         db = self.structured_db
+        db.invalidate_caches()
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         self.run_props_cache_hint = 'runs_cache'
         return QueryRunMetricCollection(self, query, paginated, offset)
@@ -313,6 +314,7 @@ class Repo:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         db = self.structured_db
+        db.invalidate_caches()
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
         self.run_props_cache_hint = 'runs_cache'
         return QueryMetricCollection(repo=self, query=query)
