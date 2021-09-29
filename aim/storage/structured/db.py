@@ -29,6 +29,10 @@ class ObjectCache:
             self._cached = True
         return list(self._data.keys())
 
+    def __setitem__(self, key, value):
+        assert self._cached
+        self._data[key] = value
+
     def __getitem__(self, key):
         if not self._cached:
             self.fill_cache()
