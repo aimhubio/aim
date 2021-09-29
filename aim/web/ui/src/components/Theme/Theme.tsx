@@ -16,8 +16,11 @@ const light: ThemeOptions = {
     fontFamily: 'Inter Regular, sans-serif',
   },
   overrides: {
-    MuiTextField: {},
-    MuiInputBase: {},
+    MuiDivider: {
+      root: {
+        backgroundColor: '#E8F1FC',
+      },
+    },
     MuiButton: {
       root: {
         height: 32,

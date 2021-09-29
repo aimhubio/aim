@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { Box } from '@material-ui/core';
 
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
@@ -15,7 +14,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
       <BrowserRouter>
         <ProjectWrapper />
         <Theme>
-          <Box display='flex' className='pageContainer'>
+          <div className='pageContainer'>
             <SideBar />
             <div className='mainContainer'>
               <React.Suspense fallback={null}>
@@ -31,7 +30,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                 </Switch>
               </React.Suspense>
             </div>
-          </Box>
+          </div>
         </Theme>
       </BrowserRouter>
     </>

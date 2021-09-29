@@ -26,7 +26,6 @@
   .Metrics__section__div {
     display: flex;
     flex-direction: column;
-    justify-content: center;
   }
 
   .Metrics__chart__container {
@@ -55,6 +54,8 @@
 .Metrics__SelectForm__Grouping__container {
   display: flex;
   border-bottom: 0.0625rem solid #e8f1fc;
+  min-height: 5.9375rem;
+  max-height: 5.9375rem;
 }
 
 .Metrics__controls__container {

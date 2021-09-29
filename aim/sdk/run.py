@@ -484,7 +484,7 @@ class Run(StructuredRunMixin):
             self._system_resource_tracker.stop()
 
         logger.debug(f'finalizing {self}')
-        self.finalize()
+        self.finalize(skip_wait=True)
 
     @classmethod
     def finalize_msg(cls):
@@ -500,12 +500,13 @@ class Run(StructuredRunMixin):
                            'Consider tracking at lower pace.')
             cls._track_warning_shown = True
 
-    def finalize(self):
+    def finalize(self, skip_wait=False):
         if self._finalized:
             return
         self._finalized = True
         self.finalize_msg()
-        self.repo.tracking_queue.wait_for_finish()
+        if not skip_wait:
+            self.repo.tracking_queue.wait_for_finish()
 
         self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',

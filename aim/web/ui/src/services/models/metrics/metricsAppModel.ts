@@ -1,6 +1,6 @@
 import React from 'react';
 
-import _, { isEmpty, isNil } from 'lodash-es';
+import _, { isEmpty, isNil, debounce } from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 import COLORS from 'config/colors/colors';
@@ -86,7 +86,7 @@ import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
-  requestIsPending: true,
+  requestIsPending: null,
 });
 let tooltipData: ITooltipData = {};
 
@@ -327,10 +327,12 @@ function getMetricsData() {
   });
   return {
     call: async () => {
-      if (query === '') {
+      if (query === '()') {
         model.setState({
           requestIsPending: false,
           queryIsEmpty: true,
+          tableData: [],
+          lineChartData: [],
         });
       } else {
         model.setState({
@@ -444,7 +446,7 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
     {
       group: 'metric',
       label: 'metric.name',
-      value: 'metric.name',
+      value: 'metric_name',
     },
     {
       group: 'metric',
@@ -1581,72 +1583,72 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
 
-function onActivePointChange(
-  activePoint: IActivePoint,
-  focusedStateActive: boolean = false,
-): void {
-  const { data, params, refs, config } =
-    model.getState() as IMetricAppModelState;
-  const tableRef: any = refs?.tableRef;
-  let tableData = null;
-  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
-    tableData = getDataAsTableRows(
-      data,
-      activePoint.xValue,
-      params,
-      false,
-      config,
-      true,
-    );
-    if (tableRef) {
-      tableRef.current?.updateData({
-        newData: tableData.rows,
-        dynamicData: true,
-      });
-      tableRef.current?.setHoveredRow?.(activePoint.key);
-      tableRef.current?.setActiveRow?.(
-        focusedStateActive ? activePoint.key : null,
+const onActivePointChange = debounce(
+  (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
+    const { data, params, refs, config } =
+      model.getState() as IMetricAppModelState;
+    const tableRef: any = refs?.tableRef;
+    let tableData = null;
+    if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+      tableData = getDataAsTableRows(
+        data,
+        activePoint.xValue,
+        params,
+        false,
+        config,
+        true,
       );
-      if (focusedStateActive) {
-        tableRef.current?.scrollToRow?.(activePoint.key);
+      if (tableRef) {
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          dynamicData: true,
+        });
+        tableRef.current?.setHoveredRow?.(activePoint.key);
+        tableRef.current?.setActiveRow?.(
+          focusedStateActive ? activePoint.key : null,
+        );
+        if (focusedStateActive) {
+          tableRef.current?.scrollToRow?.(activePoint.key);
+        }
       }
     }
-  }
-  let configData: IMetricAppConfig = config;
-  if (configData?.chart) {
-    configData = {
-      ...configData,
-      chart: {
-        ...configData.chart,
-        focusedState: {
-          active: focusedStateActive,
-          key: activePoint.key,
-          xValue: activePoint.xValue,
-          yValue: activePoint.yValue,
-          chartIndex: activePoint.chartIndex,
+    let configData: IMetricAppConfig = config;
+    if (configData?.chart) {
+      configData = {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          focusedState: {
+            active: focusedStateActive,
+            key: activePoint.key,
+            xValue: activePoint.xValue,
+            yValue: activePoint.yValue,
+            chartIndex: activePoint.chartIndex,
+          },
+          tooltip: {
+            ...configData.chart.tooltip,
+            content: filterTooltipContent(
+              tooltipData[activePoint.key],
+              configData?.chart.tooltip.selectedParams,
+            ),
+          },
         },
-        tooltip: {
-          ...configData.chart.tooltip,
-          content: filterTooltipContent(
-            tooltipData[activePoint.key],
-            configData?.chart.tooltip.selectedParams,
-          ),
-        },
-      },
-    };
+      };
 
-    if (
-      config.chart.focusedState.active !== focusedStateActive ||
-      (config.chart.focusedState.active &&
-        activePoint.key !== config.chart.focusedState.key)
-    ) {
-      updateURL(configData);
+      if (
+        config.chart.focusedState.active !== focusedStateActive ||
+        (config.chart.focusedState.active &&
+          activePoint.key !== config.chart.focusedState.key)
+      ) {
+        updateURL(configData);
+      }
     }
-  }
-  model.setState({
-    config: configData,
-  });
-}
+    model.setState({
+      config: configData,
+    });
+  },
+  35,
+);
 
 // Table Methods
 
@@ -2189,7 +2191,6 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
@@ -2211,7 +2212,6 @@ function onTableResizeEnd(tableHeight: string) {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
 }
 
