@@ -80,6 +80,7 @@ class Repo:
         self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self.structured_db = DB.from_path(self.path)
+        self._run_props_cache_hint = None
         if init:
             self.structured_db.run_upgrades()
 
@@ -292,8 +293,16 @@ class Repo:
         """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        Run.set_props_cache_hint('runs_cache')
+        self.run_props_cache_hint = 'runs_cache'
         return QueryRunMetricCollection(self, query, paginated, offset)
+
+    @property
+    def run_props_cache_hint(self):
+        return self._run_props_cache_hint
+
+    @run_props_cache_hint.setter
+    def run_props_cache_hint(self, cache: str):
+        self._run_props_cache_hint = cache
 
     def query_metrics(self, query: str = '') -> QueryMetricCollection:
         """Get metrics satisfying query expression.
@@ -305,7 +314,7 @@ class Repo:
         """
         db = self.structured_db
         db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        Run.set_props_cache_hint('runs_cache')
+        self.run_props_cache_hint = 'runs_cache'
         return QueryMetricCollection(repo=self, query=query)
 
     def _get_meta_tree(self):
