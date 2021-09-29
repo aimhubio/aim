@@ -46,6 +46,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
+  let rafID = 0;
 
   const { margin, width, height } = visBoxRef.current;
 
@@ -121,6 +122,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     let xAxisValueText;
 
     switch (alignmentConfig?.type) {
+      case AlignmentOptions.EPOCH:
+        xAxisValueText = Math.floor(xAxisTickValue);
+        break;
       case AlignmentOptions.RELATIVE_TIME:
         xAxisValueText = shortEnglishHumanizer(
           Math.round(xAxisTickValue * 1000),
@@ -625,14 +629,15 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       return;
     }
     const mousePos = d3.pointer(event);
-
     if (isMouseInVisArea(mousePos[0], mousePos[1])) {
-      updateFocusedChart({
-        mousePos: [
-          Math.floor(mousePos[0]) - margin.left,
-          Math.floor(mousePos[1]) - margin.top,
-        ],
-        focusedStateActive: false,
+      rafID = window.requestAnimationFrame(() => {
+        updateFocusedChart({
+          mousePos: [
+            Math.floor(mousePos[0]) - margin.left,
+            Math.floor(mousePos[1]) - margin.top,
+          ],
+          focusedStateActive: false,
+        });
       });
     }
   }
@@ -644,8 +649,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const mousePos = d3.pointer(event);
 
     if (!isMouseInVisArea(mousePos[0], mousePos[1])) {
+      if (rafID) {
+        window.cancelAnimationFrame(rafID);
+      }
       clearHoverAttributes();
-
       safeSyncHoverState({ activePoint: null });
     }
   }

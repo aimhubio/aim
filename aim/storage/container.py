@@ -1,327 +1,297 @@
-import logging
-from pathlib import Path
-from filelock import FileLock
+from abc import abstractmethod
+from typing import Iterator, Tuple
 
-import aimrocks
+from typing import TYPE_CHECKING
 
-from aim.storage import encoding as E
-
-from typing import Iterator, Optional, Tuple, Union
-
-from aim.storage.containerview import ContainerView
-from aim.storage.prefixview import PrefixView
-from aim.storage.treeview import TreeView
+if TYPE_CHECKING:
+    from .treeview import TreeView
 
 
-logger = logging.getLogger(__name__)
+class Container:
+    """Container is a interface of mutable key-value storage.
 
+    We can think of :obj:`Container` as a set of `(key, value)` records. This
+    definition enables us to easily define union-containers, store a Container
+    physically in separate locations in chunks, optionally by partitioning data
+    w.r.t. key contents (for example, group data chunks by key prefixes).
 
-class Container(ContainerView):
+    The interface is similar to a flat dict-like object where both keys and the
+    values are `bytes` objects. The design of interface makes it easy to manage
+    groups of data to be stored with shared prefixes and implementations should
+    be designed to provide optimized access to such constructs.
     """
-    Containers are sets of {key: values}.
-    Ideally we want to query not separate Containers
-    but Unions of Containers instead.
 
-    Each Container corresponds to a single RocksDB database.
-
-    Containers satisfy Dict properties per run.
-    """
-    def __init__(
-        self,
-        path: str,
-        read_only: bool = False,
-        wait_if_busy: bool = False
-    ) -> None:
-        self.path = Path(path)
-        self.read_only = read_only
-        self._db_opts = dict(
-            create_if_missing=True,
-            paranoid_checks=False,
-            keep_log_file_num=10,
-            skip_stats_update_on_db_open=True,
-            skip_checking_sst_file_sizes_on_db_open=True,
-            max_open_files=-1,
-            write_buffer_size=64 * 1024 * 1024,  # 64MB
-            max_write_buffer_number=3,
-            target_file_size_base=64 * 1024 * 1024,  # 64MB
-            max_background_compactions=4,
-            level0_file_num_compaction_trigger=8,
-            level0_slowdown_writes_trigger=17,
-            level0_stop_writes_trigger=24,
-            num_levels=4,
-            max_bytes_for_level_base=512 * 1024 * 1024,  # 512MB
-            max_bytes_for_level_multiplier=8,
-        )
-        # opts.allow_concurrent_memtable_write = False
-        # opts.memtable_factory = aimrocks.VectorMemtableFactory()
-        # opts.table_factory = aimrocks.PlainTableFactory()
-        # opts.table_factory = aimrocks.BlockBasedTableFactory(block_cache=aimrocks.LRUCache(67108864))
-        # opts.write_buffer_size = 67108864
-        # opts.arena_block_size = 67108864
-
-        self._db = None
-        self._lock = None
-        self._wait_if_busy = wait_if_busy  # TODO implement
-        self._lock_path: Optional[Path] = None
-        self._progress_path: Optional[Path] = None
-        if not self.read_only:
-            self.writable_db
-        # TODO check if Containers are reopenable
-
-    @property
-    def db(self) -> aimrocks.DB:
-        if self._db is not None:
-            return self._db
-
-        logger.debug(f'opening {self.path} as aimrocks db')
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        locks_dir = self.path.parent.parent / 'locks'
-        locks_dir.mkdir(parents=True, exist_ok=True)
-
-        if not self.read_only:
-            self._lock_path = locks_dir / self.path.name
-            self._lock = FileLock(str(self._lock_path), timeout=10)
-            self._lock.acquire()
-
-        self._db = aimrocks.DB(str(self.path),
-                               aimrocks.Options(**self._db_opts),
-                               read_only=self.read_only)
-
-        return self._db
-
-    @property
-    def writable_db(self) -> aimrocks.DB:
-        db = self.db
-        if self._progress_path is None:
-            progress_dir = self.path.parent.parent / 'progress'
-            progress_dir.mkdir(parents=True, exist_ok=True)
-            self._progress_path = progress_dir / self.path.name
-            self._progress_path.touch(exist_ok=True)
-        return db
-
-    def finalize(self, *, index: ContainerView):
-        if not self._progress_path:
-            return
-
-        for k, v in self.items():
-            index[k] = v
-
-        self._progress_path.unlink()
-        self._progress_path = None
-
+    @abstractmethod
     def close(self):
-        if self._lock is not None:
-            self._lock.release()
-            self._lock = None
-        if self._db is not None:
-            # self._db.close()
-            self._db = None
+        """Close all the resources."""
+        ...
 
-    def __del__(self):
-        self.close()
+    @abstractmethod
+    def finalize(self, *, index: 'Container'):
+        """Finalize the Container.
 
+        Perform operations of compactions, indexing, optimization, etc.
+        """
+        ...
+
+    @abstractmethod
     def preload(self):
-        self.db
+        """Preload the Container.
 
+        The interface of Container is designed in such a way that (almost) all
+        the operations are supported to be done lazily.
+        Sometimes there is need to preload the storage without performing an
+        operation that will cause an actual read / write access.
+        """
+        ...
+
+    @classmethod
+    def path_join(cls, *args: bytes, prefix: bytes = b'') -> bytes:
+        """Join multiple paths.
+
+        We do not need an separator as by design all the keys, therefore paths
+        as well end with `PATH_SENTINEL`.
+        """
+        return prefix + b''.join(args)
+
+    @abstractmethod
+    def get(self, key: bytes, default=None) -> bytes:
+        """Returns the value by the given `key` if it exists else `default`.
+
+        The `default` is :obj:`None` by default.
+        """
+        ...
+
+    @abstractmethod
+    def __getitem__(self, key: bytes) -> bytes:
+        """Returns the value by the given `key`."""
+        ...
+
+    @abstractmethod
+    def set(self, key: bytes, value: bytes, *, store_batch=None):
+        """Set a value for given key, optionally store in a batch.
+
+        If `store_batch` is provided, instead of the `(key, value)` being added
+        to the collection immediately, the operation is stored in a batch in
+        order to be executed in a whole with other write operations. Depending
+        on the :obj:`Conainer` implementation, this may feature transactions,
+        atomic writes, etc.
+        """
+        ...
+
+    @abstractmethod
+    def __setitem__(self, key: bytes, value: bytes):
+        """Set a value for given key."""
+        ...
+
+    @abstractmethod
+    def delete(self, key: bytes, *, store_batch=None):
+        """Delete a key-value record by the given key,
+        optionally store in a batch.
+
+        If `store_batch` is provided, instead of the `(key, value)` being added
+        to the collection immediately, the operation is stored in a batch in
+        order to be executed in a whole with other write operations. Depending
+        on the :obj:`Conainer` implementation, this may feature transactions,
+        atomic writes, etc.
+        """
+        ...
+
+    @abstractmethod
+    def __delitem__(self, key: bytes):
+        """Delete a key-value record by the given key."""
+        ...
+
+    @abstractmethod
+    def delete_range(self, begin: bytes, end: bytes, *, store_batch=None):
+        """Delete all the records in the given `[begin, end)` key range."""
+        ...
+
+    @abstractmethod
+    def batch(self):
+        """Creates a new batch object to store operations in before executing
+        using :obj:`Container.commit`.
+
+        The operations :obj:`Container.set`, :obj:`Container.delete`,
+        :obj:`Container.delete_range` are supported.
+
+        See more at :obj:`Container.commit`
+        """
+        ...
+
+    @abstractmethod
+    def commit(self, batch):
+        """Execute the accumulated write operations in the given `batch`.
+
+        Depending on the :obj:`Container` implementation, this may feature
+        transactions, atomic writes, etc.
+        """
+        ...
+
+    @abstractmethod
+    def items(self, prefix: bytes = b'') -> Iterator[Tuple[bytes, bytes]]:
+        """Iterate over all the key-value records in the prefix key range.
+
+        The iteration is always performed in lexiographic order w.r.t keys.
+        If `prefix` is provided, iterate only over those records that have key
+        starting with the `prefix`.
+
+        For example, if `prefix == b'meta.'`, and the Container consists of:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }`, the method will yield `(b'meta.x', b'123')` and `(b'meta.z', b'x')`
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range
+        """
+        ...
+
+    @abstractmethod
+    def keys(self, prefix: bytes = b'') -> Iterator[bytes]:
+        """Iterate over all the keys in the prefix range.
+
+        The iteration is always performed in lexiographic order.
+        If `prefix` is provided, iterate only over keys starting with
+        the `prefix`.
+
+        For example, if `prefix == b'meta.'`, and the Container consists of:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }`, the method will yield `b'meta.x'` and `b'meta.z'`
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range
+        """
+        ...
+
+    @abstractmethod
+    def values(self, prefix: bytes = b'') -> Iterator[bytes]:
+        """Iterate over all the values in the given prefix key range.
+
+        The iteration is always performed in lexiographic order w.r.t keys.
+        If `prefix` is provided, iterate only over those record values that have
+        key starting with the `prefix`.
+
+        For example, if `prefix == b'meta.'`, and the Container consists of:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }`, the method will yield `b'123'` and `b'x'`
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range
+        """
+        ...
+
+    @abstractmethod
+    def view(self, prefix: bytes = b'') -> 'Container':
+        """Return a view (even mutable ones) that enable access to the container
+        but with modifications.
+
+        Args:
+            prefix (:obj:`bytes`): the prefix that defines the key range of the
+                view-container. The resulting container will share an access to
+                only records in the `prefix` key range, but with `prefix`-es
+                stripped from them.
+
+                For example, if the Container contents are:
+                `{
+                    b'e.y': b'012',
+                    b'meta.x': b'123',
+                    b'meta.z': b'x',
+                    b'zzz': b'oOo'
+                }`, then `container.view(prefix=b'meta.')` will behave (almost)
+                exactly as an Container:
+                `{
+                    b'x': b'123',
+                    b'z': b'x',
+                }`
+        """
+        ...
+
+    @abstractmethod
     def tree(self) -> 'TreeView':
-        return TreeView(self)
+        """Return a :obj:`TreeView` which enables hierarchical view and access
+        to the container records.
 
-    def batch_set(
-        self,
-        key: bytes,
-        value: bytes,
-        *,
-        store_batch: aimrocks.WriteBatch = None
-    ):
-        if store_batch is None:
-            store_batch = self.writable_db
-        store_batch.put(key=key, value=value)
+        This is achieved by prefixing groups and using `PATH_SENTINEL` as a
+        separator for keys.
 
-    def __setitem__(
-        self,
-        key: bytes,
-        value: bytes
-    ):
-        self.writable_db.put(key=key, value=value)
+        For example, if the Container contents are:
+            `{
+                b'e.y': b'012',
+                b'meta.x': b'123',
+                b'meta.z': b'x',
+                b'zzz': b'oOo'
+            }`, and the path sentinel is `b'.'` then `tree = container.tree()`
+            will behave as a (possibly deep) dict-like object:
+            `tree[b'meta'][b'x'] == b'123'`
+        """
+        ...
 
-    def __getitem__(
-        self,
-        key: bytes
-    ) -> bytes:
-        return self.db.get(key=key)
+    @abstractmethod
+    def walk(self, prefix: bytes = b''):
+        """A bi-directional generator to walk over the collection of records on
+        any arbitrary order. The `prefix` sent to the generator (lets call it
+        a `walker`) seeks for lower-bound key in the collection.
 
-    def __delitem__(
-        self,
-        key: bytes
-    ) -> None:
-        return self.writable_db.delete(key)
+        In other words, if the Container contents are:
+        `{
+            b'e.y': b'012',
+            b'meta.x': b'123',
+            b'meta.z': b'x',
+            b'zzz': b'oOo'
+        }` and `walker = container.walk()` then:
+        `walker.send(b'meta') == b'meta.x'`, `walker.send(b'e.y') == b'e.y'`
+        """
+        ...
 
-    def batch_delete(
-        self,
-        prefix: bytes,
-        store_batch: aimrocks.WriteBatch = None
-    ):
-        if store_batch is None:
-            batch = aimrocks.WriteBatch()
-        else:
-            batch = store_batch
+    @abstractmethod
+    def next_key(self, key: bytes = b'') -> bytes:
+        """Returns the key that comes (lexicographically) right after the
+        provided `key`.
+        """
+        ...
 
-        batch.delete_range((prefix, prefix + b'\xff'))
+    @abstractmethod
+    def next_value(self, key: bytes = b'') -> bytes:
+        """Returns the value for the key that comes (lexicographically) right
+        after the provided `key`.
+        """
+        ...
 
-        if not store_batch:
-            self.writable_db.write(batch)
-        else:
-            return batch
+    @abstractmethod
+    def next_key_value(self, key: bytes = b'') -> Tuple[bytes, bytes]:
+        """Returns `(key, value)` for the key that comes (lexicographically)
+        right after the provided `key`.
+        """
+        ...
 
-    def items(
-        self,
-        prefix: bytes = b''
-    ) -> Iterator[Tuple[bytes, bytes]]:
-        # TODO return ValuesView, not iterator
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        it.seek(prefix)
-        for key, val in it:
-            if not key.startswith(prefix):
-                break
-            yield key, val
+    @abstractmethod
+    def prev_key(self, key: bytes = b'') -> bytes:
+        """Returns the key that comes (lexicographically) right before the
+        provided `key`.
+        """
+        ...
 
-    def walk(
-        self,
-        prefix: bytes = b''
-    ):
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        it.seek(prefix)
+    @abstractmethod
+    def prev_value(self, key: bytes = b'') -> bytes:
+        """Returns the value for the key that comes (lexicographically) right
+        before the provided `key`.
+        """
+        ...
 
-        while True:
-            try:
-                key, val = next(it)
-            except StopIteration:
-                yield None
-                break
-            jump = yield key
-            it.seek(jump)
-
-    def iterlevel(
-        self,
-        prefix: bytes = b''
-    ) -> Iterator[Tuple[bytes, bytes]]:
-        # TODO return ValuesView, not iterator
-        # TODO broken right now
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        it.seek(prefix)
-
-        key, val = next(it)
-
-        while True:
-            try:
-                key, val = next(it)
-            except StopIteration:
-                break
-
-            if not key.startswith(prefix):
-                break
-
-            next_range = key[:-1] + bytes([key[-1] + 1])
-            it.seek(next_range)
-
-            yield key, val
-
-    def keys(
-        self,
-        prefix: bytes = b''
-    ):
-        # TODO return KeyView, not iterator
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iterkeys()
-        it.seek(prefix)
-        for key in it:
-            if not key.startswith(prefix):
-                break
-            yield key
-
-    def values(
-        self,
-        prefix: bytes
-    ):
-        # not vraz thing to implement
-        raise NotImplementedError
-
-    def update(
-        self
-    ) -> None:
-        raise NotImplementedError
-
-    def view(
-        self,
-        prefix: Union[
-            bytes,
-            Tuple[Union[int, str], ...]
-        ]
-    ) -> 'ContainerView':
-        if not isinstance(prefix, bytes):
-            prefix = E.encode_path(prefix)
-        return PrefixView(prefix=prefix, container=self)
-
-    def commit(
-        self,
-        batch: aimrocks.WriteBatch
-    ):
-        self.writable_db.write(batch)
-
-    def next_key(
-        self,
-        prefix: bytes = b''
-    ) -> bytes:
-        it: Iterator[bytes] = self.db.iterkeys()
-        it.seek(prefix + b'\x00')
-        key = next(it)
-
-        if not key.startswith(prefix):
-            raise KeyError
-
-        return key
-
-    def next_value(
-        self,
-        prefix: bytes = b''
-    ) -> bytes:
-        key, value = self.next_key_value(prefix)
-        return value
-
-    def next_key_value(
-        self,
-        prefix: bytes = b''
-    ) -> Tuple[bytes, bytes]:
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        it.seek(prefix + b'\x00')
-
-        key, value = next(it)
-
-        if not key.startswith(prefix):
-            raise KeyError
-
-        return key, value
-
-    def prev_key(
-        self,
-        prefix: bytes = b''
-    ) -> bytes:
-        key, value = self.prev_key_value(prefix)
-        return key
-
-    def prev_value(
-        self,
-        prefix: bytes = b''
-    ) -> bytes:
-        key, value = self.prev_key_value(prefix)
-        return value
-
-    def prev_key_value(
-        self,
-        prefix: bytes
-    ) -> Tuple[bytes, bytes]:
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
-        it.seek_for_prev(prefix + b'\xff')
-
-        key, value = it.get()
-
-        return key, value
+    @abstractmethod
+    def prev_key_value(self, key: bytes = b'') -> Tuple[bytes, bytes]:
+        """Returns `(key, value)` for the key that comes (lexicographically)
+        right before the provided `key`.
+        """
+        ...

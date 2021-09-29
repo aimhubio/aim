@@ -1,9 +1,8 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 $border-color: $cuddle-50;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
 $border-radius: 0.2rem;
-
 
 :root {
   --cell-height: 32px;
@@ -50,10 +49,8 @@ $border-radius: 0.2rem;
   z-index: 0;
 }
 
-
 .Table__action__icon {
   color: $primary-color;
-  margin: 0.125rem 0.25rem;
 }
 
 .Table__pane--left,
@@ -87,6 +84,11 @@ $border-radius: 0.2rem;
     .Table__cell,
     .Table__group__config__cell {
       border-right: none;
+    }
+  }
+
+  &.Table__column--actions {
+    .Table__cell {
       padding: 0;
     }
   }
@@ -251,8 +253,7 @@ $border-radius: 0.2rem;
   padding: $space-xxs $space-sm;
   font-size: $text-md;
   border-color: $border-color;
-  font-family: 'Inter SemiBold', sans-serif;
-  font-weight: bold;
+  font-family: "Inter SemiBold", sans-serif;
   z-index: 3;
   overflow: visible;
 
@@ -289,7 +290,7 @@ $border-radius: 0.2rem;
   top: 0;
   background-color: $cuddle-20;
   font-size: $text-md;
-  font-family: 'Inter SemiBold', sans-serif;
+  font-family: "Inter SemiBold", sans-serif;
   letter-spacing: 0.05rem;
   border-top: 1px solid $border-color;
 }
@@ -317,7 +318,7 @@ $border-radius: 0.2rem;
 
   &:hover,
   &.active {
-   background-color: $primary-color-5;
+    background-color: $primary-color-5;
   }
 
   &.disabled {
@@ -348,7 +349,6 @@ $border-radius: 0.2rem;
         &:first-of-type {
           .Table__group {
             margin-left: var(--group-margin);
-            border-left: 1px solid $border-color;
             border-top-left-radius: $border-radius;
             border-bottom-left-radius: $border-radius;
 

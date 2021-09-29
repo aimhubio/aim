@@ -1,13 +1,17 @@
 import React, { memo } from 'react';
-import useModel from 'hooks/model/useModel';
-import Runs from './Runs';
-import { ITableRef } from '../../types/components/Table/Table';
-import runsAppModel from '../../services/models/runs/runsAppModel';
+import { useLocation } from 'react-router-dom';
+
 import * as analytics from 'services/analytics';
+import useModel from 'hooks/model/useModel';
+import { ITableRef } from 'types/components/Table/Table';
+import runsAppModel from 'services/models/runs/runsAppModel';
+import getStateFromUrl from 'utils/getStateFromUrl';
+import Runs from './Runs';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
   const runsData = useModel(runsAppModel);
+  const location = useLocation();
 
   React.useEffect(() => {
     if (tableRef.current) {
@@ -26,6 +30,15 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       runsAppModel.destroy();
     };
   }, []);
+
+  // Add effect to recover state from URL when browser history navigation is used
+  React.useEffect(() => {
+    if (!!runsData?.config!) {
+      if (runsData.config.select !== getStateFromUrl('search')) {
+        runsAppModel.setDefaultAppConfigData();
+      }
+    }
+  }, [location.search]);
 
   return (
     <Runs

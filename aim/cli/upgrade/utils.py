@@ -68,8 +68,9 @@ def convert_run(lrun: LegacyRun, repo: Repo, legacy_run_map, skip_failed):
                     run_metrics[metric.name].append(context)
                     for r in trace.read_records(slice(0, None, 1)):
                         step_record, metric_record = deserialize_pb(r)
-                        val = (metric_record.value, step_record.step, step_record.epoch, step_record.timestamp)
-                        _track_legacy_run_step(run, metric_name, context, val)
+                        # no need to track in a separate thread. use _track_impl directly.
+                        run._track_impl(metric_record.value, step_record.timestamp, metric_name,
+                                        step_record.step, step_record.epoch, context=context)
             except Exception:
                 metric.close_artifact()
                 raise
@@ -160,38 +161,3 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
         click.echo(f'Legacy repository can be found at \'{lrepo_path}\'.')
     click.echo('DONE')
     return repo
-
-
-# this is a duplicate of run.track() method allowing to set timestamp. used for legacy data migration only.
-def _track_legacy_run_step(run: Run, metric_name: str, context: dict, val):
-    (value, step, epoch, timestamp) = val
-
-    from aim.storage.context import Context, MetricDescriptor
-    if context is None:
-        context = {}
-
-    ctx = Context(context)
-    metric = MetricDescriptor(metric_name, ctx)
-
-    if ctx not in run.contexts:
-        run.meta_tree['contexts', ctx.idx] = ctx.to_dict()
-        run.meta_run_tree['contexts', ctx.idx] = ctx.to_dict()
-        run.contexts[ctx] = ctx.idx
-        run._idx_to_ctx[ctx.idx] = ctx
-
-    time_view = run.series_run_tree.view(metric.selector).array('time').allocate()
-    val_view = run.series_run_tree.view(metric.selector).array('val').allocate()
-    epoch_view = run.series_run_tree.view(metric.selector).array('epoch').allocate()
-
-    max_idx = run.series_counters.get((ctx, metric_name), None)
-    if max_idx is None:
-        max_idx = len(val_view)
-    if max_idx == 0:
-        run.meta_tree['traces', ctx.idx, metric_name] = 1
-    run.meta_run_tree['traces', ctx.idx, metric_name, "last"] = value
-
-    run.series_counters[ctx, metric_name] = max_idx + 1
-
-    time_view[step] = timestamp
-    val_view[step] = value
-    epoch_view[step] = epoch

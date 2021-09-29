@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Divider,
-  MenuItem,
-  MenuList,
-  Slider,
-  Switch,
-} from '@material-ui/core';
+import { MenuItem, Slider } from '@material-ui/core';
 
 import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';

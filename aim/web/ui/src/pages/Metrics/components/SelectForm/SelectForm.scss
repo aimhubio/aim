@@ -1,8 +1,8 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 .SelectForm__container {
   flex: 1;
-  padding: 0.625rem 1.5em;
+  padding: 0.5rem 1.5em;
   display: flex;
 }
 
@@ -18,7 +18,7 @@
   min-width: 12rem;
 
   .TagLabel {
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 }
 
@@ -26,9 +26,24 @@
   width: 100%;
 
   input {
+    font-family: monospace;
     padding: 0.5rem;
     font-size: $text-md;
     border-bottom: $border-main;
+  }
+}
+
+.SelectForm__TextField {
+  margin-top: 0.875rem;
+  input {
+    font-family: monospace;
+  }
+}
+
+.SelectForm__textarea {
+  flex: 1;
+  textarea {
+    font-family: monospace;
   }
 }
 
@@ -86,7 +101,7 @@
   position: relative;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     width: 50px;
     height: 30px;

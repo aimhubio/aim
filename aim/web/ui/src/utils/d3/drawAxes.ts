@@ -40,12 +40,9 @@ function drawAxes(props: IDrawAxesProps): void {
           xAlignmentText = XAlignmentEnum.Epoch + 's';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
-          const delta = Math.floor(xValues.length / ticksCount);
-          const ticks =
-            delta > 1 ? xValues.filter((_, i) => i % delta === 0) : xValues;
+          const ticks = xValues.filter((x) => Math.round(x) - x === 0);
 
-          // TODO need to check
-          xAxis.ticks(ticksCount).tickValues(ticks);
+          xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1).tickValues(ticks);
         }
         break;
       case AlignmentOptions.RELATIVE_TIME:

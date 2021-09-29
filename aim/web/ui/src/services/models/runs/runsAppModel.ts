@@ -53,6 +53,7 @@ import {
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 import * as analytics from 'services/analytics';
 import { RowHeightEnum } from 'config/enums/tableEnums';
+import { formatValue } from 'utils/formatValue';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -297,12 +298,12 @@ function resetModelOnError(detail?: any) {
 }
 
 function exceptionHandler(detail: any) {
-  let message = detail.message || 'Something went wrong';
+  let message = '';
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
   } else {
-    message = 'Something went wrong';
+    message = detail.message || 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -791,7 +792,7 @@ function getDataAsTableRows(
       metric.run.traces.map((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
-        ] = trace.last_value.last;
+        ] = formatValue(trace.last_value.last);
       });
       const rowValues: any = {
         key: metric.key,
@@ -824,8 +825,7 @@ function getDataAsTableRows(
       });
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
+        rowValues[paramKey] = formatValue(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);
@@ -1060,6 +1060,7 @@ const runAppModel = {
   onColumnsVisibilityChange,
   onTableDiffShow,
   updateColumnsWidths,
+  setDefaultAppConfigData,
 };
 
 export default runAppModel;

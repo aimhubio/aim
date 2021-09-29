@@ -1,116 +1,80 @@
 import React from 'react';
 import { Popover, PopoverPosition } from '@material-ui/core';
-import { isEqual } from 'lodash-es';
 
 import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
+import getPositionBasedOnOverflow from 'utils/getPositionBasedOnOverflow';
+import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent';
 
 import './ChartPopover.scss';
 
-function ChartPopover({
-  id,
-  popoverPosition,
-  open = false,
-  className = '',
-  children,
-  containerRef,
-  popoverContentRef,
-}: IChartPopover): JSX.Element | null {
+function ChartPopover(props: IChartPopover): JSX.Element | null {
+  const { id = 'popover', open = false, className = '' } = props;
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
   );
+  const popoverContentRef = React.useRef<HTMLDivElement>(null);
+  const frameIDRef = React.useRef<number>(0);
 
-  const getPositionBasedOnOverflow = React.useCallback(
-    (pos: PopoverPosition, containerRect: DOMRect): PopoverPosition => {
-      let left;
-      let top;
+  function onPopoverPositionChange(popoverPos: PopoverPosition | null): void {
+    if (popoverPos === null) {
+      setPopoverPos(null);
+    } else if (popoverContentRef.current && props.containerRef?.current) {
+      // Popover viewport need to be overflowed by chart container
+      const pos = getPositionBasedOnOverflow(
+        popoverPos,
+        props.containerRef.current.getBoundingClientRect(),
+        popoverContentRef.current.getBoundingClientRect(),
+      );
 
-      if (
-        pos.left + (popoverContentRef?.current?.offsetWidth || 0) <
-        containerRect.left
-      ) {
-        left = containerRect.left;
-      } else if (
-        pos.left + (popoverContentRef?.current?.offsetWidth || 0) >
-        containerRect.left +
-          containerRect.width -
-          (popoverContentRef?.current?.offsetWidth || 0)
-      ) {
-        left =
-          containerRect.left +
-          containerRect.width -
-          (popoverContentRef?.current?.offsetWidth || 0);
-      } else {
-        left = pos.left;
-      }
+      setPopoverPos(pos);
+    }
+  }
 
-      if (
-        pos.top + (popoverContentRef?.current?.offsetHeight || 0) <
-        containerRect.top
-      ) {
-        top =
-          containerRect.top - (popoverContentRef?.current?.offsetHeight || 0);
-      } else if (
-        pos.top + (popoverContentRef?.current?.offsetHeight || 0) >
-        containerRect.top + containerRect.height
-      ) {
-        top =
-          containerRect.top +
-          containerRect.height -
-          (popoverContentRef?.current?.offsetHeight || 0);
-      } else {
-        top = pos.top;
-      }
-
-      return {
-        left,
-        top,
-      };
-    },
-    [
-      popoverContentRef?.current?.offsetHeight,
-      popoverContentRef?.current?.offsetWidth,
-    ],
-  );
-
-  const onPopoverPositionChange = React.useCallback(
-    (popoverPos: PopoverPosition | null): void => {
-      if (popoverPos === null) {
-        setPopoverPos(null);
-      } else {
-        // Popover viewport need to be overflowed by chart container
-        const containerRect = containerRef?.current?.getBoundingClientRect();
-        const pos = containerRect
-          ? getPositionBasedOnOverflow(popoverPos, containerRect)
-          : popoverPos;
-
-        setPopoverPos((prevState) => {
-          if (isEqual(prevState, pos)) {
-            return prevState;
-          }
-          return pos;
-        });
-      }
-    },
-    [containerRef, getPositionBasedOnOverflow],
-  );
-
+  // on mount stage
   React.useEffect(() => {
-    onPopoverPositionChange(popoverPosition);
-  }, [popoverPosition, onPopoverPositionChange]);
+    frameIDRef.current = window.requestAnimationFrame(() => {
+      onPopoverPositionChange(props.popoverPosition);
+    });
 
-  return !!popoverPos ? (
+    return () => {
+      window.cancelAnimationFrame(frameIDRef.current);
+    };
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (open && props.popoverPosition) {
+      frameIDRef.current = window.requestAnimationFrame(() => {
+        onPopoverPositionChange(props.popoverPosition);
+      });
+    }
+  }, [
+    props.popoverPosition,
+    props.containerRef?.current,
+    props.tooltipContent,
+    props.focusedState.key,
+    popoverContentRef?.current,
+    open,
+  ]);
+
+  return (
     <Popover
-      id={id || 'popover'}
-      open={open}
+      id={id}
+      open={!!props.popoverPosition && open}
       disableEnforceFocus={true}
       anchorReference='anchorPosition'
-      anchorPosition={popoverPos}
+      anchorPosition={popoverPos || props.popoverPosition || undefined}
       className={`ChartPopover ${className}`}
-      classes={{ paper: 'ChartPopover__content' }}
+      classes={{ paper: `ChartPopover__content${popoverPos ? '' : '__hide'}` }}
     >
-      {children}
+      <PopoverContent
+        ref={popoverContentRef}
+        chartType={props.chartType}
+        tooltipContent={props.tooltipContent}
+        focusedState={props.focusedState}
+        alignmentConfig={props.alignmentConfig}
+      />
     </Popover>
-  ) : null;
+  );
 }
 
 export default React.memo(ChartPopover);

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Grid, PopoverPosition, GridSize, Typography } from '@material-ui/core';
 import _ from 'lodash-es';
 
@@ -7,7 +7,6 @@ import { chartTypesConfig } from './config';
 import { ChartTypeEnum } from 'utils/d3';
 
 import ChartPopover from './ChartPopover/ChartPopover';
-import PopoverContent from './PopoverContent/PopoverContent';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -22,7 +21,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
   ref,
 ) {
-  const [chartRefs /*setChartsRefs*/] = React.useState<React.RefObject<any>[]>(
+  const [chartRefs] = React.useState<React.RefObject<any>[]>(
     new Array(props.data.length).fill('*').map(() => React.createRef()),
   );
   const [popoverPosition, setPopoverPosition] =
@@ -30,7 +29,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
-  const popoverContentRef = useRef<any>({});
 
   const syncHoverState = React.useCallback(
     (params: ISyncHoverStateParams): void => {
@@ -61,10 +59,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           props.onActivePointChange(activePoint, focusedStateActive);
         }
 
-        setPopoverPosition({
-          top: activePoint.topPos - (containerRef.current?.scrollTop || 0),
-          left: activePoint.leftPos - (containerRef.current?.scrollLeft || 0),
-        });
+        if (activePointRef.current && containerRef.current) {
+          setPopoverPosition({
+            top: activePointRef.current.topPos - containerRef.current.scrollTop,
+            left:
+              activePointRef.current.leftPos - containerRef.current.scrollLeft,
+          });
+        } else {
+          setPopoverPosition(null);
+        }
       }
       // on MouseLeave
       else {
@@ -79,14 +82,15 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const onScroll = React.useCallback((): void => {
     if (popoverPosition) {
-      setPopoverPosition({
-        top:
-          (activePointRef.current?.topPos || 0) -
-          (containerRef.current?.scrollTop || 0),
-        left:
-          (activePointRef.current?.leftPos || 0) -
-          (containerRef.current?.scrollLeft || 0),
-      });
+      if (activePointRef.current && containerRef.current) {
+        setPopoverPosition({
+          top: activePointRef.current.topPos - containerRef.current.scrollTop,
+          left:
+            activePointRef.current.leftPos - containerRef.current.scrollLeft,
+        });
+      } else {
+        setPopoverPosition(null);
+      }
     }
   }, [popoverPosition]);
 
@@ -167,7 +171,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             </Grid>
             <ChartPopover
               containerRef={containerRef}
-              popoverContentRef={popoverContentRef}
               popoverPosition={popoverPosition}
               open={
                 props.resizeMode !== ResizeModeEnum.MaxHeight &&
@@ -176,15 +179,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 !props.zoom?.active &&
                 (props.tooltip.display || props.focusedState.active)
               }
-            >
-              <PopoverContent
-                popoverContentRef={popoverContentRef}
-                chartType={props.chartType}
-                tooltipContent={props.tooltip.content}
-                focusedState={props.focusedState}
-                alignmentConfig={props.alignmentConfig}
-              />
-            </ChartPopover>
+              chartType={props.chartType}
+              tooltipContent={props.tooltip.content}
+              focusedState={props.focusedState}
+              alignmentConfig={props.alignmentConfig}
+            />
           </Grid>
           <Grid className='Metrics__controls__container' item>
             {props.controls}

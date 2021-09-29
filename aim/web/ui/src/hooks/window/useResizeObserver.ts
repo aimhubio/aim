@@ -3,6 +3,7 @@ import { useEffect, RefObject } from 'react';
 const useResizeObserver = (
   resizeObserverCallback: ResizeObserverCallback,
   target: RefObject<HTMLElement>,
+  returnCallback?: () => void,
 ): void => {
   useEffect(() => {
     if (target?.current) {
@@ -14,10 +15,13 @@ const useResizeObserver = (
       return () => {
         if (observer) {
           observer.disconnect();
+          if (typeof returnCallback === 'function') {
+            returnCallback();
+          }
         }
       };
     }
-  }, [resizeObserverCallback, target]);
+  }, [resizeObserverCallback, returnCallback, target]);
 };
 
 export default useResizeObserver;

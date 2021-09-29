@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Box, Divider, Link, Paper, capitalize } from '@material-ui/core';
+import { Box, Divider, Link, Paper } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
@@ -13,13 +13,11 @@ import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent
 
 import './PopoverContent.scss';
 
-function PopoverContent({
-  tooltipContent,
-  focusedState,
-  chartType,
-  alignmentConfig,
-  popoverContentRef,
-}: IPopoverContentProps) {
+const PopoverContent = React.forwardRef(function PopoverContent(
+  props: IPopoverContentProps,
+  ref,
+): React.FunctionComponentElement<React.ReactNode> {
+  const { tooltipContent, focusedState, chartType, alignmentConfig } = props;
   const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
 
   function renderPopoverHeader(): React.ReactNode {
@@ -28,8 +26,7 @@ function PopoverContent({
         return (
           <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
-              {capitalize(tooltipContent.metricName)}:{' '}
-              {focusedState?.yValue ?? '--'}
+              {tooltipContent.metricName}: {focusedState?.yValue ?? '--'}
             </div>
             <div className='PopoverContent__value'>
               Step:{' '}
@@ -60,7 +57,7 @@ function PopoverContent({
 
   return (
     <Paper
-      ref={popoverContentRef}
+      ref={ref}
       className='PopoverContent__container'
       style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
     >
@@ -79,8 +76,7 @@ function PopoverContent({
                     </div>
                     {Object.keys(groupConfig[groupConfigKey]).map((item) => (
                       <div key={item} className='PopoverContent__value'>
-                        {capitalize(item)}:{' '}
-                        {groupConfig[groupConfigKey][item] ?? '--'}
+                        {item}: {groupConfig[groupConfigKey][item] ?? '--'}
                       </div>
                     ))}
                   </React.Fragment>
@@ -96,8 +92,12 @@ function PopoverContent({
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
-                  {capitalize(paramKey)}:{' '}
-                  {JSON.stringify(params[paramKey]) ?? '--'}
+                  {paramKey}:{' '}
+                  {params[paramKey]
+                    ? typeof params[paramKey] !== 'string'
+                      ? JSON.stringify(params[paramKey])
+                      : params[paramKey]
+                    : '--'}
                 </div>
               ))}
             </Box>
@@ -130,6 +130,6 @@ function PopoverContent({
       </Box>
     </Paper>
   );
-}
+});
 
 export default React.memo(PopoverContent);

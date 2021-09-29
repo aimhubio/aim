@@ -12,18 +12,55 @@
 #
 import os
 import sys
+import glob
+from importlib.util import module_from_spec, spec_from_file_location
+
 sys.path.insert(0, os.path.abspath('..'))
 
 
+PATH_HERE = os.path.abspath(os.path.dirname(__file__))
+PATH_ROOT = os.path.join(PATH_HERE, '..', '..')
+
+FOLDER_GENERATED = 'generated'
+
+spec = spec_from_file_location(
+    'aim/__about__.py', os.path.join(PATH_ROOT, 'aim', '__about__.py')
+)
+about = module_from_spec(spec)
+spec.loader.exec_module(about)
+
 # -- Project information -----------------------------------------------------
 
-project = 'Aim SDK'
-copyright = '2021, albert@aimhub.io'
-author = 'albert@aimhub.io'
+project = 'Aim'
+copyright = about.__copyright__
+author = about.__author__
 
 # The full version, including alpha/beta/rc tags
-release = '3.0.0'
+release = about.__version__
 
+# -- Project documents -------------------------------------------------------
+
+def _transform_changelog(path_in: str, path_out: str) -> None:
+    with open(path_in) as fp:
+        chlog_lines = fp.readlines()
+    # enrich short subsub-titles to be unique
+    chlog_ver = ""
+    for i, ln in enumerate(chlog_lines):
+        if ln.startswith('## '):
+            chlog_ver = ln[2:].split('-')[0].strip()
+        elif ln.startswith('### '):
+            ln = ln.replace('###', f'### {chlog_ver} -')
+            chlog_lines[i] = ln
+    with open(path_out, 'w') as fp:
+        fp.writelines(chlog_lines)
+
+
+os.makedirs(os.path.join(PATH_HERE, FOLDER_GENERATED), exist_ok=True)
+# copy all documents from GH templates like contribution guide
+for md in glob.glob(os.path.join(PATH_ROOT, '.github', '*.md')):
+    shutil.copy(md, os.path.join(PATH_HERE, FOLDER_GENERATED, os.path.basename(md)))
+# copy also the changelog
+_transform_changelog(os.path.join(PATH_ROOT, 'CHANGELOG.md'), os.path.join(PATH_HERE, FOLDER_GENERATED, 'CHANGELOG.md'))
 
 # -- General configuration ---------------------------------------------------
 
@@ -57,6 +94,8 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+# html_logo = "_static/images/logo.svg"
+html_favicon = '_static/images/logo.svg'
 
 autodoc_typehints = 'none'
 autodoc_member_order = 'groupwise'

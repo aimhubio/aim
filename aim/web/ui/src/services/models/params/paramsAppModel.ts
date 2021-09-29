@@ -58,11 +58,12 @@ import {
 } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import JsonToCSV from 'utils/JsonToCSV';
+import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: false });
+const model = createModel<Partial<any>>({ isParamsLoading: null });
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
@@ -176,12 +177,12 @@ function resetModelOnError(detail?: any) {
 }
 
 function exceptionHandler(detail: any) {
-  let message = detail.message || 'Something went wrong';
+  let message = '';
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
   } else {
-    message = 'Something went wrong';
+    message = detail.message || 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -238,7 +239,13 @@ function getParamsData() {
     call: async () => {
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
-      if (!_.isEmpty(select?.params)) {
+      if (_.isEmpty(select?.params)) {
+        model.setState({
+          highPlotData: [],
+          tableData: [],
+          isParamsLoading: false,
+        });
+      } else {
         model.setState({ isParamsLoading: true });
         const stream = await getRunsRequestRef.call(exceptionHandler);
         let gen = adjustable_reader(stream);
@@ -428,7 +435,7 @@ function getDataAsLines(
                 dimension[label] = {
                   values: new Set(),
                   scaleType: 'linear',
-                  displayName: `<span>${label}</span>`,
+                  displayName: label,
                   dimensionType: 'param',
                 };
               }
@@ -453,11 +460,9 @@ function getDataAsLines(
                       dimension[formattedContext] = {
                         values: new Set().add(trace.last_value.last),
                         scaleType: 'linear',
-                        displayName: `<span>${
-                          value.param_name
-                        }</span> <span>${contextToString(
+                        displayName: `${value.param_name} ${contextToString(
                           trace.context,
-                        )}</span>`,
+                        )}`,
                         dimensionType: 'metric',
                       };
                     }
@@ -465,16 +470,7 @@ function getDataAsLines(
                 });
               } else {
                 const paramValue = _.get(run.run.params, label);
-                if (paramValue === undefined) {
-                  values[label] = null;
-                } else if (paramValue === null) {
-                  values[label] = 'None';
-                } else if (typeof paramValue === 'string') {
-                  values[label] = `"${paramValue}"`;
-                } else {
-                  // TODO need to fix type
-                  values[label] = paramValue as any;
-                }
+                values[label] = formatValue(paramValue, null);
                 if (values[label] !== null) {
                   if (typeof values[label] === 'string') {
                     dimension[label].scaleType = 'point';
@@ -746,7 +742,7 @@ function onColorIndicatorChange(): void {
   if (configData?.chart) {
     const chart = { ...configData.chart };
     chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
-    updateModelData({ ...configData, chart });
+    updateModelData({ ...configData, chart }, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] ${
@@ -763,7 +759,7 @@ function onCurveInterpolationChange(): void {
       configData.chart.curveInterpolation === CurveEnum.Linear
         ? CurveEnum.MonotoneX
         : CurveEnum.Linear;
-    updateModelData({ ...configData, chart });
+    updateModelData({ ...configData, chart }, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] Set interpolation mode to "${
@@ -778,23 +774,17 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const { data, params, refs, config, metricsColumns } =
-    model.getState() as any;
-  const tableData = getDataAsTableRows(
-    data,
-    metricsColumns,
-    params,
-    false,
-    config,
-  );
-  const tableRef: any = refs?.tableRef;
-  if (tableRef) {
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
-    );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+  const { refs, config } = model.getState() as any;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    const tableRef: any = refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IParamsAppConfig = config;
@@ -819,10 +809,18 @@ function onActivePointChange(
         },
       },
     };
+
+    if (
+      config.chart.focusedState.active !== focusedStateActive ||
+      (config.chart.focusedState.active &&
+        (activePoint.key !== config.chart.focusedState.key ||
+          activePoint.xValue !== config.chart.focusedState.xValue))
+    ) {
+      updateURL(configData);
+    }
   }
 
   model.setState({
-    tableData: tableData.rows,
     config: configData,
   });
 }
@@ -830,11 +828,15 @@ function onActivePointChange(
 function onParamsSelectChange(data: any[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, params: data },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, params: data },
-      },
+      config: newConfig,
     });
   }
 }
@@ -842,11 +844,15 @@ function onParamsSelectChange(data: any[]) {
 function onSelectRunQueryChange(query: string) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -859,27 +865,17 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Other',
-      label: 'experiment_name',
-      value: 'run.experiment_name',
+      group: 'Run',
+      label: 'run.experiment',
+      value: 'run.props.experiment',
     },
     {
-      group: 'Other',
+      group: 'Run',
       label: 'run.hash',
-      value: 'run.params.status.hash',
+      value: 'run.hash',
     },
-    {
-      group: 'Other',
-      label: 'metric_name',
-      value: 'metric_name',
-    },
-    {
-      group: 'context',
-      label: 'subset',
-      value: 'context.subset',
-    },
+    ...paramsOptions,
   ];
 }
 
@@ -890,7 +886,7 @@ function onGroupingSelectChange({
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
 }
@@ -905,7 +901,7 @@ function onGroupingModeChange({
       ...configData.grouping.reverseMode,
       [groupName]: value,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
@@ -921,7 +917,7 @@ function onGroupingPaletteChange(index: number): void {
       ...configData.grouping,
       paletteIndex: index,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] Set color palette to "${
@@ -943,12 +939,15 @@ function onGroupingReset(groupName: GroupNameType) {
       persistence: { ...persistence, [groupName]: false },
       isApplied: { ...isApplied, [groupName]: true },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent('[ParamsExplorer] Reset grouping');
 }
 
-function updateModelData(configData: IParamsAppConfig): void {
+function updateModelData(
+  configData: IParamsAppConfig = model.getState()!.config!,
+  shouldURLUpdate?: boolean,
+): void {
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
@@ -974,6 +973,11 @@ function updateModelData(configData: IParamsAppConfig): void {
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
   });
+
+  if (shouldURLUpdate) {
+    updateURL(configData);
+  }
+
   model.setState({
     config: configData,
     data,
@@ -1054,7 +1058,7 @@ function getDataAsTableRows(
       metric.run.traces.map((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
-        ] = trace.last_value.last;
+        ] = formatValue(trace.last_value.last);
       });
       const rowValues: any = {
         rowMeta: {
@@ -1093,8 +1097,7 @@ function getDataAsTableRows(
 
       paramKeys.forEach((paramKey) => {
         const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
+        rowValues[paramKey] = formatValue(value);
         if (columnsValues.hasOwnProperty(paramKey)) {
           if (!columnsValues[paramKey].includes(value)) {
             columnsValues[paramKey].push(value);
@@ -1165,7 +1168,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
         [groupName]: !configData.grouping.isApplied[groupName],
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1179,7 +1182,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
         [groupName]: !configData.grouping.persistence[groupName],
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
@@ -1261,6 +1264,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }
@@ -1369,42 +1373,32 @@ function onResetConfigData(): void {
       ...getConfig().grouping,
     };
     configData.chart = { ...getConfig().chart };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
-function updateGroupingStateUrl(): void {
-  const groupingData = model.getState()?.config?.grouping;
-  if (groupingData) {
-    updateUrlParam('grouping', groupingData);
+/**
+ * function updateURL has 2 major functionalities:
+ *    1. Keeps URL in sync with the app config
+ *    2. Stores updated URL in localStorage if App is not in the bookmark state
+ * @param {IParamsAppConfig} configData - the current state of the app config
+ */
+function updateURL(configData = model.getState()!.config!) {
+  const { grouping, chart, select } = configData;
+  const url: string = getUrlWithParam(
+    ['grouping', 'chart', 'select'],
+    [encode(grouping), encode(chart), encode(select)],
+  );
+
+  if (url === `${window.location.pathname}${window.location.search}`) {
+    return;
   }
-}
 
-function updateChartStateUrl(): void {
-  const chartData = model.getState()?.config?.chart;
-
-  if (chartData) {
-    updateUrlParam('chart', chartData);
-  }
-}
-
-function updateSelectStateUrl(): void {
-  const selectData = model.getState()?.config?.select;
-  if (selectData) {
-    updateUrlParam('select', selectData);
-  }
-}
-
-function updateUrlParam(
-  paramName: string,
-  data: Record<string, unknown>,
-): void {
-  const encodedUrl: string = encode(data);
-  const url: string = getUrlWithParam(paramName, encodedUrl);
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('paramsUrl', url);
   }
+
   window.history.pushState(null, '', url);
 }
 
@@ -1742,9 +1736,6 @@ const paramsAppModel = {
   onNotificationDelete,
   onChangeTooltip,
   onExportTableData,
-  updateChartStateUrl,
-  updateSelectStateUrl,
-  updateGroupingStateUrl,
   onTableRowHover,
   onTableRowClick,
   setDefaultAppConfigData,
@@ -1759,6 +1750,8 @@ const paramsAppModel = {
   onSortReset,
   onSortChange,
   updateColumnsWidths,
+  updateURL,
+  updateModelData,
 };
 
 export default paramsAppModel;

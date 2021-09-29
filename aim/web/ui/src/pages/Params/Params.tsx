@@ -15,9 +15,10 @@ import { isEmpty } from 'lodash-es';
 import Table from 'components/Table/Table';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import './Params.scss';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import './Params.scss';
 
 const Params = ({
   curveInterpolation,
@@ -124,6 +125,7 @@ const Params = ({
             }`}
           >
             <BusyLoaderWrapper
+              height='100%'
               isLoading={isParamsLoading}
               loaderComponent={<ChartLoader />}
             >
@@ -152,7 +154,7 @@ const Params = ({
                   }
                 />
               ) : (
-                !isParamsLoading && (
+                isParamsLoading === false && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."

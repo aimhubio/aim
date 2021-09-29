@@ -75,6 +75,7 @@ const LineChart = React.forwardRef(function LineChart(
   const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
+  const rafIDRef = React.useRef<number>();
 
   function draw() {
     const { processedData, min, max, xValues } = processData(
@@ -189,7 +190,7 @@ const LineChart = React.forwardRef(function LineChart(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        requestAnimationFrame(renderChart);
+        rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
     [
@@ -203,10 +204,21 @@ const LineChart = React.forwardRef(function LineChart(
     ],
   );
 
-  useResizeObserver(resizeObserverCallback, parentRef);
+  const observerReturnCallback = React.useCallback(() => {
+    if (rafIDRef.current) {
+      window.cancelAnimationFrame(rafIDRef.current);
+    }
+  }, []);
+
+  useResizeObserver(resizeObserverCallback, parentRef, observerReturnCallback);
 
   React.useEffect(() => {
-    requestAnimationFrame(renderChart);
+    rafIDRef.current = window.requestAnimationFrame(renderChart);
+    return () => {
+      if (rafIDRef.current) {
+        window.cancelAnimationFrame(rafIDRef.current);
+      }
+    };
   }, [
     data,
     zoom,

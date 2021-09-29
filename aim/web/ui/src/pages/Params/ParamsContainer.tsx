@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouteMatch, useLocation } from 'react-router-dom';
 
 import Params from './Params';
 import paramsAppModel from 'services/models/params/paramsAppModel';
@@ -10,9 +11,9 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
-import { useRouteMatch } from 'react-router-dom';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import * as analytics from 'services/analytics';
+import getStateFromUrl from 'utils/getStateFromUrl';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);
@@ -21,6 +22,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const paramsData = useModel<any>(paramsAppModel);
   const route = useRouteMatch<any>();
+  const location = useLocation();
 
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -44,8 +46,13 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => paramsAppModel.getParamsData().call());
+      appRequestRef.call().then(() => {
+        paramsAppModel.getParamsData().call();
+      });
+    } else {
+      paramsAppModel.setDefaultAppConfigData();
     }
+
     analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
@@ -55,23 +62,19 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  // Add effect to recover state from URL when browser history navigation is used
   React.useEffect(() => {
-    if (paramsData?.config?.grouping) {
-      paramsAppModel.updateGroupingStateUrl();
+    if (!!paramsData.config) {
+      if (
+        paramsData.config.grouping !== getStateFromUrl('grouping') ||
+        paramsData.config.chart !== getStateFromUrl('chart') ||
+        paramsData.config.select !== getStateFromUrl('select')
+      ) {
+        paramsAppModel.setDefaultAppConfigData();
+        paramsAppModel.updateModelData();
+      }
     }
-  }, [paramsData?.config?.grouping]);
-
-  React.useEffect(() => {
-    if (paramsData?.config?.chart) {
-      paramsAppModel.updateChartStateUrl();
-    }
-  }, [paramsData?.config?.chart]);
-
-  React.useEffect(() => {
-    if (paramsData?.config?.select) {
-      paramsAppModel.updateSelectStateUrl();
-    }
-  }, [paramsData?.config?.select]);
+  }, [location.search]);
 
   return (
     <Params

@@ -3,12 +3,12 @@ import { isEmpty } from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
-import hexToRgbA from 'utils/haxToRgba';
 import TagRunsTable from './TagRunsTable';
-import { ITagDetailProps } from 'types/pages/tags/Tags';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
+import TagLabel from 'components/TagLabel/TagLabel';
+import { ITagDetailProps } from 'types/pages/tags/Tags';
 
 import './Tags.scss';
 
@@ -43,22 +43,11 @@ function TagDetail({
           width='auto'
         >
           {tagInfo && (
-            <div className='TagContainer__tagBox'>
-              <div
-                className='TagContainer__tagBox__tag'
-                style={{
-                  borderColor: tagInfo?.color,
-                  background: hexToRgbA(tagInfo?.color, 0.1),
-                }}
-              >
-                <span
-                  className='TagContainer__tagBox__tag__content'
-                  style={{ color: tagInfo?.color }}
-                >
-                  {tagInfo?.name}
-                </span>
-              </div>
-            </div>
+            <TagLabel
+              size='medium'
+              color={tagInfo?.color}
+              label={tagInfo?.name}
+            />
           )}
         </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>

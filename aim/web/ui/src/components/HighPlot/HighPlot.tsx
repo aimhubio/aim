@@ -57,6 +57,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   const axesRef = React.useRef<any>({});
   const linesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
+  const rafIDRef = React.useRef<number>();
 
   const draw = React.useCallback((): void => {
     drawParallelArea({
@@ -161,16 +162,27 @@ const HighPlot = React.forwardRef(function HighPlot(
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
-        requestAnimationFrame(renderChart);
+        rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
     [renderChart],
   );
 
-  useResizeObserver(resizeObserverCallback, parentRef);
+  const observerReturnCallback = React.useCallback(() => {
+    if (rafIDRef.current) {
+      window.cancelAnimationFrame(rafIDRef.current);
+    }
+  }, []);
+
+  useResizeObserver(resizeObserverCallback, parentRef, observerReturnCallback);
 
   React.useEffect(() => {
-    requestAnimationFrame(renderChart);
+    rafIDRef.current = window.requestAnimationFrame(renderChart);
+    return () => {
+      if (rafIDRef.current) {
+        window.cancelAnimationFrame(rafIDRef.current);
+      }
+    };
   }, [renderChart]);
 
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import _, { isEmpty, isNil } from 'lodash-es';
+import _, { isEmpty, isNil, debounce } from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 import COLORS from 'config/colors/colors';
@@ -83,9 +83,10 @@ import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import { formatValue } from 'utils/formatValue';
 
 const model = createModel<Partial<IMetricAppModelState>>({
-  requestIsPending: true,
+  requestIsPending: null,
 });
 let tooltipData: ITooltipData = {};
 
@@ -294,12 +295,12 @@ function resetModelOnError(detail?: any) {
 }
 
 function exceptionHandler(detail: any) {
-  let message = detail.message || 'Something went wrong';
+  let message = '';
 
   if (detail.name === 'SyntaxError') {
     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
   } else {
-    message = 'Something went wrong';
+    message = detail.message || 'Something went wrong';
   }
 
   onNotificationAdd({
@@ -326,10 +327,12 @@ function getMetricsData() {
   });
   return {
     call: async () => {
-      if (query === '') {
+      if (query === '()') {
         model.setState({
           requestIsPending: false,
           queryIsEmpty: true,
+          tableData: [],
+          lineChartData: [],
         });
       } else {
         model.setState({
@@ -429,25 +432,25 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Other',
-      label: 'experiment',
+      group: 'Run',
+      label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Other',
+      group: 'Run',
       label: 'run.hash',
       value: 'run.hash',
     },
+    ...paramsOptions,
     {
-      group: 'Other',
-      label: 'metric',
+      group: 'metric',
+      label: 'metric.name',
       value: 'metric_name',
     },
     {
-      group: 'context',
-      label: 'subset',
+      group: 'metric',
+      label: 'context.subset',
       value: 'context.subset',
     },
   ];
@@ -767,7 +770,7 @@ function alignData(
             xValues: [
               ...metric.data.epochs.map(
                 (epoch, i) =>
-                  epoch -
+                  epoch +
                   (epochs[epoch].length > 1
                     ? (0.99 / epochs[epoch].length) *
                       epochs[epoch].indexOf(metric.data.steps[i])
@@ -987,6 +990,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IMetricAppConfig,
+  dynamicUpdate?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1115,22 +1119,23 @@ function getDataAsTableRows(
         }
       });
 
-      paramKeys.forEach((paramKey) => {
-        const value = _.get(metric.run.params, paramKey, '-');
-        rowValues[paramKey] =
-          typeof value === 'string' ? value : JSON.stringify(value);
-        if (columnsValues.hasOwnProperty(paramKey)) {
-          if (
-            _.findIndex(columnsValues[paramKey], (paramValue) =>
-              _.isEqual(value, paramValue),
-            ) === -1
-          ) {
-            columnsValues[paramKey].push(value);
+      if (!dynamicUpdate) {
+        paramKeys.forEach((paramKey) => {
+          const value = _.get(metric.run.params, paramKey, '-');
+          rowValues[paramKey] = formatValue(value);
+          if (columnsValues.hasOwnProperty(paramKey)) {
+            if (
+              _.findIndex(columnsValues[paramKey], (paramValue) =>
+                _.isEqual(value, paramValue),
+              ) === -1
+            ) {
+              columnsValues[paramKey].push(value);
+            }
+          } else {
+            columnsValues[paramKey] = [value];
           }
-        } else {
-          columnsValues[paramKey] = [value];
-        }
-      });
+        });
+      }
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].items.push(
@@ -1302,7 +1307,7 @@ function onAggregationConfigChange(
         ...aggregationConfig,
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(
@@ -1330,7 +1335,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...props };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   if (props.curveInterpolation) {
     analytics.trackEvent(
@@ -1350,7 +1355,7 @@ function onIgnoreOutliersChange(): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] ${
@@ -1363,7 +1368,7 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.axesScaleType = params;
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] Set X axis scale type "${params.xAxis}"`,
@@ -1394,7 +1399,10 @@ function resetChartZoom(configData: IMetricAppConfig): void {
   analytics.trackEvent('[MetricsExplorer][Chart] Reset zoom');
 }
 
-function updateModelData(configData: IMetricAppConfig): void {
+function updateModelData(
+  configData: IMetricAppConfig = model.getState()!.config!,
+  shouldURLUpdate?: boolean,
+): void {
   const { data, params } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
@@ -1421,6 +1429,11 @@ function updateModelData(configData: IMetricAppConfig): void {
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
   });
+
+  if (shouldURLUpdate) {
+    updateURL(configData);
+  }
+
   model.setState({
     config: configData,
     data,
@@ -1443,7 +1456,7 @@ function onGroupingSelectChange({
     configData.grouping = { ...configData.grouping, [groupName]: list };
     resetChartZoom(configData);
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
 }
@@ -1462,7 +1475,7 @@ function onGroupingModeChange({
       resetChartZoom(configData);
     }
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${
@@ -1479,7 +1492,7 @@ function onGroupingPaletteChange(index: number): void {
       paletteIndex: index,
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] Set color palette to "${
@@ -1502,7 +1515,7 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent('[MetricsExplorer] Reset grouping');
 }
@@ -1518,7 +1531,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
       },
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1533,7 +1546,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
       },
     };
     setAggregationEnabled(configData);
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${
@@ -1565,68 +1578,79 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
 
-function onActivePointChange(
-  activePoint: IActivePoint,
-  focusedStateActive: boolean = false,
-): void {
-  const { data, params, refs, config } =
-    model.getState() as IMetricAppModelState;
-  const tableRef: any = refs?.tableRef;
-  const tableData = getDataAsTableRows(
-    data,
-    activePoint.xValue,
-    params,
-    false,
-    config,
-  );
-  if (tableRef) {
-    tableRef.current?.updateData({
-      newData: tableData.rows,
-      dynamicData: true,
-    });
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
-    );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+const onActivePointChange = debounce(
+  (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
+    const { data, params, refs, config } =
+      model.getState() as IMetricAppModelState;
+    const tableRef: any = refs?.tableRef;
+    let tableData = null;
+    if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+      tableData = getDataAsTableRows(
+        data,
+        activePoint.xValue,
+        params,
+        false,
+        config,
+        true,
+      );
+      if (tableRef) {
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          dynamicData: true,
+        });
+        tableRef.current?.setHoveredRow?.(activePoint.key);
+        tableRef.current?.setActiveRow?.(
+          focusedStateActive ? activePoint.key : null,
+        );
+        if (focusedStateActive) {
+          tableRef.current?.scrollToRow?.(activePoint.key);
+        }
+      }
     }
-  }
-  let configData: IMetricAppConfig = config;
-  if (configData?.chart) {
-    configData = {
-      ...configData,
-      chart: {
-        ...configData.chart,
-        focusedState: {
-          active: focusedStateActive,
-          key: activePoint.key,
-          xValue: activePoint.xValue,
-          yValue: activePoint.yValue,
-          chartIndex: activePoint.chartIndex,
+    let configData: IMetricAppConfig = config;
+    if (configData?.chart) {
+      configData = {
+        ...configData,
+        chart: {
+          ...configData.chart,
+          focusedState: {
+            active: focusedStateActive,
+            key: activePoint.key,
+            xValue: activePoint.xValue,
+            yValue: activePoint.yValue,
+            chartIndex: activePoint.chartIndex,
+          },
+          tooltip: {
+            ...configData.chart.tooltip,
+            content: filterTooltipContent(
+              tooltipData[activePoint.key],
+              configData?.chart.tooltip.selectedParams,
+            ),
+          },
         },
-        tooltip: {
-          ...configData.chart.tooltip,
-          content: filterTooltipContent(
-            tooltipData[activePoint.key],
-            configData?.chart.tooltip.selectedParams,
-          ),
-        },
-      },
-    };
-  }
+      };
 
-  model.setState({
-    tableData: tableData.rows,
-    config: configData,
-  });
-}
+      if (
+        config.chart.focusedState.active !== focusedStateActive ||
+        (config.chart.focusedState.active &&
+          activePoint.key !== config.chart.focusedState.key)
+      ) {
+        updateURL(configData);
+      }
+    }
+    model.setState({
+      config: configData,
+    });
+  },
+  35,
+);
 
-//Table Methods
+// Table Methods
 
 function onTableRowHover(rowKey?: string): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
@@ -1739,37 +1763,28 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   analytics.trackEvent('[MetricsExplorer] Export runs data to CSV');
 }
 
-function updateGroupingStateUrl(): void {
-  const groupingData = model.getState()?.config?.grouping;
-  if (groupingData) {
-    updateUrlParam('grouping', groupingData);
-  }
-}
+/**
+ * function updateURL has 2 major functionalities:
+ *    1. Keeps URL in sync with the app config
+ *    2. Stores updated URL in localStorage if App is not in the bookmark state
+ * @param {IMetricAppConfig} configData - the current state of the app config
+ */
+function updateURL(configData = model.getState()!.config!) {
+  const { grouping, chart, select } = configData;
+  const url: string = getUrlWithParam(
+    ['grouping', 'chart', 'select'],
+    [encode(grouping), encode(chart), encode(select)],
+  );
 
-function updateChartStateUrl(): void {
-  const chartData = model.getState()?.config?.chart;
-  if (chartData) {
-    updateUrlParam('chart', chartData);
+  if (url === `${window.location.pathname}${window.location.search}`) {
+    return;
   }
-}
 
-function updateSelectStateUrl(): void {
-  const selectData = model.getState()?.config?.select;
-  if (selectData) {
-    updateUrlParam('select', selectData);
-  }
-}
-
-function updateUrlParam(
-  paramName: string,
-  data: Record<string, unknown>,
-): void {
-  const encodedUrl: string = encode(data);
-  const url: string = getUrlWithParam(paramName, encodedUrl);
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('metricsUrl', url);
   }
+
   window.history.pushState(null, '', url);
 }
 
@@ -1795,7 +1810,7 @@ function onResetConfigData(): void {
       ...getConfig().grouping,
     };
     configData.chart = { ...getConfig().chart };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }
 
@@ -1933,7 +1948,7 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
       ...configData.chart,
       alignmentConfig,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
@@ -1945,11 +1960,15 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
 function onMetricsSelectChange(data: ISelectMetricsOption[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, metrics: data },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, metrics: data },
-      },
+      config: newConfig,
     });
   }
 }
@@ -1957,11 +1976,15 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
 function onSelectRunQueryChange(query: string) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -1969,11 +1992,15 @@ function onSelectRunQueryChange(query: string) {
 function onSelectAdvancedQueryChange(query: string) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, advancedQuery: query },
+    };
+
+    updateURL(newConfig);
+
     model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, advancedQuery: query },
-      },
+      config: newConfig,
     });
   }
 }
@@ -1981,14 +2008,18 @@ function onSelectAdvancedQueryChange(query: string) {
 function toggleSelectAdvancedMode() {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.select) {
-    model.setState({
-      config: {
-        ...configData,
-        select: {
-          ...configData.select,
-          advancedMode: !configData.select.advancedMode,
-        },
+    const newConfig = {
+      ...configData,
+      select: {
+        ...configData.select,
+        advancedMode: !configData.select.advancedMode,
       },
+    };
+
+    updateURL(newConfig);
+
+    model.setState({
+      config: newConfig,
     });
   }
   analytics.trackEvent(
@@ -2160,7 +2191,6 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
@@ -2182,7 +2212,6 @@ function onTableResizeEnd(tableHeight: string) {
       config,
     });
     setItem('metricsTable', encode(table));
-    updateModelData(config);
   }
 }
 
@@ -2313,8 +2342,6 @@ const metricAppModel = {
   onGroupingApplyChange,
   onGroupingPersistenceChange,
   onBookmarkCreate,
-  updateGroupingStateUrl,
-  updateChartStateUrl,
   onNotificationDelete,
   onNotificationAdd,
   onBookmarkUpdate,
@@ -2325,7 +2352,6 @@ const metricAppModel = {
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
-  updateSelectStateUrl,
   onChangeTooltip,
   onExportTableData,
   onRowHeightChange,
@@ -2339,6 +2365,8 @@ const metricAppModel = {
   onSortReset,
   onSortChange,
   updateColumnsWidths,
+  updateURL,
+  updateModelData,
 };
 
 export default metricAppModel;

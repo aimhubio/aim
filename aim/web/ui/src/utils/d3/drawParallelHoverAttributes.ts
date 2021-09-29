@@ -32,6 +32,8 @@ const drawParallelHoverAttributes = ({
   axesNodeRef,
 }: IDrawParallelHoverAttributesProps) => {
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
+  let rafID = 0;
+
   const { margin } = visBoxRef.current;
   const svgArea = d3.select(visAreaRef.current).select('svg');
   const keysOfDimensions = Object.keys(dimensions);
@@ -379,7 +381,9 @@ const drawParallelHoverAttributes = ({
       return;
     }
     const mouse = d3.pointer(event);
-    updateFocusedChart({ mouse });
+    rafID = window.requestAnimationFrame(() => {
+      updateFocusedChart({ mouse });
+    });
   }
 
   function drawActiveLine(key: string): void {
@@ -432,6 +436,9 @@ const drawParallelHoverAttributes = ({
         .selectAll(`[id=Circle-${attributesRef.current?.lineKey}line]`)
         .remove();
 
+      if (rafID) {
+        window.cancelAnimationFrame(rafID);
+      }
       clearHoverAttributes();
       safeSyncHoverState({ activePoint: null });
     }

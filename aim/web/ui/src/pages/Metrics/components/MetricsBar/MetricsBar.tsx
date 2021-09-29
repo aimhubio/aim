@@ -14,9 +14,9 @@ import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 import Icon from 'components/Icon/Icon';
+import Button from 'components/Button/Button';
 
 import './MetricsBar.scss';
-import Button from 'components/Button/Button';
 
 function MetricsBar({
   onBookmarkCreate,
@@ -45,12 +45,15 @@ function MetricsBar({
         <ControlPopover
           title='Bookmark'
           anchor={({ onAnchorClick }) => (
-            <div onClick={onAnchorClick} className='MetricsBar__item__bookmark'>
+            <Button
+              color='secondary'
+              className='MetricsBar__item__bookmark'
+              size='small'
+              onClick={onAnchorClick}
+            >
               <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-              <span>
-                <Icon name='bookmarks' />
-              </span>
-            </div>
+              <Icon name='bookmarks' />
+            </Button>
           )}
           component={
             <div className='MetricsBar__popover'>
@@ -64,23 +67,27 @@ function MetricsBar({
           }
         />
       ) : (
-        <div className='MetricsBar__item__bookmark'>
+        <Button
+          color='secondary'
+          className='MetricsBar__item__bookmark'
+          size='small'
+          onClick={() => handleBookmarkClick('create')}
+        >
           <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-          <Button
-            color='secondary'
-            onClick={() => handleBookmarkClick('create')}
-            withOnlyIcon
-          >
-            <Icon name='bookmarks' />
-          </Button>
-        </div>
+          <Icon name='bookmarks' />
+        </Button>
       )}
 
       <div className='MetricsBar__menu'>
         <ControlPopover
           title='Menu'
           anchor={({ onAnchorClick }) => (
-            <Button withOnlyIcon color='secondary' onClick={onAnchorClick}>
+            <Button
+              withOnlyIcon
+              color='secondary'
+              size='small'
+              onClick={onAnchorClick}
+            >
               <Icon name='menu' />
             </Button>
           )}

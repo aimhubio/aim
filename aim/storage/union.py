@@ -11,7 +11,7 @@ from pathlib import Path
 from aim.storage.encoding import encode_path
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
-from aim.storage.containerview import ContainerView
+from aim.storage.rockscontainer import RocksContainer
 
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
@@ -223,7 +223,7 @@ class DB(object):
         return ValuesIterator(self.dbs, *args, **kwargs)
 
 
-class UnionContainer(Container):
+class RocksUnionContainer(RocksContainer):
 
     def __init__(self, *args, **kwargs):
         return super().__init__(*args, **kwargs)
@@ -253,16 +253,16 @@ class UnionContainer(Container):
     def view(
         self,
         prefix: bytes = b''
-    ) -> 'ContainerView':
+    ) -> 'Container':
         container = self
         if prefix in self.db.dbs:
-            container = UnionSubContainer(container=self, domain=prefix)
+            container = RocksUnionSubContainer(container=self, domain=prefix)
         return PrefixView(prefix=prefix,
                           container=container)
 
 
-class UnionSubContainer(Container):
-    def __init__(self, container: 'UnionContainer', domain: bytes):
+class RocksUnionSubContainer(RocksContainer):
+    def __init__(self, container: 'RocksUnionContainer', domain: bytes):
         self._parent = container
         self.domain = domain
 
@@ -283,5 +283,5 @@ class UnionSubContainer(Container):
     def view(
         self,
         prefix: bytes = b''
-    ) -> 'ContainerView':
+    ) -> 'Container':
         return PrefixView(prefix=prefix, container=self)
