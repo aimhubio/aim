@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Popover, PopoverPosition } from '@material-ui/core';
 import { isEqual } from 'lodash-es';
 

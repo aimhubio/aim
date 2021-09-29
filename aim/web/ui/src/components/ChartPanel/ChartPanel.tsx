@@ -22,7 +22,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   props: IChartPanelProps,
   ref,
 ) {
-  const [chartRefs, setChartsRefs] = React.useState<React.RefObject<any>[]>(
+  const [chartRefs /*setChartsRefs*/] = React.useState<React.RefObject<any>[]>(
     new Array(props.data.length).fill('*').map(() => React.createRef()),
   );
   const [popoverPosition, setPopoverPosition] =

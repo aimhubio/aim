@@ -2,6 +2,7 @@ import React from 'react';
 import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
@@ -65,6 +66,128 @@ const initialPaginationConfig = {
   isLatest: false,
 };
 
+let liveUpdateInstance: LiveUpdateService | null;
+
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
+  const modelState = model.getState();
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableColumns = getRunsTableColumns(
+    metricsColumns,
+    params,
+    data[0]?.config,
+    model.getState()?.config?.table.columnsOrder!,
+    model.getState()?.config?.table.hiddenColumns!,
+  );
+  model.setState({
+    data,
+    rowData: newData,
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns,
+    tableData: tableData.rows,
+    sameValueColumns: tableData.sameValueColumns,
+    config: {
+      ...modelState?.config,
+      pagination: {
+        ...modelState?.config.pagination,
+        isLatest: false,
+      },
+    },
+  });
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: tableData.rows,
+      newColumns: tableColumns,
+      hiddenColumns: modelState?.config.table.hiddenColumns!,
+    });
+  }, 0);
+}
+function getRunsData(isInitial = true) {
+  // isInitial: true --> when search button clicked or data is loading at the first time
+  const modelState = prepareModelStateToCall(isInitial);
+  const configData = modelState?.config;
+
+  const query = configData?.select?.query || '';
+  const pagination = configData?.pagination;
+
+  const { call, abort } = runsService.getRunsData(
+    query,
+    pagination?.limit,
+    pagination?.offset,
+  );
+
+  return {
+    call: async () => {
+      try {
+        console.time('timer2');
+        const stream = await call(exceptionHandler);
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
+
+        const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
+          ? []
+          : modelState?.rowData;
+        let count = 0;
+        for await (let [keys, val] of objects) {
+          if (isInitial) {
+            const runData: any = val;
+            runsData.push({ ...runData, hash: keys[0] } as any);
+          } else {
+            if (count > 0) {
+              const runData: any = val;
+              runsData.push({ ...runData, hash: keys[0] } as any);
+            }
+          }
+          count++;
+        }
+        const { data, params, metricsColumns } = processData(runsData);
+        console.timeEnd('timer2');
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
+        const tableColumns = getRunsTableColumns(
+          metricsColumns,
+          params,
+          data[0]?.config,
+          model.getState()?.config?.table.columnsOrder!,
+          model.getState()?.config?.table.hiddenColumns!,
+        );
+
+        model.setState({
+          data,
+          rowData: runsData,
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns,
+          tableData: tableData.rows,
+          sameValueColumns: tableData.sameValueColumns,
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...modelState?.config.pagination,
+              isLatest:
+                !isInitial && count < modelState?.config.pagination.limit,
+            },
+          },
+        });
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+            hiddenColumns: configData.table.hiddenColumns!,
+          });
+        }, 0);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    abort,
+  };
+}
+// Thread end
 function getConfig() {
   return {
     grouping: {
@@ -216,89 +339,6 @@ function prepareModelStateToCall(isInitial: boolean) {
   return model.getState();
 }
 
-function getRunsData(isInitial = true) {
-  // isInitial: true --> when search button clicked or data is loading at the first time
-  const modelState = prepareModelStateToCall(isInitial);
-  const configData = modelState?.config;
-
-  const query = configData?.select?.query || '';
-  const pagination = configData?.pagination;
-
-  const { call, abort } = runsService.getRunsData(
-    query,
-    pagination?.limit,
-    pagination?.offset,
-  );
-
-  return {
-    call: async () => {
-      try {
-        const stream = await call(exceptionHandler);
-        let gen = adjustable_reader(stream);
-        let buffer_pairs = decode_buffer_pairs(gen);
-        let decodedPairs = decodePathsVals(buffer_pairs);
-        let objects = iterFoldTree(decodedPairs, 1);
-
-        const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
-          ? []
-          : modelState?.rowData;
-        let count = 0;
-        for await (let [keys, val] of objects) {
-          if (isInitial) {
-            const runData: any = val;
-            runsData.push({ ...runData, hash: keys[0] } as any);
-          } else {
-            if (count > 0) {
-              const runData: any = val;
-              runsData.push({ ...runData, hash: keys[0] } as any);
-            }
-          }
-          count++;
-        }
-        const { data, params, metricsColumns } = processData(runsData);
-
-        const tableData = getDataAsTableRows(data, metricsColumns, params);
-        const tableColumns = getRunsTableColumns(
-          metricsColumns,
-          params,
-          data[0]?.config,
-          model.getState()?.config?.table.columnsOrder!,
-          model.getState()?.config?.table.hiddenColumns!,
-        );
-
-        model.setState({
-          data,
-          rowData: runsData,
-          requestIsPending: false,
-          infiniteIsPending: false,
-          tableColumns,
-          tableData: tableData.rows,
-          sameValueColumns: tableData.sameValueColumns,
-          config: {
-            ...modelState?.config,
-            pagination: {
-              ...modelState?.config.pagination,
-              isLatest:
-                !isInitial && count < modelState?.config.pagination.limit,
-            },
-          },
-        });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: configData.table.hiddenColumns!,
-          });
-        }, 0);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    abort,
-  };
-}
-
 function getLastRunsData(lastRow: any) {
   const modelData = model.getState();
   const infiniteIsPending = modelData?.infiniteIsPending;
@@ -366,8 +406,27 @@ function initialize(appId: string = '') {
     }
   }
   setDefaultAppConfigData();
+  liveUpdateInstance = new LiveUpdateService(
+    'runsWorkerService',
+    model,
+    updateData,
+  );
 
+  liveUpdateInstance
+    .init()
+    .then()
+    .catch((e: any) => {
+      console.log('INITIALIZER ------ failed workers service --> ', e);
+    });
   return getRunsData();
+}
+
+/**
+ * Deinitialize reqruied instances
+ */
+function destroy() {
+  liveUpdateInstance?.remove();
+  liveUpdateInstance = null;
 }
 
 function getFilteredRow(
@@ -393,7 +452,7 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  // TODO need to get data and params from state not from processData
+  // @TODO need to get data and params from state not from processData
   const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
@@ -987,6 +1046,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 
 const runAppModel = {
   ...model,
+  destroy,
   initialize,
   getRunsData,
   getLastRunsData,

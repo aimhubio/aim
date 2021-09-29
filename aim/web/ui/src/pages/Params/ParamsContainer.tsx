@@ -49,6 +49,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
+      paramsAppModel.destroy();
       paramsRequestRef.abort();
       appRequestRef?.abort();
     };

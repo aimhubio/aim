@@ -1,0 +1,71 @@
+import API from 'services/api/api';
+import { IApiRequest } from 'types/services/services';
+
+const LogTypes = {
+  log: 'black',
+  error: 'red',
+  success: 'green',
+};
+
+enum LogTypeNames {
+  log = 'log',
+  error = 'error',
+  success = 'success',
+}
+
+export function log(
+  message: string | Error | typeof Error,
+  type: LogTypeNames = LogTypeNames.log,
+): void {
+  console.log(`%c ${message}`, `color: ${LogTypes[type]}`);
+}
+
+export function invariantSuccess(message: string, condition: boolean): void {
+  if (condition) {
+    log(message, LogTypeNames.success);
+  }
+}
+
+export function invariantError(
+  exception: string | Error | typeof Error,
+  condition: boolean,
+): void {
+  if (condition) {
+    log(exception, LogTypeNames.error);
+  }
+}
+
+/**
+ * function createGetStream
+ * Useful to dynamically create {call, abort} methods
+ * @param {String} endpoint - uri
+ * @param {Object} params - parameters to send with http call
+ */
+export function createGetStream(
+  endpoint: string,
+  params: Object,
+): IApiRequest<ReadableStream> {
+  return API.getStream<ReadableStream>(endpoint, params);
+}
+
+export function createTransferableData(data: any): Buffer {
+  const stringData = JSON.stringify(data);
+
+  // change to array buffer
+  const b = Buffer.from(stringData);
+
+  return b;
+}
+
+/**
+ * getDataFromTransferable
+ * Useful to convert transferable data to non-transferable getting from Worker
+ * @param {ArrayBufferLike} data - buffer
+ * convert buffer to JSON parse result
+ */
+export function getDataFromTransferable(data: ArrayBufferLike): any {
+  const view = new DataView(data, 0, data.byteLength);
+  const decoder = new TextDecoder('utf-8');
+  const string = decoder.decode(view.buffer);
+  return JSON.parse(string);
+}

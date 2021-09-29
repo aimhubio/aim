@@ -23,6 +23,7 @@
     "@types/react-window": "^1.8.4",
     "bs58check": "^2.1.2",
     "classnames": "^2.3.1",
+    "comlink": "^4.3.1",
     "d3": "^7.0.0",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
@@ -122,6 +123,7 @@
     "@types/react-beautiful-dnd": "^13.1.1",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
+    "comlink-loader": "^2.0.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
@@ -129,6 +131,6 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "jss-plugin-template": "^10.7.1",
     "prettier": "2.3.1",
-    "prettier-eslint": "^12.0.0"
+    "prettier-eslint": "^12.0.0",
   }
 }

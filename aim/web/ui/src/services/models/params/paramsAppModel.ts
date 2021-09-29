@@ -152,6 +152,7 @@ function initialize(appId: string): void {
     setDefaultAppConfigData();
   }
 }
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],

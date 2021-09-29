@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 
 import { ScaleEnum } from 'utils/d3';
 import ToggleButton from 'components/ToggleButton/ToggleButton';

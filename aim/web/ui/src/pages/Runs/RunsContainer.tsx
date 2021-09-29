@@ -23,6 +23,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView('[RunsExplorer]');
     return () => {
       runsRequestRef.abort();
+      runsAppModel.destroy();
     };
   }, []);
 
