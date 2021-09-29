@@ -13,12 +13,12 @@ _this_year = time.strftime("%Y")
 __author__ = "Gev Sogomonian, Gor Arakelyan et al."
 __author_email__ = "community@aimhub.io"
 __license__ = "Apache-2.0"
-__copyright__ = f"Copyright (c) 2019-{_this_year}, {__author__}."
+__copyright__ = f"2019-{_this_year}, {__author__}."
 __homepage__ = "https://github.com/aimhubio/aim"
 __docs_url__ = "https://github.com/aimhubio/aim"
 # this has to be simple string, see: https://github.com/pypa/twine/issues/522
 __docs__ = (
-    "Aim is the lightweight lightweight library for ML researchers to store and retrieve AI metadata."
+    "Aim is a lightweight library for ML researchers to store and retrieve AI metadata."
 )
 __long_docs__ = """
 """
