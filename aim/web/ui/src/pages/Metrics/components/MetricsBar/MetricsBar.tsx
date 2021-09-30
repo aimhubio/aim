@@ -17,7 +17,7 @@ import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
 
 import './MetricsBar.scss';
-import LiveUpdateSettings from '../../../../components/LiveUpdateSettings/LiveUpdateSettings';
+import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 
 function MetricsBar({
   onBookmarkCreate,
@@ -25,6 +25,7 @@ function MetricsBar({
   onResetConfigData,
   liveUpdateConfig,
   onLiveUpdateConfigChange,
+  title,
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
@@ -43,7 +44,7 @@ function MetricsBar({
   }
 
   return (
-    <AppBar title='Explore'>
+    <AppBar title={title}>
       {/*<LiveUpdateSettings
         {...liveUpdateConfig}
         onLiveUpdateConfigChange={onLiveUpdateConfigChange}

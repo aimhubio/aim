@@ -9,4 +9,5 @@ export interface IMetricsBarProps {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  title: string;
 }

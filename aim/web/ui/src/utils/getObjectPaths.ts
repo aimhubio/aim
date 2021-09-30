@@ -6,6 +6,9 @@ function getObjectPaths(
   prefix: string = '',
   includeRoot: boolean = false,
 ): string[] {
+  if (obj === null) {
+    return [];
+  }
   let rootKeys = Object.keys(obj).map((key) => {
     return { prefixedKey: prefix ? `${prefix}.${key}` : key, key };
   });

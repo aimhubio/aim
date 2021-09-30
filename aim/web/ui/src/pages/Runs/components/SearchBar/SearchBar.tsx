@@ -31,7 +31,7 @@ function SearchBar({
       <TextField
         fullWidth
         size='small'
-        placeholder='Runs'
+        placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.creation_time >= 1632081600'
         variant='outlined'
         spellCheck={false}
         InputProps={{

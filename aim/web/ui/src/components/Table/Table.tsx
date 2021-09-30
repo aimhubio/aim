@@ -622,7 +622,7 @@ const Table = React.forwardRef(function Table(
             </div>
           )}
           <div
-            style={{ height: 'calc(100% - 52px)', overflow: 'auto' }}
+            style={{ height: 'calc(100% - 40px)', overflow: 'auto' }}
             ref={tableContainerRef}
           >
             <AutoResizer>

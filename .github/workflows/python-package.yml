@@ -16,8 +16,6 @@ jobs:
 
       - name: Checkout sources
         uses: actions/checkout@v2
-        with:
-          ref: main
 
       - name: Build UI
         working-directory: ./aim/web/ui
@@ -57,8 +55,6 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-        with:
-          ref: main
 
       - name: Build UI
         working-directory: ./aim/web/ui

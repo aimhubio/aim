@@ -4,6 +4,8 @@ import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+// TODO [GA]: MetricsBar is imported as AppBar.
+// Implement ParamsBar or use unified NavBar for explorers.
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
@@ -102,6 +104,7 @@ const Params = ({
               onResetConfigData={onResetConfigData}
               liveUpdateConfig={liveUpdateConfig}
               onLiveUpdateConfigChange={onLiveUpdateConfigChange}
+              title={'Params explorer'}
             />
           </div>
           <div className='Params__SelectForm__Grouping__container'>

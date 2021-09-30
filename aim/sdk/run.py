@@ -168,7 +168,6 @@ class Run(StructuredRunMixin):
     """
 
     _idx_to_ctx: Dict[int, Context] = dict()
-    _props_cache_hint: str = None
     _finalize_message_shown = False
     _track_warning_shown = False
 
@@ -379,10 +378,6 @@ class Run(StructuredRunMixin):
         epoch_view[step] = epoch
         time_view[step] = track_time
 
-    @classmethod
-    def set_props_cache_hint(cls, cache: str):
-        cls._props_cache_hint = cache
-
     @property
     def props(self):
         if self._props is None:
@@ -391,9 +386,9 @@ class Run(StructuredRunMixin):
 
     def _init_props(self):
         sdb = self.repo.structured_db
-        if self._props_cache_hint:
-            self._props = sdb.caches[self._props_cache_hint][self.hashname]
-        else:
+        if self.repo.run_props_cache_hint:
+            self._props = sdb.caches[self.repo.run_props_cache_hint][self.hashname]
+        if not self._props:
             self._props = sdb.find_run(self.hashname)
             if not self._props:
                 if self.read_only:
@@ -401,6 +396,8 @@ class Run(StructuredRunMixin):
                 else:
                     self._props = sdb.create_run(self.hashname)
                     self._props.experiment = 'default'
+            if self.repo.run_props_cache_hint:
+                sdb.caches[self.repo.run_props_cache_hint][self.hashname] = self._props
 
     def metric_tree(self, name: str, context: Context) -> TreeView:
         return self.series_run_tree.view((context.idx, name))
@@ -487,7 +484,7 @@ class Run(StructuredRunMixin):
             self._system_resource_tracker.stop()
 
         logger.debug(f'finalizing {self}')
-        self.finalize()
+        self.finalize(skip_wait=True)
 
     @classmethod
     def finalize_msg(cls):
@@ -503,12 +500,13 @@ class Run(StructuredRunMixin):
                            'Consider tracking at lower pace.')
             cls._track_warning_shown = True
 
-    def finalize(self):
+    def finalize(self, skip_wait=False):
         if self._finalized:
             return
         self._finalized = True
         self.finalize_msg()
-        self.repo.tracking_queue.wait_for_finish()
+        if not skip_wait:
+            self.repo.tracking_queue.wait_for_finish()
 
         self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',

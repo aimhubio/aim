@@ -29,6 +29,10 @@ class ObjectCache:
             self._cached = True
         return list(self._data.keys())
 
+    def __setitem__(self, key, value):
+        assert self._cached
+        self._data[key] = value
+
     def __getitem__(self, key):
         if not self._cached:
             self.fill_cache()
@@ -93,5 +97,9 @@ class DB(ObjectFactory):
             return
         self._caches[cache_name] = ObjectCache(callback, key_func)
 
-    def invalidate_caches(self):
+    def invalidate_all_caches(self):
         self._caches.clear()
+
+    def invalidate_cache(self, cache_name):
+        if self._caches.get(cache_name):
+            del self._caches[cache_name]

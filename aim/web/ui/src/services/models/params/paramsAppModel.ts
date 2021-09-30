@@ -266,6 +266,9 @@ function getParamsData() {
         model.setState({
           highPlotData: [],
           tableData: [],
+          data: [],
+          rawData: [],
+          tableColumns: [],
           isParamsLoading: false,
         });
       } else {

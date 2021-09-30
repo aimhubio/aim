@@ -3,15 +3,15 @@
 .GroupingItem__container {
   display: flex;
   flex-direction: column;
-  margin-right: 0.375em;
+  margin-right: 0.5em;
   cursor: pointer;
   &:last-child {
     margin-right: 0;
   }
   span {
-    margin-top: 0.5em;
+    margin-top: 0.4em;
     font-size: 0.75em;
-    line-height: 0.9375em;
+    line-height: 1.25em;
     text-align: center;
     text-transform: capitalize;
     color: #374A61;

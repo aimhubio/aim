@@ -350,7 +350,12 @@ function getMetricsData() {
           requestIsPending: false,
           queryIsEmpty: true,
           tableData: [],
+          data: [],
           lineChartData: [],
+          params: [],
+          aggregatedData: [],
+          tableColumns: [],
+          rawData: [],
         });
       } else {
         model.setState({
@@ -484,7 +489,7 @@ function processData(data: IRun<IMetricTrace>[]): {
   let params: string[] = [];
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
-  data.forEach((run: IRun<IMetricTrace>) => {
+  data?.forEach((run: IRun<IMetricTrace>) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     metrics = metrics.concat(
       run.traces.map((trace: any) => {
