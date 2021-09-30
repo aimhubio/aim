@@ -1,4 +1,5 @@
 @use './src/styles/abstracts' as *;
+
 .Runs__section {
   height: 100vh;
   overflow: hidden;
@@ -22,11 +23,6 @@
     // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   }
 
-  .Runs__section__div {
-    //display: flex;
-    //flex-direction: column;
-    //justify-content: center;
-  }
   .Runs__table__container {
     -webkit-box-flex: 0.5;
     -ms-flex: 0.5 1 0px;
