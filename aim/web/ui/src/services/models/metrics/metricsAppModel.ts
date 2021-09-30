@@ -332,7 +332,12 @@ function getMetricsData() {
           requestIsPending: false,
           queryIsEmpty: true,
           tableData: [],
+          data: [],
           lineChartData: [],
+          params: [],
+          aggregatedData: [],
+          tableColumns: [],
+          rawData: [],
         });
       } else {
         model.setState({
