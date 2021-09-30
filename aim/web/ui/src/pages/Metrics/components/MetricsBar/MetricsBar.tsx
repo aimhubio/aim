@@ -22,6 +22,7 @@ function MetricsBar({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
+  title,
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
@@ -40,7 +41,7 @@ function MetricsBar({
   }
 
   return (
-    <AppBar title='Explore'>
+    <AppBar title={title}>
       {route.params.appId ? (
         <ControlPopover
           title='Bookmark'

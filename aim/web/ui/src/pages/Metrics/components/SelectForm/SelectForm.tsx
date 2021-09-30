@@ -162,7 +162,7 @@ function SelectForm({
                   rows={3}
                   variant='outlined'
                   placeholder={
-                    'Select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10'
+                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
                   }
                   value={selectedMetricsData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
@@ -174,7 +174,7 @@ function SelectForm({
               <>
                 <Box display='flex' alignItems='center'>
                   <Button
-                    variant='outlined'
+                    variant='contained'
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
@@ -242,12 +242,15 @@ function SelectForm({
                       }}
                     />
                   </Popper>
-                  {selectedMetricsData?.metrics.length > 0 && (
-                    <Divider
-                      style={{ margin: '0 1rem' }}
-                      orientation='vertical'
-                      flexItem
-                    />
+                  <Divider
+                    style={{ margin: '0 1rem' }}
+                    orientation='vertical'
+                    flexItem
+                  />
+                  {selectedMetricsData?.metrics.length === 0 && (
+                    <span className='SelectForm__tags__empty'>
+                      No metrics are selected
+                    </span>
                   )}
                   <Box className='Metrics__SelectForm__tags ScrollBar__hidden'>
                     {selectedMetricsData?.metrics?.map(
@@ -264,7 +267,7 @@ function SelectForm({
                     )}
                   </Box>
                 </Box>
-                {selectedMetricsData?.metrics.length > 0 && (
+                {selectedMetricsData?.metrics.length > 1 && (
                   <span
                     onClick={() => onMetricsSelectChange([])}
                     className='SelectForm__clearAll'
@@ -284,14 +287,14 @@ function SelectForm({
               variant='outlined'
               spellCheck={false}
               inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Run expression'
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
               value={selectedMetricsData?.query ?? ''}
               onChange={({ target }) => onSelectRunQueryChange(target.value)}
             />
           </div>
         )}
       </div>
-      <Divider style={{ margin: '0 1.5rem' }} orientation='vertical' flexItem />
+
       <div className='SelectForm__search__container'>
         <Button
           fullWidth

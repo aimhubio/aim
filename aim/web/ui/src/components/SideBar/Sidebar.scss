@@ -1,8 +1,8 @@
 @use 'src/styles/abstracts' as *;
 
 .Sidebar__container {
-  width: 80px;
-  max-width: 80px;
+  width: 75px;
+  max-width: 75px;
 }
 
 .Sidebar__Paper {
@@ -36,7 +36,7 @@
   color: black;
   .Sidebar__List__item__text {
     margin-top: 6px;
-    font-size: $text-sm;
+    font-size: 0.7rem;
     font-style: normal;
     font-weight: 500;
     color: #fff;
@@ -49,7 +49,7 @@
     content: '';
     position: absolute;
     top: 20px;
-    left: 3px;
+    left: 0px;
     height: 40px;
     width: 3px;
     background-color: #ffff;

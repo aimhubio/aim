@@ -3,7 +3,7 @@
 .AppBar__container {
   display: flex;
   align-items: center;
-  min-height: 2.5rem;
+  min-height: 2.3rem;
   border-bottom: $border-main;
   border-left: $border-main;
   border-right: $border-main;
@@ -13,9 +13,11 @@
 
 .AppBar__title {
   flex: 1;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #000;
+  font-size: 0.8rem;
+  font-family: 'Inter SemiBold';
+  color: $pico-100;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
 .AppBar__content {
