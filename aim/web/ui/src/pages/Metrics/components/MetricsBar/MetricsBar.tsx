@@ -45,10 +45,10 @@ function MetricsBar({
 
   return (
     <AppBar title={title}>
-      {/*<LiveUpdateSettings
+      <LiveUpdateSettings
         {...liveUpdateConfig}
         onLiveUpdateConfigChange={onLiveUpdateConfigChange}
-      />*/}
+      />
       {route.params.appId ? (
         <ControlPopover
           title='Bookmark'

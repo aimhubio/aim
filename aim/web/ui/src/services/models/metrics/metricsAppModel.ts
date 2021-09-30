@@ -331,6 +331,11 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
+/**
+ * q: query,
+ ...(metric && { x_axis: metric }),
+ */
+
 function getMetricsData() {
   if (metricsRequestRef) {
     metricsRequestRef.abort();

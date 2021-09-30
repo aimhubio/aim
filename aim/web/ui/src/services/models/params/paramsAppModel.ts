@@ -68,7 +68,7 @@ import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.ex
 const model = createModel<Partial<any>>({
   isParamsLoading: null,
   liveUpdateConfig: {
-    delay: 10000,
+    delay: 3000,
     enabled: false,
   },
 });
@@ -175,7 +175,46 @@ function initialize(appId: string): void {
   }
 }
 
-function updateData() {}
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
+
+  const configData = model.getState()?.config;
+  if (configData) {
+    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
+  }
+
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    configData,
+  );
+  const sortFields = model.getState()?.config?.table.sortFields;
+
+  model.setState({
+    data,
+    highPlotData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    params,
+    metricsColumns,
+    rawData: newData,
+    config: configData,
+    tableData: tableData.rows,
+    tableColumns: getParamsTableColumns(
+      metricsColumns,
+      params,
+      data[0]?.config,
+      configData.table.columnsOrder!,
+      configData.table.hiddenColumns!,
+      sortFields,
+      onSortChange,
+    ),
+    sameValueColumns: tableData.sameValueColumns,
+    isParamsLoading: false,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+  });
+}
 
 function resetModelOnError(detail?: any) {
   model.setState({
@@ -258,6 +297,7 @@ function setDefaultAppConfigData() {
 }
 
 function getParamsData() {
+  liveUpdateInstance?.stop().then();
   return {
     call: async () => {
       const select = model.getState()?.config?.select;
@@ -321,6 +361,10 @@ function getParamsData() {
           sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
+        });
+
+        liveUpdateInstance?.start({
+          q: select?.query,
         });
       }
     },
@@ -1741,17 +1785,24 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();
-  const configData = state?.config;
+  const select = state?.config.select;
   const liveUpdateConfig = state?.liveUpdateConfig;
 
   if (!liveUpdateConfig?.enabled && config.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance?.start({
+      q: select?.query,
+    });
   } else {
     liveUpdateInstance?.clear();
     liveUpdateInstance = null;
   }
 
   model.setState({
-    // @ts-ignore
     liveUpdateConfig: {
       ...liveUpdateConfig,
       ...(config.delay ? { delay: config.delay } : {}),
