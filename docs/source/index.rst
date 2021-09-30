@@ -24,25 +24,10 @@ Aim
    :name: api
    :caption: References
 
-   ref_cli
    ref_sdk
+   ref_ql
+   ref_cli
    ref_storage
-
-.. toctree::
-   :maxdepth: 2
-   :name: guides
-   :caption: Usage Guides
-
-   guide_integrations
-   guide_ql
-   guide_ui
-
-.. toctree::
-   :maxdepth: 2
-   :name: tutorials
-   :caption: Tutorials
-
-   guides/tutorials/tutorial_1.md
 
 .. toctree::
    :maxdepth: 1
