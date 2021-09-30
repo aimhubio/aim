@@ -84,11 +84,18 @@ import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
+  liveUpdateConfig: {
+    delay: 10000,
+    enabled: false,
+  },
 });
 let tooltipData: ITooltipData = {};
+
+let liveUpdateInstance: LiveUpdateService | null;
 
 function getConfig(): IMetricAppConfig {
   return {
@@ -194,7 +201,18 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+  const liveUpdateState = model.getState()?.liveUpdateConfig;
+
+  if (liveUpdateState?.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'metrics',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
 }
+
+function updateData() {}
 
 function setDefaultAppConfigData() {
   const grouping: IMetricAppConfig['grouping'] =
@@ -2318,8 +2336,35 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const liveUpdateConfig = state?.liveUpdateConfig;
+
+  if (!liveUpdateConfig?.enabled && config.enabled) {
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  model.setState({
+    // @ts-ignore
+    liveUpdateConfig: {
+      ...liveUpdateConfig,
+      ...(config.delay ? { delay: config.delay } : {}),
+      ...(config.enabled ? { enabled: config.enabled } : {}),
+    },
+  });
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
+}
+
 const metricAppModel = {
   ...model,
+  destroy,
   initialize,
   getMetricsData,
   getAppConfigData,
@@ -2367,6 +2412,7 @@ const metricAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  changeLiveUpdateConfig,
 };
 
 export default metricAppModel;

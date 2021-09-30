@@ -59,10 +59,14 @@ import { formatValue } from 'utils/formatValue';
 const model = createModel<Partial<any>>({
   requestIsPending: true,
   infiniteIsPending: false,
+  liveUpdateConfig: {
+    delay: 3000,
+    enabled: false,
+  },
 });
 
 const initialPaginationConfig = {
-  limit: 45,
+  limit: 30,
   offset: null,
   isLatest: false,
 };
@@ -113,6 +117,8 @@ function getRunsData(isInitial = true) {
   const query = configData?.select?.query || '';
   const pagination = configData?.pagination;
 
+  liveUpdateInstance?.stop().then();
+
   const { call, abort } = runsService.getRunsData(
     query,
     pagination?.limit,
@@ -122,7 +128,6 @@ function getRunsData(isInitial = true) {
   return {
     call: async () => {
       try {
-        console.time('timer2');
         const stream = await call(exceptionHandler);
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
@@ -146,7 +151,7 @@ function getRunsData(isInitial = true) {
           count++;
         }
         const { data, params, metricsColumns } = processData(runsData);
-        console.timeEnd('timer2');
+
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
           metricsColumns,
@@ -181,6 +186,11 @@ function getRunsData(isInitial = true) {
             hiddenColumns: configData.table.hiddenColumns!,
           });
         }, 0);
+
+        liveUpdateInstance?.start({
+          q: query,
+          limit: pagination.limit + runsData?.length || 0,
+        });
       } catch (e) {
         console.error(e);
       }
@@ -188,6 +198,8 @@ function getRunsData(isInitial = true) {
     abort,
   };
 }
+
+function setLiveUpdateConfig() {}
 // Thread end
 function getConfig() {
   return {
@@ -394,6 +406,8 @@ function initialize(appId: string = '') {
     },
     groupingSelectOptions: [],
   });
+  const liveUpdateState = model.getState()?.liveUpdateConfig;
+
   if (!appId) {
     const searchParam = new URLSearchParams(window.location.search);
     const searchFromUrl = searchParam.get('search');
@@ -407,27 +421,21 @@ function initialize(appId: string = '') {
     }
   }
   setDefaultAppConfigData();
-  liveUpdateInstance = new LiveUpdateService(
-    'runsWorkerService',
-    model,
-    updateData,
-  );
 
-  liveUpdateInstance
-    .init()
-    .then()
-    .catch((e: any) => {
-      console.log('INITIALIZER ------ failed workers service --> ', e);
-    });
+  if (liveUpdateState.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'runs',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
+
   return getRunsData();
 }
 
-/**
- * Deinitialize reqruied instances
- */
 function destroy() {
-  liveUpdateInstance?.remove();
-  liveUpdateInstance = null;
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
 }
 
 function getFilteredRow(
@@ -1044,6 +1052,37 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const liveUpdateConfig = state?.liveUpdateConfig;
+
+  if (!liveUpdateConfig?.enabled && config.enabled) {
+    const query = configData?.select?.query || '';
+    const pagination = configData?.pagination;
+
+    liveUpdateInstance = new LiveUpdateService(
+      'runs',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance.start({
+      q: query,
+      limit: pagination.limit + state?.rowData?.length || 0,
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  model.setState({
+    liveUpdateConfig: {
+      ...liveUpdateConfig,
+      ...config,
+    },
+  });
+}
+
 const runAppModel = {
   ...model,
   destroy,
@@ -1061,6 +1100,7 @@ const runAppModel = {
   onTableDiffShow,
   updateColumnsWidths,
   setDefaultAppConfigData,
+  changeLiveUpdateConfig,
 };
 
 export default runAppModel;

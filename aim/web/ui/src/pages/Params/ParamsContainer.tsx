@@ -142,6 +142,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={paramsAppModel.onTableDiffShow}
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
+      liveUpdateConfig={paramsData?.liveUpdateConfig}
+      onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
     />
   );
 }

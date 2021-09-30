@@ -93,4 +93,9 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onSortReset: () => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   columnsWidths: { [key: string]: number };
+  liveUpdateConfig: { delay: number; enabled: boolean };
+  onLiveUpdateConfigChange: (config: {
+    delay?: number;
+    enabled?: boolean;
+  }) => void;
 }

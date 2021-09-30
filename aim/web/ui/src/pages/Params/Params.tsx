@@ -75,6 +75,8 @@ const Params = ({
   onTableDiffShow,
   onSortReset,
   updateColumnsWidths,
+  liveUpdateConfig,
+  onLiveUpdateConfigChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -98,6 +100,8 @@ const Params = ({
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}
+              liveUpdateConfig={liveUpdateConfig}
+              onLiveUpdateConfigChange={onLiveUpdateConfigChange}
             />
           </div>
           <div className='Params__SelectForm__Grouping__container'>

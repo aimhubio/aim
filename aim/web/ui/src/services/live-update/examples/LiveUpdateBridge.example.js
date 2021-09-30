@@ -7,62 +7,53 @@ import LUWorker from 'comlink-loader!../Worker';
 import * as Comlink from 'comlink';
 import { getDataFromTransferable } from '../utils';
 
+const embeddedAppNames = {
+  runs: {
+    name: 'Runs',
+    endpoint: 'runs/search/run',
+  },
+  metrics: {
+    name: 'Metrics',
+    endpoint: 'runs/search/metric',
+  },
+  params: {
+    name: 'Params',
+    endpoint: 'runs/search/run',
+  },
+};
+
 class UpdateService {
-  constructor(name, model, responseListener) {
-    this.worker = new LUWorker();
-    this.model = model;
-    this.mainRequestIsPending = false;
+  constructor(appName, responseListener, delay) {
+    this.appName = appName;
+    this.delay = delay;
     this.responseListener = responseListener;
+
+    this.instance = new LUWorker();
+    this.instance.setConfig(
+      appName,
+      embeddedAppNames[this.appName].endpoint,
+      delay,
+      process.env.NODE_ENV === 'development',
+    );
+    this.instance.subscribeToApiCallResult(
+      Comlink.proxy(this.responseHandler.bind(this)),
+    );
   }
 
-  async init() {
-    try {
-      this.instance = this.worker;
-      this.instance.setConfig('Runs', 'runs/search/run', 4000, true);
-
-      this.model.subscribe('UPDATE', this.subscribeToModel.bind(this));
-      this.instance.subscribeToApiCallResult(
-        Comlink.proxy(this.responseHandler.bind(this)),
-      );
-    } catch (e) {}
-  }
-
-  responseHandler(data) {
-    const obj = getDataFromTransferable(data);
-    console.log(obj);
-    this.responseListener(obj);
-  }
-
-  subscribeToModel() {
-    const modelState = this.model.getState();
-    const newQuery = modelState?.config?.select?.query;
-
-    if (modelState.requestIsPending) {
-      if (modelState.requestIsPending !== this.mainRequestIsPending) {
-        console.log('stop worker');
-
-        this.mainRequestIsPending = true;
+  async stop() {
+    if (this.inProgress) {
+      try {
+        const stopResult = await this.instance.stop();
+        this.inProgress = false;
+        return stopResult;
+      } catch (e) {
+        console.log("---- couldn't stop worker");
       }
-      // stopWorker;
-      this.stopWorker().then().catch();
-    } else if (this.mainRequestIsPending) {
-      console.log('start worker');
-      this.mainRequestIsPending = false;
-      // start workers;
-      this.startWorker({ q: newQuery, limit: 50 });
     }
   }
 
-  async stopWorker() {
-    this.instance
-      .stop()
-      .then()
-      .catch((e) => {
-        console.log('workers stop exception --> ', e);
-      });
-  }
-
-  startWorker(params) {
+  start(params) {
+    this.inProgress = true;
     this.instance
       .start(params)
       .then()
@@ -71,16 +62,32 @@ class UpdateService {
       });
   }
 
-  remove() {
-    this.stopWorker()
-      .then(() => {
-        this.instance.close();
-        this.instance[Comlink.releaseProxy]();
-      })
+  responseHandler(data) {
+    const obj = getDataFromTransferable(data);
+
+    this.responseListener(obj);
+  }
+
+  changeDelay(delay) {
+    this.stop()
       .catch(() => {
-        this.instance.close();
-        this.instance[Comlink.releaseProxy]();
+        console.log("---- couldn't change config");
+      })
+      .finally(() => {
+        this.instance.setConfig(
+          this.appName,
+          embeddedAppNames[this.appName].endpoint,
+          delay,
+          process.env.NODE_ENV === 'development',
+        );
       });
+  }
+
+  clear() {
+    this.stop().finally(() => {
+      this.instance.close();
+      this.instance[Comlink.releaseProxy]();
+    });
   }
 }
 

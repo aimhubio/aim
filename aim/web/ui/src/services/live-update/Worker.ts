@@ -41,7 +41,7 @@ let subscriptions: ISubscriptions = {
 let key: Symbol;
 
 // delay
-let delay: number = 5000;
+let schedulerDelay: number = 5000;
 
 // api url prefix
 let url: string = '';
@@ -112,7 +112,8 @@ function transferApiCallResponse(data: Array<unknown>) {
 function scheduler(f: (q: string) => Promise<any>) {
   // @TODO improve
   //  now this will call every for deley ms, need to create delay after each other
-  const timerId = setInterval(f, 4000);
+
+  const timerId = setInterval(f, schedulerDelay);
   schedule = {
     timerId,
     inProgress: false,
@@ -160,7 +161,7 @@ function start(params: Object = {}): void {
  */
 async function startUpdateCall(): Promise<any> {
   // calculate nec-s;
-  logging && console.time('operated');
+  logging && console.time(`${key.toString()} operated`);
   const stream = await apiMethods?.call();
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
@@ -174,7 +175,7 @@ async function startUpdateCall(): Promise<any> {
     data.push({ ...d, hash: keys[0] } as any);
   }
 
-  logging && console.timeEnd('operated');
+  logging && console.timeEnd(`${key.toString()} operated`);
   transferApiCallResponse(data);
 }
 
@@ -210,12 +211,13 @@ function close() {
 const setConfig = (
   name: string,
   endpoint: string,
-  delay: number = 3000,
+  delay: number = 5000,
   enableLog = false,
 ) => {
   key = Symbol(`app.live.update.${name}`);
   logging = enableLog;
   url = endpoint;
+  schedulerDelay = delay;
 };
 
 export function errorHandler(error: ResponseType) {

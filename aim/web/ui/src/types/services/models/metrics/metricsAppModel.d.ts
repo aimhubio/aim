@@ -38,6 +38,10 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  liveUpdateConfig: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartTitleData {

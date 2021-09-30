@@ -64,6 +64,8 @@ function Metrics(
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
+            liveUpdateConfig={props.liveUpdateConfig}
+            onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
           />
           <div className='Metrics__SelectForm__Grouping__container'>
             <SelectForm
