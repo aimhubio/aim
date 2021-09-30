@@ -66,7 +66,7 @@ import getFilteredRow from 'utils/app/getFilteredRow';
 import getChartTitleData from 'utils/app/getChartTitleData';
 
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: false });
+const model = createModel<Partial<any>>({ isParamsLoading: null });
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
@@ -241,7 +241,13 @@ function getParamsData() {
     call: async () => {
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
-      if (!_.isEmpty(select?.params)) {
+      if (_.isEmpty(select?.params)) {
+        model.setState({
+          highPlotData: [],
+          tableData: [],
+          isParamsLoading: false,
+        });
+      } else {
         model.setState({ isParamsLoading: true });
         const stream = await getRunsRequestRef.call(exceptionHandler);
         let gen = adjustable_reader(stream);

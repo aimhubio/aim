@@ -25,7 +25,7 @@ export interface IMetricAppModelState {
     tableRef: { current: ITableRef | null };
     chartPanelRef: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean;
+  requestIsPending: boolean | null;
   queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IMetricAppConfig;
