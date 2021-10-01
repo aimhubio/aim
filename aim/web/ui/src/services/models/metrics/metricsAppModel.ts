@@ -1253,20 +1253,22 @@ function setTooltipData(
   tooltipData = data;
 }
 
-//Chart Methods
+// Chart Methods
 
 function onHighlightModeChange(mode: HighlightEnum): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          highlightMode: mode,
-        },
+  const config: IMetricAppConfig | undefined = model.getState()?.config;
+  if (config?.chart) {
+    const configData = {
+      ...config,
+      chart: {
+        ...config.chart,
+        highlightMode: mode,
       },
+    };
+    model.setState({
+      config: configData,
     });
+    updateURL(configData);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] Set highlight mode to "${HighlightEnum[
@@ -1276,20 +1278,22 @@ function onHighlightModeChange(mode: HighlightEnum): void {
 }
 
 function onZoomChange(zoom: Partial<IChartZoom>): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          zoom: {
-            ...configData.chart.zoom,
-            ...zoom,
-          },
+  const config: IMetricAppConfig | undefined = model.getState()?.config;
+  if (config?.chart) {
+    const configData = {
+      ...config,
+      chart: {
+        ...config.chart,
+        zoom: {
+          ...config.chart.zoom,
+          ...zoom,
         },
       },
+    };
+    model.setState({
+      config: configData,
     });
+    updateURL(configData);
   }
   if (!isNil(zoom.mode)) {
     analytics.trackEvent(
@@ -1401,6 +1405,8 @@ function resetChartZoom(configData: IMetricAppConfig): void {
       history: [],
     },
   };
+  model.setState({ config: configData });
+  updateURL(configData);
   analytics.trackEvent('[MetricsExplorer][Chart] Reset zoom');
 }
 
