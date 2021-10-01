@@ -32,7 +32,7 @@
   .subtitle {
     color: tint($pico, 50);
     font-size: $text-sm;
-    font-family: 'Inter Medium',sans-serif;
+    font-family: 'Inter Medium', sans-serif;
     text-transform: uppercase;
     display: block;
   }
@@ -41,8 +41,9 @@
 .ControlPopover__title {
   padding: 0.5rem 1rem;
   border-bottom: $border-main;
+  color: $pico;
   background: tint($primary-color, 95);
   text-transform: capitalize;
   font-size: 0.875rem;
-  font-family: 'Inter SemiBold',sans-serif;
+  font-family: 'Inter SemiBold', sans-serif;
 }

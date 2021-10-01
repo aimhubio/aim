@@ -2,10 +2,6 @@
 
 .ColorPopoverAdvanced__container {
   width: 25rem;
-
-  span, p {
-
-  }
 }
 
 .ColorPopoverAdvanced__persistence {
@@ -13,8 +9,8 @@
   border-bottom: $border-main;
 }
 
-.ColorPopoverAdvanced__persistence__p, .ColorPopoverAdvanced__container__span {
-  color: $text-color-80;
+.ColorPopoverAdvanced__persistence__p,
+.ColorPopoverAdvanced__container__span {
   font-size: $text-md;
   font-family: 'Inter Regular', sans-serif;
 }
@@ -40,7 +36,7 @@
   border: 0.0625rem solid transparent;
   height: 2rem;
   overflow: hidden;
-  transition: all .18s ease-out;
+  transition: all 0.18s ease-out;
   padding: 0.1875rem;
 
   &.active {

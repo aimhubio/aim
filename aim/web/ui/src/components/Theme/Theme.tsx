@@ -45,7 +45,7 @@ const light: ThemeOptions = {
       main: '#1c2852',
     },
     text: {
-      primary: '#1C2852',
+      primary: '#414B6D',
     },
   },
   spacing: (factor: number) => `${factor}em`,
