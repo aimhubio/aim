@@ -498,33 +498,35 @@ function getDataAsLines(
     _.groupBy(flattedLines, 'chartIndex'),
   );
 
-  return Object.keys(dimensionsObject).map((keyOfDimension, i) => {
-    const dimensions: IDimensionsType = {};
-    Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
-      if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [
-            Math.min(...dimensionsObject[keyOfDimension][key].values),
-            Math.max(...dimensionsObject[keyOfDimension][key].values),
-          ],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
-        };
-      } else {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [...dimensionsObject[keyOfDimension][key].values],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
-        };
-      }
-    });
-    return {
-      dimensions,
-      data: groupedByChartIndex[i],
-    };
-  });
+  return Object.keys(dimensionsObject)
+    .map((keyOfDimension, i) => {
+      const dimensions: IDimensionsType = {};
+      Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
+        if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
+          dimensions[key] = {
+            scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+            domainData: [
+              Math.min(...dimensionsObject[keyOfDimension][key].values),
+              Math.max(...dimensionsObject[keyOfDimension][key].values),
+            ],
+            displayName: dimensionsObject[keyOfDimension][key].displayName,
+            dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+          };
+        } else {
+          dimensions[key] = {
+            scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+            domainData: [...dimensionsObject[keyOfDimension][key].values],
+            displayName: dimensionsObject[keyOfDimension][key].displayName,
+            dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+          };
+        }
+      });
+      return {
+        dimensions,
+        data: groupedByChartIndex[i],
+      };
+    })
+    .filter((data) => !isEmpty(data.data) && !isEmpty(data.dimensions));
 }
 
 function getGroupConfig(
