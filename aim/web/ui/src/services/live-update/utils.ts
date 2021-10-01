@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import API from 'services/api/api';
 import { IApiRequest } from 'types/services/services';
 

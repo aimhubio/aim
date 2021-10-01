@@ -2,6 +2,8 @@
  * @author AimHub
  * @see README.md for more details
  */
+/* eslint-disable no-console */
+
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import LUWorker from 'comlink-loader!../Worker';
 import * as Comlink from 'comlink';

@@ -2,6 +2,9 @@
  * @author AimHub
  * @TODO improve logging, exception handling
  */
+
+/* eslint-disable no-console */
+
 import * as Comlink from 'comlink';
 
 import {
@@ -152,6 +155,8 @@ async function stop(): Promise<any> {
  */
 function start(params: Object = {}): void {
   apiMethods = createGetStream(url, params);
+  invariantSuccess(`Started ${key.toString()} success`, logging);
+
   scheduler(startUpdateCall);
 }
 
