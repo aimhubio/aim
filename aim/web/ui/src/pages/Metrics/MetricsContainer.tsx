@@ -208,7 +208,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
       // live update
-      liveUpdateConfig={metricsData?.liveUpdateConfig}
+      liveUpdateConfig={metricsData.config.liveUpdate}
       onLiveUpdateConfigChange={metricsAppModel.changeLiveUpdateConfig}
     />
   );

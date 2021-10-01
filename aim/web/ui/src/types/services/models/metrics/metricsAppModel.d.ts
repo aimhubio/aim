@@ -161,6 +161,10 @@ interface IMetricAppConfig {
     };
     height: string;
   };
+  liveUpdate: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartZoom {

@@ -59,10 +59,6 @@ import { formatValue } from 'utils/formatValue';
 const model = createModel<Partial<any>>({
   requestIsPending: true,
   infiniteIsPending: false,
-  liveUpdateConfig: {
-    delay: 3000,
-    enabled: false,
-  },
 });
 
 const initialPaginationConfig = {
@@ -280,6 +276,10 @@ function getConfig() {
       },
     },
     pagination: initialPaginationConfig,
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -385,11 +385,18 @@ function setDefaultAppConfigData() {
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('runsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -406,7 +413,6 @@ function initialize(appId: string = '') {
     },
     groupingSelectOptions: [],
   });
-  const liveUpdateState = model.getState()?.liveUpdateConfig;
 
   if (!appId) {
     const searchParam = new URLSearchParams(window.location.search);
@@ -421,6 +427,8 @@ function initialize(appId: string = '') {
     }
   }
   setDefaultAppConfigData();
+
+  const liveUpdateState = model.getState()?.config.liveUpdate;
 
   if (liveUpdateState.enabled) {
     liveUpdateInstance = new LiveUpdateService(
@@ -1055,7 +1063,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();
   const configData = state?.config;
-  const liveUpdateConfig = state?.liveUpdateConfig;
+  const liveUpdateConfig = configData.liveUpdate;
 
   if (!liveUpdateConfig?.enabled && config.enabled) {
     const query = configData?.select?.query || '';
@@ -1074,13 +1082,19 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
     liveUpdateInstance?.clear();
     liveUpdateInstance = null;
   }
-
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
   model.setState({
-    liveUpdateConfig: {
-      ...liveUpdateConfig,
-      ...config,
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
     },
   });
+
+  setItem('runsLUConfig', encode(newLiveUpdateConfig));
 }
 
 const runAppModel = {

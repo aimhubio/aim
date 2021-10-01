@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .App_LiveUpdateSettings_Container {
   margin-right: 0.8rem;
   display: flex;
@@ -7,5 +9,6 @@
     font-size: 0.875rem;
     line-height: 1.0625em;
     margin-right: 0.625em;
+    color: $pico-100;
   }
 }

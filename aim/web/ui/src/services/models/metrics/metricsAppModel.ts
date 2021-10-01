@@ -88,10 +88,7 @@ import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.ex
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
-  liveUpdateConfig: {
-    delay: 2000,
-    enabled: false,
-  },
+  config: getConfig(),
 });
 let tooltipData: ITooltipData = {};
 
@@ -181,6 +178,10 @@ function getConfig(): IMetricAppConfig {
       },
       height: '',
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -202,7 +203,7 @@ function initialize(appId: string): void {
     setDefaultAppConfigData();
   }
 
-  const liveUpdateState = model.getState()?.liveUpdateConfig;
+  const liveUpdateState = model.getState()?.config?.liveUpdate;
 
   if (liveUpdateState?.enabled) {
     liveUpdateInstance = new LiveUpdateService(
@@ -232,11 +233,18 @@ function setDefaultAppConfigData() {
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('metricsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -373,10 +381,17 @@ function getMetricsData() {
           requestIsPending: true,
           queryIsEmpty: false,
         });
+        liveUpdateInstance?.stop().then();
+
         const stream = await metricsRequestRef.call(exceptionHandler);
         const runData = await getRunData(stream);
 
         updateData(runData);
+
+        liveUpdateInstance?.start({
+          q: query,
+          ...(metric && { x_axis: metric }),
+        });
       }
     },
     abort: metricsRequestRef.abort,
@@ -2354,7 +2369,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();
   const configData = state?.config;
-  const liveUpdateConfig = state?.liveUpdateConfig;
+  const liveUpdateConfig = configData?.liveUpdate;
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
 
@@ -2373,13 +2388,18 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
     liveUpdateInstance = null;
   }
 
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
   model.setState({
-    // @ts-ignore
-    liveUpdateConfig: {
-      ...liveUpdateConfig,
-      ...config,
+    config: {
+      ...configData,
+      // @ts-ignore
+      liveUpdate: newLiveUpdateConfig,
     },
   });
+  setItem('metricsLUConfig', encode(newLiveUpdateConfig));
 }
 
 function destroy() {

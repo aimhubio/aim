@@ -17,10 +17,10 @@ function LiveUpdateSettings(
       <span className='LiveUpdateText'>Live update:</span>
       <Switch
         disableRipple
-        checked={props.enabled}
-        onChange={() =>
-          props.onLiveUpdateConfigChange({ enabled: !props.enabled })
-        }
+        checked={Boolean(props.enabled)}
+        onChange={(d) => {
+          props.onLiveUpdateConfigChange({ enabled: !props.enabled });
+        }}
         size='small'
         color='primary'
       />

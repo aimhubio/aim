@@ -64,7 +64,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onManageColumns={runsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={runsAppModel.onColumnsVisibilityChange}
       onTableDiffShow={runsAppModel.onTableDiffShow}
-      liveUpdateConfig={runsData?.liveUpdateConfig}
+      liveUpdateConfig={runsData?.config?.liveUpdate}
       onLiveUpdateConfigChange={runsAppModel.changeLiveUpdateConfig}
     />
   );

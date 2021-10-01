@@ -67,10 +67,7 @@ import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.ex
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
   isParamsLoading: null,
-  liveUpdateConfig: {
-    delay: 3000,
-    enabled: false,
-  },
+  config: getConfig(),
 });
 
 let tooltipData: ITooltipData = {};
@@ -143,6 +140,10 @@ function getConfig() {
         right: [],
       },
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -164,7 +165,7 @@ function initialize(appId: string): void {
     setDefaultAppConfigData();
   }
 
-  const liveUpdateState = model.getState()?.liveUpdateConfig;
+  const liveUpdateState = model.getState()?.config.liveUpdate;
 
   if (liveUpdateState?.enabled) {
     liveUpdateInstance = new LiveUpdateService(
@@ -280,15 +281,23 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+
   const tableConfigHash = getItem('paramsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('paramsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IParamsAppConfig | any = _.merge(getConfig(), {
     chart,
     grouping,
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -1786,8 +1795,9 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();
-  const select = state?.config.select;
-  const liveUpdateConfig = state?.liveUpdateConfig;
+  const configData = state?.config;
+  const select = configData.select;
+  const liveUpdateConfig = configData.liveUpdate;
 
   if (!liveUpdateConfig?.enabled && config.enabled) {
     liveUpdateInstance = new LiveUpdateService(
@@ -1803,12 +1813,19 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
     liveUpdateInstance = null;
   }
 
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
   model.setState({
-    liveUpdateConfig: {
-      ...liveUpdateConfig,
-      ...config,
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
     },
   });
+
+  setItem('paramsLUConfig', encode(newLiveUpdateConfig));
 }
 
 function destroy() {
