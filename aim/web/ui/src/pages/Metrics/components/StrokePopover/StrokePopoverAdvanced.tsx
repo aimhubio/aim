@@ -20,8 +20,7 @@ function StrokePopoverAdvanced({
         <div>
           <Switch
             color='primary'
-            defaultChecked={persistence}
-            value={persistence}
+            checked={persistence}
             onChange={() => onPersistenceChange('stroke')}
           />
           <span className='ColorPopoverAdvanced__container__span'>Enable</span>

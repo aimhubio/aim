@@ -577,6 +577,7 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'color',
         });
         groupValue.color =
           COLORS[paletteIndex][
@@ -603,6 +604,7 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'stroke',
         });
         groupValue.dasharray =
           DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
