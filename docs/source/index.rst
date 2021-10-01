@@ -1,7 +1,7 @@
 Aim
 ===
 
-.. mdinclude:: md/overview.md
+.. mdinclude:: overview.md
 
 .. raw:: html
 
@@ -12,12 +12,11 @@ Aim
    :name: start
    :caption: Quick Start
 
-   md/overview.md
-   md/quick-start/3_steps.md
-   md/quick-start/first_run.md
-   md/quick-start/basic_query.md
-   md/quick-start/integrations.md
-   md/quick-start/why_aim.md
+   overview.md
+   quick_start/3_steps.md
+   quick_start/first_run.md
+   quick_start/integrations.md
+   quick_start/why_aim.md
 
 
 .. toctree::
@@ -25,24 +24,10 @@ Aim
    :name: api
    :caption: References
 
-   api_references
-   cli_references
-
-.. toctree::
-   :maxdepth: 2
-   :name: guides
-   :caption: Usage Guides
-
-   integration_guides
-   ql_guides
-   ui_guides
-
-.. toctree::
-   :maxdepth: 2
-   :name: tutorials
-   :caption: Tutorials
-
-   md/guides/tutorials/tutorial_1.md
+   ref_sdk
+   ref_ql
+   ref_cli
+   ref_storage
 
 .. toctree::
    :maxdepth: 1

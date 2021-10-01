@@ -13,13 +13,10 @@
   min-width: 50rem;
   .Params__fullHeight {
     height: 100%;
-    // height: -moz-available; /* WebKit-based browsers will ignore this. */
-    // height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   }
   .Params__section__div {
     display: flex;
     flex-direction: column;
-    justify-content: center;
   }
 
   .Params__ResizePanel {
@@ -59,6 +56,8 @@
 .Params__SelectForm__Grouping__container {
   display: flex;
   border-bottom: 0.0625rem solid #e8f1fc;
+  min-height: 6rem;
+  max-height: 6rem;
 }
 
 .Metrics__controls__container {

@@ -1,42 +1,64 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 .SelectForm__container {
   flex: 1;
-  padding: 1em 1.5em;
+  padding: 0.725rem 1.5em;
   display: flex;
 }
 
-.SelectForm__metrics__container {
+.SelectForm__params__container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* TODO [GA]: Override MUI default styles in a nice way */
+  .MuiBox-root {
+    justify-content: flex-start;
+  }
 }
 
 .SelectForm__tags {
   display: flex;
   align-items: center;
   overflow: auto;
-  width: calc(100vw - 40.325rem);
+  max-width: calc(100vw - 40rem);
   min-width: 15rem;
 
   .TagLabel {
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    &:last-child {
+      margin-right: 20px;
+    }
   }
 }
 
-.SelectForm__metric__select {
+.SelectForm__tags__empty {
+  font-size: $text-md;
+  color: $grey;
+}
+
+.SelectForm__param__select {
   width: 100%;
 
   input {
     padding: 8px;
     font-size: $text-md;
     border-bottom: $border-main;
+    font-family: monospace;
   }
 }
 
 .SelectForm__search__container {
   width: 103px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
+}
+
+.Params__SelectForm__TextField {
+  input {
+    font-family: monospace;
+  }
 }
 
 .Params__SelectForm__search__button {
@@ -75,15 +97,16 @@
   position: relative;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
-    width: 50px;
-    height: 30px;
-    box-shadow: inset -20px 0px 20px 0px;
-    left: -59px;
-    top: -2px;
+    width: 20px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 92%);
+    left: -20px;
+    top: -5px;
+    border-radius: 0;
     color: white;
-    border-radius: 8px;
     pointer-events: none;
   }
 

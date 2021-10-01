@@ -27,9 +27,9 @@ import {
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import Icon from 'components/Icon/Icon';
 import TagLabel from 'components/TagLabel/TagLabel';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 import './SelectForm.scss';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 function SelectForm({
   onParamsSelectChange,
@@ -130,7 +130,7 @@ function SelectForm({
   const id = open ? 'select-metric' : undefined;
   return (
     <div className='SelectForm__container'>
-      <div className='SelectForm__metrics__container'>
+      <div className='SelectForm__params__container'>
         <Box display='flex'>
           <Box
             width='100%'
@@ -141,7 +141,7 @@ function SelectForm({
             <>
               <Box display='flex' alignItems='center'>
                 <Button
-                  variant='outlined'
+                  variant='contained'
                   color='primary'
                   onClick={handleClick}
                   aria-describedby={id}
@@ -179,7 +179,8 @@ function SelectForm({
                         ref={params.InputProps.ref}
                         inputProps={params.inputProps}
                         autoFocus={true}
-                        className='SelectForm__metric__select'
+                        spellCheck={false}
+                        className='SelectForm__param__select'
                       />
                     )}
                     renderOption={(option) => {
@@ -203,31 +204,34 @@ function SelectForm({
                     }}
                   />
                 </Popper>
+                <Divider
+                  style={{ margin: '0 1em' }}
+                  orientation='vertical'
+                  flexItem
+                />
+                {selectedParamsData?.params.length === 0 && (
+                  <span className='SelectForm__tags__empty'>
+                    No params are selected
+                  </span>
+                )}
                 {selectedParamsData?.params.length > 0 && (
-                  <>
-                    <Divider
-                      style={{ margin: '0 1em' }}
-                      orientation='vertical'
-                      flexItem
-                    />
-                    <Box className='SelectForm__tags ScrollBar__hidden'>
-                      {selectedParamsData?.params?.map(
-                        (tag: ISelectParamsOption) => {
-                          return (
-                            <TagLabel
-                              key={tag.label}
-                              color={tag.color}
-                              label={tag.label}
-                              onDelete={handleDelete}
-                            />
-                          );
-                        },
-                      )}
-                    </Box>
-                  </>
+                  <Box className='SelectForm__tags ScrollBar__hidden'>
+                    {selectedParamsData?.params?.map(
+                      (tag: ISelectParamsOption) => {
+                        return (
+                          <TagLabel
+                            key={tag.label}
+                            color={tag.color}
+                            label={tag.label}
+                            onDelete={handleDelete}
+                          />
+                        );
+                      },
+                    )}
+                  </Box>
                 )}
               </Box>
-              {selectedParamsData?.params.length > 0 && (
+              {selectedParamsData?.params.length > 1 && (
                 <span
                   onClick={() => onParamsSelectChange([])}
                   className='SelectForm__clearAll'
@@ -248,18 +252,18 @@ function SelectForm({
           </Button>
         </Box>
 
-        <Box mt={0.875}>
+        <div className='Params__SelectForm__TextField'>
           <TextField
             fullWidth
             size='small'
             variant='outlined'
-            className='TextField'
+            spellCheck={false}
             inputProps={{ style: { height: '0.687rem' } }}
-            placeholder='Run expression'
+            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             value={selectedParamsData?.query}
             onChange={({ target }) => onSelectRunQueryChange(target.value)}
           />
-        </Box>
+        </div>
       </div>
     </div>
   );

@@ -4,4 +4,5 @@ export interface IMetricsBarProps {
   onBookmarkCreate: IMetricProps['onBookmarkCreate'];
   onBookmarkUpdate: IMetricProps['onBookmarkUpdate'];
   onResetConfigData: IMetricProps['onResetConfigData'];
+  title: string;
 }

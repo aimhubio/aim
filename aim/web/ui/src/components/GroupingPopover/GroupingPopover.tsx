@@ -5,6 +5,7 @@ import {
   AccordionSummary,
   Checkbox,
   TextField,
+  Chip,
 } from '@material-ui/core';
 import {
   CheckBox as CheckBoxIcon,
@@ -46,7 +47,13 @@ function GroupingPopover({
         data.push(option);
       }
     });
-    return data;
+
+    // Sort selected values by the order of their application
+    return data.sort(
+      (a, b) =>
+        groupingData?.[groupName].indexOf(a.value) -
+        groupingData?.[groupName].indexOf(b.value),
+    );
   }, [groupName, groupingData]);
 
   function handleGroupingMode(val: string | number, id: any) {
@@ -67,7 +74,6 @@ function GroupingPopover({
             Select Fields for grouping by {groupName}
           </h3>
           <Autocomplete
-            id='select-metrics'
             size='small'
             multiple
             disableCloseOnSelect
@@ -84,6 +90,18 @@ function GroupingPopover({
                 label='Select Params'
                 placeholder='Select'
               />
+            )}
+            renderTags={(value, getTagProps) => (
+              <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                {value.map((selected, i) => (
+                  <Chip
+                    key={i}
+                    {...getTagProps({ index: i })}
+                    label={selected.label}
+                    size='small'
+                  />
+                ))}
+              </div>
             )}
             renderOption={(option, { selected }) => (
               <React.Fragment>

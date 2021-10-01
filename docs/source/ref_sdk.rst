@@ -1,4 +1,4 @@
-aim.sdk subpackage
+Aim SDK
 ==================
 
 aim.sdk.repo module

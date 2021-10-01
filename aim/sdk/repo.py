@@ -7,6 +7,9 @@ from collections import defaultdict
 from typing import Dict, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
+from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
+from aim.ext.task_queue.queue import TaskQueue
+
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
@@ -50,25 +53,34 @@ class Repo:
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
+    tracking_queue = TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
+
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
             raise NotImplementedError
         self.read_only = read_only
-        self.root_path = path
-        self.path = os.path.join(path, AIM_REPO_NAME)
+        self._mount_root = None
+        if path.startswith('ssh://'):
+            self._mount_root, self.root_path = mount_remote_repo(path)
+        else:
+            self.root_path = path
+        self.path = os.path.join(self.root_path, AIM_REPO_NAME)
 
         if init:
             os.makedirs(self.path, exist_ok=True)
             with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                 version_fh.write(DATA_VERSION + '\n')
         if not os.path.exists(self.path):
-            raise RuntimeError(f'Cannot find repository \'{path}\'. Please init first.')
+            if self._mount_root:
+                unmount_remote_repo(self.root_path, self._mount_root)
+            raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
         self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self.structured_db = DB.from_path(self.path)
+        self._run_props_cache_hint = None
         if init:
             self.structured_db.run_upgrades()
 
@@ -126,7 +138,8 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        path = clean_repo_path(path)
+        if not path.startswith('ssh://'):
+            path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
             repo = Repo(path, read_only=read_only, init=init)
@@ -279,9 +292,19 @@ class Repo:
             :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
         """
         db = self.structured_db
-        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        Run.set_props_cache_hint('runs_cache')
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        self.run_props_cache_hint = cache_name
         return QueryRunMetricCollection(self, query, paginated, offset)
+
+    @property
+    def run_props_cache_hint(self):
+        return self._run_props_cache_hint
+
+    @run_props_cache_hint.setter
+    def run_props_cache_hint(self, cache: str):
+        self._run_props_cache_hint = cache
 
     def query_metrics(self, query: str = '') -> QueryMetricCollection:
         """Get metrics satisfying query expression.
@@ -292,8 +315,10 @@ class Repo:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         db = self.structured_db
-        db.init_cache('runs_cache', db.runs, lambda run: run.hashname)
-        Run.set_props_cache_hint('runs_cache')
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        self.run_props_cache_hint = cache_name
         return QueryMetricCollection(repo=self, query=query)
 
     def _get_meta_tree(self):
@@ -330,3 +355,7 @@ class Repo:
             return meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
+
+    def __del__(self):
+        if self._mount_root:
+            unmount_remote_repo(self.root_path, self._mount_root)

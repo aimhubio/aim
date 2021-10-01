@@ -2,11 +2,8 @@ import { PopoverPosition } from '@material-ui/core';
 
 function getPositionBasedOnOverflow(
   pos: PopoverPosition,
-  containerRect?: DOMRect,
-  contentRect: DOMRect | { width: number; height: number } = {
-    width: 230,
-    height: 250,
-  },
+  containerRect: DOMRect,
+  contentRect: DOMRect,
 ): PopoverPosition {
   if (!containerRect || !contentRect) {
     return pos;

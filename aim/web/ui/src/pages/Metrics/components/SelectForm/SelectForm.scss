@@ -1,41 +1,75 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 .SelectForm__container {
   flex: 1;
-  padding: 0.625rem 1.5em;
+  padding: 0.725rem 1.5em;
   display: flex;
 }
 
 .SelectForm__metrics__container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 1rem;
+  /* TODO [GA]: Override MUI default styles in a nice way */
+  .MuiBox-root {
+    justify-content: flex-start;
+  }
 }
 
 .Metrics__SelectForm__tags {
   display: flex;
   align-items: center;
   overflow: auto;
-  width: calc(100vw - 43.325rem);
+  max-width: calc(100vw - 40rem);
   min-width: 12rem;
 
   .TagLabel {
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    &:last-child {
+      margin-right: 20px;
+    }
   }
+}
+
+.SelectForm__tags__empty {
+  font-size: $text-md;
+  color: $grey;
 }
 
 .SelectForm__metric__select {
   width: 100%;
 
   input {
+    font-family: monospace;
     padding: 0.5rem;
     font-size: $text-md;
     border-bottom: $border-main;
   }
 }
 
+.SelectForm__TextField {
+  input {
+    font-family: monospace;
+  }
+}
+
+.SelectForm__textarea {
+  flex: 1;
+  .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
+    padding-top: 7.5px;
+    padding-bottom: 7.5px;
+  }
+  textarea {
+    font-family: monospace;
+  }
+}
+
 .SelectForm__search__container {
   width: 103px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
 }
 
@@ -46,7 +80,6 @@
 .SelectForm__search__actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5em;
 
   button {
     border: $border-main;
@@ -86,15 +119,16 @@
   position: relative;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
-    width: 50px;
-    height: 30px;
-    box-shadow: inset -20px 0px 20px 0px;
-    left: -59px;
-    top: -2px;
+    width: 20px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 92%);
+    left: -20px;
+    top: -5px;
+    border-radius: 0;
     color: white;
-    border-radius: $border-radius-lg;
     pointer-events: none;
   }
 

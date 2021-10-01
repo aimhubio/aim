@@ -4,6 +4,8 @@ import Controls from './components/Controls/Controls';
 import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+// TODO [GA]: MetricsBar is imported as AppBar.
+// Implement ParamsBar or use unified NavBar for explorers.
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import { IParamsProps } from 'types/pages/params/Params';
 import { ChartTypeEnum } from 'utils/d3';
@@ -98,6 +100,7 @@ const Params = ({
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}
+              title={'Params explorer'}
             />
           </div>
           <div className='Params__SelectForm__Grouping__container'>
@@ -125,6 +128,7 @@ const Params = ({
             }`}
           >
             <BusyLoaderWrapper
+              height='100%'
               isLoading={isParamsLoading}
               loaderComponent={<ChartLoader />}
             >
@@ -153,7 +157,7 @@ const Params = ({
                   }
                 />
               ) : (
-                !isParamsLoading && (
+                isParamsLoading === false && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."

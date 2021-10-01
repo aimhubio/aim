@@ -64,6 +64,7 @@ function Metrics(
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
+            title={'Metrics explorer'}
           />
           <div className='Metrics__SelectForm__Grouping__container'>
             <SelectForm
@@ -94,7 +95,7 @@ function Metrics(
               isLoading={props.requestIsPending}
               className='Metrics__loader'
               height='100%'
-              loaderComponent={<ChartLoader />}
+              loaderComponent={<ChartLoader controlsCount={9} />}
             >
               {!!props.lineChartData?.[0]?.length ? (
                 <ChartPanel
@@ -139,7 +140,7 @@ function Metrics(
                   }
                 />
               ) : (
-                !props.requestIsPending && (
+                props.requestIsPending === false && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."

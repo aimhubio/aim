@@ -13,11 +13,13 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
+import { isEmpty } from 'lodash-es';
 
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import projectsModel from 'services/models/projects/projectsModel';
 import COLORS from 'config/colors/colors';
+import contextToString from 'utils/contextToString';
 
 import {
   ISelectMetricsOption,
@@ -108,19 +110,19 @@ function SelectForm({
         index++;
 
         for (let val of projectsData.metrics[key]) {
-          let label: string = Object.keys(val)
-            .map((item) => `${item}="${val[item]}"`)
-            .join(', ');
-          data.push({
-            label: `${key} ${label}`,
-            group: key,
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              metric_name: key,
-              context: val,
-            },
-          });
-          index++;
+          if (!isEmpty(val)) {
+            let label = contextToString(val);
+            data.push({
+              label: `${key} ${label}`,
+              group: key,
+              color: COLORS[0][index % COLORS[0].length],
+              value: {
+                metric_name: key,
+                context: val,
+              },
+            });
+            index++;
+          }
         }
       }
     }
@@ -150,27 +152,28 @@ function SelectForm({
             alignItems='center'
           >
             {selectedMetricsData?.advancedMode ? (
-              <Box flex={1} flexWrap='nowrap'>
+              <div className='SelectForm__textarea'>
                 <TextField
                   fullWidth
                   multiline
                   size='small'
+                  spellCheck={false}
                   rows={3}
                   variant='outlined'
                   placeholder={
-                    'Select metric:Metric if metric.name in [“loss”, “accuracy”] and metric.run.lr > 10'
+                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
                   }
                   value={selectedMetricsData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
                     onSelectAdvancedQueryChange(target.value)
                   }
                 />
-              </Box>
+              </div>
             ) : (
               <>
                 <Box display='flex' alignItems='center'>
                   <Button
-                    variant='outlined'
+                    variant='contained'
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
@@ -209,6 +212,7 @@ function SelectForm({
                         <InputBase
                           ref={params.InputProps.ref}
                           inputProps={params.inputProps}
+                          spellCheck={false}
                           placeholder='Search'
                           autoFocus={true}
                           className='SelectForm__metric__select'
@@ -237,12 +241,15 @@ function SelectForm({
                       }}
                     />
                   </Popper>
-                  {selectedMetricsData?.metrics.length > 0 && (
-                    <Divider
-                      style={{ margin: '0 1rem' }}
-                      orientation='vertical'
-                      flexItem
-                    />
+                  <Divider
+                    style={{ margin: '0 1rem' }}
+                    orientation='vertical'
+                    flexItem
+                  />
+                  {selectedMetricsData?.metrics.length === 0 && (
+                    <span className='SelectForm__tags__empty'>
+                      No metrics are selected
+                    </span>
                   )}
                   <Box className='Metrics__SelectForm__tags ScrollBar__hidden'>
                     {selectedMetricsData?.metrics?.map(
@@ -259,7 +266,7 @@ function SelectForm({
                     )}
                   </Box>
                 </Box>
-                {selectedMetricsData?.metrics.length > 0 && (
+                {selectedMetricsData?.metrics.length > 1 && (
                   <span
                     onClick={() => onMetricsSelectChange([])}
                     className='SelectForm__clearAll'
@@ -272,21 +279,21 @@ function SelectForm({
           </Box>
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
-          <Box mt={0.875}>
+          <div className='SelectForm__TextField'>
             <TextField
               fullWidth
               size='small'
               variant='outlined'
-              className='TextField'
+              spellCheck={false}
               inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Run expression'
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
               value={selectedMetricsData?.query ?? ''}
               onChange={({ target }) => onSelectRunQueryChange(target.value)}
             />
-          </Box>
+          </div>
         )}
       </div>
-      <Divider style={{ margin: '0 1.5em' }} orientation='vertical' flexItem />
+
       <div className='SelectForm__search__container'>
         <Button
           fullWidth

@@ -1,4 +1,4 @@
-@use 'src/styles/abstracts' as *;
+@use "src/styles/abstracts" as *;
 
 $border-color: $cuddle-50;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
@@ -253,8 +253,7 @@ $border-radius: 0.2rem;
   padding: $space-xxs $space-sm;
   font-size: $text-md;
   border-color: $border-color;
-  font-family: 'Inter SemiBold', sans-serif;
-  font-weight: bold;
+  font-family: "Inter Medium", sans-serif;
   z-index: 3;
   overflow: visible;
 
@@ -291,8 +290,8 @@ $border-radius: 0.2rem;
   top: 0;
   background-color: $cuddle-20;
   font-size: $text-md;
-  font-family: 'Inter SemiBold', sans-serif;
-  letter-spacing: 0.05rem;
+  font-family: "Inter SemiBold", sans-serif;
+  letter-spacing: 0;
   border-top: 1px solid $border-color;
 }
 

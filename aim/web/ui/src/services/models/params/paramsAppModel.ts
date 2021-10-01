@@ -63,7 +63,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: false });
+const model = createModel<Partial<any>>({ isParamsLoading: null });
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
@@ -238,7 +238,16 @@ function getParamsData() {
     call: async () => {
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
-      if (!_.isEmpty(select?.params)) {
+      if (_.isEmpty(select?.params)) {
+        model.setState({
+          highPlotData: [],
+          tableData: [],
+          data: [],
+          rawData: [],
+          tableColumns: [],
+          isParamsLoading: false,
+        });
+      } else {
         model.setState({ isParamsLoading: true });
         const stream = await getRunsRequestRef.call(exceptionHandler);
         let gen = adjustable_reader(stream);
@@ -767,23 +776,17 @@ function onActivePointChange(
   activePoint: IActivePoint,
   focusedStateActive: boolean = false,
 ): void {
-  const { data, params, refs, config, metricsColumns } =
-    model.getState() as any;
-  const tableData = getDataAsTableRows(
-    data,
-    metricsColumns,
-    params,
-    false,
-    config,
-  );
-  const tableRef: any = refs?.tableRef;
-  if (tableRef) {
-    tableRef.current?.setHoveredRow?.(activePoint.key);
-    tableRef.current?.setActiveRow?.(
-      focusedStateActive ? activePoint.key : null,
-    );
-    if (focusedStateActive) {
-      tableRef.current?.scrollToRow?.(activePoint.key);
+  const { refs, config } = model.getState() as any;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    const tableRef: any = refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.key);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.key : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.key);
+      }
     }
   }
   let configData: IParamsAppConfig = config;
@@ -809,13 +812,17 @@ function onActivePointChange(
       },
     };
 
-    if (config.chart.focusedState.active !== focusedStateActive) {
+    if (
+      config.chart.focusedState.active !== focusedStateActive ||
+      (config.chart.focusedState.active &&
+        (activePoint.key !== config.chart.focusedState.key ||
+          activePoint.xValue !== config.chart.focusedState.xValue))
+    ) {
       updateURL(configData);
     }
   }
 
   model.setState({
-    tableData: tableData.rows,
     config: configData,
   });
 }
@@ -860,27 +867,17 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Other',
-      label: 'experiment_name',
-      value: 'run.experiment_name',
+      group: 'Run',
+      label: 'run.experiment',
+      value: 'run.props.experiment',
     },
     {
-      group: 'Other',
+      group: 'Run',
       label: 'run.hash',
-      value: 'run.params.status.hash',
+      value: 'run.hash',
     },
-    {
-      group: 'Other',
-      label: 'metric_name',
-      value: 'metric_name',
-    },
-    {
-      group: 'context',
-      label: 'subset',
-      value: 'context.subset',
-    },
+    ...paramsOptions,
   ];
 }
 
@@ -1269,6 +1266,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
     };
 
     model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent('[ParamsExplorer] Change tooltip content');
 }
