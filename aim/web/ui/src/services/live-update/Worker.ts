@@ -59,8 +59,7 @@ let apiMethods: ApiMethods | null = null;
 let logging = true;
 
 /**
- * @external
- * function subscribeToApiCallResult
+ * @external function subscribeToApiCallResult
  * When using it from other thread
  *    it is no possible to send callback function using postMessage's parameter
  *    make callback function as a proxy using Comlink.proxy(callback), or implement proxy
@@ -111,7 +110,7 @@ function transferApiCallResponse(data: Array<unknown>) {
  */
 function scheduler(f: (q: string) => Promise<any>) {
   // @TODO improve
-  //  now this will call every for deley ms, need to create delay after each other
+  //  now this will call every for delay ms, need to create delay after each other
 
   const timerId = setInterval(f, schedulerDelay);
   schedule = {
@@ -121,7 +120,7 @@ function scheduler(f: (q: string) => Promise<any>) {
 }
 
 /**
- * @external
+ * @external function stop
  * stop worker processes
  *    currently there is a single process (api call)
  *    calling stop function will abort the call, and will pause scheduler
@@ -148,7 +147,7 @@ async function stop(): Promise<any> {
 }
 
 /**
- * @external
+ * @external function start
  * @param {Object} params - params to send with http request
  */
 function start(params: Object = {}): void {
@@ -162,6 +161,7 @@ function start(params: Object = {}): void {
 async function startUpdateCall(): Promise<any> {
   // calculate nec-s;
   logging && console.time(`${key.toString()} operated`);
+
   const stream = await apiMethods?.call();
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
@@ -180,7 +180,7 @@ async function startUpdateCall(): Promise<any> {
 }
 
 /**
- * @external
+ * @external function close
  * function close
  * close function is useful for cleanup, when worker has not usage
  * close function will
@@ -201,7 +201,7 @@ function close() {
 
 /**
  * @TODO make chance to set config as constructor parameters
- * @external
+ * @external function setConfig
  * function setConfig
  * @param {string} name - the name to unify worker
  * @param {string} endpoint - http call endpoint

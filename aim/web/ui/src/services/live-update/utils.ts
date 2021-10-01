@@ -49,8 +49,11 @@ export function createGetStream(
 }
 
 export function createTransferableData(data: any): Buffer {
-  const stringData = JSON.stringify(data);
-
+  // @TODO resolve issue
+  // console.log(data[0].traces[0].values);
+  const stringData = data.toString();
+  // If the object has nested buffers, it can not convert using stringify, it can not stringify nested buffers
+  // console.log(JSON.parse(stringData)[0].traces[0].values);
   // change to array buffer
   const b = Buffer.from(stringData);
 

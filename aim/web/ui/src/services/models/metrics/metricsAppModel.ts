@@ -89,7 +89,7 @@ import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.ex
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
   liveUpdateConfig: {
-    delay: 10000,
+    delay: 2000,
     enabled: false,
   },
 });
@@ -215,12 +215,9 @@ function initialize(appId: string): void {
 
 function updateData(newData: any) {
   const configData = model.getState()?.config;
-
-  getRunData(newData).then((runData) => {
-    if (configData) {
-      setModelData(runData, configData);
-    }
-  });
+  if (configData) {
+    setModelData(newData, configData);
+  }
 }
 
 function setDefaultAppConfigData() {
@@ -378,9 +375,8 @@ function getMetricsData() {
         });
         const stream = await metricsRequestRef.call(exceptionHandler);
         const runData = await getRunData(stream);
-        if (configData) {
-          setModelData(runData, configData);
-        }
+
+        updateData(runData);
       }
     },
     abort: metricsRequestRef.abort,
