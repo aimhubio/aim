@@ -54,6 +54,7 @@ enum ChartTypeEnum {
   LineChart = 'LineChart',
   HighPlot = 'HighPlot',
   ScatterPlot = 'ScatterPlot',
+  ImageSet = 'ImageSet',
 }
 
 export {

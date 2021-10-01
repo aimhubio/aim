@@ -113,7 +113,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }));
 
   React.useEffect(() => {
-    if (!props.panelResizing) {
+    if (!props.panelResizing && props.focusedState) {
       chartRefs.forEach((chartRef) => {
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
@@ -171,25 +171,27 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 );
               })}
             </Grid>
-            <ChartPopover
-              containerRef={containerRef}
-              popoverContentRef={popoverContentRef}
-              popoverPosition={popoverPosition}
-              open={
-                props.resizeMode !== ResizeModeEnum.MaxHeight &&
-                props.data.length > 0 &&
-                !props.panelResizing &&
-                !props.zoom?.active &&
-                (props.tooltip.display || props.focusedState.active)
-              }
-            >
-              <PopoverContent
-                chartType={props.chartType}
-                tooltipContent={props.tooltip.content}
-                focusedState={props.focusedState}
-                alignmentConfig={props.alignmentConfig}
-              />
-            </ChartPopover>
+            {props.tooltip && props.focusedState && (
+              <ChartPopover
+                containerRef={containerRef}
+                popoverContentRef={popoverContentRef}
+                popoverPosition={popoverPosition}
+                open={
+                  props.resizeMode !== ResizeModeEnum.MaxHeight &&
+                  props.data.length > 0 &&
+                  !props.panelResizing &&
+                  !props.zoom?.active &&
+                  (props.tooltip.display || props.focusedState.active)
+                }
+              >
+                <PopoverContent
+                  chartType={props.chartType}
+                  tooltipContent={props.tooltip.content}
+                  focusedState={props.focusedState}
+                  alignmentConfig={props.alignmentConfig}
+                />
+              </ChartPopover>
+            )}
           </Grid>
           <Grid className='Metrics__controls__container' item>
             {props.controls}

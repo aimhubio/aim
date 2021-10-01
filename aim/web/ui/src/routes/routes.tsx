@@ -10,6 +10,9 @@ const Bookmarks = React.lazy(
 );
 const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
+const ImagesExplore = React.lazy(
+  () => import('pages/ImagesExplore/ImagesExplore'),
+);
 
 export interface IRoute {
   path: PathEnum;
@@ -82,6 +85,12 @@ const routes = {
     component: RunDetail,
     showInSidebar: false,
     displayName: 'Run Detail',
+  },
+  IMAGE_EXPLORE: {
+    path: PathEnum.Images_Explore,
+    component: ImagesExplore,
+    showInSidebar: true,
+    displayName: 'Images',
   },
 };
 

@@ -1,0 +1,27 @@
+.ImagesExplore__container {
+  background-color: #ffffff;
+  min-width: 50rem;
+  .ImagesExplore__section {
+    height: 100vh;
+    overflow: hidden;
+  }
+  .ImagesExplore__fullHeight {
+    height: 100%;
+  }
+
+  .ImagesExplore__section__div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.ImageSet {
+  padding: 10px 40px;
+  display: flex;
+  background-color: #ffffff;
+  &__imageBox {
+    padding: 10px;
+    border: 1px solid #e8f1fc;
+  }
+}

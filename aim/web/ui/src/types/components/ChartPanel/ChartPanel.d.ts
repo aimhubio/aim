@@ -19,8 +19,8 @@ export interface IChartPanelProps {
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
   panelResizing?: boolean;
-  focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  focusedState?: IFocusedState;
+  tooltip?: IChartTooltip;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;
@@ -36,7 +36,7 @@ export interface IChartPanelProps {
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
-  resizeMode: ResizeModeEnum;
+  resizeMode?: ResizeModeEnum;
 }
 
 export interface IChartPanelRef {
@@ -55,5 +55,6 @@ export type IMemoizedForwardRefComponent<T> = React.MemoExoticComponent<
 export interface IChartTypeConfig {
   [key: string]:
     | IMemoizedForwardRefComponent<ILineChartProps>
-    | IMemoizedForwardRefComponent<IHighPlotProps>;
+    | IMemoizedForwardRefComponent<IHighPlotProps>
+    | IMemoizedForwardRefComponent<any>;
 }
