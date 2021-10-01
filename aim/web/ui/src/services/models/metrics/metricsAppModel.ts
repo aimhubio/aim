@@ -569,18 +569,19 @@ function getGroupingPersistIndex({
   groupValues,
   groupKey,
   grouping,
+  groupName,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
+  const configHash = encode(groupValues[groupKey].config as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
     if (charCode > 47 && charCode < 58) {
       index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
       );
     }
   }
@@ -672,6 +673,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'color',
         });
         groupValue.color =
           COLORS[paletteIndex][
@@ -698,6 +700,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'stroke',
         });
         groupValue.dasharray =
           DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];

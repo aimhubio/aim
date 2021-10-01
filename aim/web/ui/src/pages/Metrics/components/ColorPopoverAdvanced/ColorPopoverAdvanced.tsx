@@ -27,7 +27,11 @@ function ColorPopoverAdvanced({
           color regardless of its order.
         </p>
         <div>
-          <Switch color='primary' />
+          <Switch
+            onChange={() => onPersistenceChange('color')}
+            checked={persistence}
+            color='primary'
+          />
           <span className='ColorPopoverAdvanced__container__span'>Enable</span>
         </div>
       </div>
