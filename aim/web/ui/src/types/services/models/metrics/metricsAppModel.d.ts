@@ -235,6 +235,7 @@ export interface IGetGroupingPersistIndex {
   };
   groupKey: string;
   grouping: IMetricAppConfig['grouping'];
+  groupName: 'color' | 'stroke';
 }
 
 export type GroupNameType = 'color' | 'stroke' | 'chart';
