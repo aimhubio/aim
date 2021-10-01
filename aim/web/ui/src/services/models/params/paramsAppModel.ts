@@ -297,9 +297,10 @@ function setDefaultAppConfigData() {
 }
 
 function getParamsData() {
-  liveUpdateInstance?.stop().then();
   return {
     call: async () => {
+      liveUpdateInstance?.stop().then();
+
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
@@ -1805,8 +1806,7 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   model.setState({
     liveUpdateConfig: {
       ...liveUpdateConfig,
-      ...(config.delay ? { delay: config.delay } : {}),
-      ...(config.enabled ? { enabled: config.enabled } : {}),
+      ...config,
     },
   });
 }

@@ -201,6 +201,7 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+
   const liveUpdateState = model.getState()?.liveUpdateConfig;
 
   if (liveUpdateState?.enabled) {
@@ -212,7 +213,15 @@ function initialize(appId: string): void {
   }
 }
 
-function updateData() {}
+function updateData(newData: any) {
+  const configData = model.getState()?.config;
+
+  getRunData(newData).then((runData) => {
+    if (configData) {
+      setModelData(runData, configData);
+    }
+  });
+}
 
 function setDefaultAppConfigData() {
   const grouping: IMetricAppConfig['grouping'] =
@@ -2350,8 +2359,19 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();
   const configData = state?.config;
   const liveUpdateConfig = state?.liveUpdateConfig;
+  const metric = configData?.chart.alignmentConfig.metric;
+  let query = getQueryStringFromSelect(configData?.select);
 
   if (!liveUpdateConfig?.enabled && config.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'metrics',
+      updateData,
+      config.delay || liveUpdateConfig?.delay,
+    );
+    liveUpdateInstance?.start({
+      q: query,
+      ...(metric && { x_axis: metric }),
+    });
   } else {
     liveUpdateInstance?.clear();
     liveUpdateInstance = null;
@@ -2361,8 +2381,7 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
     // @ts-ignore
     liveUpdateConfig: {
       ...liveUpdateConfig,
-      ...(config.delay ? { delay: config.delay } : {}),
-      ...(config.enabled ? { enabled: config.enabled } : {}),
+      ...config,
     },
   });
 }
