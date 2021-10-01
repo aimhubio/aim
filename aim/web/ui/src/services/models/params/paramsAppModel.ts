@@ -451,7 +451,7 @@ function processData(data: IRun<IParamTrace>[]): {
   const paletteIndex: number = grouping?.paletteIndex || 0;
   const metricsColumns: any = {};
 
-  data.forEach((run: IRun<IParamTrace>, index) => {
+  data?.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     run.traces.forEach((trace) => {
       metricsColumns[trace.metric_name] = {
