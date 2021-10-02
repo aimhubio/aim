@@ -13,4 +13,5 @@ export interface IGroupingProps {
   onGroupingReset: IMetricProps['onGroupingReset'];
   onGroupingApplyChange: IMetricAppConfig['onGroupingApplyChange'];
   onGroupingPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
+  onShuffleChange: IMetricProps['onShuffleChange'];
 }

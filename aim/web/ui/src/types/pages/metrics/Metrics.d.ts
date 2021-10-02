@@ -110,6 +110,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   columnsWidths: { [key: string]: number };
+  onShuffleChange: (name: 'stroke' | 'color') => void;
 }
 
 export interface IOnSmoothingChange {

@@ -205,6 +205,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
+      onShuffleChange={metricAppModel.onShuffleChange}
     />
   );
 }

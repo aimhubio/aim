@@ -18,6 +18,8 @@ export interface IGroupingPopoverProps {
 export interface IGroupingPopoverAdvancedProps {
   paletteIndex?: number;
   persistence?: boolean;
+  groupingData: IMetricAppConfig['grouping'];
   onPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
   onGroupingPaletteChange?: IMetricProps['onGroupingPaletteChange'];
+  onShuffleChange: IMetricProps['onShuffleChange'];
 }
