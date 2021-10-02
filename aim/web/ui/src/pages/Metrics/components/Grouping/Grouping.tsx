@@ -37,6 +37,7 @@ function Grouping({
   onGroupingReset,
   onGroupingPersistenceChange,
   onGroupingApplyChange,
+  onShuffleChange,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Grouping__container'>
@@ -55,10 +56,12 @@ function Grouping({
               advancedComponent={
                 AdvancedComponent && (
                   <AdvancedComponent
+                    groupingData={groupingData}
                     onPersistenceChange={onGroupingPersistenceChange}
                     persistence={
                       groupingData?.persistence[groupName as 'color' | 'stroke']
                     }
+                    onShuffleChange={onShuffleChange}
                     {...(groupName === 'color' && {
                       onGroupingPaletteChange,
                       paletteIndex: groupingData?.paletteIndex,

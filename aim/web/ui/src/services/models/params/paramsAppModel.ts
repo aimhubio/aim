@@ -584,7 +584,7 @@ function getGroupingPersistIndex({
   groupKey,
   grouping,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
+  const configHash = encode(groupValues[groupKey].config as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
@@ -755,6 +755,20 @@ function onColorIndicatorChange(): void {
       configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
     } color indicator`,
   );
+}
+
+function onShuffleChange(name: 'color' | 'stroke') {
+  const configData = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      seed: {
+        ...configData.grouping.seed,
+        [name]: configData.grouping.seed[name] + 1,
+      },
+    };
+    updateModelData(configData);
+  }
 }
 
 function onCurveInterpolationChange(): void {
@@ -1758,6 +1772,7 @@ const paramsAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  onShuffleChange,
 };
 
 export default paramsAppModel;

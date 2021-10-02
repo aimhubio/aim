@@ -588,6 +588,20 @@ function getGroupingPersistIndex({
   return index;
 }
 
+function onShuffleChange(name: 'color' | 'stroke') {
+  const configData = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      seed: {
+        ...configData.grouping.seed,
+        [name]: configData.grouping.seed[name] + 1,
+      },
+    };
+    updateModelData(configData);
+  }
+}
+
 function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
   const groupByColor = getFilteredGroupingOptions(grouping, 'color');
   const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
@@ -2381,6 +2395,7 @@ const metricAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  onShuffleChange,
 };
 
 export default metricAppModel;

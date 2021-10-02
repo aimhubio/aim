@@ -54,6 +54,7 @@ const Params = ({
   sortFields,
   resizeMode,
   notifyData,
+  hiddenColumns,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -70,13 +71,13 @@ const Params = ({
   onBookmarkUpdate,
   onResetConfigData,
   onChangeTooltip,
-  hiddenColumns,
   onTableResizeModeChange,
   onNotificationDelete,
   onColumnsVisibilityChange,
   onTableDiffShow,
   onSortReset,
   updateColumnsWidths,
+  onShuffleChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -118,6 +119,7 @@ const Params = ({
               onGroupingReset={onGroupingReset}
               onGroupingApplyChange={onGroupingApplyChange}
               onGroupingPersistenceChange={onGroupingPersistenceChange}
+              onShuffleChange={onShuffleChange}
             />
           </div>
 

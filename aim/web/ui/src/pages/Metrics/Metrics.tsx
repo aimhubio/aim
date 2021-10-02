@@ -83,6 +83,7 @@ function Metrics(
               onGroupingReset={props.onGroupingReset}
               onGroupingApplyChange={props.onGroupingApplyChange}
               onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+              onShuffleChange={props.onShuffleChange}
             />
           </div>
           <div
