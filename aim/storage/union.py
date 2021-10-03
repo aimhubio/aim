@@ -193,7 +193,7 @@ class DB(object):
             self._get_db(prefix, path, self._dbs, new_dbs)
 
         if index_db is not None:
-            new_dbs[index_prefix] = index_db
+            new_dbs[b""] = index_db
         self._dbs = new_dbs
         return new_dbs
 
@@ -205,6 +205,7 @@ class DB(object):
             # Shadowing
             if key.startswith(prefix):
                 return db.get(key)
+        return self.dbs[b""].get(key)
         raise ValueError
 
     def iteritems(
@@ -255,7 +256,7 @@ class RocksUnionContainer(RocksContainer):
         prefix: bytes = b''
     ) -> 'Container':
         container = self
-        if prefix in self.db.dbs:
+        if prefix and prefix in self.db.dbs:
             container = RocksUnionSubContainer(container=self, domain=prefix)
         return PrefixView(prefix=prefix,
                           container=container)
