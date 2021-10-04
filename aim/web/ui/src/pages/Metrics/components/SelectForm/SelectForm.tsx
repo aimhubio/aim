@@ -38,7 +38,7 @@ function SelectForm({
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
-  onRunCopy,
+  onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
@@ -312,7 +312,7 @@ function SelectForm({
           >
             <Icon name='edit' />
           </Button>
-          <Button onClick={onRunCopy} withOnlyIcon={true}>
+          <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
             <Icon name='copy' />
           </Button>
         </div>

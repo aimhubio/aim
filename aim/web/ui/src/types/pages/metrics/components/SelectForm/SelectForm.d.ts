@@ -6,7 +6,7 @@ export interface ISelectFormProps {
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;
-  onRunCopy: () => void;
+  onSearchQueryCopy: () => void;
 }
 export interface ISelectMetricsOption {
   label: string;

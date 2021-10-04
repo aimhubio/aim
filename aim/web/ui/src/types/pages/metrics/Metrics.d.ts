@@ -111,7 +111,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   columnsWidths: { [key: string]: number };
   onShuffleChange: (name: 'stroke' | 'color') => void;
-  onRunCopy: () => void;
+  onSearchQueryCopy: () => void;
 }
 
 export interface IOnSmoothingChange {

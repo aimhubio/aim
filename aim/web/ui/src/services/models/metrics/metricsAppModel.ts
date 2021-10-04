@@ -1270,7 +1270,7 @@ function setTooltipData(
   tooltipData = data;
 }
 
-function onRunCopy(): void {
+function onSearchQueryCopy(): void {
   const selectedMetricsData = model.getState()?.config?.select;
   let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
   navigator.clipboard.writeText(query);
@@ -2407,7 +2407,7 @@ const metricAppModel = {
   updateURL,
   updateModelData,
   onShuffleChange,
-  onRunCopy,
+  onSearchQueryCopy,
 };
 
 export default metricAppModel;

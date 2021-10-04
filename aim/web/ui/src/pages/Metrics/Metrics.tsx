@@ -73,7 +73,7 @@ function Metrics(
               onSelectRunQueryChange={props.onSelectRunQueryChange}
               onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
               toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
-              onRunCopy={props.onRunCopy}
+              onSearchQueryCopy={props.onSearchQueryCopy}
             />
             <Grouping
               groupingData={props.groupingData}
