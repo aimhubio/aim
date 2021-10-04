@@ -37,16 +37,15 @@
   }
 
   &:hover {
-    background-color: tint($primary-color, 90);
+    background-color: $pico-5;
   }
 
-  &.active,
+  &.active {
+    background-color: tint($primary-color, 90);
+  }
   &.outlined {
-    border: 0.0625rem solid tint($primary-color, 30);
     background-color: tint($primary-color, 90);
-  }
-
-  &.disabled {
+    border: 0.0625rem solid tint($primary-color, 30);
   }
 }
 

@@ -8,14 +8,16 @@ type Props = {
 };
 
 export default function TableSortIcons(props: Props) {
-  return props.sort ? (
+  return (
     <span className='TableColumn__SortIcon' onClick={props.onSort}>
-      {props.sort === 'asc' && <Icon name='back-up' color='#3C4043' />}
-      {props.sort === 'desc' && <Icon name='back-down' color='#3C4043' />}
-    </span>
-  ) : (
-    <span className='TableColumn__SortIcon' onClick={props.onSort}>
-      {<Icon name='back-up' color='#bcbcbc' />}
+      <Icon
+        name='sort-arrow-up'
+        color={props.sort === 'asc' ? '#3C4043' : '#83899E'}
+      />
+      <Icon
+        name='sort-arrow-down'
+        color={props.sort === 'desc' ? '#3C4043' : '#83899E'}
+      />
     </span>
   );
 }
