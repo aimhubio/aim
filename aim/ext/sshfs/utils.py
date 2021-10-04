@@ -146,7 +146,7 @@ def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
 
     # TODO: experiment on sshfs options to find an optimal set
     # construct sshfs options, use IdentityFile if provided by the user
-    sshfs_options = 'allow_other,default_permissions'
+    sshfs_options = 'default_permissions'
     identity_file = os.environ.get('AIM_REMOTE_REPO_KEY_FILE')
     if identity_file:
         sshfs_options = f'{sshfs_options},IdentityFile={identity_file}'
