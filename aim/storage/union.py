@@ -206,7 +206,6 @@ class DB(object):
             if key.startswith(prefix):
                 return db.get(key)
         return self.dbs[b""].get(key)
-        raise ValueError
 
     def iteritems(
         self, *args, **kwargs
