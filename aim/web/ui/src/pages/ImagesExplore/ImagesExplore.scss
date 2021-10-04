@@ -1,9 +1,11 @@
+@use 'src/styles/abstracts' as *;
+
 .ImagesExplore__container {
   background-color: #ffffff;
   min-width: 50rem;
   .ImagesExplore__section {
-    height: 100vh;
-    overflow: hidden;
+    height: 100%;
+    overflow-y: scroll;
   }
   .ImagesExplore__fullHeight {
     height: 100%;
@@ -16,12 +18,18 @@
   }
 }
 
-.ImageSet {
+.ImagesSet {
   padding: 10px 40px;
   display: flex;
+  flex-direction: column;
   background-color: #ffffff;
-  &__imageBox {
-    padding: 10px;
-    border: 1px solid #e8f1fc;
+  border: 1px solid $border-color-main;
+  &__imagesBox {
+    display: flex;
+    img {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
   }
 }

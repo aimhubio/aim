@@ -19,8 +19,8 @@ export interface IChartPanelProps {
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
   panelResizing?: boolean;
-  focusedState?: IFocusedState;
-  tooltip?: IChartTooltip;
+  focusedState: IFocusedState;
+  tooltip: IChartTooltip;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;
