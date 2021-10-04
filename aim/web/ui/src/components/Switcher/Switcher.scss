@@ -1,0 +1,66 @@
+@use 'src/styles/abstracts' as *;
+
+.Switcher {
+  cursor: pointer;
+  border-radius: 0.625rem;
+  color: #fff;
+  position: relative;
+  user-select: none;
+  &__circle {
+    transition: all 0.18s ease-out;
+    position: absolute;
+    transform: translateX(-100%) translateX(14px);
+    top: 0.125rem;
+    &__checked {
+      transform: translateX(100%) translateX(6px);
+    }
+  }
+
+  &__leftLabel,
+  &__rightLabel {
+    position: absolute;
+    top: 3px;
+  }
+
+  &__leftLabel {
+    left: 3px;
+  }
+
+  &__rightLabel {
+    right: 3px;
+  }
+
+  &__primary {
+    background-color: $primary-color;
+  }
+
+  &__secondary {
+    background-color: $text-color;
+  }
+  &__small {
+    height: 0.75rem;
+    width: 1.5rem;
+    font-size: 0.5rem;
+    .Switcher__circle {
+      font-size: 0.5rem;
+    }
+  }
+
+  &__medium {
+    height: 1rem;
+    width: 2rem;
+    font-size: 7px;
+    .Switcher__circle {
+      font-size: 0.75rem;
+    }
+  }
+
+  &__large {
+    height: 1.25rem;
+    width: 2.5rem;
+    font-size: 10px;
+    .Switcher__circle {
+      font-size: 1rem;
+    }
+  }
+}
