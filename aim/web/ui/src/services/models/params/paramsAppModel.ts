@@ -498,33 +498,35 @@ function getDataAsLines(
     _.groupBy(flattedLines, 'chartIndex'),
   );
 
-  return Object.keys(dimensionsObject).map((keyOfDimension, i) => {
-    const dimensions: IDimensionsType = {};
-    Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
-      if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [
-            Math.min(...dimensionsObject[keyOfDimension][key].values),
-            Math.max(...dimensionsObject[keyOfDimension][key].values),
-          ],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
-        };
-      } else {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [...dimensionsObject[keyOfDimension][key].values],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
-        };
-      }
-    });
-    return {
-      dimensions,
-      data: groupedByChartIndex[i],
-    };
-  });
+  return Object.keys(dimensionsObject)
+    .map((keyOfDimension, i) => {
+      const dimensions: IDimensionsType = {};
+      Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
+        if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
+          dimensions[key] = {
+            scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+            domainData: [
+              Math.min(...dimensionsObject[keyOfDimension][key].values),
+              Math.max(...dimensionsObject[keyOfDimension][key].values),
+            ],
+            displayName: dimensionsObject[keyOfDimension][key].displayName,
+            dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+          };
+        } else {
+          dimensions[key] = {
+            scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+            domainData: [...dimensionsObject[keyOfDimension][key].values],
+            displayName: dimensionsObject[keyOfDimension][key].displayName,
+            dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+          };
+        }
+      });
+      return {
+        dimensions,
+        data: groupedByChartIndex[i],
+      };
+    })
+    .filter((data) => !isEmpty(data.data) && !isEmpty(data.dimensions));
 }
 
 function getGroupConfig(
@@ -582,7 +584,7 @@ function getGroupingPersistIndex({
   groupKey,
   grouping,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
+  const configHash = encode(groupValues[groupKey].config as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
@@ -685,6 +687,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'color',
         });
         groupValue.color =
           COLORS[paletteIndex][
@@ -711,6 +714,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'stroke',
         });
         groupValue.dasharray =
           DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
@@ -751,6 +755,20 @@ function onColorIndicatorChange(): void {
       configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
     } color indicator`,
   );
+}
+
+function onShuffleChange(name: 'color' | 'stroke') {
+  const configData = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      seed: {
+        ...configData.grouping.seed,
+        [name]: configData.grouping.seed[name] + 1,
+      },
+    };
+    updateModelData(configData);
+  }
 }
 
 function onCurveInterpolationChange(): void {
@@ -1754,6 +1772,7 @@ const paramsAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  onShuffleChange,
 };
 
 export default paramsAppModel;

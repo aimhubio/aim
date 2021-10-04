@@ -569,22 +569,37 @@ function getGroupingPersistIndex({
   groupValues,
   groupKey,
   grouping,
+  groupName,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
+  const configHash = encode(groupValues[groupKey].config as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
     if (charCode > 47 && charCode < 58) {
       index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
       );
     }
   }
   return index;
+}
+
+function onShuffleChange(name: 'color' | 'stroke') {
+  const configData = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      seed: {
+        ...configData.grouping.seed,
+        [name]: configData.grouping.seed[name] + 1,
+      },
+    };
+    updateModelData(configData);
+  }
 }
 
 function isGroupingApplied(grouping: IMetricAppConfig['grouping']): boolean {
@@ -672,6 +687,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'color',
         });
         groupValue.color =
           COLORS[paletteIndex][
@@ -698,6 +714,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'stroke',
         });
         groupValue.dasharray =
           DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
@@ -1253,20 +1270,33 @@ function setTooltipData(
   tooltipData = data;
 }
 
-//Chart Methods
+function onSearchQueryCopy(): void {
+  const selectedMetricsData = model.getState()?.config?.select;
+  let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
+  navigator.clipboard.writeText(query);
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'success',
+    message: 'Run Expression Copied',
+  });
+}
+
+// Chart Methods
 
 function onHighlightModeChange(mode: HighlightEnum): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          highlightMode: mode,
-        },
+  const config: IMetricAppConfig | undefined = model.getState()?.config;
+  if (config?.chart) {
+    const configData = {
+      ...config,
+      chart: {
+        ...config.chart,
+        highlightMode: mode,
       },
+    };
+    model.setState({
+      config: configData,
     });
+    updateURL(configData);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] Set highlight mode to "${HighlightEnum[
@@ -1276,20 +1306,22 @@ function onHighlightModeChange(mode: HighlightEnum): void {
 }
 
 function onZoomChange(zoom: Partial<IChartZoom>): void {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          zoom: {
-            ...configData.chart.zoom,
-            ...zoom,
-          },
+  const config: IMetricAppConfig | undefined = model.getState()?.config;
+  if (config?.chart) {
+    const configData = {
+      ...config,
+      chart: {
+        ...config.chart,
+        zoom: {
+          ...config.chart.zoom,
+          ...zoom,
         },
       },
+    };
+    model.setState({
+      config: configData,
     });
+    updateURL(configData);
   }
   if (!isNil(zoom.mode)) {
     analytics.trackEvent(
@@ -1401,6 +1433,8 @@ function resetChartZoom(configData: IMetricAppConfig): void {
       history: [],
     },
   };
+  model.setState({ config: configData });
+  updateURL(configData);
   analytics.trackEvent('[MetricsExplorer][Chart] Reset zoom');
 }
 
@@ -2372,6 +2406,8 @@ const metricAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  onShuffleChange,
+  onSearchQueryCopy,
 };
 
 export default metricAppModel;

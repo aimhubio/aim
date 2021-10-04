@@ -114,7 +114,7 @@ function SortPopover({
         ))}
       </div>
       <div className='SortPopover__reset__sorting'>
-        <Button onClick={onReset} variant='outlined' size='small'>
+        <Button onClick={onReset} size='small'>
           Reset Sorting
         </Button>
       </div>
