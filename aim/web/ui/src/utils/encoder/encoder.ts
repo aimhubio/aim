@@ -11,5 +11,9 @@ export function encode(
 }
 
 export function decode(value: string): string {
-  return bs58check.decode(value).toString();
+  try {
+    return bs58check.decode(value).toString();
+  } catch (ex) {
+    return '{}';
+  }
 }
