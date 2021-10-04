@@ -1270,6 +1270,17 @@ function setTooltipData(
   tooltipData = data;
 }
 
+function onRunCopy(): void {
+  const selectedMetricsData = model.getState()?.config?.select;
+  let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
+  navigator.clipboard.writeText(query);
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'success',
+    message: 'Run Expression Copied',
+  });
+}
+
 // Chart Methods
 
 function onHighlightModeChange(mode: HighlightEnum): void {
@@ -2396,6 +2407,7 @@ const metricAppModel = {
   updateURL,
   updateModelData,
   onShuffleChange,
+  onRunCopy,
 };
 
 export default metricAppModel;

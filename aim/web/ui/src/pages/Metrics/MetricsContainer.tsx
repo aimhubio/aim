@@ -206,6 +206,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
       onShuffleChange={metricAppModel.onShuffleChange}
+      onRunCopy={metricAppModel.onRunCopy}
     />
   );
 }

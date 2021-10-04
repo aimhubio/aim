@@ -38,6 +38,7 @@ function SelectForm({
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
+  onRunCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
@@ -128,11 +129,6 @@ function SelectForm({
     }
     return data;
   }, [projectsData]);
-
-  function handleRunCopy(): void {
-    let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
-    navigator.clipboard.writeText(query);
-  }
 
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
@@ -316,7 +312,7 @@ function SelectForm({
           >
             <Icon name='edit' />
           </Button>
-          <Button onClick={handleRunCopy} withOnlyIcon={true}>
+          <Button onClick={onRunCopy} withOnlyIcon={true}>
             <Icon name='copy' />
           </Button>
         </div>
