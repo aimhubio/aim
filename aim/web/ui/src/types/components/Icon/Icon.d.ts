@@ -87,4 +87,7 @@ export type IconName =
   | 'check-rectangle'
   | 'check-circle'
   | 'check'
-  | 'link';
+  | 'link'
+  | 'images'
+  | 'sort-arrow-up'
+  | 'sort-arrow-down';

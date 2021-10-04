@@ -28,7 +28,7 @@
   display: flex;
   align-items: center;
   border: 0.0625rem solid transparent;
-  transition: all .18s ease-out;
+  transition: all 0.18s ease-out;
   border-radius: $radius-main;
   padding: 0 0.375rem !important;
   margin-right: 0.375rem !important;
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 500;
     font-size: $text-md;
-    line-height: 17px; 
+    line-height: 17px;
   }
 
   i {
@@ -53,5 +53,9 @@
 .TableColumn__SortIcon {
   font-size: $text-md;
   cursor: pointer;
-  margin: 0 8px;
+  margin: 0 $space-xs;
+  i {
+    display: inline-block;
+    width: $space-xs;
+  }
 }
