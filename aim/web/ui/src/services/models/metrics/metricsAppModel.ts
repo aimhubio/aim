@@ -255,9 +255,9 @@ function getQueryStringFromSelect(
                 (item) =>
                   `(metric.name == "${
                     metric.value.metric_name
-                  }" and metric.context.${item} == "${
-                    (metric.value.context as any)[item]
-                  }")`,
+                  }" and metric.context.${item} == ${formatValue(
+                    (metric.value.context as any)[item],
+                  )})`,
               )}`,
         )
         .join(' or ')})`.trim();
