@@ -614,6 +614,7 @@ const Table = React.forwardRef(function Table(
                     color='primary'
                     size='small'
                     onClick={onExport}
+                    startIcon={<Icon fontSize={14} name='download' />}
                   >
                     Export
                   </Button>

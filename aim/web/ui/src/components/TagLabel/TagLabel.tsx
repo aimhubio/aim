@@ -16,6 +16,8 @@ function TagLabel({
   onClick,
   size = 'medium',
   maxWidth = 'auto',
+  style,
+  className = '',
 }: ITagLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Chip
@@ -25,9 +27,10 @@ function TagLabel({
         color,
         border: `0.0625rem solid ${color}`,
         maxWidth,
+        ...style,
       }}
       size='small'
-      className={`TagLabel TagLabel${'__' + size}`}
+      className={`${className} TagLabel TagLabel${'__' + size}`}
       variant={variant}
       label={label}
       data-name={label}
