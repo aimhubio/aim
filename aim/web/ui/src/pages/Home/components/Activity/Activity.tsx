@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { CircularProgress, Grid } from '@material-ui/core';
 
 import HeatMap from 'components/HeatMap/HeatMap';
 import { IActivityProps } from 'types/pages/home/components/Activity/Activity';
@@ -16,16 +16,24 @@ function Activity({
   }
   let today = new Date();
   return (
-    <Grid className='Activity__container' container spacing={1}>
+    <Grid className='Activity' container spacing={1}>
       <Grid item>
         <h2>Statistics</h2>
         <div className='Activity__Statistics__card'>
           <span>Experiments</span>
-          <strong>{activityData?.num_experiments || 0}</strong>
+          <strong>
+            {activityData?.num_experiments || (
+              <CircularProgress className='Activity__loader' />
+            )}
+          </strong>
         </div>
         <div className='Activity__Statistics__card'>
           <span>Runs</span>
-          <strong>{activityData?.num_runs || 0}</strong>
+          <strong>
+            {activityData?.num_runs || (
+              <CircularProgress className='Activity__loader' />
+            )}
+          </strong>
         </div>
       </Grid>
       <Grid xs item>

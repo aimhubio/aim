@@ -1,64 +1,62 @@
-.ExploreAim__container {
+@use 'src/styles/abstracts' as *;
+
+.ExploreAim {
   display: flex;
   flex-direction: column;
-  border-left: 0.0625em solid #E8F1FC;
-  padding: 1.5em 1.5em 1.5em 2.5em;
+  border-left: 0.0625rem solid $cuddle-50;
+  padding: 1.5rem 1.5rem 1.5rem 2.5rem;
   min-width: 600px;
   h2 {
     margin: 0;
   }
-
-}
-
-.ExploreAim_card__container {
-  margin-top: 2em;
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 840px;
-}
-
-.ExploreAim__social__item {
-  border: 0.0625em solid #E8F1FC;
-  border-radius: 0.5em;
-  display: flex;
-  align-items: center;
-  padding: 1em 1.5em;
-  margin-bottom: 0.5em;
-  text-decoration: none;
-  max-width: 33em;
-  &:last-child {
-    margin-bottom: 0;
+  &__card__container {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 840px;
   }
-  &:visited {
-    color: unset;
-  };
-  &:hover {
-    border-color: #1473E6;
-    i {
-      color: #1473E6;
+  &__social {
+    margin-top: 2rem;
+    &__item {
+      border: 0.0625rem solid $cuddle-50;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+      max-width: 33rem;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      &:visited {
+        color: unset;
+      }
+      &:hover {
+        border-color: #1473e6;
+        i {
+          color: #1473e6;
+        }
+      }
+      span {
+        font-size: 1rem;
+        line-height: 1.1875rem;
+        color: $pico;
+        flex: 1;
+      }
+
+      img {
+        margin-right: 1rem;
+        width: 2rem;
+      }
+
+      i {
+        font-size: 0.625rem;
+        color: $text-color;
+      }
     }
   }
-  span {
-    font-size: 1em;
-    line-height: 1.1875em;
-    color: #031123;
-    flex: 1;
+  &__block__item {
+    margin-top: 3rem;
   }
-
-  img {
-    margin-right: 1em;
-    width: 2em;
-  }
-
-  i {
-    font-size: 0.625em;
-  }
-}
-
-.ExploreAim__social__container {
-  margin-top: 2em;
-}
-
-.ExploreAim__block__item {
-  margin-top: 3em;
 }

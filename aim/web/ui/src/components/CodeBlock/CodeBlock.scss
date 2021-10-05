@@ -1,10 +1,12 @@
 @use 'src/styles/abstracts' as *;
-
-.CodeBlock__container {
+.CodeBlock {
   background: #f2f3f4;
-  border-radius: 6px;
+  border-radius: $border-radius-main;
   padding: 1em 3em 1em 1em;
   position: relative;
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
   pre {
     margin: 0;
     font-style: normal;
@@ -13,15 +15,19 @@
     line-height: 1.3125em;
     color: #031123;
   }
-
   .prism-code {
     background-color: transparent !important;
   }
-}
-
-.CodeBlock__copy__span {
-  cursor: pointer;
-  position: absolute;
-  right: 0.5em;
-  top: 0.5em;
+  &__copy__span {
+    top: 1em;
+    right: 1em;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: $pico;
+    display: flex;
+    cursor: pointer;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+  }
 }

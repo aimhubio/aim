@@ -44,10 +44,10 @@ const cardsData: IExploreCard[] = [
 ];
 function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='ExploreAim__container'>
+    <div className='ExploreAim'>
       <div>
         <h2>Get Involved</h2>
-        <div className='ExploreAim__social__container'>
+        <div className='ExploreAim__social'>
           <a
             target='_blank'
             href='https://aimstack.slack.com'
@@ -74,7 +74,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
       </div>
       <div className='ExploreAim__block__item'>
         <h2>Explore Aim</h2>
-        <div className='ExploreAim_card__container'>
+        <div className='ExploreAim__card__container'>
           {cardsData.map((item: IExploreCard) => (
             <ExploreAimCard key={item.path} {...item} />
           ))}
