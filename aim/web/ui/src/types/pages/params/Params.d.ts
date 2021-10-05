@@ -17,7 +17,7 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { ITableRef } from 'components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {

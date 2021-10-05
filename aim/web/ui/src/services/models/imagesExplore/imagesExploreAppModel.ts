@@ -1,93 +1,47 @@
 import React from 'react';
 
-import _, { isEmpty, isNil } from 'lodash-es';
-// import { saveAs } from 'file-saver';
-// import moment from 'moment';
-import COLORS from 'config/colors/colors';
-// import metricsService from 'services/api/metrics/metricsService';
+import _, { isEmpty } from 'lodash-es';
 import createModel from '../model';
 import { decode, encode } from 'utils/encoder/encoder';
-// import getClosestValue from 'utils/getClosestValue';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import getObjectPaths from 'utils/getObjectPaths';
-// import {
-//   getMetricsTableColumns,
-//   metricsTableRowRenderer,
-// } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
-import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-// import appsService from 'services/api/apps/appsService';
-// import dashboardService from 'services/api/dashboard/dashboardService';
 import getUrlWithParam from 'utils/getUrlWithParam';
 // import getStateFromUrl from 'utils/getStateFromUrl';
-import {
-  aggregateGroupData,
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
 import {
   adjustable_reader,
   decode_buffer_pairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import getSmoothenedData from 'utils/getSmoothenedData';
-import filterMetricData from 'utils/filterMetricData';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import filterTooltipContent from 'utils/filterTooltipContent';
-import JsonToCSV from 'utils/JsonToCSV';
+import getStateFromUrl from 'utils/getStateFromUrl';
 
 // Types
 import {
   GroupNameType,
-  IAggregatedData,
-  IAggregationConfig,
-  IAlignMetricsDataParams,
   IAppData,
-  IChartTitle,
-  IChartTitleData,
-  IChartTooltip,
-  IChartZoom,
   IDashboardData,
-  IGetGroupingPersistIndex,
   IGroupingSelectOption,
   IMetricAppConfig,
-  IMetricAppModelState,
   IMetricsCollection,
-  IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
-  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
-import { ILine } from 'types/components/LineChart/LineChart';
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum, ScaleEnum } from 'utils/d3';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import {
-  AlignmentNotificationsEnum,
-  BookmarkNotificationsEnum,
-} from 'config/notification-messages/notificationMessages';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { getItem, setItem } from 'utils/storage';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import { formatValue } from 'utils/formatValue';
 import imagesExploreMockData from './imagesExploreMockData';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
 
 const model = createModel<Partial<any>>({
   requestIsPending: true,
 });
-let tooltipData: ITooltipData = {};
 
 function getConfig(): any {
   return {
@@ -130,37 +84,31 @@ let appRequestRef: {
 
 function initialize(appId: string): void {
   model.init();
-  model.setState({
-    config: getConfig(),
-  });
-  // if (!appId) {
-  //   setDefaultAppConfigData();
-  // }
+  // model.setState({
+  //   config: getConfig(),
+  // });
+  if (!appId) {
+    setDefaultAppConfigData();
+  }
 }
 
-// function setDefaultAppConfigData() {
-//   const grouping: IMetricAppConfig['grouping'] =
-//     getStateFromUrl('grouping') || getConfig().grouping;
-//   const chart: IMetricAppConfig['chart'] =
-//     getStateFromUrl('chart') || getConfig().chart;
-//   const select: IMetricAppConfig['select'] =
-//     getStateFromUrl('select') || getConfig().select;
+function setDefaultAppConfigData() {
+  const grouping: any = getStateFromUrl('grouping') || getConfig().grouping;
+  const select: any = getStateFromUrl('select') || getConfig().select;
+  const tableConfigHash = getItem('imagesExploreTable');
+  const table = tableConfigHash
+    ? JSON.parse(decode(tableConfigHash))
+    : getConfig().table;
+  const configData = _.merge(getConfig(), {
+    grouping, // not useful
+    select,
+    table,
+  });
 
-//   const tableConfigHash = getItem('metricsTable');
-//   const table = tableConfigHash
-//     ? JSON.parse(decode(tableConfigHash))
-//     : getConfig().table;
-//   const configData: IMetricAppConfig = _.merge(getConfig(), {
-//     chart, // not useful
-//     grouping, // not useful
-//     select,
-//     table,
-//   });
-
-//   model.setState({
-//     config: configData,
-//   });
-// }
+  model.setState({
+    config: configData,
+  });
+}
 
 // function getAppConfigData(appId: string) {
 //   if (appRequestRef) {
@@ -177,36 +125,6 @@ function initialize(appId: string): void {
 //     },
 //     abort: appRequestRef.abort,
 //   };
-// }
-
-// function getQueryStringFromSelect(
-//   selectData: IMetricAppConfig['select'] | undefined,
-// ) {
-//   let query = '';
-//   if (selectData !== undefined) {
-//     if (selectData.advancedMode) {
-//       query = selectData.advancedQuery;
-//     } else {
-//       query = `${
-//         selectData.query ? `${selectData.query} and ` : ''
-//       }(${selectData.metrics
-//         .map((metric) =>
-//           metric.value.context === null
-//             ? `(metric.name == "${metric.value.metric_name}")`
-//             : `${Object.keys(metric.value.context).map(
-//                 (item) =>
-//                   `(metric.name == "${
-//                     metric.value.metric_name
-//                   }" and metric.context.${item} == "${
-//                     (metric.value.context as any)[item]
-//                   }")`,
-//               )}`,
-//         )
-//         .join(' or ')})`.trim();
-//     }
-//   }
-
-//   return query;
 // }
 
 let imagesRequestRef: {
@@ -281,13 +199,30 @@ function getImagesData() {
       });
       // const stream = await metricsRequestRef.call(exceptionHandler);
       // const runData = await getRunData(stream);
-      // if (configData) {
-      setModelData(imagesExploreMockData, getConfig());
-      // }
+      if (configData) {
+        setModelData(imagesExploreMockData, configData);
+      }
       // }
     },
     // abort: imagesRequestRef.abort,
     abort: () => {},
+  };
+}
+
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
+  return {
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: IMetricAppConfig = _.merge(getConfig(), appData.state);
+      model.setState({
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
   };
 }
 
@@ -349,9 +284,7 @@ function processData(data: IRun<IMetricTrace>[]): {
 function setModelData(rawData: any[], configData: any) {
   // const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
-  // if (configData) {
-  //   setAggregationEnabled(configData);
-  // }
+
   // const tableData = getDataAsTableRows(
   //   data,
   //   configData?.chart?.focusedState.xValue ?? null,
@@ -412,9 +345,9 @@ function updateModelData(
   //   hiddenColumns: configData.table.hiddenColumns!,
   // });
 
-  // if (shouldURLUpdate) {
-  //   updateURL(configData);
-  // }
+  if (shouldURLUpdate) {
+    updateURL(configData);
+  }
 
   model.setState({
     config: configData,
@@ -540,7 +473,6 @@ function onGroupingModeChange({
   groupName,
   value,
 }: IOnGroupingModeChangeParams): void {
-  console.log(value);
   const configData = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {
@@ -595,10 +527,10 @@ function onGroupingApplyChange(): void {
  * @param {IMetricAppConfig} configData - the current state of the app config
  */
 function updateURL(configData = model.getState()!.config!) {
-  const { grouping, chart, select } = configData;
+  const { grouping, select } = configData;
   const url: string = getUrlWithParam(
-    ['grouping', 'chart', 'select'],
-    [encode(grouping), encode(chart), encode(select)],
+    ['grouping', 'select'],
+    [encode(grouping), encode(select)],
   );
 
   if (url === `${window.location.pathname}${window.location.search}`) {
@@ -607,7 +539,7 @@ function updateURL(configData = model.getState()!.config!) {
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('metricsUrl', url);
+    setItem('imagesExploreUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -642,10 +574,11 @@ async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
 
 function getDataAsImageSet(data: any) {
   if (!isEmpty(data)) {
+    const configData = model.getState()?.config;
     const imageSetData: any = {};
-    const groupFields = Object.keys(data[0].config);
+    const groupFields = configData?.grouping?.groupBy;
     data.forEach((group: any) => {
-      const path = groupFields.reduce((acc, field: any) => {
+      const path = groupFields.reduce((acc: any, field: any) => {
         acc.push(`${field}=${_.get(group.data[0], field)}`);
         return acc;
       }, [] as any);
@@ -672,6 +605,53 @@ function onNotificationAdd(notification: INotification) {
   }, 3000);
 }
 
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: any = model.getState()?.config;
+  if (configData) {
+    const app: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'images-explore' })
+      .call();
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call();
+      if (bookmark.name) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'success',
+          message: BookmarkNotificationsEnum.CREATE,
+        });
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: BookmarkNotificationsEnum.ERROR,
+        });
+      }
+    }
+  }
+  analytics.trackEvent('[ImagesExplore] Create bookmark');
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: any = model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, { state: configData, type: 'images-explore' })
+      .call()
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.UPDATE,
+          });
+        }
+      });
+  }
+  analytics.trackEvent('[ImagesExplore] Update bookmark');
+}
+
 const metricAppModel = {
   ...model,
   initialize,
@@ -686,6 +666,10 @@ const metricAppModel = {
   onResetConfigData,
   updateURL,
   updateModelData,
+  onBookmarkUpdate,
+  onBookmarkCreate,
+  getAppConfigData,
+  setDefaultAppConfigData,
 };
 
 export default metricAppModel;

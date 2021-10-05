@@ -64,7 +64,7 @@ const routes = {
     path: PathEnum.Params_Id,
     component: Params,
     showInSidebar: false,
-    displayName: 'MetricsId',
+    displayName: 'ParamsId',
   },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
@@ -91,6 +91,13 @@ const routes = {
     component: ImagesExplore,
     showInSidebar: true,
     displayName: 'Images',
+    icon: 'images',
+  },
+  IMAGE_EXPLORE_ID: {
+    path: PathEnum.Images_Explore_Id,
+    component: ImagesExplore,
+    showInSidebar: false,
+    displayName: 'ImagesId',
   },
 };
 

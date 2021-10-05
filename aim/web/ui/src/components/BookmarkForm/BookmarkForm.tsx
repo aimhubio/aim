@@ -11,7 +11,7 @@ import {
 import {
   IBookmarkFormState,
   IBookmarkFormProps,
-} from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+} from 'types/components/BookmarkForm/BookmarkForm';
 
 const initialState: IBookmarkFormState = { name: '', description: '' };
 function BookmarkForm({

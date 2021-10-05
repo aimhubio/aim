@@ -100,7 +100,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     if (!!metricsData.config) {
       if (
         metricsData.config.grouping !== getStateFromUrl('grouping') ||
-        metricsData.config.chart !== getStateFromUrl('chart') ||
         metricsData.config.select !== getStateFromUrl('select')
       ) {
         metricAppModel.setDefaultAppConfigData();

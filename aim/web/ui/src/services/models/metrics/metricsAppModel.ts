@@ -68,7 +68,7 @@ import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import {

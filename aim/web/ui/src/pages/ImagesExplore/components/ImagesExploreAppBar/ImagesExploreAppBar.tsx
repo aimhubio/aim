@@ -12,18 +12,17 @@ import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
 
-import './MetricsBar.scss';
+import './ImagesExploreAppBar.scss';
 
-function MetricsBar({
+function ImagesExploreAppBar({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
   title,
-}: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
+}: any): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
 
@@ -48,16 +47,18 @@ function MetricsBar({
           anchor={({ onAnchorClick }) => (
             <Button
               color='secondary'
-              className='MetricsBar__item__bookmark'
+              className='ImagesExploreAppBar__item__bookmark'
               size='small'
               onClick={onAnchorClick}
             >
-              <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
+              <span className='ImagesExploreAppBar__item__bookmark__span'>
+                Bookmark
+              </span>
               <Icon name='bookmarks' />
             </Button>
           )}
           component={
-            <div className='MetricsBar__popover'>
+            <div className='ImagesExploreAppBar__popover'>
               <MenuItem onClick={() => handleBookmarkClick('create')}>
                 Create Bookmark
               </MenuItem>
@@ -70,16 +71,18 @@ function MetricsBar({
       ) : (
         <Button
           color='secondary'
-          className='MetricsBar__item__bookmark'
+          className='ImagesExploreAppBar__item__bookmark'
           size='small'
           onClick={() => handleBookmarkClick('create')}
         >
-          <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
+          <span className='ImagesExploreAppBar__item__bookmark__span'>
+            Bookmark
+          </span>
           <Icon name='bookmarks' />
         </Button>
       )}
 
-      <div className='MetricsBar__menu'>
+      <div className='ImagesExploreAppBar__menu'>
         <ControlPopover
           title='Menu'
           anchor={({ onAnchorClick }) => (
@@ -93,7 +96,7 @@ function MetricsBar({
             </Button>
           )}
           component={
-            <div className='MetricsBar__popover'>
+            <div className='ImagesExploreAppBar__popover'>
               <MenuItem onClick={onResetConfigData}>
                 Reset Controls to System Defaults
               </MenuItem>
@@ -135,4 +138,4 @@ function MetricsBar({
   );
 }
 
-export default React.memo(MetricsBar);
+export default React.memo(ImagesExploreAppBar);
