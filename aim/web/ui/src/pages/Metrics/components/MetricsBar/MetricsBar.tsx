@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  Switch,
   Typography,
 } from '@material-ui/core';
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
@@ -18,7 +17,6 @@ import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
 
 import './MetricsBar.scss';
-import Switcher from 'components/Switcher/Switcher';
 
 function MetricsBar({
   onBookmarkCreate,
@@ -80,14 +78,7 @@ function MetricsBar({
           <Icon name='bookmarks' />
         </Button>
       )}
-
       <div className='MetricsBar__menu'>
-        <Switcher
-          onChange={(checked) => console.log(checked)}
-          leftLabel='on'
-          rightLabel='off'
-          checked={true}
-        />
         <ControlPopover
           title='Menu'
           anchor={({ onAnchorClick }) => (

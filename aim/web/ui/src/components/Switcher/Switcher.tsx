@@ -1,37 +1,55 @@
 import React from 'react';
-import { ISwitcherProps } from 'types/components/Switcher/Switcher';
+import {
+  ISwitcherProps,
+  SwitcherLabel,
+} from 'types/components/Switcher/Switcher';
 import Icon from 'components/Icon/Icon';
 
 import './Switcher.scss';
 
 function Switcher({
-  checked,
   onChange,
+  checked,
   color = 'primary',
   leftLabel,
   rightLabel,
   size = 'medium',
+  variant = 'contained',
+  name = 'switcher',
 }: ISwitcherProps) {
-  const [state, setState] = React.useState<boolean>(checked);
+  const [checkedValue, setCheckedValue] = React.useState<boolean | undefined>(
+    checked,
+  );
 
-  function handleClick() {
-    setState(!state);
-    onChange(!state);
+  function handleClick(e: React.ChangeEvent<any>) {
+    setCheckedValue(!checkedValue);
+    onChange(e, !checkedValue);
+  }
+
+  function isValidLabel(label: SwitcherLabel | unknown) {
+    return !(label === null || label === undefined);
   }
   return (
-    <div
-      className={`Switcher ${`Switcher__${color}`} ${`Switcher__${size}`}`}
+    <button
+      data-name={name}
+      className={`Switcher ${`Switcher__${variant}`} ${`Switcher__${color}`} ${`Switcher__${size} ${
+        checkedValue ? 'Switcher__checked' : ''
+      }`}`}
       onClick={handleClick}
     >
-      <span className='Switcher__leftLabel'>{leftLabel || null}</span>
+      {isValidLabel(leftLabel) && (
+        <span className='Switcher__leftLabel'>{leftLabel}</span>
+      )}
       <Icon
         className={`Switcher__circle ${
-          state ? 'Switcher__circle__checked' : ''
+          checkedValue ? 'Switcher__circle__checked' : ''
         }`}
         name='check-circle'
       />
-      <span className='Switcher__rightLabel'>{rightLabel}</span>
-    </div>
+      {isValidLabel(rightLabel) && (
+        <span className='Switcher__rightLabel'>{rightLabel}</span>
+      )}
+    </button>
   );
 }
 

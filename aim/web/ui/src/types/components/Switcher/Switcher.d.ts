@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 export interface ISwitcherProps {
-  leftLabel?: string | number | React.FunctionComponent<React.ReactNode>;
-  rightLabel?: string | number | React.FunctionComponent<React.ReactNode>;
-  checked: boolean;
+  leftLabel?: SwitcherLabel;
+  rightLabel?: SwitcherLabel;
+  checked: boolean | undefined;
   color?: 'primary' | 'secondary';
   size?: 'small' | 'medium' | 'large';
-  onChange: (checked: boolean) => void;
+  variant?: 'contained' | 'outlined';
+  name?: string;
+  onChange: (e: React.ChangeEvent, checked: boolean) => void;
 }
+
+export type SwitcherLabel =
+  | string
+  | number
+  | React.FunctionComponent<React.ReactElement>
+  | ReactElement;
