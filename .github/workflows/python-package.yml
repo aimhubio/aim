@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
         os: [ 'macos-latest' ]
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
     steps:
