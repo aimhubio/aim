@@ -54,7 +54,7 @@ function RunMetricCard({
             <TagLabel
               key={index}
               color={COLORS[0][(i + index) % COLORS[0].length]}
-              label={label || ''}
+              label={label || 'No context'}
             />
           ))}
       </div>
