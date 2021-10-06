@@ -429,21 +429,30 @@ function onBookmarkUpdate(id: string) {
   analytics.trackEvent('[MetricsExplorer] Update bookmark');
 }
 
-function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
+function getGroupingSelectOptions(
+  params: string[],
+  contexts: string[],
+): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
+  }));
+
+  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
+    group: 'metric',
+    label: `metric.context.${context}`,
+    value: `context.${context}`,
   }));
 
   return [
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
@@ -453,22 +462,20 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
       label: 'metric.name',
       value: 'metric_name',
     },
-    {
-      group: 'metric',
-      label: 'context.subset',
-      value: 'context.subset',
-    },
+    ...contextOptions,
   ];
 }
 
 function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
+  contexts: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: IMetric[] = [];
   let index: number = -1;
   let params: string[] = [];
+  let contexts: string[] = [];
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
   data?.forEach((run: IRun<IMetricTrace>) => {
@@ -477,6 +484,9 @@ function processData(data: IRun<IMetricTrace>[]): {
       run.traces.map((trace: any) => {
         index++;
 
+        contexts = contexts.concat(
+          getObjectPaths(trace.context, trace.context),
+        );
         const { values, steps, epochs, timestamps } = filterMetricData({
           values: [...new Float64Array(trace.values.blob)],
           steps: [...new Float64Array(trace.iters.blob)],
@@ -536,12 +546,14 @@ function processData(data: IRun<IMetricTrace>[]): {
     ),
   );
   const uniqParams = _.uniq(params);
+  const uniqContexts = _.uniq(contexts);
 
   setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
     params: uniqParams,
+    contexts: uniqContexts,
   };
 }
 
@@ -1442,7 +1454,7 @@ function updateModelData(
   configData: IMetricAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params } = processData(
+  const { data, params, contexts } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(
@@ -1452,7 +1464,7 @@ function updateModelData(
     false,
     configData,
   );
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
@@ -1940,7 +1952,7 @@ function setModelData(
   configData: IMetricAppConfig,
 ) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params } = processData(rawData);
+  const { data, params, contexts } = processData(rawData);
   if (configData) {
     setAggregationEnabled(configData);
   }
@@ -1971,7 +1983,7 @@ function setModelData(
       onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    groupingSelectOptions: [...getGroupingSelectOptions(params, contexts)],
   });
 }
 
