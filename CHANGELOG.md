@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.2 Oct 6 2021
+- Integrate readthedocs (gorarakelyan)
+
 ## 2.7.1 Jun 30 2021
 - Fix bookmark navigation issue (roubkar)
 - Empty metric select on X-axis alignment property change (roubkar)
