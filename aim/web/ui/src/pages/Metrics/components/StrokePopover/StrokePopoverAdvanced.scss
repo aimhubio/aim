@@ -1,12 +1,22 @@
 @use 'src/styles/abstracts' as *;
 
-.StrokePopoverAdvanced__container {
-  padding: 1rem;
-}
+.StrokePopoverAdvanced {
+  &__container {
+    padding: 1rem;
+    &__span {
+      display: inline-block;
+      font-size: $text-md;
+      font-family: 'Inter Regular', sans-serif;
+      margin: 1rem 0;
+    }
+  }
 
-.StrokePopoverAdvanced__container__span {
-  display: inline-block;
-  font-size: $text-md;
-  font-family: 'Inter Regular', sans-serif;
-  margin: 1rem 0;
+  &__Switcher__button__container {
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    .ColorPopoverAdvanced__container__span {
+      margin-left: 0.875rem;
+    }
+  }
 }

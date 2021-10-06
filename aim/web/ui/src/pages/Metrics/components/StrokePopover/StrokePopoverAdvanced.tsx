@@ -5,6 +5,7 @@ import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/
 import Button from 'components/Button/Button';
 
 import './StrokePopoverAdvanced.scss';
+import Switcher from 'components/Switcher/Switcher';
 
 function StrokePopoverAdvanced({
   onPersistenceChange,
@@ -27,11 +28,12 @@ function StrokePopoverAdvanced({
           the same stroke style regardless to its order
         </span>
         <div className='flex fac fjb'>
-          <div>
-            <Switch
+          <div className='StrokePopoverAdvanced__Switcher__button__container'>
+            <Switcher
               color='primary'
               checked={persistence}
               onChange={() => onPersistenceChange('stroke')}
+              size='large'
             />
             <span className='ColorPopoverAdvanced__container__span'>
               Enable
