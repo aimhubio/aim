@@ -1,0 +1,4 @@
+sphinx
+sphinx_rtd_theme
+m2r2==0.3.1
+aim==2.7.1
