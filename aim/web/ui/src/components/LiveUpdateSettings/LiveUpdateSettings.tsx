@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Typography } from '@material-ui/core';
+import Switcher from 'components/Switcher/Switcher';
 
 import './LiveUpdateSettings.scss';
 
@@ -15,8 +15,7 @@ function LiveUpdateSettings(
   return (
     <div className='App_LiveUpdateSettings_Container'>
       <span className='LiveUpdateText'>Live update:</span>
-      <Switch
-        disableRipple
+      <Switcher
         checked={Boolean(props.enabled)}
         onChange={(d) => {
           props.onLiveUpdateConfigChange({ enabled: !props.enabled });

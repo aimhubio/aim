@@ -1,9 +1,9 @@
 @use 'src/styles/abstracts' as *;
 
 .App_LiveUpdateSettings_Container {
-  margin-right: 0.8rem;
+  margin-right: 1.5rem;
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   .LiveUpdateText {
     font-weight: 500;
     font-size: 0.875rem;
