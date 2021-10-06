@@ -1,8 +1,9 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
-import './ColumnItem.scss';
 import Icon from 'components/Icon/Icon';
+
+import './ColumnItem.scss';
 
 function ColumnItem(props: any) {
   return (
@@ -12,9 +13,8 @@ function ColumnItem(props: any) {
           className='ColumnItem__container'
           {...provided.draggableProps}
           ref={provided.innerRef}
-          onClick={props.onClick}
         >
-          <span className='ColumnItem__toggle'>
+          <span onClick={props.onClick} className='ColumnItem__toggle'>
             <Icon
               name={props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
             />

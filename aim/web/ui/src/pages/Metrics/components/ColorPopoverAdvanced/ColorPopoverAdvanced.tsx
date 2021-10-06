@@ -3,14 +3,18 @@ import { Box, Radio, Switch } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
+import Button from 'components/Button/Button';
 
 import './ColorPopoverAdvanced.scss';
+import Switcher from 'components/Switcher/Switcher';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
   onGroupingPaletteChange,
+  onShuffleChange,
   persistence,
   paletteIndex,
+  groupingData,
 }: IGroupingPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
   function onPaletteChange(e: React.ChangeEvent<HTMLInputElement>) {
     let { value } = e.target;
@@ -18,6 +22,13 @@ function ColorPopoverAdvanced({
       onGroupingPaletteChange(parseInt(value));
     }
   }
+  function isShuffleDisabled(): boolean {
+    if (groupingData.reverseMode.color || groupingData.color.length > 0) {
+      return false;
+    }
+    return true;
+  }
+
   return (
     <div className='ColorPopoverAdvanced__container'>
       <div className='ColorPopoverAdvanced__persistence'>
@@ -26,9 +37,27 @@ function ColorPopoverAdvanced({
           Enable persistent coloring mode so that each item always has the same
           color regardless of its order.
         </p>
-        <div>
-          <Switch color='primary' />
-          <span className='ColorPopoverAdvanced__container__span'>Enable</span>
+        <div className='flex fac fjb'>
+          <div className='ColorPopoverAdvanced__Switcher__button__container'>
+            <Switcher
+              onChange={() => onPersistenceChange('color')}
+              checked={persistence}
+              size='large'
+            />
+            <span className='ColorPopoverAdvanced__container__span'>
+              Enable
+            </span>
+          </div>
+          {persistence && (
+            <Button
+              disabled={isShuffleDisabled()}
+              onClick={() => onShuffleChange('color')}
+              variant='contained'
+              size='small'
+            >
+              Shuffle
+            </Button>
+          )}
         </div>
       </div>
       <div className='ColorPopoverAdvanced__preferred__colors'>

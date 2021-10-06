@@ -1,6 +1,6 @@
 //@ts-nocheck
 export const SEGMENT_DEMO_WRITE_KEY = 'Rj1I4AisLSvsvAnPW7OqkoYBUTXJRBHK';
-export const SEGMENT_WRITE_KEY = 'LBnAonwto541z4Dn4ntGJScCsYNRdIC3';
+export const SEGMENT_WRITE_KEY = 'RrVqLHHD6WDXoFBkodO9KidodTtU92XO';
 export function isDev() {
   return process.env.NODE_ENV === 'development';
 }
@@ -24,6 +24,7 @@ const init = () => {
     window.analytics.load(SEGMENT_WRITE_KEY);
   }
 };
+
 const pageView = (pageName, pageCat = null) => {
   if (!enabled()) {
     return;

@@ -6,7 +6,7 @@ import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import Icon from 'components/Icon/Icon';
 import { IconName } from 'types/components/Icon/Icon';
 
-import './groupingItemStyle.scss';
+import './GroupingItem.scss';
 
 const icons = {
   stroke: 'line-style',
@@ -30,9 +30,8 @@ function GroupingItem({
     <ControlPopover
       title={title}
       anchor={({ onAnchorClick, opened }) => (
-        <div className={'GroupingItem__container'}>
+        <div onClick={onAnchorClick} className={'GroupingItem__container'}>
           <div
-            onClick={onAnchorClick}
             className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
               groupingData?.[groupName]?.length > 0 ? 'outlined' : ''
             }`}

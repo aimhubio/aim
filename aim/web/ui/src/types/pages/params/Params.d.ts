@@ -19,7 +19,6 @@ import { ITableRef } from 'components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import paramsAppModel from '../../../services/models/params/paramsAppModel';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -54,6 +53,18 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tableRowHeight: any;
   resizeMode: ResizeModeEnum;
   notifyData: INotification[];
+  onSortFieldsChange: any;
+  onParamVisibilityChange: any;
+  onColumnsOrderChange: any;
+  tableData: any;
+  tableRowHeight?: any;
+  onTableRowHover?: any;
+  onTableRowClick?: any;
+  tableColumns: any;
+  tableRowHeight: any;
+  hiddenColumns: any;
+  onRowHeightChange: any;
+  columnsWidths: { [key: string]: number };
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (
@@ -76,22 +87,12 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
-  onRowHeightChange: any;
   onColumnsVisibilityChange: (order: any) => void;
   onTableDiffShow: () => void;
-  onSortFieldsChange: any;
-  onParamVisibilityChange: any;
-  onColumnsOrderChange: any;
-  tableData: any;
-  tableRowHeight?: any;
-  onTableRowHover?: any;
-  onTableRowClick?: any;
-  tableColumns: any;
-  tableRowHeight: any;
-  hiddenColumns: any;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   onSortReset: () => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
+  onShuffleChange: (name: 'stroke' | 'color') => void;
   columnsWidths: { [key: string]: number };
   liveUpdateConfig: { delay: number; enabled: boolean };
   onLiveUpdateConfigChange: (config: {

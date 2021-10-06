@@ -14,7 +14,6 @@
     line-height: 1.25em;
     text-align: center;
     text-transform: capitalize;
-    color: #374A61;
   }
 }
 
@@ -26,28 +25,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all .18s ease-out;
+  transition: all 0.18s ease-out;
 
   &:last-child {
     margin-right: 0;
   }
 
   i {
-    color: #1473E6;
+    color: #1473e6;
     font-size: 24px;
   }
 
   &:hover {
-    background-color: tint($primary-color, 90);
+    background-color: $pico-5;
   }
 
-  &.active, &.outlined {
+  &.active {
+    background-color: tint($primary-color, 90);
+  }
+  &.outlined {
+    background-color: tint($primary-color, 90);
     border: 0.0625rem solid tint($primary-color, 30);
-    background-color: tint($primary-color, 90);
-  }
-
-  &.disabled {
-
   }
 }
 

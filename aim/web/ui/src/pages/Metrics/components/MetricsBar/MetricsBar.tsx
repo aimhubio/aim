@@ -85,7 +85,6 @@ function MetricsBar({
           <Icon name='bookmarks' />
         </Button>
       )}
-
       <div className='MetricsBar__menu'>
         <ControlPopover
           title='Menu'

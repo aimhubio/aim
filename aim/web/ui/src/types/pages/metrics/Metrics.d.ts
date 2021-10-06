@@ -31,7 +31,6 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import runsAppModel from '../../../services/models/runs/runsAppModel';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -111,6 +110,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   columnsWidths: { [key: string]: number };
+  onShuffleChange: (name: 'stroke' | 'color') => void;
+  onSearchQueryCopy: () => void;
   liveUpdateConfig: { delay: number; enabled: boolean };
   onLiveUpdateConfigChange: (config: {
     delay?: number;

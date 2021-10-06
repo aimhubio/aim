@@ -36,7 +36,6 @@ import {
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import getStateFromUrl from 'utils/getStateFromUrl';
-import metricsAppModel from 'services/models/metrics/metricsAppModel';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -89,7 +88,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     metricsRequestRef.call();
     analytics.pageView('[MetricsExplorer]');
     return () => {
-      metricsAppModel.destroy();
+      metricAppModel.destroy();
       metricsRequestRef.abort();
       if (appRequestRef) {
         appRequestRef.abort();
@@ -209,7 +208,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
       // live update
       liveUpdateConfig={metricsData.config.liveUpdate}
-      onLiveUpdateConfigChange={metricsAppModel.changeLiveUpdateConfig}
+      onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
+      onShuffleChange={metricAppModel.onShuffleChange}
+      onSearchQueryCopy={metricAppModel.onSearchQueryCopy}
     />
   );
 }

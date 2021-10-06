@@ -43,11 +43,14 @@ class TaskQueue(object):
                 break
             task_f, args, kwargs = self._queue.get()
             task_f(*args, **kwargs)
+            # clear the unnecessary references to Run objects
+            task_f, args, kwargs = None, None, None
             self._queue.task_done()
 
     def wait_for_finish(self):
         if self._stopped:
             return
+        # TODO: [MV, AT] think about other solution instead of join()
         self._queue.join()
 
     def stop_workers(self):
