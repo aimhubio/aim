@@ -25,7 +25,7 @@ Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
 
 <br />
   
-<img src="https://user-images.githubusercontent.com/13848158/136271722-56c4d0e0-ea75-4c08-8671-9e2859592a47.gif" />
+<img src="https://user-images.githubusercontent.com/13848158/136272428-44090e7e-d570-4bae-b58b-4115ab8a8061.gif" />
 
 <br />
 
@@ -65,16 +65,23 @@ $ pip install aim==3.0.0b6
 </summary>
 
 ```python
-import aim
+from aim import Run
 
-# Save inputs, hparams or any other `key: value` pairs
-aim[(hyperparam_dict, name='hparams') # Passing name argument is optional
+# Initialize a new run
+run = Run()
 
-# ...
-for step in range(10):
-    # Log metrics to visualize performance
-    aim.track(metric_value, name='metric_name', epoch=epoch_number)
-# ...
+# Log run parameters
+run["hparams"] = {
+    "learning_rate": 0.001,
+    "batch_size": 32,
+}
+
+# Log metrics
+for step, sample in enumerate(train_loader):
+    # ...
+    run.track(loss_val, name='loss', step=step, epoch=epoch, context={ "subset": "train" })
+    run.track(acc_val, name='acc', step=step, epoch=epoch, context={ "subset": "train" })
+    # ...
 ```
 
 _See documentation [here](#sdk-specifications)._
@@ -167,5 +174,3 @@ _See documentation [here](#xgboost)._
 ```shell
 $ aim up
 ```
-
-[Contributor Guide](https://github.com/aimhubio/aim/wiki/Contributing)
