@@ -34,6 +34,7 @@ body {
   }
 
   &__OutLined {
+    height: 20px;
     &__Small {
       .MuiInputLabel-outlined.MuiInputLabel-marginDense {
         font-weight: 500;

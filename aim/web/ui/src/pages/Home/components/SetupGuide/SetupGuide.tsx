@@ -3,6 +3,7 @@ import CodeBlock from 'components/CodeBlock/CodeBlock';
 import Icon from 'components/Icon/Icon';
 
 import './SetupGuide.scss';
+import AskForm from '../AskForm/AskForm';
 
 function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -54,6 +55,7 @@ for step in range(10):
           <span>Live demo</span>
         </div>
       </div>
+      <AskForm />
     </div>
   );
 }

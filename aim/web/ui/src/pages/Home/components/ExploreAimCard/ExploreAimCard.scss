@@ -6,10 +6,11 @@
   border-radius: 0.5rem;
   border: 0.0625rem solid $cuddle-50;
   transition: background-color 0.3s ease-out;
-  padding: 1.5rem 1.5rem 0.875rem 1.5rem;
+  padding: 1.5rem 1.5rem 2rem 1.5rem;
   margin-bottom: 2rem;
   margin-right: 2rem;
   text-decoration: none;
+  position: relative;
   color: $pico;
   &:hover {
     background-color: #1473e6;
@@ -31,7 +32,7 @@
     margin-bottom: 0.875rem;
     transition: all 0.3s ease-out;
     i {
-      font-size: 1.5rem;
+      font-size: 1.375rem;
     }
   }
   &__title {
@@ -44,9 +45,11 @@
     font-weight: 400;
     font-size: 0.75rem;
     margin-top: 0.5rem;
-    margin-bottom: 0.75rem;
   }
   &__arrow__icon {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.25rem;
     display: flex;
     justify-content: flex-end;
 
