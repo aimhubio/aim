@@ -348,8 +348,8 @@ function getChartTitleData(
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
-              metricsCollection.config[groupItemKey] || 'None',
+            acc[groupItemKey.replace('run.params.', '')] = formatValue(
+              metricsCollection.config[groupItemKey],
             );
             return acc;
           }
@@ -373,7 +373,7 @@ function processData(data: IRun<IParamTrace>[]): {
   const paletteIndex: number = grouping?.paletteIndex || 0;
   const metricsColumns: any = {};
 
-  data.forEach((run: IRun<IParamTrace>, index) => {
+  data?.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     run.traces.forEach((trace) => {
       metricsColumns[trace.metric_name] = {
@@ -541,8 +541,8 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: JSON.stringify(
-            _.get(metricsCollection.config, paramKey, '-'),
+          [paramKey.replace('run.params.', '')]: formatValue(
+            _.get(metricsCollection.config, paramKey),
           ),
         });
         return acc;
@@ -566,9 +566,7 @@ function setTooltipData(
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: JSON.stringify(
-              _.get(param, `run.params.${paramKey}`, '-'),
-            ),
+            [paramKey]: formatValue(_.get(param, `run.params.${paramKey}`)),
           });
           return acc;
         }, {}),

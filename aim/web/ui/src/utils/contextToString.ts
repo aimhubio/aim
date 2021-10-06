@@ -1,3 +1,5 @@
+import { formatValue } from './formatValue';
+
 function contextToString(
   obj: { [key: string]: unknown },
   mode?: string,
@@ -9,7 +11,7 @@ function contextToString(
             case 'keyHash':
               return `${key}-${obj[key]}`;
             default:
-              return `${key}="${obj[key]}"`;
+              return `${key}=${formatValue(obj[key])}`;
           }
         })
         .join(mode === 'keyHash' ? '' : ', ')

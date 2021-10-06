@@ -255,9 +255,9 @@ function getQueryStringFromSelect(
                 (item) =>
                   `(metric.name == "${
                     metric.value.metric_name
-                  }" and metric.context.${item} == "${
-                    (metric.value.context as any)[item]
-                  }")`,
+                  }" and metric.context.${item} == ${formatValue(
+                    (metric.value.context as any)[item],
+                  )})`,
               )}`,
         )
         .join(' or ')})`.trim();
@@ -369,8 +369,8 @@ function getChartTitleData(
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
-              metricsCollection.config[groupItemKey] || 'None',
+            acc[groupItemKey.replace('run.params.', '')] = formatValue(
+              metricsCollection.config[groupItemKey],
             );
           }
           return acc;
@@ -1094,15 +1094,15 @@ function getDataAsTableRows(
         value:
           closestIndex === null
             ? '-'
-            : `${metric.data.values[closestIndex] ?? '-'}`,
+            : formatValue(metric.data.values[closestIndex]),
         step:
           closestIndex === null
             ? '-'
-            : `${metric.data.steps[closestIndex] ?? '-'}`,
+            : formatValue(metric.data.steps[closestIndex]),
         epoch:
           closestIndex === null
             ? '-'
-            : `${metric.data.epochs[closestIndex] ?? '-'}`,
+            : formatValue(metric.data.epochs[closestIndex]),
         time:
           closestIndex !== null ? metric.data.timestamps[closestIndex] : null,
         parentId: groupKey,
@@ -1229,8 +1229,8 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: JSON.stringify(
-            _.get(metricsCollection.config, paramKey, '-'),
+          [paramKey.replace('run.params.', '')]: formatValue(
+            _.get(metricsCollection.config, paramKey),
           ),
         });
         return acc;
@@ -1257,9 +1257,7 @@ function setTooltipData(
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: JSON.stringify(
-              _.get(metric, `run.params.${paramKey}`, '-'),
-            ),
+            [paramKey]: formatValue(_.get(metric, `run.params.${paramKey}`)),
           });
           return acc;
         }, {}),
