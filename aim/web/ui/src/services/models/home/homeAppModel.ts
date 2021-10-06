@@ -1,5 +1,6 @@
 import createModel from '../model';
 import projectsService from 'services/api/projects/projectsService';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
 const model = createModel<any>({});
 
@@ -16,13 +17,57 @@ function getActivityData() {
   };
 }
 
+function onSendEmail(data: object): Promise<any> {
+  return fetch('https://formspree.io/f/mvodyvwp', {
+    method: 'Post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(async (res) => await res.json())
+    .then((data) => {
+      if (data.ok) {
+        onNotificationAdd({
+          severity: 'success',
+          message: 'Email Successfully sent',
+          id: Date.now(),
+        });
+      } else {
+        onNotificationAdd({
+          severity: 'error',
+          message: 'Please enter valid email',
+          id: Date.now(),
+        });
+      }
+      return data;
+    });
+}
 function initialize() {
   model.init();
 }
+
+function onNotificationDelete(id: number) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData].filter((i) => i.id !== id);
+  model.setState({ notifyData });
+}
+
+function onNotificationAdd(notification: INotification) {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+  notifyData = [...notifyData, notification];
+  model.setState({ notifyData });
+  setTimeout(() => {
+    onNotificationDelete(notification.id);
+  }, 3000);
+}
+
 const homeAppModel = {
   ...model,
   initialize,
   getActivityData,
+  onSendEmail,
+  onNotificationDelete,
 };
 
 export default homeAppModel;

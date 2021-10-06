@@ -1,12 +1,28 @@
 import React from 'react';
+import { TextField } from '@material-ui/core';
 
 import avatarImg from 'assets/gevImg.jpeg';
 
-import './AskForm.scss';
-import { TextField } from '@material-ui/core';
 import Button from 'components/Button/Button';
+import { IAskFormProps } from 'types/pages/home/components/AskForm/AskForm';
 
-function AskForm(): React.FunctionComponentElement<React.ReactNode> {
+import './AskForm.scss';
+
+function AskForm({
+  onSendEmail,
+}: IAskFormProps): React.FunctionComponentElement<React.ReactNode> {
+  const [email, setEmail] = React.useState('');
+
+  async function handleSubmit() {
+    const data = await onSendEmail({ email });
+    if (data.ok) {
+      setEmail('');
+    }
+  }
+
+  function onChange(e: React.ChangeEvent<any>): void {
+    setEmail(e.target.value);
+  }
   return (
     <div className='AskForm'>
       <div className='AskForm__avatar'>
@@ -20,12 +36,19 @@ function AskForm(): React.FunctionComponentElement<React.ReactNode> {
         reach out asap
       </p>
       <TextField
-        className='TextField__OutLined'
+        className='TextField__OutLined__Large'
         placeholder='Write your email'
-        size='small'
         variant='outlined'
+        onChange={onChange}
+        value={email}
       />
-      <Button variant='contained'>Submit</Button>
+      <Button
+        onClick={handleSubmit}
+        variant='contained'
+        className='AskForm__submit'
+      >
+        Submit
+      </Button>
     </div>
   );
 }

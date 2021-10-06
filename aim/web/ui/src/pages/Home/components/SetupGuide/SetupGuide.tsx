@@ -1,11 +1,14 @@
 import React from 'react';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import Icon from 'components/Icon/Icon';
+import AskForm from '../AskForm/AskForm';
+import { ISetupGuideProps } from 'types/pages/home/components/SetupGuide/SetupGuide';
 
 import './SetupGuide.scss';
-import AskForm from '../AskForm/AskForm';
 
-function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
+function SetupGuide({
+  onSendEmail,
+}: ISetupGuideProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='SetupGuide__container'>
       <h2>Integrate Aim with your code</h2>
@@ -55,7 +58,7 @@ for step in range(10):
           <span>Live demo</span>
         </div>
       </div>
-      <AskForm />
+      <AskForm onSendEmail={onSendEmail} />
     </div>
   );
 }
