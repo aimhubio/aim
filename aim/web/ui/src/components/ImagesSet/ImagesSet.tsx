@@ -1,5 +1,5 @@
 import React from 'react';
-import imagesExploreMockData from 'services/models/imagesExplore/imagesExploreMockData';
+import './ImageSet.scss';
 
 const ImagesSet = React.forwardRef(function ImageSet(
   { data, title }: any,
@@ -8,17 +8,22 @@ const ImagesSet = React.forwardRef(function ImageSet(
   return (
     <div className='ImagesSet'>
       {Array.isArray(data) ? (
-        <div className='ImagesSet__imagesBox'>
-          <span>{title}</span>
-          <div>
+        <div className='ImagesSet__container'>
+          <span className='ImagesSet__container__title'>{title}</span>
+          <div className='ImagesSet__container__imagesBox'>
             {data.map(({ src }, index) => (
-              <img key={index} src={src} alt='' />
+              <div
+                key={index}
+                className='ImagesSet__container__imagesBox__imageBox'
+              >
+                <img src={src} alt='' />
+              </div>
             ))}
           </div>
         </div>
       ) : (
-        <div>
-          <p>{title}</p>
+        <div className='ImagesSet__container'>
+          <p className='ImagesSet__container__title'>{title}</p>
           {Object.keys(data).map((keyName, key) => (
             <ImagesSet
               key={key}
