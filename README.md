@@ -4,7 +4,7 @@
 |---|
 
 <br />
-  
+
 <img src="https://user-images.githubusercontent.com/13848158/136364717-0939222c-55b6-44f0-ad32-d9ab749546e4.png" height="70" />
 
 <br />
@@ -27,8 +27,9 @@
 </h3>
   
 ---
-
-<img src="https://user-images.githubusercontent.com/13848158/136272428-44090e7e-d570-4bae-b58b-4115ab8a8061.gif" />
+<kbd>
+  <img src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+</kbd>
 
 <br />
 
