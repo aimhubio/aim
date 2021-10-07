@@ -195,8 +195,6 @@ function getRunsData(isInitial = true) {
   };
 }
 
-function setLiveUpdateConfig() {}
-// Thread end
 function getConfig() {
   return {
     grouping: {
