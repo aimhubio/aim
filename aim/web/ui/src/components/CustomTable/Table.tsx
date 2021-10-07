@@ -5,10 +5,12 @@ import './Table.scss';
 
 import React, { useRef, useState, useEffect } from 'react';
 import _ from 'lodash-es';
+import { VariableSizeList } from 'react-window';
 import classNames from 'classnames';
-import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 
+import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 import Column from './TableColumn';
+import AutoResizer from 'components/Table/AutoResizer';
 
 function Table(props) {
   const columns = props.columns;
@@ -190,6 +192,7 @@ function Table(props) {
         [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
           true,
       })}
+      onScroll={(e) => console.log('scroll')}
     >
       <div
         className={classNames({
@@ -252,51 +255,76 @@ function Table(props) {
           </div>
         )}
         <div className='Table__pane Table__pane--middle'>
-          {middlePane.map((col, index) => (
-            <Column
-              key={col.key}
-              topHeader={props.topHeader}
-              showTopHeaderContent={
-                props.topHeader &&
-                sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
-                  ?.topHeader !== col.topHeader
-              }
-              showTopHeaderBorder={
-                props.topHeader &&
-                sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
-                  ?.topHeader !== col.topHeader
-              }
-              col={col}
-              data={props.data}
-              groups={props.groups}
-              expanded={expanded}
-              expand={expand}
-              togglePin={togglePin}
-              pinnedTo={null}
-              firstColumn={index === 0 && leftPane.length === 0}
-              width={props.columnsWidths?.[col.key]}
-              updateColumnWidth={props.updateColumnsWidths}
-              headerMeta={props.headerMeta}
-              isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-              hideColumn={() =>
-                props.setExcludedFields?.([
-                  ...(props.excludedFields || []),
-                  col.key,
-                ])
-              }
-              paneFirstColumn={index === 0}
-              paneLastColumn={index === middlePane.length - 1}
-              moveColumn={(dir) => moveColumn(col.key, 'middle', index, dir)}
-              sortable={
-                col.sortableKey &&
-                props.sortFields.findIndex((f) => f[0] === col.sortableKey) ===
-                  -1
-              }
-              sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-              onRowHover={props.onRowHover}
-              onRowClick={props.onRowClick}
-            />
-          ))}
+          <AutoResizer>
+            {({ width, height }) => (
+              <VariableSizeList
+                width={width}
+                height={height}
+                itemCount={middlePane.length}
+                itemSize={(index) => 150}
+                layout='horizontal'
+              >
+                {({ index, style }) => {
+                  const col = middlePane[index];
+                  return (
+                    <Column
+                      key={col.key}
+                      style={style}
+                      topHeader={props.topHeader}
+                      showTopHeaderContent={
+                        props.topHeader &&
+                        sortedColumns[
+                          (leftPane ? leftPane.length : 0) + index - 1
+                        ]?.topHeader !== col.topHeader
+                      }
+                      showTopHeaderBorder={
+                        props.topHeader &&
+                        sortedColumns[
+                          (leftPane ? leftPane.length : 0) + index + 1
+                        ]?.topHeader !== col.topHeader
+                      }
+                      col={col}
+                      data={props.data}
+                      groups={props.groups}
+                      expanded={expanded}
+                      expand={expand}
+                      togglePin={togglePin}
+                      pinnedTo={null}
+                      firstColumn={index === 0 && leftPane.length === 0}
+                      width={props.columnsWidths?.[col.key]}
+                      updateColumnWidth={props.updateColumnsWidths}
+                      headerMeta={props.headerMeta}
+                      isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                        col.key,
+                      )}
+                      hideColumn={() =>
+                        props.setExcludedFields?.([
+                          ...(props.excludedFields || []),
+                          col.key,
+                        ])
+                      }
+                      paneFirstColumn={index === 0}
+                      paneLastColumn={index === middlePane.length - 1}
+                      moveColumn={(dir) =>
+                        moveColumn(col.key, 'middle', index, dir)
+                      }
+                      sortable={
+                        col.sortableKey &&
+                        props.sortFields.findIndex(
+                          (f) => f[0] === col.sortableKey,
+                        ) === -1
+                      }
+                      sortByColumn={(order) =>
+                        props.onSort(col.sortableKey, order)
+                      }
+                      onRowHover={props.onRowHover}
+                      onRowClick={props.onRowClick}
+                    />
+                  );
+                }}
+              </VariableSizeList>
+            )}
+          </AutoResizer>
         </div>
         {rightPane.length > 0 && (
           <div className='Table__pane Table__pane--right'>
