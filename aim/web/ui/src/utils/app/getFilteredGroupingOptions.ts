@@ -7,9 +7,9 @@ export function getFilteredGroupingOptions<M extends State>(
 ): string[] {
   const modelState = model.getState();
   const grouping = modelState?.config?.grouping;
-  const { reverseMode, isApplied } = grouping;
+  const { reverseMode, isApplied } = grouping || {};
   const groupingSelectOptions = model.getState()?.groupingSelectOptions;
-  if (groupingSelectOptions) {
+  if (groupingSelectOptions && grouping) {
     const filteredOptions = [...groupingSelectOptions]
       .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
       .map((item) => item.value);

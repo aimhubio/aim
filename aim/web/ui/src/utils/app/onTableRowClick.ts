@@ -1,9 +1,12 @@
 import { IModel, State } from 'types/services/models/model';
 
-export default function onTableRowClick<M extends State>(
-  rowKey?: string,
-  model?: IModel<M>,
-): void {
+export default function onTableRowClick<M extends State>({
+  rowKey,
+  model,
+}: {
+  rowKey?: string;
+  model: IModel<M>;
+}): void {
   const configData = model?.getState()!.config!;
   const chartPanelRef: any = model?.getState()?.refs?.chartPanelRef;
   let focusedStateActive = !!rowKey;

@@ -1,24 +1,25 @@
 import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
-import { IOnTableResizeEndParams } from 'types/utils/app/onTableResizeEnd';
-import { State } from 'types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 
 export function onTableResizeEnd<M extends State>(
-  params: IOnTableResizeEndParams<M>,
+  tableHeight: string,
+  model: IModel<M>,
+  appName: string,
 ): void {
-  const configData = params.model.getState()?.config;
+  const configData = model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
-      height: params.tableHeight,
+      height: tableHeight,
     };
     const config = {
       ...configData,
       table,
     };
-    params.model.setState({
+    model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
+    setItem(`${appName}Table`, encode(table));
   }
 }

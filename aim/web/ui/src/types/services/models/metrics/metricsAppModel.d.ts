@@ -22,8 +22,8 @@ import { IModel } from '../model';
 
 export interface IMetricAppModelState {
   refs: {
-    tableRef: { current: ITableRef | null };
-    chartPanelRef: { current: IChartPanelRef | null };
+    tableRef?: { current: ITableRef | null };
+    chartPanelRef?: { current: IChartPanelRef | null };
   };
   requestIsPending: boolean | null;
   queryIsEmpty: boolean;
@@ -32,6 +32,7 @@ export interface IMetricAppModelState {
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
+  tooltipData: ITooltipData;
   aggregatedData: IAggregatedData[];
   tableData: any[];
   tableColumns: ITableColumn[];
@@ -100,8 +101,8 @@ export interface IAggregationData {
 
 export type SortField = [string, 'asc' | 'desc'];
 
-interface IMetricAppConfig {
-  grouping: {
+export interface IMetricAppConfig {
+  grouping?: {
     color: string[];
     stroke: string[];
     chart: string[];
@@ -125,7 +126,7 @@ interface IMetricAppConfig {
     };
     paletteIndex: number;
   };
-  chart: {
+  chart?: {
     highlightMode: HighlightEnum;
     ignoreOutliers: boolean;
     zoom: IChartZoom;
@@ -138,13 +139,13 @@ interface IMetricAppConfig {
     alignmentConfig: IAlignmentConfig;
     tooltip: IChartTooltip;
   };
-  select: {
+  select?: {
     metrics: ISelectMetricsOption[];
     query: string;
     advancedMode: boolean;
     advancedQuery: string;
   };
-  table: {
+  table?: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
     sortFields?: SortField[];

@@ -8,7 +8,7 @@ import { setItem } from 'utils/storage';
 export default function onColumnsOrderChange<M extends State>(
   columnsOrder: any,
   model: IModel<M>,
-) {
+): void {
   const configData = model.getState()?.config;
   if (configData?.table) {
     const table = {

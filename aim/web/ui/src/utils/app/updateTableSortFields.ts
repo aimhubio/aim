@@ -9,8 +9,8 @@ import { setItem } from 'utils/storage';
 export default function updateSortFields<M extends State>(
   sortFields: SortField[],
   model: IModel<M>,
-  page: string,
-) {
+  appName: string,
+): void {
   const configData = model.getState()?.config;
   if (configData?.table) {
     const table = {
@@ -25,11 +25,11 @@ export default function updateSortFields<M extends State>(
       config: configUpdate,
     });
 
-    setItem(`${page}Table`, encode(table));
+    setItem(`${appName}Table`, encode(table));
     // updateModelData(configUpdate);
   }
   analytics.trackEvent(
-    `[${page}Explorer][Table] ${
+    `[${appName}Explorer][Table] ${
       isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );

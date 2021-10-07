@@ -10,6 +10,7 @@ export type State = {
   notifyData?: INotification[];
   refs?: Record<string, any>;
   params?: Record<string, any>;
+  sameValueColumns?: string[];
 };
 
 export interface IModel<StateType extends Partial<State>> {

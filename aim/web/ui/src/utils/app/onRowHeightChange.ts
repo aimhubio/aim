@@ -10,7 +10,7 @@ export default function onRowHeightChange<M extends State>(
   height: RowHeightSize,
   model: IModel<M>,
   appName: string,
-) {
+): void {
   const configData = model.getState()?.config;
   if (configData?.table) {
     const table = {

@@ -9,7 +9,7 @@ export default function onColumnsVisibilityChange<M extends State>(
   hiddenColumns: string[],
   model: IModel<M>,
   appName: string,
-) {
+): void {
   const configData = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {

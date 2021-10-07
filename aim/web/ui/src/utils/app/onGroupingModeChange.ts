@@ -1,15 +1,13 @@
 import * as analytics from 'services/analytics';
 
-// import { IOnGroupingModeChangeParams } from 'types/services/models/metrics/metricsAppModel';
-import { State } from 'types/services/models/model';
+import { IOnGroupingModeChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { IModel, State } from 'types/services/models/model';
 import resetChartZoom from './resetChartZoom';
 
-export default function onGroupingModeChange<M extends State>({
-  groupName,
-  value,
-  model,
-}: any): // IOnGroupingModeChangeParams<M>
-void {
+export default function onGroupingModeChange<M extends State>(
+  { groupName, value }: IOnGroupingModeChangeParams,
+  model: IModel<M>,
+): void {
   const configData = model?.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {

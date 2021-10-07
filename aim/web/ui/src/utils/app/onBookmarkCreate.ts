@@ -3,19 +3,18 @@ import * as analytics from 'services/analytics';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import {
   IAppData,
   IDashboardData,
 } from 'types/services/models/metrics/metricsAppModel';
 import onNotificationAdd from './onNotificationAdd';
+import { IModel, State } from 'types/services/models/model';
 
-export default async function onBookmarkCreate({
-  name,
-  description,
-  model,
-  appName,
-}: any) {
+export default async function onBookmarkCreate<M extends State>(
+  { name, description }: any,
+  model: IModel<M>,
+  appName: string,
+) {
   const configData = model?.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService

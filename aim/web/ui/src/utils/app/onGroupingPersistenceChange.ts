@@ -1,9 +1,10 @@
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
+import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 
 export default function onGroupingPersistenceChange<M extends State>(
-  groupName: 'stroke' | 'color',
+  groupName: GroupNameType,
   model: IModel<M>,
   appName: string,
 ): void {

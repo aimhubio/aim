@@ -17,7 +17,7 @@ export default function updateColumnsWidths<M extends State>(
   isReset: boolean,
   model: IModel<M>,
   appName: string,
-) {
+): void {
   const configData = model.getState()?.config;
   if (configData?.table && configData?.table?.columnsWidths) {
     let columnsWidths = configData?.table?.columnsWidths;

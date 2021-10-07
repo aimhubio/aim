@@ -402,7 +402,7 @@ function processData(data: IRun<IMetricTrace>[]): {
 
         let yValues = values;
         if (
-          configData?.chart.smoothingAlgorithm &&
+          configData?.chart?.smoothingAlgorithm &&
           configData.chart.smoothingFactor
         ) {
           yValues = getSmoothenedData({
@@ -422,7 +422,7 @@ function processData(data: IRun<IMetricTrace>[]): {
           key: metricKey,
           dasharray: '0',
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-          isHidden: configData!.table.hiddenMetrics!.includes(metricKey),
+          isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
           data: {
             values,
             steps,
@@ -526,7 +526,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
       const colorConfig = _.pick(groupValue.config, groupByColor);
       const colorKey = encode(colorConfig);
 
-      if (grouping.persistence.color && grouping.isApplied.color) {
+      if (grouping?.persistence.color && grouping.isApplied.color) {
         let index = getGroupingPersistIndex({
           groupValues,
           groupKey,

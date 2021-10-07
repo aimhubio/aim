@@ -1,4 +1,8 @@
-import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
+import {
+  IMetricTrace,
+  IParamTrace,
+  IRun,
+} from 'types/services/models/metrics/runModel';
 import {
   adjustable_reader,
   decodePathsVals,
@@ -7,7 +11,7 @@ import {
 } from 'utils/encoder/streamEncoding';
 
 export default async function getRunData<
-  S extends ReadableStream<IRun<IMetricTrace>[]>,
+  S extends ReadableStream<IRun<IMetricTrace | IParamTrace>[]>,
 >(stream: S) {
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);

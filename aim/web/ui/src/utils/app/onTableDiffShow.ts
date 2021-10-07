@@ -1,12 +1,15 @@
 import * as analytics from 'services/analytics';
 import { IOnTableDiffShowParams } from 'types/utils/app/onTableDiffShow';
+import { IModel, State } from 'types/services/models/model';
 
-export function onTableDiffShow<T>(params: IOnTableDiffShowParams<T>): void {
-  const sameValueColumns = params.model.getState()?.sameValueColumns;
+export function onTableDiffShow<M extends State>(
+  args: IOnTableDiffShowParams,
+  model: IModel<M>,
+  appName: string,
+): void {
+  const sameValueColumns = model.getState()?.sameValueColumns;
   if (sameValueColumns) {
-    params.onColumnsVisibilityChange(sameValueColumns);
+    args.onColumnsVisibilityChange(sameValueColumns);
   }
-  analytics.trackEvent(
-    `[${params.page}Explorer][Table] Show table columns diff`,
-  );
+  analytics.trackEvent(`[${appName}Explorer][Table] Show table columns diff`);
 }

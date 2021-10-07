@@ -451,7 +451,7 @@ function getFilteredGroupingOptions(
   grouping: IMetricAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
-  const { reverseMode, isApplied } = grouping;
+  const { reverseMode, isApplied } = grouping || {};
   const groupingSelectOptions = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
     const filteredOptions = [...groupingSelectOptions]

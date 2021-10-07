@@ -5,7 +5,7 @@ import { IModel, State } from 'types/services/models/model';
 export default function toggleSelectAdvancedMode<M extends State>(
   model: IModel<M>,
   appName: string,
-) {
+): void {
   const configData = model.getState()?.config;
   if (configData?.select) {
     model.setState({

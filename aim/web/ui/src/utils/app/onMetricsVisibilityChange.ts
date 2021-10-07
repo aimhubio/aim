@@ -7,7 +7,7 @@ import { setItem } from 'utils/storage';
 export default function onMetricVisibilityChange<M extends State>(
   metricsKeys: string[],
   model: IModel<M>,
-) {
+): void {
   const configData = model.getState()?.config;
   const processedData = model.getState()?.data;
   if (configData?.table && processedData) {

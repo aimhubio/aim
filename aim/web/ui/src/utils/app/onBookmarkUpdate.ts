@@ -10,7 +10,7 @@ export default function onBookmarkUpdate<M extends State>(
   id: string,
   model: IModel<M>,
   appName: string,
-) {
+): void {
   const configData = model.getState()?.config;
   if (configData) {
     appsService

@@ -117,6 +117,4 @@ export interface IOnSmoothingChange {
   smoothingAlgorithm?: SmoothingAlgorithmEnum;
   smoothingFactor?: number;
   curveInterpolation?: CurveEnum;
-  model?: IModel<any>;
-  appName?: string;
 }

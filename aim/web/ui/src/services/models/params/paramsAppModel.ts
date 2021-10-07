@@ -156,6 +156,7 @@ function initialize(appId: string): void {
     setDefaultAppConfigData();
   }
 }
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],
@@ -196,6 +197,7 @@ function exceptionHandler(detail: any) {
   // reset model
   resetModelOnError(detail);
 }
+
 function getAppConfigData(appId: string) {
   if (appRequestRef) {
     appRequestRef.abort();
@@ -259,6 +261,7 @@ function getParamsData() {
         for await (let [keys, val] of objects) {
           runData.push({ ...(val as any), hash: keys[0] });
         }
+
         const { data, params, metricsColumns } = processData(runData);
         const configData = model.getState()?.config;
         if (configData) {
@@ -322,7 +325,7 @@ function onTableRowClick(rowKey?: string): void {
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
   let focusedStateActive = !!rowKey;
   if (
-    configData?.chart.focusedState.active &&
+    configData?.chart?.focusedState.active &&
     configData?.chart.focusedState.key === rowKey
   ) {
     focusedStateActive = false;
@@ -531,6 +534,9 @@ function getFilteredGroupingOptions( // separated
   grouping: IParamsAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
+  if (!grouping) {
+    return [];
+  }
   const { selectOptions, reverseMode, isApplied } = grouping;
 
   const filteredOptions = [...selectOptions]
@@ -676,7 +682,7 @@ function onColorIndicatorChange(): void {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] ${
-      configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
+      configData.chart?.isVisibleColorIndicator ? 'Disable' : 'Enable'
     } color indicator`,
   );
 }
@@ -694,7 +700,7 @@ function onCurveInterpolationChange(): void {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Chart] Set interpolation mode to "${
-      configData.chart.curveInterpolation === CurveEnum.Linear
+      configData.chart?.curveInterpolation === CurveEnum.Linear
         ? 'cubic'
         : 'linear'
     }"`,
@@ -893,16 +899,16 @@ function updateModelData(
     metricsColumns,
     params,
     data[0]?.config,
-    configData.table.columnsOrder!,
-    configData.table.hiddenColumns!,
-    configData.table.sortFields,
+    configData.table?.columnsOrder!,
+    configData.table?.hiddenColumns!,
+    configData.table?.sortFields,
     onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
-    hiddenColumns: configData.table.hiddenColumns!,
+    hiddenColumns: configData.table?.hiddenColumns!,
   });
 
   if (shouldURLUpdate) {
@@ -959,8 +965,8 @@ function getDataAsTableRows(
       const groupHeaderRow = {
         meta: {
           chartIndex:
-            config.grouping.chart.length > 0 ||
-            config.grouping.reverseMode.chart
+            config.grouping?.chart.length! > 0 ||
+            config.grouping?.reverseMode.chart
               ? metricsCollection.chartIndex + 1
               : null,
           color: metricsCollection.color,
@@ -1117,7 +1123,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
   }
   analytics.trackEvent(
     `[ParamsExplorer] ${
-      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
+      !configData?.grouping?.persistence[groupName] ? 'Enable' : 'Disable'
     } ${groupName} persistence`,
   );
 }
@@ -1564,7 +1570,7 @@ function onSortReset() {
  */
 function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const sortFields = configData?.table.sortFields || [];
+  const sortFields = configData?.table?.sortFields || [];
 
   const existField = sortFields?.find((d: SortField) => d[0] === field);
   let newFields: SortField[] = [];

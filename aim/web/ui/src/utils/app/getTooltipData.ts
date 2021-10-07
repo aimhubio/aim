@@ -8,14 +8,12 @@ import { IModel, State } from 'types/services/models/model';
 import { IParam } from 'types/services/models/params/paramsAppModel';
 import getGroupConfig from './getGroupConfig';
 
-let tooltipData: ITooltipData = {};
-
-export default function setTooltipData<M extends State>(
+export default function getTooltipData<M extends State>(
   processedData: IMetricsCollection<IMetric | IParam | any>[],
   paramKeys: string[],
   model: IModel<M>,
-): void {
-  const data: { [key: string]: any } = {};
+): ITooltipData {
+  const data: ITooltipData = {};
 
   for (let metricsCollection of processedData) {
     const groupConfig = getGroupConfig(metricsCollection, model);
@@ -38,5 +36,5 @@ export default function setTooltipData<M extends State>(
     }
   }
 
-  tooltipData = data;
+  return data;
 }
