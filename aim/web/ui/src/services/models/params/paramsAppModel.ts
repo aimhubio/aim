@@ -877,19 +877,19 @@ function onSelectRunQueryChange(query: string) {
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
   }));
 
   return [
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
