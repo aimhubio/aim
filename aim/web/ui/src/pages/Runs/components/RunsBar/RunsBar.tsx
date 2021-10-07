@@ -1,6 +1,6 @@
 import React from 'react';
 import AppBar from 'components/AppBar/AppBar';
-import LiveUpdateSettings from '../../../../components/LiveUpdateSettings/LiveUpdateSettings';
+import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 
 function RunsBar(props: {
   enabled: boolean;
