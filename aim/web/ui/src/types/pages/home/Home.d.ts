@@ -2,8 +2,9 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 
 export interface IHomeProps {
   activityData: IActivityData[];
-  onSendEmail: (data: object) => Promise<any>;
   notifyData: INotification[];
+  askEmailSent: boolean;
+  onSendEmail: (data: object) => Promise<any>;
   onNotificationDelete: (id: number) => void;
 }
 

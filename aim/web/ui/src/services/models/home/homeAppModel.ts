@@ -1,6 +1,7 @@
 import createModel from '../model';
 import projectsService from 'services/api/projects/projectsService';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { getItem, setItem } from 'utils/storage';
 
 const model = createModel<any>({});
 
@@ -18,7 +19,7 @@ function getActivityData() {
 }
 
 function onSendEmail(data: object): Promise<any> {
-  return fetch('https://formspree.io/f/mvodyvwp', {
+  return fetch('https://formspree.io/f/xeqvdval', {
     method: 'Post',
     headers: {
       'Content-Type': 'application/json',
@@ -33,6 +34,8 @@ function onSendEmail(data: object): Promise<any> {
           message: 'Email Successfully sent',
           id: Date.now(),
         });
+        model.setState({ askEmailSent: true });
+        setItem('askEmailSent', true);
       } else {
         onNotificationAdd({
           severity: 'error',
@@ -45,6 +48,8 @@ function onSendEmail(data: object): Promise<any> {
 }
 function initialize() {
   model.init();
+  const isAskEmailSent: boolean = getItem('askEmailSent') === 'true';
+  model.setState({ askEmailSent: isAskEmailSent });
 }
 
 function onNotificationDelete(id: number) {
