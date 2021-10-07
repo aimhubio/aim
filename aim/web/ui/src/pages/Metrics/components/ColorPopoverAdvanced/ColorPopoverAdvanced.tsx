@@ -6,6 +6,7 @@ import COLORS from 'config/colors/colors';
 import Button from 'components/Button/Button';
 
 import './ColorPopoverAdvanced.scss';
+import Switcher from 'components/Switcher/Switcher';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,
@@ -37,11 +38,11 @@ function ColorPopoverAdvanced({
           color regardless of its order.
         </p>
         <div className='flex fac fjb'>
-          <div>
-            <Switch
+          <div className='ColorPopoverAdvanced__Switcher__button__container'>
+            <Switcher
               onChange={() => onPersistenceChange('color')}
               checked={persistence}
-              color='primary'
+              size='large'
             />
             <span className='ColorPopoverAdvanced__container__span'>
               Enable

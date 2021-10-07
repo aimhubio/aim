@@ -13,13 +13,13 @@ function ExploreAimCard({
   description,
 }: IExploreCard): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <NavLink className='ExploreAimCard__container' to={`/${path}`}>
+    <NavLink className='ExploreAimCard' to={`/${path}`}>
       <div className='ExploreAimCard__icon'>
         <Icon name={`${path}` as IconName} />
       </div>
       <h4 className='ExploreAimCard__title'>{title}</h4>
       <p className='ExploreAimCard__desc'>{description}</p>
-      <div className='ExploreAim_card__arrowIcon__container'>
+      <div className='ExploreAimCard__arrow__icon'>
         <Icon name='long-arrow-right' />
       </div>
     </NavLink>

@@ -46,5 +46,8 @@ html body .Select__Chip {
   margin-top: 0.25rem;
   i {
     color: $pico-80;
+    &:hover {
+      color: inherit;
+    }
   }
 }

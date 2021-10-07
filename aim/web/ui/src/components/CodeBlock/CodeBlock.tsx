@@ -15,7 +15,7 @@ function CodeBlock({
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
   const contentRef = React.createRef<HTMLPreElement>();
   return (
-    <div className={`CodeBlock__container ${className}`}>
+    <div className={`CodeBlock ${className}`}>
       <Highlight
         {...defaultProps}
         theme={theme}

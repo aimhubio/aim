@@ -11,7 +11,7 @@ export function formatValue(value: any, undefinedValue: any = '-') {
   if (value === false) {
     return 'False';
   }
-  if (typeof value === 'number' || typeof value === 'string') {
+  if (typeof value === 'number') {
     return value;
   }
 
