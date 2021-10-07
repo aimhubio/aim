@@ -7,6 +7,7 @@ import { ISetupGuideProps } from 'types/pages/home/components/SetupGuide/SetupGu
 import './SetupGuide.scss';
 
 function SetupGuide({
+  askEmailSent,
   onSendEmail,
 }: ISetupGuideProps): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -58,7 +59,7 @@ for step in range(10):
           <span>Live demo</span>
         </div>
       </div>
-      <AskForm onSendEmail={onSendEmail} />
+      {askEmailSent ? null : <AskForm onSendEmail={onSendEmail} />}
     </div>
   );
 }

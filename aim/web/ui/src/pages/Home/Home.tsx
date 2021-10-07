@@ -13,6 +13,7 @@ function Home({
   onSendEmail,
   notifyData,
   onNotificationDelete,
+  askEmailSent,
 }: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <section className='Home__container'>
@@ -20,7 +21,7 @@ function Home({
         <Activity activityData={activityData} />
       </div>
       <div className='Home__Explore__container'>
-        <SetupGuide onSendEmail={onSendEmail} />
+        <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
         <ExploreAim />
       </div>
       {notifyData?.length > 0 && (

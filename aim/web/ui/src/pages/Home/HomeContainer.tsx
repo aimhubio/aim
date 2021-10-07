@@ -21,6 +21,7 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSendEmail={homeAppModel.onSendEmail}
       activityData={homeData.activityData}
       notifyData={homeData.notifyData}
+      askEmailSent={homeData.askEmailSent}
       onNotificationDelete={homeAppModel.onNotificationDelete}
     />
   );
