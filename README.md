@@ -1,30 +1,33 @@
 <div align="center">
 
-<img src="https://user-images.githubusercontent.com/13848158/97081166-8f568800-1611-11eb-991c-e9bc1344074e.png" height="95" />
-
-**Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.**
-
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim-cli)](https://pypi.org/project/aim-cli/)
-[![PyPI Package](https://img.shields.io/pypi/v/aim-cli?color=yellow)](https://pypi.org/project/aim-cli/)
-[![Downloads](https://img.shields.io/docker/pulls/aimhubio/aim-board)](https://hub.docker.com/r/aimhubio/aim-board)
-[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
-[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
-
-[![Follow on Twitter](https://img.shields.io/twitter/follow/aimstackio?style=social)](https://twitter.com/aimstackio)
-
----
-
-<h3 align="center">
-:tada:
-Try out Aim at <a href="http://play.aimstack.io:43900/explore?search=eyJjaGFydCI6eyJzZXR0aW5ncyI6eyJwZXJzaXN0ZW50Ijp7InlTY2FsZSI6MCwiem9vbU1vZGUiOmZhbHNlLCJ6b29tSGlzdG9yeSI6W10sInBlcnNpc3RlbnQiOnsieVNjYWxlIjowLCJ6b29tTW9kZSI6ZmFsc2UsInpvb21IaXN0b3J5IjpbXSwicGVyc2lzdGVudCI6eyJ5U2NhbGUiOjAsInpvb21Nb2RlIjpmYWxzZSwiem9vbUhpc3RvcnkiOltdLCJwZXJzaXN0ZW50Ijp7ImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsInpvb20iOm51bGwsImludGVycG9sYXRlIjpmYWxzZX0sImRpc3BsYXlPdXRsaWVycyI6ZmFsc2UsImludGVycG9sYXRlIjp0cnVlLCJ6b29tIjp7IjAiOnsieCI6WzIuNjg1MTczMTQ4MTA1MzM4NSwzOF0sInkiOlszLjQ1NDEwMDA0ODU0MjAyMywzLjY4MjMzOTM5NzAxNzAyOF19LCIxIjp7IngiOlsyLjUzNzIwNjUxMzA3NzU1NywzOF0sInkiOlsyNy42NzE5Nzg3NjM2MTk2ODQsMzIuNTgxOTk5Nzc4NzQ3NTZdfSwiMiI6eyJ4IjpbNi4xMzAwNzcxODU4MDYzMzIsMjddLCJ5IjpbMy40MzIxNTAwNTM5Nzc5NjYsMy42NDc3MDkzNTA2NzM4NjZdfSwiMyI6eyJ4IjpbMy40OTA5MDg3NzA3OTQyNDE0LDI3XSwieSI6WzI5LjE0MjQ0OTMzOTY5ODA4MiwzMy43NzI5OTk5NTQyMjM2MzZdfSwiNCI6eyJ4IjpbNC42OTMxNjM4MzkzNzM3MDgsMjhdLCJ5IjpbMjkuNDA5MjQ3MjgyOTAwMjY0LDMyLjEwMzk5OTcxMDA4MzAxXX0sIjUiOnsieCI6WzYuOTQxMTk3MDgwOTUyMjg1LDI3LjA0MTk0NTU0NjY2ODI2XSwieSI6WzMuNDgxNjAwMDgxOTIwNjI0LDMuNTgyNzgzODQ4MDA3ODUzOF19fX0sInpvb20iOm51bGx9LCJ6b29tIjpudWxsLCJkaXNwbGF5T3V0bGllcnMiOmZhbHNlLCJpbnRlcnBvbGF0ZSI6dHJ1ZSwiYWdncmVnYXRlZCI6dHJ1ZX19LCJmb2N1c2VkIjp7ImNpcmNsZSI6eyJhY3RpdmUiOmZhbHNlLCJydW5IYXNoIjpudWxsLCJtZXRyaWNOYW1lIjpudWxsLCJ0cmFjZUNvbnRleHQiOm51bGwsInN0ZXAiOm51bGx9fX0sInNlYXJjaCI6eyJxdWVyeSI6ImJsZXUgaWYgY29udGV4dC5zdWJzZXQgPT0gdGVzdCBhbmQgaHBhcmFtcy5sZWFybmluZ19yYXRlID4gMC4wMDAwMSIsInYiOjF9LCJjb250ZXh0RmlsdGVyIjp7Imdyb3VwQnlDb2xvciI6WyJwYXJhbXMuaHBhcmFtcy5hbGlnbiIsInBhcmFtcy5ocGFyYW1zLm1heF9rIiwicGFyYW1zLmRhdGFzZXQucHJlcHJvYyJdLCJncm91cEJ5U3R5bGUiOltdLCJncm91cEJ5Q2hhcnQiOlsicGFyYW1zLmhwYXJhbXMuYWxpZ24iXSwiZ3JvdXBBZ2FpbnN0Ijp7ImNvbG9yIjpmYWxzZSwic3R5bGUiOmZhbHNlLCJjaGFydCI6ZmFsc2V9LCJhZ2dyZWdhdGVkQXJlYSI6Im1pbl9tYXgiLCJhZ2dyZWdhdGVkTGluZSI6ImF2ZyIsInNlZWQiOnsiY29sb3IiOjEwLCJzdHlsZSI6MTB9LCJwZXJzaXN0Ijp7ImNvbG9yIjpmYWxzZSwic3R5bGUiOmZhbHNlfSwiYWdncmVnYXRlZCI6dHJ1ZX19">play.aimstack.io</a>
-:tada:
-<br />
-<br />
-Join the Aim community on <a href="https://slack.aimstack.io">Slack</a>
-</h3>
+| :zap: Aim v3.0.0 beta is live. Try out at <a href="http://play.aimstack.io:10001/metrics?grouping=2KhRameHik98oBj8Bsw6VRdcA7KuW5Y2kZtNEFLDLRtdSb1RVR7k9p9QkRk9Tvai2qWdRFPzisMBiA5RNazdhRaE56LwugevHBFTsESJULie39yCghtVnq5CuWSA2B8MuPn3Dg6XRqVrsC7BpJE16jRKnZ7dZ7xonbkXiAM2TPL3YRByWYrre6J3hUPB7BdfUJz57sdPjnF3G72SbQUGEWXKZQKHNyQCjEkPbKNxQUKxh7wXeMB3PF1gqjGtGSEihL5LsT7jmnPBr5Mfr4dHp2mbUGSt8cQNydQhC1iPW53jXnZ77TdSnoHjGT1xLuSTyUzhLBpaPPMokZPV7cmi2FybEGWmVd53athLrBmuVx8PffZCpUoXUDbwZS4fzrgp9HBZhsfUunmJzqADxg3SxYny4k2dLoVer3ULiBzXExPkXaNsRaiJbM8ZTXsPVfVZbgCR1zyBHSogayxSZBdqdVD8rY5K&chart=Cm6b4V1xjN1vWwfnKhWBAJ491MNYk6oJHwWJtyKVe6zu6D7ShYbPyEyVuVgyn73j7KNbhSnhLnU6evCrpnHa338r8cXeEYtgUoNhxxBbYuVdUXqAox1334Uzc59hFxtbDfeL2MtZVh2JoLqiyEjnSqeqX6FWbWKAF61ivoFdkutMnDyhKCT9SoZYgLr9y1wR8CssfX2rwN4JUWT8k2Jr84WJ1vpAhrcB3xERKF3rAddQsczC1wE7824Qk3WVKAttLTLG5FVidFh9XkTD4Sdzf7DZ1DYoqiHs9zBFM2LASd7rz42fkmmrrz7koHoFQG6787QLuGBRDZTvYvCT8JeLbXpTdLtKXbvU3dboKqdbv7u9FvsCc7ir1SQeignKE7EKihcFSXf97QKLNXxNPdeyiwdGuj8Cj4kHfYwqRGUcjxMSihV45Y7F3x2W8zUvKB6uJLEnpDAufhcN7mLbzrjNRQ5mfW2GfgoJ5a6nrhzcUMbkztokkKpgokm2tZ23XWfyEq6WMxRxdXCrBMeuE5EgbfeResip87GcxW5o784gfG8xRaGdS596sQhLfgT4FPzytUqyHXU4upwfb65jGrUzG1dsiaiB1rZyXKpw6riKLCNNvRXVTnzRenQpyHzJBqDccyMSehy8T4ThFSjniSvsk1jKbsVgq2rA3RMyLJf9Z85cpx3hx7RmrJTCNv2aZtb3xXH3bEBms9u2XVCrykVsrSSRP4Tv3vjsbuMDdpAy5RscUCqPgFhJdHzTEaZGTzVL214rRWNum5RBgpcdK3QGtVWwAPXV2jirEpoUhqFEv4gTKX3KXL6LUPsi7jYPGNbMWAcovt3fTgVCrWZeaHRcSG3WKJX5La2vkjnDmhHNs4SbDjS6ze31iaz2fCwzSZ9v3ca4pVtWezPbHpBZVpZd4FG4Lt3oKDG2xvKP9w1Q1jP77hM4eozJxTFiTgQxH4S8mpnfYbxrnmVwxhAu4PKRmevEZkJPVX1hMN6yykqFz7RrhvG4yQ8muYEYWv5DkzycptNy9bDEmDxVAk2CRnvbdo6jYnWbh77t1JEZdhJoCaVSHk6MovrdLoc5X8jxEbcDU7xBL3wj5ecULt3tYq5aoFeNHHCTBxWnk2gA5iLZNA7rBNtQuEzBpN1kjh&select=7zY8Ghyd8kPXab3LdBmLqMwxSSWcZypz9sHYtcG8bSoniZPTnXp2oTf9TrxEu55XfP546wpJrzzEXCGpczGdS9z8coMktqf7j2EbUveJeLRBSPBPw83ru5MxhMSA3FysZ5nTiroEqNktj2ux67ExzjkheiJhWkf5oJNrKYEPuM8adYhjBH2Ez5Ma1uiNZfQxu1mt18iqX3DcFAc3BjjH3WXE3guqpk4bFzk16JB8Nz4pvhsuBDH6XUuGQsZEzoKRbbELYVMozcABWWn47w35XcT9YE4Bmyk8vuJuCY7wmN5wHxt8BiNAGoh9UQGcRqrWV55swMGy3v3Yfkfo9YSDZCEbs47gJ7kAbfLEGe4EPr2yv9h3mu5NuScU5fajDiGrt4oREeBK1SH3EqnPS8qznn4cumJccEBsPGzc88vQY3rHvyzD5LTrnmPxDUARm9HYeLq61nUJPjpUErEPwV37wiYzZrE8o3j8oVm4cwo1fczfffXjG7NkmqSVheZ">play.aimstack.io</a> :zap: |
+|---|
 
 <br />
   
+<img src="https://user-images.githubusercontent.com/13848158/136364717-0939222c-55b6-44f0-ad32-d9ab749546e4.png" height="70" />
+
+<br />
+<br />
+
+**Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.**
+
+[![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
+[![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
+[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
+[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
+
+<h3 align="center">
+  <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
+  <a href="https://aimstack.readthedocs.io/en/latest/quick_start/3_steps.html"><b>Aim in 3 steps</b></a> &bull;
+  <a href="https://aimstack.readthedocs.io/en/latest/ref_sdk.html"><b>API Reference</b></a> &bull;
+  <a href="http://slack.activeloop.ai"><b>Slack Community</b></a> &bull;
+  <a href="https://twitter.com/aimstackio"><b>Twitter</b></a>
+</h3>
+  
+---
+
 <img src="https://user-images.githubusercontent.com/13848158/136272428-44090e7e-d570-4bae-b58b-4115ab8a8061.gif" />
 
 <br />
