@@ -14,7 +14,7 @@ with open(version_file) as vf:
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
-NAME = os.getenv('AIM_PKG_NAME') or 'aim'
+NAME = 'aim'
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.6.0'
@@ -89,23 +89,20 @@ class UploadCommand(Command):
         pass
 
     def run(self):
-        for name in ['aim', 'aim-cli']:
-            try:
-                self.status('Removing previous builds…')
-                rmtree(os.path.join(here, 'dist'))
-            except OSError:
-                pass
+        try:
+            self.status('Removing previous builds…')
+            rmtree(os.path.join(here, 'dist'))
+        except OSError:
+            pass
 
-            self.status('Cleaning build directory')
-            os.system('{} setup.py clean --all'.format(sys.executable))
+        self.status('Cleaning build directory')
+        os.system('{} setup.py clean --all'.format(sys.executable))
 
-            self.status('Building Source and Wheel (universal) distribution…')
-            os.system(
-                'AIM_PKG_NAME={1} {0} setup.py sdist bdist_wheel --universal'
-                .format(sys.executable, name))
+        self.status('Building Source and Wheel (universal) distribution…')
+        os.system(f'{sys.executable} setup.py sdist bdist_wheel --universal')
 
-            # self.status('Uploading the package to PyPI via Twine…')
-            os.system('twine upload dist/*')
+        # self.status('Uploading the package to PyPI via Twine…')
+        os.system('twine upload dist/*')
 
         if not self.rc:
             self.status('Pushing git tags…')
