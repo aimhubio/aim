@@ -8,18 +8,18 @@ Step 1: Explicitly import the AimCallback for tracking training data.
 
 ```python
 	
-	# call sdk aim.xgboost 
-	from aim.xgboost import AimCallback
+# call sdk aim.xgboost 
+from aim.xgboost import AimCallback
+
 ```
 
 Step 2: XGboost provides the xgboost.train method for model training, in which the callbacks parameter can call back data information from the outside. Here we pass in aimcallbacl designed for tracking data information
 
 ```python
-	
-	mnist_model = xgboost.train(param, dtrain, num_round, watchlist,
-                            callbacks=[AimCallback(experiment='xgboost_test')] )
 
-	
+xgboost.train(param, dtrain, num_round, watchlist,
+                            callbacks=[AimCallback(experiment='xgboost_test')])
+
 ```
 
 During the training process, you can start another terminal, in the same directory, start aim up, you can observe the information in real time.
