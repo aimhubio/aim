@@ -1,6 +1,6 @@
 import React from 'react';
 
-import _, { isEmpty, isNil, debounce } from 'lodash-es';
+import _, { debounce, isEmpty, isNil } from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 import COLORS from 'config/colors/colors';
@@ -2048,9 +2048,6 @@ function onSelectAdvancedQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
     };
-
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2059,17 +2056,23 @@ function onSelectAdvancedQueryChange(query: string) {
 
 function toggleSelectAdvancedMode() {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let query = configData?.select.advancedQuery
+    ? configData.select.advancedQuery
+    : getQueryStringFromSelect(configData?.select);
+  if (query === '()') {
+    query = '';
+  }
   if (configData?.select) {
     const newConfig = {
       ...configData,
       select: {
         ...configData.select,
+        advancedQuery: query,
         advancedMode: !configData.select.advancedMode,
       },
     };
 
     updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
