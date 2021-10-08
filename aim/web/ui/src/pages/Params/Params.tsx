@@ -77,6 +77,8 @@ const Params = ({
   onTableDiffShow,
   onSortReset,
   updateColumnsWidths,
+  liveUpdateConfig,
+  onLiveUpdateConfigChange,
   onShuffleChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
@@ -101,6 +103,8 @@ const Params = ({
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}
+              liveUpdateConfig={liveUpdateConfig}
+              onLiveUpdateConfigChange={onLiveUpdateConfigChange}
               title={'Params explorer'}
             />
           </div>

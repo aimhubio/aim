@@ -62,14 +62,22 @@ import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: null });
+const model = createModel<Partial<any>>({
+  isParamsLoading: null,
+  config: getConfig(),
+});
+
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
   call: () => Promise<IAppData>;
   abort: () => void;
 };
+
+let liveUpdateInstance: LiveUpdateService | null;
 
 function getConfig() {
   return {
@@ -132,6 +140,10 @@ function getConfig() {
         right: [],
       },
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -152,7 +164,59 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+
+  const liveUpdateState = model.getState()?.config.liveUpdate;
+
+  if (liveUpdateState?.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
 }
+
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
+
+  const configData = model.getState()?.config;
+  if (configData) {
+    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
+  }
+
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    configData,
+  );
+  const sortFields = model.getState()?.config?.table.sortFields;
+
+  model.setState({
+    data,
+    highPlotData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    params,
+    metricsColumns,
+    rawData: newData,
+    config: configData,
+    tableData: tableData.rows,
+    tableColumns: getParamsTableColumns(
+      metricsColumns,
+      params,
+      data[0]?.config,
+      configData.table.columnsOrder!,
+      configData.table.hiddenColumns!,
+      sortFields,
+      onSortChange,
+    ),
+    sameValueColumns: tableData.sameValueColumns,
+    isParamsLoading: false,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+  });
+}
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],
@@ -217,15 +281,23 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+
   const tableConfigHash = getItem('paramsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('paramsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IParamsAppConfig | any = _.merge(getConfig(), {
     chart,
     grouping,
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -236,6 +308,8 @@ function setDefaultAppConfigData() {
 function getParamsData() {
   return {
     call: async () => {
+      liveUpdateInstance?.stop().then();
+
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
@@ -297,6 +371,10 @@ function getParamsData() {
           sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
+        });
+
+        liveUpdateInstance?.start({
+          q: select?.query,
         });
       }
     },
@@ -1228,7 +1306,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
             });
           }
         })
-        .catch((err) => {
+        .catch(() => {
           onNotificationAdd({
             id: Date.now(),
             severity: 'error',
@@ -1731,8 +1809,49 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const query = configData.select?.query;
+  const liveUpdateConfig = configData.liveUpdate;
+
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance?.start({
+      q: query,
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+
+  setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
+}
+
 const paramsAppModel = {
   ...model,
+  destroy,
   initialize,
   getParamsData,
   onColorIndicatorChange,
@@ -1770,6 +1889,7 @@ const paramsAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  changeLiveUpdateConfig,
   onShuffleChange,
 };
 

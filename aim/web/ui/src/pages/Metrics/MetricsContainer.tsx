@@ -88,6 +88,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     metricsRequestRef.call();
     analytics.pageView('[MetricsExplorer]');
     return () => {
+      metricAppModel.destroy();
       metricsRequestRef.abort();
       if (appRequestRef) {
         appRequestRef.abort();
@@ -205,6 +206,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
+      // live update
+      liveUpdateConfig={metricsData.config.liveUpdate}
+      onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
       onShuffleChange={metricAppModel.onShuffleChange}
       onSearchQueryCopy={metricAppModel.onSearchQueryCopy}
     />
