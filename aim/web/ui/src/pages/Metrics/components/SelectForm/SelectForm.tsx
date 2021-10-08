@@ -70,7 +70,7 @@ function SelectForm({
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedMetricsData?.metrics].filter(
+    let fieldData = [...(selectedMetricsData?.metrics || [])].filter(
       (opt: ISelectMetricsOption) => opt.label !== field,
     );
     onMetricsSelectChange(fieldData);
@@ -198,7 +198,7 @@ function SelectForm({
                       disablePortal={true}
                       disableCloseOnSelect
                       options={metricsOptions}
-                      value={selectedMetricsData?.metrics ?? ''}
+                      value={selectedMetricsData?.metrics}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
                       getOptionLabel={(option) => option.label}
@@ -267,14 +267,16 @@ function SelectForm({
                     )}
                   </Box>
                 </Box>
-                {selectedMetricsData?.metrics.length > 1 && (
-                  <span
-                    onClick={() => onMetricsSelectChange([])}
-                    className='SelectForm__clearAll'
-                  >
-                    <Icon name='close' />
-                  </span>
-                )}
+                {selectedMetricsData &&
+                  Array.isArray(selectedMetricsData.metrics) &&
+                  selectedMetricsData.metrics.length > 1 && (
+                    <span
+                      onClick={() => onMetricsSelectChange([])}
+                      className='SelectForm__clearAll'
+                    >
+                      <Icon name='close' />
+                    </span>
+                  )}
               </>
             )}
           </Box>

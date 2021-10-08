@@ -89,6 +89,8 @@ import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
 import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
 import { formatValue } from 'utils/formatValue';
+import updateUrlParam from '../../../utils/app/updateUrlParam';
+import createAppModel, { appInitialConfig } from '../../../createAppModel';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -463,7 +465,7 @@ function processData(data: IRun<IMetricTrace>[]): {
 function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   const configData = model.getState()!.config;
   const grouping = configData!.grouping;
-  const { paletteIndex } = grouping;
+  const { paletteIndex = 0 } = grouping || {};
   const groupByColor = getFilteredGroupingOptions('color', model);
   const groupByStroke = getFilteredGroupingOptions('stroke', model);
   const groupByChart = getFilteredGroupingOptions('chart', model);
@@ -552,7 +554,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
     if (groupByStroke.length > 0) {
       const dasharrayConfig = _.pick(groupValue.config, groupByStroke);
       const dasharrayKey = encode(dasharrayConfig);
-      if (grouping.persistence.stroke && grouping.isApplied.stroke) {
+      if (grouping?.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
           groupValues,
           groupKey,
@@ -589,16 +591,16 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   return aggregateGroupData({
     groupData: groups,
     methods: {
-      area: chartConfig.aggregationConfig.methods.area,
-      line: chartConfig.aggregationConfig.methods.line,
+      area: chartConfig!.aggregationConfig.methods.area,
+      line: chartConfig!.aggregationConfig.methods.line,
     },
-    scale: chartConfig.axesScaleType,
+    scale: chartConfig!.axesScaleType,
   });
 }
 
 function alignData(
   data: IMetricsCollection<IMetric>[],
-  type: AlignmentOptions = model.getState()!.config!.chart.alignmentConfig
+  type: AlignmentOptions = model.getState()!.config!.chart?.alignmentConfig
     .type!,
 ): IMetricsCollection<IMetric>[] {
   switch (type) {
@@ -847,8 +849,8 @@ function getDataAsTableRows(
       const groupHeaderRow = {
         meta: {
           chartIndex:
-            config.grouping.chart.length > 0 ||
-            config.grouping.reverseMode.chart
+            config?.grouping?.chart.length ||
+            config?.grouping?.reverseMode.chart
               ? metricsCollection.chartIndex + 1
               : null,
           color: metricsCollection.color,
@@ -1156,7 +1158,7 @@ function onSmoothingChange(props: IOnSmoothingChange) {
     );
   } else {
     analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set smoothening algorithm to "${configData?.chart.smoothingAlgorithm}"`,
+      `[MetricsExplorer][Chart] Set smoothening algorithm to "${configData?.chart?.smoothingAlgorithm}"`,
       { smoothingFactor: props.smoothingFactor },
     );
   }
@@ -1171,7 +1173,7 @@ function onIgnoreOutliersChange(): void {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Chart] ${
-      !configData?.chart.ignoreOutliers ? 'Ignore' : 'Display'
+      !configData?.chart?.ignoreOutliers ? 'Ignore' : 'Display'
     } outliers`,
   );
 }
@@ -1193,13 +1195,15 @@ function onAxesScaleTypeChange(params: IAxesScaleState): void {
 
 function setAggregationEnabled(configData: IMetricAppConfig): void {
   // separated
-  const isAppliedGrouping =
-    isGroupingApplied<Partial<IMetricAppModelState>>(model);
-  configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
-  if (!isAppliedGrouping) {
-    configData.chart.aggregationConfig.isApplied = false;
+  if (configData?.chart) {
+    const isAppliedGrouping =
+      isGroupingApplied<Partial<IMetricAppModelState>>(model);
+    configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
+    if (!isAppliedGrouping) {
+      configData.chart.aggregationConfig.isApplied = false;
+    }
+    analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
   }
-  analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
 }
 
 function updateModelData(
@@ -1220,17 +1224,17 @@ function updateModelData(
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
-    configData.table.columnsOrder!,
-    configData.table.hiddenColumns!,
+    configData.table?.columnsOrder!,
+    configData.table?.hiddenColumns!,
     configData?.chart?.aggregationConfig.methods,
-    configData.table.sortFields,
+    configData.table?.sortFields,
     onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
-    hiddenColumns: configData.table.hiddenColumns!,
+    hiddenColumns: configData.table?.hiddenColumns!,
   });
 
   if (shouldURLUpdate) {
@@ -1365,7 +1369,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${
-      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
+      !configData?.grouping?.persistence[groupName] ? 'Enable' : 'Disable'
     } ${groupName} persistence`,
   );
 }
@@ -1405,7 +1409,7 @@ const onActivePointChange = debounce(
       model.getState() as IMetricAppModelState;
     const tableRef: any = refs?.tableRef;
     let tableData = null;
-    if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    if (config?.table?.resizeMode !== ResizeModeEnum.Hide) {
       tableData = getDataAsTableRows(
         data,
         activePoint.xValue,
@@ -1452,7 +1456,7 @@ const onActivePointChange = debounce(
       };
 
       if (
-        config.chart.focusedState.active !== focusedStateActive ||
+        config?.chart?.focusedState.active !== focusedStateActive ||
         (config.chart.focusedState.active &&
           activePoint.key !== config.chart.focusedState.key)
       ) {
@@ -1485,7 +1489,7 @@ function onTableRowClick(rowKey?: string): void {
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
   let focusedStateActive = !!rowKey;
   if (
-    configData.chart.focusedState.active &&
+    configData?.chart?.focusedState.active &&
     configData.chart.focusedState.key === rowKey
   ) {
     focusedStateActive = false;
@@ -1510,8 +1514,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
     data[0]?.config,
-    config?.table.columnsOrder!,
-    config?.table.hiddenColumns!,
+    config?.table?.columnsOrder!,
+    config?.table?.hiddenColumns!,
     config?.chart?.aggregationConfig.methods,
   );
 
@@ -1567,24 +1571,22 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
  *    1. Keeps URL in sync with the app config
  *    2. Stores updated URL in localStorage if App is not in the bookmark state
  * @param {IMetricAppConfig} configData - the current state of the app config
- */
+//  */
 function updateURL(configData = model.getState()!.config!) {
   const { grouping, chart, select } = configData;
-  const url: string = getUrlWithParam(
-    ['grouping', 'chart', 'select'],
-    [encode(grouping), encode(chart), encode(select)],
-  );
+  const encodedParams: { [key: string]: string } = {};
 
-  if (url === `${window.location.pathname}${window.location.search}`) {
-    return;
+  if (grouping) {
+    encodedParams.grouping = encode(grouping);
+  }
+  if (chart) {
+    encodedParams.chart = encode(chart);
+  }
+  if (select) {
+    encodedParams.select = encode(select);
   }
 
-  const appId: string = window.location.pathname.split('/')[2];
-  if (!appId) {
-    setItem('metricsUrl', url);
-  }
-
-  window.history.pushState(null, '', url);
+  updateUrlParam(encodedParams, 'metrics');
 }
 
 function onNotificationDelete(id: number) {
@@ -1608,10 +1610,8 @@ function onResetConfigData(): void {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData) {
-    configData.grouping = {
-      ...getConfig().grouping,
-    };
-    configData.chart = { ...getConfig().chart };
+    configData.grouping = { ...getConfig().grouping } as any;
+    configData.chart = { ...getConfig().chart } as any;
     updateModelData(configData, true);
   }
 }
@@ -1671,10 +1671,12 @@ async function onAlignmentMetricChange(metric: string) {
         severity: 'error',
         message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
       });
-      configData.chart = {
-        ...configData.chart,
-        alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
-      };
+      if (configData) {
+        configData.chart = {
+          ...configData.chart,
+          alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
+        } as any;
+      }
     }
     setModelData(rawData, configData);
   }
@@ -1704,7 +1706,7 @@ function setModelData(
   rawData: IRun<IMetricTrace>[],
   configData: IMetricAppConfig,
 ) {
-  const sortFields = model.getState()?.config?.table.sortFields;
+  const sortFields = model.getState()?.config?.table?.sortFields;
   const { data, params } = processData(rawData);
   if (configData) {
     setAggregationEnabled(configData);
@@ -1735,8 +1737,8 @@ function setModelData(
     tableColumns: getMetricsTableColumns(
       params,
       data[0]?.config,
-      configData.table.columnsOrder!,
-      configData.table.hiddenColumns!,
+      configData?.table?.columnsOrder!,
+      configData?.table?.hiddenColumns!,
       configData?.chart?.aggregationConfig.methods,
       sortFields,
       onSortChange,
@@ -1839,7 +1841,7 @@ function toggleSelectAdvancedMode() {
   }
   analytics.trackEvent(
     `[MetricsExplorer] Turn ${
-      !configData?.select.advancedMode ? 'on' : 'off'
+      !configData?.select?.advancedMode ? 'on' : 'off'
     } the advanced mode of select form`,
   );
 }
@@ -2082,7 +2084,7 @@ function onSortReset() {
 function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const sortFields = configData?.table.sortFields || [];
+  const sortFields = configData?.table?.sortFields || [];
 
   const existField = sortFields?.find((d: SortField) => d[0] === field);
   let newFields: SortField[] = [];
@@ -2147,39 +2149,45 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 const metricAppModel = {
   ...model,
   initialize,
-  getMetricsData,
   getAppConfigData,
+  getMetricsData,
   getDataAsTableRows,
   setDefaultAppConfigData,
-  onHighlightModeChange,
-  onZoomChange,
-  onSmoothingChange,
-  onIgnoreOutliersChange,
-  onAxesScaleTypeChange,
-  onAggregationConfigChange,
+  updateURL,
+  updateModelData,
   onActivePointChange,
-  onTableRowHover,
-  onTableRowClick,
+  onExportTableData,
+  onBookmarkCreate,
+  onBookmarkUpdate,
+  onNotificationAdd,
+  onNotificationDelete,
+  onResetConfigData,
+  // grouping
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
-  onBookmarkCreate,
-  onNotificationDelete,
-  onNotificationAdd,
-  onBookmarkUpdate,
-  onResetConfigData,
-  onAlignmentMetricChange,
-  onAlignmentTypeChange,
+  // select
   onMetricsSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
+  // chart
   onChangeTooltip,
-  onExportTableData,
+  onHighlightModeChange,
+  onZoomChange,
+  onSmoothingChange,
+  onIgnoreOutliersChange,
+  onAxesScaleTypeChange,
+  onAggregationConfigChange,
+  // table
   onRowHeightChange,
+  onTableRowHover,
+  onTableRowClick,
+  onAlignmentMetricChange,
+  onAlignmentTypeChange,
   onMetricVisibilityChange,
   onColumnsVisibilityChange,
   onTableDiffShow,
@@ -2189,8 +2197,18 @@ const metricAppModel = {
   onSortReset,
   onSortChange,
   updateColumnsWidths,
-  updateURL,
-  updateModelData,
 };
 
 export default metricAppModel;
+
+const metricsAppModel = createAppModel(appInitialConfig.METRICS);
+
+console.log('metricsAppModel', metricsAppModel);
+
+console.log(
+  'metricsAppModelState',
+  metricsAppModel.getState(),
+  'metricsAppModelConfig',
+  // @ts-ignore
+  metricsAppModel.getConfig(),
+);

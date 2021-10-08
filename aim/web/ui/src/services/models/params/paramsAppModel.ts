@@ -64,6 +64,7 @@ import getGroupConfig from 'utils/app/getGroupConfig';
 import getFilteredRow from 'utils/app/getFilteredRow';
 // import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getChartTitleData from 'utils/app/getChartTitleData';
+import updateUrlParam from '../../../utils/app/updateUrlParam';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({ isParamsLoading: null });
@@ -1303,21 +1304,19 @@ function onResetConfigData(): void {
  */
 function updateURL(configData = model.getState()!.config!) {
   const { grouping, chart, select } = configData;
-  const url: string = getUrlWithParam(
-    ['grouping', 'chart', 'select'],
-    [encode(grouping), encode(chart), encode(select)],
-  );
+  const encodedParams: { [key: string]: string } = {};
 
-  if (url === `${window.location.pathname}${window.location.search}`) {
-    return;
+  if (grouping) {
+    encodedParams.grouping = encode(grouping);
+  }
+  if (chart) {
+    encodedParams.chart = encode(chart);
+  }
+  if (select) {
+    encodedParams.select = encode(select);
   }
 
-  const appId: string = window.location.pathname.split('/')[2];
-  if (!appId) {
-    setItem('paramsUrl', url);
-  }
-
-  window.history.pushState(null, '', url);
+  updateUrlParam(encodedParams, 'params');
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1635,42 +1634,46 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 const paramsAppModel = {
   ...model,
   initialize,
+  getAppConfigData,
   getParamsData,
-  onColorIndicatorChange,
-  onCurveInterpolationChange,
+  setDefaultAppConfigData,
+  updateURL,
+  updateModelData,
   onActivePointChange,
-  onParamsSelectChange,
-  onSelectRunQueryChange,
-  onRowHeightChange,
+  onExportTableData,
+  onBookmarkCreate,
+  onBookmarkUpdate,
+  onNotificationAdd,
+  onNotificationDelete,
+  onResetConfigData,
+  // grouping
   onGroupingSelectChange,
   onGroupingModeChange,
   onGroupingPaletteChange,
   onGroupingReset,
   onGroupingApplyChange,
   onGroupingPersistenceChange,
-  onBookmarkCreate,
-  onBookmarkUpdate,
-  onResetConfigData,
-  onNotificationAdd,
-  onNotificationDelete,
+  // select
+  onParamsSelectChange,
+  onSelectRunQueryChange,
+  // chart
   onChangeTooltip,
-  onExportTableData,
+  onColorIndicatorChange,
+  onCurveInterpolationChange,
+  // table
+  onRowHeightChange,
   onTableRowHover,
   onTableRowClick,
-  setDefaultAppConfigData,
   onSortFieldsChange,
   onParamVisibilityChange,
   onColumnsOrderChange,
   onColumnsVisibilityChange,
   onTableResizeModeChange,
-  getAppConfigData,
   onTableDiffShow,
   onTableResizeEnd,
   onSortReset,
   onSortChange,
   updateColumnsWidths,
-  updateURL,
-  updateModelData,
 };
 
 export default paramsAppModel;

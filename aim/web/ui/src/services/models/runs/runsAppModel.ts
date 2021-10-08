@@ -54,6 +54,7 @@ import { RowHeightEnum } from 'config/enums/tableEnums';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import { formatValue } from 'utils/formatValue';
+import updateUrlParam from '../../../utils/app/updateUrlParam';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -360,7 +361,7 @@ function initialize(appId: string = '') {
     const searchFromUrl = searchParam.get('search');
     const urlFromStorage = getItem('runsUrl');
     if (searchFromUrl) {
-      setItem('runsUrl', getUrlWithParam('search', searchFromUrl));
+      setItem('runsUrl', getUrlWithParam({ search: searchFromUrl }));
     } else {
       if (urlFromStorage) {
         window.history.pushState(null, '', urlFromStorage);
@@ -453,12 +454,12 @@ function getFilteredGroupingOptions(
 ): string[] {
   const { reverseMode, isApplied } = grouping || {};
   const groupingSelectOptions = model.getState()?.groupingSelectOptions;
-  if (groupingSelectOptions) {
+  if (groupingSelectOptions && grouping) {
     const filteredOptions = [...groupingSelectOptions]
       .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
       .map((item) => item.value);
-    return isApplied[groupName]
-      ? reverseMode[groupName]
+    return isApplied?.[groupName]
+      ? reverseMode?.[groupName]
         ? filteredOptions
         : grouping[groupName]
       : [];
@@ -781,23 +782,10 @@ function onSelectRunQueryChange(query: string) {
   }
 }
 
-function updateUrlParam(
-  paramName: string,
-  data: Record<string, unknown>,
-): void {
-  const encodedUrl: string = encode(data);
-  const url: string = getUrlWithParam(paramName, encodedUrl);
-  const appId: string = window.location.pathname.split('/')[2];
-  if (!appId) {
-    setItem('runsUrl', url);
-  }
-  window.history.pushState(null, '', url);
-}
-
 function updateSelectStateUrl(): void {
   const selectData = model.getState()?.config?.select;
   if (selectData) {
-    updateUrlParam('search', selectData);
+    updateUrlParam({ search: selectData }, 'runs');
   }
 }
 
@@ -837,14 +825,14 @@ function updateModelData(configData: IMetricAppConfig): void {
     metricsColumns,
     params,
     data[0]?.config,
-    configData.table.columnsOrder!,
-    configData.table.hiddenColumns!,
+    configData?.table?.columnsOrder!,
+    configData?.table?.hiddenColumns!,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
-    hiddenColumns: configData.table.hiddenColumns!,
+    hiddenColumns: configData?.table?.hiddenColumns!,
   });
   model.setState({
     config: configData,
@@ -943,15 +931,17 @@ const runAppModel = {
   getRunsData,
   getLastRunsData,
   onExportTableData,
-  onRowHeightChange,
   onNotificationDelete,
+  setDefaultAppConfigData,
+  // table
+  onRowHeightChange,
   onColumnsOrderChange,
-  updateSelectStateUrl,
-  onSelectRunQueryChange,
   onColumnsVisibilityChange,
   onTableDiffShow,
   updateColumnsWidths,
-  setDefaultAppConfigData,
+  // select
+  updateSelectStateUrl,
+  onSelectRunQueryChange,
 };
 
 export default runAppModel;
