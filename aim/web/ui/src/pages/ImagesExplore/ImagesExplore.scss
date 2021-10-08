@@ -5,8 +5,7 @@
     min-width: 50rem;
     height: 100%;
     .ImagesExplore__section {
-      height: 100%;
-      overflow-y: scroll;
+      height: 100vh;
     }
     .ImagesExplore__loader {
       flex-direction: column;
@@ -36,7 +35,7 @@
     .ImagesExplore__imagesWrapper__container {
       min-height: 11.25rem;
       flex: 0.5 1 0;
-      overflow-y: scroll;
+      overflow: auto;
       &__hide {
         display: none;
       }
