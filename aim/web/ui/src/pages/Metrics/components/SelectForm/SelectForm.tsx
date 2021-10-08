@@ -6,6 +6,7 @@ import {
   Divider,
   InputBase,
   Popper,
+  Tooltip,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
@@ -302,19 +303,37 @@ function SelectForm({
           Search
         </Button>
         <div className='SelectForm__search__actions'>
-          <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
-            <Icon name='reset' />
-          </Button>
-          <Button
-            className={selectedMetricsData?.advancedMode ? 'active' : ''}
-            withOnlyIcon={true}
-            onClick={toggleEditMode}
+          <Tooltip title='Reset query'>
+            <div>
+              <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
+                <Icon name='reset' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip
+            title={
+              selectedMetricsData?.advancedMode
+                ? 'Switch to default mode'
+                : 'Enable advanced search mode '
+            }
           >
-            <Icon name='edit' />
-          </Button>
-          <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
-            <Icon name='copy' />
-          </Button>
+            <div>
+              <Button
+                className={selectedMetricsData?.advancedMode ? 'active' : ''}
+                withOnlyIcon={true}
+                onClick={toggleEditMode}
+              >
+                <Icon name='edit' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title='Copy search query'>
+            <div>
+              <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
+                <Icon name='copy' />
+              </Button>
+            </div>
+          </Tooltip>
         </div>
       </div>
     </div>
