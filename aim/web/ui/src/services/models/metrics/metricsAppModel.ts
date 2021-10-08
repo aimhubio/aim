@@ -1638,7 +1638,7 @@ const onActivePointChange = debounce(
       model.getState() as IMetricAppModelState;
     const tableRef: any = refs?.tableRef;
     let tableData = null;
-    if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    if (config?.table?.resizeMode !== ResizeModeEnum.Hide) {
       tableData = getDataAsTableRows(
         data,
         activePoint.xValue,
