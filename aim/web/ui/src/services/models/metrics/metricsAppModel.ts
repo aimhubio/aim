@@ -84,11 +84,15 @@ import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
+  config: getConfig(),
 });
 let tooltipData: ITooltipData = {};
+
+let liveUpdateInstance: LiveUpdateService | null;
 
 function getConfig(): IMetricAppConfig {
   return {
@@ -174,6 +178,10 @@ function getConfig(): IMetricAppConfig {
       },
       height: '',
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -194,6 +202,23 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+
+  const liveUpdateState = model.getState()?.config?.liveUpdate;
+
+  if (liveUpdateState?.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'metrics',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
+}
+
+function updateData(newData: any) {
+  const configData = model.getState()?.config;
+  if (configData) {
+    setModelData(newData, configData);
+  }
 }
 
 function setDefaultAppConfigData() {
@@ -208,11 +233,18 @@ function setDefaultAppConfigData() {
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('metricsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -313,12 +345,15 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
-function getMetricsData() {
+function getMetricsData(fromSearch?: boolean) {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
   const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
+  if (fromSearch) {
+    updateURL();
+  }
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
@@ -344,11 +379,17 @@ function getMetricsData() {
           requestIsPending: true,
           queryIsEmpty: false,
         });
+        liveUpdateInstance?.stop().then();
+
         const stream = await metricsRequestRef.call(exceptionHandler);
         const runData = await getRunData(stream);
-        if (configData) {
-          setModelData(runData, configData);
-        }
+
+        updateData(runData);
+
+        liveUpdateInstance?.start({
+          q: query,
+          ...(metric && { x_axis: metric }),
+        });
       }
     },
     abort: metricsRequestRef.abort,
@@ -593,7 +634,7 @@ function getGroupingPersistIndex({
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
       );
     }
   }
@@ -2373,8 +2414,50 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const liveUpdateConfig = configData?.liveUpdate;
+  const metric = configData?.chart.alignmentConfig.metric;
+  let query = getQueryStringFromSelect(configData?.select);
+
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+    liveUpdateInstance = new LiveUpdateService(
+      'metrics',
+      updateData,
+      config.delay || liveUpdateConfig?.delay,
+    );
+    liveUpdateInstance?.start({
+      q: query,
+      ...(metric && { x_axis: metric }),
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    config: {
+      ...configData,
+      // @ts-ignore
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+  setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
+}
+
 const metricAppModel = {
   ...model,
+  destroy,
   initialize,
   getMetricsData,
   getAppConfigData,
@@ -2424,6 +2507,7 @@ const metricAppModel = {
   updateModelData,
   onShuffleChange,
   onSearchQueryCopy,
+  changeLiveUpdateConfig,
 };
 
 export default metricAppModel;

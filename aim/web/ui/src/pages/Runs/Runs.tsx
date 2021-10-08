@@ -11,7 +11,12 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
     <div className='Runs__container'>
       <section className='Runs__section'>
         <div className='Runs__section__div Runs__fullHeight'>
-          <RunsBar />
+          <RunsBar
+            {...{
+              ...props.liveUpdateConfig,
+              onLiveUpdateConfigChange: props.onLiveUpdateConfigChange,
+            }}
+          />
           <SearchBar
             onSearchInputChange={props.onSelectRunQueryChange}
             searchValue={props.query}

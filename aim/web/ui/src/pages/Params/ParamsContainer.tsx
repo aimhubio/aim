@@ -56,6 +56,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
+      paramsAppModel.destroy();
       paramsRequestRef.abort();
       appRequestRef?.abort();
     };
@@ -142,6 +143,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
+      liveUpdateConfig={paramsData.config.liveUpdate}
+      onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
     />
   );
 }
