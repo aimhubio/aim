@@ -255,9 +255,9 @@ function getQueryStringFromSelect(
                 (item) =>
                   `(metric.name == "${
                     metric.value.metric_name
-                  }" and metric.context.${item} == "${
-                    (metric.value.context as any)[item]
-                  }")`,
+                  }" and metric.context.${item} == ${formatValue(
+                    (metric.value.context as any)[item],
+                  )})`,
               )}`,
         )
         .join(' or ')})`.trim();
@@ -369,8 +369,8 @@ function getChartTitleData(
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = JSON.stringify(
-              metricsCollection.config[groupItemKey] || 'None',
+            acc[groupItemKey.replace('run.params.', '')] = formatValue(
+              metricsCollection.config[groupItemKey],
             );
           }
           return acc;
@@ -429,21 +429,30 @@ function onBookmarkUpdate(id: string) {
   analytics.trackEvent('[MetricsExplorer] Update bookmark');
 }
 
-function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
+function getGroupingSelectOptions(
+  params: string[],
+  contexts: string[],
+): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
+  }));
+
+  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
+    group: 'metric',
+    label: `metric.context.${context}`,
+    value: `context.${context}`,
   }));
 
   return [
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
@@ -453,22 +462,20 @@ function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
       label: 'metric.name',
       value: 'metric_name',
     },
-    {
-      group: 'metric',
-      label: 'context.subset',
-      value: 'context.subset',
-    },
+    ...contextOptions,
   ];
 }
 
 function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
+  contexts: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: IMetric[] = [];
   let index: number = -1;
   let params: string[] = [];
+  let contexts: string[] = [];
   const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
   data?.forEach((run: IRun<IMetricTrace>) => {
@@ -477,6 +484,9 @@ function processData(data: IRun<IMetricTrace>[]): {
       run.traces.map((trace: any) => {
         index++;
 
+        contexts = contexts.concat(
+          getObjectPaths(trace.context, trace.context),
+        );
         const { values, steps, epochs, timestamps } = filterMetricData({
           values: [...new Float64Array(trace.values.blob)],
           steps: [...new Float64Array(trace.iters.blob)],
@@ -536,12 +546,14 @@ function processData(data: IRun<IMetricTrace>[]): {
     ),
   );
   const uniqParams = _.uniq(params);
+  const uniqContexts = _.uniq(contexts);
 
   setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
     params: uniqParams,
+    contexts: uniqContexts,
   };
 }
 
@@ -1094,15 +1106,15 @@ function getDataAsTableRows(
         value:
           closestIndex === null
             ? '-'
-            : `${metric.data.values[closestIndex] ?? '-'}`,
+            : formatValue(metric.data.values[closestIndex]),
         step:
           closestIndex === null
             ? '-'
-            : `${metric.data.steps[closestIndex] ?? '-'}`,
+            : formatValue(metric.data.steps[closestIndex]),
         epoch:
           closestIndex === null
             ? '-'
-            : `${metric.data.epochs[closestIndex] ?? '-'}`,
+            : formatValue(metric.data.epochs[closestIndex]),
         time:
           closestIndex !== null ? metric.data.timestamps[closestIndex] : null,
         parentId: groupKey,
@@ -1229,8 +1241,8 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: JSON.stringify(
-            _.get(metricsCollection.config, paramKey, '-'),
+          [paramKey.replace('run.params.', '')]: formatValue(
+            _.get(metricsCollection.config, paramKey),
           ),
         });
         return acc;
@@ -1257,9 +1269,7 @@ function setTooltipData(
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: JSON.stringify(
-              _.get(metric, `run.params.${paramKey}`, '-'),
-            ),
+            [paramKey]: formatValue(_.get(metric, `run.params.${paramKey}`)),
           });
           return acc;
         }, {}),
@@ -1442,7 +1452,7 @@ function updateModelData(
   configData: IMetricAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params } = processData(
+  const { data, params, contexts } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
   const tableData = getDataAsTableRows(
@@ -1452,7 +1462,7 @@ function updateModelData(
     false,
     configData,
   );
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
@@ -1940,7 +1950,7 @@ function setModelData(
   configData: IMetricAppConfig,
 ) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params } = processData(rawData);
+  const { data, params, contexts } = processData(rawData);
   if (configData) {
     setAggregationEnabled(configData);
   }
@@ -1971,7 +1981,7 @@ function setModelData(
       onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    groupingSelectOptions: [...getGroupingSelectOptions(params, contexts)],
   });
 }
 

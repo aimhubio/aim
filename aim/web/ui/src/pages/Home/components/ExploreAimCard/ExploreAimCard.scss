@@ -1,63 +1,61 @@
 @use 'src/styles/abstracts' as *;
 
-.ExploreAimCard__container {
+.ExploreAimCard {
   width: 15.5rem;
   background-color: transparent;
   border-radius: 0.5rem;
-  border: 0.0625rem solid #e8f1fc;
+  border: 0.0625rem solid $cuddle-50;
   transition: background-color 0.3s ease-out;
-  padding: 1.5rem 1.5rem 0.875rem 1.5rem;
+  padding: 1.5rem 1.5rem 2rem 1.5rem;
   margin-bottom: 2rem;
   margin-right: 2rem;
   text-decoration: none;
+  position: relative;
   color: $pico;
-
   &:hover {
     background-color: #1473e6;
-    color: #ffffff;
+    color: #fff;
     .ExploreAimCard__icon {
       color: #1473e6;
-      background-color: #ffffff;
+      background-color: #fff;
     }
   }
-}
-
-.ExploreAimCard__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  width: 2.75rem;
-  height: 2.75rem;
-  background: #1473e6;
-  color: #ffffff;
-  margin-bottom: 0.875rem;
-  transition: all .3s ease-out;
-  i {
-    font-size: 1.5rem;
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: #1473e6;
+    color: #fff;
+    margin-bottom: 0.875rem;
+    transition: all 0.3s ease-out;
+    i {
+      font-size: 1.375rem;
+    }
   }
-}
+  &__title {
+    font-family: 'Inter SemiBold', sans-serif;
+    font-size: $text-md;
+    line-height: 1.0625rem;
+    margin: 0;
+  }
+  &__desc {
+    font-weight: 400;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  &__arrow__icon {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.25rem;
+    display: flex;
+    justify-content: flex-end;
 
-.ExploreAimCard__title {
-  font-weight: 600;
-  font-size: $text-md;
-  line-height: 1.0625rem;
-  margin: 0;
-}
-
-.ExploreAimCard__desc {
-  font-weight: 400;
-  font-size: 0.75rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.ExploreAim_card__arrowIcon__container {
-  display: flex;
-  justify-content: flex-end;
-
-  i {
-    color: #ffffff;
-    font-size: 1.75rem;
+    i {
+      color: #fff;
+      font-size: 1.75rem;
+    }
   }
 }

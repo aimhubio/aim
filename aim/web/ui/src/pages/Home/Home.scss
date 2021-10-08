@@ -1,31 +1,25 @@
-.Home__container {
-  background-color: #FFFFFF;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  h2 {
-    font-style: normal;
-    font-weight: 600;
-    font-size: 24px;
-    line-height: 29px;
-    color: #031123;
+@use 'src/styles/abstracts' as *;
+
+.Home {
+  &__container {
+    background-color: #ffffff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    h2 {
+      font-family: 'Inter SemiBold', sans-serif;
+      font-size: 24px;
+      line-height: 29px;
+      color: $pico;
+      margin: 0 0 1em 0;
+    }
   }
-}
-
-.Front__Grid__heading {
-  font-weight: 600;
-  font-size: 24px;
-  line-height: 29px;
-  color: #031123;
-  margin: 0;
-}
-
-.Home__Explore__container {
-  border-top: 1px solid #E8F1FC;
-  border-bottom: 1px solid #E8F1FC;
-  display: flex;
-}
-
-.Home__Activity__container {
-  padding: 1.5em;
+  &__Explore__container {
+    border-top: 1px solid #e8f1fc;
+    border-bottom: 1px solid #e8f1fc;
+    display: flex;
+  }
+  &__Activity__container {
+    padding: 1.5em;
+  }
 }

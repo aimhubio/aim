@@ -1,6 +1,3 @@
-Aim
-===
-
 .. mdinclude:: overview.md
 
 .. raw:: html
