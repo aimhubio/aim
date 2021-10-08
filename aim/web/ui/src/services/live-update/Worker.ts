@@ -1,5 +1,4 @@
 /**
- * @author AimHub
  * @TODO improve logging, exception handling
  */
 

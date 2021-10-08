@@ -619,7 +619,7 @@ function getGroupingPersistIndex({
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
       );
     }
   }
@@ -2402,7 +2402,7 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
 
-  if (!liveUpdateConfig?.enabled && config.enabled) {
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
     liveUpdateInstance = new LiveUpdateService(
       'metrics',
       updateData,

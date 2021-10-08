@@ -1,5 +1,4 @@
 /**
- * @author AimHub
  * @see README.md for more details
  */
 /* eslint-disable no-console */

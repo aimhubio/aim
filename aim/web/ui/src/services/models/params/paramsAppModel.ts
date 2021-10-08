@@ -1814,17 +1814,17 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();
   const configData = state?.config;
-  const select = configData.select;
+  const query = configData.select?.query;
   const liveUpdateConfig = configData.liveUpdate;
 
-  if (!liveUpdateConfig?.enabled && config.enabled) {
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
     liveUpdateInstance = new LiveUpdateService(
       'params',
       updateData,
       config.delay || liveUpdateConfig.delay,
     );
     liveUpdateInstance?.start({
-      q: select?.query,
+      q: query,
     });
   } else {
     liveUpdateInstance?.clear();
