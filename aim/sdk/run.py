@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.metric import SingleRunMetricCollection
-from aim.sdk.utils import generate_run_hash
+from aim.sdk.utils import generate_run_hash, get_object_typename
 from aim.sdk.num_utils import convert_to_py_number
 from aim.sdk.types import AimObject
 
@@ -346,7 +346,11 @@ class Run(StructuredRunMixin):
         if context is None:
             context = {}
 
-        value = convert_to_py_number(value)
+        try:
+            val = convert_to_py_number(value)
+        except ValueError:
+            # value is not a number
+            val = value
 
         ctx = Context(context)
         metric = MetricDescriptor(name, ctx)
@@ -366,7 +370,8 @@ class Run(StructuredRunMixin):
             max_idx = len(val_view)
         if max_idx == 0:
             self.meta_tree['traces', ctx.idx, name] = 1
-        self.meta_run_tree['traces', ctx.idx, name, "last"] = value
+            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = get_object_typename(val)
+        self.meta_run_tree['traces', ctx.idx, name, "last"] = val
 
         self.series_counters[ctx, name] = max_idx + 1
 
@@ -374,7 +379,7 @@ class Run(StructuredRunMixin):
 
         if step is None:
             step = max_idx
-        val_view[step] = value
+        val_view[step] = val
         epoch_view[step] = epoch
         time_view[step] = track_time
 
@@ -408,13 +413,19 @@ class Run(StructuredRunMixin):
         Yields:
             tuples of (metric_name, context, run) where run is the Run object itself.
         """
-        for ctx_idx, run_ctx_view in self.meta_run_tree.view('traces').items():
+        yield from self.iter_sequence_info_by_type(('float', 'int'))
+
+    def iter_sequence_info_by_type(self, dtypes: Tuple[str, ...]) -> Iterator[Tuple[str, Context, 'Run']]:
+        for ctx_idx, run_ctx_dict in self.meta_run_tree.view('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
-            for metric_name in run_ctx_view.keys():
+            for metric_name in run_ctx_dict.keys():
                 assert isinstance(metric_name, str)
-                yield metric_name, ctx, self
+                # skip sequences with item dtype other than float and integer.
+                # sequences with no dtype are considered to be float sequences.
+                if run_ctx_dict[metric_name].get('dtype', 'float') in dtypes:
+                    yield metric_name, ctx, self
 
     def metrics(self) -> 'MetricCollection':
         """Get iterable object for all run tracked metrics.
