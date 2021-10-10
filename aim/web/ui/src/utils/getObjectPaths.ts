@@ -1,4 +1,4 @@
-import _, { isArray, isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 function getObjectPaths(
   obj: { [key: string]: unknown },
@@ -15,7 +15,7 @@ function getObjectPaths(
   let paths: string[] = includeRoot
     ? rootKeys.reduce((acc: string[], { prefixedKey }) => {
         const val: any = _.get(rootObject, prefixedKey);
-        if (typeof val !== 'object' || isNil(val) || isArray(val)) {
+        if (typeof val !== 'object' || _.isNil(val) || _.isArray(val)) {
           acc.push(prefixedKey);
         }
         return acc;
@@ -23,7 +23,7 @@ function getObjectPaths(
     : Object.keys(obj)
         .filter(
           (key) =>
-            !_.isObject(obj[key]) || isNil(obj[key]) || isArray(obj[key]),
+            !_.isObject(obj[key]) || _.isNil(obj[key]) || _.isArray(obj[key]),
         )
         .map((key) => {
           return key;
