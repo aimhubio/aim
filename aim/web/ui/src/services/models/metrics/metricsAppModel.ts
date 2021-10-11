@@ -533,12 +533,12 @@ function processData(data: IRun<IMetricTrace>[]): {
           axesScaleType: configData?.chart?.axesScaleType,
         });
 
-        let yValues = values;
+        let processedValues = values;
         if (
           configData?.chart.smoothingAlgorithm &&
           configData.chart.smoothingFactor
         ) {
-          yValues = getSmoothenedData({
+          processedValues = getSmoothenedData({
             smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
             smoothingFactor: configData.chart.smoothingFactor,
             data: values,
@@ -557,14 +557,14 @@ function processData(data: IRun<IMetricTrace>[]): {
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           isHidden: configData!.table.hiddenMetrics!.includes(metricKey),
           data: {
-            values,
+            values: processedValues,
             steps,
             epochs,
             timestamps: timestamps.map((timestamp) =>
               Math.round(timestamp * 1000),
             ),
             xValues: steps,
-            yValues,
+            yValues: processedValues,
           },
         } as IMetric);
       }),
@@ -1016,27 +1016,15 @@ function getAggregatedData(
 
 function getDataAsLines(
   processedData: IMetricsCollection<IMetric>[],
-  configData: IMetricAppConfig | any = model.getState()?.config,
 ): ILine[][] {
   if (!processedData) {
     return [];
   }
-  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
   const lines = processedData
     .map((metricsCollection: IMetricsCollection<IMetric>) =>
       metricsCollection.data
         .filter((metric) => !metric.isHidden)
         .map((metric: IMetric) => {
-          let yValues;
-          if (smoothingAlgorithm && smoothingFactor) {
-            yValues = getSmoothenedData({
-              smoothingAlgorithm,
-              smoothingFactor,
-              data: metric.data.yValues,
-            });
-          } else {
-            yValues = metric.data.yValues;
-          }
           return {
             ...metric,
             groupKey: metricsCollection.key,
@@ -1046,7 +1034,7 @@ function getDataAsLines(
             selectors: [metric.key, metric.key, metric.run.hash],
             data: {
               xValues: metric.data.xValues,
-              yValues,
+              yValues: metric.data.yValues,
             },
           };
         }),
