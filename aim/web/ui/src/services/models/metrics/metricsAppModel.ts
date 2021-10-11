@@ -345,13 +345,13 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
-function getMetricsData(fromSearch?: boolean) {
+function getMetricsData(shouldUrlUpdate?: boolean) {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
   const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
-  if (fromSearch) {
+  if (shouldUrlUpdate) {
     updateURL();
   }
   const metric = configData?.chart.alignmentConfig.metric;
@@ -2058,8 +2058,6 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
       select: { ...configData.select, metrics: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2073,8 +2071,6 @@ function onSelectRunQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, query },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
@@ -2113,7 +2109,6 @@ function toggleSelectAdvancedMode() {
       },
     };
 
-    updateURL(newConfig);
     model.setState({
       config: newConfig,
     });
