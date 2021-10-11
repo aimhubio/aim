@@ -416,9 +416,9 @@ class Run(StructuredRunMixin):
         yield from self.iter_sequence_info_by_type(('float', 'int'))
 
     def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, 'Run']]:
+        if isinstance(dtypes, str):
+            dtypes = (dtypes,)
         for ctx_idx, run_ctx_dict in self.meta_run_tree.view('traces').items():
-            if isinstance(dtypes, str):
-                dtypes = (dtypes, )
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
