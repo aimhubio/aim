@@ -1,8 +1,8 @@
 import React from 'react';
-
-import _, { debounce, isEmpty, isNil } from 'lodash-es';
+import _ from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
@@ -1374,7 +1374,7 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
     });
     updateURL(configData);
   }
-  if (!isNil(zoom.mode)) {
+  if (!_.isNil(zoom.mode)) {
     analytics.trackEvent(
       `[MetricsExplorer][Chart] Set zoom mode to "${
         zoom.mode === 0 ? 'single' : 'multiple'
@@ -1673,7 +1673,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
 
-const onActivePointChange = debounce(
+const onActivePointChange = _.debounce(
   (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
     const { data, params, refs, config } =
       model.getState() as IMetricAppModelState;
@@ -2232,7 +2232,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[MetricsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[MetricsExplorer][Table] Show all table columns');
   }
 }
@@ -2264,9 +2264,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
   }
@@ -2332,7 +2332,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }

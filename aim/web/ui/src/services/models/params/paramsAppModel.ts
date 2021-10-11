@@ -1,5 +1,5 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
@@ -604,7 +604,7 @@ function getDataAsLines(
         data: groupedByChartIndex[i],
       };
     })
-    .filter((data) => !isEmpty(data.data) && !isEmpty(data.dimensions));
+    .filter((data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions));
 }
 
 function getGroupConfig(
@@ -1537,7 +1537,7 @@ function onSortFieldsChange(sortFields: [string, any][]) {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1599,7 +1599,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[ParamsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[ParamsExplorer][Table] Show all table columns');
   }
 }
@@ -1622,9 +1622,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(configUpdate);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
   }
@@ -1727,7 +1727,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }

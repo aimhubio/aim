@@ -398,6 +398,9 @@ $border-radius: 0.2rem;
   display: flex;
   flex: 1;
   color: $pico;
+  .TagLabel {
+    margin-right: $space-xxxs;
+  }
 }
 
 .Popover__body {
