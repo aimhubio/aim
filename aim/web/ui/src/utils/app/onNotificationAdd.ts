@@ -5,8 +5,8 @@ import onNotificationDelete from './onNotificationDelete';
 export default function onNotificationAdd<
   M extends State,
   N extends INotification,
->(notification: N, model: IModel<M>) {
-  let notifyData = model.getState()?.notifyData || [];
+>(notification: N, model: IModel<M>): void {
+  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData, notification];
   model.setState({ notifyData });
   setTimeout(() => {

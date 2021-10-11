@@ -88,7 +88,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableData={paramsData?.tableData}
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState}
-      isParamsLoading={paramsData?.isParamsLoading}
+      requestIsPending={paramsData?.requestIsPending}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator
       }
@@ -111,7 +111,6 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       notifyData={paramsData?.notifyData}
       tableRowHeight={paramsData?.config?.table.rowHeight as RowHeightSize}
       columnsWidths={paramsData?.config?.table.columnsWidths}
-      requestIsPending={paramsData?.requestIsPending}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}

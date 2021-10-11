@@ -14,7 +14,7 @@ export default async function onBookmarkCreate<M extends State>(
   { name, description }: any,
   model: IModel<M>,
   appName: string,
-) {
+): Promise<void> {
   const configData = model?.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService

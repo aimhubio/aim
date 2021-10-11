@@ -19,7 +19,6 @@ import {
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
-import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import {
   aggregateGroupData,
@@ -89,8 +88,10 @@ import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
 import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
 import { formatValue } from 'utils/formatValue';
-import updateUrlParam from '../../../utils/app/updateUrlParam';
-import createAppModel, { appInitialConfig } from '../../../createAppModel';
+import updateUrlParam from 'utils/app/updateUrlParam';
+import createAppModel, {
+  appInitialConfig,
+} from 'services/models/explorer/createAppModel';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -2146,69 +2147,59 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
-const metricAppModel = {
-  ...model,
-  initialize,
-  getAppConfigData,
-  getMetricsData,
-  getDataAsTableRows,
-  setDefaultAppConfigData,
-  updateURL,
-  updateModelData,
-  onActivePointChange,
-  onExportTableData,
-  onBookmarkCreate,
-  onBookmarkUpdate,
-  onNotificationAdd,
-  onNotificationDelete,
-  onResetConfigData,
-  // grouping
-  onGroupingSelectChange,
-  onGroupingModeChange,
-  onGroupingPaletteChange,
-  onGroupingReset,
-  onGroupingApplyChange,
-  onGroupingPersistenceChange,
-  // select
-  onMetricsSelectChange,
-  onSelectRunQueryChange,
-  onSelectAdvancedQueryChange,
-  toggleSelectAdvancedMode,
-  // chart
-  onChangeTooltip,
-  onHighlightModeChange,
-  onZoomChange,
-  onSmoothingChange,
-  onIgnoreOutliersChange,
-  onAxesScaleTypeChange,
-  onAggregationConfigChange,
-  // table
-  onRowHeightChange,
-  onTableRowHover,
-  onTableRowClick,
-  onAlignmentMetricChange,
-  onAlignmentTypeChange,
-  onMetricVisibilityChange,
-  onColumnsVisibilityChange,
-  onTableDiffShow,
-  onColumnsOrderChange,
-  onTableResizeModeChange,
-  onTableResizeEnd,
-  onSortReset,
-  onSortChange,
-  updateColumnsWidths,
-};
+// const metricAppModel = {
+//   ...model,
+//   initialize,
+//   getAppConfigData,
+//   getMetricsData,
+//   getDataAsTableRows,
+//   setDefaultAppConfigData,
+//   updateURL,
+//   updateModelData,
+//   onActivePointChange,
+//   onExportTableData,
+//   onBookmarkCreate,
+//   onBookmarkUpdate,
+//   onNotificationAdd,
+//   onNotificationDelete,
+//   onResetConfigData,
+//   // grouping
+//   onGroupingSelectChange,
+//   onGroupingModeChange,
+//   onGroupingPaletteChange,
+//   onGroupingReset,
+//   onGroupingApplyChange,
+//   onGroupingPersistenceChange,
+//   // select
+//   onMetricsSelectChange,
+//   onSelectRunQueryChange,
+//   onSelectAdvancedQueryChange,
+//   toggleSelectAdvancedMode,
+//   // chart
+//   onChangeTooltip,
+//   onHighlightModeChange,
+//   onZoomChange,
+//   onSmoothingChange,
+//   onIgnoreOutliersChange,
+//   onAxesScaleTypeChange,
+//   onAggregationConfigChange,
+//   // table
+//   onRowHeightChange,
+//   onTableRowHover,
+//   onTableRowClick,
+//   onAlignmentMetricChange,
+//   onAlignmentTypeChange,
+//   onMetricVisibilityChange,
+//   onColumnsVisibilityChange,
+//   onTableDiffShow,
+//   onColumnsOrderChange,
+//   onTableResizeModeChange,
+//   onTableResizeEnd,
+//   onSortReset,
+//   onSortChange,
+//   updateColumnsWidths,
+// };
+
+const metricAppModel = createAppModel(appInitialConfig.METRICS) as any;
 
 export default metricAppModel;
-
-const metricsAppModel = createAppModel(appInitialConfig.METRICS);
-
-console.log('metricsAppModel', metricsAppModel);
-
-console.log(
-  'metricsAppModelState',
-  metricsAppModel.getState(),
-  'metricsAppModelConfig',
-  // @ts-ignore
-  metricsAppModel.getConfig(),
-);

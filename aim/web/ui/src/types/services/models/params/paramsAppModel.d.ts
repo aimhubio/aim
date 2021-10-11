@@ -46,6 +46,7 @@ export interface IParamsAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  metricsColumns: any;
 }
 
 export interface IParam {
