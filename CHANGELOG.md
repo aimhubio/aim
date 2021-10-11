@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.4 Oct 11 2021
+- Resolve UI version bug (gorarakelyan)
+
 ## 2.7.3 Oct 6 2021
 - Add VERSION file to MANIFEST (gorarakelyan)
 
