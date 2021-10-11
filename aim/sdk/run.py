@@ -6,7 +6,7 @@ from collections import Counter
 from copy import deepcopy
 
 from aim.sdk.errors import RepoIntegrityError
-from aim.sdk.metric import SingleRunMetricCollection
+from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash, get_object_typename
 from aim.sdk.num_utils import convert_to_py_number
 from aim.sdk.types import AimObject
@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.sdk.metric import Metric
-    from aim.sdk.metric import MetricCollection
+    from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
 
@@ -415,19 +415,22 @@ class Run(StructuredRunMixin):
         """
         yield from self.iter_sequence_info_by_type(('float', 'int'))
 
-    def iter_sequence_info_by_type(self, dtypes: Tuple[str, ...]) -> Iterator[Tuple[str, Context, 'Run']]:
+    def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, 'Run']]:
         for ctx_idx, run_ctx_dict in self.meta_run_tree.view('traces').items():
+            if isinstance(dtypes, str):
+                dtypes = (dtypes, )
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
-            for metric_name in run_ctx_dict.keys():
-                assert isinstance(metric_name, str)
-                # skip sequences with item dtype other than float and integer.
+            for seq_name in run_ctx_dict.keys():
+                assert isinstance(seq_name, str)
+                # skip sequences not matching dtypes.
                 # sequences with no dtype are considered to be float sequences.
-                if run_ctx_dict[metric_name].get('dtype', 'float') in dtypes:
-                    yield metric_name, ctx, self
+                # '*' stands for all data types
+                if '*' in dtypes or run_ctx_dict[seq_name].get('dtype', 'float') in dtypes:
+                    yield seq_name, ctx, self
 
-    def metrics(self) -> 'MetricCollection':
+    def metrics(self) -> 'SequenceCollection':
         """Get iterable object for all run tracked metrics.
 
         Returns:
@@ -438,7 +441,7 @@ class Run(StructuredRunMixin):
             >>> for metric in run.metrics():
             >>>     metric.values.sparse_numpy()
         """
-        return SingleRunMetricCollection(self)
+        return SingleRunSequenceCollection(self)
 
     def __eq__(self, other: 'Run') -> bool:
         return self.hashname == other.hashname and self.repo == other.repo

@@ -6,7 +6,7 @@ from typing import Iterator, Tuple, Optional, List
 from aim.storage.context import Context
 from aim.sdk.run import Run
 from aim.sdk.metric import Metric
-from aim.sdk.metric import MetricCollection
+from aim.sdk.sequence_collection import SequenceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
 
@@ -118,7 +118,7 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
         yield collect_run_streamable_data(encoded_tree)
 
 
-def metric_search_result_streamer(traces: MetricCollection, steps_num: int, x_axis: Optional[str]) -> bytes:
+def metric_search_result_streamer(traces: SequenceCollection, steps_num: int, x_axis: Optional[str]) -> bytes:
     for run_trace_collection in traces.iter_runs():
         run = None
         traces_list = []
@@ -158,7 +158,7 @@ def metric_search_result_streamer(traces: MetricCollection, steps_num: int, x_ax
             yield collect_run_streamable_data(encoded_tree)
 
 
-def run_search_result_streamer(runs: MetricCollection, limit: int) -> bytes:
+def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
     run_count = 0
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
