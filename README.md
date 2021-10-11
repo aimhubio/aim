@@ -58,7 +58,7 @@ Follow the steps below to get started with Aim.
 _Prerequisite: You need to have python3 and pip3 installed in your environment before installing Aim_
 
 ```shell
-$ pip install aim==3.0.0b6
+$ pip3 install aim==3.0.0b6
 ```
 
 **2. Integrate Aim with your code**
