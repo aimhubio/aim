@@ -54,7 +54,8 @@ function SelectForm({
     };
   }, []);
 
-  function handleMetricSearch() {
+  function handleMetricSearch(e: React.ChangeEvent<any>): void {
+    e.preventDefault();
     searchMetricsRef.current = metricAppModel.getMetricsData(true);
     searchMetricsRef.current.call();
   }
@@ -150,21 +151,23 @@ function SelectForm({
           >
             {selectedMetricsData?.advancedMode ? (
               <div className='SelectForm__textarea'>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  spellCheck={false}
-                  rows={3}
-                  variant='outlined'
-                  placeholder={
-                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  }
-                  value={selectedMetricsData?.advancedQuery ?? ''}
-                  onChange={({ target }) =>
-                    onSelectAdvancedQueryChange(target.value)
-                  }
-                />
+                <form onSubmit={handleMetricSearch}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    size='small'
+                    spellCheck={false}
+                    rows={3}
+                    variant='outlined'
+                    placeholder={
+                      'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                    }
+                    value={selectedMetricsData?.advancedQuery ?? ''}
+                    onChange={({ target }) =>
+                      onSelectAdvancedQueryChange(target.value)
+                    }
+                  />
+                </form>
               </div>
             ) : (
               <>
@@ -277,16 +280,18 @@ function SelectForm({
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              spellCheck={false}
-              inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              value={selectedMetricsData?.query ?? ''}
-              onChange={({ target }) => onSelectRunQueryChange(target.value)}
-            />
+            <form onSubmit={handleMetricSearch}>
+              <TextField
+                fullWidth
+                size='small'
+                variant='outlined'
+                spellCheck={false}
+                inputProps={{ style: { height: '0.687rem' } }}
+                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                value={selectedMetricsData?.query ?? ''}
+                onChange={({ target }) => onSelectRunQueryChange(target.value)}
+              />
+            </form>
           </div>
         )}
       </div>

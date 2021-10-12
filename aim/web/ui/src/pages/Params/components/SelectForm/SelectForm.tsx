@@ -49,7 +49,8 @@ function SelectForm({
     };
   }, []);
 
-  function handleParamsSearch() {
+  function handleParamsSearch(e: React.ChangeEvent<any>) {
+    e.preventDefault();
     searchRef.current.call();
   }
 
@@ -253,16 +254,18 @@ function SelectForm({
         </Box>
 
         <div className='Params__SelectForm__TextField'>
-          <TextField
-            fullWidth
-            size='small'
-            variant='outlined'
-            spellCheck={false}
-            inputProps={{ style: { height: '0.687rem' } }}
-            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-            value={selectedParamsData?.query}
-            onChange={({ target }) => onSelectRunQueryChange(target.value)}
-          />
+          <form onSubmit={handleParamsSearch}>
+            <TextField
+              fullWidth
+              size='small'
+              variant='outlined'
+              spellCheck={false}
+              inputProps={{ style: { height: '0.687rem' } }}
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+              value={selectedParamsData?.query}
+              onChange={({ target }) => onSelectRunQueryChange(target.value)}
+            />
+          </form>
         </div>
       </div>
     </div>
