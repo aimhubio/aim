@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from aim.storage.types import CustomObjectBase
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.container import Container
 from aim.storage.arrayview import TreeArrayView
@@ -38,6 +39,9 @@ class InMemoryTreeView(TreeView):
         container = self.container
         for key in path:
             container = container[key]
+
+        if isinstance(container, CustomObjectBase):
+            return container
 
         return InMemoryTreeView(container)
 

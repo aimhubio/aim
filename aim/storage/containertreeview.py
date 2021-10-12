@@ -1,6 +1,8 @@
 from aim.storage import encoding as E
+from aim.storage.encoding.encoding import decode
+from aim.storage.object import CustomObject
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.utils import ArrayFlag
+from aim.storage.utils import ArrayFlag, CustomObjectFlagType
 from aim.storage.container import Container
 from aim.storage import treeutils
 from aim.storage.arrayview import TreeArrayView
@@ -36,7 +38,15 @@ class ContainerTreeView(TreeView):
         prefix = E.encode_path(path)
 
         container_view = self.container.view(prefix)
-        return ContainerTreeView(container_view)
+        tree_view = ContainerTreeView(container_view)
+        # Okay, but let's decide if we want to initialize a CustomObject view
+        try:
+            flag = decode(container_view[b''])
+            if isinstance(flag, CustomObjectFlagType):
+                return CustomObject._aim_decode(flag.aim_name, tree_view)
+        except:
+            pass
+        return tree_view
 
     def make_array(
         self,

@@ -1,9 +1,10 @@
 from typing import Dict
 
+from aim.storage.types import CustomObjectBase
 from aim.storage.inmemorytreeview import InMemoryTreeView
 
 
-class CustomObject:
+class CustomObject(CustomObjectBase):
     registry: Dict[str, type] = {}
 
     def __init__(self):
