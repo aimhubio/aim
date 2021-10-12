@@ -4,6 +4,13 @@ from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from aim.sdk.run import Run
+
+
 T = TypeVar('T')
 
 

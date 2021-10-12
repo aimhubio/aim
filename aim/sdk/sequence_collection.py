@@ -11,6 +11,7 @@ from aim.storage.query import RestrictedPythonQuery
 if TYPE_CHECKING:
     from aim.sdk.run import Run
     from aim.sdk.repo import Repo
+    from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +74,8 @@ class SingleRunSequenceCollection(SequenceCollection):
          run (:obj:`Run`): Run object for which sequences are queried.
          seq_cls (:obj:`type`): The collection's sequence class. Sequences not matching to seq_cls.allowed_dtypes
             will be skipped. `Sequence` by default, meaning all sequences will match.
-         query (:obj:`str`, optional): Query expression. If specified, method `iter()` will return iterator for sequences
-            matching the query. If not, method `iter()` will return iterator for run's all sequences.
+         query (:obj:`str`, optional): Query expression. If specified, method `iter()` will return iterator for
+            sequences matching the query. If not, method `iter()` will return iterator for run's all sequences.
     """
     def __init__(
         self,
@@ -114,8 +115,8 @@ class SingleRunSequenceCollection(SequenceCollection):
 class QuerySequenceCollection(SequenceCollection):
     """Implementation of SequenceCollection interface for repository's sequences matching given query.
 
-    Method `iter()` returns Sequence iterator, which yields Sequence matching query from currently iterated run's sequences.
-    Once there are no sequences left in current run, repository's next run is considered.
+    Method `iter()` returns Sequence iterator, which yields Sequence matching query from currently
+    iterated run's sequences. Once there are no sequences left in current run, repository's next run is considered.
     Method `iter_runs()` returns SequenceCollection iterator for repository's runs.
 
     Args:

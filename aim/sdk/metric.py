@@ -30,10 +30,12 @@ class Metric(Sequence):
 
         Args:
              include_name: (:obj:`int`, optional): If true, include metric name in dataframe. False by default.
-             include_context: (:obj:`int`, optional): If true, include metric context path:value pairs in dataframe. False by default.
-             include_run: (:obj:`int`, optional): If true, include run run.hashname and run hparams path:value pairs in dataframe. False by default.
-             only_last: (:obj:`int`, optional): If true return dataframe for only last value, step, timestamp and epoch. False by default.
-
+             include_context: (:obj:`int`, optional): If true, include metric context
+                path:value pairs in dataframe. False by default.
+             include_run: (:obj:`int`, optional): If true, include run run.hashname and run hparams
+                path:value pairs in dataframe. False by default.
+             only_last: (:obj:`int`, optional): If true return dataframe for only last value, step, timestamp
+                and epoch. False by default.
         """
         # Returns dataframe with rows corresponding to iters
         # Columns: `step`, `value`, `time`
