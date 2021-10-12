@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Radio, Switch } from '@material-ui/core';
+import { Box, Radio } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
@@ -43,6 +43,7 @@ function ColorPopoverAdvanced({
               onChange={() => onPersistenceChange('color')}
               checked={persistence}
               size='large'
+              variant='contained'
             />
             <span className='ColorPopoverAdvanced__container__span'>
               Enable

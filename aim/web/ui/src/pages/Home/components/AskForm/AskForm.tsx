@@ -1,17 +1,16 @@
 import React from 'react';
 import { TextField } from '@material-ui/core';
 
-import avatarImg from 'assets/gevImg.jpeg';
-
 import Button from 'components/Button/Button';
 import { IAskFormProps } from 'types/pages/home/components/AskForm/AskForm';
 
+import avatarImg from 'assets/gevImg.jpeg';
 import './AskForm.scss';
 
 function AskForm({
   onSendEmail,
 }: IAskFormProps): React.FunctionComponentElement<React.ReactNode> {
-  const [email, setEmail] = React.useState('');
+  const [email, setEmail] = React.useState<string>('');
 
   async function handleSubmit() {
     const data = await onSendEmail({ email });
@@ -23,6 +22,7 @@ function AskForm({
   function onChange(e: React.ChangeEvent<any>): void {
     setEmail(e.target.value);
   }
+
   return (
     <div className='AskForm'>
       <div className='AskForm__avatar'>

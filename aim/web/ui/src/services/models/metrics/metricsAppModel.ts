@@ -1,8 +1,8 @@
 import React from 'react';
-
 import _ from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
@@ -345,12 +345,15 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
-function getMetricsData() {
+function getMetricsData(shouldUrlUpdate?: boolean) {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
   const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
+  if (shouldUrlUpdate) {
+    updateURL();
+  }
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
@@ -1853,16 +1856,13 @@ function updateURL(configData = model.getState()!.config!) {
     ['grouping', 'chart', 'select'],
     [encode(grouping), encode(chart), encode(select)],
   );
-
   if (url === `${window.location.pathname}${window.location.search}`) {
     return;
   }
-
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('metricsUrl', url);
   }
-
   window.history.pushState(null, '', url);
 }
 
@@ -2043,8 +2043,6 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
       select: { ...configData.select, metrics: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2059,8 +2057,6 @@ function onSelectRunQueryChange(query: string) {
       select: { ...configData.select, query },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2074,9 +2070,6 @@ function onSelectAdvancedQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
     };
-
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2085,16 +2078,21 @@ function onSelectAdvancedQueryChange(query: string) {
 
 function toggleSelectAdvancedMode() {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let query = configData?.select.advancedQuery
+    ? configData.select.advancedQuery
+    : getQueryStringFromSelect(configData?.select);
+  if (query === '()') {
+    query = '';
+  }
   if (configData?.select) {
     const newConfig = {
       ...configData,
       select: {
         ...configData.select,
+        advancedQuery: query,
         advancedMode: !configData.select.advancedMode,
       },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,

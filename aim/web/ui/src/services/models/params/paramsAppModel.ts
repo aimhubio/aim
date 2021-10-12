@@ -5,13 +5,13 @@ import { saveAs } from 'file-saver';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
-import { encode, decode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import COLORS from 'config/colors/colors';
@@ -24,23 +24,23 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
-  IGroupingSelectOption,
   GroupNameType,
   IAppData,
+  IChartTitle,
+  IChartTitleData,
+  IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricsCollection,
+  IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
-  IChartTooltip,
-  IChartTitle,
-  IChartTitleData,
-  IMetricTableRowData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IParam,
   IParamsAppConfig,
@@ -305,11 +305,13 @@ function setDefaultAppConfigData() {
   });
 }
 
-function getParamsData() {
+function getParamsData(shouldUrlUpdate?: boolean) {
   return {
     call: async () => {
+      if (shouldUrlUpdate) {
+        updateURL();
+      }
       liveUpdateInstance?.stop().then();
-
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
@@ -929,8 +931,6 @@ function onParamsSelectChange(data: any[]) {
       select: { ...configData.select, params: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -944,8 +944,6 @@ function onSelectRunQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, query },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
