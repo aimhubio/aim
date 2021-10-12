@@ -19,8 +19,3 @@ xgboost.train(param, dtrain, num_round, watchlist,
 ```
 
 During the training process, you can start another terminal, in the same directory, start aim up, you can observe the information in real time.
-
-The complete mnist example based on XGboost + Aim can be viewed: [Integration_xgboost](During the training process, you can start another terminal, in the same directory, start aim up, you can observe the information in real time.)
-
-
-

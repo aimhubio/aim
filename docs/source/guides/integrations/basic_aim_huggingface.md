@@ -1,5 +1,8 @@
 ### Integration with Huggingface
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1YJsWXmpmJ8s6K9smqIFT7CnM27yjoPq3?usp=sharing)
+
+
 In this guide, we will show you how to integrate Aim with Huggingface. The work we are going to do together is sentiment classification problem, which is the most common text classification task. We choose the IMDB movie review dataset as an experimental dataset, which classifies movie reviews as positive or negative. During the training process, we will show the use of aim to record effective information.
 
 You only need 2 simple steps to employ Aim to collect data ❤️
@@ -26,7 +29,6 @@ trainer = Trainer(
 )
 ```
 
- The complete IMDB example based on Huggingface + Aim can be viewed: [Integration_Huggingface](https://colab.research.google.com/drive/1YJsWXmpmJ8s6K9smqIFT7CnM27yjoPq3?usp=sharing)
 
 
 
