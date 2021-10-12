@@ -1,5 +1,5 @@
 import React from 'react';
-import Switcher from 'components/Switcher/Switcher';
+import Switcher from 'components/ui/Switcher/Switcher';
 
 import './LiveUpdateSettings.scss';
 
@@ -17,7 +17,7 @@ function LiveUpdateSettings(
       <span className='LiveUpdateText'>Live update:</span>
       <Switcher
         checked={Boolean(props.enabled)}
-        onChange={(d) => {
+        onChange={() => {
           props.onLiveUpdateConfigChange({ enabled: !props.enabled });
         }}
         size='small'

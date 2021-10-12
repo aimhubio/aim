@@ -3,10 +3,8 @@
 .StrokePopoverAdvanced {
   &__container {
     padding: 1rem;
-    &__span {
+    &__p {
       display: inline-block;
-      font-size: $text-md;
-      font-family: 'Inter Regular', sans-serif;
       margin: 1rem 0;
     }
   }
