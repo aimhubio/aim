@@ -1,10 +1,12 @@
+import React from 'react';
+
 export interface ITextProps {
   component?: componentType;
   weight?: componentWeightType;
   size?: componentSizeType;
   color?: componentColorType;
   className?: string;
-  children?: any;
+  children?: React.ReactNode;
   tint?: componentTintType;
 }
 
