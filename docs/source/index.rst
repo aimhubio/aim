@@ -27,6 +27,13 @@
    ref_storage
 
 .. toctree::
+   :maxdepth: 2
+   :name: api
+   :caption: Guides
+
+   guide_integrations.rst
+
+.. toctree::
    :maxdepth: 1
    :name: Community
    :caption: Community

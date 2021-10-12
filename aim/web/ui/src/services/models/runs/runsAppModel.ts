@@ -55,8 +55,7 @@ import { RowHeightEnum } from 'config/enums/tableEnums';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import { formatValue } from 'utils/formatValue';
 import updateUrlParam from '../../../utils/app/updateUrlParam';
-import createAppModel from '../explorer/createAppModel';
-import { appInitialConfig } from '../explorer';
+import { appInitialConfig, createAppModel } from '../explorer';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({

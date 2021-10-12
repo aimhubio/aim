@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+import { useLocation, useRouteMatch, useHistory } from 'react-router-dom';
 
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
@@ -46,7 +46,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
-  const location = useLocation();
+  const history = useHistory();
   const metricsData = useModel<Partial<IMetricAppModelState> | any>(
     metricAppModel,
   );
@@ -87,13 +87,25 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     } else {
       metricAppModel.setDefaultAppConfigData();
     }
-
     const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
     analytics.pageView('[MetricsExplorer]');
+    const unListenHistory = history.listen(() => {
+      if (!!metricsData.config) {
+        if (
+          metricsData.config.grouping !== getStateFromUrl('grouping') ||
+          metricsData.config.chart !== getStateFromUrl('chart') ||
+          metricsData.config.select !== getStateFromUrl('select')
+        ) {
+          metricAppModel.setDefaultAppConfigData();
+          metricAppModel.updateModelData();
+        }
+      }
+    });
     return () => {
       metricAppModel.destroy();
       metricsRequestRef.abort();
+      unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();
       }
@@ -101,18 +113,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   // Add effect to recover state from URL when browser history navigation is used
-  React.useEffect(() => {
-    if (!!metricsData.config) {
-      if (
-        metricsData.config.grouping !== getStateFromUrl('grouping') ||
-        metricsData.config.chart !== getStateFromUrl('chart') ||
-        metricsData.config.select !== getStateFromUrl('select')
-      ) {
-        metricAppModel.setDefaultAppConfigData();
-        metricAppModel.updateModelData();
-      }
-    }
-  }, [location.search]);
 
   return (
     <Metrics

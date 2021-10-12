@@ -1,8 +1,8 @@
 import React from 'react';
-
 import _ from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
@@ -78,9 +78,7 @@ import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import { getFilteredGroupingOptions } from 'utils/app/getFilteredGroupingOptions';
 import isGroupingApplied from 'utils/app/isGroupingApplied';
-import getGroupConfig from 'utils/app/getGroupConfig';
 import resetChartZoom from 'utils/app/resetChartZoom';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
@@ -89,10 +87,10 @@ import getChartTitleData from 'utils/app/getChartTitleData';
 import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
 import { formatValue } from 'utils/formatValue';
 import updateUrlParam from 'utils/app/updateUrlParam';
-import createAppModel from 'services/models/explorer/createAppModel';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import getTooltipData from '../../../utils/app/getTooltipData';
-import { appInitialConfig } from '../explorer';
+import { getFilteredGroupingOptions } from '../../../utils/app/getFilteredGroupingOptions';
+import { appInitialConfig, createAppModel } from '../explorer';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -325,12 +323,15 @@ function exceptionHandler(detail: any): void {
   resetModelOnError(detail);
 }
 
-function getMetricsData() {
+function getMetricsData(shouldUrlUpdate?: boolean) {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
   const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
+  if (shouldUrlUpdate) {
+    updateURL();
+  }
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
@@ -451,12 +452,12 @@ function processData(data: IRun<IMetricTrace>[]): {
           axesScaleType: configData?.chart?.axesScaleType,
         });
 
-        let yValues = values;
+        let processedValues = values;
         if (
           configData?.chart?.smoothingAlgorithm &&
           configData.chart.smoothingFactor
         ) {
-          yValues = getSmoothenedData({
+          processedValues = getSmoothenedData({
             smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
             smoothingFactor: configData.chart.smoothingFactor,
             data: values,
@@ -475,14 +476,14 @@ function processData(data: IRun<IMetricTrace>[]): {
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
           data: {
-            values,
+            values: processedValues,
             steps,
             epochs,
             timestamps: timestamps.map((timestamp) =>
               Math.round(timestamp * 1000),
             ),
             xValues: steps,
-            yValues,
+            yValues: processedValues,
           },
         } as IMetric);
       }),
@@ -833,27 +834,15 @@ function alignData(
 
 function getDataAsLines(
   processedData: IMetricsCollection<IMetric>[],
-  configData: IMetricAppConfig | any = model.getState()?.config,
 ): ILine[][] {
   if (!processedData) {
     return [];
   }
-  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
   const lines = processedData
     .map((metricsCollection: IMetricsCollection<IMetric>) =>
       metricsCollection.data
         .filter((metric) => !metric.isHidden)
         .map((metric: IMetric) => {
-          let yValues;
-          if (smoothingAlgorithm && smoothingFactor) {
-            yValues = getSmoothenedData({
-              smoothingAlgorithm,
-              smoothingFactor,
-              data: metric.data.yValues,
-            });
-          } else {
-            yValues = metric.data.yValues;
-          }
           return {
             ...metric,
             groupKey: metricsCollection.key,
@@ -863,7 +852,7 @@ function getDataAsLines(
             selectors: [metric.key, metric.key, metric.run.hash],
             data: {
               xValues: metric.data.xValues,
-              yValues,
+              yValues: metric.data.yValues,
             },
           };
         }),
@@ -1818,8 +1807,6 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
       select: { ...configData.select, metrics: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -1835,8 +1822,6 @@ function onSelectRunQueryChange(query: string) {
       select: { ...configData.select, query },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -1851,9 +1836,6 @@ function onSelectAdvancedQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
     };
-
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -1863,16 +1845,21 @@ function onSelectAdvancedQueryChange(query: string) {
 function toggleSelectAdvancedMode() {
   // separated
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let query = configData?.select?.advancedQuery
+    ? configData.select.advancedQuery
+    : getQueryStringFromSelect(configData?.select);
+  if (query === '()') {
+    query = '';
+  }
   if (configData?.select) {
     const newConfig = {
       ...configData,
       select: {
         ...configData.select,
+        advancedQuery: query,
         advancedMode: !configData.select.advancedMode,
       },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,

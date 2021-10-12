@@ -17,7 +17,6 @@ import {
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import filterTooltipContent from 'utils/filterTooltipContent';
-import getUrlWithParam from 'utils/getUrlWithParam';
 import { getItem, setItem } from 'utils/storage';
 import getStateFromUrl from 'utils/getStateFromUrl';
 // Types
@@ -67,8 +66,7 @@ import { IModel } from '../../../types/services/models/model';
 import { IGetGroupingPersistIndex } from '../../../types/utils/app/getGroupingPersistIndex';
 import getFilteredRow from '../../../utils/app/getFilteredRow';
 import updateUrlParam from '../../../utils/app/updateUrlParam';
-import createAppModel from '../explorer/createAppModel';
-import { appInitialConfig } from '../explorer';
+import { appInitialConfig, createAppModel } from '../explorer';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -315,11 +313,13 @@ function setDefaultAppConfigData() {
   });
 }
 
-function getParamsData() {
+function getParamsData(shouldUrlUpdate?: boolean) {
   return {
     call: async () => {
+      if (shouldUrlUpdate) {
+        updateURL();
+      }
       liveUpdateInstance?.stop().then();
-
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
@@ -896,8 +896,6 @@ function onParamsSelectChange(data: any[]) {
       select: { ...configData.select, params: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -911,8 +909,6 @@ function onSelectRunQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, query },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
