@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   Box,
-  TextField,
   Checkbox,
   Divider,
   InputBase,
   Popper,
+  TextField,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
@@ -41,7 +41,7 @@ function SelectForm({
   const searchRef = React.useRef<any>(null);
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchRef.current = paramsAppModel.getParamsData();
+    searchRef.current = paramsAppModel.getParamsData(true);
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef.abort();

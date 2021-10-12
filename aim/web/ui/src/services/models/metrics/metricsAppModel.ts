@@ -1868,16 +1868,13 @@ function updateURL(configData = model.getState()!.config!) {
     ['grouping', 'chart', 'select'],
     [encode(grouping), encode(chart), encode(select)],
   );
-
   if (url === `${window.location.pathname}${window.location.search}`) {
     return;
   }
-
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('metricsUrl', url);
   }
-
   window.history.pushState(null, '', url);
 }
 
