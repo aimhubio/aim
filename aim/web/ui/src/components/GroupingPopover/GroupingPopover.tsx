@@ -5,7 +5,6 @@ import {
   AccordionSummary,
   Checkbox,
   TextField,
-  Chip,
 } from '@material-ui/core';
 import {
   CheckBox as CheckBoxIcon,
@@ -20,8 +19,9 @@ import {
   GroupNameType,
 } from 'types/services/models/metrics/metricsAppModel';
 import Icon from 'components/Icon/Icon';
+import TagLabel from 'components/TagLabel/TagLabel';
 
-import './groupingPopoverStyle.scss';
+import './GroupingPopover.scss';
 
 function GroupingPopover({
   groupName,
@@ -96,11 +96,12 @@ function GroupingPopover({
             renderTags={(value, getTagProps) => (
               <div style={{ maxHeight: 110, overflow: 'auto' }}>
                 {value.map((selected, i) => (
-                  <Chip
+                  <TagLabel
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}
                     size='small'
+                    className='Select__Chip'
                   />
                 ))}
               </div>

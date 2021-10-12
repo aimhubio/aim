@@ -1,5 +1,5 @@
 import * as analytics from 'services/analytics';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 import { IChartZoom } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 
@@ -7,25 +7,26 @@ export default function onZoomChange<M extends State>(
   zoom: Partial<IChartZoom>,
   model: IModel<M>,
   appName: string,
+  updateURL: any,
 ): void {
-  const configData = model.getState()?.config;
-  if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          zoom: {
-            ...configData.chart.zoom,
-            ...zoom,
-          },
+  const config = model.getState()?.config;
+  if (config?.chart) {
+    const configData = {
+      ...config,
+      chart: {
+        ...config.chart,
+        zoom: {
+          ...config.chart.zoom,
+          ...zoom,
         },
       },
-    });
+    };
+    model.setState({ config: configData });
+    updateURL(configData);
   }
-  if (!isNil(zoom.mode)) {
+  if (!_.isNil(zoom.mode)) {
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] Set zoom mode to "${
+      `[${appName}][Chart] Set zoom mode to "${
         zoom.mode === 0 ? 'single' : 'multiple'
       }"`,
     );

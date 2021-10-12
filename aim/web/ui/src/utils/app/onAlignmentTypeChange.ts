@@ -6,6 +6,7 @@ export default function onAlignmentTypeChange<M extends State>(
   type: AlignmentOptions,
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
@@ -18,7 +19,7 @@ export default function onAlignmentTypeChange<M extends State>(
       ...configData.chart,
       alignmentConfig,
     };
-    // updateModelData(configData);
+    updateModelData(configData);
   }
   analytics.trackEvent(
     `[${appName}Explorer][Chart] Align X axis by "${AlignmentOptions[

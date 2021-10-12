@@ -14,7 +14,7 @@ export default function onBookmarkUpdate<M extends State>(
   const configData = model.getState()?.config;
   if (configData) {
     appsService
-      .updateApp(id, { state: configData, type: appName.toLowerCase })
+      .updateApp(id, { state: configData, type: appName.toLowerCase() })
       .call()
       .then((res: IDashboardData | any) => {
         if (res.id) {

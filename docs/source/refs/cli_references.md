@@ -1,7 +1,7 @@
 ## Command Line Interface
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
-Paired with the [Python Library](#sdk-specifications), Aim is a powerful utility to record, search and compare AI experiments.
+Paired with the Python Library, Aim is a powerful utility to record, search and compare AI experiments.
 Here are the set of commands supported:
 
 
@@ -65,6 +65,3 @@ $ aim ugrade 2to3 [ARGS]
 | `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data. |
 | `--skip-checks`       | Use this flag to skip new repository consistency checks. |
 | `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`.|
-
-
-Jump to [[Getting Started](#getting-started-in-3-steps)] [[Overview](#overview)] [[Use Cases](#use-cases)]

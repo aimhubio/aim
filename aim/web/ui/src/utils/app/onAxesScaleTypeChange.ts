@@ -7,11 +7,12 @@ export default function onAxesScaleTypeChange<M extends State>(
   args: IAxesScaleState,
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model?.getState()?.config;
   if (configData?.chart) {
     configData.chart.axesScaleType = args;
-    // updateModelData(configData);
+    updateModelData(configData);
   }
   analytics.trackEvent(
     `[${appName}Explorer][Chart] Set X axis scale type "${args.xAxis}"`,

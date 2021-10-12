@@ -106,4 +106,8 @@ export interface IParamsAppConfig {
     };
     height: string;
   };
+  liveUpdate?: {
+    delay: number;
+    enabled: boolean;
+  };
 }

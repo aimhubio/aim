@@ -18,7 +18,7 @@ export default async function onBookmarkCreate<M extends State>(
   const configData = model?.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService
-      .createApp({ state: configData, type: appName?.toLowerCase })
+      .createApp({ state: configData, type: appName.toLowerCase() })
       .call();
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService

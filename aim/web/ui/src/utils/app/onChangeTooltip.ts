@@ -1,11 +1,15 @@
 import * as analytics from 'services/analytics';
 
-import { IChartTooltip } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IChartTooltip,
+  ITooltipData,
+} from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import filterTooltipContent from 'utils/filterTooltipContent';
 
 export default function onChangeTooltip<M extends State>(
   tooltip: Partial<IChartTooltip>,
+  tooltipData: ITooltipData,
   model: IModel<M>,
   appName: string,
 ): void {
@@ -14,7 +18,7 @@ export default function onChangeTooltip<M extends State>(
     let content = configData.chart.tooltip.content;
     if (tooltip.selectedParams && configData?.chart.focusedState.key) {
       content = filterTooltipContent(
-        // tooltipData[configData.chart.focusedState.key],
+        tooltipData[configData.chart.focusedState.key],
         tooltip.selectedParams,
       );
     }

@@ -33,4 +33,8 @@ export interface IRunsAppConfig {
     offset: null;
     isLatest: boolean;
   };
+  liveUpdate?: {
+    delay: number;
+    enabled: boolean;
+  };
 }

@@ -74,9 +74,7 @@ function filterMetricData({
     values: filteredYValues,
     steps: filteredXValues,
     epochs: filteredEpochs,
-    timestamps: filteredTimestamps.map((timestamp) =>
-      Math.round(timestamp * 1000),
-    ),
+    timestamps: filteredTimestamps,
   };
 }
 

@@ -1,4 +1,4 @@
-name: aim/aim-cli packaging pipeline
+name: aim packaging pipeline
 
 on: workflow_dispatch
 
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
         os: [ 'macos-latest' ]
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
     steps:
@@ -74,14 +74,12 @@ jobs:
 
       - name: Build bdist wheel
         run: |
-          AIM_PKG_NAME=aim python setup.py bdist_wheel -d dist
-          AIM_PKG_NAME=aim-cli python setup.py bdist_wheel -d dist
+          python setup.py bdist_wheel -d dist
 
       - name: Build sdist
         if: matrix.python-version == '3.9'
         run: |
-          AIM_PKG_NAME=aim python setup.py sdist
-          AIM_PKG_NAME=aim-cli python setup.py sdist
+          python setup.py sdist
 
       - name: Publish wheel
         env:

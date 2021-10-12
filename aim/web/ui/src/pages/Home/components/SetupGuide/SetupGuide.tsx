@@ -1,19 +1,24 @@
 import React from 'react';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import Icon from 'components/Icon/Icon';
+import AskForm from '../AskForm/AskForm';
+import { ISetupGuideProps } from 'types/pages/home/components/SetupGuide/SetupGuide';
 
 import './SetupGuide.scss';
 
-function SetupGuide(): React.FunctionComponentElement<React.ReactNode> {
+function SetupGuide({
+  askEmailSent,
+  onSendEmail,
+}: ISetupGuideProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='SetupGuide__container'>
       <h2>Integrate Aim with your code</h2>
       <div className='SetupGuide__code'>
-        <h3>Import Aim</h3>
+        <h3>1. Import Aim</h3>
         <CodeBlock code='import aim' />
       </div>
       <div className='SetupGuide__code'>
-        <h3>Track your training runs</h3>
+        <h3>2. Track your training runs</h3>
         <CodeBlock
           code={`run_inst = aim.Run(experiment='my_exp_name')
 
@@ -29,31 +34,32 @@ for step in range(10):
 `}
         />
       </div>
-      <div className='StyleGuide__resources__container'>
+      <div className='SetupGuide__resources__container'>
         <a
           target='_blank'
           href='https://github.com/aimhubio/aim#overview'
           rel='noreferrer'
-          className='SetupGuide__resource__item'
+          className='SetupGuide__resources__item'
         >
-          <div className='StyleGuide__resource__item__icon'>
+          <div className='SetupGuide__resources__item__icon'>
             <Icon name='runs' />
           </div>
           <span>Full docs</span>
         </a>
-        <div className='SetupGuide__resource__item'>
-          <div className='StyleGuide__resource__item__icon'>
+        <div className='SetupGuide__resources__item'>
+          <div className='SetupGuide__resources__item__icon'>
             <Icon name='bookmarks' />
           </div>
           <span>Jupyter notebook</span>
         </div>
-        <div className='SetupGuide__resource__item'>
-          <div className='StyleGuide__resource__item__icon'>
+        <div className='SetupGuide__resources__item'>
+          <div className='SetupGuide__resources__item__icon'>
             <Icon name='metrics' />
           </div>
           <span>Live demo</span>
         </div>
       </div>
+      {askEmailSent ? null : <AskForm onSendEmail={onSendEmail} />}
     </div>
   );
 }

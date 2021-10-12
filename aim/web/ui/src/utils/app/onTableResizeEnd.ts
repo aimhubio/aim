@@ -6,6 +6,7 @@ export function onTableResizeEnd<M extends State>(
   tableHeight: string,
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.table) {
@@ -17,9 +18,8 @@ export function onTableResizeEnd<M extends State>(
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem(`${appName}Table`, encode(table));
+    updateModelData(config);
   }
 }

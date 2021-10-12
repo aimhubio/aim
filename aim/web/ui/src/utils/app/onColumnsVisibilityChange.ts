@@ -9,6 +9,7 @@ export default function onColumnsVisibilityChange<M extends State>(
   hiddenColumns: string[],
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
@@ -28,7 +29,7 @@ export default function onColumnsVisibilityChange<M extends State>(
       config: configUpdate,
     });
     setItem(`${appName}Table`, encode(table));
-    // updateModelData(configUpdate);
+    updateModelData(configUpdate);
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent(`[${appName}Explorer][Table] Hide all table columns`);

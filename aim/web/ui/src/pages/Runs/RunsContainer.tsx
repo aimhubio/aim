@@ -31,6 +31,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView('[RunsExplorer]');
     return () => {
       runsRequestRef.abort();
+      runsAppModel.destroy();
     };
   }, []);
 
@@ -67,6 +68,8 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onManageColumns={runsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={runsAppModel.onColumnsVisibilityChange}
       onTableDiffShow={runsAppModel.onTableDiffShow}
+      liveUpdateConfig={runsData?.config?.liveUpdate}
+      onLiveUpdateConfigChange={runsAppModel.changeLiveUpdateConfig}
     />
   );
 }

@@ -1,4 +1,3 @@
-import { encode } from 'utils/encoder/encoder';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import { setItem } from 'utils/storage';
 

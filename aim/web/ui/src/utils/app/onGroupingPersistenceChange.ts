@@ -7,6 +7,8 @@ export default function onGroupingPersistenceChange<M extends State>(
   groupName: GroupNameType,
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
+  setAggregationEnabled?: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.grouping) {
@@ -17,8 +19,10 @@ export default function onGroupingPersistenceChange<M extends State>(
         [groupName]: !configData.grouping.persistence[groupName],
       },
     };
-    // setAggregationEnabled(configData);
-    // updateModelData(configData);
+    if (typeof setAggregationEnabled === 'function') {
+      setAggregationEnabled(model, appName);
+    }
+    updateModelData(configData);
   }
   analytics.trackEvent(
     `[${appName}Explorer] ${

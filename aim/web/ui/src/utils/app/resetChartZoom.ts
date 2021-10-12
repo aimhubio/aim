@@ -3,9 +3,8 @@ import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel'
 
 export default function resetChartZoom(
   configData: IMetricAppConfig | any,
-  page: string,
+  appName: string,
 ): IMetricAppConfig | any {
-  analytics.trackEvent(`[${page}Explorer][Chart] Reset zoom`);
   configData.chart = {
     ...configData.chart,
     zoom: {
@@ -14,5 +13,6 @@ export default function resetChartZoom(
       history: [],
     },
   };
+  analytics.trackEvent(`[${appName}Explorer][Chart] Reset zoom`);
   return configData;
 }

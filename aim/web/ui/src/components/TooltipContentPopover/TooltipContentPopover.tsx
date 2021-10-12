@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, TextField, Typography, Chip } from '@material-ui/core';
+import { Checkbox, TextField, Typography } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
@@ -12,6 +12,7 @@ import { ITooltipContentPopoverProps } from 'types/components/TooltipContentPopo
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import './TooltipContentPopover.scss';
+import TagLabel from 'components/TagLabel/TagLabel';
 
 function TooltipContentPopover({
   onChangeTooltip,
@@ -53,7 +54,7 @@ function TooltipContentPopover({
   }, [selectOptions, selectedParams]);
 
   const paramsOptions = React.useMemo(() => {
-    return selectOptions.filter((option) => option.group === 'params');
+    return selectOptions.filter((option) => option.group === 'run');
   }, [selectOptions]);
 
   return (
@@ -96,11 +97,12 @@ function TooltipContentPopover({
             renderTags={(value, getTagProps) => (
               <div style={{ maxHeight: 110, overflow: 'auto' }}>
                 {value.map((selected, i) => (
-                  <Chip
+                  <TagLabel
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}
                     size='small'
+                    className='Select__Chip'
                   />
                 ))}
               </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
@@ -41,6 +41,7 @@ import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IParam,
   IParamsAppConfig,
+  IParamsAppModelState,
 } from 'types/services/models/params/paramsAppModel';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
 import { ISelectParamsOption } from 'types/pages/params/components/SelectForm/SelectForm';
@@ -59,21 +60,28 @@ import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
-import getGroupConfig from 'utils/app/getGroupConfig';
-import getFilteredRow from 'utils/app/getFilteredRow';
-// import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
-import getChartTitleData from 'utils/app/getChartTitleData';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+import getTooltipData from '../../../utils/app/getTooltipData';
+import getChartTitleData from '../../../utils/app/getChartTitleData';
+import { IModel } from '../../../types/services/models/model';
+import { IGetGroupingPersistIndex } from '../../../types/utils/app/getGroupingPersistIndex';
+import getFilteredRow from '../../../utils/app/getFilteredRow';
 import updateUrlParam from '../../../utils/app/updateUrlParam';
 
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: null });
+const model = createModel<Partial<any>>({
+  isParamsLoading: null,
+  config: getConfig(),
+});
+
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
   call: () => Promise<IAppData>;
   abort: () => void;
 };
+
+let liveUpdateInstance: LiveUpdateService | null;
 
 function getConfig() {
   return {
@@ -136,6 +144,10 @@ function getConfig() {
         right: [],
       },
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -156,6 +168,60 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+
+  const liveUpdateState = model.getState()?.config.liveUpdate;
+
+  if (liveUpdateState?.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
+}
+
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
+
+  const configData = model.getState()?.config;
+  if (configData) {
+    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
+  }
+
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    configData,
+  );
+  const sortFields = model.getState()?.config?.table.sortFields;
+
+  model.setState({
+    data,
+    highPlotData: getDataAsLines(data),
+    chartTitleData: getChartTitleData<IParam, IParamsAppModelState>(
+      data,
+      model as IModel<IParamsAppModelState>,
+    ),
+    params,
+    metricsColumns,
+    rawData: newData,
+    config: configData,
+    tableData: tableData.rows,
+    tableColumns: getParamsTableColumns(
+      metricsColumns,
+      params,
+      data[0]?.config,
+      configData.table.columnsOrder!,
+      configData.table.hiddenColumns!,
+      sortFields,
+      onSortChange,
+    ),
+    sameValueColumns: tableData.sameValueColumns,
+    isParamsLoading: false,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+  });
 }
 
 function resetModelOnError(detail?: any) {
@@ -223,15 +289,23 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+
   const tableConfigHash = getItem('paramsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('paramsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IParamsAppConfig | any = _.merge(getConfig(), {
     chart,
     grouping,
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -242,12 +316,17 @@ function setDefaultAppConfigData() {
 function getParamsData() {
   return {
     call: async () => {
+      liveUpdateInstance?.stop().then();
+
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
         model.setState({
           highPlotData: [],
           tableData: [],
+          data: [],
+          rawData: [],
+          tableColumns: [],
           isParamsLoading: false,
         });
       } else {
@@ -283,7 +362,10 @@ function getParamsData() {
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
-          chartTitleData: getChartTitleData<IParam, any>(data, model),
+          chartTitleData: getChartTitleData<IParam, IParamsAppModelState>(
+            data,
+            model as IModel<IParamsAppModelState>,
+          ),
           params,
           metricsColumns,
           rawData: runData,
@@ -302,6 +384,10 @@ function getParamsData() {
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
         });
+
+        liveUpdateInstance?.start({
+          q: select?.query,
+        });
       }
     },
     abort: () => getRunsRequestRef.abort(),
@@ -311,7 +397,7 @@ function getParamsData() {
 //Table Methods
 
 function onTableRowHover(rowKey?: string): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
     const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
 
@@ -322,7 +408,7 @@ function onTableRowHover(rowKey?: string): void {
 }
 
 function onTableRowClick(rowKey?: string): void {
-  const configData: IParamsAppConfig | undefined = model.getState()!.config!;
+  const configData: IParamsAppConfig = model.getState()!.config!;
   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
   let focusedStateActive = !!rowKey;
   if (
@@ -350,7 +436,7 @@ function processData(data: IRun<IParamTrace>[]): {
   const paletteIndex: number = grouping?.paletteIndex || 0;
   const metricsColumns: any = {};
 
-  data.forEach((run: IRun<IParamTrace>, index) => {
+  data?.forEach((run: IRun<IParamTrace>, index) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     run.traces.forEach((trace) => {
       metricsColumns[trace.metric_name] = {
@@ -381,7 +467,8 @@ function processData(data: IRun<IParamTrace>[]): {
   );
   const uniqParams = _.uniq(params);
 
-  setTooltipData(processedData, uniqParams);
+  tooltipData = getTooltipData(processedData, uniqParams, model);
+
   return {
     data: processedData,
     params: uniqParams,
@@ -475,63 +562,83 @@ function getDataAsLines(
     _.groupBy(flattedLines, 'chartIndex'),
   );
 
-  return Object.keys(dimensionsObject).map((keyOfDimension, i) => {
-    const dimensions: IDimensionsType = {};
-    Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
-      if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [
-            Math.min(...dimensionsObject[keyOfDimension][key].values),
-            Math.max(...dimensionsObject[keyOfDimension][key].values),
-          ],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
-        };
-      } else {
-        dimensions[key] = {
-          scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-          domainData: [...dimensionsObject[keyOfDimension][key].values],
-          displayName: dimensionsObject[keyOfDimension][key].displayName,
-          dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
-        };
-      }
-    });
-    return {
-      dimensions,
-      data: groupedByChartIndex[i],
-    };
-  });
+  return Object.keys(dimensionsObject)
+    .map((keyOfDimension, i) => {
+      const dimensions: IDimensionsType = {};
+      Object.keys(dimensionsObject[keyOfDimension]).forEach((key: string) => {
+        if (dimensionsObject[keyOfDimension][key].scaleType === 'linear') {
+          dimensions[key] = {
+            scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+            domainData: [
+              Math.min(...dimensionsObject[keyOfDimension][key].values),
+              Math.max(...dimensionsObject[keyOfDimension][key].values),
+            ],
+            displayName: dimensionsObject[keyOfDimension][key].displayName,
+            dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+          };
+        } else {
+          dimensions[key] = {
+            scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+            domainData: [...dimensionsObject[keyOfDimension][key].values],
+            displayName: dimensionsObject[keyOfDimension][key].displayName,
+            dimensionType: dimensionsObject[keyOfDimension][key].dimensionType,
+          };
+        }
+      });
+      return {
+        dimensions,
+        data: groupedByChartIndex[i],
+      };
+    })
+    .filter((data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions));
 }
 
-function setTooltipData( // separated
-  processedData: IMetricsCollection<IParam>[],
-  paramKeys: string[],
-): void {
-  const data: { [key: string]: any } = {};
+function getGroupConfig(
+  metricsCollection: IMetricsCollection<IParam>,
+  groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
+) {
+  const configData = model.getState()?.config;
+  let groupConfig: { [key: string]: {} } = {};
 
-  for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig(metricsCollection, model);
-    for (let param of metricsCollection.data) {
-      data[param.key] = {
-        runHash: param.run.hash,
-        groupConfig,
-        params: paramKeys.reduce((acc, paramKey) => {
-          Object.assign(acc, {
-            [paramKey]: JSON.stringify(
-              _.get(param, `run.params.${paramKey}`, '-'),
-            ),
-          });
-          return acc;
-        }, {}),
-      };
+  for (let groupItemKey of groupingItems) {
+    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+    if (groupItem.length) {
+      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+        Object.assign(acc, {
+          [paramKey.replace('run.params.', '')]: formatValue(
+            _.get(metricsCollection.config, paramKey),
+          ),
+        });
+        return acc;
+      }, {});
     }
   }
-
-  tooltipData = data;
+  return groupConfig;
 }
 
-function getFilteredGroupingOptions( // separated
+function getGroupingPersistIndex({
+  groupValues,
+  groupKey,
+  grouping,
+}: IGetGroupingPersistIndex) {
+  const configHash = encode(groupValues[groupKey].config as {}, true);
+  let index = BigInt(0);
+  for (let i = 0; i < configHash.length; i++) {
+    const charCode = configHash.charCodeAt(i);
+    if (charCode > 47 && charCode < 58) {
+      index += BigInt(
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+      );
+    } else if (charCode > 96 && charCode < 103) {
+      index += BigInt(
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+      );
+    }
+  }
+  return index;
+}
+
+function getFilteredGroupingOptions(
   grouping: IParamsAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
@@ -620,6 +727,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'color',
         });
         groupValue.color =
           COLORS[paletteIndex][
@@ -646,6 +754,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
           groupValues,
           groupKey,
           grouping,
+          groupName: 'stroke',
         });
         groupValue.dasharray =
           DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
@@ -686,6 +795,20 @@ function onColorIndicatorChange(): void {
       configData.chart?.isVisibleColorIndicator ? 'Disable' : 'Enable'
     } color indicator`,
   );
+}
+
+function onShuffleChange(name: 'color' | 'stroke') {
+  const configData = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = {
+      ...configData.grouping,
+      seed: {
+        ...configData.grouping.seed,
+        [name]: configData.grouping.seed[name] + 1,
+      },
+    };
+    updateModelData(configData);
+  }
 }
 
 function onCurveInterpolationChange(): void {
@@ -764,7 +887,7 @@ function onActivePointChange(
 }
 
 function onParamsSelectChange(data: any[]) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.select) {
     const newConfig = {
       ...configData,
@@ -780,7 +903,7 @@ function onParamsSelectChange(data: any[]) {
 }
 
 function onSelectRunQueryChange(query: string) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.select) {
     const newConfig = {
       ...configData,
@@ -797,19 +920,19 @@ function onSelectRunQueryChange(query: string) {
 
 function getGroupingSelectOptions(params: string[]): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
   }));
 
   return [
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
@@ -821,7 +944,7 @@ function onGroupingSelectChange({
   groupName,
   list,
 }: IOnGroupingSelectChangeParams) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
@@ -833,7 +956,7 @@ function onGroupingModeChange({
   groupName,
   value,
 }: IOnGroupingModeChangeParams): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {
       ...configData.grouping.reverseMode,
@@ -849,7 +972,7 @@ function onGroupingModeChange({
 }
 
 function onGroupingPaletteChange(index: number): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {
       ...configData.grouping,
@@ -865,7 +988,7 @@ function onGroupingPaletteChange(index: number): void {
 }
 
 function onGroupingReset(groupName: GroupNameType) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.grouping) {
     const { reverseMode, paletteIndex, isApplied, persistence } =
       configData.grouping;
@@ -920,7 +1043,10 @@ function updateModelData(
     config: configData,
     data,
     highPlotData: getDataAsLines(data),
-    chartTitleData: getChartTitleData<IParam, any>(data, model),
+    chartTitleData: getChartTitleData<IParam, IParamsAppModelState>(
+      data,
+      model as IModel<IParamsAppModelState>,
+    ),
     groupingSelectOptions: [...getGroupingSelectOptions(params)],
     tableData: tableData.rows,
     tableColumns,
@@ -1097,7 +1223,7 @@ function getDataAsTableRows(
 }
 
 function onGroupingApplyChange(groupName: GroupNameType): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {
       ...configData.grouping,
@@ -1111,7 +1237,7 @@ function onGroupingApplyChange(groupName: GroupNameType): void {
 }
 
 function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = {
       ...configData.grouping,
@@ -1130,7 +1256,7 @@ function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const configData: IMetricAppConfig = model.getState()?.config;
   if (configData) {
     const data: IAppData | any = await appsService
       .createApp({ state: configData, type: 'params' })
@@ -1148,7 +1274,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
             });
           }
         })
-        .catch((err) => {
+        .catch(() => {
           onNotificationAdd({
             id: Date.now(),
             severity: 'error',
@@ -1161,7 +1287,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
 }
 
 function onBookmarkUpdate(id: string) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData) {
     appsService
       .updateApp(id, { state: configData, type: 'params' })
@@ -1180,7 +1306,7 @@ function onBookmarkUpdate(id: string) {
 }
 
 function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-  let configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;
     if (tooltip.selectedParams && configData?.chart.focusedState.key) {
@@ -1286,7 +1412,7 @@ function onNotificationAdd(notification: INotification) {
 }
 
 function onResetConfigData(): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData) {
     configData.grouping = {
       ...getConfig().grouping,
@@ -1320,7 +1446,7 @@ function updateURL(configData = model.getState()!.config!) {
 }
 
 function onRowHeightChange(height: RowHeightSize) {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const configData: IMetricAppConfig = model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
@@ -1343,7 +1469,7 @@ function onRowHeightChange(height: RowHeightSize) {
 
 function onSortFieldsChange(sortFields: [string, any][]) {
   // separated
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table) {
     const configUpdate = {
       ...configData,
@@ -1359,13 +1485,13 @@ function onSortFieldsChange(sortFields: [string, any][]) {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
 
 function onParamVisibilityChange(metricsKeys: string[]) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   const processedData: IMetricsCollection<IParam>[] = model.getState()?.data;
   if (configData?.table && processedData) {
     const table = {
@@ -1399,7 +1525,7 @@ function onParamVisibilityChange(metricsKeys: string[]) {
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
   if (configData?.table) {
     const table = {
@@ -1421,13 +1547,13 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[ParamsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[ParamsExplorer][Table] Show all table columns');
   }
 }
 
 function onColumnsOrderChange(columnsOrder: any) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
@@ -1444,16 +1570,16 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(configUpdate);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
   }
 }
 
 function onTableResizeModeChange(mode: ResizeModeEnum): void {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
@@ -1463,9 +1589,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem('paramsTable', encode(table));
     updateModelData(config);
   }
@@ -1483,7 +1607,7 @@ function onTableDiffShow() {
 }
 
 function onRowVisibilityChange(metricKey: string) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table) {
     let hiddenMetrics = configData?.table?.hiddenMetrics || [];
     if (hiddenMetrics?.includes(metricKey)) {
@@ -1510,7 +1634,7 @@ function onRowVisibilityChange(metricKey: string) {
 }
 
 function onTableResizeEnd(tableHeight: string) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
@@ -1530,7 +1654,7 @@ function onTableResizeEnd(tableHeight: string) {
 
 // internal function to update config.table.sortFields and cache data
 function updateSortFields(sortFields: SortField[]) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
@@ -1549,7 +1673,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1568,7 +1692,7 @@ function onSortReset() {
  * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
  */
 function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  const configData: IMetricAppConfig = model.getState()?.config;
   const sortFields = configData?.table?.sortFields || [];
 
   const existField = sortFields?.find((d: SortField) => d[0] === field);
@@ -1607,7 +1731,7 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
 }
 
 function updateColumnsWidths(key: string, width: number, isReset: boolean) {
-  const configData: IParamsAppConfig | undefined = model.getState()?.config;
+  const configData: IParamsAppConfig = model.getState()?.config;
   if (configData?.table && configData?.table?.columnsWidths) {
     let columnsWidths = configData?.table?.columnsWidths;
     if (isReset) {
@@ -1631,8 +1755,49 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const query = configData.select?.query;
+  const liveUpdateConfig = configData.liveUpdate;
+
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance?.start({
+      q: query,
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+
+  setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
+}
+
 const paramsAppModel = {
   ...model,
+  destroy,
   initialize,
   getAppConfigData,
   getParamsData,
@@ -1674,6 +1839,8 @@ const paramsAppModel = {
   onSortReset,
   onSortChange,
   updateColumnsWidths,
+  changeLiveUpdateConfig,
+  onShuffleChange,
 };
 
 export default paramsAppModel;

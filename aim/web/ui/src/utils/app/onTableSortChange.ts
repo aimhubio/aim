@@ -12,6 +12,8 @@ import updateTableSortFields from 'utils/app/updateTableSortFields';
 export default function onTableSortChange<M extends State>(
   field: string,
   model: IModel<M>,
+  appName: string,
+  updateModelData: any,
   value?: 'asc' | 'desc' | 'none',
 ) {
   const configData = model.getState().config;
@@ -49,5 +51,5 @@ export default function onTableSortChange<M extends State>(
       newFields = [...sortFields, [field, 'asc']];
     }
   }
-  updateTableSortFields(newFields, model, 'metrics');
+  updateTableSortFields(newFields, model, appName, updateModelData);
 }

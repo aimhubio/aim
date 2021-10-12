@@ -3,10 +3,14 @@ import * as analytics from 'services/analytics';
 import { IOnGroupingModeChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import resetChartZoom from './resetChartZoom';
+import setAggregationEnabled from './setAggregationEnabled';
 
 export default function onGroupingModeChange<M extends State>(
   { groupName, value }: IOnGroupingModeChangeParams,
   model: IModel<M>,
+  appName: string,
+  updateModelData: any,
+  setAggregationEnabled?: any,
 ): void {
   const configData = model?.getState()?.config;
   if (configData?.grouping) {
@@ -15,10 +19,12 @@ export default function onGroupingModeChange<M extends State>(
       [groupName]: value,
     };
     if (groupName === 'chart') {
-      resetChartZoom(configData, 'Metrics');
+      resetChartZoom(configData, appName);
     }
-    // setAggregationEnabled(configData);
-    // updateModelData(configData);
+    if (typeof setAggregationEnabled === 'function') {
+      setAggregationEnabled(model, appName);
+    }
+    updateModelData(configData);
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${

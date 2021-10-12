@@ -32,7 +32,6 @@ export interface IMetricAppModelState {
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
-  tooltipData: ITooltipData;
   aggregatedData: IAggregatedData[];
   tableData: any[];
   tableColumns: ITableColumn[];
@@ -40,6 +39,10 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  liveUpdateConfig: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartTitleData {
@@ -159,6 +162,10 @@ export interface IMetricAppConfig {
     };
     height: string;
   };
+  liveUpdate?: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartZoom {
@@ -229,6 +236,15 @@ export interface IOnGroupingModeChangeParams {
   groupName: GroupNameType;
   value: boolean;
   options?: any[] | null;
+}
+
+export interface IGetGroupingPersistIndex {
+  groupValues: {
+    [key: string]: IMetricsCollection<IMetric>;
+  };
+  groupKey: string;
+  grouping: IMetricAppConfig['grouping'];
+  groupName: 'color' | 'stroke';
 }
 
 export type GroupNameType = 'color' | 'stroke' | 'chart';

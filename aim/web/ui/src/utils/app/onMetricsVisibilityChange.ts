@@ -7,6 +7,8 @@ import { setItem } from 'utils/storage';
 export default function onMetricVisibilityChange<M extends State>(
   metricsKeys: string[],
   model: IModel<M>,
+  appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   const processedData = model.getState()?.data;
@@ -31,8 +33,8 @@ export default function onMetricVisibilityChange<M extends State>(
     model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
-    // updateModelData(config);
+    setItem(`${appName}Table`, encode(table));
+    updateModelData(config);
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${

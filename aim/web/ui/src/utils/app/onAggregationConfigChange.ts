@@ -8,6 +8,7 @@ export default function onAggregationConfigChange<M extends State>(
   aggregationConfig: Partial<IAggregationConfig>,
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.chart && !_.isEmpty(aggregationConfig)) {
@@ -18,7 +19,7 @@ export default function onAggregationConfigChange<M extends State>(
         ...aggregationConfig,
       },
     };
-    // updateModelData(configData);
+    updateModelData(configData);
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(

@@ -2,18 +2,18 @@ import * as analytics from 'services/analytics';
 
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { CurveEnum } from 'utils/d3';
-import { SmoothingAlgorithmEnum } from '../smoothingData';
-import { IModel } from '../../types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
 
-export default function onSmoothingChange(
+export default function onSmoothingChange<M extends State>(
   args: IOnSmoothingChange,
-  model?: IModel<any>,
-  appName?: string,
+  model: IModel<M>,
+  appName: string,
+  updateModelData: any,
 ): void {
   const configData = model?.getState()?.config;
   if (configData?.chart) {
     configData.chart = { ...configData.chart, ...args };
-    // updateModelData(configData);
+    updateModelData(configData);
   }
   if (args.curveInterpolation) {
     analytics.trackEvent(

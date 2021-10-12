@@ -1,29 +1,30 @@
 @use "src/styles/abstracts" as *;
-@import "src/styles/abstracts/_variables.scss";
+@import 'src/styles/abstracts/_variables.scss';
 
 body {
   .MuiOutlinedInput-root {
+    border-radius: $border-radius-main;
     &:hover {
       .MuiOutlinedInput-notchedOutline {
-        border-color: #90afda;
+        border-color: $cuddle-110;
       }
     }
 
     .MuiOutlinedInput-notchedOutline {
-      border-color: #bdcee8;
-      border-width: 1px !important;
+      border-color: $cuddle;
+      border-width: 0.0625rem !important;
     }
   }
 
   .Mui-disabled {
     color: $text-color-50;
     .MuiOutlinedInput-notchedOutline {
-      border-color: #d1ddef !important;
+      border-color: $cuddle-70 !important;
     }
   }
   .Mui-focused {
     .MuiOutlinedInput-notchedOutline {
-      border-color: $primary-color !important;
+      border-color: $cuddle-110 !important;
     }
   }
 }
@@ -52,6 +53,29 @@ body {
           font-weight: 500;
           font-size: $text-md;
           color: $text-color;
+          padding: 0.375rem 1rem;
+          height: 1rem;
+        }
+
+        .MuiOutlinedInput-notchedOutline {
+          border-color: #bdcee8;
+        }
+
+        .PrivateNotchedOutline-legendLabelled-13 {
+          span {
+            padding-right: 0;
+          }
+        }
+      }
+    }
+    &__Large {
+      .MuiInputBase-root {
+        .MuiInputBase-input {
+          font-weight: 500;
+          font-size: $text-md;
+          color: $text-color;
+          padding: 0.5625rem 1rem 0.625rem;
+          height: 1rem;
         }
 
         .MuiOutlinedInput-notchedOutline {

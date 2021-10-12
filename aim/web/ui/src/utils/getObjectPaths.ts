@@ -15,13 +15,16 @@ function getObjectPaths(
   let paths: string[] = includeRoot
     ? rootKeys.reduce((acc: string[], { prefixedKey }) => {
         const val: any = _.get(rootObject, prefixedKey);
-        if (typeof val !== 'object') {
+        if (typeof val !== 'object' || _.isNil(val) || _.isArray(val)) {
           acc.push(prefixedKey);
         }
         return acc;
       }, [])
     : Object.keys(obj)
-        .filter((key) => !_.isObject(obj[key]))
+        .filter(
+          (key) =>
+            !_.isObject(obj[key]) || _.isNil(obj[key]) || _.isArray(obj[key]),
+        )
         .map((key) => {
           return key;
         });

@@ -8,11 +8,12 @@ import { IModel, State } from 'types/services/models/model';
 
 export default function onIgnoreOutliersChange<M extends State>(
   model: IModel<M>,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
     configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
-    // updateModelData(configData);
+    updateModelData(configData);
     model.setState({ config: configData });
   }
   analytics.trackEvent(

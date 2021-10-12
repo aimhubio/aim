@@ -4,6 +4,9 @@ import { IModel, State } from 'types/services/models/model';
 export default function onGroupingApplyChange<M extends State>(
   groupName: GroupNameType,
   model: IModel<M>,
+  appName: string,
+  updateModelData: any,
+  setAggregationEnabled?: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.grouping) {
@@ -14,7 +17,9 @@ export default function onGroupingApplyChange<M extends State>(
         [groupName]: !configData.grouping.isApplied[groupName],
       },
     };
-    // setAggregationEnabled(configData);
-    // updateModelData(configData);
+    if (typeof setAggregationEnabled === 'function') {
+      setAggregationEnabled(model, appName);
+    }
+    updateModelData(configData);
   }
 }

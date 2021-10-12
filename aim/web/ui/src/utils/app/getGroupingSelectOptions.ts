@@ -2,34 +2,37 @@ import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppM
 
 export default function getGroupingSelectOptions(
   params: string[],
+  contexts: string[] = [],
 ): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
+  }));
+
+  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
+    group: 'metric',
+    label: `metric.context.${context}`,
+    value: `context.${context}`,
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment',
     },
     {
-      group: 'Run',
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
+    ...paramsOptions,
     {
       group: 'metric',
-      label: 'metric',
+      label: 'metric.name',
       value: 'metric_name',
     },
-    {
-      group: 'metric',
-      label: 'context.subset',
-      value: 'context.subset',
-    },
+    ...contextOptions,
   ];
 }

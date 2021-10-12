@@ -11,6 +11,7 @@ import onNotificationAdd from './onNotificationAdd';
 export default async function onAlignmentMetricChange<M extends State>(
   metric: string,
   model: IModel<M>,
+  setModelData: any,
 ) {
   const modelState = model.getState();
   const configData = modelState?.config;
@@ -76,7 +77,7 @@ export default async function onAlignmentMetricChange<M extends State>(
         alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
       };
     }
-    // setModelData(rawData, configData);
+    setModelData(rawData, configData);
   }
   analytics.trackEvent(
     '[MetricsExplorer][Chart] Align X axis by another metric',

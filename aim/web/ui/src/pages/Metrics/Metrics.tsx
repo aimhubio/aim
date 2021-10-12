@@ -64,6 +64,8 @@ function Metrics(
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
+            liveUpdateConfig={props.liveUpdateConfig}
+            onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
             title={'Metrics explorer'}
           />
           <div className='Metrics__SelectForm__Grouping__container'>
@@ -73,6 +75,7 @@ function Metrics(
               onSelectRunQueryChange={props.onSelectRunQueryChange}
               onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
               toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
+              onSearchQueryCopy={props.onSearchQueryCopy}
             />
             <Grouping
               groupingData={props.groupingData}
@@ -83,6 +86,7 @@ function Metrics(
               onGroupingReset={props.onGroupingReset}
               onGroupingApplyChange={props.onGroupingApplyChange}
               onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+              onShuffleChange={props.onShuffleChange}
             />
           </div>
           <div

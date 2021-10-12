@@ -6,6 +6,7 @@ import { CurveEnum } from 'utils/d3';
 export default function onCurveInterpolationChange<M extends State>(
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
@@ -14,7 +15,7 @@ export default function onCurveInterpolationChange<M extends State>(
       configData.chart.curveInterpolation === CurveEnum.Linear
         ? CurveEnum.MonotoneX
         : CurveEnum.Linear;
-    // updateModelData({ ...configData, chart }, true);
+    updateModelData({ ...configData, chart }, true);
     analytics.trackEvent(
       `[${appName}Explorer][Chart] Set interpolation mode to "${
         configData.chart.curveInterpolation === CurveEnum.Linear

@@ -6,21 +6,22 @@ export default function onHighlightModeChange<M extends State>(
   mode: HighlightEnum,
   model: IModel<M>,
   appName: string,
+  updateURL: any,
 ): void {
-  const configData = model.getState()?.config;
-  if (configData?.chart) {
-    model.setState({
-      config: {
-        ...configData,
-        chart: {
-          ...configData.chart,
-          highlightMode: mode,
-        },
+  const config = model.getState()?.config;
+  if (config?.chart) {
+    const configData = {
+      ...config,
+      chart: {
+        ...config.chart,
+        highlightMode: mode,
       },
-    });
+    };
+    model.setState({ config: configData });
+    updateURL(configData);
   }
   analytics.trackEvent(
-    `[${appName}Explorer][Chart] Set highlight mode to "${HighlightEnum[
+    `[${appName}][Chart] Set highlight mode to "${HighlightEnum[
       mode
     ].toLowerCase()}"`,
   );

@@ -7,6 +7,8 @@ import { setItem } from 'utils/storage';
 export default function onParamVisibilityChange<M extends State>(
   metricsKeys: string[],
   model: IModel<M>,
+  appName: string,
+  updateModelData: any,
 ) {
   const configData = model.getState()?.config;
   const processedData = model.getState()?.data;
@@ -26,11 +28,9 @@ export default function onParamVisibilityChange<M extends State>(
       ...configData,
       table,
     };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('paramsTable', encode(table));
-    // updateModelData(configUpdate);
+    model.setState({ config: configUpdate });
+    setItem(`${appName.toLowerCase()}Table`, encode(table));
+    updateModelData(configUpdate);
   }
   analytics.trackEvent(
     `[ParamsExplorer][Table] ${

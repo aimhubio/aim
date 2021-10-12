@@ -16,6 +16,14 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  return <Home activityData={homeData.activityData} />;
+  return (
+    <Home
+      onSendEmail={homeAppModel.onSendEmail}
+      activityData={homeData.activityData}
+      notifyData={homeData.notifyData}
+      askEmailSent={homeData.askEmailSent}
+      onNotificationDelete={homeAppModel.onNotificationDelete}
+    />
+  );
 }
 export default HomeContainer;

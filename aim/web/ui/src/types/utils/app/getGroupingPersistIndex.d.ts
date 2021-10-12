@@ -10,4 +10,5 @@ export interface IGetGroupingPersistIndex {
   };
   groupKey: string;
   grouping: IMetricAppConfig['grouping'];
+  groupName: string;
 }

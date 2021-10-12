@@ -1,6 +1,6 @@
 import * as analytics from 'services/analytics';
 
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
@@ -8,6 +8,8 @@ import { setItem } from 'utils/storage';
 export default function onColumnsOrderChange<M extends State>(
   columnsOrder: any,
   model: IModel<M>,
+  appName: string,
+  updateModelData: any,
 ): void {
   const configData = model.getState()?.config;
   if (configData?.table) {
@@ -23,13 +25,13 @@ export default function onColumnsOrderChange<M extends State>(
     model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
-    // updateModelData(config);
+    setItem(`${appName}Table`, encode(table));
+    updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
   }

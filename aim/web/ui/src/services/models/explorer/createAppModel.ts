@@ -45,6 +45,7 @@ import {
   IChartZoom,
   IAggregationConfig,
   IChartTooltip,
+  ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IRun,
@@ -142,43 +143,18 @@ import { createRunModel } from 'services/models/metrics/runModel';
 import createModel from 'services/models/model';
 import { decode, encode } from 'utils/encoder/encoder';
 import { AppDataTypeEnum, AppNameEnum } from './index';
-import { IAppInitialConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  IAppInitialConfig,
+  IAppModelState,
+} from 'types/services/models/explorer/createAppModel';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import onResetConfigData from 'utils/app/onResetConfigData';
-
-export const appInitialConfig: {
-  [key: string]: IAppInitialConfig;
-} = {
-  METRICS: {
-    dataType: AppDataTypeEnum.METRICS,
-    selectForm: AppNameEnum.METRICS,
-    grouping: true,
-    appName: AppNameEnum.METRICS,
-    components: { table: true, charts: [ChartTypeEnum.LineChart] },
-  },
-  PARAMS: {
-    dataType: AppDataTypeEnum.RUNS,
-    selectForm: AppNameEnum.PARAMS,
-    grouping: true,
-    appName: AppNameEnum.PARAMS,
-    components: { table: true, charts: [ChartTypeEnum.HighPlot] },
-  },
-  RUNS: {
-    dataType: AppDataTypeEnum.RUNS,
-    selectForm: AppNameEnum.RUNS,
-    grouping: false,
-    appName: AppNameEnum.RUNS,
-    components: { table: true },
-  },
-};
-
-type IAppModelState =
-  | IMetricAppModelState
-  | IParamsAppModelState
-  | IRunsAppModelState;
+import LiveUpdateService from '../../live-update/examples/LiveUpdateBridge.example';
+import onShuffleChange from '../../../utils/app/onShuffleChange';
+import { saveAs } from 'file-saver';
 
 function createAppModel(appInitialConfig: IAppInitialConfig) {
   const model = createModel<IAppModelState>({
@@ -194,7 +170,12 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
     const { dataType, grouping, components, selectForm } = appInitialConfig;
     switch (dataType) {
       case AppDataTypeEnum.METRICS: {
-        const config: IMetricAppConfig = {};
+        const config: IMetricAppConfig = {
+          liveUpdate: {
+            delay: 2000,
+            enabled: false,
+          },
+        };
         if (grouping) {
           config.grouping = {
             color: [],
@@ -381,6 +362,8 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
       abort: () => void;
     };
+    let tooltipData: ITooltipData = {};
+    let liveUpdateInstance: LiveUpdateService | null;
 
     function initialize(appId: string): void {
       model.init();
@@ -395,7 +378,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         };
       }
       if (components?.charts?.[0]) {
-        state.tooltipData = {};
+        tooltipData = {};
         state.refs = {
           ...state.refs,
           chartPanelRef: { current: null },
@@ -404,6 +387,23 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       model.setState({ ...state });
       if (!appId) {
         setDefaultAppConfigData();
+      }
+
+      const liveUpdateState = model.getState()?.config?.liveUpdate;
+
+      if (liveUpdateState?.enabled) {
+        liveUpdateInstance = new LiveUpdateService(
+          appName,
+          updateData,
+          liveUpdateState.delay,
+        );
+      }
+    }
+
+    function updateData(newData: IRun<IMetricTrace>[]): void {
+      const configData = model.getState()?.config;
+      if (configData) {
+        setModelData(newData, configData);
       }
     }
 
@@ -445,13 +445,19 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               requestIsPending: true,
               queryIsEmpty: false,
             });
+            liveUpdateInstance?.stop().then();
+
             const stream = await metricsRequestRef.call((detail) =>
               exceptionHandler(detail, model),
             );
             const runData = await getRunData(stream);
-            if (configData) {
-              setModelData(runData, configData);
-            }
+
+            updateData(runData);
+
+            liveUpdateInstance?.start({
+              q: query,
+              ...(metric && { x_axis: metric }),
+            });
           }
         },
         abort: metricsRequestRef.abort,
@@ -700,8 +706,17 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
     }
 
     function setDefaultAppConfigData(): void {
-      const defaultConfig: IMetricAppConfig = {};
       const config = getConfig() as IMetricAppConfig;
+
+      const liveUpdateConfigHash = getItem('metricsLUConfig');
+      const luConfig = liveUpdateConfigHash
+        ? JSON.parse(decode(liveUpdateConfigHash))
+        : config.liveUpdate;
+
+      const defaultConfig: IMetricAppConfig = {
+        liveUpdate: luConfig,
+      };
+
       if (grouping) {
         defaultConfig.grouping =
           getStateFromUrl('grouping') || config?.grouping;
@@ -718,6 +733,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           ? JSON.parse(decode(tableConfigHash))
           : config?.table;
       }
+
       const configData: IMetricAppConfig = _.merge(config, defaultConfig);
       model.setState({ config: configData });
     }
@@ -725,18 +741,24 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
     function processData(data: IRun<IMetricTrace>[]): {
       data: IMetricsCollection<IMetric>[];
       params: string[];
+      contexts: string[];
     } {
       const configData = model.getState()?.config;
       let metrics: IMetric[] = [];
       let index: number = -1;
       let params: string[] = [];
+      let contexts: string[] = [];
+      const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
       data?.forEach((run: IRun<IMetricTrace>) => {
         params = params.concat(getObjectPaths(run.params, run.params));
         metrics = metrics.concat(
-          run.traces.map((trace: IMetricTrace) => {
+          run.traces.map((trace: any) => {
             index++;
 
+            contexts = contexts.concat(
+              getObjectPaths(trace.context, trace.context),
+            );
             const { values, steps, epochs, timestamps } = filterMetricData({
               values: [...new Float64Array(trace.values.blob)],
               steps: [...new Float64Array(trace.iters.blob)],
@@ -751,7 +773,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               configData.chart.smoothingFactor
             ) {
               yValues = getSmoothenedData({
-                smoothingAlgorithm: configData.chart.smoothingAlgorithm,
+                smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
                 smoothingFactor: configData.chart.smoothingFactor,
                 data: values,
               });
@@ -761,20 +783,20 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               metricName: trace.metric_name,
               traceContext: trace.context,
             });
-
-            const paletteIndex = configData?.grouping?.paletteIndex || 0;
             return createMetricModel({
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
               key: metricKey,
               dasharray: '0',
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-              isHidden: configData!.table.hiddenMetrics!.includes(metricKey),
+              isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               data: {
                 values,
                 steps,
                 epochs,
-                timestamps,
+                timestamps: timestamps.map((timestamp) =>
+                  Math.round(timestamp * 1000),
+                ),
                 xValues: steps,
                 yValues,
               },
@@ -787,31 +809,41 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         _.orderBy(
           metrics,
           configData?.table?.sortFields?.map(
-            (f: SortField) => (metric: IMetric) => _.get(metric, f[0], ''),
+            (f: SortField) =>
+              function (metric: IMetric) {
+                return _.get(metric, f[0], '');
+              },
           ) ?? [],
           configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
         ),
       );
-
       const uniqParams = _.uniq(params);
+      const uniqContexts = _.uniq(contexts);
 
       if (components?.charts?.[0]) {
-        model.setState({
-          tooltipData: getTooltipData(processedData, uniqParams, model),
-        });
+        tooltipData = getTooltipData(processedData, uniqParams, model);
       }
 
       return {
         data: processedData,
         params: uniqParams,
+        contexts: uniqContexts,
       };
+    }
+
+    function setComponentRefs(refElement: any): void {
+      const modelState = model.getState();
+      if (modelState?.refs) {
+        modelState.refs = Object.assign(modelState.refs, refElement);
+        model.setState({ refs: modelState.refs });
+      }
     }
 
     function updateModelData(
       configData: IMetricAppConfig = model.getState()!.config!,
       shouldURLUpdate?: boolean,
     ): void {
-      const { data, params } = processData(
+      const { data, params, contexts } = processData(
         model.getState()?.rawData as IRun<IMetricTrace>[],
       );
       const tableData = getDataAsTableRows(
@@ -821,7 +853,9 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         false,
         configData,
       );
-      const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+      const groupingSelectOptions = [
+        ...getGroupingSelectOptions(params, contexts),
+      ];
       const tableColumns = getMetricsTableColumns(
         params,
         data[0]?.config,
@@ -865,8 +899,8 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       rawData: IRun<IMetricTrace>[],
       configData: IMetricAppConfig,
     ): void {
-      const sortFields = model.getState()?.config?.table.sortFields;
-      const { data, params } = processData(rawData);
+      const sortFields = model.getState()?.config?.table?.sortFields;
+      const { data, params, contexts } = processData(rawData);
       if (configData) {
         setAggregationEnabled(model, appName);
       }
@@ -884,11 +918,11 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         params,
         data,
         lineChartData: getDataAsLines(data),
-        chartTitleData: getChartTitleData<IMetric, IMetricAppModelState>(
-          data,
-          model as IModel<IMetricAppModelState>,
-        ),
-        aggregatedData: getAggregatedData<IMetricAppModelState>(
+        chartTitleData: getChartTitleData<
+          IMetric,
+          Partial<IMetricAppModelState>
+        >(data, model as IModel<IMetricAppModelState>),
+        aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>(
           data,
           model as IModel<IMetricAppModelState>,
         ),
@@ -896,14 +930,14 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         tableColumns: getMetricsTableColumns(
           params,
           data[0]?.config,
-          configData.table?.columnsOrder!,
-          configData.table?.hiddenColumns!,
+          configData?.table?.columnsOrder!,
+          configData?.table?.hiddenColumns!,
           configData?.chart?.aggregationConfig.methods,
           sortFields,
           onSortChange,
         ),
         sameValueColumns: tableData.sameValueColumns,
-        groupingSelectOptions: [...getGroupingSelectOptions(params)],
+        groupingSelectOptions: [...getGroupingSelectOptions(params, contexts)],
       });
     }
 
@@ -1175,6 +1209,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               groupValues,
               groupKey,
               grouping,
+              groupName: 'color',
             });
             groupValue.color =
               COLORS[paletteIndex][
@@ -1201,6 +1236,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               groupValues,
               groupKey,
               grouping,
+              groupName: 'stroke',
             });
             groupValue.dasharray =
               DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
@@ -1240,6 +1276,17 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           line: chartConfig.aggregationConfig.methods.line,
         },
         scale: chartConfig.axesScaleType,
+      });
+    }
+
+    function onSearchQueryCopy(): void {
+      const selectedMetricsData = model.getState()?.config?.select;
+      let query = getQueryStringFromSelect(selectedMetricsData);
+      navigator.clipboard.writeText(query);
+      onModelNotificationAdd({
+        id: Date.now(),
+        severity: 'success',
+        message: 'Run Expression Copied',
       });
     }
 
@@ -1350,70 +1397,76 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       analytics.trackEvent(`[${appName}] Export runs data to CSV`);
     }
 
-    function onActivePointChange(
-      activePoint: IActivePoint,
-      focusedStateActive: boolean = false,
-    ): void {
-      const { data, params, refs, config, tooltipData } =
-        model.getState() as IMetricAppModelState;
-      const tableRef: any = refs?.tableRef;
-      let tableData = null;
-      if (config?.table?.resizeMode !== ResizeModeEnum.Hide) {
-        tableData = getDataAsTableRows(
-          data,
-          activePoint.xValue,
-          params,
-          false,
-          config,
-          true,
-        );
-        if (tableRef) {
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            dynamicData: true,
-          });
-          tableRef.current?.setHoveredRow?.(activePoint.key);
-          tableRef.current?.setActiveRow?.(
-            focusedStateActive ? activePoint.key : null,
-          );
-          if (focusedStateActive) {
-            tableRef.current?.scrollToRow?.(activePoint.key);
+    const onActivePointChange = _.debounce(
+      (
+        activePoint: IActivePoint,
+        focusedStateActive: boolean = false,
+      ): void => {
+        const { data, params, refs, config } =
+          model.getState() as IMetricAppModelState;
+        if (!!config) {
+          const tableRef: any = refs?.tableRef;
+          let tableData = null;
+          if (config.table?.resizeMode !== ResizeModeEnum.Hide) {
+            tableData = getDataAsTableRows(
+              data,
+              activePoint.xValue,
+              params,
+              false,
+              config,
+              true,
+            );
+            if (tableRef) {
+              tableRef.current?.updateData({
+                newData: tableData.rows,
+                dynamicData: true,
+              });
+              tableRef.current?.setHoveredRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+              if (focusedStateActive) {
+                tableRef.current?.scrollToRow?.(activePoint.key);
+              }
+            }
           }
-        }
-      }
-      let configData: IMetricAppConfig = config;
-      if (configData?.chart) {
-        configData = {
-          ...configData,
-          chart: {
-            ...configData.chart,
-            focusedState: {
-              active: focusedStateActive,
-              key: activePoint.key,
-              xValue: activePoint.xValue,
-              yValue: activePoint.yValue,
-              chartIndex: activePoint.chartIndex,
-            },
-            tooltip: {
-              ...configData.chart.tooltip,
-              content: filterTooltipContent(
-                tooltipData[activePoint.key],
-                configData?.chart.tooltip.selectedParams,
-              ),
-            },
-          },
-        };
+          let configData: IMetricAppConfig = config;
+          if (configData?.chart) {
+            configData = {
+              ...configData,
+              chart: {
+                ...configData.chart,
+                focusedState: {
+                  active: focusedStateActive,
+                  key: activePoint.key,
+                  xValue: activePoint.xValue,
+                  yValue: activePoint.yValue,
+                  chartIndex: activePoint.chartIndex,
+                },
+                tooltip: {
+                  ...configData.chart.tooltip,
+                  content: filterTooltipContent(
+                    tooltipData[activePoint.key],
+                    configData?.chart.tooltip.selectedParams,
+                  ),
+                },
+              },
+            };
 
-        if (
-          config?.chart?.focusedState.active !== focusedStateActive ||
-          (config?.chart?.focusedState.active &&
-            activePoint.key !== config.chart.focusedState.key)
-        ) {
-          updateURL(configData);
+            if (
+              config.chart?.focusedState.active !== focusedStateActive ||
+              (config.chart.focusedState.active &&
+                activePoint.key !== config.chart.focusedState.key)
+            ) {
+              updateURL(configData);
+            }
+          }
+
+          model.setState({ config: configData });
         }
-      }
-      model.setState({ config: configData });
-    }
+      },
+      50,
+    );
 
     function onModelBookmarkCreate({ name, description }: any): Promise<void> {
       return onBookmarkCreate({ name, description }, model, appName);
@@ -1434,14 +1487,57 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
     }
 
     function onModelResetConfigData(): void {
-      onResetConfigData(model);
+      onResetConfigData(model, getConfig, updateModelData);
     }
 
     function onSortChange(
       field: string,
       value?: 'asc' | 'desc' | 'none',
     ): void {
-      onTableSortChange(field, model, value);
+      onTableSortChange(field, model, appName, updateModelData, value);
+    }
+
+    function changeLiveUpdateConfig(config: {
+      enabled?: boolean;
+      delay?: number;
+    }): void {
+      const state = model.getState();
+      const configData = state?.config;
+      const liveUpdateConfig = configData?.liveUpdate;
+      const metric = configData?.chart?.alignmentConfig.metric;
+      let query = getQueryStringFromSelect(configData?.select);
+
+      if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+        liveUpdateInstance = new LiveUpdateService(
+          appName,
+          updateData,
+          config.delay || liveUpdateConfig?.delay,
+        );
+        liveUpdateInstance?.start({
+          q: query,
+          ...(metric && { x_axis: metric }),
+        });
+      } else {
+        liveUpdateInstance?.clear();
+        liveUpdateInstance = null;
+      }
+
+      const newLiveUpdateConfig = {
+        ...liveUpdateConfig,
+        ...config,
+      };
+      model.setState({
+        config: {
+          ...configData,
+          liveUpdate: newLiveUpdateConfig,
+        },
+      });
+      setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+    }
+
+    function destroy(): void {
+      liveUpdateInstance?.clear();
+      liveUpdateInstance = null; //@TODO check is this need or not
     }
 
     const methods = {
@@ -1450,6 +1546,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       getMetricsData,
       getDataAsTableRows,
       setDefaultAppConfigData,
+      setComponentRefs,
       updateURL,
       updateModelData,
       onActivePointChange,
@@ -1460,6 +1557,9 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       onNotificationDelete: onModelNotificationDelete,
       onResetConfigData: onModelResetConfigData,
       onSortChange,
+      onSearchQueryCopy,
+      changeLiveUpdateConfig,
+      destroy,
     };
 
     if (grouping) {
@@ -1468,25 +1568,64 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           groupName,
           list,
         }: IOnGroupingSelectChangeParams): void {
-          onGroupingSelectChange({ groupName, list }, model);
+          onGroupingSelectChange(
+            { groupName, list },
+            model,
+            appName,
+            updateModelData,
+            setAggregationEnabled,
+          );
         },
         onGroupingModeChange({
           groupName,
           value,
         }: IOnGroupingModeChangeParams): void {
-          onGroupingModeChange({ groupName, value }, model);
+          onGroupingModeChange(
+            { groupName, value },
+            model,
+            appName,
+            updateModelData,
+            setAggregationEnabled,
+          );
         },
         onGroupingPaletteChange(index: number): void {
-          onGroupingPaletteChange(index, model, appName);
+          onGroupingPaletteChange(
+            index,
+            model,
+            appName,
+            updateModelData,
+            setAggregationEnabled,
+          );
         },
         onGroupingReset(groupName: GroupNameType): void {
-          onGroupingReset(groupName, model, appName);
+          onGroupingReset(
+            groupName,
+            model,
+            appName,
+            updateModelData,
+            setAggregationEnabled,
+          );
         },
         onGroupingApplyChange(groupName: GroupNameType): void {
-          onGroupingApplyChange(groupName, model);
+          onGroupingApplyChange(
+            groupName,
+            model,
+            appName,
+            updateModelData,
+            setAggregationEnabled,
+          );
         },
         onGroupingPersistenceChange(groupName: GroupNameType): void {
-          onGroupingPersistenceChange(groupName, model, appName);
+          onGroupingPersistenceChange(
+            groupName,
+            model,
+            appName,
+            updateModelData,
+            setAggregationEnabled,
+          );
+        },
+        onShuffleChange(name: 'color' | 'stroke') {
+          onShuffleChange(name, model, updateModelData);
         },
       });
     }
@@ -1495,49 +1634,54 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         onMetricsSelectChange<M, D>(
           data: D & Partial<ISelectMetricsOption[]>,
         ): void {
-          onMetricsSelectChange(data, model);
+          onMetricsSelectChange(data, model, updateURL);
         },
         onSelectRunQueryChange(query: string): void {
-          onSelectRunQueryChange(query, model);
+          onSelectRunQueryChange(query, model, updateURL);
         },
         onSelectAdvancedQueryChange(query: string): void {
-          onSelectAdvancedQueryChange(query, model);
+          onSelectAdvancedQueryChange(query, model, updateURL);
         },
         toggleSelectAdvancedMode(): void {
-          toggleSelectAdvancedMode(model, appName);
+          toggleSelectAdvancedMode(model, appName, updateURL);
         },
       });
     }
     if (components?.charts?.[0]) {
       Object.assign(methods, {
         onHighlightModeChange(mode: HighlightEnum): void {
-          onHighlightModeChange(mode, model, appName);
+          onHighlightModeChange(mode, model, appName, updateURL);
         },
         onZoomChange(zoom: Partial<IChartZoom>): void {
-          onZoomChange(zoom, model, appName);
+          onZoomChange(zoom, model, appName, updateURL);
         },
         onSmoothingChange(args: IOnSmoothingChange): void {
-          onSmoothingChange(args, model, appName);
+          onSmoothingChange(args, model, appName, updateModelData);
         },
         onIgnoreOutliersChange(model: IModel<IMetricAppModelState>): void {
-          onIgnoreOutliersChange(model);
+          onIgnoreOutliersChange(model, updateModelData);
         },
         onAxesScaleTypeChange(args: IAxesScaleState): void {
-          onAxesScaleTypeChange(args, model, appName);
+          onAxesScaleTypeChange(args, model, appName, updateModelData);
         },
         onAggregationConfigChange(
           aggregationConfig: Partial<IAggregationConfig>,
         ): void {
-          onAggregationConfigChange(aggregationConfig, model, appName);
+          onAggregationConfigChange(
+            aggregationConfig,
+            model,
+            appName,
+            updateModelData,
+          );
         },
         onAlignmentMetricChange(metric: string): Promise<void> {
-          return onAlignmentMetricChange(metric, model);
+          return onAlignmentMetricChange(metric, model, setModelData);
         },
         onAlignmentTypeChange(type: AlignmentOptions): void {
-          onAlignmentTypeChange(type, model, appName);
+          onAlignmentTypeChange(type, model, appName, updateModelData);
         },
         onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-          onChangeTooltip(tooltip, model, appName);
+          onChangeTooltip(tooltip, tooltipData, model, appName);
         },
       });
     }
@@ -1553,32 +1697,49 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           onTableRowClick({ rowKey, model });
         },
         onMetricVisibilityChange(metricsKeys: string[]): void {
-          onMetricVisibilityChange(metricsKeys, model);
+          onMetricVisibilityChange(
+            metricsKeys,
+            model,
+            appName,
+            updateModelData,
+          );
         },
         onColumnsVisibilityChange(hiddenColumns: string[]): void {
-          onColumnsVisibilityChange(hiddenColumns, model, appName);
+          onColumnsVisibilityChange(
+            hiddenColumns,
+            model,
+            appName,
+            updateModelData,
+          );
         },
         onTableDiffShow(args: IOnTableDiffShowParams): void {
           onTableDiffShow(args, model, appName);
         },
         onColumnsOrderChange(columnsOrder: any): void {
-          onColumnsOrderChange(columnsOrder, model);
+          onColumnsOrderChange(columnsOrder, model, appName, updateModelData);
         },
         onTableResizeModeChange(mode: ResizeModeEnum): void {
-          onTableResizeModeChange(mode, model, appName);
+          onTableResizeModeChange(mode, model, appName, updateModelData);
         },
         onTableResizeEnd(tableHeight: string): void {
-          onTableResizeEnd(tableHeight, model, appName);
+          onTableResizeEnd(tableHeight, model, appName, updateModelData);
         },
         onSortReset(): void {
-          updateSortFields([], model, appName);
+          updateSortFields([], model, appName, updateModelData);
         },
         updateColumnsWidths(
           key: string,
           width: number,
           isReset: boolean,
         ): void {
-          updateColumnsWidths(key, width, isReset, model, appName);
+          updateColumnsWidths(
+            key,
+            width,
+            isReset,
+            model,
+            appName,
+            updateModelData,
+          );
         },
       });
     }
@@ -1598,6 +1759,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
         abort: () => void;
       };
+      let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string = ''): {
         call: () => Promise<void>;
@@ -1605,22 +1767,22 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       } {
         model.init();
         const state: Partial<IRunsAppModelState> = {};
-        if (grouping) {
-          state.groupingSelectOptions = [];
-        }
+        // if (grouping) {
+        //   state.groupingSelectOptions = [];
+        // }
         if (components?.table) {
           state.refs = {
             ...state.refs,
             tableRef: { current: null },
           };
         }
-        if (components?.charts?.[0]) {
-          state.tooltipData = {};
-          state.refs = {
-            ...state.refs,
-            chartPanelRef: { current: null },
-          };
-        }
+        // if (components?.charts?.[0]) {
+        //   tooltipData = {};
+        //   state.refs = {
+        //     ...state.refs,
+        //     chartPanelRef: { current: null },
+        //   };
+        // }
         model.setState({ ...state });
         if (!appId) {
           const searchParam = new URLSearchParams(window.location.search);
@@ -1639,6 +1801,16 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         }
         setDefaultAppConfigData();
 
+        const liveUpdateState = model.getState()?.config.liveUpdate;
+
+        if (liveUpdateState?.enabled) {
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            liveUpdateState.delay,
+          );
+        }
+
         return getRunsData();
       }
 
@@ -1655,6 +1827,8 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
 
         const query = configData?.select?.query || '';
         const pagination = configData?.pagination;
+
+        liveUpdateInstance?.stop().then();
 
         const { call, abort } = runsService.getRunsData(
           query,
@@ -1738,18 +1912,27 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       }
 
       function setDefaultAppConfigData(): void {
-        const defaultConfig: IParamsAppConfig & IRunsAppConfig = {};
-        const config = getConfig();
-        if (grouping) {
-          defaultConfig.grouping =
-            getStateFromUrl('grouping') || config?.grouping;
-        }
+        const config = getConfig() as IRunsAppConfig;
+
+        const liveUpdateConfigHash = getItem('runsLUConfig');
+        const luConfig = liveUpdateConfigHash
+          ? JSON.parse(decode(liveUpdateConfigHash))
+          : config?.liveUpdate;
+
+        const defaultConfig: IParamsAppConfig & IRunsAppConfig = {
+          liveUpdate: luConfig,
+        };
+
+        // if (grouping) {
+        //   defaultConfig.grouping =
+        //     getStateFromUrl('grouping') || config?.grouping;
+        // }
         if (selectForm) {
           defaultConfig.select = getStateFromUrl('select') || config?.select;
         }
-        if (components.charts) {
-          defaultConfig.chart = getStateFromUrl('chart') || config?.chart;
-        }
+        // if (components.charts) {
+        //   defaultConfig.chart = getStateFromUrl('chart') || config?.chart;
+        // }
         if (components.table) {
           const tableConfigHash = getItem(`${appName}Table`);
           defaultConfig.table = tableConfigHash
@@ -1761,6 +1944,33 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           defaultConfig,
         );
         model.setState({ config: configData });
+      }
+
+      function updateModelData(configData: IMetricAppConfig): void {
+        const { data, params, metricsColumns } = processData(
+          model.getState()?.rawData as IRun<IMetricTrace>[],
+        );
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
+        const tableColumns: ITableColumn[] = getRunsTableColumns(
+          metricsColumns,
+          params,
+          data[0]?.config,
+          configData?.table?.columnsOrder!,
+          configData?.table?.hiddenColumns!,
+        );
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+          hiddenColumns: configData?.table?.hiddenColumns!,
+        });
+        model.setState({
+          config: configData,
+          data,
+          tableData: tableData.rows,
+          tableColumns,
+          sameValueColumns: tableData.sameValueColumns,
+        });
       }
 
       function prepareModelStateToCall(isInitial: boolean): IRunsAppModelState {
@@ -1802,7 +2012,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         const paletteIndex: number = grouping?.paletteIndex || 0;
         const metricsColumns: any = {};
 
-        data.forEach((run: IRun<IParamTrace>, index) => {
+        data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           run.traces.forEach((trace) => {
             metricsColumns[trace.metric_name] = {
@@ -1831,7 +2041,6 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       function groupData(data: any): IMetricsCollection<IMetric>[] {
         const configData = model.getState()!.config;
         const grouping = configData!.grouping;
-        const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions('color', model);
         const groupByStroke = getFilteredGroupingOptions('stroke', model);
         const groupByChart = getFilteredGroupingOptions('chart', model);
@@ -1885,6 +2094,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         const colorConfigsMap: { [key: string]: number } = {};
         const dasharrayConfigsMap: { [key: string]: number } = {};
         const chartIndexConfigsMap: { [key: string]: number } = {};
+        const { paletteIndex } = grouping;
 
         for (let groupKey in groupValues) {
           const groupValue = groupValues[groupKey];
@@ -1898,6 +2108,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
                 groupValues,
                 groupKey,
                 grouping,
+                groupName: 'color',
               });
               groupValue.color =
                 COLORS[paletteIndex][
@@ -1924,6 +2135,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
                 groupValues,
                 groupKey,
                 grouping,
+                groupName: 'stroke',
               });
               groupValue.dasharray =
                 DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
@@ -2141,7 +2353,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       }
 
       function onExportTableData(): void {
-        // TODO need to get data and params from state not from processData
+        // @TODO need to get data and params from state not from processData
         const { data, params, metricsColumns } = processData(
           model.getState()?.rawData as IRun<IMetricTrace>[],
         );
@@ -2187,10 +2399,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow.forEach((row: IMetricTableRowData) => {
-              const filteredRow = getFilteredRow<IMetricTableRowData>(
-                filteredHeader,
-                row,
-              );
+              const filteredRow = getFilteredRow(filteredHeader, row);
               dataToExport.push(filteredRow);
             });
             if (groupedRows.length - 1 !== groupedRowIndex) {
@@ -2209,23 +2418,105 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         onNotificationDelete(id, model);
       }
 
+      function updateData(newData: any): void {
+        const { data, params, metricsColumns } = processData(newData);
+        const modelState = model.getState() as IRunsAppModelState;
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
+        const tableColumns = getRunsTableColumns(
+          metricsColumns,
+          params,
+          data[0]?.config,
+          model.getState()?.config?.table.columnsOrder!,
+          model.getState()?.config?.table.hiddenColumns!,
+        );
+        model.setState({
+          data,
+          rowData: newData,
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns,
+          tableData: tableData.rows,
+          sameValueColumns: tableData.sameValueColumns,
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...modelState?.config.pagination,
+              isLatest: false,
+            },
+          },
+        });
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+            hiddenColumns: modelState?.config.table.hiddenColumns!,
+          });
+        }, 0);
+      }
+
+      function destroy(): void {
+        liveUpdateInstance?.clear();
+        liveUpdateInstance = null; //@TODO check is this need or not
+      }
+
+      function changeLiveUpdateConfig(config: {
+        enabled?: boolean;
+        delay?: number;
+      }): void {
+        const state = model.getState() as IRunsAppModelState;
+        const configData = state?.config;
+        const liveUpdateConfig = configData.liveUpdate;
+
+        if (!liveUpdateConfig?.enabled && config.enabled) {
+          const query = configData?.select?.query || '';
+          const pagination = configData?.pagination;
+
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            config.delay || liveUpdateConfig.delay,
+          );
+          liveUpdateInstance.start({
+            q: query,
+            limit: pagination.limit + state?.rawData?.length || 0,
+          });
+        } else {
+          liveUpdateInstance?.clear();
+          liveUpdateInstance = null;
+        }
+        const newLiveUpdateConfig = {
+          ...liveUpdateConfig,
+          ...config,
+        };
+        model.setState({
+          config: {
+            ...configData,
+            liveUpdate: newLiveUpdateConfig,
+          },
+        });
+
+        setItem('runsLUConfig', encode(newLiveUpdateConfig));
+      }
+
       const methods = {
+        destroy,
         initialize,
         getRunsData,
         getLastRunsData,
-        updateURL,
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,
         setDefaultAppConfigData,
+        changeLiveUpdateConfig,
       };
 
-      if (grouping) {
-        // Object.assign(methods, {});
-      }
+      // if (grouping) {
+      //   Object.assign(methods, {});
+      // }
       if (selectForm) {
         Object.assign(methods, {
           onSelectRunQueryChange(query: string): void {
-            onSelectRunQueryChange(query, model);
+            onSelectRunQueryChange(query, model, updateURL);
           },
           updateSelectStateUrl(): void {
             const selectData = model.getState()?.config?.select;
@@ -2235,32 +2526,44 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           },
         });
       }
-      if (components?.charts?.[0]) {
-        // Object.assign(methods, {});
-      }
+      // if (components?.charts?.[0]) {
+      //   Object.assign(methods, {});
+      // }
       if (components?.table) {
         Object.assign(methods, {
           onRowHeightChange(height: RowHeightSize): void {
             onRowHeightChange(height, model, appName);
           },
           onColumnsOrderChange(columnsOrder: any): void {
-            onColumnsOrderChange(columnsOrder, model);
+            onColumnsOrderChange(columnsOrder, model, appName, updateModelData);
           },
           onColumnsVisibilityChange(hiddenColumns: string[]): void {
-            onColumnsVisibilityChange(hiddenColumns, model, appName);
+            onColumnsVisibilityChange(
+              hiddenColumns,
+              model,
+              appName,
+              updateModelData,
+            );
           },
           onTableDiffShow(args: IOnTableDiffShowParams): void {
             onTableDiffShow(args, model, appName);
           },
           onSortReset(): void {
-            updateSortFields([], model, appName);
+            updateSortFields([], model, appName, updateModelData);
           },
           updateColumnsWidths(
             key: string,
             width: number,
             isReset: boolean,
           ): void {
-            updateColumnsWidths(key, width, isReset, model, appName);
+            updateColumnsWidths(
+              key,
+              width,
+              isReset,
+              model,
+              appName,
+              updateModelData,
+            );
           },
         });
       }
@@ -2277,6 +2580,8 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
         abort: () => void;
       };
+      let tooltipData: ITooltipData = {};
+      let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
         model.init();
@@ -2301,6 +2606,61 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         if (!appId) {
           setDefaultAppConfigData();
         }
+        const liveUpdateState = model.getState()?.config.liveUpdate;
+
+        if (liveUpdateState?.enabled) {
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            liveUpdateState.delay,
+          );
+        }
+      }
+
+      function updateData(newData: any): void {
+        const { data, params, metricsColumns } = processData(newData);
+
+        const configData = model.getState()?.config;
+        if (configData) {
+          configData.grouping.selectOptions = [
+            ...getGroupingSelectOptions(params),
+          ];
+        }
+
+        const tableData = getDataAsTableRows(
+          data,
+          metricsColumns,
+          params,
+          false,
+          configData,
+        );
+        const sortFields = model.getState()?.config?.table.sortFields;
+
+        model.setState({
+          data,
+          highPlotData: getDataAsLines(data),
+          chartTitleData: getChartTitleData<IParam, IParamsAppModelState>(
+            data,
+            model as IModel<IParamsAppModelState>,
+          ),
+          params,
+          metricsColumns,
+          rawData: newData,
+          config: configData,
+          tableData: tableData.rows,
+          tableColumns: getParamsTableColumns(
+            metricsColumns,
+            params,
+            data[0]?.config,
+            configData.table.columnsOrder!,
+            configData.table.hiddenColumns!,
+            sortFields,
+            onSortChange,
+          ),
+          sameValueColumns: tableData.sameValueColumns,
+          requestIsPending: false,
+          groupingSelectOptions: [...getGroupingSelectOptions(params)],
+        });
       }
 
       function getAppConfigData(appId: string): {
@@ -2325,8 +2685,15 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       }
 
       function setDefaultAppConfigData(): void {
-        const defaultConfig: IParamsAppConfig = {};
-        const config = getConfig();
+        const config = getConfig() as IParamsAppConfig;
+
+        const liveUpdateConfigHash = getItem('paramsLUConfig');
+        const luConfig = liveUpdateConfigHash
+          ? JSON.parse(decode(liveUpdateConfigHash))
+          : config?.liveUpdate;
+
+        const defaultConfig: IParamsAppConfig = { liveUpdate: luConfig };
+
         if (grouping) {
           defaultConfig.grouping =
             getStateFromUrl('grouping') || config?.grouping;
@@ -2362,11 +2729,10 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.params)) {
+              liveUpdateInstance?.stop().then();
+
               let state: Partial<IParamsAppModelState> = {};
-              if (
-                Array.isArray(components?.charts) &&
-                components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1
-              ) {
+              if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
                 state.highPlotData = [];
               }
               if (components.table) {
@@ -2390,6 +2756,10 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               if (configData) {
                 setModelData(runData, configData);
               }
+
+              liveUpdateInstance?.start({
+                q: configData?.select?.query,
+              });
             }
           },
           abort: () => runsRequestRef.abort(),
@@ -2771,7 +3141,6 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
 
       function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
         const grouping = model.getState()!.config!.grouping;
-        const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions('color', model);
         const groupByStroke = getFilteredGroupingOptions('stroke', model);
         const groupByChart = getFilteredGroupingOptions('chart', model);
@@ -2826,6 +3195,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         const colorConfigsMap: { [key: string]: number } = {};
         const dasharrayConfigsMap: { [key: string]: number } = {};
         const chartIndexConfigsMap: { [key: string]: number } = {};
+        const { paletteIndex } = grouping;
 
         for (let groupKey in groupValues) {
           const groupValue = groupValues[groupKey];
@@ -2839,6 +3209,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
                 groupValues,
                 groupKey,
                 grouping,
+                groupName: 'color',
               });
               groupValue.color =
                 COLORS[paletteIndex][
@@ -2865,6 +3236,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
                 groupValues,
                 groupKey,
                 grouping,
+                groupName: 'stroke',
               });
               groupValue.dasharray =
                 DASH_ARRAYS[Number(index % BigInt(DASH_ARRAYS.length))];
@@ -2908,7 +3280,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         const paletteIndex: number = grouping?.paletteIndex || 0;
         const metricsColumns: any = {};
 
-        data.forEach((run: IRun<IParamTrace>, index) => {
+        data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           run.traces.forEach((trace) => {
             metricsColumns[trace.metric_name] = {
@@ -2929,20 +3301,18 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           _.orderBy(
             runs,
             configData?.table?.sortFields?.map(
-              (f: any) =>
+              (f: SortField) =>
                 function (run: IParam) {
                   return _.get(run, f[0], '');
                 },
             ) ?? [],
-            configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
+            configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
           ),
         );
         const uniqParams = _.uniq(params);
 
         if (components?.charts?.[0]) {
-          model.setState({
-            tooltipData: getTooltipData(processedData, uniqParams, model),
-          });
+          tooltipData = getTooltipData(processedData, uniqParams, model);
         }
         return {
           data: processedData,
@@ -2985,7 +3355,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
                 tooltip: {
                   ...configData.chart.tooltip,
                   content: filterTooltipContent(
-                    model.getState().tooltipData[activePoint.key],
+                    tooltipData[activePoint.key],
                     configData?.chart.tooltip.selectedParams,
                   ),
                 },
@@ -3004,7 +3374,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
 
           model.setState({ config: configData });
         },
-        35,
+        50,
       );
 
       function onExportTableData(): void {
@@ -3142,14 +3512,56 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       }
 
       function onModelResetConfigData(): void {
-        onResetConfigData(model);
+        onResetConfigData(model, getConfig, updateModelData);
       }
 
       function onSortChange(
         field: string,
         value?: 'asc' | 'desc' | 'none',
       ): void {
-        onTableSortChange(field, model, value);
+        onTableSortChange(field, model, appName, updateModelData, value);
+      }
+
+      function changeLiveUpdateConfig(config: {
+        enabled?: boolean;
+        delay?: number;
+      }): void {
+        const state = model.getState();
+        const configData = state?.config;
+        const query = configData.select?.query;
+        const liveUpdateConfig = configData.liveUpdate;
+
+        if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            config.delay || liveUpdateConfig.delay,
+          );
+          liveUpdateInstance?.start({
+            q: query,
+          });
+        } else {
+          liveUpdateInstance?.clear();
+          liveUpdateInstance = null;
+        }
+
+        const newLiveUpdateConfig = {
+          ...liveUpdateConfig,
+          ...config,
+        };
+        model.setState({
+          config: {
+            ...configData,
+            liveUpdate: newLiveUpdateConfig,
+          },
+        });
+
+        setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+      }
+
+      function destroy(): void {
+        liveUpdateInstance?.clear();
+        liveUpdateInstance = null; //@TODO check is this need or not
       }
 
       const methods = {
@@ -3166,6 +3578,9 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        destroy,
+        changeLiveUpdateConfig,
+        onShuffleChange,
       };
 
       if (grouping) {
@@ -3174,25 +3589,43 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
             groupName,
             list,
           }: IOnGroupingSelectChangeParams): void {
-            onGroupingSelectChange({ groupName, list }, model);
+            onGroupingSelectChange(
+              { groupName, list },
+              model,
+              appName,
+              updateModelData,
+            );
           },
           onGroupingModeChange({
             groupName,
             value,
           }: IOnGroupingModeChangeParams): void {
-            onGroupingModeChange({ groupName, value }, model);
+            onGroupingModeChange(
+              { groupName, value },
+              model,
+              appName,
+              updateModelData,
+            );
           },
           onGroupingPaletteChange(index: number): void {
-            onGroupingPaletteChange(index, model, appName);
+            onGroupingPaletteChange(index, model, appName, updateModelData);
           },
           onGroupingReset(groupName: GroupNameType): void {
-            onGroupingReset(groupName, model, appName);
+            onGroupingReset(groupName, model, appName, updateModelData);
           },
           onGroupingApplyChange(groupName: GroupNameType): void {
-            onGroupingApplyChange(groupName, model);
+            onGroupingApplyChange(groupName, model, appName, updateModelData);
           },
           onGroupingPersistenceChange(groupName: GroupNameType): void {
-            onGroupingPersistenceChange(groupName, model, appName);
+            onGroupingPersistenceChange(
+              groupName,
+              model,
+              appName,
+              updateModelData,
+            );
+          },
+          onShuffleChange(name: 'color' | 'stroke') {
+            onShuffleChange(name, model, updateModelData);
           },
         });
       }
@@ -3212,20 +3645,20 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
             }
           },
           onSelectRunQueryChange(query: string): void {
-            onSelectRunQueryChange(query, model);
+            onSelectRunQueryChange(query, model, updateURL);
           },
         });
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
           onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-            onChangeTooltip(tooltip, model, appName);
+            onChangeTooltip(tooltip, tooltipData, model, appName);
           },
           onColorIndicatorChange(): void {
-            onColorIndicatorChange(model, appName);
+            onColorIndicatorChange(model, appName, updateModelData);
           },
           onCurveInterpolationChange(): void {
-            onCurveInterpolationChange(model, appName);
+            onCurveInterpolationChange(model, appName, updateModelData);
           },
         });
       }
@@ -3241,35 +3674,52 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
             onTableRowClick({ rowKey, model });
           },
           onSortFieldsChange(sortFields: [string, any][]): void {
-            onSortFieldsChange(sortFields, model, appName);
+            onSortFieldsChange(sortFields, model, appName, updateModelData);
           },
           onParamVisibilityChange(metricsKeys: string[]): void {
-            onParamVisibilityChange(metricsKeys, model);
+            onParamVisibilityChange(
+              metricsKeys,
+              model,
+              appName,
+              updateModelData,
+            );
           },
           onColumnsOrderChange(columnsOrder: any): void {
-            onColumnsOrderChange(columnsOrder, model);
+            onColumnsOrderChange(columnsOrder, model, appName, updateModelData);
           },
           onColumnsVisibilityChange(hiddenColumns: string[]): void {
-            onColumnsVisibilityChange(hiddenColumns, model, appName);
+            onColumnsVisibilityChange(
+              hiddenColumns,
+              model,
+              appName,
+              updateModelData,
+            );
           },
           onTableResizeModeChange(mode: ResizeModeEnum): void {
-            onTableResizeModeChange(mode, model, appName);
+            onTableResizeModeChange(mode, model, appName, updateModelData);
           },
           onTableDiffShow(args: IOnTableDiffShowParams): void {
             onTableDiffShow(args, model, appName);
           },
           onTableResizeEnd(tableHeight: string): void {
-            onTableResizeEnd(tableHeight, model, appName);
+            onTableResizeEnd(tableHeight, model, appName, updateModelData);
           },
           onSortReset(): void {
-            updateSortFields([], model, appName);
+            updateSortFields([], model, appName, updateModelData);
           },
           updateColumnsWidths(
             key: string,
             width: number,
             isReset: boolean,
           ): void {
-            updateColumnsWidths(key, width, isReset, model, appName);
+            updateColumnsWidths(
+              key,
+              width,
+              isReset,
+              model,
+              appName,
+              updateModelData,
+            );
           },
         });
       }

@@ -1,63 +1,69 @@
 @use 'src/styles/abstracts' as *;
 
-.ColorPopoverAdvanced__container {
-  width: 25rem;
-
-  span, p {
-
+.ColorPopoverAdvanced {
+  &__container {
+    width: 25rem;
   }
-}
 
-.ColorPopoverAdvanced__persistence {
-  padding: 1rem;
-  border-bottom: $border-main;
-}
-
-.ColorPopoverAdvanced__persistence__p, .ColorPopoverAdvanced__container__span {
-  color: $text-color-80;
-  font-size: $text-md;
-  font-family: 'Inter Regular', sans-serif;
-}
-
-.ColorPopoverAdvanced__persistence__p {
-  margin: 0.5rem 0 1rem 0;
-}
-
-.ColorPopoverAdvanced__preferred__colors {
-  padding: 1rem;
-  h3 {
-    margin-bottom: 0.5rem;
+  &__Switcher__button__container {
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    .ColorPopoverAdvanced__container__span {
+      margin-left: 0.875rem;
+    }
   }
-  .ColorPopoverAdvanced__container__span {
+  &__persistence {
+    padding: 1rem;
+    border-bottom: $border-main;
+  }
+
+  &__persistence__p,
+  &__container__span {
+    font-size: $text-md;
+    font-family: 'Inter Regular', sans-serif;
+  }
+
+  &__persistence__p {
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  &__preferred__colors {
+    padding: 1rem;
+    h3 {
+      margin-bottom: 0.5rem;
+    }
+    .ColorPopoverAdvanced__container__span {
+      flex: 1;
+    }
+  }
+
+  &__paletteColors__container {
+    display: flex;
+    border-radius: $border-radius-md;
+    width: 10.5rem;
+    border: 0.0625rem solid transparent;
+    height: 2rem;
+    overflow: hidden;
+    transition: all 0.18s ease-out;
+    padding: 0.1875rem;
+
+    &.active {
+      border: 0.0625rem solid $primary-color;
+    }
+  }
+
+  &__paletteColors_colorItem {
+    display: inline-block;
     flex: 1;
-  }
-}
+    height: 100%;
 
-.ColorPopoverAdvanced__paletteColors__container {
-  display: flex;
-  border-radius: $border-radius-md;
-  width: 10.5rem;
-  border: 0.0625rem solid transparent;
-  height: 2rem;
-  overflow: hidden;
-  transition: all .18s ease-out;
-  padding: 0.1875rem;
+    &:first-child {
+      border-radius: 0.25rem 0 0 0.25rem;
+    }
 
-  &.active {
-    border: 0.0625rem solid $primary-color;
-  }
-}
-
-.ColorPopoverAdvanced__paletteColors_colorItem {
-  display: inline-block;
-  flex: 1;
-  height: 100%;
-
-  &:first-child {
-    border-radius: 0.25rem 0 0 0.25rem;
-  }
-
-  &:last-child {
-    border-radius: 0 0.25rem 0.25rem 0;
+    &:last-child {
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
   }
 }

@@ -32,8 +32,28 @@ $primary-darker: #142447;
 $primary-bg: #f7faff;
 $primary-lighter: #dfe6f7;
 $primary-light: #7a94cc;
+
+// tinted colors
+$primary-color-10: #e8f1fc;
+$primary-color-5: #f3f8fe;
+$primary-color-50: #89b9f2;
+
+$pico-100: #1c2852;
+$pico-80: #414b6d;
+$pico-70: #606986;
+$pico-50: #83899e;
+$pico-10: #e8eaee;
+$pico-5: #f4f4f6;
+
+$cuddle-110: #90afda;
+$cuddle-70: #d1ddef;
+$cuddle-50: #dee6f3;
+$cuddle-30: #ebf0f8;
+$cuddle-20: #f2f5fa;
+$cuddle-10: #f8fafd;
+
 //border
-$border-color-main: tint($primary-color, 90);
+$border-color-main: $primary-color-10;
 $border-main: 0.0625rem solid $border-color-main;
 $radius-main: 0.375rem;
 $border-color-secondary: tint($cuddle, 80);
@@ -44,9 +64,8 @@ $border-radius-sm: 0.25rem;
 $border-radius-md: 0.375rem;
 $border-radius-lg: 0.5rem;
 //text
-$text-color: $pico;
+$text-color: #414b6d;
 $text-color-50: tint($pico, 50%);
-$text-color-80: tint($pico, 20%);
 $text-sm: 0.75rem;
 $text-md: 0.875rem;
 $text-lg: 1rem;
@@ -71,26 +90,9 @@ $col-lg: 960px; // (max-width: 960px)
 $col-xl: 1140px; // (max-width: 1140px)
 $col-xxl: 1420px; // (max-width: 1420px)
 $breakpoints: (
-        sm: $sm,
-        md: $md,
-        lg: $lg,
-        xl: $xl,
-        xxl: $xxl,
+  sm: $sm,
+  md: $md,
+  lg: $lg,
+  xl: $xl,
+  xxl: $xxl,
 );
-
-// tinted colors
-$primary-color-10: #e8f1fc;
-$primary-color-5: #f3f8fe;
-$primary-color-50: #89b9f2;
-
-$pico-100: #1C2852;
-$pico-80: #414B6D;
-$pico-70: #606986;
-$pico-10: #E8EAEE;
-$pico-5: #F4F4F6;
-
-$cuddle-70: #D1DDEF;
-$cuddle-50: #DEE6F3;
-$cuddle-30: #EBF0F8;;
-$cuddle-20: #F2F5FA;
-$cuddle-10: #F8FAFD;

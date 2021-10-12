@@ -7,6 +7,7 @@ export default function onSortFieldsChange<M extends State>(
   sortFields: [string, any][],
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ) {
   const configData = model.getState()?.config;
   if (configData?.table) {
@@ -17,10 +18,8 @@ export default function onSortFieldsChange<M extends State>(
         sortFields: sortFields,
       },
     };
-    model.setState({
-      config: configUpdate,
-    });
-    // updateModelData(configUpdate);
+    model.setState({ config: configUpdate });
+    updateModelData(configUpdate);
   }
   analytics.trackEvent(
     `[${appName}Explorer][Table] ${

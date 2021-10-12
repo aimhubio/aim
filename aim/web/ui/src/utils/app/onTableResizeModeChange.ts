@@ -8,6 +8,7 @@ export default function onTableResizeModeChange<M extends State>(
   mode: ResizeModeEnum,
   model: IModel<M>,
   appName: string,
+  updateModelData: any,
 ): void {
   const configData = model?.getState()?.config;
 
@@ -20,10 +21,9 @@ export default function onTableResizeModeChange<M extends State>(
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem(`${appName}Table`, encode(table));
+    updateModelData(config);
   }
   analytics.trackEvent(
     `[${appName}Explorer][Table] Set table view mode to "${mode}"`,
