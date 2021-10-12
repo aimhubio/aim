@@ -20,7 +20,7 @@ from aim.storage.encoding.encoding_native import (
     decode_utf_8_str,
 )
 from aim.storage.encoding.encoding_native import decode_path  # noqa F401
-from aim.storage.utils import ArrayFlag, ObjectFlag
+from aim.storage.utils import ArrayFlag, ArrayFlagType, ObjectFlag, ObjectFlagType, CustomObjectFlagType
 from aim.storage.types import AimObjectKey, AimObjectPath
 
 from typing import Union, Any
@@ -43,6 +43,7 @@ _STRING = 4
 _BYTES = 5
 _ARRAY = 6
 _OBJECT = 7
+_CUSTOM_OBJECT = 8 | 7
 
 
 def encode(value: Any) -> bytes:
@@ -80,16 +81,19 @@ def encode(value: Any) -> bytes:
         # Byte arrays / BLOBS can be used to encode arbitrary binary content
         type_id = _BYTES
         encoding = value
-    elif value is ArrayFlag:
+    elif isinstance(value, ArrayFlagType):
         # Array flag is used to denote non-finised object, expecting
         # encodings for its elements
         type_id = _ARRAY
         encoding = b''
-    elif value is ObjectFlag:
+    elif isinstance(value, ObjectFlagType):
         # Object flag is used to denote non-finised object, expecting
         # encodings for its elements
         type_id = _OBJECT
         encoding = b''
+    elif isinstance(value, CustomObjectFlagType):
+        type_id = _CUSTOM_OBJECT
+        encoding = encode_utf_8_str(value.aim_name)
     else:
         raise NotImplementedError
 
@@ -123,6 +127,8 @@ def decode(buffer: bytes):
         return ArrayFlag
     elif type_id == _OBJECT:
         return ObjectFlag
+    elif type_id == _CUSTOM_OBJECT:
+        return CustomObjectFlagType(decode_utf_8_str(buffer))
     else:
         return None
 
