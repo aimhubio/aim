@@ -263,7 +263,17 @@ function Column({
       </div>
       {groups
         ? Object.keys(data).map((groupKey) => (
-            <div key={groupKey} className='Table__group'>
+            <div
+              key={groupKey}
+              className='Table__group'
+              style={
+                col.key === '#' && data[groupKey].data.meta.color
+                  ? {
+                      borderLeft: 'none',
+                    }
+                  : null
+              }
+            >
               {col.key === '#' ? (
                 <div
                   className={classNames({

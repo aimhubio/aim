@@ -17,11 +17,14 @@ import Icon from 'components/Icon/Icon';
 import Button from 'components/Button/Button';
 
 import './MetricsBar.scss';
+import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 
 function MetricsBar({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
+  liveUpdateConfig,
+  onLiveUpdateConfigChange,
   title,
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
@@ -42,6 +45,10 @@ function MetricsBar({
 
   return (
     <AppBar title={title}>
+      <LiveUpdateSettings
+        {...liveUpdateConfig}
+        onLiveUpdateConfigChange={onLiveUpdateConfigChange}
+      />
       {route.params.appId ? (
         <ControlPopover
           title='Bookmark'

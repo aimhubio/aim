@@ -51,4 +51,8 @@ interface IParamsAppConfig {
   };
   table: any;
   onParamsSelectChange: (data) => void;
+  liveUpdateConfig: {
+    delay: number;
+    enabled: boolean;
+  };
 }
