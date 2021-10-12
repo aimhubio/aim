@@ -41,7 +41,8 @@ export function aggregateGroupData({
       groupsData
         .flat()
         .map((item) => item.data.xValues)
-        .flat(),
+        .flat()
+        .sort((a, b) => a - b),
     );
   }
 
@@ -57,7 +58,7 @@ export function aggregateGroupData({
 
         // Calculate line value (y) for each X axis value in chart
         // Even for case when line does not have corresponding x value
-        for (let j = 0; j < trace.xValues.length; j++) {
+        for (let j = 0; j < trace.xValues.length - 1; j++) {
           const step = trace.xValues[j];
           const point = trace.yValues[j];
           const nextStep = trace.xValues[j + 1];
