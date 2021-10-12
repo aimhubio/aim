@@ -43,6 +43,7 @@ function ColorPopoverAdvanced({
               onChange={() => onPersistenceChange('color')}
               checked={persistence}
               size='large'
+              variant='contained'
             />
             <span className='ColorPopoverAdvanced__container__span'>
               Enable
