@@ -67,6 +67,8 @@ import { IModel } from '../../../types/services/models/model';
 import { IGetGroupingPersistIndex } from '../../../types/utils/app/getGroupingPersistIndex';
 import getFilteredRow from '../../../utils/app/getFilteredRow';
 import updateUrlParam from '../../../utils/app/updateUrlParam';
+import createAppModel from '../explorer/createAppModel';
+import { appInitialConfig } from '../explorer';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -1795,52 +1797,54 @@ function destroy() {
   liveUpdateInstance = null; //@TODO check is this need or not
 }
 
-const paramsAppModel = {
-  ...model,
-  destroy,
-  initialize,
-  getAppConfigData,
-  getParamsData,
-  setDefaultAppConfigData,
-  updateURL,
-  updateModelData,
-  onActivePointChange,
-  onExportTableData,
-  onBookmarkCreate,
-  onBookmarkUpdate,
-  onNotificationAdd,
-  onNotificationDelete,
-  onResetConfigData,
-  // grouping
-  onGroupingSelectChange,
-  onGroupingModeChange,
-  onGroupingPaletteChange,
-  onGroupingReset,
-  onGroupingApplyChange,
-  onGroupingPersistenceChange,
-  // select
-  onParamsSelectChange,
-  onSelectRunQueryChange,
-  // chart
-  onChangeTooltip,
-  onColorIndicatorChange,
-  onCurveInterpolationChange,
-  // table
-  onRowHeightChange,
-  onTableRowHover,
-  onTableRowClick,
-  onSortFieldsChange,
-  onParamVisibilityChange,
-  onColumnsOrderChange,
-  onColumnsVisibilityChange,
-  onTableResizeModeChange,
-  onTableDiffShow,
-  onTableResizeEnd,
-  onSortReset,
-  onSortChange,
-  updateColumnsWidths,
-  changeLiveUpdateConfig,
-  onShuffleChange,
-};
+// const paramsAppModel = {
+//   ...model,
+//   destroy,
+//   initialize,
+//   getAppConfigData,
+//   getParamsData,
+//   setDefaultAppConfigData,
+//   updateURL,
+//   updateModelData,
+//   onActivePointChange,
+//   onExportTableData,
+//   onBookmarkCreate,
+//   onBookmarkUpdate,
+//   onNotificationAdd,
+//   onNotificationDelete,
+//   onResetConfigData,
+//   // grouping
+//   onGroupingSelectChange,
+//   onGroupingModeChange,
+//   onGroupingPaletteChange,
+//   onGroupingReset,
+//   onGroupingApplyChange,
+//   onGroupingPersistenceChange,
+//   // select
+//   onParamsSelectChange,
+//   onSelectRunQueryChange,
+//   // chart
+//   onChangeTooltip,
+//   onColorIndicatorChange,
+//   onCurveInterpolationChange,
+//   // table
+//   onRowHeightChange,
+//   onTableRowHover,
+//   onTableRowClick,
+//   onSortFieldsChange,
+//   onParamVisibilityChange,
+//   onColumnsOrderChange,
+//   onColumnsVisibilityChange,
+//   onTableResizeModeChange,
+//   onTableDiffShow,
+//   onTableResizeEnd,
+//   onSortReset,
+//   onSortChange,
+//   updateColumnsWidths,
+//   changeLiveUpdateConfig,
+//   onShuffleChange,
+// };
+
+const paramsAppModel = createAppModel(appInitialConfig.PARAMS) as any;
 
 export default paramsAppModel;

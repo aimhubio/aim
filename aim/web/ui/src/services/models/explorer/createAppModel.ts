@@ -1501,7 +1501,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       enabled?: boolean;
       delay?: number;
     }): void {
-      const state = model.getState();
+      const state = model.getState() as IMetricAppModelState;
       const configData = state?.config;
       const liveUpdateConfig = configData?.liveUpdate;
       const metric = configData?.chart?.alignmentConfig.metric;
@@ -1658,7 +1658,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         onSmoothingChange(args: IOnSmoothingChange): void {
           onSmoothingChange(args, model, appName, updateModelData);
         },
-        onIgnoreOutliersChange(model: IModel<IMetricAppModelState>): void {
+        onIgnoreOutliersChange(): void {
           onIgnoreOutliersChange(model, updateModelData);
         },
         onAxesScaleTypeChange(args: IAxesScaleState): void {
@@ -2475,7 +2475,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
             updateData,
-            config.delay || liveUpdateConfig.delay,
+            config?.delay || liveUpdateConfig?.delay,
           );
           liveUpdateInstance.start({
             q: query,
@@ -3321,61 +3321,113 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         };
       }
 
-      const onActivePointChange = _.debounce(
-        (
-          activePoint: IActivePoint,
-          focusedStateActive: boolean = false,
-        ): void => {
-          const { refs, config } = model.getState() as IParamsAppModelState;
-          if (config.table?.resizeMode !== ResizeModeEnum.Hide) {
-            const tableRef: any = refs?.tableRef;
-            if (tableRef) {
-              tableRef.current?.setHoveredRow?.(activePoint.key);
-              tableRef.current?.setActiveRow?.(
-                focusedStateActive ? activePoint.key : null,
-              );
-              if (focusedStateActive) {
-                tableRef.current?.scrollToRow?.(activePoint.key);
-              }
+      // const onActivePointChange = _.debounce(
+      //   (
+      //     activePoint: IActivePoint,
+      //     focusedStateActive: boolean = false,
+      //   ): void => {
+      //     const { refs, config } = model.getState() as IParamsAppModelState;
+      //     if (config.table?.resizeMode !== ResizeModeEnum.Hide) {
+      //       const tableRef: any = refs?.tableRef;
+      //       if (tableRef) {
+      //         tableRef.current?.setHoveredRow?.(activePoint.key);
+      //         tableRef.current?.setActiveRow?.(
+      //           focusedStateActive ? activePoint.key : null,
+      //         );
+      //         if (focusedStateActive) {
+      //           tableRef.current?.scrollToRow?.(activePoint.key);
+      //         }
+      //       }
+      //     }
+      //     let configData: IParamsAppConfig = config;
+      //     if (configData?.chart) {
+      //       configData = {
+      //         ...configData,
+      //         chart: {
+      //           ...configData.chart,
+      //           focusedState: {
+      //             active: focusedStateActive,
+      //             key: activePoint.key,
+      //             xValue: activePoint.xValue,
+      //             yValue: activePoint.yValue,
+      //             chartIndex: activePoint.chartIndex,
+      //           },
+      //           tooltip: {
+      //             ...configData.chart.tooltip,
+      //             content: filterTooltipContent(
+      //               tooltipData[activePoint.key],
+      //               configData?.chart.tooltip.selectedParams,
+      //             ),
+      //           },
+      //         },
+      //       };
+      //
+      //       if (
+      //         config.chart?.focusedState.active !== focusedStateActive ||
+      //         (config.chart.focusedState.active &&
+      //           (activePoint.key !== config.chart.focusedState.key ||
+      //             activePoint.xValue !== config.chart.focusedState.xValue))
+      //       ) {
+      //         updateURL(configData);
+      //       }
+      //     }
+      //
+      //     model.setState({ config: configData });
+      //   },
+      //   50,
+      // );
+
+      function onActivePointChange(
+        activePoint: IActivePoint,
+        focusedStateActive: boolean = false,
+      ): void {
+        const { refs, config } = model.getState() as IParamsAppModelState;
+        if (config.table?.resizeMode !== ResizeModeEnum.Hide) {
+          const tableRef: any = refs?.tableRef;
+          if (tableRef) {
+            tableRef.current?.setHoveredRow?.(activePoint.key);
+            tableRef.current?.setActiveRow?.(
+              focusedStateActive ? activePoint.key : null,
+            );
+            if (focusedStateActive) {
+              tableRef.current?.scrollToRow?.(activePoint.key);
             }
           }
-          let configData: IParamsAppConfig = config;
-          if (configData?.chart) {
-            configData = {
-              ...configData,
-              chart: {
-                ...configData.chart,
-                focusedState: {
-                  active: focusedStateActive,
-                  key: activePoint.key,
-                  xValue: activePoint.xValue,
-                  yValue: activePoint.yValue,
-                  chartIndex: activePoint.chartIndex,
-                },
-                tooltip: {
-                  ...configData.chart.tooltip,
-                  content: filterTooltipContent(
-                    tooltipData[activePoint.key],
-                    configData?.chart.tooltip.selectedParams,
-                  ),
-                },
+        }
+        let configData: IParamsAppConfig = config;
+        if (configData?.chart) {
+          configData = {
+            ...configData,
+            chart: {
+              ...configData.chart,
+              focusedState: {
+                active: focusedStateActive,
+                key: activePoint.key,
+                xValue: activePoint.xValue,
+                yValue: activePoint.yValue,
+                chartIndex: activePoint.chartIndex,
               },
-            };
-
-            if (
-              config.chart?.focusedState.active !== focusedStateActive ||
-              (config.chart.focusedState.active &&
-                (activePoint.key !== config.chart.focusedState.key ||
-                  activePoint.xValue !== config.chart.focusedState.xValue))
-            ) {
-              updateURL(configData);
-            }
+              tooltip: {
+                ...configData.chart.tooltip,
+                content: filterTooltipContent(
+                  tooltipData[activePoint.key],
+                  configData?.chart.tooltip.selectedParams,
+                ),
+              },
+            },
+          };
+          if (
+            config.chart?.focusedState.active !== focusedStateActive ||
+            (config.chart.focusedState.active &&
+              (activePoint.key !== config.chart.focusedState.key ||
+                activePoint.xValue !== config.chart.focusedState.xValue))
+          ) {
+            updateURL(configData);
           }
+        }
 
-          model.setState({ config: configData });
-        },
-        50,
-      );
+        model.setState({ config: configData });
+      }
 
       function onExportTableData(): void {
         const { data, params, config, metricsColumns } =
@@ -3535,7 +3587,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
             updateData,
-            config.delay || liveUpdateConfig.delay,
+            config?.delay || liveUpdateConfig?.delay,
           );
           liveUpdateInstance?.start({
             q: query,

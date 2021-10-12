@@ -7,18 +7,20 @@ export function getFilteredGroupingOptions<M extends State>(
 ): string[] {
   const modelState = model.getState();
   const grouping = modelState?.config?.grouping;
-  const { reverseMode, isApplied } = grouping;
-  const groupingSelectOptions = model.getState()?.groupingSelectOptions;
-  if (groupingSelectOptions) {
-    const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-      .map((item) => item.value);
-    return isApplied[groupName]
-      ? reverseMode[groupName]
-        ? filteredOptions
-        : grouping[groupName]
-      : [];
-  } else {
+  if (grouping) {
+    const { reverseMode, isApplied } = grouping;
+    const groupingSelectOptions = model.getState()?.groupingSelectOptions;
+    if (groupingSelectOptions) {
+      const filteredOptions = [...groupingSelectOptions]
+        .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+        .map((item) => item.value);
+      return isApplied[groupName]
+        ? reverseMode[groupName]
+          ? filteredOptions
+          : grouping[groupName]
+        : [];
+    }
     return [];
   }
+  return [];
 }

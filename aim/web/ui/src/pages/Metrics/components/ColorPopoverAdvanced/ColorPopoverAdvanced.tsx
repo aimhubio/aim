@@ -23,7 +23,7 @@ function ColorPopoverAdvanced({
     }
   }
   function isShuffleDisabled(): boolean {
-    if (groupingData.reverseMode.color || groupingData.color.length > 0) {
+    if (groupingData?.reverseMode.color || groupingData?.color.length) {
       return false;
     }
     return true;

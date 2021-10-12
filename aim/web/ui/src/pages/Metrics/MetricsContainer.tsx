@@ -131,11 +131,11 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       panelResizing={panelResizing}
       lineChartData={metricsData?.lineChartData as ILine[][]}
       chartTitleData={metricsData?.chartTitleData as IChartTitleData}
-      ignoreOutliers={metricsData?.config?.chart.ignoreOutliers as boolean}
+      ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers as boolean}
       tableData={metricsData?.tableData as IMetricTableRowData[]}
       tableColumns={metricsData?.tableColumns as ITableColumn[]}
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
-      zoom={metricsData?.config?.chart.zoom as IChartZoom}
+      zoom={metricsData?.config?.chart?.zoom as IChartZoom}
       curveInterpolation={
         metricsData?.config?.chart.curveInterpolation as CurveEnum
       }
@@ -146,23 +146,23 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       smoothingAlgorithm={
         metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
-      smoothingFactor={metricsData?.config?.chart.smoothingFactor as number}
-      focusedState={metricsData?.config?.chart.focusedState as IFocusedState}
+      smoothingFactor={metricsData?.config?.chart?.smoothingFactor as number}
+      focusedState={metricsData?.config?.chart?.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
       tooltip={metricsData?.config?.chart?.tooltip as IChartTooltip}
       aggregationConfig={
-        metricsData?.config?.chart.aggregationConfig as IAggregationConfig
+        metricsData?.config?.chart?.aggregationConfig as IAggregationConfig
       }
       alignmentConfig={
-        metricsData?.config?.chart.alignmentConfig as IAlignmentConfig
+        metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
       }
       selectedMetricsData={
         metricsData?.config?.select as IMetricAppConfig['select']
       }
-      tableRowHeight={metricsData?.config?.table.rowHeight as RowHeightSize}
-      sortFields={metricsData?.config?.table.sortFields!}
-      hiddenMetrics={metricsData?.config?.table.hiddenMetrics!}
-      hiddenColumns={metricsData?.config?.table.hiddenColumns!}
+      tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
+      sortFields={metricsData?.config?.table?.sortFields!}
+      hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
+      hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
@@ -170,8 +170,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         projectsData?.metrics as IProjectParamsMetrics['metrics']
       }
       requestIsPending={metricsData?.requestIsPending}
-      resizeMode={metricsData?.config?.table.resizeMode as ResizeModeEnum}
-      columnsWidths={metricsData?.config?.table.columnsWidths}
+      resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}
+      columnsWidths={metricsData?.config?.table?.columnsWidths}
       // methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
@@ -211,7 +211,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
       // live update
-      liveUpdateConfig={metricsData.config.liveUpdate}
+      liveUpdateConfig={metricsData.config?.liveUpdate}
       onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
       onShuffleChange={metricAppModel.onShuffleChange}
       onSearchQueryCopy={metricAppModel.onSearchQueryCopy}

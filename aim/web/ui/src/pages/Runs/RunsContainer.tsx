@@ -11,7 +11,7 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
-  const runsData = useModel(runsAppModel);
+  const runsData = useModel<any>(runsAppModel);
   const location = useLocation();
 
   React.useEffect(() => {

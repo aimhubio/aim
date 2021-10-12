@@ -55,6 +55,8 @@ import { RowHeightEnum } from 'config/enums/tableEnums';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import { formatValue } from 'utils/formatValue';
 import updateUrlParam from '../../../utils/app/updateUrlParam';
+import createAppModel from '../explorer/createAppModel';
+import { appInitialConfig } from '../explorer';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -1056,25 +1058,27 @@ function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   setItem('runsLUConfig', encode(newLiveUpdateConfig));
 }
 
-const runAppModel = {
-  ...model,
-  destroy,
-  initialize,
-  getRunsData,
-  getLastRunsData,
-  onExportTableData,
-  onNotificationDelete,
-  setDefaultAppConfigData,
-  changeLiveUpdateConfig,
-  // table
-  onRowHeightChange,
-  onColumnsOrderChange,
-  onColumnsVisibilityChange,
-  onTableDiffShow,
-  updateColumnsWidths,
-  // select
-  updateSelectStateUrl,
-  onSelectRunQueryChange,
-};
+// const runAppModel = {
+//   ...model,
+//   destroy,
+//   initialize,
+//   getRunsData,
+//   getLastRunsData,
+//   onExportTableData,
+//   onNotificationDelete,
+//   setDefaultAppConfigData,
+//   changeLiveUpdateConfig,
+//   // table
+//   onRowHeightChange,
+//   onColumnsOrderChange,
+//   onColumnsVisibilityChange,
+//   onTableDiffShow,
+//   updateColumnsWidths,
+//   // select
+//   updateSelectStateUrl,
+//   onSelectRunQueryChange,
+// };
 
-export default runAppModel;
+const runsAppModel = createAppModel(appInitialConfig.RUNS) as any;
+
+export default runsAppModel;

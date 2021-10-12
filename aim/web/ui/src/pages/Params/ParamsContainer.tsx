@@ -99,19 +99,19 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       selectedParamsData={
         paramsData?.config?.select as IParamsAppConfig['select']
       }
-      sortFields={paramsData?.config?.table.sortFields!}
+      sortFields={paramsData?.config?.table?.sortFields!}
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
       tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
-      hiddenColumns={paramsData?.config?.table.hiddenColumns!}
-      resizeMode={paramsData?.config?.table.resizeMode}
-      hiddenMetrics={paramsData?.config?.table.hiddenMetrics!}
+      hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
+      resizeMode={paramsData?.config?.table?.resizeMode}
+      hiddenMetrics={paramsData?.config?.table?.hiddenMetrics!}
       notifyData={paramsData?.notifyData}
-      tableRowHeight={paramsData?.config?.table.rowHeight as RowHeightSize}
-      columnsWidths={paramsData?.config?.table.columnsWidths}
+      tableRowHeight={paramsData?.config?.table?.rowHeight as RowHeightSize}
+      columnsWidths={paramsData?.config?.table?.columnsWidths}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
@@ -142,7 +142,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
-      liveUpdateConfig={paramsData.config.liveUpdate}
+      liveUpdateConfig={paramsData.config?.liveUpdate}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
     />
   );
