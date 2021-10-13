@@ -8,6 +8,10 @@ export interface IImagesExploreAppConfig {
       groupBy: boolean;
     };
   };
+  images: {
+    stepSlice: number[];
+    indexSlice: number[];
+  };
   select: {
     metrics: ISelectMetricsOption[];
     query: string;

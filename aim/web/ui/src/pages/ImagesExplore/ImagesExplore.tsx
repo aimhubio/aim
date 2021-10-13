@@ -4,7 +4,6 @@ import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAp
 import * as analytics from 'services/analytics';
 import useModel from 'hooks/model/useModel';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
-import ImagesSet from 'components/ImagesSet/ImagesSet';
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import getStateFromUrl from 'utils/getStateFromUrl';
@@ -17,6 +16,7 @@ import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
+import ImagesPanel from 'components/ImagesPanel';
 
 import './ImagesExplore.scss';
 
@@ -80,6 +80,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       }
     }
   }, [location.search]);
+  console.log(imagesExploreData);
 
   return (
     <div className='ImagesExplore__container' ref={wrapperElemRef}>
@@ -134,9 +135,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 : ''
             }`}
           >
-            {imagesExploreData?.imagesData && (
-              <ImagesSet data={imagesExploreData?.imagesData} title={'root'} />
-            )}
+            <ImagesPanel
+              stepSlice={imagesExploreData?.config?.images.stepSlice}
+              indexSlice={imagesExploreData?.config?.images.indexSlice}
+              onStepSliceChange={imagesExploreAppModel.onStepSliceChange}
+              onIndexSliceChange={imagesExploreAppModel.onIndexSliceChange}
+              imagesData={imagesExploreData?.imagesData}
+            />
           </div>
           <ResizePanel
             className={`ImagesExplore__ResizePanel${

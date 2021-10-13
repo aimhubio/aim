@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import _, { isEmpty } from 'lodash-es';
 import createModel from '../model';
@@ -61,6 +61,10 @@ function getConfig(): IImagesExploreAppConfig {
       isApplied: {
         groupBy: true,
       },
+    },
+    images: {
+      stepSlice: [1, 10],
+      indexSlice: [1, 10],
     },
     select: {
       metrics: [],
@@ -296,6 +300,7 @@ function processData(data: IRun<IMetricTrace>[]): {
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
+  console.log(rawData);
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
   const tableData = getDataAsTableRows(data, params, false, configData);
@@ -1312,6 +1317,48 @@ function onImageVisibilityChange(metricsKeys: string[]) {
   );
 }
 
+function onStepSliceChange(
+  event: ChangeEvent<{}>,
+  newValue: number | number[],
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      stepSlice: newValue,
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onIndexSliceChange(
+  event: ChangeEvent<{}>,
+  newValue: number | number[],
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      indexSlice: newValue,
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config,
+    });
+  }
+}
+
 const imagesExploreAppModel = {
   ...model,
   initialize,
@@ -1348,6 +1395,8 @@ const imagesExploreAppModel = {
   onTableDiffShow,
   onRowHeightChange,
   onImageVisibilityChange,
+  onStepSliceChange,
+  onIndexSliceChange,
 };
 
 export default imagesExploreAppModel;
