@@ -25,12 +25,12 @@ import {
   ISelectMetricsOption,
   ISelectFormProps,
 } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
-import metricAppModel from 'services/models/metrics/metricsAppModel';
 import Icon from 'components/Icon/Icon';
 import TagLabel from 'components/TagLabel/TagLabel';
 import Button from 'components/Button/Button';
 
 import './SelectForm.scss';
+import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 function SelectForm({
   selectedMetricsData,
@@ -53,8 +53,8 @@ function SelectForm({
     };
   }, []);
 
-  function handleMetricSearch() {
-    searchMetricsRef.current = metricAppModel.getMetricsData();
+  function handleSearch() {
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData();
     searchMetricsRef.current.call();
   }
 
@@ -299,7 +299,7 @@ function SelectForm({
           variant='contained'
           startIcon={<SearchOutlined />}
           className='SelectForm__search__button'
-          onClick={handleMetricSearch}
+          onClick={handleSearch}
         >
           Search
         </Button>

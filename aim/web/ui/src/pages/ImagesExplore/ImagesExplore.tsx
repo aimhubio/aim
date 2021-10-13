@@ -138,8 +138,16 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             <ImagesPanel
               stepSlice={imagesExploreData?.config?.images.stepSlice}
               indexSlice={imagesExploreData?.config?.images.indexSlice}
+              indexRange={imagesExploreData?.config?.images.indexRange}
+              indexInterval={imagesExploreData?.config?.images.indexInterval}
+              stepInterval={imagesExploreData?.config?.images.stepInterval}
+              stepRange={imagesExploreData?.config?.images.stepRange}
               onStepSliceChange={imagesExploreAppModel.onStepSliceChange}
               onIndexSliceChange={imagesExploreAppModel.onIndexSliceChange}
+              onIndexIntervalChange={
+                imagesExploreAppModel.onIndexIntervalChange
+              }
+              onStepIntervalChange={imagesExploreAppModel.onStepIntervalChange}
               imagesData={imagesExploreData?.imagesData}
             />
           </div>
