@@ -1,6 +1,11 @@
 import React from 'react';
 
-export interface ITextProps {
+export interface ITextProps
+  extends Partial<
+    React.HTMLAttributes<
+      HTMLSpanElement | HTMLHeadingElement | HTMLParagraphElement | HTMLElement
+    >
+  > {
   component?: componentType;
   weight?: componentWeightType;
   size?: componentSizeType;

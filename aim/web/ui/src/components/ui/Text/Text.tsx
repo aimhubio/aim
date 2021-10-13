@@ -3,6 +3,16 @@ import { ITextProps } from 'types/components/ui/Text/ITextProps';
 
 import './Text.scss';
 
+/**
+ * @property {number} size - text size
+ * @property {string} color - text color
+ * @property {number} weight - text weight
+ * @property {string} className - component className
+ * @property {string} component - defines rendering html tag
+ * @property {number} tint - tinting text color
+ * @property {React.HTMLAttributes}  rest - rest properties that can be set
+ */
+
 function Text({
   size,
   color,
@@ -11,6 +21,7 @@ function Text({
   className,
   component,
   tint,
+  ...rest
 }: ITextProps): React.FunctionComponentElement<React.ReactNode> {
   const Element = React.useMemo(() => {
     const classes = `${className || ''} Text Text__size_${
@@ -18,46 +29,79 @@ function Text({
     } Text__weight_${weight ? weight : 500} Text__color_${
       color ? `${color}${tint ? `_${tint}` : ''}` : 'primary'
     }`;
-    let Component;
     switch (component) {
       case 'h1':
-        Component = <h1 className={classes}>{children}</h1>;
-        break;
+        return (
+          <h1 {...rest} className={classes}>
+            {children}
+          </h1>
+        );
       case 'h2':
-        Component = <h2 className={classes}>{children}</h2>;
-        break;
+        return (
+          <h2 {...rest} className={classes}>
+            {children}
+          </h2>
+        );
       case 'h3':
-        Component = <h3 className={classes}>{children}</h3>;
-        break;
+        return (
+          <h3 {...rest} className={classes}>
+            {children}
+          </h3>
+        );
       case 'h4':
-        Component = <h4 className={classes}>{children}</h4>;
-        break;
+        return (
+          <h4 {...rest} className={classes}>
+            {children}
+          </h4>
+        );
       case 'h5':
-        Component = <h5 className={classes}>{children}</h5>;
-        break;
+        return (
+          <h5 {...rest} className={classes}>
+            {children}
+          </h5>
+        );
       case 'h6':
-        Component = <h6 className={classes}>{children}</h6>;
-        break;
+        return (
+          <h6 {...rest} className={classes}>
+            {children}
+          </h6>
+        );
       case 'span':
-        Component = <span className={classes}>{children}</span>;
-        break;
+        return (
+          <span {...rest} className={classes}>
+            {children}
+          </span>
+        );
       case 'strong':
-        Component = <strong className={classes}>{children}</strong>;
-        break;
+        return (
+          <strong {...rest} className={classes}>
+            {children}
+          </strong>
+        );
       case 'small':
-        Component = <small className={classes}>{children}</small>;
-        break;
+        return (
+          <small {...rest} className={classes}>
+            {children}
+          </small>
+        );
       case 'p':
-        Component = <p className={classes}>{children}</p>;
-        break;
-
+        return (
+          <p {...rest} className={classes}>
+            {children}
+          </p>
+        );
       default:
-        Component = <span className={classes}>{children}</span>;
+        return (
+          <span {...rest} className={classes}>
+            {children}
+          </span>
+        );
     }
-    return Component;
   }, []);
 
   return Element;
 }
 
-export default React.memo(Text);
+Text.displayName = 'Text';
+
+export default React.memo<ITextProps>(Text);

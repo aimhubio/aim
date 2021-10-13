@@ -3,10 +3,10 @@ import { Box } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import Button from 'components/Button/Button';
+import Text from 'components/ui/Text/Text';
 import Switcher from 'components/ui/Switcher/Switcher';
 
 import './StrokePopoverAdvanced.scss';
-import Text from 'components/ui/Text/Text';
 
 function StrokePopoverAdvanced({
   onPersistenceChange,
