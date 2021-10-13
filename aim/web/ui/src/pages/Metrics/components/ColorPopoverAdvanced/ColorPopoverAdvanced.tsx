@@ -4,9 +4,9 @@ import { Box, Radio } from '@material-ui/core';
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
 import Button from 'components/Button/Button';
+import Switcher from 'components/ui/Switcher/Switcher';
 
 import './ColorPopoverAdvanced.scss';
-import Switcher from 'components/Switcher/Switcher';
 
 function ColorPopoverAdvanced({
   onPersistenceChange,

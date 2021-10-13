@@ -2,7 +2,7 @@ import React from 'react';
 import {
   ISwitcherProps,
   SwitcherLabel,
-} from 'types/components/Switcher/Switcher';
+} from 'types/components/ui/Switcher/Switcher';
 
 import './Switcher.scss';
 
