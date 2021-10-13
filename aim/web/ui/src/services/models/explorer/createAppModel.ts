@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
+import { saveAs } from 'file-saver';
+
 import * as analytics from 'services/analytics';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
@@ -152,9 +154,8 @@ import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import onResetConfigData from 'utils/app/onResetConfigData';
-import LiveUpdateService from '../../live-update/examples/LiveUpdateBridge.example';
-import onShuffleChange from '../../../utils/app/onShuffleChange';
-import { saveAs } from 'file-saver';
+import onShuffleChange from 'utils/app/onShuffleChange';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 
 function createAppModel(appInitialConfig: IAppInitialConfig) {
   const model = createModel<IAppModelState>({
@@ -1480,9 +1481,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
       onNotificationDelete(id, model);
     }
 
-    function onModelNotificationAdd<M, N>(
-      notification: N & INotification,
-    ): void {
+    function onModelNotificationAdd<N>(notification: N & INotification): void {
       onNotificationAdd(notification, model);
     }
 
@@ -1624,14 +1623,14 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
             setAggregationEnabled,
           );
         },
-        onShuffleChange(name: 'color' | 'stroke') {
+        onShuffleChange(name: 'color' | 'stroke'): void {
           onShuffleChange(name, model, updateModelData);
         },
       });
     }
     if (selectForm) {
       Object.assign(methods, {
-        onMetricsSelectChange<M, D>(
+        onMetricsSelectChange<D>(
           data: D & Partial<ISelectMetricsOption[]>,
         ): void {
           onMetricsSelectChange(data, model, updateURL);
@@ -3321,62 +3320,6 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         };
       }
 
-      // const onActivePointChange = _.debounce(
-      //   (
-      //     activePoint: IActivePoint,
-      //     focusedStateActive: boolean = false,
-      //   ): void => {
-      //     const { refs, config } = model.getState() as IParamsAppModelState;
-      //     if (config.table?.resizeMode !== ResizeModeEnum.Hide) {
-      //       const tableRef: any = refs?.tableRef;
-      //       if (tableRef) {
-      //         tableRef.current?.setHoveredRow?.(activePoint.key);
-      //         tableRef.current?.setActiveRow?.(
-      //           focusedStateActive ? activePoint.key : null,
-      //         );
-      //         if (focusedStateActive) {
-      //           tableRef.current?.scrollToRow?.(activePoint.key);
-      //         }
-      //       }
-      //     }
-      //     let configData: IParamsAppConfig = config;
-      //     if (configData?.chart) {
-      //       configData = {
-      //         ...configData,
-      //         chart: {
-      //           ...configData.chart,
-      //           focusedState: {
-      //             active: focusedStateActive,
-      //             key: activePoint.key,
-      //             xValue: activePoint.xValue,
-      //             yValue: activePoint.yValue,
-      //             chartIndex: activePoint.chartIndex,
-      //           },
-      //           tooltip: {
-      //             ...configData.chart.tooltip,
-      //             content: filterTooltipContent(
-      //               tooltipData[activePoint.key],
-      //               configData?.chart.tooltip.selectedParams,
-      //             ),
-      //           },
-      //         },
-      //       };
-      //
-      //       if (
-      //         config.chart?.focusedState.active !== focusedStateActive ||
-      //         (config.chart.focusedState.active &&
-      //           (activePoint.key !== config.chart.focusedState.key ||
-      //             activePoint.xValue !== config.chart.focusedState.xValue))
-      //       ) {
-      //         updateURL(configData);
-      //       }
-      //     }
-      //
-      //     model.setState({ config: configData });
-      //   },
-      //   50,
-      // );
-
       function onActivePointChange(
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
@@ -3557,7 +3500,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         onNotificationDelete(id, model);
       }
 
-      function onModelNotificationAdd<M, N>(
+      function onModelNotificationAdd<N>(
         notification: N & INotification,
       ): void {
         onNotificationAdd(notification, model);
@@ -3676,7 +3619,7 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
               updateModelData,
             );
           },
-          onShuffleChange(name: 'color' | 'stroke') {
+          onShuffleChange(name: 'color' | 'stroke'): void {
             onShuffleChange(name, model, updateModelData);
           },
         });
@@ -3792,6 +3735,8 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
         return getMetricsAppModelMethods(appInitialConfig);
       case AppDataTypeEnum.RUNS:
         return getRunsAppModelMethods(appInitialConfig);
+      default:
+        return {};
     }
   }
 
@@ -3802,14 +3747,3 @@ function createAppModel(appInitialConfig: IAppInitialConfig) {
 }
 
 export default createAppModel;
-
-// const methods = {
-//   runs: {
-//     table: {},
-//     chart: {},
-//   },
-// };
-//
-// return {
-//   ...methods[dataType][component],
-// };

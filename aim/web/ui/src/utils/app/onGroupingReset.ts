@@ -2,7 +2,6 @@ import * as analytics from 'services/analytics';
 
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
-import setAggregationEnabled from './setAggregationEnabled';
 
 export default function onGroupingReset<M extends State>(
   groupName: GroupNameType,

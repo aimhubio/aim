@@ -1,3 +1,4 @@
+import _ from 'lodash-es';
 import * as d3 from 'd3';
 import {
   IDrawParallelAxesProps,
@@ -18,7 +19,7 @@ function drawParallelAxes({
   dimensions,
   plotBoxRef,
 }: IDrawParallelAxesProps): void {
-  if (!axesNodeRef?.current) {
+  if (!axesNodeRef?.current && !dimensions && _.isEmpty(dimensions)) {
     return;
   }
   const keysOfDimensions = Object.keys(dimensions);
@@ -112,7 +113,7 @@ function drawParallelAxes({
   attributesRef.current.yScale = yScale;
   const lastYScale =
     attributesRef.current.yScale[keysOfDimensions[keysOfDimensions.length - 1]];
-  const range = lastYScale.range();
+  const range = lastYScale?.range();
   attributesRef.current.yColorIndicatorScale = d3
     .scaleSequential()
     .domain(range)

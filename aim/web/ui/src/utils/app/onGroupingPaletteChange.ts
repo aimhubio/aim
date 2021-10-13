@@ -1,7 +1,6 @@
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
-import setAggregationEnabled from './setAggregationEnabled';
 
 export default function onGroupingPaletteChange<M extends State>(
   index: number,

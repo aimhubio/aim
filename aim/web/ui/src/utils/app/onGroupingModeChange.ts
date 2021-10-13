@@ -3,7 +3,6 @@ import * as analytics from 'services/analytics';
 import { IOnGroupingModeChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import resetChartZoom from './resetChartZoom';
-import setAggregationEnabled from './setAggregationEnabled';
 
 export default function onGroupingModeChange<M extends State>(
   { groupName, value }: IOnGroupingModeChangeParams,
