@@ -3,14 +3,13 @@ import { Link as RouteLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Badge, Button, Icon } from 'components/kit';
 import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
-import Icon from 'components/Icon/Icon';
+
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
-import Button from 'components/Button/Button';
 
 function getParamsTableColumns(
   metricsColumns: any,
@@ -57,7 +56,7 @@ function getParamsTableColumns(
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
           key: `${key}_${metricContext}`,
           content: (
-            <TagLabel
+            <Badge
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'No context' : metricContext}
@@ -161,7 +160,7 @@ function paramsTableRowRenderer(
       if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
-            <TagLabel
+            <Badge
               size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ScaleEnum } from 'utils/d3';
-import ToggleButton from 'components/ToggleButton/ToggleButton';
+import { ToggleButton } from 'components/kit';
 import {
   IAxesScalePopoverProps,
   IAxesScaleState,

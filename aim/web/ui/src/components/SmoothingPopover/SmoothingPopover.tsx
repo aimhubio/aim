@@ -4,9 +4,9 @@ import { MenuItem, Slider } from '@material-ui/core';
 import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
+import { ToggleButton } from 'components/kit';
 
 import './SmoothingPopover.scss';
-import ToggleButton from '../ToggleButton/ToggleButton';
 
 const emaProps = {
   marks: [

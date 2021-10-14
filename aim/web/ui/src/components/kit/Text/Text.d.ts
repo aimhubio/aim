@@ -33,6 +33,6 @@ type componentColorType =
   | 'error'
   | 'warning'
   | 'info';
-type componentSizeType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+type componentSizeType = 10 | 11 | 12 | 14 | 16 | 18 | 24 | 36;
 type componentWeightType = 300 | 400 | 500 | 600 | 700;
 type componentTintType = 5 | 10 | 20 | 30 | 40 | 50 | 60 | 80 | 90 | 100;

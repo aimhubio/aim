@@ -27,9 +27,7 @@ import {
   ISelectMetricsOption,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
-import Button from 'components/Button/Button';
+import { Button, Icon, Badge } from 'components/kit';
 
 import './SelectForm.scss';
 
@@ -255,7 +253,7 @@ function SelectForm({
                     {selectedMetricsData?.metrics?.map(
                       (tag: ISelectMetricsOption) => {
                         return (
-                          <TagLabel
+                          <Badge
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}
