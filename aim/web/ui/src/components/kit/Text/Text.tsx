@@ -26,7 +26,7 @@ function Text({
   const Element = React.useMemo(() => {
     const classes = `${className || ''} Text Text__size_${
       size ? size : 12
-    } Text__weight_${weight ? weight : 400} Text__color_${`${
+    } Text__weight_${weight ? weight : 500} Text__color_${`${
       color ? color : 'primary'
     }${tint ? `_${tint}` : ''}`}`;
     switch (component) {

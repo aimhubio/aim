@@ -17,8 +17,23 @@ function ExploreAimCard({
       <div className='ExploreAimCard__icon'>
         <Icon name={`${path}` as IconName} />
       </div>
-      <h4 className='ExploreAimCard__title'>{title}</h4>
-      <Text className='ExploreAimCard__desc'>{description}</Text>
+      <Text
+        component='h4'
+        weight={600}
+        size={14}
+        className='ExploreAimCard__title'
+        tint={100}
+      >
+        {title}
+      </Text>
+      <Text
+        component='span'
+        weight={400}
+        className='ExploreAimCard__desc'
+        tint={100}
+      >
+        {description}
+      </Text>
       <div className='ExploreAimCard__arrow__icon'>
         <Icon name='long-arrow-right' />
       </div>

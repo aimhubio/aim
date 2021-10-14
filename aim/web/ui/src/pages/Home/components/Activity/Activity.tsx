@@ -2,8 +2,8 @@ import React from 'react';
 import { CircularProgress, Grid } from '@material-ui/core';
 
 import HeatMap from 'components/HeatMap/HeatMap';
+import { Text } from 'components/kit';
 import { IActivityProps } from 'types/pages/home/components/Activity/Activity';
-import Text from 'components/kit/Text/Text';
 
 import './Activity.scss';
 
