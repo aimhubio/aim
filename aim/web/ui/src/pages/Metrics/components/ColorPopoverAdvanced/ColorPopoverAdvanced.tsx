@@ -3,8 +3,7 @@ import { Box, Radio } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
-import Button from 'components/Button/Button';
-import Switcher from 'components/ui/Switcher/Switcher';
+import { Button, Switcher } from 'components/kit';
 
 import './ColorPopoverAdvanced.scss';
 

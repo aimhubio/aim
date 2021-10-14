@@ -1,5 +1,5 @@
 import React from 'react';
-import { ITextProps } from 'types/components/ui/Text/ITextProps';
+import { ITextProps } from './Text.d';
 
 import './Text.scss';
 
@@ -25,10 +25,10 @@ function Text({
 }: ITextProps): React.FunctionComponentElement<React.ReactNode> {
   const Element = React.useMemo(() => {
     const classes = `${className || ''} Text Text__size_${
-      size ? size : 5
-    } Text__weight_${weight ? weight : 500} Text__color_${
-      color ? `${color}${tint ? `_${tint}` : ''}` : 'primary'
-    }`;
+      size ? size : 12
+    } Text__weight_${weight ? weight : 400} Text__color_${`${
+      color ? color : 'primary'
+    }${tint ? `_${tint}` : ''}`}`;
     switch (component) {
       case 'h1':
         return (
@@ -97,7 +97,7 @@ function Text({
           </span>
         );
     }
-  }, []);
+  }, [children]);
 
   return Element;
 }

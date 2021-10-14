@@ -1,6 +1,6 @@
 import React from 'react';
-import { IButtonProps } from 'types/components/Button/Button';
 import MUButton from '@material-ui/core/Button';
+import { IButtonProps } from '.';
 
 import './Button.scss';
 

@@ -1,12 +1,10 @@
 import React, { memo, useEffect, useState } from 'react';
 import { isNil } from 'lodash-es';
 
-import Button from 'components/Button/Button';
 import Table from 'components/Table/Table';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Badge, Button, Icon } from 'components/kit';
 import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
-import Icon from 'components/Icon/Icon';
 
 function TagsTable({
   tableRef,
@@ -27,7 +25,7 @@ function TagsTable({
       width: 200,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         const { name, color } = cellData;
-        return <TagLabel label={name} color={color} key={i} maxWidth='100%' />;
+        return <Badge label={name} color={color} key={i} maxWidth='100%' />;
       },
     },
     {

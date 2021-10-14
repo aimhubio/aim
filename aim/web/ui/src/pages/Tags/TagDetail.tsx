@@ -5,9 +5,8 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import TagRunsTable from './TagRunsTable';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Badge, Button, Icon } from 'components/kit';
+
 import { ITagDetailProps } from 'types/pages/tags/Tags';
 
 import './Tags.scss';
@@ -43,11 +42,7 @@ function TagDetail({
           width='auto'
         >
           {tagInfo && (
-            <TagLabel
-              size='medium'
-              color={tagInfo?.color}
-              label={tagInfo?.name}
-            />
+            <Badge size='medium' color={tagInfo?.color} label={tagInfo?.name} />
           )}
         </BusyLoaderWrapper>
         <div className='TagDetail__headerContainer__headerActionsBox'>

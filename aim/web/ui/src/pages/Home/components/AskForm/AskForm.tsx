@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField } from '@material-ui/core';
 
-import Button from 'components/Button/Button';
+import { Button } from 'components/kit';
 import { IAskFormProps } from 'types/pages/home/components/AskForm/AskForm';
 
 import avatarImg from 'assets/gevImg.jpeg';

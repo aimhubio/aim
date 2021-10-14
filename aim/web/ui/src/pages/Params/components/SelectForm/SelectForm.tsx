@@ -13,7 +13,6 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
-import Button from 'components/Button/Button';
 
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
@@ -25,8 +24,7 @@ import {
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Badge, Button, Icon } from 'components/kit';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 import './SelectForm.scss';
@@ -220,7 +218,7 @@ function SelectForm({
                     {selectedParamsData?.params?.map(
                       (tag: ISelectParamsOption) => {
                         return (
-                          <TagLabel
+                          <Badge
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}

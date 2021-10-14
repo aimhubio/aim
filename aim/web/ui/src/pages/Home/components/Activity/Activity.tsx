@@ -3,6 +3,7 @@ import { CircularProgress, Grid } from '@material-ui/core';
 
 import HeatMap from 'components/HeatMap/HeatMap';
 import { IActivityProps } from 'types/pages/home/components/Activity/Activity';
+import Text from 'components/kit/Text/Text';
 
 import './Activity.scss';
 
@@ -18,26 +19,34 @@ function Activity({
   return (
     <Grid className='Activity' container spacing={1}>
       <Grid item>
-        <h2>Statistics</h2>
+        <Text component='h2' size={24} weight={600} tint={100}>
+          Statistics
+        </Text>
         <div className='Activity__Statistics__card'>
-          <span>Experiments</span>
-          <strong>
+          <Text size={16} component='span' color='secondary'>
+            Experiments
+          </Text>
+          <Text component='strong' size={36} weight={600} color='secondary'>
             {activityData?.num_experiments || (
               <CircularProgress className='Activity__loader' />
             )}
-          </strong>
+          </Text>
         </div>
         <div className='Activity__Statistics__card'>
-          <span>Runs</span>
-          <strong>
+          <Text size={16} component='span' color='secondary'>
+            Runs
+          </Text>
+          <Text component='strong' size={36} weight={600} color='secondary'>
             {activityData?.num_runs || (
               <CircularProgress className='Activity__loader' />
             )}
-          </strong>
+          </Text>
         </div>
       </Grid>
       <Grid xs item>
-        <h2>Activity</h2>
+        <Text component='h2' size={24} weight={600} tint={100}>
+          Activity
+        </Text>
         <div className='Activity__HeatMap'>
           <HeatMap
             startDate={shiftDate(today, -10 * 30)}

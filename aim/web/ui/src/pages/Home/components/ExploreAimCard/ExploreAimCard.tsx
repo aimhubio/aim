@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import Icon from 'components/Icon/Icon';
+import { Icon, Text } from 'components/kit';
 import { IExploreCard } from '../ExploreAim/ExploreAim';
-import { IconName } from 'types/components/Icon/Icon';
+import { IconName } from 'components/kit/Icon';
 
 import './ExploreAimCard.scss';
 
@@ -18,7 +18,7 @@ function ExploreAimCard({
         <Icon name={`${path}` as IconName} />
       </div>
       <h4 className='ExploreAimCard__title'>{title}</h4>
-      <p className='ExploreAimCard__desc'>{description}</p>
+      <Text className='ExploreAimCard__desc'>{description}</Text>
       <div className='ExploreAimCard__arrow__icon'>
         <Icon name='long-arrow-right' />
       </div>
