@@ -179,7 +179,7 @@ function getConfig(): IMetricAppConfig {
       height: '',
     },
     liveUpdate: {
-      delay: 2000,
+      delay: 7000,
       enabled: false,
     },
   };
@@ -317,13 +317,11 @@ function resetModelOnError(detail?: any) {
     requestIsPending: false,
   });
 
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: [],
+    newColumns: [],
+  });
 }
 
 function exceptionHandler(detail: any) {
@@ -1990,6 +1988,21 @@ function setModelData(
     false,
     configData,
   );
+  const tableColumns = getMetricsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+    configData?.chart?.aggregationConfig.methods,
+    sortFields,
+    onSortChange,
+  );
+  if (!model.getState()?.requestIsPending) {
+    model.getState()?.refs?.tableRef.current?.updateData({
+      newData: tableData.rows,
+      newColumns: tableColumns,
+    });
+  }
   model.setState({
     requestIsPending: false,
     rawData,
@@ -2000,15 +2013,7 @@ function setModelData(
     chartTitleData: getChartTitleData(data),
     aggregatedData: getAggregatedData(data),
     tableData: tableData.rows,
-    tableColumns: getMetricsTableColumns(
-      params,
-      data[0]?.config,
-      configData.table.columnsOrder!,
-      configData.table.hiddenColumns!,
-      configData?.chart?.aggregationConfig.methods,
-      sortFields,
-      onSortChange,
-    ),
+    tableColumns: tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions(params, contexts)],
   });
