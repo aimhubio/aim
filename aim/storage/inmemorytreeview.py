@@ -166,7 +166,7 @@ class InMemoryTreeView(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> TreeArrayView:
-        return TreeArrayView(self.view(path))
+        return TreeArrayView(self.view(path, resolve=False))
 
     def first(
         self,

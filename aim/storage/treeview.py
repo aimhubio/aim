@@ -1,4 +1,4 @@
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.storage.types import AimObject, AimObjectKey, AimObjectPath, CustomObjectBase
 from aim.storage.container import Container
 from aim.storage.arrayview import TreeArrayView
 
@@ -21,7 +21,8 @@ class TreeView:
 
     def view(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
+        path: Union[AimObjectKey, AimObjectPath],
+        resolve: bool = True
     ) -> 'TreeView':
         ...
 
