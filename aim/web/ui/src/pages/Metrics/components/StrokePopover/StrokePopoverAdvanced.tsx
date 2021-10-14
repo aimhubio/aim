@@ -2,9 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
-import Button from 'components/Button/Button';
-import Text from 'components/ui/Text/Text';
-import Switcher from 'components/ui/Switcher/Switcher';
+import { Button, Switcher, Text } from 'components/kit';
 
 import './StrokePopoverAdvanced.scss';
 
@@ -24,7 +22,11 @@ function StrokePopoverAdvanced({
     <Box className='StrokePopoverAdvanced'>
       <div className='StrokePopoverAdvanced__container'>
         <h3 className='subtitle'>Stroke Style persistence</h3>
-        <Text component='p' className='StrokePopoverAdvanced__container__p'>
+        <Text
+          component='p'
+          weight={300}
+          className='StrokePopoverAdvanced__container__p'
+        >
           Enable persistent mode for stroke styles so that each group always has
           the same stroke style regardless to its order
         </Text>

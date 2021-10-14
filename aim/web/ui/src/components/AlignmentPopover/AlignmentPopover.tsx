@@ -4,7 +4,7 @@ import { MenuItem, Select } from '@material-ui/core';
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { DensityOptions } from 'config/enums/densityEnum';
-import Text from 'components/ui/Text/Text';
+import { Text } from 'components/kit';
 
 import './AlignmentPopover.scss';
 

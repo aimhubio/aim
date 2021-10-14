@@ -1,12 +1,12 @@
 import React from 'react';
 import { Chip } from '@material-ui/core';
+import { IBadgeProps } from './Badge.d';
 
-import Icon from '../Icon/Icon';
-import { ITagLabelProps } from 'types/components/TagLabel/TagLabel';
+import { Icon } from '../index';
 
-import './TagLabel.scss';
+import './Badge.scss';
 
-function TagLabel({
+function Badge({
   id,
   label,
   color,
@@ -18,7 +18,7 @@ function TagLabel({
   maxWidth = 'auto',
   style,
   className = '',
-}: ITagLabelProps): React.FunctionComponentElement<React.ReactNode> {
+}: IBadgeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Chip
       id={id}
@@ -30,7 +30,7 @@ function TagLabel({
         ...style,
       }}
       size='small'
-      className={`${className} TagLabel TagLabel${'__' + size}`}
+      className={`Badge Badge${'__' + size} ${className}`}
       variant={variant}
       label={label}
       data-name={label}
@@ -42,4 +42,4 @@ function TagLabel({
   );
 }
 
-export default TagLabel;
+export default Badge;

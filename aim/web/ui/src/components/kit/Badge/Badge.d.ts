@@ -1,7 +1,7 @@
 import React from 'react';
-import { IconName } from '../Icon/Icon';
+import { IconName } from '../Icon/Icon.d';
 
-export interface ITagLabelProps {
+export interface IBadgeProps {
   id?: string;
   label: string;
   color?: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 
 import './ColumnItem.scss';
 

@@ -1,6 +1,6 @@
-import Button from 'components/Button/Button';
 import React from 'react';
-import IToggleButtonProps from 'types/components/ToggleButton/ToggleButton';
+import { Button } from '../index';
+import IToggleButtonProps from './ToggleButton.d';
 
 import './ToggleButton.scss';
 

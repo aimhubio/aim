@@ -11,9 +11,9 @@ import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 // @ts-ignore
 import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
-import Icon from 'components/Icon/Icon';
 import { Tooltip } from '@material-ui/core';
 
+import { Icon } from 'components/kit';
 import './Controls.scss';
 
 function Controls(

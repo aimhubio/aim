@@ -3,7 +3,7 @@ import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 import { ITagSoftDeleteProps } from 'types/pages/tags/Tags';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 
 import './Tags.scss';
 
