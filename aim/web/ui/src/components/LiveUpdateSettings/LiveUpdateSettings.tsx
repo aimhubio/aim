@@ -1,5 +1,5 @@
 import React from 'react';
-import Switcher from 'components/kit/Switcher/Switcher';
+import { Switcher } from 'components/kit';
 
 import './LiveUpdateSettings.scss';
 
