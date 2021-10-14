@@ -13,7 +13,6 @@
    quick_start/3_steps.md
    quick_start/first_run.md
    quick_start/integrations.md
-   quick_start/why_aim.md
 
 
 .. toctree::
