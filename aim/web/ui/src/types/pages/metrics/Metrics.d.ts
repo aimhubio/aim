@@ -31,6 +31,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -47,6 +48,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableColumns: ITableColumn[];
   ignoreOutliers: boolean;
   zoom: IChartZoom;
+  densityType: DensityOptions;
   curveInterpolation: CurveEnum;
   axesScaleType: IAxesScaleState;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
@@ -95,6 +97,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onAlignmentMetricChange: (metric: string) => void;
   onAlignmentTypeChange: (type: XAlignmentEnum) => void;
+  onDensityTypeChange: (type: DensityOptions) => void;
   onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;

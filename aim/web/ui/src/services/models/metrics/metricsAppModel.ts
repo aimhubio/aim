@@ -85,6 +85,7 @@ import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -137,6 +138,7 @@ function getConfig(): IMetricAppConfig {
         metric: '',
         type: AlignmentOptions.STEP,
       },
+      densityType: DensityOptions.Minimum,
       aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
@@ -358,6 +360,7 @@ function getMetricsData(shouldUrlUpdate?: boolean) {
   let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
     q: query,
+    p: configData?.chart?.densityType,
     ...(metric && { x_axis: metric }),
   });
   return {
@@ -1958,6 +1961,24 @@ async function onAlignmentMetricChange(metric: string) {
   );
 }
 
+async function onDensityTypeChange(type: DensityOptions) {
+  const modelState = model.getState();
+  const configData = modelState?.config;
+  if (configData?.chart) {
+    configData.chart = {
+      ...configData.chart,
+      densityType: type,
+    };
+    model.setState({ config: configData });
+  }
+  getMetricsData(true).call();
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set point density to "${DensityOptions[
+      type
+    ].toLowerCase()}"`,
+  );
+}
+
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
@@ -2487,6 +2508,7 @@ const metricAppModel = {
   updateModelData,
   onShuffleChange,
   onSearchQueryCopy,
+  onDensityTypeChange,
   changeLiveUpdateConfig,
 };
 

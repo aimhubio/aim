@@ -92,8 +92,10 @@ function Controls(
             <AlignmentPopover
               projectsDataMetrics={props.projectsDataMetrics}
               alignmentConfig={props.alignmentConfig}
+              densityType={props.densityType}
               onAlignmentMetricChange={props.onAlignmentMetricChange}
               onAlignmentTypeChange={props.onAlignmentTypeChange}
+              onDensityTypeChange={props.onDensityTypeChange}
             />
           }
         />
