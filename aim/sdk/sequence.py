@@ -1,4 +1,5 @@
 from typing import Generic, Union, Tuple, List, TypeVar
+from abc import abstractmethod
 
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
@@ -48,6 +49,11 @@ class Sequence(Generic[T]):
         The base Sequence allows any value, and to indicate that, `allowed_dtypes` returns '*'.
         """
         return '*'
+
+    @classmethod
+    @abstractmethod
+    def sequence_name(cls) -> str:
+        ...
 
     def _calc_hash(self):
         return hash_auto(

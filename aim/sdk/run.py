@@ -370,8 +370,13 @@ class Run(StructuredRunMixin):
             max_idx = len(val_view)
         if max_idx == 0:
             self.meta_tree['traces', ctx.idx, name] = 1
+            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step or max_idx
             self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = get_object_typename(val)
-        self.meta_run_tree['traces', ctx.idx, name, "last"] = val
+        self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
+        self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step or max_idx
+        if isinstance(val, (tuple, list)):
+            record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
+            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = max(record_max_length, len(val))
 
         self.series_counters[ctx, name] = max_idx + 1
 

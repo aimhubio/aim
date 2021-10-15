@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional
+from itertools import chain
 
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.utils import (
@@ -11,6 +12,7 @@ from aim.web.api.runs.utils import (
     metric_search_result_streamer,
     run_search_result_streamer
 )
+from aim.web.api.runs.image_utils import image_search_result_streamer
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
@@ -96,6 +98,44 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
     traces = project.repo.query_metrics(query=query)
 
     streamer = metric_search_result_streamer(traces, steps_num, x_axis)
+    return StreamingResponse(streamer)
+
+
+@runs_router.get('/search/images/',
+                 responses={400: {'model': QuerySyntaxErrorOut}})
+def run_images_search_api(q: Optional[str] = '', record_slice: Optional[str] = '', index_slice: Optional[str] = ''):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    query = q.strip()
+    try:
+        syntax_error_check(query)
+    except SyntaxError as se:
+        raise HTTPException(status_code=400, detail={
+            "name": "SyntaxError",
+            "statement": se.text,
+            "line": se.lineno,
+            "offset": se.offset
+        })
+
+    traces = project.repo.query_images(query=query)
+
+    def _str_to_slice(slice_str: str):
+        defaults = [None, None, None]
+        slice_values = chain(slice_str.strip().split(':'), defaults)
+
+        start, stop, step, *_ = map(lambda x: int(x) if x else None, slice_values)
+        return slice(start, stop, step)
+
+    try:
+        rec_slice = _str_to_slice(record_slice)
+        idx_slice = _str_to_slice(index_slice)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid slice format')
+
+    streamer = image_search_result_streamer(traces, rec_slice, idx_slice)
     return StreamingResponse(streamer)
 
 

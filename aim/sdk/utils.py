@@ -3,6 +3,7 @@ import pathlib
 import uuid
 from typing import Union
 
+from aim.storage.object import CustomObject
 
 def search_aim_repo(path):
     found = False
@@ -56,5 +57,6 @@ def get_object_typename(obj) -> str:
             return 'list'
         element_typename = get_object_typename(obj[0])
         return f'list({element_typename})'
-    # TODO [AT]: add Aim Custom object typename
-    return ''
+    if isinstance(obj, CustomObject):
+        return obj.get_typename()
+    return 'unknown'
