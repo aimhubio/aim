@@ -23,7 +23,11 @@ class CustomObject(CustomObjectBase):
     def by_name(name: str):
         return CustomObject.registry[name]
 
-    def __new__(cls, *args, _storage = None, **kwargs):
+    @classmethod
+    def get_typename(cls):
+        return cls.AIM_NAME
+
+    def __new__(cls, *args, _storage=None, **kwargs):
         obj = super().__new__(cls)
 
         if _storage is None:
