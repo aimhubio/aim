@@ -66,6 +66,7 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'uvicorn>=0.12.0',
+    'Pillow>=8.1.0',
 ]
 
 
