@@ -3,7 +3,7 @@ import { Button, Divider, InputBase } from '@material-ui/core';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import ColumnItem from './ColumnItem/ColumnItem';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 
 import './ManageColumnsPopover.scss';
 

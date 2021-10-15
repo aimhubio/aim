@@ -6,9 +6,8 @@ import classNames from 'classnames';
 import { MenuItem, Tooltip } from '@material-ui/core';
 
 import Cell from './TableCell';
-import Icon from 'components/Icon/Icon';
 import ControlPopover from '../ControlPopover/ControlPopover';
-import Button from 'components/Button/Button';
+import { Button, Icon } from 'components/kit';
 
 function Column({
   topHeader,
