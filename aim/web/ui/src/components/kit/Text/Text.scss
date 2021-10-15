@@ -2,32 +2,32 @@
 
 .Text {
   &__size {
-    &_1 {
+    &_36 {
       font-size: $text-xxxl;
     }
 
-    &_2 {
+    &_24 {
       font-size: $text-xxl;
     }
 
-    &_3 {
+    &_18 {
       font-size: $text-xl;
     }
 
-    &_4 {
+    &_16 {
       font-size: $text-lg;
     }
 
-    &_5 {
+    &_14 {
       font-size: $text-md;
     }
-    &_6 {
+    &_12 {
       font-size: $text-sm;
     }
-    &_7 {
+    &_11 {
       font-size: $text-xs;
     }
-    &_8 {
+    &_10 {
       font-size: $text-xxs;
     }
   }
@@ -88,6 +88,7 @@
       }
     }
     &_secondary {
+      color: #fff;
       &_100 {
         color: $pico;
       }

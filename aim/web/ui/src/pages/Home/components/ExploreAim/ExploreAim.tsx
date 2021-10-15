@@ -3,7 +3,7 @@ import React from 'react';
 import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
 import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
-import Icon from 'components/Icon/Icon';
+import { Icon, Text } from 'components/kit';
 
 import './ExploreAim.scss';
 
@@ -46,7 +46,9 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='ExploreAim'>
       <div>
-        <h2>Get Involved</h2>
+        <Text component='h2' tint={100} weight={600} size={24}>
+          Get Involved
+        </Text>
         <div className='ExploreAim__social'>
           <a
             target='_blank'
@@ -55,7 +57,9 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
             className='ExploreAim__social__item'
           >
             <img src={slackIcon} alt='slack' />
-            <span>Join Aim slack community</span>
+            <Text component='span' tint={100} size={16} weight={400}>
+              Join Aim slack community
+            </Text>
             <Icon name='arrow-right' />
           </a>
           <a
@@ -65,15 +69,17 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
             className='ExploreAim__social__item'
           >
             <img src={githubIcon} alt='github' />
-            <span>
+            <Text component='span' tint={100} size={16} weight={400}>
               Create an issue <br /> or report a bug to help us improve
-            </span>
+            </Text>
             <Icon name='arrow-right' />
           </a>
         </div>
       </div>
       <div className='ExploreAim__block__item'>
-        <h2>Explore Aim</h2>
+        <Text component='h2' tint={100} weight={600} size={24}>
+          Explore Aim
+        </Text>
         <div className='ExploreAim__card__container'>
           {cardsData.map((item: IExploreCard) => (
             <ExploreAimCard key={item.path} {...item} />
