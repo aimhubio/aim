@@ -11,11 +11,9 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import COLORS from 'config/colors/colors';
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Button, Icon, Badge } from 'components/kit';
 import { PathEnum } from 'config/enums/routesEnum';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -225,13 +223,13 @@ function metricsTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <TagLabel
+              <Badge
                 size='small'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
-              <TagLabel
+              <Badge
                 size='small'
                 color={COLORS[0][0]}
                 label={rowData.context}
@@ -265,7 +263,7 @@ function metricsTableRowRenderer(
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
-            <TagLabel
+            <Badge
               size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
@@ -292,7 +290,7 @@ function metricsTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <TagLabel key={item} size='small' color={COLORS[0][0]} label={item} />
+          <Badge key={item} size='small' color={COLORS[0][0]} label={item} />
         )),
       },
       value: rowData.value,

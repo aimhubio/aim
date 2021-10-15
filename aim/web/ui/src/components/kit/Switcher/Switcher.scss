@@ -8,10 +8,13 @@
   position: relative;
   user-select: none;
   border: none;
+
   &__circle {
-    transition: all 0.18s ease-out;
+    border-radius: 0.625rem;
+    background-color: #fff;
+    transition: all 0.1s linear;
     position: absolute;
-    transform: translateX(-100%) translateX(-2px);
+    left: 2px;
     top: 0.125rem;
   }
 
@@ -37,6 +40,7 @@
     .Switcher__leftLabel {
       transform: scale(1);
     }
+
     .Switcher__rightLabel {
       transform: scale(0);
     }
@@ -44,6 +48,7 @@
 
   &__primary {
     background-color: $pico-50;
+
     &.Switcher__checked {
       background-color: $primary-color;
     }
@@ -51,21 +56,32 @@
 
   &__secondary {
     background-color: $pico-50;
+
     &.Switcher__checked {
       background-color: $pico;
     }
   }
+
   &__small {
     height: 0.8125rem;
     width: 1.5rem;
     font-size: 0.5rem;
     .Switcher__circle {
-      font-size: 0.5rem;
-      line-height: 0.5rem;
-      top: 3px;
-      //   transform: translateX(-100%) translateX(10px);
+      width: 0.5625rem;
+      border-radius: 0.5rem;
+      height: 0.5625rem;
+      line-height: 0.5625rem;
+      top: 2px;
       &__checked {
-        transform: translateX(100%) translateX(-6px);
+        left: calc(100% - 11px);
+      }
+    }
+    &:hover {
+      .Switcher__circle {
+        width: 0.675rem;
+        &__checked {
+          left: calc(100% - 13px);
+        }
       }
     }
     .Switcher__leftLabel,
@@ -82,12 +98,22 @@
   &__medium {
     height: 1rem;
     width: 2rem;
-    font-size: 8px;
     line-height: 8px;
+
     .Switcher__circle {
       font-size: 0.75rem;
+      width: 0.75rem;
+      height: 0.75rem;
       &__checked {
-        transform: translateX(100%) translateX(-10px);
+        left: calc(100% - 14px);
+      }
+    }
+    &:hover {
+      .Switcher__circle {
+        width: 0.9375rem;
+        &__checked {
+          left: calc(100% - 17px);
+        }
       }
     }
   }
@@ -97,13 +123,23 @@
     width: 2.5rem;
     font-size: 10px;
     line-height: 10px;
+
     .Switcher__circle {
-      transform: translateX(-100%) translateX(-1px);
-      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
       &__checked {
-        transform: translateX(100%) translateX(-14px);
+       left: calc(100% - 18px);
       }
     }
+    &:hover {
+      .Switcher__circle {
+        width: 1.25rem;
+        &__checked {
+          left: calc(100% - 22px);
+        }
+      }
+    }
+
     .Switcher__leftLabel,
     .Switcher__rightLabel {
       font-size: 10px;
@@ -119,45 +155,27 @@
     border: 0.0625rem solid $pico-50;
     background-color: #fff;
     color: $pico-50;
+
     &.Switcher__primary {
       &.Switcher__small {
         .Switcher__rightLabel {
           top: 2px;
           right: 2px;
         }
+
         .Switcher__leftLabel {
           top: 2px;
           left: 2px;
         }
-        .Switcher__circle {
-          top: 2px;
-          transform: translateX(-100%) translateX(-1px);
-          &__checked {
-            transform: translateX(100%) translateX(-7px);
-          }
-        }
       }
-      &.Switcher__medium {
-        .Switcher__circle {
-          transform: translateX(-100%) translateX(-1px);
-          &__checked {
-            transform: translateX(100%) translateX(-11px);
-          }
-        }
-      }
-      &.Switcher__large {
-        .Switcher__circle {
-          transform: translateX(-100%) translateX(-1px);
-          &__checked {
-            transform: translateX(100%) translateX(-15px);
-          }
-        }
-      }
+
       .Switcher__circle {
         color: $pico-50;
+        background-color: $pico-50;
         top: 1px;
         &__checked {
           color: $primary-color;
+          background-color: $primary-color;
         }
       }
 

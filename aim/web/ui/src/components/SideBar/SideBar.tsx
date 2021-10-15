@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom';
 import routes, { IRoute } from 'routes/routes';
 import { Drawer } from '@material-ui/core';
 
-import { IconName } from 'types/components/Icon/Icon';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 import { PathEnum } from 'config/enums/routesEnum';
+import { IconName } from 'components/kit/Icon';
 
 import logoImg from 'assets/logo.svg';
 

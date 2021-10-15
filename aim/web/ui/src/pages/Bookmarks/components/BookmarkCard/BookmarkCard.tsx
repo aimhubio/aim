@@ -3,12 +3,10 @@ import { NavLink } from 'react-router-dom';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import Icon from 'components/Icon/Icon';
+import { Button, Icon, Badge } from 'components/kit';
 
-import Button from 'components/Button/Button';
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
-import TagLabel from 'components/TagLabel/TagLabel';
 import * as analytics from 'services/analytics';
 
 import './BookmarkCard.scss';
@@ -86,7 +84,7 @@ function BookmarkCard({
               {tags.map((tag, index) => {
                 let color = COLORS[0][index % COLORS[0].length];
                 return (
-                  <TagLabel key={tag.label} label={tag.label} color={color} />
+                  <Badge key={tag.label} label={tag.label} color={color} />
                 );
               })}
             </div>

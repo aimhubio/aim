@@ -5,7 +5,7 @@ You only need these three steps to get started with Aim
 1. Install Aim v3.x:
 
 ```shell
-pip install aim>=3.0.0
+pip3 install aim==3.0.0b6
 ```
 
 2. Simple integration with your training code:

@@ -1,5 +1,5 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
@@ -943,9 +943,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
   }
@@ -1023,7 +1023,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
   }
 }

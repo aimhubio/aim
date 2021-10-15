@@ -13,11 +13,10 @@ import BookmarkForm from '../BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
+import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
+import { Button, Icon } from 'components/kit';
 
 import './MetricsBar.scss';
-import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 
 function MetricsBar({
   onBookmarkCreate,

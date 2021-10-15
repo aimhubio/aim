@@ -1,5 +1,4 @@
 import React from 'react';
-import Icon from 'components/Icon/Icon';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';

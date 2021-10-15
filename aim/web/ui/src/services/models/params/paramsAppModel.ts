@@ -1,17 +1,17 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
-import { encode, decode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import COLORS from 'config/colors/colors';
@@ -24,23 +24,23 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
-  IGroupingSelectOption,
   GroupNameType,
   IAppData,
+  IChartTitle,
+  IChartTitleData,
+  IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricsCollection,
+  IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
-  IChartTooltip,
-  IChartTitle,
-  IChartTitleData,
-  IMetricTableRowData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IParam,
   IParamsAppConfig,
@@ -305,11 +305,13 @@ function setDefaultAppConfigData() {
   });
 }
 
-function getParamsData() {
+function getParamsData(shouldUrlUpdate?: boolean) {
   return {
     call: async () => {
+      if (shouldUrlUpdate) {
+        updateURL();
+      }
       liveUpdateInstance?.stop().then();
-
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
@@ -604,7 +606,7 @@ function getDataAsLines(
         data: groupedByChartIndex[i],
       };
     })
-    .filter((data) => !isEmpty(data.data) && !isEmpty(data.dimensions));
+    .filter((data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions));
 }
 
 function getGroupConfig(
@@ -929,8 +931,6 @@ function onParamsSelectChange(data: any[]) {
       select: { ...configData.select, params: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -944,8 +944,6 @@ function onSelectRunQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, query },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
@@ -1537,7 +1535,7 @@ function onSortFieldsChange(sortFields: [string, any][]) {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1599,7 +1597,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[ParamsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[ParamsExplorer][Table] Show all table columns');
   }
 }
@@ -1622,9 +1620,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(configUpdate);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
   }
@@ -1727,7 +1725,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
