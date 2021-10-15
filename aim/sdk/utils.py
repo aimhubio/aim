@@ -5,6 +5,7 @@ from typing import Union
 
 from aim.storage.object import CustomObject
 
+
 def search_aim_repo(path):
     found = False
     path = os.path.abspath(path)
