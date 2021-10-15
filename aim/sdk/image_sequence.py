@@ -15,10 +15,10 @@ class Images(Sequence):
         return 'images'
 
     def first_step(self):
-        return self.run.meta_run_tree['traces', self.context.idx, self.name, 'first_step']
+        return self._meta_tree['first_step']
 
     def last_step(self):
-        return self.run.meta_run_tree['traces', self.context.idx, self.name, 'last_step']
+        return self._meta_tree['last_step']
 
     def record_length(self):
-        return self.run.meta_run_tree['traces', self.context.idx, self.name, 'record_max_length']
+        return self._meta_tree['record_max_length']

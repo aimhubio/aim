@@ -93,6 +93,7 @@ class Sequence(Generic[T]):
 
         if max_idx == 0:
             self._meta_tree['first_step'] = step
+            # TODO [AT] check sequence is homogenious & handle empty list case
             self._meta_tree['dtype'] = get_object_typename(val)
 
         self._meta_tree['last'] = val
