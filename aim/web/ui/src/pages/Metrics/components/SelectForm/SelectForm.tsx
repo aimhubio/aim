@@ -96,33 +96,53 @@ function SelectForm({
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
+    const systemOptions = [];
+    const ddd: any = {
+      __system__gpu_memory_percent: [
+        {
+          gpu: '1',
+        },
+      ],
+      __system__gpu_power_watts: [
+        {
+          gpu: '0',
+        },
+      ],
+      ...projectsData?.metrics,
+    };
+
     let index: number = 0;
     if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        data.push({
-          label: key,
-          group: key,
-          color: COLORS[0][index % COLORS[0].length],
-          value: {
-            metric_name: key,
-            context: null,
-          },
-        });
-        index++;
+      for (let key in ddd) {
+        console.log(key.split('__'));
+        if (key.split('__')[1] === 'system') {
+          systemOptions.push({});
+        } else {
+          data.push({
+            label: key,
+            group: key,
+            color: COLORS[0][index % COLORS[0].length],
+            value: {
+              metric_name: key,
+              context: null,
+            },
+          });
+          index++;
 
-        for (let val of projectsData.metrics[key]) {
-          if (!isEmpty(val)) {
-            let label = contextToString(val);
-            data.push({
-              label: `${key} ${label}`,
-              group: key,
-              color: COLORS[0][index % COLORS[0].length],
-              value: {
-                metric_name: key,
-                context: val,
-              },
-            });
-            index++;
+          for (let val of ddd[key]) {
+            if (!isEmpty(val)) {
+              let label = contextToString(val);
+              data.push({
+                label: `${key} ${label}`,
+                group: key,
+                color: COLORS[0][index % COLORS[0].length],
+                value: {
+                  metric_name: key,
+                  context: val,
+                },
+              });
+              index++;
+            }
           }
         }
       }
