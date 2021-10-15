@@ -80,7 +80,7 @@ function AlignmentPopover({
       <div className='AlignmentPopover__container__densityOptions AlignmentPopover__container__options'>
         <Text
           component='p'
-          size={6}
+          size={12}
           color='primary'
           tint={50}
           className='AlignmentPopover__container__options__title'
@@ -101,7 +101,7 @@ function AlignmentPopover({
       <div className='AlignmentPopover__container__options'>
         <Text
           component='p'
-          size={6}
+          size={12}
           color='primary'
           tint={50}
           className='AlignmentPopover__container__options__title'
@@ -122,7 +122,7 @@ function AlignmentPopover({
       <div className='AlignmentPopover__container__selectContainer AlignmentPopover__container__options'>
         <Text
           component='p'
-          size={6}
+          size={12}
           color='primary'
           tint={50}
           className='AlignmentPopover__container__options__title'
