@@ -89,7 +89,7 @@ def is_number(value):
     return False
 
 
-def convert_to_py_number(value):
+def convert_to_py_number(value) -> object:
     """
     Converts numpy objects or tensors to python number types
     """
@@ -102,4 +102,4 @@ def convert_to_py_number(value):
     if is_pytorch_tensor(value):
         return value.item()
 
-    return value
+    raise ValueError('not a number')
