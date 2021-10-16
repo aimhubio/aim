@@ -1,25 +1,25 @@
 .ImagesPanel {
-  width: calc(100vw - 75px);
+  width: calc(100vw - 4.6875rem);
   &__slidersContainer {
     display: flex;
-    padding: 40px 20px 10px;
+    padding: 2.5rem 1.25rem 0.625rem;
     justify-content: space-around;
     &__sliderContainer {
       display: flex;
       align-items: center;
       &__intervalField {
-        width: 80px;
+        width: 5rem;
         height: auto;
       }
       &__title {
-        margin-right: 20px;
+        margin-right: 1.25rem;
         font-size: 0.825rem;
         font-weight: bold;
-        padding-bottom: 5px;
+        padding-bottom: 0.3125;
       }
       &__sliderBox {
-        width: 160px;
-        margin-right: 20px;
+        width: 16rem;
+        margin-right: 1.25rem;
       }
     }
   }

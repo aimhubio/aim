@@ -80,7 +80,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       }
     }
   }, [location.search]);
-  console.log(imagesExploreData);
 
   return (
     <div className='ImagesExplore__container' ref={wrapperElemRef}>
@@ -149,6 +148,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               }
               onStepIntervalChange={imagesExploreAppModel.onStepIntervalChange}
               imagesData={imagesExploreData?.imagesData}
+              isLoading={imagesExploreData?.requestIsPending}
             />
           </div>
           <ResizePanel

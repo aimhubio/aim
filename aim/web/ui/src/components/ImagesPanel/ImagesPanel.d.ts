@@ -16,4 +16,5 @@ export interface IImagesPanelProps {
   ) => void;
   onStepIntervalChange: (event: ChangeEvent<{ value: number }>) => void;
   onIndexIntervalChange: (event: ChangeEvent<{ value: number }>) => void;
+  isLoading: boolean;
 }

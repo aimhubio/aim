@@ -25,12 +25,12 @@ import {
   ISelectMetricsOption,
   ISelectFormProps,
 } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
+import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import Icon from 'components/Icon/Icon';
 import TagLabel from 'components/TagLabel/TagLabel';
 import Button from 'components/Button/Button';
 
 import './SelectForm.scss';
-import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 function SelectForm({
   selectedMetricsData,
