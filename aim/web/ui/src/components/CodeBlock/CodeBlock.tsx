@@ -1,5 +1,5 @@
 import React from 'react';
-// import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
+// import AssignmentTurnedInOutlinedIcon from '@material-kit/icons/AssignmentTurnedInOutlined';
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/nightOwlLight';
 

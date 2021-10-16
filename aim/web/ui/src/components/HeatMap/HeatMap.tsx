@@ -2,11 +2,12 @@ import React from 'react';
 
 // import { classNames } from '../../utils';
 import { Tooltip } from '@material-ui/core';
-
-import './HeatMapStyle.scss';
 import { useHistory } from 'react-router-dom';
 import { encode } from 'utils/encoder/encoder';
 import * as analytics from 'services/analytics';
+import { Text } from 'components/kit';
+
+import './HeatMapStyle.scss';
 
 const cellScales: number[] = [0, 1, 2, 3, 4];
 function HeatMap({
@@ -199,7 +200,7 @@ function HeatMap({
         </div>
       </div>
       <div className='CalendarHeatmap__cell__info'>
-        <span>Less</span>
+        <Text size={10}>Less</Text>
         {cellScales.map((scale) => (
           <div
             key={scale}
@@ -212,7 +213,7 @@ function HeatMap({
           </div>
         ))}
 
-        <span>More</span>
+        <Text size={10}>More</Text>
       </div>
     </div>
   );

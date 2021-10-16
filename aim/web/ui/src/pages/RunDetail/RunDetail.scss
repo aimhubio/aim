@@ -10,10 +10,14 @@
       color: $text-color;
       &__pageName {
         margin-right: 0.4375em;
-        color: tint($text-color, 30);
+        color: $pico-70;
+        text-transform: capitalize;
       }
       &__runHash {
         margin-left: 0.4375em;
+        text-transform: lowercase;
+        font-family: 'Inter SemiBold', sans-serif;
+        color: $pico;
       }
     }
     &__headerContainer {
@@ -30,7 +34,8 @@
         justify-content: space-between;
         &__experimentName {
           font-size: $text-md;
-          font-weight: 600;
+          font-family: 'Inter SemiBold', sans-serif;
+          color: $pico;
         }
         &__experimentDate {
           font-size: $text-sm;
@@ -60,7 +65,7 @@
       }
       .MuiTabs-flexContainer {
         .MuiTab-textColorPrimary {
-          color: tint($pico, 20);
+          color: $pico-80;
           font-size: $text-md;
           font-weight: 500;
           text-transform: unset;
@@ -75,7 +80,7 @@
           }
           &.Mui-selected {
             color: $pico;
-            font-weight: 600;
+            font-family: 'Inter SemiBold', sans-serif;
             position: relative;
             border-right: none;
             &::before {
@@ -123,7 +128,7 @@
 .RunDetailParamsTab {
   padding: 1.5rem;
   margin: 0.75rem;
-  border: 0.0625rem solid tint($cuddle, 50);
+  border: 0.0625rem solid $cuddle-50;
   border-radius: 0.5rem;
   height: 100%;
 }
@@ -137,7 +142,7 @@
     align-items: stretch;
     height: 100%;
     &__chartContainer {
-      border: 0.0625rem solid tint($cuddle, 50);
+      border: 0.0625rem solid $cuddle-50;
       border-radius: 0.5rem;
       margin: 0.75rem;
       width: calc(50% - 24px);
@@ -149,19 +154,24 @@
         }
       }
       &__metricDetailBox {
-        border-top: 0.0625rem solid tint($cuddle, 50);
+        border-top: 0.0625rem solid $cuddle-50;
         padding: 1rem 1.5rem 1.5rem;
         &__title {
-          font-weight: 500;
           font-size: 0.625rem;
+          color: $pico;
         }
         &__metricName {
           margin: $space-xs 0;
-          font-weight: 600;
           font-size: 1.125rem;
+          font-family: 'Inter SemiBold', sans-serif;
+          color: $pico;
         }
         .SelectForm__tags__item {
           margin-top: 0.5rem;
+        }
+        .Badge {
+          margin-right: $space-xxs;
+          margin-bottom: $space-xxs;
         }
       }
     }
@@ -170,7 +180,7 @@
 
 .RunDetailSettingsTab {
   padding: 1.5rem;
-  border: 0.0625rem solid tint($cuddle, 50);
+  border: 0.0625rem solid $cuddle-50;
   border-radius: 0.5rem;
   height: 5.25rem;
   margin: 0 10.25rem;
@@ -178,7 +188,7 @@
   align-items: center;
   justify-content: space-between;
   &__buttonUnarchive {
-    background: tint($pico, 50);
+    background: $pico-50;
     color: white;
   }
   &__infoBox {

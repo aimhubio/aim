@@ -1,8 +1,8 @@
 import React from 'react';
-
-import _, { isEmpty, isNil, debounce } from 'lodash-es';
+import _ from 'lodash-es';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+
 import COLORS from 'config/colors/colors';
 import metricsService from 'services/api/metrics/metricsService';
 import createModel from '../model';
@@ -84,11 +84,16 @@ import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
+  config: getConfig(),
 });
 let tooltipData: ITooltipData = {};
+
+let liveUpdateInstance: LiveUpdateService | null;
 
 function getConfig(): IMetricAppConfig {
   return {
@@ -133,6 +138,7 @@ function getConfig(): IMetricAppConfig {
         metric: '',
         type: AlignmentOptions.STEP,
       },
+      densityType: DensityOptions.Minimum,
       aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
@@ -174,6 +180,10 @@ function getConfig(): IMetricAppConfig {
       },
       height: '',
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -194,6 +204,23 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+
+  const liveUpdateState = model.getState()?.config?.liveUpdate;
+
+  if (liveUpdateState?.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'metrics',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
+}
+
+function updateData(newData: any) {
+  const configData = model.getState()?.config;
+  if (configData) {
+    setModelData(newData, configData);
+  }
 }
 
 function setDefaultAppConfigData() {
@@ -208,11 +235,18 @@ function setDefaultAppConfigData() {
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('metricsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -313,16 +347,20 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
-function getMetricsData() {
+function getMetricsData(shouldUrlUpdate?: boolean) {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
   const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
+  if (shouldUrlUpdate) {
+    updateURL();
+  }
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
     q: query,
+    p: configData?.chart?.densityType,
     ...(metric && { x_axis: metric }),
   });
   return {
@@ -344,11 +382,17 @@ function getMetricsData() {
           requestIsPending: true,
           queryIsEmpty: false,
         });
+        liveUpdateInstance?.stop().then();
+
         const stream = await metricsRequestRef.call(exceptionHandler);
         const runData = await getRunData(stream);
-        if (configData) {
-          setModelData(runData, configData);
-        }
+
+        updateData(runData);
+
+        liveUpdateInstance?.start({
+          q: query,
+          ...(metric && { x_axis: metric }),
+        });
       }
     },
     abort: metricsRequestRef.abort,
@@ -495,12 +539,12 @@ function processData(data: IRun<IMetricTrace>[]): {
           axesScaleType: configData?.chart?.axesScaleType,
         });
 
-        let yValues = values;
+        let processedValues = values;
         if (
           configData?.chart.smoothingAlgorithm &&
           configData.chart.smoothingFactor
         ) {
-          yValues = getSmoothenedData({
+          processedValues = getSmoothenedData({
             smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
             smoothingFactor: configData.chart.smoothingFactor,
             data: values,
@@ -519,14 +563,14 @@ function processData(data: IRun<IMetricTrace>[]): {
           color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
           isHidden: configData!.table.hiddenMetrics!.includes(metricKey),
           data: {
-            values,
+            values: processedValues,
             steps,
             epochs,
             timestamps: timestamps.map((timestamp) =>
               Math.round(timestamp * 1000),
             ),
             xValues: steps,
-            yValues,
+            yValues: processedValues,
           },
         } as IMetric);
       }),
@@ -593,7 +637,7 @@ function getGroupingPersistIndex({
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
-        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
+        (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
       );
     }
   }
@@ -978,27 +1022,15 @@ function getAggregatedData(
 
 function getDataAsLines(
   processedData: IMetricsCollection<IMetric>[],
-  configData: IMetricAppConfig | any = model.getState()?.config,
 ): ILine[][] {
   if (!processedData) {
     return [];
   }
-  const { smoothingAlgorithm, smoothingFactor } = configData?.chart;
   const lines = processedData
     .map((metricsCollection: IMetricsCollection<IMetric>) =>
       metricsCollection.data
         .filter((metric) => !metric.isHidden)
         .map((metric: IMetric) => {
-          let yValues;
-          if (smoothingAlgorithm && smoothingFactor) {
-            yValues = getSmoothenedData({
-              smoothingAlgorithm,
-              smoothingFactor,
-              data: metric.data.yValues,
-            });
-          } else {
-            yValues = metric.data.yValues;
-          }
           return {
             ...metric,
             groupKey: metricsCollection.key,
@@ -1008,7 +1040,7 @@ function getDataAsLines(
             selectors: [metric.key, metric.key, metric.run.hash],
             data: {
               xValues: metric.data.xValues,
-              yValues,
+              yValues: metric.data.yValues,
             },
           };
         }),
@@ -1333,7 +1365,7 @@ function onZoomChange(zoom: Partial<IChartZoom>): void {
     });
     updateURL(configData);
   }
-  if (!isNil(zoom.mode)) {
+  if (!_.isNil(zoom.mode)) {
     analytics.trackEvent(
       `[MetricsExplorer][Chart] Set zoom mode to "${
         zoom.mode === 0 ? 'single' : 'multiple'
@@ -1632,7 +1664,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
 }
 
-const onActivePointChange = debounce(
+const onActivePointChange = _.debounce(
   (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
     const { data, params, refs, config } =
       model.getState() as IMetricAppModelState;
@@ -1827,16 +1859,13 @@ function updateURL(configData = model.getState()!.config!) {
     ['grouping', 'chart', 'select'],
     [encode(grouping), encode(chart), encode(select)],
   );
-
   if (url === `${window.location.pathname}${window.location.search}`) {
     return;
   }
-
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
     setItem('metricsUrl', url);
   }
-
   window.history.pushState(null, '', url);
 }
 
@@ -1932,6 +1961,24 @@ async function onAlignmentMetricChange(metric: string) {
   );
 }
 
+async function onDensityTypeChange(type: DensityOptions) {
+  const modelState = model.getState();
+  const configData = modelState?.config;
+  if (configData?.chart) {
+    configData.chart = {
+      ...configData.chart,
+      densityType: type,
+    };
+    model.setState({ config: configData });
+  }
+  getMetricsData(true).call();
+  analytics.trackEvent(
+    `[MetricsExplorer][Chart] Set point density to "${DensityOptions[
+      type
+    ].toLowerCase()}"`,
+  );
+}
+
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
@@ -2017,8 +2064,6 @@ function onMetricsSelectChange(data: ISelectMetricsOption[]) {
       select: { ...configData.select, metrics: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2033,8 +2078,6 @@ function onSelectRunQueryChange(query: string) {
       select: { ...configData.select, query },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2048,9 +2091,6 @@ function onSelectAdvancedQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
     };
-
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -2059,16 +2099,21 @@ function onSelectAdvancedQueryChange(query: string) {
 
 function toggleSelectAdvancedMode() {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+  let query = configData?.select.advancedQuery
+    ? configData.select.advancedQuery
+    : getQueryStringFromSelect(configData?.select);
+  if (query === '()') {
+    query = '';
+  }
   if (configData?.select) {
     const newConfig = {
       ...configData,
       select: {
         ...configData.select,
+        advancedQuery: query,
         advancedMode: !configData.select.advancedMode,
       },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
@@ -2188,7 +2233,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[MetricsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[MetricsExplorer][Table] Show all table columns');
   }
 }
@@ -2220,9 +2265,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
   }
@@ -2288,7 +2333,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -2370,8 +2415,50 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const liveUpdateConfig = configData?.liveUpdate;
+  const metric = configData?.chart.alignmentConfig.metric;
+  let query = getQueryStringFromSelect(configData?.select);
+
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+    liveUpdateInstance = new LiveUpdateService(
+      'metrics',
+      updateData,
+      config.delay || liveUpdateConfig?.delay,
+    );
+    liveUpdateInstance?.start({
+      q: query,
+      ...(metric && { x_axis: metric }),
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    config: {
+      ...configData,
+      // @ts-ignore
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+  setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
+}
+
 const metricAppModel = {
   ...model,
+  destroy,
   initialize,
   getMetricsData,
   getAppConfigData,
@@ -2421,6 +2508,8 @@ const metricAppModel = {
   updateModelData,
   onShuffleChange,
   onSearchQueryCopy,
+  onDensityTypeChange,
+  changeLiveUpdateConfig,
 };
 
 export default metricAppModel;

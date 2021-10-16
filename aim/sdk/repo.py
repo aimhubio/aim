@@ -13,7 +13,8 @@ from aim.ext.task_queue.queue import TaskQueue
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
-from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
+from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
+from aim.sdk.metric import Metric
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -280,7 +281,7 @@ class Repo:
         else:
             return Run(hashname, repo=self, read_only=True)
 
-    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunMetricCollection:
+    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunSequenceCollection:
         """Get runs satisfying query expression.
 
         Args:
@@ -296,7 +297,7 @@ class Repo:
         db.invalidate_cache(cache_name)
         db.init_cache(cache_name, db.runs, lambda run: run.hashname)
         self.run_props_cache_hint = cache_name
-        return QueryRunMetricCollection(self, query, paginated, offset)
+        return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
 
     @property
     def run_props_cache_hint(self):
@@ -306,7 +307,7 @@ class Repo:
     def run_props_cache_hint(self, cache: str):
         self._run_props_cache_hint = cache
 
-    def query_metrics(self, query: str = '') -> QueryMetricCollection:
+    def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
 
         Args:
@@ -319,7 +320,8 @@ class Repo:
         db.invalidate_cache(cache_name)
         db.init_cache(cache_name, db.runs, lambda run: run.hashname)
         self.run_props_cache_hint = cache_name
-        return QueryMetricCollection(repo=self, query=query)
+
+        return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
 
     def _get_meta_tree(self):
         return self.request(

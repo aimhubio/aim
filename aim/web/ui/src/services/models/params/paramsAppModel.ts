@@ -1,17 +1,17 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
-import { encode, decode } from 'utils/encoder/encoder';
+import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import contextToString from 'utils/contextToString';
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import COLORS from 'config/colors/colors';
@@ -24,23 +24,23 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
-  IGroupingSelectOption,
   GroupNameType,
   IAppData,
+  IChartTitle,
+  IChartTitleData,
+  IChartTooltip,
   IDashboardData,
   IGetGroupingPersistIndex,
+  IGroupingSelectOption,
   IMetricAppConfig,
   IMetricsCollection,
+  IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   ITooltipData,
-  IChartTooltip,
-  IChartTitle,
-  IChartTitleData,
-  IMetricTableRowData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IRun, IParamTrace } from 'types/services/models/metrics/runModel';
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IParam,
   IParamsAppConfig,
@@ -62,14 +62,22 @@ import { formatValue } from 'utils/formatValue';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+
 // TODO need to implement state type
-const model = createModel<Partial<any>>({ isParamsLoading: null });
+const model = createModel<Partial<any>>({
+  isParamsLoading: null,
+  config: getConfig(),
+});
+
 let tooltipData: ITooltipData = {};
 
 let appRequestRef: {
   call: () => Promise<IAppData>;
   abort: () => void;
 };
+
+let liveUpdateInstance: LiveUpdateService | null;
 
 function getConfig() {
   return {
@@ -132,6 +140,10 @@ function getConfig() {
         right: [],
       },
     },
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -152,7 +164,59 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+
+  const liveUpdateState = model.getState()?.config.liveUpdate;
+
+  if (liveUpdateState?.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
 }
+
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
+
+  const configData = model.getState()?.config;
+  if (configData) {
+    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
+  }
+
+  const tableData = getDataAsTableRows(
+    data,
+    metricsColumns,
+    params,
+    false,
+    configData,
+  );
+  const sortFields = model.getState()?.config?.table.sortFields;
+
+  model.setState({
+    data,
+    highPlotData: getDataAsLines(data),
+    chartTitleData: getChartTitleData(data),
+    params,
+    metricsColumns,
+    rawData: newData,
+    config: configData,
+    tableData: tableData.rows,
+    tableColumns: getParamsTableColumns(
+      metricsColumns,
+      params,
+      data[0]?.config,
+      configData.table.columnsOrder!,
+      configData.table.hiddenColumns!,
+      sortFields,
+      onSortChange,
+    ),
+    sameValueColumns: tableData.sameValueColumns,
+    isParamsLoading: false,
+    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+  });
+}
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],
@@ -217,15 +281,23 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+
   const tableConfigHash = getItem('paramsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('paramsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IParamsAppConfig | any = _.merge(getConfig(), {
     chart,
     grouping,
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -233,9 +305,13 @@ function setDefaultAppConfigData() {
   });
 }
 
-function getParamsData() {
+function getParamsData(shouldUrlUpdate?: boolean) {
   return {
     call: async () => {
+      if (shouldUrlUpdate) {
+        updateURL();
+      }
+      liveUpdateInstance?.stop().then();
       const select = model.getState()?.config?.select;
       getRunsRequestRef = runsService.getRunsData(select?.query);
       if (_.isEmpty(select?.params)) {
@@ -297,6 +373,10 @@ function getParamsData() {
           sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
           groupingSelectOptions: [...getGroupingSelectOptions(params)],
+        });
+
+        liveUpdateInstance?.start({
+          q: select?.query,
         });
       }
     },
@@ -526,7 +606,7 @@ function getDataAsLines(
         data: groupedByChartIndex[i],
       };
     })
-    .filter((data) => !isEmpty(data.data) && !isEmpty(data.dimensions));
+    .filter((data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions));
 }
 
 function getGroupConfig(
@@ -851,8 +931,6 @@ function onParamsSelectChange(data: any[]) {
       select: { ...configData.select, params: data },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -866,8 +944,6 @@ function onSelectRunQueryChange(query: string) {
       ...configData,
       select: { ...configData.select, query },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
@@ -1228,7 +1304,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
             });
           }
         })
-        .catch((err) => {
+        .catch(() => {
           onNotificationAdd({
             id: Date.now(),
             severity: 'error',
@@ -1459,7 +1535,7 @@ function onSortFieldsChange(sortFields: [string, any][]) {
   }
   analytics.trackEvent(
     `[ParamsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1521,7 +1597,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[ParamsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[ParamsExplorer][Table] Show all table columns');
   }
 }
@@ -1544,9 +1620,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(configUpdate);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[ParamsExplorer][Table] Reset table columns order');
   }
@@ -1649,7 +1725,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[MetricsExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1731,8 +1807,49 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const query = configData.select?.query;
+  const liveUpdateConfig = configData.liveUpdate;
+
+  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+    liveUpdateInstance = new LiveUpdateService(
+      'params',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance?.start({
+      q: query,
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+
+  setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
+}
+
 const paramsAppModel = {
   ...model,
+  destroy,
   initialize,
   getParamsData,
   onColorIndicatorChange,
@@ -1770,6 +1887,7 @@ const paramsAppModel = {
   updateColumnsWidths,
   updateURL,
   updateModelData,
+  changeLiveUpdateConfig,
   onShuffleChange,
 };
 

@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
-import Button from 'components/Button/Button';
+import { Button, Icon } from 'components/kit';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
@@ -18,8 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import { RowHeightSize, rowCeilSizeConfig } from 'config/table/tableConfigs';
-import Icon from 'components/Icon/Icon';
+import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
 import TableLoader from '../TableLoader/TableLoader';
 
 import './Table.scss';

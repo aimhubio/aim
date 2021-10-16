@@ -38,6 +38,10 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  liveUpdateConfig: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartTitleData {
@@ -134,6 +138,7 @@ interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    densityType: DensityOptions;
     alignmentConfig: IAlignmentConfig;
     tooltip: IChartTooltip;
   };
@@ -156,6 +161,10 @@ interface IMetricAppConfig {
       right: string[];
     };
     height: string;
+  };
+  liveUpdate: {
+    delay: number;
+    enabled: boolean;
   };
 }
 
