@@ -11,7 +11,7 @@ import RunDetailParamsTab from './RunDetailParamsTab';
 import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailSettingsTab from './RunDetailSettingsTab';
 import AppBar from 'components/AppBar/AppBar';
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Badge } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import * as analytics from 'services/analytics';
 
@@ -77,7 +77,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           </div>
           <Box className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
             {runData?.runInfo?.tags.map((tag: any, i: number) => (
-              <TagLabel color={tag.color} label={tag.name} key={i} />
+              <Badge color={tag.color} label={tag.name} key={i} />
             ))}
           </Box>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 
 type Props = {
   sort: string | null;

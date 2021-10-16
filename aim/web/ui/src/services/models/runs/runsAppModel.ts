@@ -1,7 +1,8 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
@@ -61,10 +62,138 @@ const model = createModel<Partial<any>>({
 });
 
 const initialPaginationConfig = {
-  limit: 45,
+  limit: 30,
   offset: null,
   isLatest: false,
 };
+
+let liveUpdateInstance: LiveUpdateService | null;
+
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
+  const modelState = model.getState();
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableColumns = getRunsTableColumns(
+    metricsColumns,
+    params,
+    data[0]?.config,
+    model.getState()?.config?.table.columnsOrder!,
+    model.getState()?.config?.table.hiddenColumns!,
+  );
+  model.setState({
+    data,
+    rowData: newData,
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns,
+    tableData: tableData.rows,
+    sameValueColumns: tableData.sameValueColumns,
+    config: {
+      ...modelState?.config,
+      pagination: {
+        ...modelState?.config.pagination,
+        isLatest: false,
+      },
+    },
+  });
+  setTimeout(() => {
+    const tableRef: any = model.getState()?.refs?.tableRef;
+    tableRef.current?.updateData({
+      newData: tableData.rows,
+      newColumns: tableColumns,
+      hiddenColumns: modelState?.config.table.hiddenColumns!,
+    });
+  }, 0);
+}
+function getRunsData(isInitial = true) {
+  // isInitial: true --> when search button clicked or data is loading at the first time
+  const modelState = prepareModelStateToCall(isInitial);
+  const configData = modelState?.config;
+
+  const query = configData?.select?.query || '';
+  const pagination = configData?.pagination;
+
+  liveUpdateInstance?.stop().then();
+
+  const { call, abort } = runsService.getRunsData(
+    query,
+    pagination?.limit,
+    pagination?.offset,
+  );
+
+  return {
+    call: async () => {
+      try {
+        const stream = await call(exceptionHandler);
+        let gen = adjustable_reader(stream);
+        let buffer_pairs = decode_buffer_pairs(gen);
+        let decodedPairs = decodePathsVals(buffer_pairs);
+        let objects = iterFoldTree(decodedPairs, 1);
+
+        const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
+          ? []
+          : modelState?.rowData;
+        let count = 0;
+        for await (let [keys, val] of objects) {
+          if (isInitial) {
+            const runData: any = val;
+            runsData.push({ ...runData, hash: keys[0] } as any);
+          } else {
+            if (count > 0) {
+              const runData: any = val;
+              runsData.push({ ...runData, hash: keys[0] } as any);
+            }
+          }
+          count++;
+        }
+        const { data, params, metricsColumns } = processData(runsData);
+
+        const tableData = getDataAsTableRows(data, metricsColumns, params);
+        const tableColumns = getRunsTableColumns(
+          metricsColumns,
+          params,
+          data[0]?.config,
+          model.getState()?.config?.table.columnsOrder!,
+          model.getState()?.config?.table.hiddenColumns!,
+        );
+
+        model.setState({
+          data,
+          rowData: runsData,
+          requestIsPending: false,
+          infiniteIsPending: false,
+          tableColumns,
+          tableData: tableData.rows,
+          sameValueColumns: tableData.sameValueColumns,
+          config: {
+            ...modelState?.config,
+            pagination: {
+              ...modelState?.config.pagination,
+              isLatest:
+                !isInitial && count < modelState?.config.pagination.limit,
+            },
+          },
+        });
+        setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+            hiddenColumns: configData.table.hiddenColumns!,
+          });
+        }, 0);
+
+        liveUpdateInstance?.start({
+          q: query,
+          limit: pagination.limit + runsData?.length || 0,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    abort,
+  };
+}
 
 function getConfig() {
   return {
@@ -145,6 +274,10 @@ function getConfig() {
       },
     },
     pagination: initialPaginationConfig,
+    liveUpdate: {
+      delay: 2000,
+      enabled: false,
+    },
   };
 }
 
@@ -217,89 +350,6 @@ function prepareModelStateToCall(isInitial: boolean) {
   return model.getState();
 }
 
-function getRunsData(isInitial = true) {
-  // isInitial: true --> when search button clicked or data is loading at the first time
-  const modelState = prepareModelStateToCall(isInitial);
-  const configData = modelState?.config;
-
-  const query = configData?.select?.query || '';
-  const pagination = configData?.pagination;
-
-  const { call, abort } = runsService.getRunsData(
-    query,
-    pagination?.limit,
-    pagination?.offset,
-  );
-
-  return {
-    call: async () => {
-      try {
-        const stream = await call(exceptionHandler);
-        let gen = adjustable_reader(stream);
-        let buffer_pairs = decode_buffer_pairs(gen);
-        let decodedPairs = decodePathsVals(buffer_pairs);
-        let objects = iterFoldTree(decodedPairs, 1);
-
-        const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
-          ? []
-          : modelState?.rowData;
-        let count = 0;
-        for await (let [keys, val] of objects) {
-          if (isInitial) {
-            const runData: any = val;
-            runsData.push({ ...runData, hash: keys[0] } as any);
-          } else {
-            if (count > 0) {
-              const runData: any = val;
-              runsData.push({ ...runData, hash: keys[0] } as any);
-            }
-          }
-          count++;
-        }
-        const { data, params, metricsColumns } = processData(runsData);
-
-        const tableData = getDataAsTableRows(data, metricsColumns, params);
-        const tableColumns = getRunsTableColumns(
-          metricsColumns,
-          params,
-          data[0]?.config,
-          model.getState()?.config?.table.columnsOrder!,
-          model.getState()?.config?.table.hiddenColumns!,
-        );
-
-        model.setState({
-          data,
-          rowData: runsData,
-          requestIsPending: false,
-          infiniteIsPending: false,
-          tableColumns,
-          tableData: tableData.rows,
-          sameValueColumns: tableData.sameValueColumns,
-          config: {
-            ...modelState?.config,
-            pagination: {
-              ...modelState?.config.pagination,
-              isLatest:
-                !isInitial && count < modelState?.config.pagination.limit,
-            },
-          },
-        });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: configData.table.hiddenColumns!,
-          });
-        }, 0);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    abort,
-  };
-}
-
 function getLastRunsData(lastRow: any) {
   const modelData = model.getState();
   const infiniteIsPending = modelData?.infiniteIsPending;
@@ -333,11 +383,18 @@ function setDefaultAppConfigData() {
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('runsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -354,6 +411,7 @@ function initialize(appId: string = '') {
     },
     groupingSelectOptions: [],
   });
+
   if (!appId) {
     const searchParam = new URLSearchParams(window.location.search);
     const searchFromUrl = searchParam.get('search');
@@ -368,7 +426,22 @@ function initialize(appId: string = '') {
   }
   setDefaultAppConfigData();
 
+  const liveUpdateState = model.getState()?.config.liveUpdate;
+
+  if (liveUpdateState.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'runs',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
+
   return getRunsData();
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
 }
 
 function getFilteredRow(
@@ -394,7 +467,7 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  // TODO need to get data and params from state not from processData
+  // @TODO need to get data and params from state not from processData
   const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
@@ -870,9 +943,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
   }
@@ -950,7 +1023,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
   }
 }
@@ -987,8 +1060,46 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const liveUpdateConfig = configData.liveUpdate;
+
+  if (!liveUpdateConfig?.enabled && config.enabled) {
+    const query = configData?.select?.query || '';
+    const pagination = configData?.pagination;
+
+    liveUpdateInstance = new LiveUpdateService(
+      'runs',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance.start({
+      q: query,
+      limit: pagination.limit + state?.rowData?.length || 0,
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+
+  setItem('runsLUConfig', encode(newLiveUpdateConfig));
+}
+
 const runAppModel = {
   ...model,
+  destroy,
   initialize,
   getRunsData,
   getLastRunsData,
@@ -1003,6 +1114,7 @@ const runAppModel = {
   onTableDiffShow,
   updateColumnsWidths,
   setDefaultAppConfigData,
+  changeLiveUpdateConfig,
 };
 
 export default runAppModel;

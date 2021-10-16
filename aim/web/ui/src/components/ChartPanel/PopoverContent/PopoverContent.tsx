@@ -7,7 +7,7 @@ import contextToString from 'utils/contextToString';
 import formatXAxisValueByAlignment from 'utils/formatXAxisValueByAlignment';
 import { ChartTypeEnum } from 'utils/d3';
 import { PathEnum } from 'config/enums/routesEnum';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 

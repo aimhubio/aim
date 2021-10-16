@@ -69,7 +69,7 @@ class ContextView:
         return ContextView(self.context[path[0]])
 
 
-class MetricView:
+class SequenceView:
     def __init__(self, name: str, context: dict, run_view: RunView):
         self.name = name
         self.run = run_view

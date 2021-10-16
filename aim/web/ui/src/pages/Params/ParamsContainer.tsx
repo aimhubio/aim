@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, useLocation } from 'react-router-dom';
+import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import Params from './Params';
 import paramsAppModel from 'services/models/params/paramsAppModel';
@@ -22,7 +22,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const paramsData = useModel<any>(paramsAppModel);
   const route = useRouteMatch<any>();
-  const location = useLocation();
+  const history = useHistory();
 
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -52,28 +52,27 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     } else {
       paramsAppModel.setDefaultAppConfigData();
     }
-
+    const unListenHistory = history.listen(() => {
+      if (!!paramsData.config) {
+        if (
+          paramsData.config.grouping !== getStateFromUrl('grouping') ||
+          paramsData.config.chart !== getStateFromUrl('chart') ||
+          paramsData.config.select !== getStateFromUrl('select')
+        ) {
+          paramsAppModel.setDefaultAppConfigData();
+          paramsAppModel.updateModelData();
+        }
+      }
+    });
     analytics.pageView('[ParamsExplorer]');
     paramsRequestRef.call();
     return () => {
+      paramsAppModel.destroy();
       paramsRequestRef.abort();
+      unListenHistory();
       appRequestRef?.abort();
     };
   }, []);
-
-  // Add effect to recover state from URL when browser history navigation is used
-  React.useEffect(() => {
-    if (!!paramsData.config) {
-      if (
-        paramsData.config.grouping !== getStateFromUrl('grouping') ||
-        paramsData.config.chart !== getStateFromUrl('chart') ||
-        paramsData.config.select !== getStateFromUrl('select')
-      ) {
-        paramsAppModel.setDefaultAppConfigData();
-        paramsAppModel.updateModelData();
-      }
-    }
-  }, [location.search]);
 
   return (
     <Params
@@ -142,6 +141,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
+      liveUpdateConfig={paramsData.config.liveUpdate}
+      onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
     />
   );
 }

@@ -13,8 +13,8 @@ import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
+import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
+import { Button, Icon } from 'components/kit';
 
 import './MetricsBar.scss';
 
@@ -22,6 +22,8 @@ function MetricsBar({
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
+  liveUpdateConfig,
+  onLiveUpdateConfigChange,
   title,
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
@@ -42,6 +44,10 @@ function MetricsBar({
 
   return (
     <AppBar title={title}>
+      <LiveUpdateSettings
+        {...liveUpdateConfig}
+        onLiveUpdateConfigChange={onLiveUpdateConfigChange}
+      />
       {route.params.appId ? (
         <ControlPopover
           title='Bookmark'

@@ -1,7 +1,5 @@
 import React from 'react';
-import { IIconProps } from 'types/components/Icon/Icon';
-
-import './Icon.scss';
+import { IIconProps } from './Icon.d';
 
 function Icon({
   name,

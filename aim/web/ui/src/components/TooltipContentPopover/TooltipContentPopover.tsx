@@ -6,13 +6,12 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import ToggleButton from 'components/ToggleButton/ToggleButton';
+import { ToggleButton, Badge } from 'components/kit';
 
 import { ITooltipContentPopoverProps } from 'types/components/TooltipContentPopover/TooltipContentPopover';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import './TooltipContentPopover.scss';
-import TagLabel from 'components/TagLabel/TagLabel';
 
 function TooltipContentPopover({
   onChangeTooltip,
@@ -54,7 +53,7 @@ function TooltipContentPopover({
   }, [selectOptions, selectedParams]);
 
   const paramsOptions = React.useMemo(() => {
-    return selectOptions.filter((option) => option.group === 'params');
+    return selectOptions.filter((option) => option.group === 'run');
   }, [selectOptions]);
 
   return (
@@ -97,7 +96,7 @@ function TooltipContentPopover({
             renderTags={(value, getTagProps) => (
               <div style={{ maxHeight: 110, overflow: 'auto' }}>
                 {value.map((selected, i) => (
-                  <TagLabel
+                  <Badge
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}

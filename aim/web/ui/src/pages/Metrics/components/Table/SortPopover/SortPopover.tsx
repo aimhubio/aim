@@ -8,8 +8,7 @@ import {
 
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
-import ToggleButton from 'components/ToggleButton/ToggleButton';
-import Icon from 'components/Icon/Icon';
+import { ToggleButton, Icon } from 'components/kit';
 
 import './SortPopover.scss';
 

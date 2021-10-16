@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  ISwitcherProps,
-  SwitcherLabel,
-} from 'types/components/Switcher/Switcher';
-import Icon from 'components/Icon/Icon';
+import { ISwitcherProps, SwitcherLabel } from './Switcher.d';
 
 import './Switcher.scss';
 
@@ -29,6 +25,13 @@ function Switcher({
   function isValidLabel(label: SwitcherLabel | unknown) {
     return !(label === null || label === undefined);
   }
+
+  React.useEffect(() => {
+    if (checked !== checkedValue) {
+      setCheckedValue(checked);
+    }
+  }, [checked]);
+
   return (
     <button
       data-name={name}
@@ -40,11 +43,10 @@ function Switcher({
       {isValidLabel(leftLabel) && (
         <span className='Switcher__leftLabel'>{leftLabel}</span>
       )}
-      <Icon
+      <i
         className={`Switcher__circle ${
           checkedValue ? 'Switcher__circle__checked' : ''
         }`}
-        name='check-circle'
       />
       {isValidLabel(rightLabel) && (
         <span className='Switcher__rightLabel'>{rightLabel}</span>
