@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import _, { isEmpty } from 'lodash-es';
 import createModel from '../model';
@@ -45,7 +45,6 @@ import moment from 'moment';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { formatValue } from 'utils/formatValue';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
-import filterMetricData from 'utils/filterMetricData';
 
 const model = createModel<Partial<any>>({
   requestIsPending: false,
@@ -193,7 +192,7 @@ function getImagesData() {
         queryIsEmpty: false,
       });
       // const stream = await metricsRequestRef.call(exceptionHandler);
-      // const runData = await getRunData(stream);
+      // const {runData} = await getRunData(stream);
       if (configData) {
         setModelData(imagesExploreMockData, configData);
       }
@@ -233,11 +232,6 @@ function processData(data: IRun<IMetricTrace>[]): {
     params = params.concat(getObjectPaths(run.params, run.params));
 
     run.images.forEach((imageData: any) => {
-      const { steps, epochs, timestamps } = filterMetricData({
-        steps: [...new Float64Array(imageData.iters.blob)],
-        epochs: [...new Float64Array(imageData.epochs?.blob)],
-        timestamps: [...new Float64Array(imageData.timestamps.blob)],
-      });
       imageData.values.forEach((stepData: any, stepIndex: number) => {
         stepData.forEach((image: any) => {
           const metricKey = encode({
@@ -255,20 +249,6 @@ function processData(data: IRun<IMetricTrace>[]): {
             context: imageData.context,
             run: _.omit(run, 'images'),
             key: metricKey,
-            data: {
-              steps: [
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                18, 19, 20, 21, 22, 23, 24, 25, 26,
-              ],
-              epochs: [
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                18, 19, 20, 21, 22, 23, 24, 25, 26,
-              ],
-              timestamps: [
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                18, 19, 20, 21, 22, 23, 24, 25, 26,
-              ].map((timestamp) => Math.round(timestamp * 1000)),
-            },
           });
         });
       });
@@ -299,11 +279,19 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
   const tableData = getDataAsTableRows(data, params, false, configData);
-
+  const config = configData;
+  config.images = {
+    stepRange: rawData[0].records_range as number[],
+    indexRange: rawData[0].indices_range as number[],
+    stepSlice: config?.images?.stepSlice || rawData[0].records_range,
+    indexSlice: config?.images?.indexSlice || rawData[0].indices_range,
+    stepInterval: config?.images?.stepInterval || 50,
+    indexInterval: config?.images?.indexInterval || 5,
+  };
   model.setState({
     requestIsPending: false,
     rawData,
-    config: configData,
+    config: config,
     params,
     data,
     imagesData: getDataAsImageSet(data),
@@ -1312,6 +1300,84 @@ function onImageVisibilityChange(metricsKeys: string[]) {
   );
 }
 
+function onStepSliceChange(
+  event: ChangeEvent<{}>,
+  newValue: number | number[],
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      stepSlice: newValue,
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onIndexSliceChange(
+  event: ChangeEvent<{}>,
+  newValue: number | number[],
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      indexSlice: newValue,
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onIndexIntervalChange(event: ChangeEvent<{ value: number }>) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images && +event.target.value > 0) {
+    const images = {
+      ...configData.images,
+      indexInterval: +event.target.value,
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onStepIntervalChange(event: ChangeEvent<{ value: number }>) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images && +event.target.value > 0) {
+    const images = {
+      ...configData.images,
+      stepInterval: +event.target.value,
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config,
+    });
+  }
+}
+
 const imagesExploreAppModel = {
   ...model,
   initialize,
@@ -1348,6 +1414,10 @@ const imagesExploreAppModel = {
   onTableDiffShow,
   onRowHeightChange,
   onImageVisibilityChange,
+  onStepSliceChange,
+  onIndexSliceChange,
+  onIndexIntervalChange,
+  onStepIntervalChange,
 };
 
 export default imagesExploreAppModel;

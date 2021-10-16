@@ -1,19 +1,18 @@
 @use "src/styles/abstracts" as *;
 
 .ImagesSet {
-  padding: 10px 40px;
-  display: flex;
-  flex-direction: column;
+  padding: 0.625rem 1.25rem;
+  display: table;
+  width: 100%;
   background-color: #ffffff;
-  border-top: 1px solid $border-color-main;
+  border-top: $border-main;
 
   &__container {
     display: flex;
     flex-direction: column;
     img {
-      width: 100px;
-      height: 100px;
-      margin-right: 0.625rem;
+      width: 6.25rem;
+      height: 6.25rem;
     }
     &__title {
       padding-bottom: 0.625rem;
@@ -21,11 +20,10 @@
     }
     &__imagesBox {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
       &__imageBox {
-        width: 100px;
-        height: 100px;
+        width: 6.25rem;
+        height: 6.25rem;
+        margin-right: 0.625rem;
         margin-bottom: 0.625rem;
       }
     }

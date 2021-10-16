@@ -4,7 +4,6 @@ import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAp
 import * as analytics from 'services/analytics';
 import useModel from 'hooks/model/useModel';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
-import ImagesSet from 'components/ImagesSet/ImagesSet';
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import getStateFromUrl from 'utils/getStateFromUrl';
@@ -17,6 +16,7 @@ import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
+import ImagesPanel from 'components/ImagesPanel';
 
 import './ImagesExplore.scss';
 
@@ -134,9 +134,22 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 : ''
             }`}
           >
-            {imagesExploreData?.imagesData && (
-              <ImagesSet data={imagesExploreData?.imagesData} title={'root'} />
-            )}
+            <ImagesPanel
+              stepSlice={imagesExploreData?.config?.images.stepSlice}
+              indexSlice={imagesExploreData?.config?.images.indexSlice}
+              indexRange={imagesExploreData?.config?.images.indexRange}
+              indexInterval={imagesExploreData?.config?.images.indexInterval}
+              stepInterval={imagesExploreData?.config?.images.stepInterval}
+              stepRange={imagesExploreData?.config?.images.stepRange}
+              onStepSliceChange={imagesExploreAppModel.onStepSliceChange}
+              onIndexSliceChange={imagesExploreAppModel.onIndexSliceChange}
+              onIndexIntervalChange={
+                imagesExploreAppModel.onIndexIntervalChange
+              }
+              onStepIntervalChange={imagesExploreAppModel.onStepIntervalChange}
+              imagesData={imagesExploreData?.imagesData}
+              isLoading={imagesExploreData?.requestIsPending}
+            />
           </div>
           <ResizePanel
             className={`ImagesExplore__ResizePanel${
