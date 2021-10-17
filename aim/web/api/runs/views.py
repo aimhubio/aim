@@ -12,7 +12,7 @@ from aim.web.api.runs.utils import (
     metric_search_result_streamer,
     run_search_result_streamer
 )
-from aim.web.api.runs.image_utils import image_search_result_streamer
+from aim.web.api.runs.image_utils import image_search_result_streamer, images_batch_result_streamer
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
@@ -26,7 +26,8 @@ from aim.web.api.runs.pydantic_models import (
     StructuredRunUpdateOut,
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
-    StructuredRunRemoveTagOut
+    StructuredRunRemoveTagOut,
+    URIBatchIn
 )
 from aim.web.api.utils import object_factory
 from aim.storage.query import syntax_error_check
@@ -137,6 +138,16 @@ def run_images_search_api(q: Optional[str] = '', record_slice: Optional[str] = '
 
     streamer = image_search_result_streamer(traces, rec_slice, idx_slice)
     return StreamingResponse(streamer)
+
+
+@runs_router.post('/images/get-batch/')
+def run_traces_batch_api(uri_batch: URIBatchIn):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    return StreamingResponse(images_batch_result_streamer(uri_batch, project.repo))
 
 
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)

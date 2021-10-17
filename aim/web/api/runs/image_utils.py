@@ -1,15 +1,19 @@
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, List
+from typing import TYPE_CHECKING
 from collections import namedtuple
 
 from aim.storage.treeutils import encode_tree
 
 from aim.sdk.objects import Image
+from aim.sdk.run import Run
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
-from aim.sdk.run import Run
+from aim.sdk.uri_service import URIService, generate_resource_path
 
 from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data
 
+if TYPE_CHECKING:
+    from aim.sdk import Repo
 
 IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
@@ -18,11 +22,12 @@ def sliced_img_record(values: Iterable[Image], _slice: slice) -> Iterable[Image]
     yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
 
 
-def img_record_to_encodable(image_record):
+def img_record_to_encodable(image_record, trace, step):
     img_list = []
     for idx, img in image_record:
         img_dump = img.json()
-        img_dump['blob_uri'] = ''  # TODO [AT]: Integrate URI service here
+        image_resource_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))
+        img_dump['blob_uri'] = URIService.generate_uri(trace.run.hashname, 'seqs', image_resource_path)
         img_dump['index'] = idx
         img_list.append(img_dump)
     return img_list
@@ -54,7 +59,7 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
     steps_vals = trace.values.items_slice(_slice=rec_slice)
     for step, val in steps_vals:
         steps.append(step)
-        values.append(img_record_to_encodable(sliced_img_record(val, idx_slice)))
+        values.append(img_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
 
     return {
         'trace_name': trace.name,
@@ -111,3 +116,8 @@ def image_search_result_streamer(traces: SequenceCollection, rec_slice: slice, i
             for trace in run_trace_collection.iter():
                 traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
             yield pack_run_data(run_trace_collection.run, traces_list)
+
+
+def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
+    uri_service = URIService(repo=repo)
+    yield from uri_service.request_batch(uri_batch=uri_batch)
