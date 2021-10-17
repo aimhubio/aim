@@ -28,6 +28,7 @@ import {
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { Button, Icon, Badge } from 'components/kit';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 import './SelectForm.scss';
 
@@ -96,59 +97,52 @@ function SelectForm({
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
-    const systemOptions = [];
-    const ddd: any = {
-      __system__gpu_memory_percent: [
-        {
-          gpu: '1',
-        },
-      ],
-      __system__gpu_power_watts: [
-        {
-          gpu: '0',
-        },
-      ],
-      ...projectsData?.metrics,
-    };
-
+    const systemOptions: ISelectMetricsOption[] = [];
     let index: number = 0;
     if (projectsData?.metrics) {
-      for (let key in ddd) {
-        console.log(key.split('__'));
-        if (key.split('__')[1] === 'system') {
-          systemOptions.push({});
+      for (let key in projectsData.metrics) {
+        let system: boolean = key.startsWith('__system__');
+        let option = getOption(system, key, index);
+        if (system) {
+          systemOptions.push(option);
         } else {
-          data.push({
-            label: key,
-            group: key,
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              metric_name: key,
-              context: null,
-            },
-          });
-          index++;
-
-          for (let val of ddd[key]) {
-            if (!isEmpty(val)) {
-              let label = contextToString(val);
-              data.push({
-                label: `${key} ${label}`,
-                group: key,
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  metric_name: key,
-                  context: val,
-                },
-              });
-              index++;
+          data.push(option);
+        }
+        index++;
+        for (let val of projectsData.metrics[key]) {
+          if (!isEmpty(val)) {
+            let label = contextToString(val);
+            let option = getOption(system, key, index, val);
+            option.label = `${option.label} ${label}`;
+            if (system) {
+              systemOptions.push(option);
+            } else {
+              data.push(option);
             }
+            index++;
           }
         }
       }
     }
-    return data;
+    return data.concat(systemOptions);
   }, [projectsData]);
+
+  function getOption(
+    system: boolean,
+    key: string,
+    index: number,
+    val: object | null = null,
+  ): ISelectMetricsOption {
+    return {
+      label: `${system ? formatSystemMetricName(key) : key}`,
+      group: system ? formatSystemMetricName(key) : key,
+      color: COLORS[0][index % COLORS[0].length],
+      value: {
+        metric_name: key,
+        context: val,
+      },
+    };
+  }
 
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
@@ -252,7 +246,8 @@ function SelectForm({
                               size='small'
                             />
                             <span className='SelectForm__option__label'>
-                              {option.label}
+                              {contextToString(option.value.context) ||
+                                option.group}
                             </span>
                           </React.Fragment>
                         );
