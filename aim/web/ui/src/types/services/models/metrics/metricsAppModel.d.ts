@@ -138,6 +138,7 @@ interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    densityType: DensityOptions;
     alignmentConfig: IAlignmentConfig;
     tooltip: IChartTooltip;
   };

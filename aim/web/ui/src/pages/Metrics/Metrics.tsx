@@ -122,6 +122,7 @@ function Metrics(
                       smoothingAlgorithm={props.smoothingAlgorithm}
                       smoothingFactor={props.smoothingFactor}
                       curveInterpolation={props.curveInterpolation}
+                      densityType={props.densityType}
                       ignoreOutliers={props.ignoreOutliers}
                       zoom={props.zoom}
                       highlightMode={props.highlightMode}
@@ -137,6 +138,7 @@ function Metrics(
                       onAggregationConfigChange={
                         props.onAggregationConfigChange
                       }
+                      onDensityTypeChange={props.onDensityTypeChange}
                       onAlignmentTypeChange={props.onAlignmentTypeChange}
                       onAlignmentMetricChange={props.onAlignmentMetricChange}
                       projectsDataMetrics={props.projectsDataMetrics}
