@@ -34,20 +34,16 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   );
 
   React.useEffect(() => {
+    paramsAppModel.initialize(route.params.appId);
     let appRequestRef: {
       call: () => Promise<any>;
       abort: () => void;
     };
-    const paramsRequestRef: {
-      call: () => Promise<any>;
-      abort: () => void;
-    } = paramsAppModel.getParamsData();
-    paramsAppModel.initialize(route.params.appId);
-
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
         paramsAppModel.getParamsData().call();
+        paramsAppModel.setDefaultAppConfigData();
       });
     } else {
       paramsAppModel.setDefaultAppConfigData();
@@ -65,12 +61,15 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     });
     analytics.pageView('[ParamsExplorer]');
+    const paramsRequestRef = paramsAppModel.getParamsData();
     paramsRequestRef.call();
     return () => {
       paramsAppModel.destroy();
       paramsRequestRef.abort();
       unListenHistory();
-      appRequestRef?.abort();
+      if (appRequestRef) {
+        appRequestRef.abort();
+      }
     };
   }, []);
 
