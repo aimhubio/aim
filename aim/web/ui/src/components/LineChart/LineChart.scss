@@ -85,7 +85,10 @@
     &.aggregated {
       opacity: 0;
       &.highlighted {
-        opacity: 0.6;
+        opacity: 0.5;
+      }
+      &.active {
+        opacity: 0.8;
       }
     }
     &.highlighted {

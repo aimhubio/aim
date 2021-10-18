@@ -175,7 +175,9 @@ function drawAxes(props: IDrawAxesProps): void {
   axesRef.current.yAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'yAxis')
-    .call(yAxis);
+    .attr('stroke-width', 0.05)
+    .attr('fill', 'none')
+    .call(yAxis.tickSize(-width));
 
   svgNodeRef.current
     .append('text')
