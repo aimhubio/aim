@@ -7,7 +7,9 @@ import { MenuItem, Tooltip } from '@material-ui/core';
 
 import Cell from './TableCell';
 import ControlPopover from '../ControlPopover/ControlPopover';
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
+import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
+import { decode } from 'utils/encoder/encoder';
 
 function Column({
   topHeader,
@@ -380,6 +382,13 @@ function Column({
 }
 
 function GroupConfig({ config, expand, expanded, groupKey }) {
+  const configData = React.useMemo(() => {
+    const groupConfig = JSON.parse(decode(groupKey));
+    return Object.keys(groupConfig).map((key, index) => {
+      return { name: key, value: groupConfig[key] };
+    });
+  }, [groupKey]);
+
   return (
     <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
       <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
@@ -389,6 +398,33 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
             {config.chartIndex}
           </span>
         </Tooltip>
+      )}
+      {configData?.length > 0 && (
+        <ControlPopover
+          title='Group Config'
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          anchor={({ onAnchorClick, opened }) => (
+            <Tooltip title={configData.map((item) => item.name + ', ')}>
+              <div>
+                <Button
+                  size='small'
+                  className='Table__group__config__popover'
+                  onClick={onAnchorClick}
+                >
+                  <Text>grouped by {configData.length} fields</Text>
+                </Button>
+              </div>
+            </Tooltip>
+          )}
+          component={<GroupConfigPopover configData={configData} />}
+        />
       )}
       {config.dasharray !== null && (
         <Tooltip title='Group stroke style'>

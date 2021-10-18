@@ -52,7 +52,7 @@
 
   &__color {
     &_primary {
-    color: $text-color;
+      color: $text-color;
       &_100 {
         color: $pico;
       }
@@ -60,7 +60,7 @@
         color: $pico-90;
       }
       &_80 {
-        color: $pico-80
+        color: $pico-80;
       }
       &_70 {
         color: $pico-70;
@@ -93,7 +93,7 @@
         color: $pico;
       }
       &_80 {
-        color: $pico-80
+        color: $pico-80;
       }
       &_50 {
         color: $pico-50;
@@ -126,7 +126,7 @@
         color: $warning-color;
       }
       &_80 {
-        color: $warning-color-80
+        color: $warning-color-80;
       }
       &_50 {
         color: $warning-color-50;
