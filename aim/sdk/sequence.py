@@ -1,4 +1,9 @@
 from typing import Generic, Union, Tuple, List, TypeVar
+from abc import abstractmethod
+from copy import deepcopy
+
+from aim.sdk.num_utils import convert_to_py_number
+from aim.sdk.utils import get_object_typename
 
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
@@ -33,8 +38,13 @@ class Sequence(Generic[T]):
         self.context = context
         self.run = run
 
-        self.tree = run.metric_tree(name, context)
+        self._meta_tree = run.meta_run_tree.view(('traces', context.idx, name))
+        self._tree = run.series_run_tree.view((context.idx, name))
+        self._values = self._tree.array('vals')
+        self._epochs = self._tree.array('epoch')
+        self._timestamps = self._tree.array('time')
 
+        self._length: int = None
         self._hash: int = None
 
     def __repr__(self) -> str:
@@ -48,6 +58,55 @@ class Sequence(Generic[T]):
         The base Sequence allows any value, and to indicate that, `allowed_dtypes` returns '*'.
         """
         return '*'
+
+    @classmethod
+    @abstractmethod
+    def sequence_name(cls) -> str:
+        ...
+
+    def track(self, value, track_time: float, step: int, epoch: int):
+        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
+        # not the actual implementation execution time.
+        val = deepcopy(value)
+        track_rate_warning = self.run.repo.tracking_queue.register_task(
+            self._track_impl, val, track_time, step, epoch)
+        if track_rate_warning:
+            self.run.track_rate_warn()
+
+    def _track_impl(self, value, track_time: float, step: int, epoch: int):
+        try:
+            val = convert_to_py_number(value)
+        except ValueError:
+            # value is not a number
+            val = value
+
+        val_view = self._values.allocate()
+        epoch_view = self._epochs.allocate()
+        time_view = self._timestamps.allocate()
+
+        max_idx = self._length
+        if max_idx is None:
+            max_idx = len(val_view)
+        step = step or max_idx
+
+        self._length = max_idx + 1
+
+        if max_idx == 0:
+            self._meta_tree['first_step'] = step
+            # TODO [AT] check sequence is homogenious & handle empty list case
+            self._meta_tree['dtype'] = get_object_typename(val)
+
+        self._meta_tree['last'] = val
+        self._meta_tree['last_step'] = step
+        if isinstance(val, (tuple, list)):
+            record_max_length = self._meta_tree.get('record_max_length', 0)
+            self._meta_tree['record_max_length'] = max(record_max_length, len(val))
+
+        # TODO perform assignments in an atomic way
+
+        val_view[step] = val
+        epoch_view[step] = epoch
+        time_view[step] = track_time
 
     def _calc_hash(self):
         return hash_auto(
@@ -67,8 +126,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns values ArrayView.
         """
-        array_view = self.tree.array('val')
-        return array_view
+        return self._values
 
     @property
     def indices(self) -> List[int]:
@@ -85,8 +143,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns epochs ArrayView.
         """
-        array_view = self.tree.array('epoch')
-        return array_view
+        return self._epochs
 
     @property
     def timestamps(self) -> ArrayView[float]:
@@ -94,8 +151,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns timestamps ArrayView.
         """
-        array_view = self.tree.array('time')
-        return array_view
+        return self._timestamps
 
     def __bool__(self) -> bool:
         return bool(self.values)
@@ -104,4 +160,4 @@ class Sequence(Generic[T]):
         return len(self.values)
 
     def preload(self):
-        self.tree.preload()
+        self._tree.preload()

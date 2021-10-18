@@ -144,3 +144,6 @@ class QuerySyntaxErrorOut(BaseModel):
         line: int
         offset: int
     detail: SE
+
+
+URIBatchIn = List[str]
