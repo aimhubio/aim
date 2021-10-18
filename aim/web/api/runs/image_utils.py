@@ -64,10 +64,6 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
     return {
         'trace_name': trace.name,
         'context': trace.context.to_dict(),
-        'record_range': [rec_slice.start, rec_slice.stop],
-        'index_range': [idx_slice.start, idx_slice.stop],
-        'record_slice': [rec_slice.start, rec_slice.stop, rec_slice.step],
-        'index_slice': [idx_slice.start, idx_slice.stop, idx_slice.step],
         'values': values,
         'iters': steps,
         'epochs': list(trace.epochs.values_slice(_slice=rec_slice)),
@@ -75,27 +71,37 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
     }
 
 
-def image_search_result_streamer(traces: SequenceCollection, rec_slice: slice, idx_slice: slice):
-    record_range_missing = rec_slice.start is None or rec_slice.stop is None
-    index_range_missing = idx_slice.start is None or idx_slice.stop is None
+def image_search_result_streamer(traces: SequenceCollection,
+                                 rec_range: IndexRange, rec_density: int,
+                                 idx_range: IndexRange, idx_density: int):
+    record_range_missing = rec_range.start is None or rec_range.stop is None
+    index_range_missing = idx_range.start is None or idx_range.stop is None
     run_traces = {}
+
+    trcs_rec_range, trcs_idx_range = IndexRange(None, None), IndexRange(None, None)
     if record_range_missing or index_range_missing:
-        record_range, index_range = get_record_and_index_range(traces, trace_cache=run_traces)
+        trcs_rec_range, trcs_idx_range = get_record_and_index_range(traces, trace_cache=run_traces)
 
-    rec_start = rec_slice.start or record_range.start
-    rec_stop = rec_slice.stop or record_range.stop
-    rec_step = rec_slice.step or ((rec_stop - rec_start) // 50 or 1)
+    rec_start = rec_range.start if rec_range.start is not None else trcs_rec_range.start
+    rec_stop = rec_range.stop if rec_range.stop is not None else trcs_rec_range.stop
+    rec_step = (rec_stop - rec_start) // rec_density or 1
 
-    idx_start = idx_slice.start or index_range.start
-    idx_stop = idx_slice.stop or index_range.stop
-    idx_step = idx_slice.step or ((idx_stop - idx_start) // 5 or 1)
+    idx_start = idx_range.start if idx_range.start is not None else trcs_idx_range.start
+    idx_stop = idx_range.stop if idx_range.stop is not None else trcs_idx_range.stop
+    idx_step = (idx_stop - idx_start) // idx_density or 1
 
     rec_slice = slice(rec_start, rec_stop, rec_step)
     idx_slice = slice(idx_start, idx_stop, idx_step)
 
-    def pack_run_data(run_: Run, traces_: list):
+    def pack_run_data(run_: Run, traces_: list, rec_slice: slice, idx_slice: slice):
         run_dict = {
             run_.hashname: {
+                'ranges': {
+                    'record_range': [rec_slice.start, rec_slice.stop],
+                    'index_range': [idx_slice.start, idx_slice.stop],
+                    'record_slice': [rec_slice.start, rec_slice.stop, rec_slice.step],
+                    'index_slice': [idx_slice.start, idx_slice.stop, idx_slice.step]
+                },
                 'params': run_.get(...),
                 'traces': traces_,
                 'props': get_run_props(run_)
@@ -109,13 +115,13 @@ def image_search_result_streamer(traces: SequenceCollection, rec_slice: slice, i
             traces_list = []
             for trace in run_info['traces']:
                 traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
-            yield pack_run_data(run_info['run'], traces_list)
+            yield pack_run_data(run_info['run'], traces_list, rec_slice, idx_slice)
     else:
         for run_trace_collection in traces.iter_runs():
             traces_list = []
             for trace in run_trace_collection.iter():
                 traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
-            yield pack_run_data(run_trace_collection.run, traces_list)
+            yield pack_run_data(run_trace_collection.run, traces_list, rec_slice, idx_slice)
 
 
 def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):

@@ -12,13 +12,14 @@ from aim.web.api.runs.utils import (
     metric_search_result_streamer,
     run_search_result_streamer
 )
-from aim.web.api.runs.image_utils import image_search_result_streamer, images_batch_result_streamer
+from aim.web.api.runs.image_utils import image_search_result_streamer, images_batch_result_streamer, IndexRange
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
     RunTracesBatchApiIn,
     RunMetricCustomAlignApiOut,
     RunMetricSearchApiOut,
+    RunImagesSearchApiOut,
     RunInfoOut,
     RunSearchApiOut,
     RunTracesBatchApiOut,
@@ -102,9 +103,11 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
     return StreamingResponse(streamer)
 
 
-@runs_router.get('/search/images/',
+@runs_router.get('/search/images/', response_model=RunImagesSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_images_search_api(q: Optional[str] = '', record_slice: Optional[str] = '', index_slice: Optional[str] = ''):
+def run_images_search_api(q: Optional[str] = '',
+                          record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                          index_range: Optional[str] = '', index_density: Optional[int] = 5):
     # Get project
     project = Project()
     if not project.exists():
@@ -123,20 +126,20 @@ def run_images_search_api(q: Optional[str] = '', record_slice: Optional[str] = '
 
     traces = project.repo.query_images(query=query)
 
-    def _str_to_slice(slice_str: str):
-        defaults = [None, None, None]
-        slice_values = chain(slice_str.strip().split(':'), defaults)
+    def _str_to_range(range_str: str):
+        defaults = [None, None]
+        slice_values = chain(range_str.strip().split(':'), defaults)
 
         start, stop, step, *_ = map(lambda x: int(x) if x else None, slice_values)
-        return slice(start, stop, step)
+        return IndexRange(start, stop)
 
     try:
-        rec_slice = _str_to_slice(record_slice)
-        idx_slice = _str_to_slice(index_slice)
+        record_range = _str_to_range(record_range)
+        index_range = _str_to_range(index_range)
     except ValueError:
-        raise HTTPException(status_code=400, detail='Invalid slice format')
+        raise HTTPException(status_code=400, detail='Invalid range format')
 
-    streamer = image_search_result_streamer(traces, rec_slice, idx_slice)
+    streamer = image_search_result_streamer(traces, record_range, record_density, index_range, index_density)
     return StreamingResponse(streamer)
 
 

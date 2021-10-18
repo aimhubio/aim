@@ -20,7 +20,6 @@ T = TypeVar('T')
 
 
 class Sequence(Generic[T]):
-    # TODO move the core logic of Run.track here
     """Class representing single series of tracked value.
 
     Objects series can be retrieved as Sequence regardless the object's type,
