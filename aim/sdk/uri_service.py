@@ -16,7 +16,8 @@ SEPARATOR = '__'  # subject to change
 
 def generate_resource_path(prefix_view: 'PrefixView', additional_path: 'AimObjectPath') -> str:
     prefix_path = decode_path(prefix_view.prefix)
-    return encode_path(prefix_path + additional_path).decode()
+    encoded_path = encode_path((*prefix_path, *additional_path))
+    return encoded_path.hex()
 
 
 class URIService:
@@ -33,17 +34,17 @@ class URIService:
     def request_batch(self, uri_batch: List[str]):
         for uri in uri_batch:
             run_name, sub_name, resource_path = self.decode_uri(uri)
+            resource_path = decode_path(bytes.fromhex(resource_path))
             config = ContainerConfig(run_name, sub_name, read_only=True)
             container = self.container_persistent_pool.get(config)
             if not container:
                 if sub_name == 'meta':
-                    container = self.repo.request(name=run_name, sub=sub_name, from_union=True, read_only=True)
+                    container = self.repo.request(sub_name, run_name, from_union=True, read_only=True)
                 else:
-                    container = self.repo.request(name=run_name, sub=sub_name, read_only=True)
+                    container = self.repo.request(sub_name, run_name, read_only=True)
 
                 self.container_persistent_pool[config] = container
-
-            yield container.view(resource_path).collect()
+            yield container.tree().view(resource_path).collect()
 
         # clear container pool
         self.container_persistent_pool.clear()
