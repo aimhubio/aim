@@ -1,9 +1,12 @@
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
-export default function getGroupingSelectOptions(
-  params: string[],
-  contexts: string[] = [],
-): IGroupingSelectOption[] {
+export default function getGroupingSelectOptions({
+  params,
+  contexts = [],
+}: {
+  params: string[];
+  contexts?: string[];
+}): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     group: 'run',
     label: `run.${param}`,

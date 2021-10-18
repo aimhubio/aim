@@ -1,13 +1,22 @@
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { IModel, State } from 'types/services/models/model';
 import * as analytics from 'services/analytics';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onAlignmentTypeChange<M extends State>(
-  type: AlignmentOptions,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-): void {
+export default function onAlignmentTypeChange<M extends State>({
+  type,
+  model,
+  appName,
+  updateModelData,
+}: {
+  type: AlignmentOptions;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
     const alignmentConfig = { ...configData.chart.alignmentConfig, type };
@@ -19,7 +28,7 @@ export default function onAlignmentTypeChange<M extends State>(
       ...configData.chart,
       alignmentConfig,
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[${appName}Explorer][Chart] Align X axis by "${AlignmentOptions[

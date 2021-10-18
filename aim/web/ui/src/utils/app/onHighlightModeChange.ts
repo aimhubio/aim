@@ -1,13 +1,17 @@
 import * as analytics from 'services/analytics';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IModel, State } from 'types/services/models/model';
+import updateURL from './updateURL';
 
-export default function onHighlightModeChange<M extends State>(
-  mode: HighlightEnum,
-  model: IModel<M>,
-  appName: string,
-  updateURL: any,
-): void {
+export default function onHighlightModeChange<M extends State>({
+  mode,
+  model,
+  appName,
+}: {
+  mode: HighlightEnum;
+  model: IModel<M>;
+  appName: string;
+}): void {
   const config = model.getState()?.config;
   if (config?.chart) {
     const configData = {
@@ -18,7 +22,8 @@ export default function onHighlightModeChange<M extends State>(
       },
     };
     model.setState({ config: configData });
-    updateURL(configData);
+
+    updateURL({ configData, appName });
   }
   analytics.trackEvent(
     `[${appName}][Chart] Set highlight mode to "${HighlightEnum[

@@ -3,13 +3,22 @@ import * as analytics from 'services/analytics';
 import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onAggregationConfigChange<M extends State>(
-  aggregationConfig: Partial<IAggregationConfig>,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-): void {
+export default function onAggregationConfigChange<M extends State>({
+  aggregationConfig,
+  model,
+  appName,
+  updateModelData,
+}: {
+  aggregationConfig: Partial<IAggregationConfig>;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}): void {
   const configData = model.getState()?.config;
   if (configData?.chart && !_.isEmpty(aggregationConfig)) {
     configData.chart = {
@@ -19,7 +28,7 @@ export default function onAggregationConfigChange<M extends State>(
         ...aggregationConfig,
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(

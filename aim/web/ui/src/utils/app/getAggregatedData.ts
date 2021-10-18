@@ -6,10 +6,13 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 
-export default function getAggregatedData<M extends State>(
-  processedData: IMetricsCollection<IMetric>[],
-  model: IModel<M>,
-): IAggregatedData[] {
+export default function getAggregatedData<M extends State>({
+  processedData,
+  model,
+}: {
+  processedData: IMetricsCollection<IMetric>[];
+  model: IModel<M>;
+}): IAggregatedData[] {
   if (!processedData) {
     return [];
   }

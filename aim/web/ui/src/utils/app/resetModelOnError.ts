@@ -1,9 +1,13 @@
 import { IModel, State } from 'types/services/models/model';
 
-export default function resetModelOnError<M extends State>(
-  detail?: any,
-  model?: IModel<M>,
-) {
+export default function resetModelOnError<M extends State>({
+  detail,
+  model,
+}: {
+  detail?: any;
+  model?: IModel<M>;
+}) {
+  // TODO set state correctly for any app model state
   model?.setState({
     data: [],
     params: [],

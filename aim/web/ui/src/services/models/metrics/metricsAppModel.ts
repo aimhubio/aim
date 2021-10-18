@@ -18,7 +18,6 @@ import {
 } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import appsService from 'services/api/apps/appsService';
-import dashboardService from 'services/api/dashboard/dashboardService';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import {
   aggregateGroupData,
@@ -39,47 +38,29 @@ import JsonToCSV from 'utils/JsonToCSV';
 
 // Types
 import {
-  GroupNameType,
-  IAggregationConfig,
-  IAlignMetricsDataParams,
   IAppData,
-  IChartTooltip,
-  IChartZoom,
-  IDashboardData,
   IMetricAppConfig,
   IMetricAppModelState,
   IMetricsCollection,
   IMetricTableRowData,
-  IOnGroupingModeChangeParams,
-  IOnGroupingSelectChangeParams,
   ITooltipData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import {
-  AlignmentNotificationsEnum,
-  BookmarkNotificationsEnum,
-} from 'config/notification-messages/notificationMessages';
+import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { getItem, setItem } from 'utils/storage';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import isGroupingApplied from 'utils/app/isGroupingApplied';
-import resetChartZoom from 'utils/app/resetChartZoom';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAggregatedData from 'utils/app/getAggregatedData';
@@ -88,9 +69,13 @@ import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
 import { formatValue } from 'utils/formatValue';
 import updateUrlParam from 'utils/app/updateUrlParam';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
-import getTooltipData from '../../../utils/app/getTooltipData';
-import { getFilteredGroupingOptions } from '../../../utils/app/getFilteredGroupingOptions';
+import getTooltipData from 'utils/app/getTooltipData';
+import { getFilteredGroupingOptions } from 'utils/app/getFilteredGroupingOptions';
 import { appInitialConfig, createAppModel } from '../explorer';
+import onNotificationAdd from 'utils/app/onNotificationAdd';
+import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
+import setAggregationEnabled from 'utils/app/setAggregationEnabled';
+import updateSortFields from 'utils/app/updateTableSortFields';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -314,9 +299,12 @@ function exceptionHandler(detail: any): void {
   }
 
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'error',
-    message,
+    notification: {
+      id: Date.now(),
+      severity: 'error',
+      message,
+    },
+    model,
   });
 
   // reset model
@@ -373,55 +361,55 @@ function getMetricsData(shouldUrlUpdate?: boolean) {
     abort: metricsRequestRef.abort,
   };
 }
-
-async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData) {
-    const app: IAppData | any = await appsService
-      .createApp({ state: configData, type: 'metrics' })
-      .call();
-    if (app.id) {
-      const bookmark: IDashboardData = await dashboardService
-        .createDashboard({ app_id: app.id, name, description })
-        .call();
-      if (bookmark.name) {
-        onNotificationAdd({
-          id: Date.now(),
-          severity: 'success',
-          message: BookmarkNotificationsEnum.CREATE,
-        });
-      } else {
-        onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: BookmarkNotificationsEnum.ERROR,
-        });
-      }
-    }
-  }
-  analytics.trackEvent('[MetricsExplorer] Create bookmark');
-}
-
-function onBookmarkUpdate(id: string) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData) {
-    appsService
-      .updateApp(id, { state: configData, type: 'metrics' })
-      .call()
-      .then((res: IDashboardData | any) => {
-        if (res.id) {
-          onNotificationAdd({
-            id: Date.now(),
-            severity: 'success',
-            message: BookmarkNotificationsEnum.UPDATE,
-          });
-        }
-      });
-  }
-  analytics.trackEvent('[MetricsExplorer] Update bookmark');
-}
+//
+// async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData) {
+//     const app: IAppData | any = await appsService
+//       .createApp({ state: configData, type: 'metrics' })
+//       .call();
+//     if (app.id) {
+//       const bookmark: IDashboardData = await dashboardService
+//         .createDashboard({ app_id: app.id, name, description })
+//         .call();
+//       if (bookmark.name) {
+//         onNotificationAdd({
+//           id: Date.now(),
+//           severity: 'success',
+//           message: BookmarkNotificationsEnum.CREATE,
+//         });
+//       } else {
+//         onNotificationAdd({
+//           id: Date.now(),
+//           severity: 'error',
+//           message: BookmarkNotificationsEnum.ERROR,
+//         });
+//       }
+//     }
+//   }
+//   analytics.trackEvent('[MetricsExplorer] Create bookmark');
+// }
+//
+// function onBookmarkUpdate(id: string) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData) {
+//     appsService
+//       .updateApp(id, { state: configData, type: 'metrics' })
+//       .call()
+//       .then((res: IDashboardData | any) => {
+//         if (res.id) {
+//           onNotificationAdd({
+//             id: Date.now(),
+//             severity: 'success',
+//             message: BookmarkNotificationsEnum.UPDATE,
+//           });
+//         }
+//       });
+//   }
+//   analytics.trackEvent('[MetricsExplorer] Update bookmark');
+// }
 
 function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
@@ -505,7 +493,7 @@ function processData(data: IRun<IMetricTrace>[]): {
   const uniqParams = _.uniq(params);
   const uniqContexts = _.uniq(contexts);
 
-  tooltipData = getTooltipData(processedData, uniqParams, model);
+  tooltipData = getTooltipData({ processedData, paramKeys: uniqParams, model });
 
   return {
     data: processedData,
@@ -518,9 +506,18 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   const configData = model.getState()!.config;
   const grouping = configData!.grouping;
   const { paletteIndex = 0 } = grouping || {};
-  const groupByColor = getFilteredGroupingOptions('color', model);
-  const groupByStroke = getFilteredGroupingOptions('stroke', model);
-  const groupByChart = getFilteredGroupingOptions('chart', model);
+  const groupByColor = getFilteredGroupingOptions({
+    groupName: 'color',
+    model,
+  });
+  const groupByStroke = getFilteredGroupingOptions({
+    groupName: 'stroke',
+    model,
+  });
+  const groupByChart = getFilteredGroupingOptions({
+    groupName: 'chart',
+    model,
+  });
   if (
     groupByColor.length === 0 &&
     groupByStroke.length === 0 &&
@@ -810,9 +807,12 @@ function alignData(
       if (missingTraces) {
         let configData = model.getState()?.config;
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+          },
+          model,
         });
         if (configData?.chart) {
           configData.chart = {
@@ -1022,7 +1022,12 @@ function getDataAsTableRows(
             : metricsTableRowRenderer(rowValues, {
                 toggleVisibility: (e) => {
                   e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
+                  onRowVisibilityChange({
+                    metricKey: rowValues.key,
+                    model,
+                    appName: 'metrics',
+                    updateModelData,
+                  });
                 },
               }),
         );
@@ -1033,7 +1038,12 @@ function getDataAsTableRows(
             : metricsTableRowRenderer(rowValues, {
                 toggleVisibility: (e) => {
                   e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
+                  onRowVisibilityChange({
+                    metricKey: rowValues.key,
+                    model,
+                    appName: 'metrics',
+                    updateModelData,
+                  });
                 },
               }),
         );
@@ -1064,177 +1074,180 @@ function getDataAsTableRows(
 
   return { rows, sameValueColumns };
 }
-
-function setComponentRefs(refElement: any) {
-  const modelState = model.getState();
-  if (modelState?.refs) {
-    modelState.refs = Object.assign(modelState.refs, refElement);
-    model.setState({ refs: modelState.refs });
-  }
-}
+//
+// function setComponentRefs(refElement: any) {
+//   const modelState = model.getState();
+//   if (modelState?.refs) {
+//     modelState.refs = Object.assign(modelState.refs, refElement);
+//     model.setState({ refs: modelState.refs });
+//   }
+// }
 
 function onSearchQueryCopy(): void {
   const selectedMetricsData = model.getState()?.config?.select;
   let query = metricAppModel.getQueryStringFromSelect(selectedMetricsData);
   navigator.clipboard.writeText(query);
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'success',
-    message: 'Run Expression Copied',
+    notification: {
+      id: Date.now(),
+      severity: 'success',
+      message: 'Run Expression Copied',
+    },
+    model,
   });
 }
 
 // Chart Methods
+//
+// function onHighlightModeChange(mode: HighlightEnum): void {
+//   // separated
+//   const config: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (config?.chart) {
+//     const configData = {
+//       ...config,
+//       chart: {
+//         ...config.chart,
+//         highlightMode: mode,
+//       },
+//     };
+//     model.setState({ config: configData });
+//     updateURL(configData);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Chart] Set highlight mode to "${HighlightEnum[
+//       mode
+//     ].toLowerCase()}"`,
+//   );
+// }
+//
+// function onZoomChange(zoom: Partial<IChartZoom>): void {
+//   // separated
+//   const config: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (config?.chart) {
+//     const configData = {
+//       ...config,
+//       chart: {
+//         ...config.chart,
+//         zoom: {
+//           ...config.chart.zoom,
+//           ...zoom,
+//         },
+//       },
+//     };
+//     model.setState({ config: configData });
+//     updateURL(configData);
+//   }
+//   if (!_.isNil(zoom.mode)) {
+//     analytics.trackEvent(
+//       `[MetricsExplorer][Chart] Set zoom mode to "${
+//         zoom.mode === 0 ? 'single' : 'multiple'
+//       }"`,
+//     );
+//   }
+// }
+//
+// function onAggregationConfigChange(
+//   aggregationConfig: Partial<IAggregationConfig>,
+// ): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart && !_.isEmpty(aggregationConfig)) {
+//     configData.chart = {
+//       ...configData.chart,
+//       aggregationConfig: {
+//         ...configData.chart.aggregationConfig,
+//         ...aggregationConfig,
+//       },
+//     };
+//     updateModelData(configData, true);
+//   }
+//   if (aggregationConfig.methods) {
+//     analytics.trackEvent(
+//       `[MetricsExplorer][Chart] Set aggregation area to "${AggregationAreaMethods[
+//         aggregationConfig.methods.area
+//       ].toLowerCase()}"`,
+//     );
+//     analytics.trackEvent(
+//       `[MetricsExplorer][Chart] Set aggregation line to "${AggregationAreaMethods[
+//         aggregationConfig.methods.line
+//       ].toLowerCase()}"`,
+//     );
+//   } else {
+//     analytics.trackEvent(
+//       `[MetricsExplorer][Chart] ${
+//         aggregationConfig.isApplied
+//           ? 'Aggregate metrics'
+//           : 'Deaggregate metrics'
+//       }`,
+//     );
+//   }
+// }
+//
+// function onSmoothingChange(props: IOnSmoothingChange) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart) {
+//     configData.chart = { ...configData.chart, ...props };
+//     updateModelData(configData, true);
+//   }
+//   if (props.curveInterpolation) {
+//     analytics.trackEvent(
+//       `[MetricsExplorer][Chart] Set interpolation mode to "${
+//         props.curveInterpolation === CurveEnum.Linear ? 'linear' : 'cubic'
+//       }"`,
+//     );
+//   } else {
+//     analytics.trackEvent(
+//       `[MetricsExplorer][Chart] Set smoothening algorithm to "${configData?.chart?.smoothingAlgorithm}"`,
+//       { smoothingFactor: props.smoothingFactor },
+//     );
+//   }
+// }
+//
+// function onIgnoreOutliersChange(): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart) {
+//     configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Chart] ${
+//       !configData?.chart?.ignoreOutliers ? 'Ignore' : 'Display'
+//     } outliers`,
+//   );
+// }
+//
+// function onAxesScaleTypeChange(params: IAxesScaleState): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart) {
+//     configData.chart.axesScaleType = params;
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Chart] Set X axis scale type "${params.xAxis}"`,
+//   );
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Chart] Set Y axis scale type "${params.yAxis}"`,
+//   );
+// }
 
-function onHighlightModeChange(mode: HighlightEnum): void {
-  // separated
-  const config: IMetricAppConfig | undefined = model.getState()?.config;
-  if (config?.chart) {
-    const configData = {
-      ...config,
-      chart: {
-        ...config.chart,
-        highlightMode: mode,
-      },
-    };
-    model.setState({ config: configData });
-    updateURL(configData);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set highlight mode to "${HighlightEnum[
-      mode
-    ].toLowerCase()}"`,
-  );
-}
-
-function onZoomChange(zoom: Partial<IChartZoom>): void {
-  // separated
-  const config: IMetricAppConfig | undefined = model.getState()?.config;
-  if (config?.chart) {
-    const configData = {
-      ...config,
-      chart: {
-        ...config.chart,
-        zoom: {
-          ...config.chart.zoom,
-          ...zoom,
-        },
-      },
-    };
-    model.setState({ config: configData });
-    updateURL(configData);
-  }
-  if (!_.isNil(zoom.mode)) {
-    analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set zoom mode to "${
-        zoom.mode === 0 ? 'single' : 'multiple'
-      }"`,
-    );
-  }
-}
-
-function onAggregationConfigChange(
-  aggregationConfig: Partial<IAggregationConfig>,
-): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart && !_.isEmpty(aggregationConfig)) {
-    configData.chart = {
-      ...configData.chart,
-      aggregationConfig: {
-        ...configData.chart.aggregationConfig,
-        ...aggregationConfig,
-      },
-    };
-    updateModelData(configData, true);
-  }
-  if (aggregationConfig.methods) {
-    analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set aggregation area to "${AggregationAreaMethods[
-        aggregationConfig.methods.area
-      ].toLowerCase()}"`,
-    );
-    analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set aggregation line to "${AggregationAreaMethods[
-        aggregationConfig.methods.line
-      ].toLowerCase()}"`,
-    );
-  } else {
-    analytics.trackEvent(
-      `[MetricsExplorer][Chart] ${
-        aggregationConfig.isApplied
-          ? 'Aggregate metrics'
-          : 'Deaggregate metrics'
-      }`,
-    );
-  }
-}
-
-function onSmoothingChange(props: IOnSmoothingChange) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    configData.chart = { ...configData.chart, ...props };
-    updateModelData(configData, true);
-  }
-  if (props.curveInterpolation) {
-    analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set interpolation mode to "${
-        props.curveInterpolation === CurveEnum.Linear ? 'linear' : 'cubic'
-      }"`,
-    );
-  } else {
-    analytics.trackEvent(
-      `[MetricsExplorer][Chart] Set smoothening algorithm to "${configData?.chart?.smoothingAlgorithm}"`,
-      { smoothingFactor: props.smoothingFactor },
-    );
-  }
-}
-
-function onIgnoreOutliersChange(): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    configData.chart.ignoreOutliers = !configData?.chart.ignoreOutliers;
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Chart] ${
-      !configData?.chart?.ignoreOutliers ? 'Ignore' : 'Display'
-    } outliers`,
-  );
-}
-
-function onAxesScaleTypeChange(params: IAxesScaleState): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    configData.chart.axesScaleType = params;
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set X axis scale type "${params.xAxis}"`,
-  );
-  analytics.trackEvent(
-    `[MetricsExplorer][Chart] Set Y axis scale type "${params.yAxis}"`,
-  );
-}
-
-function setAggregationEnabled(configData: IMetricAppConfig): void {
-  // separated
-  if (configData?.chart) {
-    const isAppliedGrouping =
-      isGroupingApplied<Partial<IMetricAppModelState>>(model);
-    configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
-    if (!isAppliedGrouping) {
-      configData.chart.aggregationConfig.isApplied = false;
-    }
-  }
-  analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
-}
+// function setAggregationEnabled(configData: IMetricAppConfig): void {
+//   // separated
+//   if (configData?.chart) {
+//     const isAppliedGrouping =
+//       isGroupingApplied<Partial<IMetricAppModelState>>(model);
+//     configData.chart.aggregationConfig.isEnabled = isAppliedGrouping;
+//     if (!isAppliedGrouping) {
+//       configData.chart.aggregationConfig.isApplied = false;
+//     }
+//   }
+//   analytics.trackEvent('[MetricsExplorer][Chart] Enable aggregation');
+// }
 
 function updateModelData(
-  configData: IMetricAppConfig = model.getState()!.config!,
+  configData = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
   const { data, params, contexts } = processData(
@@ -1247,7 +1260,9 @@ function updateModelData(
     false,
     configData,
   );
-  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
+  const groupingSelectOptions = [
+    ...getGroupingSelectOptions({ params, contexts }),
+  ];
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
@@ -1272,14 +1287,14 @@ function updateModelData(
     config: configData,
     data,
     lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData<IMetric, Partial<IMetricAppModelState>>(
-      data,
+    chartTitleData: getChartTitleData<IMetric, Partial<IMetricAppModelState>>({
+      processedData: data,
       model,
-    ),
-    aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>(
-      data,
+    }),
+    aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
+      processedData: data,
       model,
-    ),
+    }),
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
@@ -1287,148 +1302,148 @@ function updateModelData(
   });
 }
 
-function onGroupingSelectChange({
-  groupName,
-  list,
-}: IOnGroupingSelectChangeParams) {
-  // separated
-  let configData: IMetricAppConfig | any = model.getState()?.config;
-  if (configData) {
-    configData.grouping = { ...configData.grouping, [groupName]: list };
-    configData = resetChartZoom(configData, 'Metrics');
-    setAggregationEnabled(configData);
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
-}
-
-function onGroupingModeChange({
-  groupName,
-  value,
-}: IOnGroupingModeChangeParams): void {
-  // separated
-  const configData = model.getState()?.config;
-  if (configData?.grouping) {
-    configData.grouping.reverseMode = {
-      ...configData.grouping.reverseMode,
-      [groupName]: value,
-    };
-    if (groupName === 'chart') {
-      resetChartZoom(configData, 'Metrics');
-    }
-    setAggregationEnabled(configData);
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer] ${
-      value ? 'Disable' : 'Enable'
-    } grouping by ${groupName} reverse mode`,
-  );
-}
-
-function onGroupingPaletteChange(index: number): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.grouping) {
-    configData.grouping = {
-      ...configData.grouping,
-      paletteIndex: index,
-    };
-    setAggregationEnabled(configData);
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer] Set color palette to "${
-      index === 0 ? '8 distinct colors' : '24 colors'
-    }"`,
-  );
-}
-
-function onGroupingReset(groupName: GroupNameType) {
-  //separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.grouping) {
-    const { reverseMode, paletteIndex, isApplied, persistence } =
-      configData.grouping;
-    configData.grouping = {
-      ...configData.grouping,
-      reverseMode: { ...reverseMode, [groupName]: false },
-      [groupName]: [],
-      paletteIndex: groupName === 'color' ? 0 : paletteIndex,
-      persistence: { ...persistence, [groupName]: false },
-      isApplied: { ...isApplied, [groupName]: true },
-    };
-    setAggregationEnabled(configData);
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent('[MetricsExplorer] Reset grouping');
-}
-
-function onGroupingApplyChange(groupName: GroupNameType): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.grouping) {
-    configData.grouping = {
-      ...configData.grouping,
-      isApplied: {
-        ...configData.grouping.isApplied,
-        [groupName]: !configData.grouping.isApplied[groupName],
-      },
-    };
-    setAggregationEnabled(configData);
-    updateModelData(configData, true);
-  }
-}
-
-function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.grouping) {
-    configData.grouping = {
-      ...configData.grouping,
-      persistence: {
-        ...configData.grouping.persistence,
-        [groupName]: !configData.grouping.persistence[groupName],
-      },
-    };
-    setAggregationEnabled(configData);
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer] ${
-      !configData?.grouping?.persistence[groupName] ? 'Enable' : 'Disable'
-    } ${groupName} persistence`,
-  );
-}
-
-function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
-  // separated
-  let configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    let content = configData.chart.tooltip.content;
-    if (tooltip.selectedParams && configData?.chart.focusedState.key) {
-      content = filterTooltipContent(
-        tooltipData[configData.chart.focusedState.key],
-        tooltip.selectedParams,
-      );
-    }
-    configData = {
-      ...configData,
-      chart: {
-        ...configData.chart,
-        tooltip: {
-          ...configData.chart.tooltip,
-          ...tooltip,
-          content,
-        },
-      },
-    };
-
-    model.setState({ config: configData });
-    updateURL(configData);
-  }
-  analytics.trackEvent('[MetricsExplorer] Change tooltip content');
-}
+// function onGroupingSelectChange({
+//   groupName,
+//   list,
+// }: IOnGroupingSelectChangeParams) {
+//   // separated
+//   let configData: IMetricAppConfig | any = model.getState()?.config;
+//   if (configData) {
+//     configData.grouping = { ...configData.grouping, [groupName]: list };
+//     configData = resetChartZoom(configData, 'Metrics');
+//     setAggregationEnabled(configData);
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
+// }
+//
+// function onGroupingModeChange({
+//   groupName,
+//   value,
+// }: IOnGroupingModeChangeParams): void {
+//   // separated
+//   const configData = model.getState()?.config;
+//   if (configData?.grouping) {
+//     configData.grouping.reverseMode = {
+//       ...configData.grouping.reverseMode,
+//       [groupName]: value,
+//     };
+//     if (groupName === 'chart') {
+//       resetChartZoom(configData, 'Metrics');
+//     }
+//     setAggregationEnabled(configData);
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer] ${
+//       value ? 'Disable' : 'Enable'
+//     } grouping by ${groupName} reverse mode`,
+//   );
+// }
+//
+// function onGroupingPaletteChange(index: number): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.grouping) {
+//     configData.grouping = {
+//       ...configData.grouping,
+//       paletteIndex: index,
+//     };
+//     setAggregationEnabled(configData);
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer] Set color palette to "${
+//       index === 0 ? '8 distinct colors' : '24 colors'
+//     }"`,
+//   );
+// }
+//
+// function onGroupingReset(groupName: GroupNameType) {
+//   //separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.grouping) {
+//     const { reverseMode, paletteIndex, isApplied, persistence } =
+//       configData.grouping;
+//     configData.grouping = {
+//       ...configData.grouping,
+//       reverseMode: { ...reverseMode, [groupName]: false },
+//       [groupName]: [],
+//       paletteIndex: groupName === 'color' ? 0 : paletteIndex,
+//       persistence: { ...persistence, [groupName]: false },
+//       isApplied: { ...isApplied, [groupName]: true },
+//     };
+//     setAggregationEnabled(configData);
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent('[MetricsExplorer] Reset grouping');
+// }
+//
+// function onGroupingApplyChange(groupName: GroupNameType): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.grouping) {
+//     configData.grouping = {
+//       ...configData.grouping,
+//       isApplied: {
+//         ...configData.grouping.isApplied,
+//         [groupName]: !configData.grouping.isApplied[groupName],
+//       },
+//     };
+//     setAggregationEnabled(configData);
+//     updateModelData(configData, true);
+//   }
+// }
+//
+// function onGroupingPersistenceChange(groupName: 'stroke' | 'color'): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.grouping) {
+//     configData.grouping = {
+//       ...configData.grouping,
+//       persistence: {
+//         ...configData.grouping.persistence,
+//         [groupName]: !configData.grouping.persistence[groupName],
+//       },
+//     };
+//     setAggregationEnabled(configData);
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer] ${
+//       !configData?.grouping?.persistence[groupName] ? 'Enable' : 'Disable'
+//     } ${groupName} persistence`,
+//   );
+// }
+//
+// function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+//   // separated
+//   let configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart) {
+//     let content = configData.chart.tooltip.content;
+//     if (tooltip.selectedParams && configData?.chart.focusedState.key) {
+//       content = filterTooltipContent(
+//         tooltipData[configData.chart.focusedState.key],
+//         tooltip.selectedParams,
+//       );
+//     }
+//     configData = {
+//       ...configData,
+//       chart: {
+//         ...configData.chart,
+//         tooltip: {
+//           ...configData.chart.tooltip,
+//           ...tooltip,
+//           content,
+//         },
+//       },
+//     };
+//
+//     model.setState({ config: configData });
+//     updateURL(configData);
+//   }
+//   analytics.trackEvent('[MetricsExplorer] Change tooltip content');
+// }
 
 const onActivePointChange = _.debounce(
   (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
@@ -1499,35 +1514,35 @@ const onActivePointChange = _.debounce(
 );
 
 // Table Methods
-
-function onTableRowHover(rowKey?: string): void {
-  //separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
-    if (chartPanelRef && !configData.chart.focusedState.active) {
-      chartPanelRef.current?.setActiveLineAndCircle(rowKey);
-    }
-  }
-}
-
-function onTableRowClick(rowKey?: string): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()!.config!;
-  const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
-  let focusedStateActive = !!rowKey;
-  if (
-    configData?.chart?.focusedState.active &&
-    configData.chart.focusedState.key === rowKey
-  ) {
-    focusedStateActive = false;
-  }
-  chartPanelRef?.current?.setActiveLineAndCircle(
-    rowKey || configData?.chart?.focusedState?.key,
-    focusedStateActive,
-    true,
-  );
-}
+//
+// function onTableRowHover(rowKey?: string): void {
+//   //separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart) {
+//     const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
+//     if (chartPanelRef && !configData.chart.focusedState.active) {
+//       chartPanelRef.current?.setActiveLineAndCircle(rowKey);
+//     }
+//   }
+// }
+//
+// function onTableRowClick(rowKey?: string): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()!.config!;
+//   const chartPanelRef: any = model.getState()?.refs?.chartPanelRef;
+//   let focusedStateActive = !!rowKey;
+//   if (
+//     configData?.chart?.focusedState.active &&
+//     configData.chart.focusedState.key === rowKey
+//   ) {
+//     focusedStateActive = false;
+//   }
+//   chartPanelRef?.current?.setActiveLineAndCircle(
+//     rowKey || configData?.chart?.focusedState?.key,
+//     focusedStateActive,
+//     true,
+//   );
+// }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config } = model.getState() as IMetricAppModelState;
@@ -1575,10 +1590,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   groupedRows.forEach(
     (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
       groupedRow.forEach((row: IMetricTableRowData) => {
-        const filteredRow = getFilteredRow<IMetricTableRowData>(
-          filteredHeader,
+        const filteredRow = getFilteredRow<IMetricTableRowData>({
+          columnKeys: filteredHeader,
           row,
-        );
+        });
         dataToExport.push(filteredRow);
       });
       if (groupedRows.length - 1 !== groupedRowIndex) {
@@ -1614,104 +1629,105 @@ function updateURL(configData = model.getState()!.config!) {
     encodedParams.select = encode(select);
   }
 
-  updateUrlParam(encodedParams, 'metrics');
+  updateUrlParam({ data: encodedParams, appName: 'metrics' });
 }
 
-function onNotificationDelete(id: number) {
-  // separated
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData].filter((i) => i.id !== id);
-  model.setState({ notifyData });
-}
+// function onNotificationDelete(id: number) {
+//   // separated
+//   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+//   notifyData = [...notifyData].filter((i) => i.id !== id);
+//   model.setState({ notifyData });
+// }
+//
+// function onNotificationAdd(notification: INotification) {
+//   // separated
+//   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+//   notifyData = [...notifyData, notification];
+//   model.setState({ notifyData });
+//   setTimeout(() => {
+//     onNotificationDelete(notification.id);
+//   }, 3000);
+// }
+//
+// function onResetConfigData(): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData) {
+//     configData.grouping = { ...getConfig().grouping } as any;
+//     configData.chart = { ...getConfig().chart } as any;
+//     updateModelData(configData, true);
+//   }
+// }
 
-function onNotificationAdd(notification: INotification) {
-  // separated
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData, notification];
-  model.setState({ notifyData });
-  setTimeout(() => {
-    onNotificationDelete(notification.id);
-  }, 3000);
-}
-
-function onResetConfigData(): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData) {
-    configData.grouping = { ...getConfig().grouping } as any;
-    configData.chart = { ...getConfig().chart } as any;
-    updateModelData(configData, true);
-  }
-}
-
-async function onAlignmentMetricChange(metric: string) {
-  // separated
-  const modelState = model.getState();
-  const configData = modelState?.config;
-  if (configData?.chart) {
-    configData.chart = {
-      ...configData.chart,
-      alignmentConfig: { metric, type: AlignmentOptions.CUSTOM_METRIC },
-    };
-    model.setState({ config: configData });
-  }
-  if (modelState?.rawData && configData) {
-    model.setState({ requestIsPending: true });
-    const runs = modelState?.rawData?.map((item) => {
-      const traces = item.traces.map(({ context, metric_name, slice }) => ({
-        context,
-        metric_name,
-        slice,
-      }));
-      return {
-        run_id: item.hash,
-        traces,
-      };
-    });
-
-    const reqBody: IAlignMetricsDataParams = {
-      align_by: metric,
-      runs,
-    };
-    const stream = await metricsService.fetchAlignedMetricsData(reqBody).call();
-    const runData = await getRunData(stream);
-    let missingTraces = false;
-    const rawData: any = model.getState()?.rawData?.map((item, index) => {
-      return {
-        ...item,
-        traces: item.traces.map((trace, ind) => {
-          let x_axis_iters = runData[index]?.[ind]?.x_axis_iters || null;
-          let x_axis_values = runData[index]?.[ind]?.x_axis_iters || null;
-          if (!x_axis_iters || !x_axis_values) {
-            missingTraces = true;
-          }
-          let data = {
-            ...trace,
-            ...runData[index][ind],
-          };
-          return data;
-        }),
-      };
-    });
-    if (missingTraces) {
-      onNotificationAdd({
-        id: Date.now(),
-        severity: 'error',
-        message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
-      });
-      if (configData) {
-        configData.chart = {
-          ...configData.chart,
-          alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
-        } as any;
-      }
-    }
-    setModelData(rawData, configData);
-  }
-  analytics.trackEvent(
-    '[MetricsExplorer][Chart] Align X axis by another metric',
-  );
-}
+//
+// async function onAlignmentMetricChange(metric: string) {
+//   // separated
+//   const modelState = model.getState();
+//   const configData = modelState?.config;
+//   if (configData?.chart) {
+//     configData.chart = {
+//       ...configData.chart,
+//       alignmentConfig: { metric, type: AlignmentOptions.CUSTOM_METRIC },
+//     };
+//     model.setState({ config: configData });
+//   }
+//   if (modelState?.rawData && configData) {
+//     model.setState({ requestIsPending: true });
+//     const runs = modelState?.rawData?.map((item) => {
+//       const traces = item.traces.map(({ context, metric_name, slice }) => ({
+//         context,
+//         metric_name,
+//         slice,
+//       }));
+//       return {
+//         run_id: item.hash,
+//         traces,
+//       };
+//     });
+//
+//     const reqBody: IAlignMetricsDataParams = {
+//       align_by: metric,
+//       runs,
+//     };
+//     const stream = await metricsService.fetchAlignedMetricsData(reqBody).call();
+//     const runData = await getRunData(stream);
+//     let missingTraces = false;
+//     const rawData: any = model.getState()?.rawData?.map((item, index) => {
+//       return {
+//         ...item,
+//         traces: item.traces.map((trace, ind) => {
+//           let x_axis_iters = runData[index]?.[ind]?.x_axis_iters || null;
+//           let x_axis_values = runData[index]?.[ind]?.x_axis_iters || null;
+//           if (!x_axis_iters || !x_axis_values) {
+//             missingTraces = true;
+//           }
+//           let data = {
+//             ...trace,
+//             ...runData[index][ind],
+//           };
+//           return data;
+//         }),
+//       };
+//     });
+//     if (missingTraces) {
+//       onNotificationAdd({
+//         id: Date.now(),
+//         severity: 'error',
+//         message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+//       });
+//       if (configData) {
+//         configData.chart = {
+//           ...configData.chart,
+//           alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
+//         } as any;
+//       }
+//     }
+//     setModelData(rawData, configData);
+//   }
+//   analytics.trackEvent(
+//     '[MetricsExplorer][Chart] Align X axis by another metric',
+//   );
+// }
 
 async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   // separated
@@ -1737,7 +1753,7 @@ function setModelData(
   const sortFields = model.getState()?.config?.table?.sortFields;
   const { data, params, contexts } = processData(rawData);
   if (configData) {
-    setAggregationEnabled(configData);
+    setAggregationEnabled({ model, appName: 'metrics' });
   }
   const tableData = getDataAsTableRows(
     data,
@@ -1753,14 +1769,14 @@ function setModelData(
     params,
     data,
     lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData<IMetric, Partial<IMetricAppModelState>>(
-      data,
+    chartTitleData: getChartTitleData<IMetric, Partial<IMetricAppModelState>>({
+      processedData: data,
       model,
-    ),
-    aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>(
-      data,
+    }),
+    aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
+      processedData: data,
       model,
-    ),
+    }),
     tableData: tableData.rows,
     tableColumns: getMetricsTableColumns(
       params,
@@ -1772,331 +1788,338 @@ function setModelData(
       onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params, contexts)],
+    groupingSelectOptions: [...getGroupingSelectOptions({ params, contexts })],
   });
 }
 
-function onAlignmentTypeChange(type: AlignmentOptions): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.chart) {
-    const alignmentConfig = { ...configData.chart.alignmentConfig, type };
+// function onAlignmentTypeChange(type: AlignmentOptions): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.chart) {
+//     const alignmentConfig = { ...configData.chart.alignmentConfig, type };
+//
+//     if (type !== AlignmentOptions.CUSTOM_METRIC) {
+//       alignmentConfig.metric = '';
+//     }
+//     configData.chart = {
+//       ...configData.chart,
+//       alignmentConfig,
+//     };
+//     updateModelData(configData, true);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
+//       type
+//     ].toLowerCase()}"`,
+//   );
+// }
+//
+// function onMetricsSelectChange(data: ISelectMetricsOption[]) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.select) {
+//     const newConfig = {
+//       ...configData,
+//       select: { ...configData.select, metrics: data },
+//     };
+//
+//     model.setState({
+//       config: newConfig,
+//     });
+//   }
+// }
+//
+// function onSelectRunQueryChange(query: string) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.select) {
+//     const newConfig = {
+//       ...configData,
+//       select: { ...configData.select, query },
+//     };
+//
+//     model.setState({
+//       config: newConfig,
+//     });
+//   }
+// }
+//
+// function onSelectAdvancedQueryChange(query: string) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.select) {
+//     const newConfig = {
+//       ...configData,
+//       select: { ...configData.select, advancedQuery: query },
+//     };
+//     model.setState({
+//       config: newConfig,
+//     });
+//   }
+// }
+//
+// function toggleSelectAdvancedMode() {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   let query = configData?.select?.advancedQuery
+//     ? configData.select.advancedQuery
+//     : getQueryStringFromSelect(configData?.select);
+//   if (query === '()') {
+//     query = '';
+//   }
+//   if (configData?.select) {
+//     const newConfig = {
+//       ...configData,
+//       select: {
+//         ...configData.select,
+//         advancedQuery: query,
+//         advancedMode: !configData.select.advancedMode,
+//       },
+//     };
+//
+//     model.setState({
+//       config: newConfig,
+//     });
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer] Turn ${
+//       !configData?.select?.advancedMode ? 'on' : 'off'
+//     } the advanced mode of select form`,
+//   );
+// }
+//
+// function onRowHeightChange(height: RowHeightSize) {
+//   //separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       rowHeight: height,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Table] Set table row height to "${RowHeightEnum[
+//       height
+//     ].toLowerCase()}"`,
+//   );
+// }
+//
+// function onMetricVisibilityChange(metricsKeys: string[]) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   const processedData = model.getState()?.data;
+//   if (configData?.table && processedData) {
+//     const table = {
+//       ...configData.table,
+//       hiddenMetrics:
+//         metricsKeys[0] === 'all'
+//           ? Object.values(processedData)
+//               .map((metricCollection) =>
+//                 metricCollection.data.map((metric) => metric.key),
+//               )
+//               .flat()
+//           : metricsKeys,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Table] ${
+//       metricsKeys[0] === 'all'
+//         ? 'Visualize all hidden metrics from table'
+//         : 'Hide all metrics from table'
+//     }`,
+//   );
+// }
 
-    if (type !== AlignmentOptions.CUSTOM_METRIC) {
-      alignmentConfig.metric = '';
-    }
-    configData.chart = {
-      ...configData.chart,
-      alignmentConfig,
-    };
-    updateModelData(configData, true);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
-      type
-    ].toLowerCase()}"`,
-  );
-}
+// function onRowVisibilityChange(metricKey: string) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table) {
+//     let hiddenMetrics = configData?.table?.hiddenMetrics || [];
+//     if (hiddenMetrics?.includes(metricKey)) {
+//       hiddenMetrics = hiddenMetrics.filter(
+//         (hiddenMetric) => hiddenMetric !== metricKey,
+//       );
+//     } else {
+//       hiddenMetrics = [...hiddenMetrics, metricKey];
+//     }
+//     const table = {
+//       ...configData.table,
+//       hiddenMetrics,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+// }
+//
+// function onColumnsVisibilityChange(hiddenColumns: string[]) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   const columnsData = model.getState()!.tableColumns!;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       hiddenColumns:
+//         hiddenColumns[0] === 'all'
+//           ? columnsData.map((col) => col.key)
+//           : hiddenColumns,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+//   if (hiddenColumns[0] === 'all') {
+//     analytics.trackEvent('[MetricsExplorer][Table] Hide all table columns');
+//   } else if (_.isEmpty(hiddenColumns)) {
+//     analytics.trackEvent('[MetricsExplorer][Table] Show all table columns');
+//   }
+// }
 
-function onMetricsSelectChange(data: ISelectMetricsOption[]) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.select) {
-    const newConfig = {
-      ...configData,
-      select: { ...configData.select, metrics: data },
-    };
+// function onTableDiffShow() {
+//   //separated
+//   const sameValueColumns = model.getState()?.sameValueColumns;
+//   if (sameValueColumns) {
+//     onColumnsVisibilityChange(sameValueColumns);
+//   }
+//   analytics.trackEvent('[MetricsExplorer][Table] Show table columns diff');
+// }
+//
+// function onColumnsOrderChange(columnsOrder: any) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       columnsOrder: columnsOrder,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+//   if (
+//     _.isEmpty(columnsOrder?.left) &&
+//     _.isEmpty(columnsOrder?.middle) &&
+//     _.isEmpty(columnsOrder?.right)
+//   ) {
+//     analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
+//   }
+// }
 
-    model.setState({
-      config: newConfig,
-    });
-  }
-}
-
-function onSelectRunQueryChange(query: string) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.select) {
-    const newConfig = {
-      ...configData,
-      select: { ...configData.select, query },
-    };
-
-    model.setState({
-      config: newConfig,
-    });
-  }
-}
-
-function onSelectAdvancedQueryChange(query: string) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.select) {
-    const newConfig = {
-      ...configData,
-      select: { ...configData.select, advancedQuery: query },
-    };
-    model.setState({
-      config: newConfig,
-    });
-  }
-}
-
-function toggleSelectAdvancedMode() {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  let query = configData?.select?.advancedQuery
-    ? configData.select.advancedQuery
-    : getQueryStringFromSelect(configData?.select);
-  if (query === '()') {
-    query = '';
-  }
-  if (configData?.select) {
-    const newConfig = {
-      ...configData,
-      select: {
-        ...configData.select,
-        advancedQuery: query,
-        advancedMode: !configData.select.advancedMode,
-      },
-    };
-
-    model.setState({
-      config: newConfig,
-    });
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer] Turn ${
-      !configData?.select?.advancedMode ? 'on' : 'off'
-    } the advanced mode of select form`,
-  );
-}
-
-function onRowHeightChange(height: RowHeightSize) {
-  //separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      rowHeight: height,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Table] Set table row height to "${RowHeightEnum[
-      height
-    ].toLowerCase()}"`,
-  );
-}
-
-function onMetricVisibilityChange(metricsKeys: string[]) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const processedData = model.getState()?.data;
-  if (configData?.table && processedData) {
-    const table = {
-      ...configData.table,
-      hiddenMetrics:
-        metricsKeys[0] === 'all'
-          ? Object.values(processedData)
-              .map((metricCollection) =>
-                metricCollection.data.map((metric) => metric.key),
-              )
-              .flat()
-          : metricsKeys,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-    updateModelData(config);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Table] ${
-      metricsKeys[0] === 'all'
-        ? 'Visualize all hidden metrics from table'
-        : 'Hide all metrics from table'
-    }`,
-  );
-}
-
-function onRowVisibilityChange(metricKey: string) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    let hiddenMetrics = configData?.table?.hiddenMetrics || [];
-    if (hiddenMetrics?.includes(metricKey)) {
-      hiddenMetrics = hiddenMetrics.filter(
-        (hiddenMetric) => hiddenMetric !== metricKey,
-      );
-    } else {
-      hiddenMetrics = [...hiddenMetrics, metricKey];
-    }
-    const table = {
-      ...configData.table,
-      hiddenMetrics,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-    updateModelData(config);
-  }
-}
-
-function onColumnsVisibilityChange(hiddenColumns: string[]) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('metricsTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent('[MetricsExplorer][Table] Hide all table columns');
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent('[MetricsExplorer][Table] Show all table columns');
-  }
-}
-
-function onTableDiffShow() {
-  //separated
-  const sameValueColumns = model.getState()?.sameValueColumns;
-  if (sameValueColumns) {
-    onColumnsVisibilityChange(sameValueColumns);
-  }
-  analytics.trackEvent('[MetricsExplorer][Table] Show table columns diff');
-}
-
-function onColumnsOrderChange(columnsOrder: any) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      columnsOrder: columnsOrder,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-    updateModelData(config);
-  }
-  if (
-    _.isEmpty(columnsOrder?.left) &&
-    _.isEmpty(columnsOrder?.middle) &&
-    _.isEmpty(columnsOrder?.right)
-  ) {
-    analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
-  }
-}
-
-function onTableResizeModeChange(mode: ResizeModeEnum): void {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      resizeMode: mode,
-    };
-
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
-  );
-}
-
-function onTableResizeEnd(tableHeight: string) {
-  //separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      height: tableHeight,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-  }
-}
+// function onTableResizeModeChange(mode: ResizeModeEnum): void {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       resizeMode: mode,
+//     };
+//
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Table] Set table view mode to "${mode}"`,
+//   );
+// }
+//
+// function onTableResizeEnd(tableHeight: string) {
+//   //separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       height: tableHeight,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+// }
 
 // internal function to update config.table.sortFields and cache data
-function updateSortFields(sortFields: SortField[]) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      sortFields,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-
-    setItem('metricsTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  analytics.trackEvent(
-    `[MetricsExplorer][Table] ${
-      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
-    } table sorting by a key`,
-  );
-}
+// function updateSortFields(sortFields: SortField[]) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       sortFields,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+//   analytics.trackEvent(
+//     `[MetricsExplorer][Table] ${
+//       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
+//     } table sorting by a key`,
+//   );
+// }
 
 // set empty array to config.table.sortFields
 function onSortReset() {
-  updateSortFields([]);
+  updateSortFields({
+    sortFields: [],
+    model,
+    appName: 'metrics',
+    updateModelData,
+  });
 }
 
 /**
@@ -2144,33 +2167,39 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
       newFields = [...sortFields, [field, 'asc']];
     }
   }
-  updateSortFields(newFields);
+  updateSortFields({
+    sortFields: newFields,
+    model,
+    appName: 'metrics',
+    updateModelData,
+  });
 }
 
-function updateColumnsWidths(key: string, width: number, isReset: boolean) {
-  // separated
-  const configData: IMetricAppConfig | undefined = model.getState()?.config;
-  if (configData?.table && configData?.table?.columnsWidths) {
-    let columnsWidths = configData?.table?.columnsWidths;
-    if (isReset) {
-      columnsWidths = _.omit(columnsWidths, [key]);
-    } else {
-      columnsWidths = { ...columnsWidths, [key]: width };
-    }
-    const table = {
-      ...configData.table,
-      columnsWidths,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('metricsTable', encode(table));
-  }
-}
+// function updateColumnsWidths(key: string, width: number, isReset: boolean) {
+//   // separated
+//   const configData: IMetricAppConfig | undefined = model.getState()?.config;
+//   if (configData?.table && configData?.table?.columnsWidths) {
+//     let columnsWidths = configData?.table?.columnsWidths;
+//     if (isReset) {
+//       columnsWidths = _.omit(columnsWidths, [key]);
+//     } else {
+//       columnsWidths = { ...columnsWidths, [key]: width };
+//     }
+//     const table = {
+//       ...configData.table,
+//       columnsWidths,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('metricsTable', encode(table));
+//     updateModelData(config);
+//   }
+// }
 
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();

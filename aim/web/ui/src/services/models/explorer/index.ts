@@ -1,6 +1,10 @@
 import createAppModel from './createAppModel';
-import { IAppInitialConfig } from '../../../types/services/models/explorer/createAppModel';
-import { ChartTypeEnum } from '../../../utils/d3';
+import { IAppInitialConfig } from 'types/services/models/explorer/createAppModel';
+import { ChartTypeEnum } from 'utils/d3';
+
+/**
+ *  Constants and Enums we can create and export from this file
+ */
 
 enum AppDataTypeEnum {
   RUNS = 'runs',
@@ -14,6 +18,11 @@ enum AppNameEnum {
   RUNS = 'runs',
   IMAGES = 'images',
 }
+
+/**
+ * appInitialConfig is config object which describes our app models
+ * @appInitialConfig { [key: string]: IAppInitialConfig }
+ */
 
 const appInitialConfig: {
   [key: string]: IAppInitialConfig;

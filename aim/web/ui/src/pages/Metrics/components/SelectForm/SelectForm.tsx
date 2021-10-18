@@ -30,7 +30,6 @@ import metricAppModel from 'services/models/metrics/metricsAppModel';
 import Icon from 'components/Icon/Icon';
 import TagLabel from 'components/TagLabel/TagLabel';
 import Button from 'components/Button/Button';
-import getQueryStringFromSelect from 'utils/app/getQuertStringFromSelect';
 
 import './SelectForm.scss';
 

@@ -3,13 +3,22 @@ import * as analytics from 'services/analytics';
 import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onMetricVisibilityChange<M extends State>(
-  metricsKeys: string[],
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-): void {
+export default function onMetricVisibilityChange<M extends State>({
+  metricsKeys,
+  model,
+  appName,
+  updateModelData,
+}: {
+  metricsKeys: string[];
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}): void {
   const configData = model.getState()?.config;
   const processedData = model.getState()?.data;
   if (configData?.table && processedData) {

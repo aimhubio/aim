@@ -7,10 +7,14 @@ import { setItem } from 'utils/storage';
  *    2. Stores updated URL in localStorage if App is not in the bookmark state
  * @data ex. {IAppConfig} configData - the current state of the app config
  */
-export default function updateUrlParam(
-  data: { [key: string]: string },
-  appName: string,
-): void {
+
+export default function updateUrlParam({
+  data,
+  appName,
+}: {
+  data: { [key: string]: string };
+  appName: string;
+}): void {
   const url: string = getUrlWithParam(data);
 
   if (url === `${window.location.pathname}${window.location.search}`) {

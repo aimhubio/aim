@@ -238,15 +238,6 @@ export interface IOnGroupingModeChangeParams {
   options?: any[] | null;
 }
 
-export interface IGetGroupingPersistIndex {
-  groupValues: {
-    [key: string]: IMetricsCollection<IMetric>;
-  };
-  groupKey: string;
-  grouping: IMetricAppConfig['grouping'];
-  groupName: 'color' | 'stroke';
-}
-
 export type GroupNameType = 'color' | 'stroke' | 'chart';
 export interface IGroupingSelectOption {
   label: string;

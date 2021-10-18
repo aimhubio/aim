@@ -2,14 +2,24 @@ import * as analytics from 'services/analytics';
 
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onGroupingReset<M extends State>(
-  groupName: GroupNameType,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-  setAggregationEnabled?: any,
-) {
+export default function onGroupingReset<M extends State>({
+  groupName,
+  model,
+  appName,
+  updateModelData,
+  setAggregationEnabled,
+}: {
+  groupName: GroupNameType;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+  setAggregationEnabled?: any;
+}) {
   const configData = model.getState()?.config;
   if (configData?.grouping) {
     const { reverseMode, paletteIndex, isApplied, persistence } =
@@ -23,9 +33,9 @@ export default function onGroupingReset<M extends State>(
       isApplied: { ...isApplied, [groupName]: true },
     };
     if (typeof setAggregationEnabled === 'function') {
-      setAggregationEnabled(model, appName);
+      setAggregationEnabled({ model, appName });
     }
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(`[${appName}Explorer] Reset grouping`);
 }

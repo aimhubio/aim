@@ -4,8 +4,8 @@ import { isEmpty } from 'lodash-es';
 import SelectForm from './components/SelectForm/SelectForm';
 import Grouping from './components/Grouping/Grouping';
 import Controls from './components/Controls/Controls';
-
 import MetricsBar from './components/MetricsBar/MetricsBar';
+
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';

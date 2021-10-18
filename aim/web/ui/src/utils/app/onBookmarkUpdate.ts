@@ -6,11 +6,15 @@ import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import onNotificationAdd from './onNotificationAdd';
 
-export default function onBookmarkUpdate<M extends State>(
-  id: string,
-  model: IModel<M>,
-  appName: string,
-): void {
+export default function onBookmarkUpdate<M extends State>({
+  id,
+  model,
+  appName,
+}: {
+  id: string;
+  model: IModel<M>;
+  appName: string;
+}): void {
   const configData = model.getState()?.config;
   if (configData) {
     appsService
@@ -18,14 +22,14 @@ export default function onBookmarkUpdate<M extends State>(
       .call()
       .then((res: IDashboardData | any) => {
         if (res.id) {
-          onNotificationAdd(
-            {
+          onNotificationAdd({
+            notification: {
               id: Date.now(),
               severity: 'success',
               message: BookmarkNotificationsEnum.UPDATE,
             },
             model,
-          );
+          });
         }
       });
   }

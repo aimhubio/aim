@@ -8,11 +8,15 @@ import { IModel, State } from 'types/services/models/model';
 import getRunData from './getRunData';
 import onNotificationAdd from './onNotificationAdd';
 
-export default async function onAlignmentMetricChange<M extends State>(
-  metric: string,
-  model: IModel<M>,
-  setModelData: any,
-) {
+export default async function onAlignmentMetricChange<M extends State>({
+  metric,
+  model,
+  setModelData,
+}: {
+  metric: string;
+  model: IModel<M>;
+  setModelData: any;
+}) {
   const modelState = model.getState();
   const configData = modelState?.config;
   if (configData?.chart) {
@@ -64,14 +68,14 @@ export default async function onAlignmentMetricChange<M extends State>(
       };
     });
     if (missingTraces) {
-      onNotificationAdd(
-        {
+      onNotificationAdd({
+        notification: {
           id: Date.now(),
           severity: 'error',
           message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
         },
         model,
-      );
+      });
       configData.chart = {
         ...configData.chart,
         alignmentConfig: { metric: '', type: AlignmentOptions.STEP },

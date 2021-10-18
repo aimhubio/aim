@@ -1,18 +1,27 @@
 import * as analytics from 'services/analytics';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IModel, State } from '../../types/services/models/model';
+import { IModel, State } from 'types/services/models/model';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onAxesScaleTypeChange<M extends State>(
-  args: IAxesScaleState,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-): void {
+export default function onAxesScaleTypeChange<M extends State>({
+  args,
+  model,
+  appName,
+  updateModelData,
+}: {
+  args: IAxesScaleState;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}): void {
   const configData = model?.getState()?.config;
   if (configData?.chart) {
     configData.chart.axesScaleType = args;
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[${appName}Explorer][Chart] Set X axis scale type "${args.xAxis}"`,

@@ -2,6 +2,7 @@ import _ from 'lodash-es';
 import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 /**
  *
@@ -11,14 +12,24 @@ import { setItem } from 'utils/storage';
  * @param {IModel<M extends State>} model - instance of create model
  */
 
-export default function updateColumnsWidths<M extends State>(
-  key: string,
-  width: number,
-  isReset: boolean,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-): void {
+export default function updateColumnsWidths<M extends State>({
+  key,
+  width,
+  isReset,
+  model,
+  appName,
+  updateModelData,
+}: {
+  key: string;
+  width: number;
+  isReset: boolean;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}): void {
   const configData = model.getState()?.config;
   if (configData?.table && configData?.table?.columnsWidths) {
     let columnsWidths = configData?.table?.columnsWidths;
@@ -35,9 +46,7 @@ export default function updateColumnsWidths<M extends State>(
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem(`${appName.toLowerCase()}Table`, encode(table));
     updateModelData(config);
   }

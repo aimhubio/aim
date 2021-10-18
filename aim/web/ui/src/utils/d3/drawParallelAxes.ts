@@ -114,10 +114,12 @@ function drawParallelAxes({
   const lastYScale =
     attributesRef.current.yScale[keysOfDimensions[keysOfDimensions.length - 1]];
   const range = lastYScale?.range();
-  attributesRef.current.yColorIndicatorScale = d3
-    .scaleSequential()
-    .domain(range)
-    .interpolator(d3.interpolateRgb(gradientStartColor, gradientEndColor));
+  if (range) {
+    attributesRef.current.yColorIndicatorScale = d3
+      .scaleSequential()
+      .domain(range)
+      .interpolator(d3.interpolateRgb(gradientStartColor, gradientEndColor));
+  }
 }
 
 export default drawParallelAxes;

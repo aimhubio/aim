@@ -1,6 +1,7 @@
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import updateTableSortFields from 'utils/app/updateTableSortFields';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 /**
  * function onSortChange has 3 major functionalities
  *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)
@@ -9,13 +10,22 @@ import updateTableSortFields from 'utils/app/updateTableSortFields';
  * @param {String} field  - the name of the field (i.e params.dataset.preproc)
  * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
  */
-export default function onTableSortChange<M extends State>(
-  field: string,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-  value?: 'asc' | 'desc' | 'none',
-) {
+export default function onTableSortChange<M extends State>({
+  field,
+  model,
+  appName,
+  updateModelData,
+  value,
+}: {
+  field: string;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+  value?: 'asc' | 'desc' | 'none';
+}) {
   const configData = model.getState().config;
   const sortFields = configData?.table.sortFields || [];
 
@@ -51,5 +61,10 @@ export default function onTableSortChange<M extends State>(
       newFields = [...sortFields, [field, 'asc']];
     }
   }
-  updateTableSortFields(newFields, model, appName, updateModelData);
+  updateTableSortFields({
+    sortFields: newFields,
+    model,
+    appName,
+    updateModelData,
+  });
 }

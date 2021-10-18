@@ -1,12 +1,22 @@
 import { IModel, State } from 'types/services/models/model';
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onRowVisibilityChange<M extends State>(
-  metricKey: string,
-  model: IModel<M>,
-  appName: string,
-) {
+export default function onRowVisibilityChange<M extends State>({
+  metricKey,
+  model,
+  appName,
+  updateModelData,
+}: {
+  metricKey: string;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}) {
   const configData = model.getState()?.config;
   if (configData?.table) {
     let hiddenMetrics = configData?.table?.hiddenMetrics || [];
@@ -25,10 +35,8 @@ export default function onRowVisibilityChange<M extends State>(
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem(`${appName}Table`, encode(table));
-    // updateModelData(config);
+    updateModelData(config);
   }
 }

@@ -6,10 +6,13 @@ import {
 import { IModel, State } from 'types/services/models/model';
 import { formatValue } from '../formatValue';
 
-export default function getChartTitleData<D, M extends State>(
-  processedData: IMetricsCollection<D>[],
-  model: IModel<M>,
-): IChartTitleData {
+export default function getChartTitleData<D, M extends State>({
+  processedData,
+  model,
+}: {
+  processedData: IMetricsCollection<D>[];
+  model: IModel<M>;
+}): IChartTitleData {
   if (!processedData) {
     return {};
   }

@@ -2,7 +2,7 @@ import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel'
 import { formatValue } from '../formatValue';
 
 export default function getQueryStringFromSelect<S>(
-  selectData: IMetricAppConfig['select'] | undefined,
+  selectData: IMetricAppConfig['select'],
 ) {
   let query = '';
   if (selectData !== undefined) {

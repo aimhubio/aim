@@ -7,12 +7,17 @@ import {
 import { IModel, State } from 'types/services/models/model';
 import filterTooltipContent from 'utils/filterTooltipContent';
 
-export default function onChangeTooltip<M extends State>(
-  tooltip: Partial<IChartTooltip>,
-  tooltipData: ITooltipData,
-  model: IModel<M>,
-  appName: string,
-): void {
+export default function onChangeTooltip<M extends State>({
+  tooltip,
+  tooltipData,
+  model,
+  appName,
+}: {
+  tooltip: Partial<IChartTooltip>;
+  tooltipData: ITooltipData;
+  model: IModel<M>;
+  appName: string;
+}): void {
   let configData = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;

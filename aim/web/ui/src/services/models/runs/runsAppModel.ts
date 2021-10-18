@@ -24,7 +24,6 @@ import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { decode, encode } from 'utils/encoder/encoder';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
-  GroupNameType,
   IMetricAppConfig,
   IMetricsCollection,
   IMetricTableRowData,
@@ -35,7 +34,6 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -51,11 +49,12 @@ import {
   runsTableRowRenderer,
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 import * as analytics from 'services/analytics';
-import { RowHeightEnum } from 'config/enums/tableEnums';
 import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import { formatValue } from 'utils/formatValue';
-import updateUrlParam from '../../../utils/app/updateUrlParam';
 import { appInitialConfig, createAppModel } from '../explorer';
+import getFilteredRow from 'utils/app/getFilteredRow';
+import exceptionHandler from 'utils/app/exceptionHandler';
+import { getFilteredGroupingOptions } from 'utils/app/getFilteredGroupingOptions';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -127,7 +126,9 @@ function getRunsData(isInitial = true) {
   return {
     call: async () => {
       try {
-        const stream = await call(exceptionHandler);
+        const stream = await call((detail) =>
+          exceptionHandler({ detail, model }),
+        );
         let gen = adjustable_reader(stream);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
@@ -310,24 +311,27 @@ function resetModelOnError(detail?: any) {
   }, 0);
 }
 
-function exceptionHandler(detail: any) {
-  let message = '';
-
-  if (detail.name === 'SyntaxError') {
-    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
-  } else {
-    message = detail.message || 'Something went wrong';
-  }
-
-  onNotificationAdd({
-    id: Date.now(),
-    severity: 'error',
-    message,
-  });
-
-  // reset model
-  resetModelOnError(detail);
-}
+// function exceptionHandler(detail: any) {
+//   let message = '';
+//
+//   if (detail.name === 'SyntaxError') {
+//     message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+//   } else {
+//     message = detail.message || 'Something went wrong';
+//   }
+//
+//   onNotificationAdd({
+//     notification: {
+//       id: Date.now(),
+//       severity: 'error',
+//       message,
+//     },
+//     model,
+//   });
+//
+//   // reset model
+//   resetModelOnError(detail);
+// }
 
 function prepareModelStateToCall(isInitial: boolean) {
   const config = model.getState()?.config;
@@ -447,28 +451,6 @@ function destroy() {
   liveUpdateInstance = null; //@TODO check is this need or not
 }
 
-function getFilteredRow(
-  columnKeys: string[],
-  row: IMetricTableRowData,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
-}
-
 function onExportTableData(e: React.ChangeEvent<any>): void {
   // @TODO need to get data and params from state not from processData
   const { data, params, metricsColumns } = processData(
@@ -511,7 +493,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   groupedRows.forEach(
     (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
       groupedRow.forEach((row: IMetricTableRowData) => {
-        const filteredRow = getFilteredRow(filteredHeader, row);
+        const filteredRow = getFilteredRow({ columnKeys: filteredHeader, row });
         dataToExport.push(filteredRow);
       });
       if (groupedRows.length - 1 !== groupedRowIndex) {
@@ -526,48 +508,57 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
 }
 
-function onNotificationDelete(id: number) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData].filter((i) => i.id !== id);
-  model.setState({ notifyData });
-}
+// function onNotificationDelete(id: number) {
+//   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+//   notifyData = [...notifyData].filter((i) => i.id !== id);
+//   model.setState({ notifyData });
+// }
 
-function onNotificationAdd(notification: INotification) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData, notification];
-  model.setState({ notifyData });
-  setTimeout(() => {
-    onNotificationDelete(notification.id);
-  }, 3000);
-}
-
-function getFilteredGroupingOptions(
-  grouping: IMetricAppConfig['grouping'],
-  groupName: GroupNameType,
-): string[] {
-  const { reverseMode, isApplied } = grouping || {};
-  const groupingSelectOptions = model.getState()?.groupingSelectOptions;
-  if (groupingSelectOptions && grouping) {
-    const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-      .map((item) => item.value);
-    return isApplied?.[groupName]
-      ? reverseMode?.[groupName]
-        ? filteredOptions
-        : grouping[groupName]
-      : [];
-  } else {
-    return [];
-  }
-}
+// function onNotificationAdd(notification: INotification) {
+//   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
+//   notifyData = [...notifyData, notification];
+//   model.setState({ notifyData });
+//   setTimeout(() => {
+//     onNotificationDelete(notification.id);
+//   }, 3000);
+// }
+//
+// function getFilteredGroupingOptions(
+//   grouping: IMetricAppConfig['grouping'],
+//   groupName: GroupNameType,
+// ): string[] {
+//   const { reverseMode, isApplied } = grouping || {};
+//   const groupingSelectOptions = model.getState()?.groupingSelectOptions;
+//   if (groupingSelectOptions && grouping) {
+//     const filteredOptions = [...groupingSelectOptions]
+//       .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+//       .map((item) => item.value);
+//     return isApplied?.[groupName]
+//       ? reverseMode?.[groupName]
+//         ? filteredOptions
+//         : grouping[groupName]
+//       : [];
+//   } else {
+//     return [];
+//   }
+// }
 
 function groupData(data: any): IMetricsCollection<IMetric>[] {
   const configData = model.getState()!.config;
   const grouping = configData!.grouping;
   const { paletteIndex } = grouping;
-  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
-  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
+  const groupByColor = getFilteredGroupingOptions({
+    groupName: 'color',
+    model,
+  });
+  const groupByStroke = getFilteredGroupingOptions({
+    groupName: 'stroke',
+    model,
+  });
+  const groupByChart = getFilteredGroupingOptions({
+    groupName: 'chart',
+    model,
+  });
   if (
     groupByColor.length === 0 &&
     groupByStroke.length === 0 &&
@@ -865,51 +856,51 @@ function getDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
-function onSelectRunQueryChange(query: string) {
-  const configData: IMetricAppConfig = model.getState()?.config;
-  if (configData?.select) {
-    model.setState({
-      config: {
-        ...configData,
-        select: { ...configData.select, query },
-      },
-    });
-  }
-}
-
-function updateSelectStateUrl(): void {
-  const selectData = model.getState()?.config?.select;
-  if (selectData) {
-    updateUrlParam({ search: selectData }, 'runs');
-  }
-}
-
-function onColumnsOrderChange(columnsOrder: any) {
-  const configData: IMetricAppConfig = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      columnsOrder: columnsOrder,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-
-    model.setState({
-      config,
-    });
-    setItem('runsTable', encode(table));
-    updateModelData(config);
-  }
-  if (
-    _.isEmpty(columnsOrder?.left) &&
-    _.isEmpty(columnsOrder?.middle) &&
-    _.isEmpty(columnsOrder?.right)
-  ) {
-    analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
-  }
-}
+// function onSelectRunQueryChange(query: string) {
+//   const configData: IMetricAppConfig = model.getState()?.config;
+//   if (configData?.select) {
+//     model.setState({
+//       config: {
+//         ...configData,
+//         select: { ...configData.select, query },
+//       },
+//     });
+//   }
+// }
+//
+// function updateSelectStateUrl(): void {
+//   const selectData = model.getState()?.config?.select;
+//   if (selectData) {
+//     updateUrlParam({ data: { search: selectData }, appName: 'runs' });
+//   }
+// }
+//
+// function onColumnsOrderChange(columnsOrder: any) {
+//   const configData: IMetricAppConfig = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       columnsOrder: columnsOrder,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//
+//     model.setState({
+//       config,
+//     });
+//     setItem('runsTable', encode(table));
+//     updateModelData(config);
+//   }
+//   if (
+//     _.isEmpty(columnsOrder?.left) &&
+//     _.isEmpty(columnsOrder?.middle) &&
+//     _.isEmpty(columnsOrder?.right)
+//   ) {
+//     analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
+//   }
+// }
 
 function updateModelData(configData: IMetricAppConfig): void {
   const { data, params, metricsColumns } = processData(
@@ -937,88 +928,88 @@ function updateModelData(configData: IMetricAppConfig): void {
     sameValueColumns: tableData.sameValueColumns,
   });
 }
+//
+// function onRowHeightChange(height: RowHeightSize) {
+//   const configData: IMetricAppConfig = model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       rowHeight: height,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('runsTable', encode(table));
+//   }
+//   analytics.trackEvent(
+//     `[RunsExplorer][Table] Set table row height to "${RowHeightEnum[height]}"`,
+//   );
+// }
+//
+// function onColumnsVisibilityChange(hiddenColumns: string[]) {
+//   const configData: IMetricAppConfig = model.getState()?.config;
+//   const columnsData = model.getState()!.tableColumns!;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       hiddenColumns:
+//         hiddenColumns[0] === 'all'
+//           ? columnsData.map((col: any) => col.key)
+//           : hiddenColumns,
+//     };
+//     const configUpdate = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config: configUpdate,
+//     });
+//
+//     setItem('runsTable', encode(table));
+//     updateModelData(configUpdate);
+//   }
+//   if (hiddenColumns[0] === 'all') {
+//     analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
+//   } else if (_.isEmpty(hiddenColumns)) {
+//     analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
+//   }
+// }
 
-function onRowHeightChange(height: RowHeightSize) {
-  const configData: IMetricAppConfig = model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      rowHeight: height,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('runsTable', encode(table));
-  }
-  analytics.trackEvent(
-    `[RunsExplorer][Table] Set table row height to "${RowHeightEnum[height]}"`,
-  );
-}
+// function onTableDiffShow() {
+//   const sameValueColumns = model.getState()?.sameValueColumns;
+//   if (sameValueColumns) {
+//     onColumnsVisibilityChange(sameValueColumns);
+//   }
+// }
 
-function onColumnsVisibilityChange(hiddenColumns: string[]) {
-  const configData: IMetricAppConfig = model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-
-    setItem('runsTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
-  }
-}
-
-function onTableDiffShow() {
-  const sameValueColumns = model.getState()?.sameValueColumns;
-  if (sameValueColumns) {
-    onColumnsVisibilityChange(sameValueColumns);
-  }
-}
-
-function updateColumnsWidths(key: string, width: number, isReset: boolean) {
-  const configData: IMetricAppConfig = model.getState()?.config;
-  if (configData?.table && configData?.table?.columnsWidths) {
-    let columnsWidths = configData?.table?.columnsWidths;
-    if (isReset) {
-      columnsWidths = _.omit(columnsWidths, [key]);
-    } else {
-      columnsWidths = { ...columnsWidths, [key]: width };
-    }
-    const table = {
-      ...configData.table,
-      columnsWidths,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config,
-    });
-    setItem('runsTable', encode(table));
-    updateModelData(config);
-  }
-}
+// function updateColumnsWidths(key: string, width: number, isReset: boolean) {
+//   const configData: IMetricAppConfig = model.getState()?.config;
+//   if (configData?.table && configData?.table?.columnsWidths) {
+//     let columnsWidths = configData?.table?.columnsWidths;
+//     if (isReset) {
+//       columnsWidths = _.omit(columnsWidths, [key]);
+//     } else {
+//       columnsWidths = { ...columnsWidths, [key]: width };
+//     }
+//     const table = {
+//       ...configData.table,
+//       columnsWidths,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({
+//       config,
+//     });
+//     setItem('runsTable', encode(table));
+//     updateModelData(config);
+//   }
+// }
 
 function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
   const state = model.getState();

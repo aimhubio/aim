@@ -10,11 +10,17 @@ import {
 import onNotificationAdd from './onNotificationAdd';
 import { IModel, State } from 'types/services/models/model';
 
-export default async function onBookmarkCreate<M extends State>(
-  { name, description }: any,
-  model: IModel<M>,
-  appName: string,
-): Promise<void> {
+export default async function onBookmarkCreate<M extends State>({
+  name,
+  description,
+  model,
+  appName,
+}: {
+  name: string;
+  description: string;
+  model: IModel<M>;
+  appName: string;
+}): Promise<void> {
   const configData = model?.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService
@@ -25,23 +31,23 @@ export default async function onBookmarkCreate<M extends State>(
         .createDashboard({ app_id: app.id, name, description })
         .call();
       if (bookmark.name) {
-        onNotificationAdd(
-          {
+        onNotificationAdd({
+          notification: {
             id: Date.now(),
             severity: 'success',
             message: BookmarkNotificationsEnum.CREATE,
           },
           model,
-        );
+        });
       } else {
-        onNotificationAdd(
-          {
+        onNotificationAdd({
+          notification: {
             id: Date.now(),
             severity: 'error',
             message: BookmarkNotificationsEnum.ERROR,
           },
           model,
-        );
+        });
       }
     }
   }

@@ -1,8 +1,14 @@
 import { AppDataTypeEnum, AppNameEnum } from 'services/models/explorer';
 import { ChartTypeEnum } from 'utils/d3';
-import { IMetricAppModelState } from '../metrics/metricsAppModel';
-import { IParamsAppModelState } from '../params/paramsAppModel';
-import { IRunsAppModelState } from '../runs/runsAppModel';
+import {
+  IMetricAppConfig,
+  IMetricAppModelState,
+} from '../metrics/metricsAppModel';
+import {
+  IParamsAppConfig,
+  IParamsAppModelState,
+} from '../params/paramsAppModel';
+import { IRunsAppConfig, IRunsAppModelState } from '../runs/runsAppModel';
 
 export interface IAppInitialConfig {
   dataType: AppDataTypeEnum;
@@ -19,3 +25,7 @@ export type IAppModelState =
   | IMetricAppModelState
   | IParamsAppModelState
   | IRunsAppModelState;
+
+export type IAppModelConfig =
+  | IMetricAppConfig
+  | (IParamsAppConfig & IRunsAppConfig);

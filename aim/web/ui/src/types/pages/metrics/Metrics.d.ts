@@ -77,7 +77,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   ) => void;
   onHighlightModeChange: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
-  onTableRowHover: (rowKey: string) => void;
+  onTableRowHover: (rowKey?: string) => void;
   onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onAggregationConfigChange: (

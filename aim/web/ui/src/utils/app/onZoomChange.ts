@@ -2,13 +2,17 @@ import * as analytics from 'services/analytics';
 import _ from 'lodash-es';
 import { IChartZoom } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+import updateURL from './updateURL';
 
-export default function onZoomChange<M extends State>(
-  zoom: Partial<IChartZoom>,
-  model: IModel<M>,
-  appName: string,
-  updateURL: any,
-): void {
+export default function onZoomChange<M extends State>({
+  zoom,
+  model,
+  appName,
+}: {
+  zoom: Partial<IChartZoom>;
+  model: IModel<M>;
+  appName: string;
+}): void {
   const config = model.getState()?.config;
   if (config?.chart) {
     const configData = {
@@ -22,7 +26,8 @@ export default function onZoomChange<M extends State>(
       },
     };
     model.setState({ config: configData });
-    updateURL(configData);
+
+    updateURL({ configData, appName });
   }
   if (!_.isNil(zoom.mode)) {
     analytics.trackEvent(

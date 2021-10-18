@@ -2,12 +2,20 @@ import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 import { CurveEnum } from 'utils/d3';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onCurveInterpolationChange<M extends State>(
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-): void {
+export default function onCurveInterpolationChange<M extends State>({
+  model,
+  appName,
+  updateModelData,
+}: {
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+}): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
     const chart = { ...configData.chart };

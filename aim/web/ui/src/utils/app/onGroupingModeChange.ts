@@ -1,16 +1,27 @@
 import * as analytics from 'services/analytics';
-
-import { IOnGroupingModeChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import resetChartZoom from './resetChartZoom';
+import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onGroupingModeChange<M extends State>(
-  { groupName, value }: IOnGroupingModeChangeParams,
-  model: IModel<M>,
-  appName: string,
-  updateModelData: any,
-  setAggregationEnabled?: any,
-): void {
+export default function onGroupingModeChange<M extends State>({
+  groupName,
+  value,
+  model,
+  appName,
+  updateModelData,
+  setAggregationEnabled,
+}: {
+  groupName: GroupNameType;
+  value: boolean;
+  model: IModel<M>;
+  appName: string;
+  updateModelData: (
+    configData: IAppModelConfig | any,
+    shouldURLUpdate?: boolean,
+  ) => void;
+  setAggregationEnabled?: any;
+}): void {
   const configData = model?.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {
@@ -18,12 +29,12 @@ export default function onGroupingModeChange<M extends State>(
       [groupName]: value,
     };
     if (groupName === 'chart') {
-      resetChartZoom(configData, appName);
+      resetChartZoom({ configData, appName });
     }
     if (typeof setAggregationEnabled === 'function') {
-      setAggregationEnabled(model, appName);
+      setAggregationEnabled({ model, appName });
     }
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
   analytics.trackEvent(
     `[MetricsExplorer] ${
