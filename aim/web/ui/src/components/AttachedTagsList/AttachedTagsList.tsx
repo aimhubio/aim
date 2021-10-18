@@ -1,9 +1,8 @@
 import React from 'react';
 import { Box, Tooltip } from '@material-ui/core';
-import TagLabel from 'components/TagLabel/TagLabel';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
+
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import { Button, Icon, Badge } from 'components/kit';
 import SelectTag from 'components/SelectTag/SelectTag';
 import { ITagInfo } from 'types/pages/tags/Tags';
 import { IAttachedTagsListProps } from 'types/components/AttachedTagsList/AttachedTagsList';
@@ -86,7 +85,7 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
         {attachedTags?.length > 0 ? (
           <div className='AttachedTagsList__tags'>
             {attachedTags.map((tag: ITagInfo) => (
-              <TagLabel
+              <Badge
                 key={tag.id}
                 color={tag.color}
                 label={tag.name}

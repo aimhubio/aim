@@ -1,7 +1,7 @@
 import React from 'react';
 import { ICopyToClipBoardProps } from 'types/components/CopyToClipBoard/CopyToClipBoard';
 
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 
 function CopyToClipboard({
   contentRef,

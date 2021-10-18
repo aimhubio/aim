@@ -140,7 +140,7 @@ function getConfig() {
       },
     },
     liveUpdate: {
-      delay: 2000,
+      delay: 7000,
       enabled: false,
     },
   };
@@ -185,6 +185,8 @@ function updateData(newData: any) {
     ];
   }
 
+  const sortFields = model.getState()?.config?.table.sortFields;
+
   const tableData = getDataAsTableRows(
     data,
     metricsColumns,
@@ -192,7 +194,23 @@ function updateData(newData: any) {
     false,
     configData,
   );
-  const sortFields = model.getState()?.config?.table.sortFields;
+
+  const tableColumns = getParamsTableColumns(
+    metricsColumns,
+    params,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+    sortFields,
+    onSortChange,
+  );
+
+  if (!model.getState()?.requestIsPending) {
+    model.getState()?.refs?.tableRef.current?.updateData({
+      newData: tableData.rows,
+      newColumns: tableColumns,
+    });
+  }
 
   model.setState({
     data,
@@ -206,15 +224,7 @@ function updateData(newData: any) {
     rawData: newData,
     config: configData,
     tableData: tableData.rows,
-    tableColumns: getParamsTableColumns(
-      metricsColumns,
-      params,
-      data[0]?.config,
-      configData.table.columnsOrder!,
-      configData.table.hiddenColumns!,
-      sortFields,
-      onSortChange,
-    ),
+    tableColumns: tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     isParamsLoading: false,
     groupingSelectOptions: [...getGroupingSelectOptions({ params })],
@@ -234,13 +244,11 @@ function resetModelOnError(detail?: any) {
     isParamsLoading: false,
   });
 
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: [],
+    newColumns: [],
+  });
 }
 
 function exceptionHandler(detail: any) {

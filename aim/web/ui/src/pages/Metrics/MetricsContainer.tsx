@@ -37,6 +37,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -156,6 +157,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       alignmentConfig={
         metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
       }
+      densityType={metricsData?.config?.chart.densityType as DensityOptions}
       selectedMetricsData={
         metricsData?.config?.select as IMetricAppConfig['select']
       }
@@ -197,6 +199,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onResetConfigData={metricAppModel.onResetConfigData}
       onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
       onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
+      onDensityTypeChange={metricAppModel.onDensityTypeChange}
       onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
       onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
       onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}

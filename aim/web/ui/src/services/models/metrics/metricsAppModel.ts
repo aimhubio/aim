@@ -76,6 +76,9 @@ import onNotificationAdd from 'utils/app/onNotificationAdd';
 import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
 import setAggregationEnabled from 'utils/app/setAggregationEnabled';
 import updateSortFields from 'utils/app/updateTableSortFields';
+import { DensityOptions } from 'config/enums/densityEnum';
+import updateURL from 'utils/app/updateURL';
+import getRunData from 'utils/app/getRunData';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -128,6 +131,7 @@ function getConfig(): IMetricAppConfig {
         metric: '',
         type: AlignmentOptions.STEP,
       },
+      densityType: DensityOptions.Minimum,
       aggregationConfig: {
         methods: {
           area: AggregationAreaMethods.MIN_MAX,
@@ -170,7 +174,7 @@ function getConfig(): IMetricAppConfig {
       height: '',
     },
     liveUpdate: {
-      delay: 2000,
+      delay: 7000,
       enabled: false,
     },
   };
@@ -279,13 +283,11 @@ function resetModelOnError(detail?: any) {
     requestIsPending: false,
   });
 
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: [],
+    newColumns: [],
+  });
 }
 
 function exceptionHandler(detail: any): void {
@@ -311,19 +313,23 @@ function exceptionHandler(detail: any): void {
   resetModelOnError(detail);
 }
 
-function getMetricsData(shouldUrlUpdate?: boolean) {
+function getMetricsData(shouldUrlUpdate?: boolean): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
   if (metricsRequestRef) {
     metricsRequestRef.abort();
   }
   const modelState: IMetricAppModelState | any = model.getState();
   const configData = modelState?.config;
   if (shouldUrlUpdate) {
-    updateURL();
+    updateURL({ configData, appName: 'metrics' });
   }
   const metric = configData?.chart.alignmentConfig.metric;
   let query = getQueryStringFromSelect(configData?.select);
   metricsRequestRef = metricsService.getMetricsData({
     q: query,
+    p: configData?.chart?.densityType,
     ...(metric && { x_axis: metric }),
   });
   return {
@@ -1280,7 +1286,7 @@ function updateModelData(
   });
 
   if (shouldURLUpdate) {
-    updateURL(configData);
+    updateURL({ configData, appName: 'metrics' });
   }
 
   model.setState({
@@ -1503,7 +1509,7 @@ const onActivePointChange = _.debounce(
           (config.chart.focusedState.active &&
             activePoint.key !== config.chart.focusedState.key)
         ) {
-          updateURL(configData);
+          updateURL({ configData, appName: 'metrics' });
         }
       }
 
@@ -1615,22 +1621,22 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
  *    2. Stores updated URL in localStorage if App is not in the bookmark state
  * @param {IMetricAppConfig} configData - the current state of the app config
 //  */
-function updateURL(configData = model.getState()!.config!) {
-  const { grouping, chart, select } = configData;
-  const encodedParams: { [key: string]: string } = {};
-
-  if (grouping) {
-    encodedParams.grouping = encode(grouping);
-  }
-  if (chart) {
-    encodedParams.chart = encode(chart);
-  }
-  if (select) {
-    encodedParams.select = encode(select);
-  }
-
-  updateUrlParam({ data: encodedParams, appName: 'metrics' });
-}
+// function updateURL(configData = model.getState()!.config!) {
+//   const { grouping, chart, select } = configData;
+//   const encodedParams: { [key: string]: string } = {};
+//
+//   if (grouping) {
+//     encodedParams.grouping = encode(grouping);
+//   }
+//   if (chart) {
+//     encodedParams.chart = encode(chart);
+//   }
+//   if (select) {
+//     encodedParams.select = encode(select);
+//   }
+//
+//   updateUrlParam({ data: encodedParams, appName: 'metrics' });
+// }
 
 // function onNotificationDelete(id: number) {
 //   // separated
@@ -1729,22 +1735,22 @@ function updateURL(configData = model.getState()!.config!) {
 //   );
 // }
 
-async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
-  // separated
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
-  let decodedPairs = decodePathsVals(buffer_pairs);
-  let objects = iterFoldTree(decodedPairs, 1);
-
-  const runData = [];
-  for await (let [keys, val] of objects) {
-    runData.push({
-      ...(val as any),
-      hash: keys[0],
-    });
-  }
-  return runData;
-}
+// async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
+//   // separated
+//   let gen = adjustable_reader(stream);
+//   let buffer_pairs = decode_buffer_pairs(gen);
+//   let decodedPairs = decodePathsVals(buffer_pairs);
+//   let objects = iterFoldTree(decodedPairs, 1);
+//
+//   const runData = [];
+//   for await (let [keys, val] of objects) {
+//     runData.push({
+//       ...(val as any),
+//       hash: keys[0],
+//     });
+//   }
+//   return runData;
+// }
 
 function setModelData(
   rawData: IRun<IMetricTrace>[],
@@ -1762,6 +1768,21 @@ function setModelData(
     false,
     configData,
   );
+  const tableColumns = getMetricsTableColumns(
+    params,
+    data[0]?.config,
+    configData.table?.columnsOrder!,
+    configData.table?.hiddenColumns!,
+    configData?.chart?.aggregationConfig.methods,
+    sortFields,
+    onSortChange,
+  );
+  if (!model.getState()?.requestIsPending) {
+    model.getState()?.refs?.tableRef?.current?.updateData({
+      newData: tableData.rows,
+      newColumns: tableColumns,
+    });
+  }
   model.setState({
     requestIsPending: false,
     rawData,
@@ -1778,15 +1799,7 @@ function setModelData(
       model,
     }),
     tableData: tableData.rows,
-    tableColumns: getMetricsTableColumns(
-      params,
-      data[0]?.config,
-      configData?.table?.columnsOrder!,
-      configData?.table?.hiddenColumns!,
-      configData?.chart?.aggregationConfig.methods,
-      sortFields,
-      onSortChange,
-    ),
+    tableColumns: tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions: [...getGroupingSelectOptions({ params, contexts })],
   });
@@ -2201,47 +2214,49 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
 //   }
 // }
 
-function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
-  const state = model.getState();
-  const configData = state?.config;
-  const liveUpdateConfig = configData?.liveUpdate;
-  const metric = configData?.chart?.alignmentConfig.metric;
-  let query = getQueryStringFromSelect(configData?.select);
+// function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+//   const state = model.getState();
+//   const configData = state?.config;
+//   const liveUpdateConfig = configData?.liveUpdate;
+//   const metric = configData?.chart?.alignmentConfig.metric;
+//   let query = getQueryStringFromSelect(configData?.select);
+//
+//   if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
+//     liveUpdateInstance = new LiveUpdateService(
+//       'metrics',
+//       updateData,
+//       config.delay || liveUpdateConfig?.delay,
+//     );
+//     liveUpdateInstance?.start({
+//       q: query,
+//       ...(metric && { x_axis: metric }),
+//     });
+//   } else {
+//     liveUpdateInstance?.clear();
+//     liveUpdateInstance = null;
+//   }
+//
+//   const newLiveUpdateConfig = {
+//     ...liveUpdateConfig,
+//     ...config,
+//   };
+//   model.setState({
+//     config: {
+//       ...configData,
+//       // @ts-ignore
+//       liveUpdate: newLiveUpdateConfig,
+//     },
+//   });
+//   setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+// }
 
-  if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
-    liveUpdateInstance = new LiveUpdateService(
-      'metrics',
-      updateData,
-      config.delay || liveUpdateConfig?.delay,
-    );
-    liveUpdateInstance?.start({
-      q: query,
-      ...(metric && { x_axis: metric }),
-    });
-  } else {
-    liveUpdateInstance?.clear();
-    liveUpdateInstance = null;
-  }
+// function destroy() {
+//   liveUpdateInstance?.clear();
+//   liveUpdateInstance = null; //@TODO check is this need or not
+// }
 
-  const newLiveUpdateConfig = {
-    ...liveUpdateConfig,
-    ...config,
-  };
-  model.setState({
-    config: {
-      ...configData,
-      // @ts-ignore
-      liveUpdate: newLiveUpdateConfig,
-    },
-  });
-  setItem('metricsLUConfig', encode(newLiveUpdateConfig));
-}
-
-function destroy() {
-  liveUpdateInstance?.clear();
-  liveUpdateInstance = null; //@TODO check is this need or not
-}
-
+const metricAppModel = createAppModel(appInitialConfig.METRICS) as any;
+//
 // const metricAppModel = {
 //   ...model,
 //   destroy,
@@ -2294,9 +2309,8 @@ function destroy() {
 //   updateModelData,
 //   onShuffleChange,
 //   onSearchQueryCopy,
+//   onDensityTypeChange,
 //   changeLiveUpdateConfig,
 // };
-
-const metricAppModel = createAppModel(appInitialConfig.METRICS) as any;
 
 export default metricAppModel;

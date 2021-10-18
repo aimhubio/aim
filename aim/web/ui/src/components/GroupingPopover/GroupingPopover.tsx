@@ -12,14 +12,12 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import ToggleButton from 'components/ToggleButton/ToggleButton';
+import { ToggleButton, Icon, Badge } from 'components/kit';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
-  IGroupingSelectOption,
   GroupNameType,
+  IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
 
 import './GroupingPopover.scss';
 
@@ -96,7 +94,7 @@ function GroupingPopover({
             renderTags={(value, getTagProps) => (
               <div style={{ maxHeight: 110, overflow: 'auto' }}>
                 {value.map((selected, i) => (
-                  <TagLabel
+                  <Badge
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}

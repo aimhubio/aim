@@ -1,6 +1,6 @@
 import React from 'react';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import Icon from 'components/Icon/Icon';
+import { Icon, Text } from 'components/kit';
 import AskForm from '../AskForm/AskForm';
 import { ISetupGuideProps } from 'types/pages/home/components/SetupGuide/SetupGuide';
 
@@ -12,13 +12,19 @@ function SetupGuide({
 }: ISetupGuideProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='SetupGuide__container'>
-      <h2>Integrate Aim with your code</h2>
+      <Text component='h2' size={24} weight={600} tint={100}>
+        Integrate Aim with your code
+      </Text>
       <div className='SetupGuide__code'>
-        <h3>1. Import Aim</h3>
+        <Text component='h3' size={18} tint={100} weight={600}>
+          1. Import Aim
+        </Text>
         <CodeBlock code='import aim' />
       </div>
       <div className='SetupGuide__code'>
-        <h3>2. Track your training runs</h3>
+        <Text component='h3' size={18} tint={100} weight={600}>
+          2. Track your training runs
+        </Text>
         <CodeBlock
           code={`run_inst = aim.Run(experiment='my_exp_name')
 
@@ -44,19 +50,25 @@ for step in range(10):
           <div className='SetupGuide__resources__item__icon'>
             <Icon name='runs' />
           </div>
-          <span>Full docs</span>
+          <Text component='span' size={14} tint={100} weight={500}>
+            Full docs
+          </Text>
         </a>
         <div className='SetupGuide__resources__item'>
           <div className='SetupGuide__resources__item__icon'>
             <Icon name='bookmarks' />
           </div>
-          <span>Jupyter notebook</span>
+          <Text component='span' size={14} tint={100} weight={500}>
+            Jupyter notebook
+          </Text>
         </div>
         <div className='SetupGuide__resources__item'>
           <div className='SetupGuide__resources__item__icon'>
             <Icon name='metrics' />
           </div>
-          <span>Live demo</span>
+          <Text component='span' size={14} tint={100} weight={500}>
+            Live demo
+          </Text>
         </div>
       </div>
       {askEmailSent ? null : <AskForm onSendEmail={onSendEmail} />}

@@ -3,12 +3,12 @@ import React from 'react';
 import { CurveEnum } from 'utils/d3';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
+import { Tooltip } from '@material-ui/core';
 // @ts-ignore
 import { IControlProps } from 'types/pages/params/components/Controls/Controls';
 
 import './Controls.scss';
-import { Tooltip } from '@material-ui/core';
 
 function Controls(
   props: IControlProps,

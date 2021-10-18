@@ -158,6 +158,8 @@ import onShuffleChange from 'utils/app/onShuffleChange';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
+import { DensityOptions } from 'config/enums/densityEnum';
+import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 
 /**
  * function createAppModel has 2 major functionalities:
@@ -257,6 +259,7 @@ function createAppModel({
               metric: '',
               type: AlignmentOptions.STEP,
             },
+            densityType: DensityOptions.Minimum,
             aggregationConfig: {
               methods: {
                 area: AggregationAreaMethods.MIN_MAX,
@@ -441,6 +444,7 @@ function createAppModel({
       let query = getQueryStringFromSelect(configData?.select);
       metricsRequestRef = metricsService.getMetricsData({
         q: query,
+        p: configData?.chart?.densityType,
         ...(metric ? { x_axis: metric } : {}),
       });
       return {
@@ -1720,6 +1724,9 @@ function createAppModel({
         },
         onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
           onChangeTooltip({ tooltip, tooltipData, model, appName });
+        },
+        onDensityTypeChange(type: DensityOptions): Promise<void> {
+          return onDensityTypeChange({ type, model, appName, getMetricsData });
         },
       });
     }

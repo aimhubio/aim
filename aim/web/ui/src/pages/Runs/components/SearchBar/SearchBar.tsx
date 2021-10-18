@@ -1,10 +1,11 @@
 import React from 'react';
-import './SearchBar.scss';
-import searchImg from 'assets/icons/search.svg';
-import { Divider, TextField } from '@material-ui/core';
-import Button from 'components/Button/Button';
 import SearchIcon from '@material-ui/icons/Search';
+import { Divider, TextField } from '@material-ui/core';
+
+import searchImg from 'assets/icons/search.svg';
+import { Button } from 'components/kit';
 import runAppModel from 'services/models/runs/runsAppModel';
+import './SearchBar.scss';
 
 function SearchBar({
   isRunsDataLoading,

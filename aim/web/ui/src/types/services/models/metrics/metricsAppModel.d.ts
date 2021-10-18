@@ -18,7 +18,7 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { IModel } from '../model';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 export interface IMetricAppModelState {
   refs: {
@@ -139,6 +139,7 @@ export interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    densityType: DensityOptions;
     alignmentConfig: IAlignmentConfig;
     tooltip: IChartTooltip;
   };
