@@ -12,7 +12,6 @@ const enabled = () => {
 };
 
 const init = () => {
-  if (!enabled()) return;
   if (initialized) return;
   if (
     window.location.hostname.indexOf('aimstack.io') !== -1 &&
