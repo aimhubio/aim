@@ -8,7 +8,7 @@ on:
       - 'aim/sdk/**'
       - 'aim/web/api/**'
       - 'aim/storage/**'
-      - '.github/pull-request.yml'
+      - '.github/workflows/pull-request.yml'
     types:
       - opened
       - synchronize
