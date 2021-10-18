@@ -78,25 +78,25 @@
   .Line {
     stroke-width: 1.45;
     opacity: 1;
-  }
-
-  .Line.aggregated {
-    opacity: 0;
+    &.active {
+      opacity: 1;
+      stroke-width: 3px;
+    }
+    &.aggregated {
+      opacity: 0;
+      &.highlighted {
+        opacity: 0.6;
+      }
+    }
+    &.highlighted {
+      opacity: 1;
+      stroke-width: 2.2px;
+    }
   }
 
   .Lines.highlight > .Line:not(.active):not(.highlighted):not(.aggregated) {
     stroke-width: 1.45;
     opacity: 0.2;
-  }
-
-  .Line.highlighted {
-    opacity: 1;
-    stroke-width: 2.2px;
-  }
-
-  .Line.active {
-    opacity: 1;
-    stroke-width: 3px;
   }
 
   .AggrLine {
