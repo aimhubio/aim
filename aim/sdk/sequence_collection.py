@@ -85,10 +85,7 @@ class SingleRunSequenceCollection(SequenceCollection):
     ):
         self.run: 'Run' = run
         self.seq_cls = seq_cls
-        if query:
-            self.query = RestrictedPythonQuery(query)
-        else:
-            self.query = None
+        self.query = RestrictedPythonQuery(query)
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
@@ -176,8 +173,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         self.query = query
         self.paginated = paginated
         self.offset = offset
-        if query:
-            self.query = RestrictedPythonQuery(query)
+        self.query = RestrictedPythonQuery(query)
 
     def iter(self) -> Iterator[Sequence]:
         """"""
