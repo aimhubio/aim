@@ -19,6 +19,7 @@ from aim.web.api.runs.pydantic_models import (
     RunTracesBatchApiIn,
     RunMetricCustomAlignApiOut,
     RunMetricSearchApiOut,
+    RunImagesSearchApiOut,
     RunInfoOut,
     RunSearchApiOut,
     RunTracesBatchApiOut,
@@ -101,7 +102,7 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
     return StreamingResponse(streamer)
 
 
-@runs_router.get('/search/images/',
+@runs_router.get('/search/images/', response_model=RunImagesSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
 def run_images_search_api(q: Optional[str] = '',
                           record_range: Optional[str] = '', record_density: Optional[int] = 50,

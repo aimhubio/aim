@@ -91,11 +91,13 @@ def image_search_result_streamer(traces: SequenceCollection,
     def pack_run_data(run_: Run, traces_: list, rec_slice: slice, idx_slice: slice):
         run_dict = {
             run_.hashname: {
+                'ranges': {
+                    'record_range': [rec_slice.start, rec_slice.stop],
+                    'index_range': [idx_slice.start, idx_slice.stop],
+                    'record_slice': [rec_slice.start, rec_slice.stop, rec_slice.step],
+                    'index_slice': [idx_slice.start, idx_slice.stop, idx_slice.step]
+                },
                 'params': run_.get(...),
-                'record_range': [rec_slice.start, rec_slice.stop],
-                'index_range': [idx_slice.start, idx_slice.stop],
-                'record_slice': [rec_slice.start, rec_slice.stop, rec_slice.step],
-                'index_slice': [idx_slice.start, idx_slice.stop, idx_slice.step],
                 'traces': traces_,
                 'props': get_run_props(run_)
             }
