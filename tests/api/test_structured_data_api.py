@@ -33,12 +33,12 @@ class TestStructuredRunApi(StructuredApiTestBase):
 
         client = self.client
         # set existing experiment
-        resp = client.put(f'/api/runs/{run.hashname}', json={'experiment': 'Experiment 2'})
+        resp = client.put(f'/api/runs/{run.hash}', json={'experiment': 'Experiment 2'})
         self.assertEqual(200, resp.status_code)
         self.assertEqual('Experiment 2', run.experiment)
 
         # set non-existing experiment (create new)
-        resp = client.put(f'/api/runs/{run.hashname}', json={'experiment': 'New experiment'})
+        resp = client.put(f'/api/runs/{run.hash}', json={'experiment': 'New experiment'})
         self.assertEqual(200, resp.status_code)
         self.assertEqual('New experiment', run.experiment)
 
@@ -53,14 +53,14 @@ class TestStructuredRunApi(StructuredApiTestBase):
 
         client = self.client
         # remove tag # 1
-        resp = client.delete(f'/api/runs/{run.hashname}/tags/{tags[0].uuid}')
+        resp = client.delete(f'/api/runs/{run.hash}/tags/{tags[0].uuid}')
         self.assertEqual(200, resp.status_code)
         self.assertEqual(1, len(run.tags))
         tag_names = [t.name for t in run.tags]
         self.assertListEqual(['last runs'], tag_names)
 
         # add new tag
-        resp = client.post(f'/api/runs/{run.hashname}/tags/new', json={'tag_name': 'new tag'})
+        resp = client.post(f'/api/runs/{run.hash}/tags/new', json={'tag_name': 'new tag'})
         self.assertEqual(200, resp.status_code)
         self.assertEqual(2, len(run.tags))
         tag_names = [t.name for t in run.tags]
@@ -70,7 +70,7 @@ class TestStructuredRunApi(StructuredApiTestBase):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')
         run = next(iter(matching_runs))
         client = self.client
-        resp = client.put(f'/api/runs/{run.hashname}', json={'description': 'long text', 'name': 'best run'})
+        resp = client.put(f'/api/runs/{run.hash}', json={'description': 'long text', 'name': 'best run'})
         self.assertEqual(200, resp.status_code)
         self.assertEqual('best run', run.name)
         self.assertEqual('long text', run.description)

@@ -32,7 +32,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('creation_time', 'created_at', get_modifier=timestamp_or_none, with_setter=False),
         Property('end_time', 'finalized_at', get_modifier=timestamp_or_none, with_setter=False),
         Property('updated_at', with_setter=False),
-        Property('hashname', 'hash', with_setter=False),
+        Property('hash', with_setter=False),
         Property('experiment', autogenerate=False),
         Property('tags', autogenerate=False),
     ]
@@ -43,7 +43,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         self._session = session
 
     def __repr__(self) -> str:
-        return f'<ModelMappedRun id={self.hashname}, name=\'{self.name}\'>'
+        return f'<ModelMappedRun id={self.hash}, name=\'{self.name}\'>'
 
     @classmethod
     def from_model(cls, model_obj, session) -> 'ModelMappedRun':

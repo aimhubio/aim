@@ -96,14 +96,13 @@ function updateData(newData: any) {
       },
     },
   });
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: tableData.rows,
-      newColumns: tableColumns,
-      hiddenColumns: modelState?.config.table.hiddenColumns!,
-    });
-  }, 0);
+
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData.rows,
+    newColumns: tableColumns,
+    hiddenColumns: modelState?.config.table.hiddenColumns!,
+  });
 }
 function getRunsData(isInitial = true) {
   // isInitial: true --> when search button clicked or data is loading at the first time
@@ -174,14 +173,13 @@ function getRunsData(isInitial = true) {
             },
           },
         });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: configData.table.hiddenColumns!,
-          });
-        }, 0);
+
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+          hiddenColumns: configData.table.hiddenColumns!,
+        });
 
         liveUpdateInstance?.start({
           q: query,
@@ -275,7 +273,7 @@ function getConfig() {
     },
     pagination: initialPaginationConfig,
     liveUpdate: {
-      delay: 2000,
+      delay: 7000,
       enabled: false,
     },
   };
@@ -298,13 +296,11 @@ function resetModelOnError(detail?: any) {
     },
   });
 
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: [],
+    newColumns: [],
+  });
 }
 
 function exceptionHandler(detail: any) {
