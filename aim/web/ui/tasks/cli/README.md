@@ -3,7 +3,7 @@
 ### Supported commands
 - create-component
 
-  > $ node cli/index.js create-component --name=<yourComponentname> --path=<yourComponentPath> --lint
+  > $ node cli/index.js create-component `--name=<yourComponentname>` `--path=<yourComponentPath>` `--lint`
 
 __NOTES__: 
 
