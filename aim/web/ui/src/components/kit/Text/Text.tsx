@@ -97,7 +97,7 @@ function Text({
           </span>
         );
     }
-  }, [children]);
+  }, [children, className, size, tint]);
 
   return Element;
 }

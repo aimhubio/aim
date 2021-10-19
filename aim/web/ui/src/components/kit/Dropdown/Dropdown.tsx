@@ -1,24 +1,204 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
+import Select, { ClearIndicatorProps } from 'react-select';
 import { IDropdownProps } from '.';
+import DropdownCustomOption from './DropdownCustomOption';
+import { Icon, Text } from 'components/kit';
+import {
+  baseSizes,
+  indicatorsContainerSizes,
+  labelTopPosition,
+} from './config';
 
 import './Dropdown.scss';
 
+/**
+ * @property {number} size - input size
+ * @property {{value: string; label: string}[]} options - options list
+ * @property {boolean} open - is dropdown open
+ * @property {string} placeholder - dropdown placeholder
+ * @property {{value: string; label: string}} value - dropdown value
+ * @property {boolean} withPortal - open dropdown menu in portal
+ * @property {function} onMenuOpen - callBack on menu opening
+ * @property {function} onMenuClose - callBack on menu closing
+ * @property {function} onChange - callBack on dropdown value change
+ * @property {boolean} isColored - color dropdown if it is used
+ * @property {string} label - swap label to top if dropdown has value and replace placeholder
+ * @property {React.HTMLAttributes}  rest - rest properties that can be set
+ */
 function Dropdown({
-  //   size,
-  //   withOnlyIcon,
-  //   color,
-  //   children,
+  size = 'medium',
+  options,
+  open = false,
+  placeholder = 'Select...',
+  value = null,
+  className = '',
+  withPortal,
+  onMenuOpen,
+  onMenuClose,
+  onChange,
+  isColored = false,
+  label,
   ...rest
 }: IDropdownProps): React.FunctionComponentElement<React.ReactNode> {
-  //   const styleOverrides = {
-  //     borderRadius: '0.375rem',
-  //     padding: `0.5rem ${withOnlyIcon ? '0.5rem' : '1.25rem'}`,
-  //     fontSize: fontSizes[size || 'medium'],
-  //     height: sizes[size || 'medium'],
-  //     minWidth: withOnlyIcon ? '2rem' : '4.375rem',
-  //   };
+  const [labelSwapped, setLabelSwapped] = useState(!!value);
+  const customStyles = {
+    control: (base: any) => ({
+      ...base,
+      height: baseSizes[size],
+      minHeight: baseSizes[size],
+      borderRadius: '0.375rem',
+      boxShadow: 'none',
+      borderColor:
+        isColored && value ? '#1473E6' : open ? '#90AFDA' : '#BDCEE8',
+      '&:hover': {
+        borderColor:
+          isColored && value ? '#1473E6' : open ? '#90AFDA' : '#BDCEE8',
+      },
+    }),
+    indicatorSeparator: () => ({
+      display: 'none',
+    }),
+    indicatorsContainer: (provided: any) => ({
+      ...provided,
+      height: indicatorsContainerSizes[size],
+      padding: '0.1875rem 0',
+    }),
+    placeholder: (holder: any) => ({
+      ...holder,
+      fontSize: '0.875rem',
+      color: '#606986',
+      marginBottom: '0.0625rem',
+    }),
+    input: (provided: any) => ({
+      ...provided,
+      margin: '0',
+    }),
+    valueContainer: (provided: any) => ({
+      ...provided,
+      height: indicatorsContainerSizes[size],
+      padding: '0 0.375rem 0 1rem',
+      fontSize: '0.875rem',
+      color: isColored && value ? '#1473E6' : '#414B6D',
+    }),
+    menuPortal: (provided: any) => ({
+      ...provided,
+      zIndex: 1000000,
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      marginLeft: 0,
+      color: isColored && value ? '#1473E6' : '#414B6D',
+      marginBottom: '0.0625rem',
+    }),
+    dropdownIndicator: () => ({ marginRight: '0.625rem' }),
+    clearIndicator: () => ({
+      padding: '0 0.625rem',
+      borderLeft: '1px solid #D1DDEF',
+    }),
+    menu: (provided: any) => ({
+      ...provided,
+      borderRadius: '0.375rem',
+      padding: '0.5rem',
+    }),
+    option: (provided: any) => ({
+      ...provided,
+      height: baseSizes[size],
+    }),
+  };
 
-  return <div></div>;
+  function ClearIndicator(props: ClearIndicatorProps<any>) {
+    const {
+      children = <Icon name='close' fontSize={'0.625rem'} />,
+      getStyles,
+      innerProps: { ref, ...restInnerProps },
+    } = props;
+    return (
+      <div
+        {...restInnerProps}
+        ref={ref}
+        style={getStyles('clearIndicator', props) as any}
+      >
+        <div style={{ padding: '0px 5px' }}>{children}</div>
+      </div>
+    );
+  }
+
+  function DropdownIndicator(props: any) {
+    const {
+      children = (
+        <Icon
+          name={open ? 'arrow-up' : 'arrow-down'}
+          fontSize={'0.75rem'}
+          color='#414B6D'
+        />
+      ),
+      getStyles,
+      innerProps: { ref, ...restInnerProps },
+    } = props;
+    return (
+      <div
+        {...restInnerProps}
+        ref={ref}
+        style={getStyles('dropdownIndicator', props)}
+      >
+        <div style={{ padding: '0 0.3125rem' }}>{children}</div>
+      </div>
+    );
+  }
+
+  function handleMenuOpen() {
+    onMenuOpen();
+    !labelSwapped && setLabelSwapped(true);
+  }
+
+  function handleMenuClose() {
+    onMenuClose();
+    !value && setLabelSwapped(false);
+  }
+
+  useEffect(() => {
+    value && !labelSwapped && setLabelSwapped(true);
+  }, [value]);
+
+  return (
+    <div className='Dropdown'>
+      {label && (
+        <Text
+          component='span'
+          size={labelSwapped ? 11 : 14}
+          weight={500}
+          style={{ top: labelTopPosition[size] }}
+          color={isColored && value ? 'info' : 'primary'}
+          tint={isColored && value ? 100 : 70}
+          className={classNames('Dropdown__label', { swapped: labelSwapped })}
+        >
+          {label}
+        </Text>
+      )}
+      <Select
+        {...rest}
+        value={options.find(
+          (option: { value: string; label: string }) => value === option.value,
+        )}
+        className={classNames({ [className]: className })}
+        options={options}
+        menuPortalTarget={withPortal && document.querySelector('body')}
+        menuIsOpen={open}
+        onMenuOpen={handleMenuOpen}
+        onMenuClose={handleMenuClose}
+        placeholder={!label && placeholder}
+        onChange={onChange as any}
+        isClearable
+        components={{
+          Option: DropdownCustomOption,
+          ClearIndicator: ClearIndicator,
+          DropdownIndicator: DropdownIndicator,
+        }}
+        styles={customStyles}
+      />
+    </div>
+  );
 }
 
 Dropdown.displayName = 'Dropdown';
