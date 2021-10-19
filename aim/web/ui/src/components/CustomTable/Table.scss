@@ -141,7 +141,7 @@ $border-radius: 0.2rem;
 }
 
 .Table__action__popup__item {
-  padding: $space-xxs $space-xs;
+  padding: $space-xxs $space-xs !important;
   text-transform: capitalize;
   cursor: pointer;
   display: flex;
@@ -342,7 +342,6 @@ $border-radius: 0.2rem;
 
 .Table__group {
   margin-top: var(--group-margin);
-  background-color: $cuddle-10;
   border-top: 1px solid $border-color;
 
   .Table__cell:last-of-type {

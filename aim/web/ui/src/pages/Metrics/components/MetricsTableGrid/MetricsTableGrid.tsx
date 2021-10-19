@@ -50,27 +50,24 @@ function getMetricsTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : 'left',
-      columnOptions: {
-        text: 'Grouping',
-        options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-          value: `${
-            grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
-          }group by ${groupName}`,
-          onClick: () => {
-            if (onGroupingToggle) {
-              onGroupingToggle({
-                groupName,
-                list: grouping?.[groupName]?.includes('run.props.experiment')
-                  ? grouping?.[groupName].filter(
-                      (item) => item !== 'run.props.experiment',
-                    )
-                  : grouping?.[groupName].concat(['run.props.experiment']),
-              } as IOnGroupingSelectChangeParams);
-            }
-          },
-          icon: icons[groupName],
-        })),
-      },
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.props.experiment')
+                ? grouping?.[groupName].filter(
+                    (item) => item !== 'run.props.experiment',
+                  )
+                : grouping?.[groupName].concat(['run.props.experiment']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
     },
     {
       key: 'run',
@@ -81,25 +78,22 @@ function getMetricsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : null,
-      columnOptions: {
-        text: 'Grouping',
-        options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-          value: `${
-            grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-          }group by ${groupName}`,
-          onClick: () => {
-            if (onGroupingToggle) {
-              onGroupingToggle({
-                groupName,
-                list: grouping?.[groupName]?.includes('run.hash')
-                  ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                  : grouping?.[groupName].concat(['run.hash']),
-              } as IOnGroupingSelectChangeParams);
-            }
-          },
-          icon: icons[groupName],
-        })),
-      },
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.hash')
+                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
+                : grouping?.[groupName].concat(['run.hash']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
     },
     {
       key: 'metric',
@@ -110,27 +104,22 @@ function getMetricsTableColumns(
         : order?.right?.includes('metric')
         ? 'right'
         : null,
-      columnOptions: {
-        text: 'Grouping',
-        options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-          value: `${
-            grouping?.[groupName]?.includes('metric_name') ? 'un' : ''
-          }group by ${groupName}`,
-          onClick: () => {
-            if (onGroupingToggle) {
-              onGroupingToggle({
-                groupName,
-                list: grouping?.[groupName]?.includes('metric_name')
-                  ? grouping?.[groupName].filter(
-                      (item) => item !== 'metric_name',
-                    )
-                  : grouping?.[groupName].concat(['metric_name']),
-              } as IOnGroupingSelectChangeParams);
-            }
-          },
-          icon: icons[groupName],
-        })),
-      },
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('metric_name') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('metric_name')
+                ? grouping?.[groupName].filter((item) => item !== 'metric_name')
+                : grouping?.[groupName].concat(['metric_name']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
     },
     {
       key: 'context',
@@ -231,9 +220,8 @@ function getMetricsTableColumns(
           : order?.right?.includes(param)
           ? 'right'
           : null,
-        columnOptions: {
-          text: 'Grouping',
-          options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        columnOptions: ['color', 'stroke', 'chart'].map(
+          (groupName: string) => ({
             value: `${
               grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
             }group by ${groupName}`,
@@ -248,8 +236,8 @@ function getMetricsTableColumns(
               }
             },
             icon: icons[groupName],
-          })),
-        },
+          }),
+        ),
       };
     }),
   );

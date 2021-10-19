@@ -144,16 +144,7 @@ function Column({
                 <div className='Table__action__popup__body'>
                   {columnOptions && (
                     <>
-                      <Text
-                        component='p'
-                        className='Table__action__popup__body__panelTitle'
-                        size={12}
-                        weight={500}
-                        tint={50}
-                      >
-                        {columnOptions?.text}:
-                      </Text>
-                      {columnOptions?.options.map((option) => (
+                      {columnOptions?.map((option) => (
                         <MenuItem
                           key={option.value}
                           className='Table__action__popup__item'
