@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useRouteMatch, useHistory } from 'react-router-dom';
+import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';

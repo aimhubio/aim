@@ -4,12 +4,16 @@ import { Box, Divider, Link, Paper } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
-import formatXAxisValueByAlignment from 'utils/formatXAxisValueByAlignment';
+import {
+  formatValueByAlignment,
+  getKeyByAlignment,
+} from 'utils/formatByAlignment';
 import { ChartTypeEnum } from 'utils/d3';
 import { PathEnum } from 'config/enums/routesEnum';
 import { Icon } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
+import { formatValue } from 'utils/formatValue';
 
 import './PopoverContent.scss';
 
@@ -17,7 +21,12 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   props: IPopoverContentProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { tooltipContent, focusedState, chartType, alignmentConfig } = props;
+  const {
+    tooltipContent = {},
+    focusedState,
+    chartType,
+    alignmentConfig,
+  } = props;
   const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
 
   function renderPopoverHeader(): React.ReactNode {
@@ -26,15 +35,17 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         return (
           <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
-              {tooltipContent.metricName}: {focusedState?.yValue ?? '--'}
+              {tooltipContent.metricName}{' '}
+              {contextToString(tooltipContent.metricContext)}{' '}
+              {focusedState?.yValue ?? '--'}
             </div>
             <div className='PopoverContent__value'>
-              Step:{' '}
-              {formatXAxisValueByAlignment({
+              {getKeyByAlignment(alignmentConfig)}{' '}
+              {contextToString(tooltipContent.metricContext)}{' '}
+              {formatValueByAlignment({
                 xAxisTickValue: (focusedState?.xValue as number) ?? null,
                 type: alignmentConfig?.type,
-              })}{' '}
-              {contextToString(tooltipContent.metricContext)}
+              })}
             </div>
           </Box>
         );
@@ -46,7 +57,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               Value: {focusedState?.yValue ?? '--'}
             </div>
             <div className='PopoverContent__value'>
-              Metric: <strong>{metric ?? '--'}</strong> {context || null}
+              <strong>{metric ?? '--'}</strong> {context || null}
             </div>
           </Box>
         );
@@ -76,7 +87,9 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                     </div>
                     {Object.keys(groupConfig[groupConfigKey]).map((item) => (
                       <div key={item} className='PopoverContent__value'>
-                        {item}: {groupConfig[groupConfigKey][item] ?? '--'}
+                        {item}:{' '}
+                        {groupConfig[groupConfigKey][item] ??
+                          formatValue(groupConfig[groupConfigKey][item])}
                       </div>
                     ))}
                   </React.Fragment>
@@ -92,12 +105,8 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
-                  {paramKey}:{' '}
-                  {params[paramKey]
-                    ? typeof params[paramKey] !== 'string'
-                      ? JSON.stringify(params[paramKey])
-                      : params[paramKey]
-                    : '--'}
+                  {`run.${paramKey}`}:{' '}
+                  {params[paramKey] ?? formatValue(params[paramKey])}
                 </div>
               ))}
             </Box>

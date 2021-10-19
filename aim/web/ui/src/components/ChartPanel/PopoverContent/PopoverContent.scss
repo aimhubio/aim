@@ -37,10 +37,11 @@
     &__subtitle1 {
       color: tint($pico, 50);
       text-transform: uppercase;
+      font-weight: 500;
     }
 
     &__subtitle2 {
-      font-family: 'Inter SemiBold', sans-serif;
+      font-weight: 600;
       text-transform: capitalize;
       color: $text-color;
       margin-top: 8px;

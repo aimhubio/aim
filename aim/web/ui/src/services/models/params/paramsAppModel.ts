@@ -439,8 +439,8 @@ function getChartTitleData(
             acc[groupItemKey.replace('run.params.', '')] = formatValue(
               metricsCollection.config[groupItemKey],
             );
-            return acc;
           }
+          return acc;
         },
         {},
       );
@@ -493,6 +493,7 @@ function processData(data: IRun<IParamTrace>[]): {
   const uniqParams = _.uniq(params);
 
   setTooltipData(processedData, uniqParams);
+
   return {
     data: processedData,
     params: uniqParams,
@@ -629,9 +630,8 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: formatValue(
+          [paramKey.replace('run.props', 'run').replace('run.params', 'run')]:
             _.get(metricsCollection.config, paramKey),
-          ),
         });
         return acc;
       }, {});
@@ -654,7 +654,7 @@ function setTooltipData(
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: formatValue(_.get(param, `run.params.${paramKey}`)),
+            [paramKey]: _.get(param, `run.params.${paramKey}`),
           });
           return acc;
         }, {}),
@@ -1157,7 +1157,7 @@ function getDataAsTableRows(
 
     metricsCollection.data.forEach((metric: any) => {
       const metricsRowValues = { ...initialMetricsRowData };
-      metric.run.traces.map((trace: any) => {
+      metric.run.traces.forEach((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
         ] = formatValue(trace.last_value.last);
