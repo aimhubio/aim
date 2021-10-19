@@ -27,7 +27,7 @@ def img_record_to_encodable(image_record, trace, step):
     for idx, img in image_record:
         img_dump = img.json()
         image_resource_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))
-        img_dump['blob_uri'] = URIService.generate_uri(trace.run.hash, 'seqs', image_resource_path)
+        img_dump['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', image_resource_path)
         img_dump['index'] = idx
         img_list.append(img_dump)
     return img_list
@@ -126,4 +126,6 @@ def image_search_result_streamer(traces: SequenceCollection,
 
 def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
     uri_service = URIService(repo=repo)
-    yield from uri_service.request_batch(uri_batch=uri_batch)
+    batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
+    for it in batch_iterator:
+        yield collect_run_streamable_data(encode_tree(it))

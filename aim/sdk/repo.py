@@ -81,6 +81,7 @@ class Repo:
 
         self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
+        self._encryption_key = None
         if init:
             self.structured_db.run_upgrades()
 
@@ -327,6 +328,26 @@ class Repo:
     @run_props_cache_hint.setter
     def run_props_cache_hint(self, cache: str):
         self._run_props_cache_hint = cache
+
+    @property
+    def encryption_key(self):
+        from cryptography.fernet import Fernet
+
+        if self._encryption_key:
+            return self._encryption_key
+
+        encryption_key_path = os.path.join(self.path, 'ENCRYPTION_KEY')
+        if not os.path.exists(encryption_key_path):
+            with open(encryption_key_path, 'w') as key_fp:
+                encryption_key = Fernet.generate_key().decode()
+                key_fp.write(encryption_key + '\n')
+        else:
+            with open(encryption_key_path, 'r') as key_fp:
+                encryption_key = key_fp.readline()
+
+        self._encryption_key = encryption_key
+
+        return encryption_key
 
     def _get_meta_tree(self):
         return self.request(
