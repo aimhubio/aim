@@ -98,12 +98,9 @@ class SingleRunSequenceCollection(SequenceCollection):
         """"""
         allowed_dtypes = self.seq_cls.allowed_dtypes()
         for seq_name, ctx, run in self.run.iter_sequence_info_by_type(allowed_dtypes):
-            if not self.query:
-                statement = True
-            else:
-                run_view = RunView(run)
-                seq_view = SequenceView(seq_name, ctx.to_dict(), run_view)
-                statement = self.query.match(run=run_view, metric=seq_view)
+            run_view = RunView(run)
+            seq_view = SequenceView(seq_name, ctx.to_dict(), run_view)
+            statement = self.query.match(run=run_view, metric=seq_view)
             if not statement:
                 continue
             yield self.seq_cls(seq_name, ctx, run)
@@ -187,11 +184,8 @@ class QueryRunSequenceCollection(SequenceCollection):
         else:
             runs_iterator = self.repo.iter_runs()
         for run in runs_iterator:
-            if not self.query:
-                statement = True
-            else:
-                run_view = RunView(run)
-                statement = self.query.match(run=run_view)
+            run_view = RunView(run)
+            statement = self.query.match(run=run_view)
             if not statement:
                 continue
             yield SingleRunSequenceCollection(run, self.seq_cls)
