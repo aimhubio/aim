@@ -13,7 +13,16 @@ import {
 import COLORS from 'config/colors/colors';
 import { Button, Icon, Badge } from 'components/kit';
 import { PathEnum } from 'config/enums/routesEnum';
-import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IOnGroupingSelectChangeParams,
+  SortField,
+} from 'types/services/models/metrics/metricsAppModel';
+
+const icons: { [key: string]: string } = {
+  color: 'coloring',
+  stroke: 'line-style',
+  chart: 'chart-group',
+};
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
@@ -26,6 +35,8 @@ function getMetricsTableColumns(
   },
   sortFields?: any[],
   onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  grouping?: { [key: string]: string[] },
+  onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -39,6 +50,27 @@ function getMetricsTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : 'left',
+      columnOptions: {
+        text: 'Grouping',
+        options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+          value: `${
+            grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+          }group by ${groupName}`,
+          onClick: () => {
+            if (onGroupingToggle) {
+              onGroupingToggle({
+                groupName,
+                list: grouping?.[groupName]?.includes('run.props.experiment')
+                  ? grouping?.[groupName].filter(
+                      (item) => item !== 'run.props.experiment',
+                    )
+                  : grouping?.[groupName].concat(['run.props.experiment']),
+              } as IOnGroupingSelectChangeParams);
+            }
+          },
+          icon: icons[groupName],
+        })),
+      },
     },
     {
       key: 'run',
@@ -49,6 +81,25 @@ function getMetricsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : null,
+      columnOptions: {
+        text: 'Grouping',
+        options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+          value: `${
+            grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
+          }group by ${groupName}`,
+          onClick: () => {
+            if (onGroupingToggle) {
+              onGroupingToggle({
+                groupName,
+                list: grouping?.[groupName]?.includes('run.hash')
+                  ? grouping?.[groupName].filter((item) => item !== 'run.hash')
+                  : grouping?.[groupName].concat(['run.hash']),
+              } as IOnGroupingSelectChangeParams);
+            }
+          },
+          icon: icons[groupName],
+        })),
+      },
     },
     {
       key: 'metric',
@@ -59,6 +110,27 @@ function getMetricsTableColumns(
         : order?.right?.includes('metric')
         ? 'right'
         : null,
+      columnOptions: {
+        text: 'Grouping',
+        options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+          value: `${
+            grouping?.[groupName]?.includes('metric_name') ? 'un' : ''
+          }group by ${groupName}`,
+          onClick: () => {
+            if (onGroupingToggle) {
+              onGroupingToggle({
+                groupName,
+                list: grouping?.[groupName]?.includes('metric_name')
+                  ? grouping?.[groupName].filter(
+                      (item) => item !== 'metric_name',
+                    )
+                  : grouping?.[groupName].concat(['metric_name']),
+              } as IOnGroupingSelectChangeParams);
+            }
+          },
+          icon: icons[groupName],
+        })),
+      },
     },
     {
       key: 'context',
@@ -134,8 +206,9 @@ function getMetricsTableColumns(
     },
   ].concat(
     paramColumns.map((param) => {
+      const paramKey = `run.params.${param}`;
       const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === `run.params.${param}`,
+        (value) => value[0] === paramKey,
       );
 
       return {
@@ -145,7 +218,7 @@ function getMetricsTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(`run.params.${param}`)}
+                onSort={() => onSort(paramKey)}
                 sortFields={sortFields}
                 sort={Array.isArray(sortItem) ? sortItem[1] : null}
               />
@@ -158,6 +231,25 @@ function getMetricsTableColumns(
           : order?.right?.includes(param)
           ? 'right'
           : null,
+        columnOptions: {
+          text: 'Grouping',
+          options: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+            value: `${
+              grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
+            }group by ${groupName}`,
+            onClick: () => {
+              if (onGroupingToggle) {
+                onGroupingToggle({
+                  groupName,
+                  list: grouping?.[groupName]?.includes(paramKey)
+                    ? grouping?.[groupName].filter((item) => item !== paramKey)
+                    : grouping?.[groupName].concat([paramKey]),
+                } as IOnGroupingSelectChangeParams);
+              }
+            },
+            icon: icons[groupName],
+          })),
+        },
       };
     }),
   );

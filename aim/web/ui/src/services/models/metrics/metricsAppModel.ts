@@ -1501,6 +1501,8 @@ function updateModelData(
     configData?.chart?.aggregationConfig.methods,
     configData.table.sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -2017,6 +2019,8 @@ function setModelData(
     configData?.chart?.aggregationConfig.methods,
     sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   if (!model.getState()?.requestIsPending) {
     model.getState()?.refs?.tableRef.current?.updateData({

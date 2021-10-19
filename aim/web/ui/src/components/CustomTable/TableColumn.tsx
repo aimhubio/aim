@@ -3,11 +3,11 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { MenuItem, Tooltip } from '@material-ui/core';
+import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 
 import Cell from './TableCell';
 import ControlPopover from '../ControlPopover/ControlPopover';
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 
 function Column({
   topHeader,
@@ -29,10 +29,9 @@ function Column({
   paneFirstColumn,
   paneLastColumn,
   moveColumn,
-  sortable,
-  sortByColumn,
   onRowHover,
   onRowClick,
+  columnOptions,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -143,6 +142,33 @@ function Column({
               )}
               component={
                 <div className='Table__action__popup__body'>
+                  {columnOptions && (
+                    <>
+                      <Text
+                        component='p'
+                        className='Table__action__popup__body__panelTitle'
+                        size={12}
+                        weight={500}
+                        tint={50}
+                      >
+                        {columnOptions?.text}:
+                      </Text>
+                      {columnOptions?.options.map((option) => (
+                        <MenuItem
+                          key={option.value}
+                          className='Table__action__popup__item'
+                          onClick={option.onClick}
+                        >
+                          <Icon fontSize={10} name={option.icon} />
+                          <span>{option.value}</span>
+                        </MenuItem>
+                      ))}
+                      <Divider
+                        orientation='horizontal'
+                        style={{ margin: '0.5rem 0' }}
+                      />
+                    </>
+                  )}
                   {!isAlwaysVisible && (
                     <MenuItem
                       className='Table__action__popup__item'
@@ -213,28 +239,6 @@ function Column({
                     >
                       <Icon fontSize={10} name='move-to-right' />
                       <span>Move to end</span>
-                    </MenuItem>
-                  )}
-                  {sortable && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => sortByColumn('asc')}
-                    >
-                      <Icon name='sort-outside' />
-                      <span>
-                        Sort by <em>ASC</em>
-                      </span>
-                    </MenuItem>
-                  )}
-                  {sortable && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => sortByColumn('desc')}
-                    >
-                      <Icon name='sort-outside' />
-                      <span>
-                        Sort by <em>DESC</em>
-                      </span>
                     </MenuItem>
                   )}
                   {width !== undefined && (

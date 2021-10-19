@@ -129,6 +129,11 @@ $border-radius: 0.2rem;
 .Table__action__popup__body {
   min-width: 180px;
   padding: 0.5rem;
+
+  &__panelTitle {
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+  }
 }
 
 .Table__action__anchor {

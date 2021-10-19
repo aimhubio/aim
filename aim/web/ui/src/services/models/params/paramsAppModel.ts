@@ -202,6 +202,8 @@ function updateData(newData: any) {
     configData.table.hiddenColumns!,
     sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
 
   if (!model.getState()?.requestIsPending) {
@@ -377,6 +379,8 @@ function getParamsData(shouldUrlUpdate?: boolean) {
             configData.table.hiddenColumns!,
             sortFields,
             onSortChange,
+            configData.grouping as any,
+            onGroupingSelectChange,
           ),
           sameValueColumns: tableData.sameValueColumns,
           isParamsLoading: false,
@@ -1068,6 +1072,8 @@ function updateModelData(
     configData.table.hiddenColumns!,
     configData.table.sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
