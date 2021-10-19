@@ -71,7 +71,7 @@ for step in range(10):
           </Text>
         </div>
       </div>
-      {askEmailSent ? null : <AskForm onSendEmail={onSendEmail} />}
+      {/*{askEmailSent ? null : <AskForm onSendEmail={onSendEmail} />}*/}
     </div>
   );
 }
