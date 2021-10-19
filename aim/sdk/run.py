@@ -156,7 +156,7 @@ class Run(StructuredRunMixin):
     Provides API for iterating tracked metrics.
 
     Args:
-         hashname (:obj:`str`, optional): Run's hashname. If skipped, generated automatically.
+         run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
          repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
             If skipped, default Repo is used.
          read_only (:obj:`bool`, optional): Run creation mode.
@@ -171,12 +171,14 @@ class Run(StructuredRunMixin):
     _finalize_message_shown = False
     _track_warning_shown = False
 
-    def __init__(self, hashname: Optional[str] = None, *,
+    def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
-        hashname = hashname or generate_run_hash()
+        run_hash = run_hash or generate_run_hash()
+        self.hash = run_hash
+
         self._finalized = False
 
         if repo is None:
@@ -198,25 +200,24 @@ class Run(StructuredRunMixin):
         self.repo = repo
         self.read_only = read_only
         if not read_only:
-            logger.debug(f'Opening Run {hashname} in write mode')
+            logger.debug(f'Opening Run {self.hash} in write mode')
 
-        self.hashname = hashname
         self._hash = None
         self._props = None
 
         self.contexts: Dict[Context, int] = dict()
 
         self.meta_tree: TreeView = self.repo.request(
-            'meta', hashname, read_only=read_only, from_union=True
+            'meta', self.hash, read_only=read_only, from_union=True
         ).tree().view('meta')
-        self.meta_run_tree: TreeView = self.meta_tree.view('chunks').view(hashname)
+        self.meta_run_tree: TreeView = self.meta_tree.view('chunks').view(self.hash)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.view('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
-            'seqs', hashname, read_only=read_only
-        ).tree().view('seqs').view('chunks').view(hashname)
+            'seqs', self.hash, read_only=read_only
+        ).tree().view('seqs').view('chunks').view(self.hash)
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
@@ -233,7 +234,7 @@ class Run(StructuredRunMixin):
             self.experiment = experiment
 
     def __repr__(self) -> str:
-        return f'<Run#{hash(self)} name={self.hashname} repo={self.repo}>'
+        return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
 
     def idx_to_ctx(self, idx: int) -> Context:
         ctx = Run._idx_to_ctx.get(idx)
@@ -392,17 +393,17 @@ class Run(StructuredRunMixin):
     def _init_props(self):
         sdb = self.repo.structured_db
         if self.repo.run_props_cache_hint:
-            self._props = sdb.caches[self.repo.run_props_cache_hint][self.hashname]
+            self._props = sdb.caches[self.repo.run_props_cache_hint][self.hash]
         if not self._props:
-            self._props = sdb.find_run(self.hashname)
+            self._props = sdb.find_run(self.hash)
             if not self._props:
                 if self.read_only:
-                    raise RepoIntegrityError(f'Missing props for Run {self.hashname}')
+                    raise RepoIntegrityError(f'Missing props for Run {self.hash}')
                 else:
-                    self._props = sdb.create_run(self.hashname)
+                    self._props = sdb.create_run(self.hash)
                     self._props.experiment = 'default'
             if self.repo.run_props_cache_hint:
-                sdb.caches[self.repo.run_props_cache_hint][self.hashname] = self._props
+                sdb.caches[self.repo.run_props_cache_hint][self.hash] = self._props
 
     def metric_tree(self, name: str, context: Context) -> TreeView:
         return self.series_run_tree.view((context.idx, name))
@@ -444,7 +445,7 @@ class Run(StructuredRunMixin):
         return SingleRunSequenceCollection(self)
 
     def __eq__(self, other: 'Run') -> bool:
-        return self.hashname == other.hashname and self.repo == other.repo
+        return self.hash == other.hash and self.repo == other.repo
 
     def get_metric(
             self,
@@ -484,7 +485,7 @@ class Run(StructuredRunMixin):
 
     def _calc_hash(self) -> int:
         # TODO maybe take read_only flag into account?
-        return hash_auto((self.hashname, hash(self.repo)))
+        return hash_auto((self.hash, hash(self.repo)))
 
     def __hash__(self) -> int:
         if self._hash is None:

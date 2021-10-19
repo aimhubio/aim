@@ -88,6 +88,6 @@ async def get_experiment_runs_api(exp_id: str, factory=Depends(object_factory)):
 
     response = {
         'id': exp.uuid,
-        'runs': [{'run_id': run.hashname, 'name': run.name} for run in exp.runs]
+        'runs': [{'run_id': run.hash, 'name': run.name} for run in exp.runs]
     }
     return response
