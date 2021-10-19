@@ -10,11 +10,4 @@
       margin-left: $space-xs;
     }
   }
-  span {
-    display: inline-block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: 9rem;
-  }
 }

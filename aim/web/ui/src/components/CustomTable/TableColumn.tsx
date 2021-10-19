@@ -391,14 +391,15 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
 
   return (
     <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
-      <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
-      {config.chartIndex !== null && config.chartIndex !== 0 && (
-        <Tooltip title='Group chart index'>
-          <span className='Table__group__config__chart'>
-            {config.chartIndex}
-          </span>
-        </Tooltip>
-      )}
+      <Button
+        size='small'
+        withOnlyIcon={true}
+        className='Table__group__config_expandButton'
+      >
+        <Text className='flex'>
+          <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+        </Text>
+      </Button>
       {configData?.length > 0 && (
         <ControlPopover
           title='Group Config'
@@ -411,14 +412,21 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
             horizontal: 'left',
           }}
           anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title={configData.map((item) => item.name + ', ')}>
+            <Tooltip
+              title={`${
+                config.itemsCount
+              } items in the group, grouped by ${configData.map(
+                (item) => ` ${item.name}`,
+              )}`}
+            >
               <div>
                 <Button
                   size='small'
                   className='Table__group__config__popover'
                   onClick={onAnchorClick}
+                  withOnlyIcon={true}
                 >
-                  <Text>grouped by {configData.length} fields</Text>
+                  <Text>{config.itemsCount}</Text>
                 </Button>
               </div>
             </Tooltip>
@@ -426,6 +434,14 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           component={<GroupConfigPopover configData={configData} />}
         />
       )}
+      {config.chartIndex !== null && config.chartIndex !== 0 && (
+        <Tooltip title='Group chart index'>
+          <span className='Table__group__config__chart'>
+            {config.chartIndex}
+          </span>
+        </Tooltip>
+      )}
+
       {config.dasharray !== null && (
         <Tooltip title='Group stroke style'>
           <svg
@@ -449,11 +465,6 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           </svg>
         </Tooltip>
       )}
-      <Tooltip title={`${config.itemsCount} items in the group`}>
-        <span className='Table__group__config__itemsCount'>
-          {config.itemsCount}
-        </span>
-      </Tooltip>
     </div>
   );
 }
