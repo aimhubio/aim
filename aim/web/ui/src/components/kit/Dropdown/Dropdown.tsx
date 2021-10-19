@@ -178,9 +178,12 @@ function Dropdown({
       )}
       <Select
         {...rest}
-        value={options.find(
-          (option: { value: string; label: string }) => value === option.value,
-        )}
+        value={
+          options.find(
+            (option: { value: string; label: string }) =>
+              value === option.value,
+          ) || null
+        }
         className={classNames({ [className]: className })}
         options={options}
         menuPortalTarget={withPortal && document.querySelector('body')}
