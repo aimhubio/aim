@@ -266,19 +266,19 @@ class Repo:
         else:
             raise StopIteration
 
-    def get_run(self, hashname: str) -> Optional['Run']:
+    def get_run(self, run_hash: str) -> Optional['Run']:
         """Get run if exists.
 
         Args:
-            hashname (str): Run hashname.
+            run_hash (str): Run hash.
         Returns:
-            :obj:`Run` object if hashname is found in repository. `None` otherwise.
+            :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
         # TODO: [MV] optimize existence check for run
-        if hashname is None or hashname not in self.meta_tree.view('chunks').keys():
+        if run_hash is None or run_hash not in self.meta_tree.view('chunks').keys():
             return None
         else:
-            return Run(hashname, repo=self, read_only=True)
+            return Run(run_hash, repo=self, read_only=True)
 
     def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunSequenceCollection:
         """Get runs satisfying query expression.
@@ -287,7 +287,7 @@ class Repo:
              query (:obj:`str`, optional): query expression.
                 If not specified, query results will include all runs.
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
-             offset (:obj:`str`, optional): `hashname` of Run to skip to.
+             offset (:obj:`str`, optional): `hash` of Run to skip to.
         Returns:
             :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
@@ -367,7 +367,7 @@ class Repo:
         db = self.structured_db
         cache_name = 'runs_cache'
         db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        db.init_cache(cache_name, db.runs, lambda run: run.hash)
         self.run_props_cache_hint = cache_name
 
     def __del__(self):

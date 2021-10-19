@@ -27,7 +27,7 @@ def img_record_to_encodable(image_record, trace, step):
     for idx, img in image_record:
         img_dump = img.json()
         image_resource_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))
-        img_dump['blob_uri'] = URIService.generate_uri(trace.run.hashname, 'seqs', image_resource_path)
+        img_dump['blob_uri'] = URIService.generate_uri(trace.run.hash, 'seqs', image_resource_path)
         img_dump['index'] = idx
         img_list.append(img_dump)
     return img_list
@@ -46,7 +46,7 @@ def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) ->
             rec_start = min(trace.first_step(), rec_start) if rec_start else trace.first_step()
             rec_stop = max(trace.last_step(), rec_stop)
             idx_stop = max(trace.record_length(), idx_stop)
-        trace_cache[run.hashname] = {
+        trace_cache[run.hash] = {
             'run': run,
             'traces': run_traces
         }
@@ -95,7 +95,7 @@ def image_search_result_streamer(traces: SequenceCollection,
 
     def pack_run_data(run_: Run, traces_: list, rec_slice: slice, idx_slice: slice):
         run_dict = {
-            run_.hashname: {
+            run_.hash: {
                 'ranges': {
                     'record_range': [rec_slice.start, rec_slice.stop],
                     'index_range': [idx_slice.start, idx_slice.stop],

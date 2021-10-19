@@ -3,7 +3,7 @@ from tests.base import TestBase
 
 class TestStructuredDatabase(TestBase):
     def test_entity_chaining_syntax(self):
-        run = self.repo.structured_db.find_run('missing_run_hashname')
+        run = self.repo.structured_db.find_run('missing_run_hash')
         self.assertFalse(run.experiment)
         self.assertFalse(run.experiment.name)
         self.assertFalse(run.tags)
