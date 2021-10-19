@@ -37,6 +37,13 @@ class CustomObject(CustomObjectBase):
             obj.storage = _storage
         return obj
 
+    def __deepcopy__(self, memodict={}):
+        cls = self.__class__
+        storage = InMemoryTreeView(container=self.storage[...])
+        result = cls.__new__(cls, _storage=storage)
+        memodict[id(self)] = result
+        return result
+
     def _aim_encode(self):
         # TODO more effective
         return self.AIM_NAME, self.storage[...]
