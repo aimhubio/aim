@@ -46,7 +46,6 @@ function BookmarkCard({
           <div className='flex fac fjc'>
             <NavLink to={`/${type}/${app_id}`}>
               <Button
-                size='small'
                 variant='outlined'
                 onClick={() =>
                   analytics.trackEvent('[Bookmarks] View bookmark')
@@ -82,9 +81,12 @@ function BookmarkCard({
           {tags.length > 0 && (
             <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
               {tags.map((tag, index) => {
-                let color = COLORS[0][index % COLORS[0].length];
                 return (
-                  <Badge key={tag.label} label={tag.label} color={color} />
+                  <Badge
+                    key={tag.label}
+                    label={tag.label}
+                    color={COLORS[0][index % COLORS[0].length]}
+                  />
                 );
               })}
             </div>

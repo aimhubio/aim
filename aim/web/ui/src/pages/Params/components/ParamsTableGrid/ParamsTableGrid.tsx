@@ -15,9 +15,9 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 
 const icons: { [key: string]: string } = {
-  color: 'coloring',
-  stroke: 'line-style',
-  chart: 'chart-group',
+  color: 'coloring-bold',
+  stroke: 'line-style-bold',
+  chart: 'chart-group-bold',
 };
 
 function getParamsTableColumns(

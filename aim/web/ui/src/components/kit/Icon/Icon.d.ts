@@ -28,7 +28,7 @@ export type IconName =
   | 'arrow-left'
   | 'arrow-down'
   | 'arrow-right'
-  | 'manage-calumn'
+  | 'manage-column'
   | 'long-arrow-right'
   | 'long-arrow-left'
   | 'cursor'

@@ -162,10 +162,10 @@ $border-radius: 0.2rem;
     background-color: $primary-lighter;
     color: $primary-darker;
   }
-
-  i {
+  &_icon {
+    width: 0.875rem;
+    display: flex;
     margin-right: 1rem;
-    font-size: 0.75rem;
   }
 }
 
