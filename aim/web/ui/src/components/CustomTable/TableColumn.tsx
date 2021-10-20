@@ -428,9 +428,9 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           }}
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip
-              title={`${
-                config.itemsCount
-              } items in the group, grouped by ${configData.map(
+              title={`${config.itemsCount} item${
+                config.itemsCount > 1 ? 's' : ''
+              } in the group, grouped by ${configData.map(
                 (item) => ` ${item.name}`,
               )}`}
             >
