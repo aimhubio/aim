@@ -35,10 +35,9 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from '../../../utils/aggregateGroupData';
-import { AlignmentOptions } from '../../../config/alignment/alignmentOptions';
 import { INotification } from '../../../types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
-import { CurveEnum, ScaleEnum } from '../../../utils/d3';
+import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
 import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
@@ -230,7 +229,7 @@ function getConfig() {
       smoothingFactor: 0,
       alignmentConfig: {
         metric: '',
-        type: AlignmentOptions.STEP,
+        type: AlignmentOptionsEnum.STEP,
       },
       aggregationConfig: {
         methods: {
@@ -799,7 +798,7 @@ function getDataAsTableRows(
     }
     metricsCollection.data.forEach((metric: any) => {
       const metricsRowValues = { ...initialMetricsRowData };
-      metric.run.traces.map((trace: any) => {
+      metric.run.traces.forEach((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
         ] = formatValue(trace.last_value.last);

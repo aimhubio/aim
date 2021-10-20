@@ -67,7 +67,7 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from 'utils/d3';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
@@ -75,7 +75,6 @@ import {
   AlignmentNotificationsEnum,
   BookmarkNotificationsEnum,
 } from 'config/notification-messages/notificationMessages';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
@@ -136,7 +135,7 @@ function getConfig(): IMetricAppConfig {
       smoothingFactor: 0,
       alignmentConfig: {
         metric: '',
-        type: AlignmentOptions.STEP,
+        type: AlignmentOptionsEnum.STEP,
       },
       densityType: DensityOptions.Minimum,
       aggregationConfig: {
@@ -473,7 +472,7 @@ function onBookmarkUpdate(id: string) {
 
 function getGroupingSelectOptions(
   params: string[],
-  contexts: string[],
+  contexts: string[] = [],
 ): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     group: 'run',
@@ -807,11 +806,11 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
 
 function alignData(
   data: IMetricsCollection<IMetric>[],
-  type: AlignmentOptions = model.getState()!.config!.chart.alignmentConfig
+  type: AlignmentOptionsEnum = model.getState()!.config!.chart.alignmentConfig
     .type!,
 ): IMetricsCollection<IMetric>[] {
   switch (type) {
-    case AlignmentOptions.STEP:
+    case AlignmentOptionsEnum.STEP:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
@@ -824,7 +823,7 @@ function alignData(
         }
       }
       break;
-    case AlignmentOptions.EPOCH:
+    case AlignmentOptionsEnum.EPOCH:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
@@ -855,7 +854,7 @@ function alignData(
         }
       }
       break;
-    case AlignmentOptions.RELATIVE_TIME:
+    case AlignmentOptionsEnum.RELATIVE_TIME:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
@@ -887,7 +886,7 @@ function alignData(
         }
       }
       break;
-    case AlignmentOptions.ABSOLUTE_TIME:
+    case AlignmentOptionsEnum.ABSOLUTE_TIME:
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
@@ -900,7 +899,7 @@ function alignData(
         }
       }
       break;
-    case AlignmentOptions.CUSTOM_METRIC:
+    case AlignmentOptionsEnum.CUSTOM_METRIC:
       let missingTraces = false;
       for (let i = 0; i < data.length; i++) {
         const metricCollection = data[i];
@@ -972,7 +971,7 @@ function alignData(
             ...configData.chart,
             alignmentConfig: {
               metric: '',
-              type: AlignmentOptions.STEP,
+              type: AlignmentOptionsEnum.STEP,
             },
           };
           model.setState({ config: configData });
@@ -1268,9 +1267,8 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: formatValue(
+          [paramKey.replace('run.props', 'run').replace('run.params', 'run')]:
             _.get(metricsCollection.config, paramKey),
-          ),
         });
         return acc;
       }, {});
@@ -1287,7 +1285,6 @@ function setTooltipData(
 
   for (let metricsCollection of processedData) {
     const groupConfig = getGroupConfig(metricsCollection);
-
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
         runHash: metric.run.hash,
@@ -1296,7 +1293,7 @@ function setTooltipData(
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: formatValue(_.get(metric, `run.params.${paramKey}`)),
+            [paramKey]: _.get(metric, `run.params.${paramKey}`),
           });
           return acc;
         }, {}),
@@ -1898,7 +1895,7 @@ async function onAlignmentMetricChange(metric: string) {
   if (configData?.chart) {
     configData.chart = {
       ...configData.chart,
-      alignmentConfig: { metric, type: AlignmentOptions.CUSTOM_METRIC },
+      alignmentConfig: { metric, type: AlignmentOptionsEnum.CUSTOM_METRIC },
     };
     model.setState({ config: configData });
   }
@@ -1948,7 +1945,7 @@ async function onAlignmentMetricChange(metric: string) {
       });
       configData.chart = {
         ...configData.chart,
-        alignmentConfig: { metric: '', type: AlignmentOptions.STEP },
+        alignmentConfig: { metric: '', type: AlignmentOptionsEnum.STEP },
       };
     }
     setModelData(rawData, configData);
@@ -2041,12 +2038,12 @@ function setModelData(
   });
 }
 
-function onAlignmentTypeChange(type: AlignmentOptions): void {
+function onAlignmentTypeChange(type: AlignmentOptionsEnum): void {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.chart) {
     const alignmentConfig = { ...configData.chart.alignmentConfig, type };
 
-    if (type !== AlignmentOptions.CUSTOM_METRIC) {
+    if (type !== AlignmentOptionsEnum.CUSTOM_METRIC) {
       alignmentConfig.metric = '';
     }
     configData.chart = {
@@ -2056,7 +2053,7 @@ function onAlignmentTypeChange(type: AlignmentOptions): void {
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptions[
+    `[MetricsExplorer][Chart] Align X axis by "${AlignmentOptionsEnum[
       type
     ].toLowerCase()}"`,
   );
