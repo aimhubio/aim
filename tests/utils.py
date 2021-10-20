@@ -66,8 +66,8 @@ def fill_up_test_data():
 
     with repo.structured_db:
         runs = []
-        for idx, hash_name in enumerate(run_hashes):
-            run = Run(hashname=hash_name, repo=repo, system_tracking_interval=None)
+        for idx, run_hash in enumerate(run_hashes):
+            run = Run(run_hash, repo=repo, system_tracking_interval=None)
             run['hparams'] = create_run_params()
             run['run_index'] = idx
             run['start_time'] = datetime.datetime.utcnow().isoformat()

@@ -99,7 +99,7 @@ class AimLogger(object):
 
             @property
             def version(self) -> str:
-                return self.experiment.hashname
+                return self.experiment.hash
 
         cls.__pl_logger_cls = _PytorchLightningLogger
         return cls.__pl_logger_cls

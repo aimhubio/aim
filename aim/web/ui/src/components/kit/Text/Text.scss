@@ -156,5 +156,8 @@
         color: $primary-color-5;
       }
     }
+    &_inherit {
+      color: inherit;
+    }
   }
 }
