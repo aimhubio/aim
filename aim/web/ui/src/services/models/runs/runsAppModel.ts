@@ -123,7 +123,7 @@ function getRunsData(isInitial = true) {
     call: async () => {
       try {
         const stream = await call(exceptionHandler);
-        let gen = adjustable_reader(stream);
+        let gen = adjustable_reader(stream as ReadableStream<any>);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
         let objects = iterFoldTree(decodedPairs, 1);
@@ -184,8 +184,12 @@ function getRunsData(isInitial = true) {
           q: query,
           limit: pagination.limit + runsData?.length || 0,
         });
-      } catch (e) {
-        console.error(e);
+      } catch (ex) {
+        if (ex.name === 'AbortError') {
+          // Abort Error
+        } else {
+          console.log('Unhandled error: ', ex);
+        }
       }
     },
     abort,

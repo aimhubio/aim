@@ -335,61 +335,69 @@ function getParamsData(shouldUrlUpdate?: boolean) {
         });
       } else {
         model.setState({ isParamsLoading: true });
-        const stream = await getRunsRequestRef.call(exceptionHandler);
-        let gen = adjustable_reader(stream);
-        let buffer_pairs = decode_buffer_pairs(gen);
-        let decodedPairs = decodePathsVals(buffer_pairs);
-        let objects = iterFoldTree(decodedPairs, 1);
+        try {
+          const stream = await getRunsRequestRef.call(exceptionHandler);
+          let gen = adjustable_reader(stream);
+          let buffer_pairs = decode_buffer_pairs(gen);
+          let decodedPairs = decodePathsVals(buffer_pairs);
+          let objects = iterFoldTree(decodedPairs, 1);
 
-        const runData: IRun<IParamTrace>[] = [];
-        for await (let [keys, val] of objects) {
-          runData.push({ ...(val as any), hash: keys[0] });
-        }
-        const { data, params, metricsColumns } = processData(runData);
-        const configData = model.getState()?.config;
-        if (configData) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions(params),
-          ];
-        }
+          const runData: IRun<IParamTrace>[] = [];
+          for await (let [keys, val] of objects) {
+            runData.push({ ...(val as any), hash: keys[0] });
+          }
+          const { data, params, metricsColumns } = processData(runData);
+          const configData = model.getState()?.config;
+          if (configData) {
+            configData.grouping.selectOptions = [
+              ...getGroupingSelectOptions(params),
+            ];
+          }
 
-        const tableData = getDataAsTableRows(
-          data,
-          metricsColumns,
-          params,
-          false,
-          configData,
-        );
-        const sortFields = model.getState()?.config?.table.sortFields;
-
-        model.setState({
-          data,
-          highPlotData: getDataAsLines(data),
-          chartTitleData: getChartTitleData(data),
-          params,
-          metricsColumns,
-          rawData: runData,
-          config: configData,
-          tableData: tableData.rows,
-          tableColumns: getParamsTableColumns(
+          const tableData = getDataAsTableRows(
+            data,
             metricsColumns,
             params,
-            data[0]?.config,
-            configData.table.columnsOrder!,
-            configData.table.hiddenColumns!,
-            sortFields,
-            onSortChange,
-            configData.grouping as any,
-            onGroupingSelectChange,
-          ),
-          sameValueColumns: tableData.sameValueColumns,
-          isParamsLoading: false,
-          groupingSelectOptions: [...getGroupingSelectOptions(params)],
-        });
+            false,
+            configData,
+          );
+          const sortFields = model.getState()?.config?.table.sortFields;
 
-        liveUpdateInstance?.start({
-          q: select?.query,
-        });
+          model.setState({
+            data,
+            highPlotData: getDataAsLines(data),
+            chartTitleData: getChartTitleData(data),
+            params,
+            metricsColumns,
+            rawData: runData,
+            config: configData,
+            tableData: tableData.rows,
+            tableColumns: getParamsTableColumns(
+              metricsColumns,
+              params,
+              data[0]?.config,
+              configData.table.columnsOrder!,
+              configData.table.hiddenColumns!,
+              sortFields,
+              onSortChange,
+              configData.grouping as any,
+              onGroupingSelectChange,
+            ),
+            sameValueColumns: tableData.sameValueColumns,
+            isParamsLoading: false,
+            groupingSelectOptions: [...getGroupingSelectOptions(params)],
+          });
+
+          liveUpdateInstance?.start({
+            q: select?.query,
+          });
+        } catch (ex) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ', ex);
+          }
+        }
       }
     },
     abort: () => getRunsRequestRef.abort(),
