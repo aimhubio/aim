@@ -601,7 +601,7 @@ const Table = React.forwardRef(function Table(
                 )}
               </div>
               {onExport && (
-                <div className='flex fac'>
+                <div className='fac'>
                   <Button
                     fullWidth
                     variant='outlined'
@@ -610,7 +610,9 @@ const Table = React.forwardRef(function Table(
                     onClick={onExport}
                     startIcon={<Icon fontSize={14} name='download' />}
                   >
-                    Export
+                    <Text size={14} color='inherit'>
+                      Export
+                    </Text>
                   </Button>
                 </div>
               )}
