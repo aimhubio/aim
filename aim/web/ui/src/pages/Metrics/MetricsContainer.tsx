@@ -79,7 +79,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
         metricAppModel.getMetricsData().call();
-        metricAppModel.setDefaultAppConfigData();
       });
     } else {
       metricAppModel.setDefaultAppConfigData();

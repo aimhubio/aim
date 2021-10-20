@@ -9,7 +9,16 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { PathEnum } from 'config/enums/routesEnum';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IOnGroupingSelectChangeParams,
+  SortField,
+} from 'types/services/models/metrics/metricsAppModel';
+
+const icons: { [key: string]: string } = {
+  color: 'coloring-bold',
+  stroke: 'line-style-bold',
+  chart: 'chart-group-bold',
+};
 
 function getParamsTableColumns(
   metricsColumns: any,
@@ -19,6 +28,8 @@ function getParamsTableColumns(
   hiddenColumns: string[],
   sortFields?: any[],
   onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  grouping?: { [key: string]: string[] },
+  onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -32,6 +43,24 @@ function getParamsTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : 'left',
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.props.experiment')
+                ? grouping?.[groupName].filter(
+                    (item) => item !== 'run.props.experiment',
+                  )
+                : grouping?.[groupName].concat(['run.props.experiment']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
     },
     {
       key: 'run',
@@ -42,6 +71,22 @@ function getParamsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : null,
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.hash')
+                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
+                : grouping?.[groupName].concat(['run.hash']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
     },
     {
       key: 'actions',
@@ -73,8 +118,9 @@ function getParamsTableColumns(
       return acc;
     }, []),
     paramColumns.map((param) => {
+      const paramKey = `run.params.${param}`;
       const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === `run.params.${param}`,
+        (value) => value[0] === `run.params.${paramKey}`,
       );
 
       return {
@@ -84,7 +130,7 @@ function getParamsTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(`run.params.${param}`)}
+                onSort={() => onSort(paramKey)}
                 sortFields={sortFields}
                 sort={Array.isArray(sortItem) ? sortItem[1] : null}
               />
@@ -97,6 +143,24 @@ function getParamsTableColumns(
           : order?.right?.includes(param)
           ? 'right'
           : null,
+        columnOptions: ['color', 'stroke', 'chart'].map(
+          (groupName: string) => ({
+            value: `${
+              grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
+            }group by ${groupName}`,
+            onClick: () => {
+              if (onGroupingToggle) {
+                onGroupingToggle({
+                  groupName,
+                  list: grouping?.[groupName]?.includes(paramKey)
+                    ? grouping?.[groupName].filter((item) => item !== paramKey)
+                    : grouping?.[groupName].concat([paramKey]),
+                } as IOnGroupingSelectChangeParams);
+              }
+            },
+            icon: icons[groupName],
+          }),
+        ),
       };
     }),
   );

@@ -14,14 +14,14 @@ class RunView:
 
     def __init__(self, run: 'Run'):
         self.db = run.repo.structured_db
-        self.hashname = run.hashname
+        self.hash = run.hash
         self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
         self.meta_run_tree: TreeView = run.meta_run_tree
         self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
 
     def __getattr__(self, item):
         if item in self.structured_run_cls.fields():
-            return getattr(self.db.caches['runs_cache'][self.hashname], item)
+            return getattr(self.db.caches['runs_cache'][self.hash], item)
         else:
             return self[item]
 

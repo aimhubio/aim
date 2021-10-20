@@ -8,11 +8,7 @@ function filterTooltipContent(
   const filteredParams: ITooltipContent['params'] = {};
 
   for (let paramKey of Object.keys(params)) {
-    // TODO improve selectedParams indexOf
-    if (
-      selectedParams.indexOf(paramKey) !== -1 ||
-      selectedParams.indexOf(`run.params.${paramKey}`) !== -1
-    ) {
+    if (selectedParams.indexOf(`run.params.${paramKey}`) !== -1) {
       filteredParams[paramKey] = params[paramKey];
     }
   }

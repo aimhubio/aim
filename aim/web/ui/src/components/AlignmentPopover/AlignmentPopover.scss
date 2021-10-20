@@ -16,6 +16,9 @@
   &__selectContainer {
     display: flex;
     flex-direction: column;
+    &__selectBox {
+      padding: 0 0.5rem;
+    }
     span {
       margin-right: 1rem;
     }
