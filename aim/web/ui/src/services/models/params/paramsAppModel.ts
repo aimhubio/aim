@@ -194,6 +194,7 @@ function updateData(newData: any) {
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
 
   const tableColumns = getParamsTableColumns(
@@ -362,6 +363,7 @@ function getParamsData(shouldUrlUpdate?: boolean) {
             params,
             false,
             configData,
+            groupingSelectOptions,
           );
           const sortFields = model.getState()?.config?.table.sortFields;
 
@@ -1078,6 +1080,7 @@ function updateModelData(
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
   const tableColumns = getParamsTableColumns(
     metricsColumns,
@@ -1119,6 +1122,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IParamsAppConfig,
+  groupingSelectOptions: any,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1148,6 +1152,11 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
+      const groupConfigData: { [key: string]: string } = {};
+      for (let key in metricsCollection.config) {
+        groupConfigData[getValueByField(groupingSelectOptions, key)] =
+          metricsCollection.config[key];
+      }
       const groupHeaderRow = {
         meta: {
           chartIndex:
@@ -1158,6 +1167,7 @@ function getDataAsTableRows(
           color: metricsCollection.color,
           dasharray: metricsCollection.dasharray,
           itemsCount: metricsCollection.data.length,
+          config: groupConfigData,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1415,13 +1425,15 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config, metricsColumns } = model.getState() as any;
+  const { data, params, config, metricsColumns, groupingSelectOptions } =
+    model.getState() as any;
   const tableData = getDataAsTableRows(
     data,
     metricsColumns,
     params,
     true,
     config,
+    groupingSelectOptions,
   );
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
