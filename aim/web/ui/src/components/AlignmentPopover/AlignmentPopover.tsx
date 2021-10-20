@@ -1,10 +1,10 @@
-import React from 'react';
-import { MenuItem, Select } from '@material-ui/core';
+import React, { useState } from 'react';
+import { MenuItem } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { DensityOptions } from 'config/enums/densityEnum';
-import { Text } from 'components/kit';
+import { Text, Dropdown } from 'components/kit';
 
 import './AlignmentPopover.scss';
 
@@ -50,6 +50,7 @@ function AlignmentPopover({
   densityType,
   projectsDataMetrics,
 }: IAlignmentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  const [open, setOpen] = useState(false);
   function handleAlignmentTypeChange(e: React.ChangeEvent<any>) {
     const { id } = e.target;
     onAlignmentTypeChange(+id);
@@ -60,20 +61,20 @@ function AlignmentPopover({
     onDensityTypeChange(+id);
   }
 
-  function onMetricChange(e: React.ChangeEvent<any>) {
-    const value = e.target.value;
-    onAlignmentMetricChange(value);
+  function onMetricChange(e: { value: string; label: string } | null) {
+    e && onAlignmentMetricChange(e.value);
   }
 
-  const metricOptions: string[] = React.useMemo(() => {
-    let data: string[] = [];
-    if (projectsDataMetrics) {
-      for (let key in projectsDataMetrics) {
-        data.push(key);
+  const metricOptions: { value: string; label: string }[] =
+    React.useMemo(() => {
+      let data: { value: string; label: string }[] = [];
+      if (projectsDataMetrics) {
+        for (let key in projectsDataMetrics) {
+          data.push({ value: key, label: key });
+        }
       }
-    }
-    return data;
-  }, [projectsDataMetrics]);
+      return data;
+    }, [projectsDataMetrics]);
 
   return (
     <div className='AlignmentPopover__container'>
@@ -129,20 +130,19 @@ function AlignmentPopover({
         >
           Metric:
         </Text>
-        {/* @TODO Change to our dropdown component,because this one doesn't match to our design*/}
-        <Select
-          className='AlignmentPopover__container__selectContainer__select'
-          variant='outlined'
-          value={alignmentConfig.metric}
-          onChange={onMetricChange}
-          label={'Select...'}
-        >
-          {metricOptions.map((metric) => (
-            <MenuItem key={metric} value={metric}>
-              {metric}
-            </MenuItem>
-          ))}
-        </Select>
+        <div className='AlignmentPopover__container__selectContainer__selectBox'>
+          <Dropdown
+            size='large'
+            isColored
+            onChange={onMetricChange}
+            value={alignmentConfig.metric}
+            options={metricOptions}
+            onMenuOpen={() => setOpen(true)}
+            onMenuClose={() => setOpen(false)}
+            open={open}
+            withPortal
+          />
+        </div>
       </div>
     </div>
   );
