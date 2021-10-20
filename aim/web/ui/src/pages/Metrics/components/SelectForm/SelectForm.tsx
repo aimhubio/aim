@@ -247,8 +247,7 @@ function SelectForm({
                               size='small'
                             />
                             <span className='SelectForm__option__label'>
-                              {contextToString(option.value.context) ||
-                                option.group}
+                              {option.label}
                             </span>
                           </React.Fragment>
                         );
