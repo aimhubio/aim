@@ -338,7 +338,7 @@ class Run(StructuredRunMixin):
             if track_rate_warning:
                 self.track_rate_warn()
         else:
-            self._track_impl(value, track_time, name, step, epoch, context = context)
+            self._track_impl(value, track_time, name, step, epoch, context=context)
 
     def _track_impl(
         self,

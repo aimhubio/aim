@@ -24,7 +24,6 @@ from aim.storage.union import RocksUnionContainer
 from aim.storage.structured.db import DB
 
 
-
 class ContainerConfig(NamedTuple):
     name: str
     sub: Optional[str]
@@ -40,7 +39,7 @@ class RepoStatus(Enum):
 
 def _get_tracking_queue():
     if os.getenv(AIM_ENABLE_TRACKING_THREAD, False):
-        return TaskQueue('metric_tracking', max_backlog=10_000_000) # single thread task queue for Run.track
+        return TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
     return None
 
 
