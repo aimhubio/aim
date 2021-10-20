@@ -84,6 +84,7 @@ function Dropdown({
     menuPortal: (provided: any) => ({
       ...provided,
       zIndex: 1000000,
+      position: 'fixed',
     }),
     singleValue: (provided: any) => ({
       ...provided,
@@ -199,6 +200,7 @@ function Dropdown({
           DropdownIndicator: DropdownIndicator,
         }}
         styles={customStyles}
+        menuPlacement='auto'
       />
     </div>
   );
