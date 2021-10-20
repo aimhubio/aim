@@ -1,4 +1,4 @@
-aim>=2.0.0
+aim>=3.0.0
 Keras==2.2.4
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
