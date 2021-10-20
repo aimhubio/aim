@@ -10,7 +10,7 @@ from weakref import WeakValueDictionary
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 
-from aim.sdk.configs import AIM_REPO_NAME
+from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
@@ -24,6 +24,7 @@ from aim.storage.union import RocksUnionContainer
 from aim.storage.structured.db import DB
 
 
+
 class ContainerConfig(NamedTuple):
     name: str
     sub: Optional[str]
@@ -35,6 +36,12 @@ class RepoStatus(Enum):
     UPDATE_REQUIRED = 2
     PATCH_REQUIRED = 3
     UPDATED = 4
+
+
+def _get_tracking_queue():
+    if os.getenv(AIM_ENABLE_TRACKING_THREAD, False):
+        return TaskQueue('metric_tracking', max_backlog=10_000_000) # single thread task queue for Run.track
+    return None
 
 
 # TODO make this api thread-safe
@@ -54,7 +61,7 @@ class Repo:
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
-    tracking_queue = TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
+    tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
