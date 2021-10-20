@@ -108,8 +108,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  // Add effect to recover state from URL when browser history navigation is used
-
   return (
     <Metrics
       // refs

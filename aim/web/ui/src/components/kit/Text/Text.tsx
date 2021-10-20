@@ -23,8 +23,8 @@ function Text({
   tint,
   ...rest
 }: ITextProps): React.FunctionComponentElement<React.ReactNode> {
-  const Element = React.useMemo(() => {
-    const classes = `${className || ''} Text Text__size_${
+  const Element = (): React.FunctionComponentElement<React.ReactNode> => {
+    const classes: string = `${className || ''} Text Text__size_${
       size ? size : 12
     } Text__weight_${weight ? weight : 500} Text__color_${`${
       color ? color : 'primary'
@@ -97,9 +97,9 @@ function Text({
           </span>
         );
     }
-  }, [children, className, size, tint]);
+  };
 
-  return Element;
+  return <Element />;
 }
 
 Text.displayName = 'Text';

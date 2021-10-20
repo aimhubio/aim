@@ -1050,6 +1050,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IMetricAppConfig,
+  groupingSelectOptions: IMetricAppModelState['groupingSelectOptions'],
   dynamicUpdate?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
@@ -1070,6 +1071,11 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
+      const groupConfigData: { [key: string]: string } = {};
+      for (let key in metricsCollection.config) {
+        groupConfigData[getValueByField(groupingSelectOptions, key)] =
+          metricsCollection.config[key];
+      }
       const groupHeaderRow = {
         meta: {
           chartIndex:
@@ -1080,6 +1086,7 @@ function getDataAsTableRows(
           color: metricsCollection.color,
           dasharray: metricsCollection.dasharray,
           itemsCount: metricsCollection.data.length,
+          config: groupConfigData,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1486,15 +1493,17 @@ function updateModelData(
   const { data, params, contexts } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
+  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
+  setTooltipData(data, params, groupingSelectOptions);
   const tableData = getDataAsTableRows(
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
-  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
-  setTooltipData(data, params, groupingSelectOptions);
+
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
@@ -1668,7 +1677,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
 const onActivePointChange = _.debounce(
   (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
-    const { data, params, refs, config } =
+    const { data, params, refs, config, groupingSelectOptions } =
       model.getState() as IMetricAppModelState;
     if (!!config) {
       const tableRef: any = refs?.tableRef;
@@ -1680,6 +1689,7 @@ const onActivePointChange = _.debounce(
           params,
           false,
           config,
+          groupingSelectOptions,
           true,
         );
         if (tableRef) {
@@ -1788,7 +1798,8 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config } = model.getState() as IMetricAppModelState;
+  const { data, params, config, groupingSelectOptions } =
+    model.getState() as IMetricAppModelState;
 
   const tableData = getDataAsTableRows(
     data,
@@ -1796,6 +1807,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     params,
     true,
     config,
+    groupingSelectOptions,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
@@ -2014,6 +2026,7 @@ function setModelData(
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
   const tableColumns = getMetricsTableColumns(
     params,

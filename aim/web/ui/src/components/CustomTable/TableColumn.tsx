@@ -8,6 +8,8 @@ import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 import Cell from './TableCell';
 import ControlPopover from '../ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
+import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
+import { decode } from 'utils/encoder/encoder';
 
 function Column({
   topHeader,
@@ -395,9 +397,56 @@ function Column({
 }
 
 function GroupConfig({ config, expand, expanded, groupKey }) {
+  const configData = React.useMemo(() => {
+    return Object.keys(config.config).map((key, index) => {
+      return { name: key, value: config.config[key] };
+    });
+  }, [config.config]);
   return (
     <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
-      <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+      <Button
+        size='small'
+        withOnlyIcon={true}
+        className='Table__group__config_expandButton'
+      >
+        <Text className='flex'>
+          <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+        </Text>
+      </Button>
+      {configData?.length > 0 && (
+        <ControlPopover
+          title='Group Config'
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          anchor={({ onAnchorClick, opened }) => (
+            <Tooltip
+              title={`${config.itemsCount} item${
+                config.itemsCount > 1 ? 's' : ''
+              } in the group, grouped by ${configData.map(
+                (item) => ` ${item.name}`,
+              )}`}
+            >
+              <div>
+                <Button
+                  size='small'
+                  className='Table__group__config__popover'
+                  onClick={onAnchorClick}
+                  withOnlyIcon={true}
+                >
+                  <Text>{config.itemsCount}</Text>
+                </Button>
+              </div>
+            </Tooltip>
+          )}
+          component={<GroupConfigPopover configData={configData} />}
+        />
+      )}
       {config.chartIndex !== null && config.chartIndex !== 0 && (
         <Tooltip title='Group chart index'>
           <span className='Table__group__config__chart'>
@@ -405,6 +454,7 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           </span>
         </Tooltip>
       )}
+
       {config.dasharray !== null && (
         <Tooltip title='Group stroke style'>
           <svg
@@ -428,11 +478,6 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           </svg>
         </Tooltip>
       )}
-      <Tooltip title={`${config.itemsCount} items in the group`}>
-        <span className='Table__group__config__itemsCount'>
-          {config.itemsCount}
-        </span>
-      </Tooltip>
     </div>
   );
 }
