@@ -37,7 +37,9 @@ function Dropdown({
   onMenuOpen,
   onMenuClose,
   onChange,
+  isClearable = false,
   isColored = false,
+  maxMenuListHeight = '12.5rem',
   label,
   ...rest
 }: IDropdownProps): React.FunctionComponentElement<React.ReactNode> {
@@ -62,7 +64,7 @@ function Dropdown({
     indicatorsContainer: (provided: any) => ({
       ...provided,
       height: indicatorsContainerSizes[size],
-      padding: '0.1875rem 0',
+      padding: '0.375rem 0',
     }),
     placeholder: (holder: any) => ({
       ...holder,
@@ -92,15 +94,28 @@ function Dropdown({
       color: isColored && value ? '#1473E6' : '#414B6D',
       marginBottom: '0.0625rem',
     }),
-    dropdownIndicator: () => ({ marginRight: '0.625rem' }),
+    dropdownIndicator: () => ({
+      marginRight: '0.625rem',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+    }),
     clearIndicator: () => ({
       padding: '0 0.625rem',
       borderLeft: '1px solid #D1DDEF',
+      cursor: 'pointer',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
     }),
     menu: (provided: any) => ({
       ...provided,
       borderRadius: '0.375rem',
       padding: '0.5rem',
+    }),
+    menuList: (provided: any) => ({
+      ...provided,
+      maxHeight: maxMenuListHeight,
     }),
     option: (provided: any) => ({
       ...provided,
@@ -120,7 +135,7 @@ function Dropdown({
         ref={ref}
         style={getStyles('clearIndicator', props) as any}
       >
-        <div style={{ padding: '0px 5px' }}>{children}</div>
+        <div className='Dropdown__indicatorContainer'>{children}</div>
       </div>
     );
   }
@@ -143,7 +158,7 @@ function Dropdown({
         ref={ref}
         style={getStyles('dropdownIndicator', props)}
       >
-        <div style={{ padding: '0 0.3125rem' }}>{children}</div>
+        <div className='Dropdown__indicatorContainer'>{children}</div>
       </div>
     );
   }
@@ -193,7 +208,7 @@ function Dropdown({
         onMenuClose={handleMenuClose}
         placeholder={!label && placeholder}
         onChange={onChange as any}
-        isClearable
+        isClearable={isClearable}
         components={{
           Option: DropdownCustomOption,
           ClearIndicator: ClearIndicator,

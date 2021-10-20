@@ -19,7 +19,7 @@ function DropdownCustomOption(
       <Text
         component='span'
         size={14}
-        weight={500}
+        weight={400}
         color={isSelected ? 'info' : 'primary'}
         tint={isSelected ? 100 : 80}
       >

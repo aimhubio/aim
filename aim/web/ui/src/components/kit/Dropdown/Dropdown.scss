@@ -14,6 +14,12 @@
       top: -0.5125rem !important;
     }
   }
+  &__indicatorContainer {
+    padding: 0px 5px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
 }
 
 .IndicatorsContainer {
@@ -32,6 +38,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  border-radius: $border-radius-sm;
   &:hover {
     background: #f2f5fa;
   }
