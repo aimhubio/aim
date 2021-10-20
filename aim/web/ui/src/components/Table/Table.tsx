@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
