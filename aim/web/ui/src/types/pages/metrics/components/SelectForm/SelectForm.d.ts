@@ -14,6 +14,6 @@ export interface ISelectMetricsOption {
   color: string;
   value: {
     metric_name: string;
-    context: object | null;
+    context: { [key: string]: unknown } | null | any;
   };
 }

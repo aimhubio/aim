@@ -3,6 +3,7 @@ import { MenuItem } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { isSystemMetric } from 'utils/isSystemMetric';
 import { AlignmentOptionsEnum } from 'utils/d3';
 import { Text, Dropdown } from 'components/kit';
 
@@ -70,7 +71,9 @@ function AlignmentPopover({
       let data: { value: string; label: string }[] = [];
       if (projectsDataMetrics) {
         for (let key in projectsDataMetrics) {
-          data.push({ value: key, label: key });
+          if (!isSystemMetric(key)) {
+            data.push({ value: key, label: key });
+          }
         }
       }
       return data;
