@@ -398,12 +398,10 @@ function Column({
 
 function GroupConfig({ config, expand, expanded, groupKey }) {
   const configData = React.useMemo(() => {
-    const groupConfig = JSON.parse(decode(groupKey));
-    return Object.keys(groupConfig).map((key, index) => {
-      return { name: key, value: groupConfig[key] };
+    return Object.keys(config.config).map((key, index) => {
+      return { name: key, value: config.config[key] };
     });
-  }, [groupKey]);
-
+  }, [config.config]);
   return (
     <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
       <Button

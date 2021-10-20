@@ -85,6 +85,8 @@ import * as analytics from 'services/analytics';
 import { formatValue } from 'utils/formatValue';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import { DensityOptions } from 'config/enums/densityEnum';
+import getValueByField from 'utils/getValueByField';
+import contextToString from 'utils/contextToString';
 
 const model = createModel<Partial<IMetricAppModelState>>({
   requestIsPending: null,
@@ -404,6 +406,7 @@ function getMetricsData(shouldUrlUpdate?: boolean) {
 
 function getChartTitleData(
   processedData: IMetricsCollection<IMetric>[],
+  groupingSelectOptions: IMetricAppModelState['groupingSelectOptions'],
   configData: IMetricAppConfig | any = model.getState()?.config,
 ): IChartTitleData {
   if (!processedData) {
@@ -416,9 +419,8 @@ function getChartTitleData(
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = formatValue(
-              metricsCollection.config[groupItemKey],
-            );
+            acc[getValueByField(groupingSelectOptions || [], groupItemKey)] =
+              formatValue(metricsCollection.config[groupItemKey]);
           }
           return acc;
         },
@@ -594,8 +596,6 @@ function processData(data: IRun<IMetricTrace>[]): {
   );
   const uniqParams = _.uniq(params);
   const uniqContexts = _.uniq(contexts);
-
-  setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
@@ -1045,6 +1045,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IMetricAppConfig,
+  groupingSelectOptions: IMetricAppModelState['groupingSelectOptions'],
   dynamicUpdate?: boolean,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
@@ -1065,6 +1066,11 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
+      const groupConfigData: { [key: string]: string } = {};
+      for (let key in metricsCollection.config) {
+        groupConfigData[getValueByField(groupingSelectOptions, key)] =
+          metricsCollection.config[key];
+      }
       const groupHeaderRow = {
         meta: {
           chartIndex:
@@ -1075,6 +1081,7 @@ function getDataAsTableRows(
           color: metricsCollection.color,
           dasharray: metricsCollection.dasharray,
           itemsCount: metricsCollection.data.length,
+          config: groupConfigData,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1123,7 +1130,7 @@ function getDataAsTableRows(
         experiment: metric.run.props.experiment ?? 'default',
         run: metric.run.props.name,
         metric: metric.metric_name,
-        context: Object.entries(metric.context).map((entry) => entry.join(':')),
+        context: contextToString(metric.context)?.split(',') || [''],
         value:
           closestIndex === null
             ? '-'
@@ -1252,6 +1259,7 @@ function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
 
 function getGroupConfig(
   metricsCollection: IMetricsCollection<IMetric>,
+  groupingSelectOptions: IMetricAppModelState['groupingSelectOptions'],
   groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
 ) {
   const configData = model.getState()?.config;
@@ -1262,8 +1270,10 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.props', 'run').replace('run.params', 'run')]:
-            _.get(metricsCollection.config, paramKey),
+          [getValueByField(groupingSelectOptions || [], paramKey)]: _.get(
+            metricsCollection.config,
+            paramKey,
+          ),
         });
         return acc;
       }, {});
@@ -1275,11 +1285,15 @@ function getGroupConfig(
 function setTooltipData(
   processedData: IMetricsCollection<IMetric>[],
   paramKeys: string[],
+  groupingSelectOptions: IMetricAppModelState['groupingSelectOptions'],
 ): void {
   const data: { [key: string]: any } = {};
 
   for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig(metricsCollection);
+    const groupConfig = getGroupConfig(
+      metricsCollection,
+      groupingSelectOptions,
+    );
     for (let metric of metricsCollection.data) {
       data[metric.key] = {
         runHash: metric.run.hash,
@@ -1474,14 +1488,17 @@ function updateModelData(
   const { data, params, contexts } = processData(
     model.getState()?.rawData as IRun<IMetricTrace>[],
   );
+  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
+  setTooltipData(data, params, groupingSelectOptions);
   const tableData = getDataAsTableRows(
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
-  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
+
   const tableColumns = getMetricsTableColumns(
     params,
     data[0]?.config,
@@ -1508,7 +1525,7 @@ function updateModelData(
     config: configData,
     data,
     lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
+    chartTitleData: getChartTitleData(data, groupingSelectOptions),
     aggregatedData: getAggregatedData(data),
     tableData: tableData.rows,
     tableColumns,
@@ -1655,7 +1672,7 @@ function onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
 
 const onActivePointChange = _.debounce(
   (activePoint: IActivePoint, focusedStateActive: boolean = false): void => {
-    const { data, params, refs, config } =
+    const { data, params, refs, config, groupingSelectOptions } =
       model.getState() as IMetricAppModelState;
     if (!!config) {
       const tableRef: any = refs?.tableRef;
@@ -1667,6 +1684,7 @@ const onActivePointChange = _.debounce(
           params,
           false,
           config,
+          groupingSelectOptions,
           true,
         );
         if (tableRef) {
@@ -1775,7 +1793,8 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config } = model.getState() as IMetricAppModelState;
+  const { data, params, config, groupingSelectOptions } =
+    model.getState() as IMetricAppModelState;
 
   const tableData = getDataAsTableRows(
     data,
@@ -1783,6 +1802,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     params,
     true,
     config,
+    groupingSelectOptions,
   );
   const tableColumns: ITableColumn[] = getMetricsTableColumns(
     params,
@@ -2009,12 +2029,15 @@ function setModelData(
   if (configData) {
     setAggregationEnabled(configData);
   }
+  const groupingSelectOptions = [...getGroupingSelectOptions(params, contexts)];
+  setTooltipData(data, params, groupingSelectOptions);
   const tableData = getDataAsTableRows(
     data,
     configData?.chart?.focusedState.xValue ?? null,
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
   const tableColumns = getMetricsTableColumns(
     params,
@@ -2040,12 +2063,12 @@ function setModelData(
     params,
     data,
     lineChartData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
+    chartTitleData: getChartTitleData(data, groupingSelectOptions),
     aggregatedData: getAggregatedData(data),
     tableData: tableData.rows,
     tableColumns: tableColumns,
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params, contexts)],
+    groupingSelectOptions,
   });
 }
 

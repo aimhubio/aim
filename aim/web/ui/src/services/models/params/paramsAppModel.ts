@@ -63,6 +63,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+import getValueByField from 'utils/getValueByField';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -180,8 +181,9 @@ function updateData(newData: any) {
   const { data, params, metricsColumns } = processData(newData);
 
   const configData = model.getState()?.config;
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   if (configData) {
-    configData.grouping.selectOptions = [...getGroupingSelectOptions(params)];
+    configData.grouping.selectOptions = groupingSelectOptions;
   }
 
   const sortFields = model.getState()?.config?.table.sortFields;
@@ -192,6 +194,7 @@ function updateData(newData: any) {
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
 
   const tableColumns = getParamsTableColumns(
@@ -216,7 +219,7 @@ function updateData(newData: any) {
   model.setState({
     data,
     highPlotData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
+    chartTitleData: getChartTitleData(data, groupingSelectOptions),
     params,
     metricsColumns,
     rawData: newData,
@@ -225,7 +228,7 @@ function updateData(newData: any) {
     tableColumns: tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     isParamsLoading: false,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    groupingSelectOptions,
   });
 }
 
@@ -347,11 +350,11 @@ function getParamsData(shouldUrlUpdate?: boolean) {
             runData.push({ ...(val as any), hash: keys[0] });
           }
           const { data, params, metricsColumns } = processData(runData);
+          const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+          setTooltipData(data, params, groupingSelectOptions);
           const configData = model.getState()?.config;
           if (configData) {
-            configData.grouping.selectOptions = [
-              ...getGroupingSelectOptions(params),
-            ];
+            configData.grouping.selectOptions = groupingSelectOptions;
           }
 
           const tableData = getDataAsTableRows(
@@ -360,13 +363,14 @@ function getParamsData(shouldUrlUpdate?: boolean) {
             params,
             false,
             configData,
+            groupingSelectOptions,
           );
           const sortFields = model.getState()?.config?.table.sortFields;
 
           model.setState({
             data,
             highPlotData: getDataAsLines(data),
-            chartTitleData: getChartTitleData(data),
+            chartTitleData: getChartTitleData(data, groupingSelectOptions),
             params,
             metricsColumns,
             rawData: runData,
@@ -385,7 +389,7 @@ function getParamsData(shouldUrlUpdate?: boolean) {
             ),
             sameValueColumns: tableData.sameValueColumns,
             isParamsLoading: false,
-            groupingSelectOptions: [...getGroupingSelectOptions(params)],
+            groupingSelectOptions,
           });
 
           liveUpdateInstance?.start({
@@ -436,6 +440,7 @@ function onTableRowClick(rowKey?: string): void {
 
 function getChartTitleData(
   processedData: IMetricsCollection<IParam>[],
+  groupingSelectOptions: any,
   configData: any = model.getState()?.config,
 ): IChartTitleData {
   if (!processedData) {
@@ -448,9 +453,8 @@ function getChartTitleData(
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = formatValue(
-              metricsCollection.config[groupItemKey],
-            );
+            acc[getValueByField(groupingSelectOptions || [], groupItemKey)] =
+              formatValue(metricsCollection.config[groupItemKey]);
           }
           return acc;
         },
@@ -503,8 +507,6 @@ function processData(data: IRun<IParamTrace>[]): {
     ),
   );
   const uniqParams = _.uniq(params);
-
-  setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
@@ -632,6 +634,7 @@ function getDataAsLines(
 
 function getGroupConfig(
   metricsCollection: IMetricsCollection<IParam>,
+  groupingSelectOptions: any,
   groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'],
 ) {
   const configData = model.getState()?.config;
@@ -642,8 +645,10 @@ function getGroupConfig(
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.props', 'run').replace('run.params', 'run')]:
-            _.get(metricsCollection.config, paramKey),
+          [getValueByField(groupingSelectOptions || [], paramKey)]: _.get(
+            metricsCollection.config,
+            paramKey,
+          ),
         });
         return acc;
       }, {});
@@ -655,11 +660,15 @@ function getGroupConfig(
 function setTooltipData(
   processedData: IMetricsCollection<IParam>[],
   paramKeys: string[],
+  groupingSelectOptions: any,
 ): void {
   const data: { [key: string]: any } = {};
 
   for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig(metricsCollection);
+    const groupConfig = getGroupConfig(
+      metricsCollection,
+      groupingSelectOptions,
+    );
     for (let param of metricsCollection.data) {
       data[param.key] = {
         runHash: param.run.hash,
@@ -1063,12 +1072,15 @@ function updateModelData(
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  setTooltipData(data, params, groupingSelectOptions);
   const tableData = getDataAsTableRows(
     data,
     metricsColumns,
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
   const tableColumns = getParamsTableColumns(
     metricsColumns,
@@ -1096,8 +1108,8 @@ function updateModelData(
     config: configData,
     data,
     highPlotData: getDataAsLines(data),
-    chartTitleData: getChartTitleData(data),
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    chartTitleData: getChartTitleData(data, groupingSelectOptions),
+    groupingSelectOptions: groupingSelectOptions,
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
@@ -1110,6 +1122,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IParamsAppConfig,
+  groupingSelectOptions: any,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1139,6 +1152,11 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
+      const groupConfigData: { [key: string]: string } = {};
+      for (let key in metricsCollection.config) {
+        groupConfigData[getValueByField(groupingSelectOptions, key)] =
+          metricsCollection.config[key];
+      }
       const groupHeaderRow = {
         meta: {
           chartIndex:
@@ -1149,6 +1167,7 @@ function getDataAsTableRows(
           color: metricsCollection.color,
           dasharray: metricsCollection.dasharray,
           itemsCount: metricsCollection.data.length,
+          config: groupConfigData,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1406,13 +1425,15 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config, metricsColumns } = model.getState() as any;
+  const { data, params, config, metricsColumns, groupingSelectOptions } =
+    model.getState() as any;
   const tableData = getDataAsTableRows(
     data,
     metricsColumns,
     params,
     true,
     config,
+    groupingSelectOptions,
   );
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,

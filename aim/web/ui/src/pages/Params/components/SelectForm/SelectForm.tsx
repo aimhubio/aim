@@ -95,7 +95,9 @@ function SelectForm({
       for (let key in projectsData.metrics) {
         let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
-          let label = contextToString(val);
+          let label: string = Object.keys(val)
+            .map((item) => `${item}="${val[item]}"`)
+            .join(', ');
           let index: number = data.length;
           let option: ISelectParamsOption = {
             label: `${system ? formatSystemMetricName(key) : key} ${label}`,
