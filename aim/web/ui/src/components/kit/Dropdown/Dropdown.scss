@@ -10,7 +10,7 @@
     &.swapped {
       background: #ffffff;
       transition: 0.3s all;
-      padding: 0 4px;
+      padding: 0 0.25rem;
       top: -0.5125rem !important;
     }
   }
@@ -27,7 +27,7 @@
 }
 
 .DropdownCustomOption {
-  padding: 8px 16px 8px 8px;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
