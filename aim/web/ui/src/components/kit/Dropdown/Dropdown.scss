@@ -32,6 +32,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  border-radius: $border-radius-sm;
   &:hover {
     background: #f2f5fa;
   }

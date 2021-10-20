@@ -9,6 +9,7 @@ export interface IDropdownProps {
   withPortal?: true;
   className?: string;
   label?: string;
+  maxMenuListHeight?: string;
   isColored?: boolean;
   onMenuOpen: () => void;
   onMenuClose: () => void;

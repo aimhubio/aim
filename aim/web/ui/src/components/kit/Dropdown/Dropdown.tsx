@@ -38,6 +38,7 @@ function Dropdown({
   onMenuClose,
   onChange,
   isColored = false,
+  maxMenuListHeight = '12.5rem',
   label,
   ...rest
 }: IDropdownProps): React.FunctionComponentElement<React.ReactNode> {
@@ -101,6 +102,10 @@ function Dropdown({
       ...provided,
       borderRadius: '0.375rem',
       padding: '0.5rem',
+    }),
+    menuList: (provided: any) => ({
+      ...provided,
+      maxHeight: maxMenuListHeight,
     }),
     option: (provided: any) => ({
       ...provided,
