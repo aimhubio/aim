@@ -28,7 +28,7 @@ export type IconName =
   | 'arrow-left'
   | 'arrow-down'
   | 'arrow-right'
-  | 'manage-calumn'
+  | 'manage-column'
   | 'long-arrow-right'
   | 'long-arrow-left'
   | 'cursor'
@@ -90,7 +90,4 @@ export type IconName =
   | 'link'
   | 'images'
   | 'sort-arrow-up'
-  | 'sort-arrow-down'
-  | 'chart-group-bold'
-  | 'coloring-bold'
-  | 'line-style-bold';
+  | 'sort-arrow-down';

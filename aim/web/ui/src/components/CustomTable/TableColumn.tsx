@@ -150,7 +150,7 @@ function Column({
                           className='Table__action__popup__item'
                           onClick={option.onClick}
                         >
-                          <Icon fontSize={10} name={option.icon} />
+                          <Icon fontSize={14} name={option.icon} />
                           <span>{option.value}</span>
                         </MenuItem>
                       ))}

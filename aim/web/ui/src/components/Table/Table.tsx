@@ -489,7 +489,7 @@ const Table = React.forwardRef(function Table(
                           opened ? 'opened' : ''
                         }`}
                       >
-                        <Icon name='manage-calumn' />
+                        <Icon name='manage-column' />
                         <span>Manage Columns</span>
                       </Button>
                     )}
