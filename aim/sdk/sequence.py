@@ -98,7 +98,10 @@ class Sequence(Generic[T]):
         return array_view
 
     def __bool__(self) -> bool:
-        return bool(self.values)
+        try:
+            return bool(self.values)
+        except ValueError:
+            return False
 
     def __len__(self) -> int:
         return len(self.values)
