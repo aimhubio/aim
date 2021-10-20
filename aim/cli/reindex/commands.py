@@ -12,7 +12,10 @@ from aim.sdk.utils import clean_repo_path
                                                         file_okay=False,
                                                         dir_okay=True,
                                                         writable=True))
-def index(repo):
+def reindex(repo):
+    """
+    Process runs left in 'in progress' state.
+    """
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status != RepoStatus.UPDATED:

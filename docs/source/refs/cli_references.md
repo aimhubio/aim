@@ -9,8 +9,9 @@ Here are the set of commands supported:
 | --------------| -------------------------------------------------------------------- |
 | `init`        | Initialize the `aim` repository.                                     |
 | `version`     | Displays the version of aim cli currently installed.                 |
-| `up`          | Runs Aim web UI for the given repo                                   |
-| `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`                   |
+| `up`          | Runs Aim web UI for the given repo.                                  |
+| `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`.                  |
+| `reindex`     | Process runs left in 'in progress' state.                            |
 
 ### init
 __**This step is optional.**__
@@ -65,3 +66,13 @@ $ aim ugrade 2to3 [ARGS]
 | `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data. |
 | `--skip-checks`       | Use this flag to skip new repository consistency checks. |
 | `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`.|
+
+### reindex
+Update index to include all runs in Aim repo which are left in progress.
+```shell
+$ aim reindex [ARGS]
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
