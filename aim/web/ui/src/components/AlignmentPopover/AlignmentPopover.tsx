@@ -51,19 +51,23 @@ function AlignmentPopover({
   densityType,
   projectsDataMetrics,
 }: IAlignmentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  const [open, setOpen] = useState(false);
-  function handleAlignmentTypeChange(e: React.ChangeEvent<any>) {
+  const [open, setOpen] = useState<boolean>(false);
+  function handleAlignmentTypeChange(e: React.ChangeEvent<any>): void {
     const { id } = e.target;
     onAlignmentTypeChange(+id);
   }
 
-  function handleDensityTypeChange(e: React.ChangeEvent<any>) {
+  function handleDensityTypeChange(e: React.ChangeEvent<any>): void {
     const { id } = e.target;
     onDensityTypeChange(+id);
   }
 
-  function onMetricChange(e: { value: string; label: string } | null) {
-    e && onAlignmentMetricChange(e.value);
+  function onMetricChange(
+    field: { value: string; label: string } | null,
+  ): void {
+    if (field) {
+      onAlignmentMetricChange(field.value);
+    }
   }
 
   const metricOptions: { value: string; label: string }[] =

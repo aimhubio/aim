@@ -966,22 +966,11 @@ function alignData(
         }
       }
       if (missingTraces) {
-        let configData = model.getState()?.config;
         onNotificationAdd({
           id: Date.now(),
           severity: 'error',
           message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
         });
-        if (configData?.chart) {
-          configData.chart = {
-            ...configData.chart,
-            alignmentConfig: {
-              metric: '',
-              type: AlignmentOptionsEnum.STEP,
-            },
-          };
-          model.setState({ config: configData });
-        }
       }
       break;
     default:
@@ -1928,6 +1917,7 @@ async function onAlignmentMetricChange(metric: string) {
       const stream = await metricsService
         .fetchAlignedMetricsData(reqBody)
         .call();
+
       const runData = await getRunData(stream);
       let missingTraces = false;
       const rawData: any = model.getState()?.rawData?.map((item, index) => {
@@ -1953,16 +1943,20 @@ async function onAlignmentMetricChange(metric: string) {
           severity: 'error',
           message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
         });
-        configData.chart = {
-          ...configData.chart,
-          alignmentConfig: { metric: '', type: AlignmentOptionsEnum.STEP },
-        };
       }
       setModelData(rawData, configData);
-    } catch (ex) {
+    } catch (ex: any) {
       if (ex.name === 'AbortError') {
         // Abort Error
       } else {
+        configData.chart = {
+          ...configData.chart,
+          alignmentConfig: {
+            metric,
+            type: AlignmentOptionsEnum.STEP,
+          },
+        };
+        model.setState({ config: configData, requestIsPending: false });
         console.log('Unhandled error: ', ex);
       }
     }
