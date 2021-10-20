@@ -12,8 +12,30 @@
     overflow: auto;
     padding-bottom: 3px;
 
+    &__box {
+      padding: 0.625rem 1rem;
+    }
+
+    &__valueContainer {
+      display: flex;
+      //align-items: center;
+      margin-top: 0.4rem;
+    }
+
+    &__valueContainer:first-child {
+      margin-top: 0;
+    }
+
     &__value {
       margin-top: 0.25rem;
+    }
+
+    &__value:first-child {
+      margin-top: 0;
+    }
+
+    &__headerValue {
+      margin-left: 0.4rem;
     }
 
     &__axisValue {
@@ -25,9 +47,6 @@
       font-weight: 400;
     }
 
-    &__value:first-child {
-      margin-top: 0;
-    }
 
     &__runDetails {
       display: flex;
