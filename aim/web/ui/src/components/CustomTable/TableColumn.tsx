@@ -150,7 +150,9 @@ function Column({
                           className='Table__action__popup__item'
                           onClick={option.onClick}
                         >
-                          <Icon fontSize={14} name={option.icon} />
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={14} name={option.icon} />
+                          </span>
                           <span>{option.value}</span>
                         </MenuItem>
                       ))}
@@ -165,7 +167,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={hideColumn}
                     >
-                      <Icon name='eye-outline-hide' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={12} name='eye-outline-hide' />
+                      </span>
                       <span>Hide column</span>
                     </MenuItem>
                   )}
@@ -174,7 +178,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => togglePin(col.key, null)}
                     >
-                      <Icon name='pin' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={12} name='pin' />
+                      </span>
                       <span>Unpin</span>
                     </MenuItem>
                   )}
@@ -183,7 +189,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => togglePin(col.key, 'left')}
                     >
-                      <Icon name='pin-left' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={12} name='pin-left' />
+                      </span>
                       <span>Pin to left</span>
                     </MenuItem>
                   )}
@@ -192,7 +200,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => togglePin(col.key, 'right')}
                     >
-                      <Icon name='pin-right' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={12} name='pin-right' />
+                      </span>
                       <span>Pin to right</span>
                     </MenuItem>
                   )}
@@ -201,7 +211,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => moveColumn('left')}
                     >
-                      <Icon fontSize={10} name='arrow-left' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={10} name='arrow-left' />
+                      </span>
                       <span>Move left</span>
                     </MenuItem>
                   )}
@@ -210,7 +222,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => moveColumn('right')}
                     >
-                      <Icon fontSize={10} name='arrow-right' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={10} name='arrow-right' />
+                      </span>
                       <span>Move right</span>
                     </MenuItem>
                   )}
@@ -219,7 +233,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => moveColumn('start')}
                     >
-                      <Icon fontSize={10} name='move-to-left' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={10} name='move-to-left' />
+                      </span>
                       <span>Move to start</span>
                     </MenuItem>
                   )}
@@ -228,7 +244,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={() => moveColumn('end')}
                     >
-                      <Icon fontSize={10} name='move-to-right' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon fontSize={10} name='move-to-right' />
+                      </span>
                       <span>Move to end</span>
                     </MenuItem>
                   )}
@@ -237,7 +255,9 @@ function Column({
                       className='Table__action__popup__item'
                       onClick={resetWidth}
                     >
-                      <Icon name='reset-width-outside' />
+                      <span className='Table__action__popup__item_icon'>
+                        <Icon name='reset-width-outside' />
+                      </span>
                       <span>Reset width</span>
                     </MenuItem>
                   )}
