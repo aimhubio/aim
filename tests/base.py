@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 
 from tests.utils import truncate_api_db, fill_up_test_data, remove_test_data
 from aim.sdk.repo import Repo
-from aim.sdk.run import Run
 
 from aim.web.run import app
 
@@ -11,19 +10,25 @@ from aim.web.run import app
 class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        fill_up_test_data()
         cls.repo = Repo.default_repo()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        remove_test_data()
 
     def tearDown(self) -> None:
         self.repo.structured_db.invalidate_all_caches()
         self.repo.run_props_cache_hint = None
 
 
-class ApiTestBase(TestBase):
+class PrefilledDataTestBase(TestBase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        fill_up_test_data()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        remove_test_data()
+
+
+class ApiTestBase(PrefilledDataTestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
