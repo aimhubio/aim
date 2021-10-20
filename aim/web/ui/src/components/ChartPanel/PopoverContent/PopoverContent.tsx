@@ -10,7 +10,7 @@ import {
 } from 'utils/formatByAlignment';
 import { ChartTypeEnum } from 'utils/d3';
 import { PathEnum } from 'config/enums/routesEnum';
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 import { formatValue } from 'utils/formatValue';
@@ -35,17 +35,25 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         return (
           <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
-              {tooltipContent.metricName}{' '}
-              {contextToString(tooltipContent.metricContext)}{' '}
-              {focusedState?.yValue ?? '--'}
+              <Text>{tooltipContent.metricName}</Text>
+              <Text style={{ marginLeft: '0.5rem' }} weight={400}>
+                {contextToString(tooltipContent.metricContext)}
+              </Text>
+              <Text component='p' style={{ marginTop: '0.125rem' }}>
+                {focusedState?.yValue ?? '--'}
+              </Text>
             </div>
             <div className='PopoverContent__value'>
-              {getKeyByAlignment(alignmentConfig)}{' '}
-              {contextToString(tooltipContent.metricContext)}{' '}
-              {formatValueByAlignment({
-                xAxisTickValue: (focusedState?.xValue as number) ?? null,
-                type: alignmentConfig?.type,
-              })}
+              <Text>{getKeyByAlignment(alignmentConfig)}</Text>
+              <Text style={{ marginLeft: '0.5rem' }} weight={400}>
+                {contextToString(tooltipContent.metricContext)}
+              </Text>
+              <Text component='p' style={{ marginTop: '0.125rem' }}>
+                {formatValueByAlignment({
+                  xAxisTickValue: (focusedState?.xValue as number) ?? null,
+                  type: alignmentConfig?.type,
+                })}
+              </Text>
             </div>
           </Box>
         );
@@ -75,7 +83,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
       <Box className='PopoverContent'>
         {renderPopoverHeader()}
         {_.isEmpty(groupConfig) ? null : (
-          <Box mt={0.5}>
+          <Box>
             <Divider className='PopoverContent__divider' />
             <Box paddingX='1rem' paddingY='0.625rem'>
               <div className='PopoverContent__subtitle1'>Group Config</div>
@@ -99,7 +107,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           </Box>
         )}
         {_.isEmpty(params) ? null : (
-          <Box mt={0.5}>
+          <Box>
             <Divider className='PopoverContent__divider' />
             <Box paddingX='1rem' paddingY='0.625rem'>
               <div className='PopoverContent__subtitle1'>Params</div>

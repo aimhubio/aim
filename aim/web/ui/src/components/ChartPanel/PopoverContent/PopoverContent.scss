@@ -13,7 +13,11 @@
     padding-bottom: 3px;
 
     &__value {
-      margin-top: 5px;
+      margin-top: 0.25rem;
+    }
+
+    &__value:first-child {
+      margin-top: 0;
     }
 
     &__runDetails {
