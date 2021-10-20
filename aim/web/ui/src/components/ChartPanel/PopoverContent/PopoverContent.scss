@@ -16,6 +16,15 @@
       margin-top: 0.25rem;
     }
 
+    &__axisValue {
+      margin-top: 0.125rem;
+    }
+
+    &__contextValue {
+      margin-left: 0.5rem;
+      font-weight: 400;
+    }
+
     &__value:first-child {
       margin-top: 0;
     }

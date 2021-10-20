@@ -141,14 +141,14 @@ function drawAxes(props: IDrawAxesProps): void {
         {
           xAlignmentText = getKeyByAlignment(alignmentConfig);
 
-          let ticksCount = Math.floor(plotBoxRef.current.width / 50);
+          let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
         }
         break;
       default: {
         xAlignmentText = getKeyByAlignment(alignmentConfig) + 's';
 
-        let ticksCount = Math.floor(plotBoxRef.current.width / 50);
+        let ticksCount = Math.floor(plotBoxRef.current.width / 90);
         xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
       }
     }

@@ -36,19 +36,19 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           <Box paddingX='1rem' paddingY='0.625rem'>
             <div className='PopoverContent__value'>
               <Text>{tooltipContent.metricName}</Text>
-              <Text style={{ marginLeft: '0.5rem' }} weight={400}>
+              <Text className='PopoverContent__contextValue'>
                 {contextToString(tooltipContent.metricContext)}
               </Text>
-              <Text component='p' style={{ marginTop: '0.125rem' }}>
+              <Text component='p' className='PopoverContent__axisValue'>
                 {focusedState?.yValue ?? '--'}
               </Text>
             </div>
             <div className='PopoverContent__value'>
               <Text>{getKeyByAlignment(alignmentConfig)}</Text>
-              <Text style={{ marginLeft: '0.5rem' }} weight={400}>
+              <Text className='PopoverContent__contextValue'>
                 {contextToString(tooltipContent.metricContext)}
               </Text>
-              <Text component='p' style={{ marginTop: '0.125rem' }}>
+              <Text component='p' className='PopoverContent__axisValue'>
                 {formatValueByAlignment({
                   xAxisTickValue: (focusedState?.xValue as number) ?? null,
                   type: alignmentConfig?.type,
