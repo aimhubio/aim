@@ -104,9 +104,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                     </div>
                     {Object.keys(groupConfig[groupConfigKey]).map((item) => (
                       <div key={item} className='PopoverContent__value'>
-                        {item}:{' '}
-                        {groupConfig[groupConfigKey][item] ??
-                          formatValue(groupConfig[groupConfigKey][item])}
+                        {item}: {formatValue(groupConfig[groupConfigKey][item])}
                       </div>
                     ))}
                   </React.Fragment>
@@ -122,8 +120,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
-                  {`run.${paramKey}`}:{' '}
-                  {params[paramKey] ?? formatValue(params[paramKey])}
+                  {`run.${paramKey}`}: {formatValue(params[paramKey])}
                 </div>
               ))}
             </div>

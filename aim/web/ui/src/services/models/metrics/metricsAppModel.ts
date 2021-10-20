@@ -619,12 +619,11 @@ function getFilteredGroupingOptions(
 }
 
 function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
+  groupConfig,
   grouping,
   groupName,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {}, true);
+  const configHash = encode(groupConfig as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
@@ -737,8 +736,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
 
       if (grouping.persistence.color && grouping.isApplied.color) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: colorConfig,
           grouping,
           groupName: 'color',
         });
@@ -764,8 +762,7 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
       const dasharrayKey = encode(dasharrayConfig);
       if (grouping.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: dasharrayConfig,
           grouping,
           groupName: 'stroke',
         });
@@ -1498,6 +1495,8 @@ function updateModelData(
     configData?.chart?.aggregationConfig.methods,
     configData.table.sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -2014,6 +2013,8 @@ function setModelData(
     configData?.chart?.aggregationConfig.methods,
     sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   if (!model.getState()?.requestIsPending) {
     model.getState()?.refs?.tableRef.current?.updateData({
