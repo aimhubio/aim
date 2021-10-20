@@ -99,7 +99,7 @@ function Text({
     }
   };
 
-  return Element();
+  return <Element />;
 }
 
 Text.displayName = 'Text';
