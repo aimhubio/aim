@@ -3,6 +3,7 @@ import {
   unstable_createMuiStrictModeTheme as createMuiTheme,
   ThemeOptions,
   ThemeProvider,
+  StylesProvider,
 } from '@material-ui/core';
 
 import { IThemeProps } from 'types/components/Theme/Theme';
@@ -81,7 +82,9 @@ function Theme(
   return (
     <Provider value={{ dark, handleTheme }}>
       {/* <CssBaseline /> */}
-      <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <StylesProvider injectFirst={true}>{props.children}</StylesProvider>
+      </ThemeProvider>
     </Provider>
   );
 }

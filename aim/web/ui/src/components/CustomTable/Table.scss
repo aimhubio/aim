@@ -129,6 +129,11 @@ $border-radius: 0.2rem;
 .Table__action__popup__body {
   min-width: 180px;
   padding: 0.5rem;
+
+  &__panelTitle {
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+  }
 }
 
 .Table__action__anchor {
@@ -136,7 +141,7 @@ $border-radius: 0.2rem;
 }
 
 .Table__action__popup__item {
-  padding: $space-xxs $space-xs;
+  padding: $space-xxs $space-xs !important;
   text-transform: capitalize;
   cursor: pointer;
   display: flex;
@@ -157,10 +162,10 @@ $border-radius: 0.2rem;
     background-color: $primary-lighter;
     color: $primary-darker;
   }
-
-  i {
+  &_icon {
+    width: 0.875rem;
+    display: flex;
     margin-right: 1rem;
-    font-size: 0.75rem;
   }
 }
 
@@ -337,7 +342,6 @@ $border-radius: 0.2rem;
 
 .Table__group {
   margin-top: var(--group-margin);
-  background-color: $cuddle-10;
   border-top: 1px solid $border-color;
 
   .Table__cell:last-of-type {

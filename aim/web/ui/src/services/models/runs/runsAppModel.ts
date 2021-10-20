@@ -35,10 +35,9 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from '../../../utils/aggregateGroupData';
-import { AlignmentOptions } from '../../../config/alignment/alignmentOptions';
 import { INotification } from '../../../types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
-import { CurveEnum, ScaleEnum } from '../../../utils/d3';
+import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
 import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
@@ -230,7 +229,7 @@ function getConfig() {
       smoothingFactor: 0,
       alignmentConfig: {
         metric: '',
-        type: AlignmentOptions.STEP,
+        type: AlignmentOptionsEnum.STEP,
       },
       aggregationConfig: {
         methods: {
@@ -555,17 +554,17 @@ function getFilteredGroupingOptions(
 }
 
 function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
+  groupConfig,
   grouping,
+  groupName,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
+  const configHash = encode(groupConfig as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
     if (charCode > 47 && charCode < 58) {
       index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
@@ -643,8 +642,7 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
 
       if (grouping.persistence.color && grouping.isApplied.color) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: colorConfig,
           grouping,
           groupName: 'color',
         });
@@ -670,8 +668,7 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
       const dasharrayKey = encode(dasharrayConfig);
       if (grouping.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: dasharrayConfig,
           grouping,
           groupName: 'stroke',
         });
@@ -801,7 +798,7 @@ function getDataAsTableRows(
     }
     metricsCollection.data.forEach((metric: any) => {
       const metricsRowValues = { ...initialMetricsRowData };
-      metric.run.traces.map((trace: any) => {
+      metric.run.traces.forEach((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
         ] = formatValue(trace.last_value.last);

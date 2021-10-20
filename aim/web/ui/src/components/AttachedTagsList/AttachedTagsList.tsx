@@ -124,7 +124,7 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
                   <Icon name='edit' />
                 ) : (
                   <Button
-                    size='medium'
+                    size='small'
                     color='primary'
                     variant='outlined'
                     className='AttachedTagsList__ControlPopover__attach'
