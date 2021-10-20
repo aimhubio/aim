@@ -36,6 +36,6 @@ def index(repo):
             # TODO: [AT] handle lock timeout on index db (retry logic).
             run.finalize()
     if runs_in_progress:
-        click.echo(f'Skipped indexing for the following runs in progress:')
+        click.echo('Skipped indexing for the following runs in progress:')
         for run_hash in runs_in_progress:
             click.secho(f'\t\'{run_hash}\'', fg='yellow')
