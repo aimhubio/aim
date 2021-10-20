@@ -3,6 +3,7 @@ import React from 'react';
 import { Text } from 'components/kit';
 import { IGroupConfigPopoverProps } from 'types/components/GroupConfigPopover/GroupConfigPopover';
 import stopPropagation from 'utils/stopPropagation';
+import { formatValue } from 'utils/formatValue';
 
 import './GroupConfigPopover.scss';
 
@@ -24,9 +25,9 @@ function GroupConfigPopover({
             className='GroupConfigPopover__item_value'
             weight={500}
             size={12}
-            title={`"${item.value}"`}
+            title={formatValue(item.value)}
           >
-            {`"${item.value}"`}
+            {formatValue(item.value)}
           </Text>
         </div>
       ))}
