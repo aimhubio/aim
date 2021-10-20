@@ -6,7 +6,8 @@ export default function getValueByField(
   comparisonFieldName: string = 'value',
   returnFiled: string = 'label',
 ) {
-  return list.find((listItem) =>
+  const foundItem = list.find((listItem) =>
     _.isEqual(listItem[comparisonFieldName], value),
-  )[returnFiled];
+  );
+  return foundItem ? foundItem[returnFiled] : '';
 }

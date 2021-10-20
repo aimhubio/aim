@@ -92,7 +92,7 @@ function SelectForm({
       for (let key in projectsData.metrics) {
         for (let val of projectsData.metrics[key]) {
           let label: string = Object.keys(val)
-            .map((item) => `${item}=${val[item]}`)
+            .map((item) => `${item}="${val[item]}"`)
             .join(', ');
           let index: number = data.length;
           data.push({
