@@ -178,7 +178,8 @@ class Run(StructuredRunMixin):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
+        self._constructed = False
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
         self.track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
@@ -236,6 +237,7 @@ class Run(StructuredRunMixin):
             self._prepare_resource_tracker(system_tracking_interval)
         if experiment:
             self.experiment = experiment
+        self._constructed = True
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
@@ -500,7 +502,7 @@ class Run(StructuredRunMixin):
         return self._hash
 
     def __del__(self):
-        if self.read_only:
+        if self.read_only or not self._constructed:
             return
         if self._system_resource_tracker:
             self._system_resource_tracker.stop()

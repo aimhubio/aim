@@ -380,11 +380,17 @@ function getMetricsData(shouldUrlUpdate?: boolean) {
           queryIsEmpty: false,
         });
         liveUpdateInstance?.stop().then();
-
-        const stream = await metricsRequestRef.call(exceptionHandler);
-        const runData = await getRunData(stream);
-
-        updateData(runData);
+        try {
+          const stream = await metricsRequestRef.call(exceptionHandler);
+          const runData = await getRunData(stream);
+          updateData(runData);
+        } catch (ex) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ', ex);
+          }
+        }
 
         liveUpdateInstance?.start({
           q: query,
@@ -809,8 +815,6 @@ function alignData(
   type: AlignmentOptionsEnum = model.getState()!.config!.chart.alignmentConfig
     .type!,
 ): IMetricsCollection<IMetric>[] {
-  console.log(type);
-
   switch (type) {
     case AlignmentOptionsEnum.STEP:
       for (let i = 0; i < data.length; i++) {
@@ -1908,34 +1912,54 @@ async function onAlignmentMetricChange(metric: string) {
       align_by: metric,
       runs,
     };
-    const stream = await metricsService.fetchAlignedMetricsData(reqBody).call();
-    const runData = await getRunData(stream);
-    let missingTraces = false;
-    const rawData: any = model.getState()?.rawData?.map((item, index) => {
-      return {
-        ...item,
-        traces: item.traces.map((trace, ind) => {
-          let x_axis_iters = runData[index]?.[ind]?.x_axis_iters || null;
-          let x_axis_values = runData[index]?.[ind]?.x_axis_iters || null;
-          if (!x_axis_iters || !x_axis_values) {
-            missingTraces = true;
-          }
-          let data = {
-            ...trace,
-            ...runData[index][ind],
-          };
-          return data;
-        }),
-      };
-    });
-    if (missingTraces) {
-      onNotificationAdd({
-        id: Date.now(),
-        severity: 'error',
-        message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+
+    try {
+      const stream = await metricsService
+        .fetchAlignedMetricsData(reqBody)
+        .call();
+
+      const runData = await getRunData(stream);
+      let missingTraces = false;
+      const rawData: any = model.getState()?.rawData?.map((item, index) => {
+        return {
+          ...item,
+          traces: item.traces.map((trace, ind) => {
+            let x_axis_iters = runData[index]?.[ind]?.x_axis_iters || null;
+            let x_axis_values = runData[index]?.[ind]?.x_axis_iters || null;
+            if (!x_axis_iters || !x_axis_values) {
+              missingTraces = true;
+            }
+            let data = {
+              ...trace,
+              ...runData[index][ind],
+            };
+            return data;
+          }),
+        };
       });
+      if (missingTraces) {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+        });
+      }
+      setModelData(rawData, configData);
+    } catch (ex: any) {
+      if (ex.name === 'AbortError') {
+        // Abort Error
+      } else {
+        configData.chart = {
+          ...configData.chart,
+          alignmentConfig: {
+            metric,
+            type: AlignmentOptionsEnum.STEP,
+          },
+        };
+        model.setState({ config: configData, requestIsPending: false });
+        console.log('Unhandled error: ', ex);
+      }
     }
-    setModelData(rawData, configData);
   }
   analytics.trackEvent(
     '[MetricsExplorer][Chart] Align X axis by another metric',
