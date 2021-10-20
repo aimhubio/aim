@@ -809,6 +809,8 @@ function alignData(
   type: AlignmentOptionsEnum = model.getState()!.config!.chart.alignmentConfig
     .type!,
 ): IMetricsCollection<IMetric>[] {
+  console.log(type);
+
   switch (type) {
     case AlignmentOptionsEnum.STEP:
       for (let i = 0; i < data.length; i++) {
@@ -960,22 +962,11 @@ function alignData(
         }
       }
       if (missingTraces) {
-        let configData = model.getState()?.config;
         onNotificationAdd({
           id: Date.now(),
           severity: 'error',
           message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
         });
-        if (configData?.chart) {
-          configData.chart = {
-            ...configData.chart,
-            alignmentConfig: {
-              metric: '',
-              type: AlignmentOptionsEnum.STEP,
-            },
-          };
-          model.setState({ config: configData });
-        }
       }
       break;
     default:
@@ -1943,10 +1934,6 @@ async function onAlignmentMetricChange(metric: string) {
         severity: 'error',
         message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
       });
-      configData.chart = {
-        ...configData.chart,
-        alignmentConfig: { metric: '', type: AlignmentOptionsEnum.STEP },
-      };
     }
     setModelData(rawData, configData);
   }
