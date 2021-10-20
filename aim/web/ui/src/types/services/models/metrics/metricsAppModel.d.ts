@@ -239,10 +239,7 @@ export interface IOnGroupingModeChangeParams {
 }
 
 export interface IGetGroupingPersistIndex {
-  groupValues: {
-    [key: string]: IMetricsCollection<IMetric>;
-  };
-  groupKey: string;
+  groupConfig: {};
   grouping: IMetricAppConfig['grouping'];
   groupName: 'color' | 'stroke';
 }
