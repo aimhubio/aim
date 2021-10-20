@@ -27,6 +27,7 @@ import paramsAppModel from 'services/models/params/paramsAppModel';
 import { Badge, Button, Icon } from 'components/kit';
 import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './SelectForm.scss';
 
@@ -92,7 +93,7 @@ function SelectForm({
     const systemOptions: ISelectParamsOption[] = [];
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
-        let system: boolean = key.startsWith('__system__');
+        let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
           let label = contextToString(val);
           let index: number = data.length;

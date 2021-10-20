@@ -5,6 +5,7 @@ import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/Alignm
 import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { Text } from 'components/kit';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './AlignmentPopover.scss';
 
@@ -69,7 +70,9 @@ function AlignmentPopover({
     let data: string[] = [];
     if (projectsDataMetrics) {
       for (let key in projectsDataMetrics) {
-        data.push(key);
+        if (!isSystemMetric(key)) {
+          data.push(key);
+        }
       }
     }
     return data;

@@ -29,6 +29,7 @@ import {
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { Button, Icon, Badge } from 'components/kit';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './SelectForm.scss';
 
@@ -100,8 +101,8 @@ function SelectForm({
     const systemOptions: ISelectMetricsOption[] = [];
     let index: number = 0;
     if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        let system: boolean = key.startsWith('__system__');
+      for (let key in projectsData?.metrics) {
+        let system: boolean = isSystemMetric(key);
         let option = getOption(system, key, index);
         if (system) {
           systemOptions.push(option);
@@ -109,7 +110,7 @@ function SelectForm({
           data.push(option);
         }
         index++;
-        for (let val of projectsData.metrics[key]) {
+        for (let val of projectsData?.metrics[key]) {
           if (!isEmpty(val)) {
             let label = contextToString(val);
             let option = getOption(system, key, index, val);
