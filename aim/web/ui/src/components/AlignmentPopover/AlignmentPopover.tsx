@@ -2,27 +2,27 @@ import React, { useState } from 'react';
 import { MenuItem } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { AlignmentOptionsEnum } from 'utils/d3';
 import { Text, Dropdown } from 'components/kit';
 
 import './AlignmentPopover.scss';
 
-const alignmentList: { type: AlignmentOptions; name: string }[] = [
+const alignmentList: { type: AlignmentOptionsEnum; name: string }[] = [
   {
-    type: AlignmentOptions.STEP,
+    type: AlignmentOptionsEnum.STEP,
     name: 'Step',
   },
   {
-    type: AlignmentOptions.EPOCH,
+    type: AlignmentOptionsEnum.EPOCH,
     name: 'Epoch',
   },
   {
-    type: AlignmentOptions.RELATIVE_TIME,
+    type: AlignmentOptionsEnum.RELATIVE_TIME,
     name: 'Relative Time',
   },
   {
-    type: AlignmentOptions.ABSOLUTE_TIME,
+    type: AlignmentOptionsEnum.ABSOLUTE_TIME,
     name: 'Absolute Time',
   },
 ];
