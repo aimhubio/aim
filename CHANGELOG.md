@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Fix query construction issue for multiple context items (roubkar)
+
 ## 3.0.0 Oct 21 2021
 - TODO [GA]: Highlight v3 core improvements
 

@@ -283,17 +283,21 @@ function getQueryStringFromSelect(
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
       }(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(metric.name == "${
-                    metric.value.metric_name
-                  }" and metric.context.${item} == ${formatValue(
-                    (metric.value.context as any)[item],
-                  )})`,
-              )}`,
+        .map(
+          (metric) =>
+            `(metric.name == "${metric.value.metric_name}"${
+              metric.value.context === null
+                ? ''
+                : ' and ' +
+                  Object.keys(metric.value.context)
+                    .map(
+                      (item) =>
+                        `metric.context.${item} == ${formatValue(
+                          (metric.value.context as any)[item],
+                        )}`,
+                    )
+                    .join(' and ')
+            })`,
         )
         .join(' or ')})`.trim();
     }
@@ -1128,9 +1132,7 @@ function getDataAsTableRows(
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
-        run: moment(metric.run.props.creation_time * 1000).format(
-          'HH:mm:ss · D MMM, YY',
-        ),
+        run: metric.run.props.name,
         metric: metric.metric_name,
         context: contextToString(metric.context)?.split(',') || [''],
         value:
@@ -1234,9 +1236,7 @@ function getDataAsTableRows(
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length === 1
-            ? paramKeys.includes(columnKey)
-              ? formatValue(columnsValues[columnKey][0])
-              : columnsValues[columnKey][0]
+            ? columnsValues[columnKey][0]
             : columnsValues[columnKey];
       }
     }
