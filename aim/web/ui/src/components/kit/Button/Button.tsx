@@ -38,6 +38,7 @@ function Button({
       ? withOnlyIconSizes[size || 'medium']
       : sizes[size || 'medium'],
     minWidth: withOnlyIcon ? '1.5rem' : '4.375rem',
+    ...(withOnlyIcon && { width: withOnlyIconSizes[size || 'medium'] }),
   };
 
   return (
