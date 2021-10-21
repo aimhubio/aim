@@ -107,7 +107,11 @@ class StructuredRunMixin:
 
             :getter: Returns run finalization time.
         """
-        return self.meta_run_tree.get('end_time')
+        try:
+            return self.meta_run_tree['end_time']
+        except KeyError:
+            # run saved with old version. fallback to sqlite data
+            return self.props.end_time
 
     @property
     def updated_at(self):
