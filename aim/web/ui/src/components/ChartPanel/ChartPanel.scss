@@ -17,7 +17,7 @@
   .ChartPanel {
     overflow: hidden;
     height: 100%;
-    border-right: 1px solid #e8f1fc;
+    border-right: $border-separator;
   }
 
   .ChartPanel__paper {

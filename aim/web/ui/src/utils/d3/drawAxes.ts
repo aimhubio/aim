@@ -169,13 +169,17 @@ function drawAxes(props: IDrawAxesProps): void {
   axesRef.current.xAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'xAxis')
+    .attr('stroke-width', 0.4)
     .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
     .call(xAxis);
 
   axesRef.current.yAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'yAxis')
-    .call(yAxis);
+    .attr('stroke-width', 0.2)
+    .attr('color', '#8E9BAE')
+    .attr('fill', 'none')
+    .call(yAxis.tickSize(-width + 80).tickSizeOuter(0));
 
   svgNodeRef.current
     .append('text')

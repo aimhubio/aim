@@ -6,6 +6,7 @@
   font-size: $text-sm;
   line-height: 15px;
   color: tint($pico, 20);
+  background-color: transparent;
 
   .PopoverContent {
     max-height: inherit;
@@ -46,7 +47,6 @@
       margin-left: 0.5rem;
       font-weight: 400;
     }
-
 
     &__runDetails {
       display: flex;

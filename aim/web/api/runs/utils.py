@@ -66,7 +66,10 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
     x_axis_values = []
     x_axis_iters = []
     for idx in iters:
-        x_val = x_trace.values[idx.item()]
+        try:
+            x_val = x_trace.values[idx.item()]
+        except KeyError:
+            x_val = None
         if x_val:
             x_axis_iters.append(idx.item())
             x_axis_values.append(x_val)

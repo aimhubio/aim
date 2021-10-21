@@ -83,7 +83,6 @@
 
   button {
     border: $border-main;
-    width: 2em;
     &:nth-child(2) {
       margin: 0 0.25rem;
     }
@@ -119,12 +118,16 @@
   position: relative;
 
   &:after {
-    content: "";
+    content: '';
     position: absolute;
     width: 20px;
     height: 34px;
     background: rgba(255, 255, 255, 0.5);
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 92%);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 1) 92%
+    );
     left: -20px;
     top: -5px;
     border-radius: 0;

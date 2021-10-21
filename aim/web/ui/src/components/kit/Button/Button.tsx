@@ -1,5 +1,6 @@
 import React from 'react';
 import MUButton from '@material-ui/core/Button';
+
 import { IButtonProps } from '.';
 
 import './Button.scss';
@@ -16,6 +17,12 @@ const fontSizes = {
   large: '0.875rem',
 };
 
+const withOnlyIconSizes = {
+  small: '1.5rem',
+  medium: '2rem',
+  large: '2.25rem',
+};
+
 function Button({
   size,
   withOnlyIcon,
@@ -25,14 +32,21 @@ function Button({
 }: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
   const styleOverrides = {
     borderRadius: '0.375rem',
-    padding: withOnlyIcon ? '0.25rem' : '0.5 rem 1.25rem',
+    padding: withOnlyIcon ? '0.25rem' : '0.5rem 1.25rem',
     fontSize: fontSizes[size || 'medium'],
-    height: withOnlyIcon ? '1.5rem' : sizes[size || 'medium'],
+    height: withOnlyIcon
+      ? withOnlyIconSizes[size || 'medium']
+      : sizes[size || 'medium'],
     minWidth: withOnlyIcon ? '1.5rem' : '4.375rem',
+    ...(withOnlyIcon && { width: withOnlyIconSizes[size || 'medium'] }),
   };
 
   return (
-    <MUButton color={color || 'primary'} style={styleOverrides} {...rest}>
+    <MUButton
+      {...rest}
+      color={color || 'primary'}
+      style={{ ...styleOverrides, ...rest.style }}
+    >
       {children}
     </MUButton>
   );
