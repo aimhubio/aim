@@ -1,4 +1,5 @@
 # Changelog
+
 ## Unreleased
 - Fix issue with making API call from Web Worker (VkoHov)
 
