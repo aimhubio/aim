@@ -27,8 +27,10 @@ def reindex(repo):
     if not runs_to_index:
         click.echo('Index is up to date.')
         return
-    click.confirm(f'This command will try to finalize all pending runs in repo \'{repo_path}\'. '
-                  f'Do you want to proceed?')
+    confirmed = click.confirm(f'This command will try to finalize all pending runs in aim repo located at '
+                              f'\'{repo_path}\'. Do you want to proceed?')
+    if not confirmed:
+        return
     runs_in_progress = []
     for run_hash in runs_to_index:
         try:
