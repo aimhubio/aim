@@ -64,7 +64,11 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
       anchorReference='anchorPosition'
       anchorPosition={popoverPos || props.popoverPosition || undefined}
       className={`ChartPopover ${className}`}
-      classes={{ paper: `ChartPopover__content${popoverPos ? '' : '__hide'}` }}
+      classes={{
+        paper: `ChartPopover__content${popoverPos ? '' : '__hide'} ${
+          props.focusedState?.active ? 'ChartPopover__content__active' : ''
+        }`,
+      }}
     >
       <PopoverContent
         ref={popoverContentRef}
