@@ -85,14 +85,6 @@ class StructuredRunMixin:
         return self.props.created_at
 
     @property
-    def finalized_at(self):
-        """Run finalization time [UTC] as datetime.
-
-            :getter: Returns run finalization time.
-        """
-        return self.props.finalized_at
-
-    @property
     def creation_time(self):
         """Run object creation time [UTC] as timestamp.
 
@@ -101,12 +93,21 @@ class StructuredRunMixin:
         return self.props.creation_time
 
     @property
+    def finalized_at(self):
+        """Run finalization time [UTC] as datetime.
+
+            :getter: Returns run finalization time.
+        """
+        end_time = self.end_time
+        return datetime.datetime.fromtimestamp(end_time) if end_time else None
+
+    @property
     def end_time(self):
         """Run finalization time [UTC] as timestamp.
 
             :getter: Returns run finalization time.
         """
-        return self.props.end_time
+        return self.meta_run_tree.get('end_time')
 
     @property
     def updated_at(self):
@@ -233,7 +234,8 @@ class Run(StructuredRunMixin):
             except (KeyError, StopIteration):
                 # no run params are set. use empty dict
                 self[...] = {}
-            self.props.finalized_at = None
+            self.meta_run_tree['end_time'] = None
+            self.props
             self._prepare_resource_tracker(system_tracking_interval)
         if experiment:
             self.experiment = experiment
@@ -532,8 +534,7 @@ class Run(StructuredRunMixin):
         if not skip_wait and self.track_in_thread:
             self.repo.tracking_queue.wait_for_finish()
 
-        with self.repo.structured_db:
-            self.props.finalized_at = datetime.datetime.utcnow()
+        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
         index = self.repo._get_container('meta/index',
                                          read_only=False,
                                          from_union=False).view(b'')

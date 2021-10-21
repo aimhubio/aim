@@ -28,9 +28,10 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('description'),
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
-        Property('finalized_at'),
         Property('creation_time', 'created_at', get_modifier=timestamp_or_none, with_setter=False),
-        Property('end_time', 'finalized_at', get_modifier=timestamp_or_none, with_setter=False),
+        # stored in rocksdb for now
+        # Property('finalized_at'),
+        # Property('end_time', 'finalized_at', get_modifier=timestamp_or_none, with_setter=False),
         Property('updated_at', with_setter=False),
         Property('hash', with_setter=False),
         Property('experiment', autogenerate=False),
