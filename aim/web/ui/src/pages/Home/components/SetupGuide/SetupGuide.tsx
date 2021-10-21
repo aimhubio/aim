@@ -1,7 +1,6 @@
 import React from 'react';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import { Icon, Text } from 'components/kit';
-import AskForm from '../AskForm/AskForm';
 import { ISetupGuideProps } from 'types/pages/home/components/SetupGuide/SetupGuide';
 
 import './SetupGuide.scss';
@@ -48,7 +47,10 @@ for step in range(10):
           className='SetupGuide__resources__item'
         >
           <div className='SetupGuide__resources__item__icon'>
-            <Icon name='runs' />
+            <Icon
+              className='SetupGuide__resources__item__icon_fullDocs'
+              name='full-docs'
+            />
           </div>
           <Text component='span' size={14} tint={100} weight={500}>
             Documentation
@@ -62,7 +64,10 @@ for step in range(10):
             className='SetupGuide__resources__item'
           >
             <div className='SetupGuide__resources__item__icon'>
-              <Icon name='bookmarks' />
+              <Icon
+                className='SetupGuide__resources__item__icon_co'
+                name='co'
+              />
             </div>
             <Text component='span' size={14} tint={100} weight={500}>
               Colab notebook
@@ -77,7 +82,10 @@ for step in range(10):
             className='SetupGuide__resources__item'
           >
             <div className='SetupGuide__resources__item__icon'>
-              <Icon name='metrics' />
+              <Icon
+                className='SetupGuide__resources__item__icon_liveDemo'
+                name='live-demo'
+              />
             </div>
             <Text component='span' size={14} tint={100} weight={500}>
               Live demo

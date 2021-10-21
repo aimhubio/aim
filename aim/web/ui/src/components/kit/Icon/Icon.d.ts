@@ -90,4 +90,7 @@ export type IconName =
   | 'link'
   | 'images'
   | 'sort-arrow-up'
-  | 'sort-arrow-down';
+  | 'sort-arrow-down'
+  | 'live-demo'
+  | 'co'
+  | 'full-docs';
