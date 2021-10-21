@@ -10,7 +10,7 @@ from weakref import WeakValueDictionary
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 
-from aim.sdk.configs import AIM_REPO_NAME
+from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
@@ -37,6 +37,12 @@ class RepoStatus(Enum):
     UPDATED = 4
 
 
+def _get_tracking_queue():
+    if os.getenv(AIM_ENABLE_TRACKING_THREAD, False):
+        return TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
+    return None
+
+
 # TODO make this api thread-safe
 class Repo:
     """Aim repository object.
@@ -54,7 +60,7 @@ class Repo:
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
-    tracking_queue = TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
+    tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
@@ -267,19 +273,19 @@ class Repo:
         else:
             raise StopIteration
 
-    def get_run(self, hashname: str) -> Optional['Run']:
+    def get_run(self, run_hash: str) -> Optional['Run']:
         """Get run if exists.
 
         Args:
-            hashname (str): Run hashname.
+            run_hash (str): Run hash.
         Returns:
-            :obj:`Run` object if hashname is found in repository. `None` otherwise.
+            :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
         # TODO: [MV] optimize existence check for run
-        if hashname is None or hashname not in self.meta_tree.view('chunks').keys():
+        if run_hash is None or run_hash not in self.meta_tree.view('chunks').keys():
             return None
         else:
-            return Run(hashname, repo=self, read_only=True)
+            return Run(run_hash, repo=self, read_only=True)
 
     def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunSequenceCollection:
         """Get runs satisfying query expression.
@@ -288,14 +294,14 @@ class Repo:
              query (:obj:`str`, optional): query expression.
                 If not specified, query results will include all runs.
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
-             offset (:obj:`str`, optional): `hashname` of Run to skip to.
+             offset (:obj:`str`, optional): `hash` of Run to skip to.
         Returns:
             :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
         """
         db = self.structured_db
         cache_name = 'runs_cache'
         db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        db.init_cache(cache_name, db.runs, lambda run: run.hash)
         self.run_props_cache_hint = cache_name
         return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
 
@@ -318,7 +324,7 @@ class Repo:
         db = self.structured_db
         cache_name = 'runs_cache'
         db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
+        db.init_cache(cache_name, db.runs, lambda run: run.hash)
         self.run_props_cache_hint = cache_name
 
         return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)

@@ -6,6 +6,7 @@ from aim.storage.structured.sql_engine.entities import ModelMappedRun, ModelMapp
 
 class ModelMappedFactory(ObjectFactory):
     def __init__(self):
+        self._session_depth = 0
         self._session = None
 
     @staticmethod
@@ -63,12 +64,18 @@ class ModelMappedFactory(ObjectFactory):
         raise NotImplementedError
 
     def __enter__(self):
-        self._session = self.get_session(autocommit=False)
+        if self._session_depth == 0:
+            assert self._session is None
+            self._session = self.get_session(autocommit=False)
+        self._session_depth += 1
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type is None:
-            self._session.commit()
-        else:
-            self._session.rollback()
-        self._session = None
+        assert self._session_depth > 0
+        self._session_depth -= 1
+        if self._session_depth == 0:
+            if exc_type is None:
+                self._session.commit()
+            else:
+                self._session.rollback()
+            self._session = None

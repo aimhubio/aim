@@ -1,9 +1,9 @@
 from parameterized import parameterized
 
-from tests.base import TestBase
+from tests.base import PrefilledDataTestBase
 
 
-class TestQuery(TestBase):
+class TestQuery(PrefilledDataTestBase):
 
     def test_query_metrics(self):
         q = 'run.hparams.batch_size == None and metric.context.is_training == True'

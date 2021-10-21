@@ -31,18 +31,8 @@ def check_sshfs_installation():
     Utility function to check sshfs installation and user permission to execute sshfs.
     Raises errors with hints to install sshfs based on the platform
     """
-    cmd = ['which', 'sshfs']
-    child = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-    )
-    child_std_out, _ = child.communicate()
-    sshfs_executable = child_std_out.rstrip()
-    exit_code = child.wait()
-    if exit_code != 0:
+    sshfs_executable = shutil.which('sshfs')
+    if not sshfs_executable:
         if platform.system().lower() == 'darwin':
             raise subprocess.SubprocessError('Could not find sshfs installation. \n'
                                              'To install sshfs please run the following commands:\n'
@@ -178,17 +168,22 @@ def unmount_remote_repo(mount_point: str, mount_root: str):
     """
     Utility function to unmount remote repo and cleanup local directories created by Aim for mounting
     """
+
+    # TODO: [MV] this is experimental
+    # TODO: [MV] decide later what to do with unmounting remote repo
+    if not os.path.exists(mount_point):
+        return
+
     if not os.path.ismount(mount_point):
         shutil.rmtree(mount_root)
         return
 
-    cmd = ['umount', mount_point]
+    # force unmount the remote path as we are sure we've done everything we need up until to this point
+    # and don't want to get stopped by any other processes stopping from unmounting
+    umount_executable = shutil.which('umount')
+    cmd = [umount_executable, mount_point]
     child = subprocess.Popen(
         cmd,
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
     )
     child.communicate()
     exit_code = child.wait()
