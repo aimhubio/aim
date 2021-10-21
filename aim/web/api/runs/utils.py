@@ -159,7 +159,6 @@ def metric_search_result_streamer(traces: SequenceCollection, steps_num: int, x_
 
             encoded_tree = encode_tree(run_dict)
             yield collect_run_streamable_data(encoded_tree)
-            break
 
 
 def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
