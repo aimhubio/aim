@@ -4,9 +4,9 @@ import { Unit } from 'humanize-duration';
 import moment from 'moment';
 
 import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
-import { XAlignmentEnum } from './index';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
+import { AlignmentOptionsEnum } from './index';
+import { getKeyByAlignment } from '../formatByAlignment';
 
 function drawAxes(props: IDrawAxesProps): void {
   const {
@@ -35,9 +35,9 @@ function drawAxes(props: IDrawAxesProps): void {
     const [first, last] = attributesRef.current.xScale.domain();
 
     switch (alignmentConfig?.type) {
-      case AlignmentOptions.EPOCH:
+      case AlignmentOptionsEnum.EPOCH:
         {
-          xAlignmentText = XAlignmentEnum.Epoch + 's';
+          xAlignmentText = getKeyByAlignment(alignmentConfig) + 's';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
           const ticks = xValues.filter((x) => Math.round(x) - x === 0);
@@ -45,9 +45,9 @@ function drawAxes(props: IDrawAxesProps): void {
           xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1).tickValues(ticks);
         }
         break;
-      case AlignmentOptions.RELATIVE_TIME:
+      case AlignmentOptionsEnum.RELATIVE_TIME:
         {
-          xAlignmentText = XAlignmentEnum.RelativeTime.replace('_', ' ');
+          xAlignmentText = getKeyByAlignment(alignmentConfig);
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 85);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -112,9 +112,9 @@ function drawAxes(props: IDrawAxesProps): void {
             );
         }
         break;
-      case AlignmentOptions.ABSOLUTE_TIME:
+      case AlignmentOptionsEnum.ABSOLUTE_TIME:
         {
-          xAlignmentText = XAlignmentEnum.AbsoluteTime.replace('_', ' ');
+          xAlignmentText = getKeyByAlignment(alignmentConfig);
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -137,18 +137,18 @@ function drawAxes(props: IDrawAxesProps): void {
         }
 
         break;
-      case AlignmentOptions.CUSTOM_METRIC:
+      case AlignmentOptionsEnum.CUSTOM_METRIC:
         {
-          xAlignmentText = alignmentConfig?.metric.replace('_', ' ');
+          xAlignmentText = getKeyByAlignment(alignmentConfig);
 
-          let ticksCount = Math.floor(plotBoxRef.current.width / 50);
+          let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
         }
         break;
       default: {
-        xAlignmentText = XAlignmentEnum.Step + 's';
+        xAlignmentText = getKeyByAlignment(alignmentConfig) + 's';
 
-        let ticksCount = Math.floor(plotBoxRef.current.width / 50);
+        let ticksCount = Math.floor(plotBoxRef.current.width / 90);
         xAxis.ticks(ticksCount > 1 ? ticksCount - 1 : 1);
       }
     }
@@ -169,13 +169,17 @@ function drawAxes(props: IDrawAxesProps): void {
   axesRef.current.xAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'xAxis')
+    .attr('stroke-width', 0.4)
     .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
     .call(xAxis);
 
   axesRef.current.yAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'yAxis')
-    .call(yAxis);
+    .attr('stroke-width', 0.2)
+    .attr('color', '#8E9BAE')
+    .attr('fill', 'none')
+    .call(yAxis.tickSize(-width + 80).tickSizeOuter(0));
 
   svgNodeRef.current
     .append('text')

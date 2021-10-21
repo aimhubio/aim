@@ -142,7 +142,7 @@ def query_add_default_expr(query: str) -> str:
         return default_expression
     else:
         if 'run.archived' not in query:
-            return f'{query} and {default_expression}'
+            return f'{default_expression} and {query}'
         else:
             return query
 

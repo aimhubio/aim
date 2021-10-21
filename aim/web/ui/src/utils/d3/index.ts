@@ -17,11 +17,19 @@ import getCoordinates from './getCoordinates';
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
 
-enum XAlignmentEnum {
-  Step = 'step',
-  Epoch = 'epoch',
-  RelativeTime = 'relative_time',
-  AbsoluteTime = 'absolute_time',
+enum AlignmentKeysEnum {
+  STEP = 'step',
+  EPOCH = 'epoch',
+  RELATIVE_TIME = 'relative_time',
+  ABSOLUTE_TIME = 'absolute_time',
+}
+
+enum AlignmentOptionsEnum {
+  STEP = 0,
+  EPOCH = 1,
+  RELATIVE_TIME = 2,
+  ABSOLUTE_TIME = 3,
+  CUSTOM_METRIC = 4,
 }
 
 enum CircleEnum {
@@ -62,7 +70,8 @@ export {
   CurveEnum,
   ScaleEnum,
   ChartTypeEnum,
-  XAlignmentEnum,
+  AlignmentKeysEnum,
+  AlignmentOptionsEnum,
   clearArea,
   drawArea,
   drawAxes,

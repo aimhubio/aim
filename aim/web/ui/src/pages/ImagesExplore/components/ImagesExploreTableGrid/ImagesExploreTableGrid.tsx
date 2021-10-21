@@ -7,11 +7,9 @@ import { merge } from 'lodash-es';
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import COLORS from 'config/colors/colors';
-import TagLabel from 'components/TagLabel/TagLabel';
 import { PathEnum } from 'config/enums/routesEnum';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
+import { Icon, Badge, Button } from 'components/kit';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -190,13 +188,13 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <TagLabel
+              <Badge
                 size='small'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
-              <TagLabel
+              <Badge
                 size='small'
                 color={COLORS[0][0]}
                 label={rowData.context}
@@ -220,7 +218,7 @@ function imagesExploreTableRowRenderer(
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
-            <TagLabel
+            <Badge
               size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
@@ -247,7 +245,7 @@ function imagesExploreTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <TagLabel key={item} size='small' color={COLORS[0][0]} label={item} />
+          <Badge key={item} size='small' color={COLORS[0][0]} label={item} />
         )),
       },
       value: rowData.value,

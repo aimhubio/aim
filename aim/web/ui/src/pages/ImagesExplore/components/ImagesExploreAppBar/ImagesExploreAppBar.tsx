@@ -12,8 +12,7 @@ import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
+import { Icon, Button } from 'components/kit';
 
 import './ImagesExploreAppBar.scss';
 

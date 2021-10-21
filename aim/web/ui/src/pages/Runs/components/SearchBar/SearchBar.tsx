@@ -1,5 +1,5 @@
 import React from 'react';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import { Divider, TextField } from '@material-ui/core';
 
 import searchImg from 'assets/icons/search.svg';
@@ -54,8 +54,7 @@ function SearchBar({
         color='primary'
         onClick={handleRunSearch}
         variant='contained'
-        size='small'
-        startIcon={<SearchIcon color='inherit' />}
+        startIcon={<SearchOutlined color='inherit' />}
         disabled={isRunsDataLoading}
       >
         Search

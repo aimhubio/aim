@@ -32,7 +32,7 @@ class Metric(Sequence):
              include_name: (:obj:`int`, optional): If true, include metric name in dataframe. False by default.
              include_context: (:obj:`int`, optional): If true, include metric context
                 path:value pairs in dataframe. False by default.
-             include_run: (:obj:`int`, optional): If true, include run run.hashname and run hparams
+             include_run: (:obj:`int`, optional): If true, include run run.hash and run hparams
                 path:value pairs in dataframe. False by default.
              only_last: (:obj:`int`, optional): If true return dataframe for only last value, step, timestamp
                 and epoch. False by default.
@@ -69,7 +69,7 @@ class Metric(Sequence):
         }
 
         if include_run:
-            data['run'] = [self.run.hashname] * len(indices)
+            data['run'] = [self.run.hash] * len(indices)
             for path, val in treeutils.unfold_tree(self.run[...],
                                                    unfold_array=False,
                                                    depth=3):
