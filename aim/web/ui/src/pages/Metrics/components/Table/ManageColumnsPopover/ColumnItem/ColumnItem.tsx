@@ -1,5 +1,6 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import classNames from 'classnames';
 
 import { Icon } from 'components/kit';
 
@@ -10,7 +11,13 @@ function ColumnItem(props: any) {
     <Draggable draggableId={props.data} index={props.index}>
       {(provided) => (
         <div
-          className='ColumnItem__container'
+          className={classNames('ColumnItem__container', {
+            highlighted:
+              props.hasSearchableItems &&
+              !!props.searchKey &&
+              props.searchKey.trim() !== '' &&
+              props.data.includes(props.searchKey),
+          })}
           {...provided.draggableProps}
           ref={provided.innerRef}
         >

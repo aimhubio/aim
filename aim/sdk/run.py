@@ -1,6 +1,8 @@
 import logging
 
 import datetime
+import os
+
 from time import time
 from weakref import WeakValueDictionary
 
@@ -9,6 +11,7 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.types import AimObject
+from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context
@@ -170,11 +173,14 @@ class Run(StructuredRunMixin):
     _finalize_message_shown = False
     _track_warning_shown = False
 
+    track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
+
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT):
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
+        self._constructed = False
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
 
@@ -217,6 +223,7 @@ class Run(StructuredRunMixin):
             self.props.finalized_at = None
         if experiment:
             self.experiment = experiment
+        self._constructed = True
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
@@ -450,7 +457,7 @@ class Run(StructuredRunMixin):
         return self._hash
 
     def __del__(self):
-        if self.read_only:
+        if self.read_only or not self._constructed:
             return
         if self._system_resource_tracker:
             self._system_resource_tracker.stop()
@@ -477,10 +484,11 @@ class Run(StructuredRunMixin):
             return
         self._finalized = True
         self.finalize_msg()
-        if not skip_wait:
+        if not skip_wait and self.track_in_thread:
             self.repo.tracking_queue.wait_for_finish()
 
-        self.props.finalized_at = datetime.datetime.utcnow()
+        with self.repo.structured_db:
+            self.props.finalized_at = datetime.datetime.utcnow()
         index = self.repo._get_container('meta/index',
                                          read_only=False,
                                          from_union=False).view(b'')

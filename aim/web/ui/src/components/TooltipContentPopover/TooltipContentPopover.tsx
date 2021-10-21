@@ -53,7 +53,9 @@ function TooltipContentPopover({
   }, [selectOptions, selectedParams]);
 
   const paramsOptions = React.useMemo(() => {
-    return selectOptions.filter((option) => option.group === 'run');
+    return selectOptions.filter((option) =>
+      option.value.startsWith('run.params.'),
+    );
   }, [selectOptions]);
 
   return (
