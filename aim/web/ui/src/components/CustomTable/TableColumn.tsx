@@ -503,9 +503,13 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
               expand(groupKey);
             }}
           >
-            <Icon
-              name={expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'}
-            />
+            <span className='Table__action__popup__item_icon'>
+              <Icon
+                name={
+                  expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'
+                }
+              />
+            </span>
             <span>
               {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
             </span>
@@ -518,7 +522,9 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
                 expand('collapse_all');
               }}
             >
-              <Icon name='collapse-inside' />
+              <span className='Table__action__popup__item_icon'>
+                <Icon name='collapse-inside' />
+              </span>
               <span>Collapse all</span>
             </MenuItem>
           )}
@@ -530,7 +536,9 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
                 expand('expand_all');
               }}
             >
-              <Icon name='collapse-outside' />
+              <span className='Table__action__popup__item_icon'>
+                <Icon name='collapse-outside' />
+              </span>
               <span>Expand all</span>
             </MenuItem>
           )}
