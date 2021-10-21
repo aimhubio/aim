@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .LineChart__container {
   background-color: white;
   height: 100%;
@@ -113,5 +115,13 @@
 
   .AggrArea.highlighted {
     opacity: 1;
+  }
+
+  .yAxis {
+    .tick {
+      text {
+        color: $text-color;
+      }
+    }
   }
 }
