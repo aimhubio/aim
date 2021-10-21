@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.0 Oct 21 2021
+- TODO [GA]: Highlight v3 core improvements
+
 ## 2.7.1 Jun 30 2021
 - Fix bookmark navigation issue (roubkar)
 - Empty metric select on X-axis alignment property change (roubkar)
