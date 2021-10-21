@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- Sort select option fields/params based on input value (roubkar)
+- Sort select options/params based on input value (roubkar)
 - Fix issue with making API call from Web Worker (VkoHov)
 
 ## 3.0.0 Oct 21 2021
