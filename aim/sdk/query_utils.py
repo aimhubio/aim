@@ -1,3 +1,5 @@
+import datetime
+
 from typing import Any, Union
 from typing import TYPE_CHECKING
 
@@ -20,7 +22,13 @@ class RunView:
         self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
 
     def __getattr__(self, item):
-        if item in self.structured_run_cls.fields():
+        if item in ['finalized_at', 'end_time']:
+            end_time = self.meta_run_tree['end_time']
+            if item == 'finalized_at':
+                return datetime.datetime.fromtimestamp(end_time) if end_time else None
+            else:
+                return end_time
+        elif item in self.structured_run_cls.fields():
             return getattr(self.db.caches['runs_cache'][self.hash], item)
         else:
             return self[item]
