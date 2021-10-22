@@ -74,9 +74,9 @@ function Controls(
       </div>
       <div>
         <ControlPopover
-          title='Align X-Axis by'
+          title='X-Axis properties'
           anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Align X-Axis'>
+            <Tooltip title='X-Axis properties'>
               <div
                 onClick={onAnchorClick}
                 className={`Controls__anchor ${opened ? 'active' : ''}`}
