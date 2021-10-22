@@ -61,7 +61,6 @@ function SortPopover({
           multiple
           disableCloseOnSelect
           options={selectOptions}
-          value={undefined}
           onChange={onChange}
           onInputChange={(e, value, reason) => setInputValue(value)}
           groupBy={(option) => option.group}
