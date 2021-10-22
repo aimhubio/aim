@@ -29,6 +29,8 @@ function GroupingPopover({
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  let [inputValue, setInputValue] = React.useState('');
+
   function onChange(e: object, values: IGroupingSelectOption[]): void {
     onSelect({
       groupName,
@@ -75,9 +77,20 @@ function GroupingPopover({
             size='small'
             multiple
             disableCloseOnSelect
-            options={groupingSelectOptions}
+            options={
+              inputValue.trim() !== ''
+                ? groupingSelectOptions
+                    .slice()
+                    .sort(
+                      (a, b) =>
+                        a.label.indexOf(inputValue) -
+                        b.label.indexOf(inputValue),
+                    )
+                : groupingSelectOptions
+            }
             value={values}
             onChange={onChange}
+            onInputChange={(e, value) => setInputValue(value)}
             groupBy={(option) => option.group}
             getOptionLabel={(option) => option.label}
             getOptionSelected={(option, value) => option.value === value.value}
