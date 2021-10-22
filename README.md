@@ -181,16 +181,18 @@ $ aim up
 
 ## Roadmap 
 
-This is what we are going to work on from Nov 1 to Feb 1
+**In progress (Oct 18 - Oct 24):**
+- [ ] Images tracking and visualization
+- [ ] Centralized tracking server
+
+### TODO: Nov 1 - Feb 1
 
 **Track and Explore:**
-  - [ ] Images tracking and visualization
   - [ ] Distributions tracking and visualization
   - [ ] Transcripts tracking and visualization
   - [ ] Runs side-by-side comparison
 
 **Data Backup:**
-  - [ ] Centralized tracking server
   - [ ] Cloud storage support: aws s3, gsc, azure storage
 
 **Reproducibility:**
@@ -205,9 +207,9 @@ This is what we are going to work on from Nov 1 to Feb 1
   - [ ] Streamlit integration
   - [ ] Raytune integration
 
-## Asking for help
+## Community
 
-If you have any questions please:
+If you have questions please:
 
 1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
 1. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
