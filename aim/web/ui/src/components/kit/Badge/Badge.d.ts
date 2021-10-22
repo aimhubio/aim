@@ -5,12 +5,13 @@ export interface IBadgeProps {
   id?: string;
   label: string;
   color?: string;
-  iconName?: IconName;
+  startIcon?: IconName;
   variant?: 'default' | 'outlined';
-  size?: 'small' | 'medium';
+  size?: 'xSmall' | 'small' | 'medium' | 'large' | 'xLarge';
   onDelete?: (label: string) => void;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   maxWidth?: string;
   style?: React.CSSProperties;
   className?: string;
+  selectBadge?: boolean;
 }

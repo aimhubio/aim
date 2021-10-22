@@ -83,6 +83,7 @@ function BookmarkCard({
               {tags.map((tag, index) => {
                 return (
                   <Badge
+                    size='large'
                     key={tag.label}
                     label={tag.label}
                     color={COLORS[0][index % COLORS[0].length]}

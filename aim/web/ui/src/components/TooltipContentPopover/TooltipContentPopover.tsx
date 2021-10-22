@@ -102,8 +102,7 @@ function TooltipContentPopover({
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}
-                    size='small'
-                    className='Select__Chip'
+                    selectBadge={true}
                   />
                 ))}
               </div>
