@@ -32,7 +32,6 @@ const init = () => {
 const pageView = (pageName, pageCat = null) => {
   if (!enabled()) return;
   init();
-  console.log('1');
   window.analytics.page(pageCat, pageName, {
     path: window.location.pathname,
     url: window.location.hostname,
@@ -45,7 +44,6 @@ const pageView = (pageName, pageCat = null) => {
 const trackEvent = (eventName: string, properties = {}) => {
   if (!enabled()) return;
   init();
-  console.log('2');
 
   window.analytics.track(eventName, properties, {
     path: window.location.pathname,
