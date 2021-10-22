@@ -24,7 +24,7 @@ function Controls(
       <div>
         <ControlPopover
           title='Select Aggregation Method'
-          open={!!props.aggregationConfig.isEnabled}
+          open={props.aggregationConfig.isEnabled}
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip
               title={
@@ -232,6 +232,11 @@ function Controls(
                 className={`Controls__anchor ${
                   props.zoom?.active ? 'active' : ''
                 }`}
+                onClick={() => {
+                  if (props.zoom) {
+                    props.onZoomChange?.({ active: !props.zoom.active });
+                  }
+                }}
               >
                 <span
                   className={`Controls__anchor__arrow ${
@@ -241,20 +246,12 @@ function Controls(
                 >
                   <Icon name='arrow-left' />
                 </span>
-                <span
-                  onClick={() => {
-                    if (props.zoom) {
-                      props.onZoomChange?.({ active: !props.zoom.active });
-                    }
-                  }}
-                >
-                  <Icon
-                    className={`Controls__icon ${
-                      props.zoom?.active ? 'active' : ''
-                    }`}
-                    name='zoom-in'
-                  />
-                </span>
+                <Icon
+                  className={`Controls__icon ${
+                    props.zoom?.active ? 'active' : ''
+                  }`}
+                  name='zoom-in'
+                />
               </div>
             </Tooltip>
           )}
@@ -276,6 +273,13 @@ function Controls(
                 className={`Controls__anchor ${
                   props.zoom?.history.length ? '' : 'disabled'
                 }`}
+                onClick={() => {
+                  if (props.zoom?.history.length) {
+                    props.onZoomChange?.({
+                      history: [...props.zoom.history].slice(0, -1),
+                    });
+                  }
+                }}
               >
                 {props.zoom?.history.length ? (
                   <span
@@ -287,17 +291,7 @@ function Controls(
                     <Icon name='arrow-left' />
                   </span>
                 ) : null}
-                <span
-                  onClick={() => {
-                    if (props.zoom?.history.length) {
-                      props.onZoomChange?.({
-                        history: [...props.zoom.history].slice(0, -1),
-                      });
-                    }
-                  }}
-                >
-                  <Icon className='Controls__icon' name='zoom-out' />
-                </span>
+                <Icon className='Controls__icon' name='zoom-out' />
               </div>
             </Tooltip>
           )}
