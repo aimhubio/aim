@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import _, { capitalize } from 'lodash-es';
+import _ from 'lodash-es';
 import { Unit } from 'humanize-duration';
 import moment from 'moment';
 
@@ -37,7 +37,8 @@ function drawAxes(props: IDrawAxesProps): void {
     switch (alignmentConfig?.type) {
       case AlignmentOptionsEnum.EPOCH:
         {
-          xAlignmentText = capitalize(getKeyByAlignment(alignmentConfig)) + 's';
+          xAlignmentText =
+            _.capitalize(getKeyByAlignment(alignmentConfig)) + 's';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -48,7 +49,7 @@ function drawAxes(props: IDrawAxesProps): void {
         break;
       case AlignmentOptionsEnum.RELATIVE_TIME:
         {
-          xAlignmentText = capitalize(getKeyByAlignment(alignmentConfig));
+          xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig));
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 85);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -115,7 +116,7 @@ function drawAxes(props: IDrawAxesProps): void {
         break;
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
         {
-          xAlignmentText = capitalize(getKeyByAlignment(alignmentConfig));
+          xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig));
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -148,7 +149,7 @@ function drawAxes(props: IDrawAxesProps): void {
         }
         break;
       default: {
-        xAlignmentText = capitalize(getKeyByAlignment(alignmentConfig)) + 's';
+        xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig)) + 's';
 
         let ticksCount = Math.floor(plotBoxRef.current.width / 90);
         ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
