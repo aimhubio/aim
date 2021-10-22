@@ -1,0 +1,31 @@
+@use "src/styles/abstracts" as *;
+
+.ImagesSet {
+  padding: 0.625rem 1.25rem;
+  display: table;
+  width: 100%;
+  background-color: #ffffff;
+  border-top: $border-main;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    img {
+      width: 6.25rem;
+      height: 6.25rem;
+    }
+    &__title {
+      padding-bottom: 0.625rem;
+      font-size: $text-sm;
+    }
+    &__imagesBox {
+      display: flex;
+      &__imageBox {
+        width: 6.25rem;
+        height: 6.25rem;
+        margin-right: 0.625rem;
+        margin-bottom: 0.625rem;
+      }
+    }
+  }
+}

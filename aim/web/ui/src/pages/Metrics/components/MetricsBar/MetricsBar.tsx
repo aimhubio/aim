@@ -8,7 +8,7 @@ import {
   MenuItem,
   Typography,
 } from '@material-ui/core';
-import BookmarkForm from '../BookmarkForm/BookmarkForm';
+import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';

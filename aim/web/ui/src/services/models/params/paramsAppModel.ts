@@ -50,7 +50,7 @@ import { ISelectParamsOption } from 'types/pages/params/components/SelectForm/Se
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import {
   getParamsTableColumns,

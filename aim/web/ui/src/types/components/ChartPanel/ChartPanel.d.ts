@@ -36,7 +36,7 @@ export interface IChartPanelProps {
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
-  resizeMode: ResizeModeEnum;
+  resizeMode?: ResizeModeEnum;
 }
 
 export interface IChartPanelRef {
@@ -55,5 +55,6 @@ export type IMemoizedForwardRefComponent<T> = React.MemoExoticComponent<
 export interface IChartTypeConfig {
   [key: string]:
     | IMemoizedForwardRefComponent<ILineChartProps>
-    | IMemoizedForwardRefComponent<IHighPlotProps>;
+    | IMemoizedForwardRefComponent<IHighPlotProps>
+    | IMemoizedForwardRefComponent<any>;
 }
