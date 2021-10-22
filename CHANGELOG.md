@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Check telemetry_enabled option on segment initialization (VkoHov)
 - Draw LineChart Y-axis (horizontal) tick lines on zooming (KaroMourad)
 - Sort select options/params based on input value (roubkar)
 - Fix query construction issue for multiple context items (roubkar)
