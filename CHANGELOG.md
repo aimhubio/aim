@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Fix draw LineChart Y-axis tick lines on zoom mode (KaroMourad)
 - Fix issue with making API call from Web Worker (VkoHov)
 
 ## 3.0.0 Oct 21 2021
