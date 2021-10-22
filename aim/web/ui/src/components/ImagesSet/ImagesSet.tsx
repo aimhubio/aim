@@ -16,7 +16,7 @@ const ImagesSet = React.forwardRef(function ImageSet(
                 key={index}
                 className='ImagesSet__container__imagesBox__imageBox'
               >
-                <img src={src} alt='' />
+                {/* <img src={src} alt='' /> */}
               </div>
             ))}
           </div>

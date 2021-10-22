@@ -1,5 +1,6 @@
 import React from 'react';
 import { Slider, TextField } from '@material-ui/core';
+import { isEmpty } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -30,7 +31,7 @@ function ImagesPanel({
       height='100%'
       loaderComponent={<TableLoader />}
     >
-      {imagesData ? (
+      {!isEmpty(imagesData) ? (
         <div className='ImagesPanel'>
           <div className='ImagesPanel__slidersContainer'>
             <div className='ImagesPanel__slidersContainer__sliderContainer'>

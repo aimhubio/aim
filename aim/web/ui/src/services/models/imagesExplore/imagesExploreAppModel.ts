@@ -33,7 +33,7 @@ import { BookmarkNotificationsEnum } from 'config/notification-messages/notifica
 import { getItem, setItem } from 'utils/storage';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
-import imagesExploreMockData from './imagesExploreMockData';
+import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import {
@@ -175,10 +175,13 @@ function getImagesData() {
   const configData = modelState?.config;
   // const metric = configData?.chart.alignmentConfig.metric;
   // let query = getQueryStringFromSelect(configData?.select);
-  // imagesRequestRef = metricsService.getMetricsData({
-  //   q: query,
-  //   ...(metric && { x_axis: metric }),
-  // });
+  imagesRequestRef = imagesExploreService.getImagesExploreData({
+    q: '',
+    record_range: '10:100',
+    index_range: '5:50',
+    record_density: 50,
+    index_density: 5,
+  });
   return {
     call: async () => {
       // if (query === '') {
@@ -191,10 +194,11 @@ function getImagesData() {
         requestIsPending: true,
         queryIsEmpty: false,
       });
-      // const stream = await metricsRequestRef.call(exceptionHandler);
-      // const {runData} = await getRunData(stream);
+      const stream = await imagesRequestRef.call(exceptionHandler);
+      const runData = await getRunData(stream);
+      console.log(runData);
       if (configData) {
-        setModelData(imagesExploreMockData, configData);
+        setModelData(runData, configData);
       }
       // }
     },
@@ -223,15 +227,16 @@ function getAppConfigData(appId: string) {
 function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
+  URIs: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: any[] = [];
   let params: string[] = [];
-
+  let uris: string[] = [];
   data.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params, run.params));
 
-    run.images.forEach((imageData: any) => {
+    run.traces.forEach((imageData: any) => {
       imageData.values.forEach((stepData: any, stepIndex: number) => {
         stepData.forEach((image: any) => {
           const metricKey = encode({
@@ -244,12 +249,13 @@ function processData(data: IRun<IMetricTrace>[]): {
           metrics.push({
             step: stepIndex + 1,
             index: image.index,
-            src: image.blob,
+            src: image.blob_uri,
             metric_name: imageData.name,
             context: imageData.context,
             run: _.omit(run, 'images'),
             key: metricKey,
           });
+          uris.push(image.blob_uri);
         });
       });
     });
@@ -267,11 +273,15 @@ function processData(data: IRun<IMetricTrace>[]): {
     ),
   );
   const uniqParams = _.uniq(params);
-
+  imagesExploreService
+    .getImagesByURIs(uris)
+    .call()
+    .then((a) => getRunData(a).then((b) => console.log(b)));
   // setTooltipData(processedData, uniqParams);
   return {
     data: processedData,
     params: uniqParams,
+    URIs: uris,
   };
 }
 
@@ -281,10 +291,10 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const tableData = getDataAsTableRows(data, params, false, configData);
   const config = configData;
   config.images = {
-    stepRange: rawData[0].records_range as number[],
-    indexRange: rawData[0].indices_range as number[],
-    stepSlice: config?.images?.stepSlice || rawData[0].records_range,
-    indexSlice: config?.images?.indexSlice || rawData[0].indices_range,
+    stepRange: rawData[0].ranges.record_range as number[],
+    indexRange: rawData[0].ranges.index_range as number[],
+    stepSlice: config?.images?.stepSlice || rawData[0].ranges.record_range,
+    indexSlice: config?.images?.indexSlice || rawData[0].ranges.index_range,
     stepInterval: config?.images?.stepInterval || 50,
     indexInterval: config?.images?.indexInterval || 5,
   };
@@ -552,6 +562,7 @@ async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   for await (let [keys, val] of objects) {
     runData.push({
       ...(val as any),
+      [keys[0]]: val,
       hash: keys[0],
     });
   }
