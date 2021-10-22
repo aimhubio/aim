@@ -14,7 +14,6 @@ from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
-from aim.sdk.metric import Metric
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -88,6 +87,7 @@ class Repo:
 
         self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
+        self._encryption_key = None
         if init:
             self.structured_db.run_upgrades()
 
@@ -296,22 +296,12 @@ class Repo:
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
              offset (:obj:`str`, optional): `hash` of Run to skip to.
         Returns:
-            :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
+            :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
-        db = self.structured_db
-        cache_name = 'runs_cache'
-        db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hash)
-        self.run_props_cache_hint = cache_name
+        self._prepare_runs_cache()
+        # TODO [AT]: check other Sequence types once Run explorer is ready.
+        from aim.sdk.metric import Metric
         return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
-
-    @property
-    def run_props_cache_hint(self):
-        return self._run_props_cache_hint
-
-    @run_props_cache_hint.setter
-    def run_props_cache_hint(self, cache: str):
-        self._run_props_cache_hint = cache
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
@@ -321,13 +311,49 @@ class Repo:
         Returns:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
-        db = self.structured_db
-        cache_name = 'runs_cache'
-        db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hash)
-        self.run_props_cache_hint = cache_name
-
+        self._prepare_runs_cache()
+        from aim.sdk.metric import Metric
         return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
+
+    def query_images(self, query: str = '') -> QuerySequenceCollection:
+        """Get image collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for image sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.image_sequence import Images
+        return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
+
+    @property
+    def run_props_cache_hint(self):
+        return self._run_props_cache_hint
+
+    @run_props_cache_hint.setter
+    def run_props_cache_hint(self, cache: str):
+        self._run_props_cache_hint = cache
+
+    @property
+    def encryption_key(self):
+        from cryptography.fernet import Fernet
+
+        if self._encryption_key:
+            return self._encryption_key
+
+        encryption_key_path = os.path.join(self.path, 'ENCRYPTION_KEY')
+        if not os.path.exists(encryption_key_path):
+            with open(encryption_key_path, 'w') as key_fp:
+                encryption_key = Fernet.generate_key().decode()
+                key_fp.write(encryption_key + '\n')
+        else:
+            with open(encryption_key_path, 'r') as key_fp:
+                encryption_key = key_fp.readline()
+
+        self._encryption_key = encryption_key
+
+        return encryption_key
 
     def _get_meta_tree(self):
         return self.request(
@@ -363,6 +389,13 @@ class Repo:
             return meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
+
+    def _prepare_runs_cache(self):
+        db = self.structured_db
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hash)
+        self.run_props_cache_hint = cache_name
 
     def __del__(self):
         if self._mount_root:

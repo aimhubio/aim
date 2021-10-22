@@ -50,6 +50,7 @@ REQUIRED = [
     'aimrocks==0.0.7',
     'cachetools>=4.0.0',
     'click>=7.0',
+    'cryptography>=3.0',
     'filelock>=3.0.0',
     'GitPython>=3.0.4',
     'numpy>=1.12.0',
@@ -66,6 +67,7 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.3.0',
     'uvicorn>=0.12.0',
+    'Pillow>=8.1.0',
 ]
 
 

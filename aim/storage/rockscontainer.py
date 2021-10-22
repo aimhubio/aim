@@ -9,6 +9,7 @@ from typing import Iterator, Optional, Tuple
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
 from aim.storage.treeview import TreeView
+from aim.storage.containertreeview import ContainerTreeView
 
 
 logger = logging.getLogger(__name__)
@@ -140,7 +141,7 @@ class RocksContainer(Container):
             will behave as a (possibly deep) dict-like object:
             `tree[b'meta'][b'x'] == b'123'`
         """
-        return TreeView(self)
+        return ContainerTreeView(self)
 
     def get(
         self,
