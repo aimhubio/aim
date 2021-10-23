@@ -7,20 +7,19 @@
 
 .ControlPopover__container {
   .MuiListItem-button {
-    color: tint($pico, 16.5);
+    color: $text-color;
     font-size: 0.875rem;
     padding: 0.5rem;
     border-radius: $border-radius-sm;
     &:hover {
-      background-color: tint($cuddle, 80);
+      background-color: $cuddle-20;
     }
   }
   .MuiListItem-root.Mui-selected {
     background-color: transparent;
-
     color: $primary-color;
     &:hover {
-      background-color: tint($cuddle, 80);
+      background-color: $cuddle-20;
     }
     &::after {
       content: '✓';
@@ -30,9 +29,8 @@
   }
 
   .subtitle {
-    color: tint($pico, 50);
+    color: $pico-50;
     font-size: $text-sm;
-    font-family: 'Inter Medium', sans-serif;
     text-transform: uppercase;
     display: block;
   }
@@ -41,9 +39,6 @@
 .ControlPopover__title {
   padding: 0.5rem 1rem;
   border-bottom: $border-main;
-  color: $pico;
-  background: tint($primary-color, 95);
+  background: $primary-color-5;
   text-transform: capitalize;
-  font-size: 0.875rem;
-  font-family: 'Inter SemiBold', sans-serif;
 }

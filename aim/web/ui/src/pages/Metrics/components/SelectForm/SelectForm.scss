@@ -1,20 +1,26 @@
 @use "src/styles/abstracts" as *;
 
-.SelectForm__container {
+.SelectForm {
   flex: 1;
   padding: 0.725rem 1.5em;
   display: flex;
-}
 
-.SelectForm__metrics__container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-right: 1rem;
-  /* TODO [GA]: Override MUI default styles in a nice way */
-  .MuiBox-root {
-    justify-content: flex-start;
+  &__container__metrics {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 1rem;
+    /* TODO [GA]: Override MUI default styles in a nice way */
+    .MuiBox-root {
+      justify-content: flex-start;
+    }
+  }
+  &__container__search {
+    width: 103px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
   }
 }
 
@@ -31,11 +37,6 @@
       margin-right: 20px;
     }
   }
-}
-
-.SelectForm__tags__empty {
-  font-size: $text-md;
-  color: $grey;
 }
 
 .SelectForm__metric__select {
@@ -64,13 +65,6 @@
   textarea {
     font-family: monospace;
   }
-}
-
-.SelectForm__search__container {
-  width: 103px;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
 }
 
 .SelectForm__search__button {
