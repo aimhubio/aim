@@ -9,25 +9,9 @@ function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
   let xValues: number[] = [];
   let yValues: number[] = [];
 
-  const processedData = data.map((line: ILine) => {
-    const lineYValues: number[] = [];
-    const lineXValues: number[] = [];
-    /**
-     * To draw the correct chart d3 needs to take sorted X-values
-     *
-     * Depends on X-values need to get corresponding Y-Values,
-     * for that we need to keep indices before sorting
-     * */
-    line.data.xValues
-      .map((value, i) => ({ i, value }))
-      .sort((a, b) => a.value - b.value)
-      .forEach((xObj, i) => {
-        lineYValues[i] = line.data.yValues[xObj.i];
-        lineXValues[i] = line.data.xValues[xObj.i];
-      });
-
-    xValues = xValues.concat(lineXValues);
-    yValues = yValues.concat(lineYValues);
+  const processedData = data.map((line) => {
+    xValues = xValues.concat(line.data.xValues);
+    yValues = yValues.concat(line.data.yValues);
 
     return Object.assign(
       {
@@ -37,8 +21,8 @@ function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
       line,
       {
         data: {
-          xValues: lineXValues,
-          yValues: lineYValues,
+          xValues: line.data.xValues,
+          yValues: line.data.yValues,
         },
       },
     );
