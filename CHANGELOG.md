@@ -2,7 +2,7 @@
 
 ## 3.0.1 Oct 22 2021
 
-- Implement sorting on LineChart data processing (KaroMourad)
+- Implement sorting algorithm on Metric data (KaroMourad)
 - Check telemetry_enabled option on segment initialization (VkoHov)
 - Draw LineChart Y-axis (horizontal) tick lines on zooming (KaroMourad)
 - Sort select options/params based on input value (roubkar)
