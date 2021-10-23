@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.0.1 Oct 22 2021
 
 - Check telemetry_enabled option on segment initialization (VkoHov)
 - Draw LineChart Y-axis (horizontal) tick lines on zooming (KaroMourad)

@@ -49,7 +49,7 @@
 
 Aim is open-source, self-hosted AI experiment tracking tool. Use Aim to deeply inspect hundreds of hyperparameter-sensitive training runs at once.
 
-# Getting Started in 3 Steps
+## Getting Started in 3 Steps
 
 Follow the steps below to get started with Aim.
 
@@ -58,7 +58,7 @@ Follow the steps below to get started with Aim.
 _Prerequisite: You need to have python3 and pip3 installed in your environment before installing Aim_
 
 ```shell
-$ pip3 install aim==3.0.0b6
+$ pip3 install aim
 ```
 
 **2. Integrate Aim with your code**
@@ -178,3 +178,39 @@ _See documentation [here](#xgboost)._
 ```shell
 $ aim up
 ```
+
+## Roadmap 
+
+**In progress (Oct 18 - Oct 24):**
+- [ ] Images tracking and visualization
+- [ ] Centralized tracking server
+
+### TODO: Nov 1 - Feb 1
+
+**Track and Explore:**
+  - [ ] Distributions tracking and visualization
+  - [ ] Transcripts tracking and visualization
+  - [ ] Runs side-by-side comparison
+
+**Data Backup:**
+  - [ ] Cloud storage support: aws s3, gsc, azure storage
+
+**Reproducibility:**
+  - [ ] Track git info, env vars, CLI arguments, dependencies
+  - [ ] Collect stdout, stderr logs
+
+**Integrations:**
+  - [ ] Colab integration
+  - [ ] Jupyter integration
+  - [ ] plotly integration
+  - [ ] Kubeflow integration
+  - [ ] Streamlit integration
+  - [ ] Raytune integration
+
+## Community
+
+If you have questions please:
+
+1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
+1. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
+1. [Join our slack](https://slack.aimstack.io/)
