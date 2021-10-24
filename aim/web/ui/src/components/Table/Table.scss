@@ -1,61 +1,42 @@
 @use 'src/styles/abstracts' as *;
 
-.Table__header__popovers__container {
+.Table__header {
   display: flex;
   padding: 0.2rem 1rem;
-}
+  &__select__resize {
+    padding-right: 1rem;
+    display: flex;
+    align-items: center;
+    border-right: 0.0625rem solid #e8f1fd;
+    margin-right: 1rem;
 
-.Table__header__select__resize {
-  padding-right: 1rem;
-  display: flex;
-  align-items: center;
-  border-right: 0.0625rem solid #e8f1fd;
-  margin-right: 1rem;
-
-  i {
-    &:nth-child(2) {
-      margin: 0 0.875rem;
+    i {
+      &:nth-child(2) {
+        margin: 0 0.875rem;
+      }
+    }
+  }
+  &__buttons {
+    flex: 1;
+  }
+  &__item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 0.0625rem solid transparent;
+    transition: all 0.18s ease-out;
+    border-radius: $radius-main;
+    padding: 0 0.375rem !important;
+    margin-right: 0.375rem !important;
+    i {
+      margin-right: 0.625rem;
+    }
+    &.opened {
+      border: 0.0625rem solid $primary-color-50;
+      background-color: $primary-color-10;
     }
   }
 }
-
-.Table__header__popovers__buttons {
-  flex: 1;
-}
-
-.Table__header__item {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  border: 0.0625rem solid transparent;
-  transition: all 0.18s ease-out;
-  border-radius: $radius-main;
-  padding: 0 0.375rem !important;
-  margin-right: 0.375rem !important;
-
-  &.opened {
-    border: 0.0625rem solid tint($primary-color, 50);
-    background-color: tint($primary-color, 90);
-  }
-
-  span {
-    font-style: normal;
-    font-weight: 500;
-    font-size: $text-md;
-    line-height: 17px;
-  }
-
-  i {
-    margin-right: 0.625rem;
-  }
-}
-
-.TableColumn__SortIcon {
-  font-size: $text-md;
-  cursor: pointer;
+.TableColumn__SortButton {
   margin: 0 $space-xs;
-  i {
-    display: inline-block;
-    width: $space-xs;
-  }
 }

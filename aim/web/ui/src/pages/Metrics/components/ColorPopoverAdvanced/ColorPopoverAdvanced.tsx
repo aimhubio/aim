@@ -3,7 +3,7 @@ import { Box, Radio } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import COLORS from 'config/colors/colors';
-import { Button, Switcher } from 'components/kit';
+import { Button, Switcher, Text } from 'components/kit';
 
 import './ColorPopoverAdvanced.scss';
 
@@ -29,13 +29,19 @@ function ColorPopoverAdvanced({
   }
 
   return (
-    <div className='ColorPopoverAdvanced__container'>
+    <div className='ColorPopoverAdvanced'>
       <div className='ColorPopoverAdvanced__persistence'>
-        <h3 className='subtitle'>colors persistence</h3>
-        <p className='ColorPopoverAdvanced__persistence__p'>
+        <Text component='h3' size={12} className='subtitle'>
+          colors persistence
+        </Text>
+        <Text
+          component='p'
+          size={14}
+          className='ColorPopoverAdvanced__persistence__p'
+        >
           Enable persistent coloring mode so that each item always has the same
           color regardless of its order.
-        </p>
+        </Text>
         <div className='flex fac fjb'>
           <div className='ColorPopoverAdvanced__Switcher__button__container'>
             <Switcher
@@ -44,9 +50,9 @@ function ColorPopoverAdvanced({
               size='large'
               variant='contained'
             />
-            <span className='ColorPopoverAdvanced__container__span'>
+            <Text size={14} className='ColorPopoverAdvanced__span'>
               Enable
-            </span>
+            </Text>
           </div>
           {persistence && (
             <Button
@@ -61,7 +67,9 @@ function ColorPopoverAdvanced({
         </div>
       </div>
       <div className='ColorPopoverAdvanced__preferred__colors'>
-        <h3 className='subtitle'>Preferred color palette:</h3>
+        <Text component='h3' tint={50}>
+          Preferred color palette
+        </Text>
         <div>
           {COLORS.map((options, index) => (
             <Box key={index} display='flex' alignItems='center'>
@@ -72,9 +80,9 @@ function ColorPopoverAdvanced({
                 size='small'
                 value={index}
               />
-              <span className='ColorPopoverAdvanced__container__span'>
+              <Text size={14} className='ColorPopoverAdvanced__span'>
                 {index === 0 ? '8 distinct colors' : '24 colors'}{' '}
-              </span>
+              </Text>
               <div
                 className={`ColorPopoverAdvanced__paletteColors__container ${
                   paletteIndex === index ? 'active' : ''

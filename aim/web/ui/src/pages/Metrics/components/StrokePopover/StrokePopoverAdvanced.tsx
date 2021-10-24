@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import { Button, Switcher, Text } from 'components/kit';
@@ -19,12 +18,14 @@ function StrokePopoverAdvanced({
     return true;
   }
   return (
-    <Box className='StrokePopoverAdvanced'>
+    <div className='StrokePopoverAdvanced'>
       <div className='StrokePopoverAdvanced__container'>
-        <h3 className='subtitle'>Stroke Style persistence</h3>
+        <Text component='h3' size={12} tint={50} className='subtitle'>
+          Stroke Style persistence
+        </Text>
         <Text
           component='p'
-          weight={300}
+          size={14}
           className='StrokePopoverAdvanced__container__p'
         >
           Enable persistent mode for stroke styles so that each group always has
@@ -38,9 +39,9 @@ function StrokePopoverAdvanced({
               onChange={() => onPersistenceChange('stroke')}
               size='large'
             />
-            <span className='ColorPopoverAdvanced__container__span'>
+            <Text size={14} className='ColorPopoverAdvanced__container__span'>
               Enable
-            </span>
+            </Text>
           </div>
           {persistence && (
             <Button
@@ -54,7 +55,7 @@ function StrokePopoverAdvanced({
           )}
         </div>
       </div>
-    </Box>
+    </div>
   );
 }
 
