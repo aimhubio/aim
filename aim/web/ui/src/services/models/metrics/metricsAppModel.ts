@@ -815,8 +815,8 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
 }
 
 /**
- * Sort X-values
- * Depends on sorted X-Values get corresponding Y-values
+ * Sort X-axis values in ascending order
+ * Sort Y-axis values based on corresponding X-axis value order
  * */
 function sortDependingArrays(
   xValues: number[],
