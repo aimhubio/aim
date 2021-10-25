@@ -179,6 +179,11 @@ function SelectForm({
                     onChange={({ target }) =>
                       onSelectAdvancedQueryChange(target.value)
                     }
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        handleMetricSearch(e);
+                      }
+                    }}
                   />
                 </form>
               </div>

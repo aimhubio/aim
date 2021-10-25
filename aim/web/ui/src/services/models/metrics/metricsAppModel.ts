@@ -283,17 +283,21 @@ function getQueryStringFromSelect(
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
       }(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(metric.name == "${
-                    metric.value.metric_name
-                  }" and metric.context.${item} == ${formatValue(
-                    (metric.value.context as any)[item],
-                  )})`,
-              )}`,
+        .map(
+          (metric) =>
+            `(metric.name == "${metric.value.metric_name}"${
+              metric.value.context === null
+                ? ''
+                : ' and ' +
+                  Object.keys(metric.value.context)
+                    .map(
+                      (item) =>
+                        `metric.context.${item} == ${formatValue(
+                          (metric.value.context as any)[item],
+                        )}`,
+                    )
+                    .join(' and ')
+            })`,
         )
         .join(' or ')})`.trim();
     }
@@ -810,6 +814,26 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   });
 }
 
+/**
+ * Sort X-axis values in ascending order
+ * Sort Y-axis values based on corresponding X-axis value order
+ * */
+function sortDependingArrays(
+  xValues: number[],
+  yValues: number[],
+): { sortedXValues: number[]; sortedYValues: number[] } {
+  const sortedXValues: number[] = [];
+  const sortedYValues: number[] = [];
+  xValues
+    .map((value, i) => ({ i, value }))
+    .sort((a, b) => a.value - b.value)
+    .forEach((xObj, i) => {
+      sortedXValues[i] = xValues[xObj.i];
+      sortedYValues[i] = yValues[xObj.i];
+    });
+  return { sortedXValues, sortedYValues };
+}
+
 function alignData(
   data: IMetricsCollection<IMetric>[],
   type: AlignmentOptionsEnum = model.getState()!.config!.chart.alignmentConfig
@@ -821,10 +845,16 @@ function alignData(
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
           const metric = metricCollection.data[j];
+
+          const { sortedXValues, sortedYValues } = sortDependingArrays(
+            [...metric.data.steps],
+            [...metric.data.values],
+          );
+
           metric.data = {
             ...metric.data,
-            xValues: [...metric.data.steps],
-            yValues: [...metric.data.values],
+            xValues: sortedXValues,
+            yValues: sortedYValues,
           };
         }
       }
@@ -835,6 +865,7 @@ function alignData(
         for (let j = 0; j < metricCollection.data.length; j++) {
           const metric = metricCollection.data[j];
           const epochs: { [key: number]: number[] } = {};
+
           metric.data.epochs.forEach((epoch, i) => {
             if (epochs.hasOwnProperty(epoch)) {
               epochs[epoch].push(metric.data.steps[i]);
@@ -843,9 +874,8 @@ function alignData(
             }
           });
 
-          metric.data = {
-            ...metric.data,
-            xValues: [
+          const { sortedXValues, sortedYValues } = sortDependingArrays(
+            [
               ...metric.data.epochs.map(
                 (epoch, i) =>
                   epoch +
@@ -855,7 +885,13 @@ function alignData(
                     : 0),
               ),
             ],
-            yValues: [...metric.data.values],
+            [...metric.data.values],
+          );
+
+          metric.data = {
+            ...metric.data,
+            xValues: sortedXValues,
+            yValues: sortedYValues,
           };
         }
       }
@@ -874,9 +910,9 @@ function alignData(
               timestamps[timestamp] = [metric.data.steps[i]];
             }
           });
-          metric.data = {
-            ...metric.data,
-            xValues: [
+
+          const { sortedXValues, sortedYValues } = sortDependingArrays(
+            [
               ...metric.data.timestamps.map(
                 (timestamp, i) =>
                   timestamp -
@@ -887,7 +923,13 @@ function alignData(
                     : 0),
               ),
             ],
-            yValues: [...metric.data.values],
+            [...metric.data.values],
+          );
+
+          metric.data = {
+            ...metric.data,
+            xValues: sortedXValues,
+            yValues: sortedYValues,
           };
         }
       }
@@ -897,10 +939,16 @@ function alignData(
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
           const metric = metricCollection.data[j];
+
+          const { sortedXValues, sortedYValues } = sortDependingArrays(
+            [...metric.data.timestamps],
+            [...metric.data.values],
+          );
+
           metric.data = {
             ...metric.data,
-            xValues: [...metric.data.timestamps],
-            yValues: [...metric.data.values],
+            xValues: sortedXValues,
+            yValues: sortedYValues,
           };
         }
       }
@@ -920,10 +968,15 @@ function alignData(
               ...new Float64Array(metric.x_axis_values.blob),
             ];
             if (xAxisValues.length === metric.data.values.length) {
+              const { sortedXValues, sortedYValues } = sortDependingArrays(
+                [...xAxisValues],
+                [...metric.data.values],
+              );
+
               metric.data = {
                 ...metric.data,
-                xValues: [...xAxisValues],
-                yValues: [...metric.data.values],
+                xValues: sortedXValues,
+                yValues: sortedYValues,
               };
             } else {
               metric.data.steps.forEach((step, index) => {
@@ -951,13 +1004,19 @@ function alignData(
                 missingIndexes,
                 metric.data.yValues,
               );
+
+              const { sortedXValues, sortedYValues } = sortDependingArrays(
+                [...xAxisValues],
+                [...yValues],
+              );
+
               metric.data = {
                 epochs,
                 steps,
                 timestamps,
                 values,
-                xValues: [...xAxisValues],
-                yValues: [...yValues],
+                xValues: sortedXValues,
+                yValues: sortedYValues,
               };
             }
           } else {

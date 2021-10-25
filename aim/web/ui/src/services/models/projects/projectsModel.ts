@@ -16,6 +16,8 @@ function getProjectsData() {
   return {
     call: () =>
       call().then((data: IProject) => {
+        //@ts-ignore
+        window.telemetry_enabled = data.telemetry_enabled;
         model.setState({
           project: data,
         });
