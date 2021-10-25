@@ -181,9 +181,12 @@ $ aim up
 
 ## Roadmap 
 
-**In progress (Oct 18 - Oct 24):**
-- [ ] Images tracking and visualization
-- [ ] Centralized tracking server
+**Done**
+- [x] Live updates (End: _Oct 18 2021_)
+
+**In progress:**
+- [ ] Images tracking and visualization (Start: _Oct 18 2021_)
+- [ ] Centralized tracking server (Start: _Oct 18 2021_)
 
 ### TODO: Nov 1 - Feb 1
 
