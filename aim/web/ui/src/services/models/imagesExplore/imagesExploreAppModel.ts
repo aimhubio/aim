@@ -259,10 +259,10 @@ function processData(data: IRun<IMetricTrace>[]): {
             runHash: run.hash,
             traceContext: imageData.context,
             index: image.index,
-            step: stepIndex + 1,
+            step: imageData.iters[stepIndex],
           });
           metrics.push({
-            step: stepIndex + 1,
+            step: imageData.iters[stepIndex],
             index: image.index,
             src: image.blob_uri,
             context: imageData.context,
@@ -309,7 +309,6 @@ function setModelData(
     groupingSelectOptions,
   );
   const config = configData;
-  console.log(rawData[0].ranges);
   config.images = {
     stepRange: rawData[0].ranges.record_range as number[],
     indexRange: rawData[0].ranges.index_range as number[],
