@@ -5,7 +5,7 @@ import LineChart from 'components/LineChart/LineChart';
 import contextToString from 'utils/contextToString';
 import COLORS from 'config/colors/colors';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
-import TagLabel from 'components/TagLabel/TagLabel';
+import { Badge } from 'components/kit';
 
 function RunMetricCard({
   batch,
@@ -51,7 +51,7 @@ function RunMetricCard({
         {contextToString(batch?.context)
           ?.split(',')
           .map((label: string, i: number) => (
-            <TagLabel
+            <Badge
               key={index}
               color={COLORS[0][(i + index) % COLORS[0].length]}
               label={label || 'No context'}

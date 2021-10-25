@@ -1,7 +1,8 @@
 import React from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 
 import runsService from 'services/api/runs/runsService';
 import createModel from '../model';
@@ -34,10 +35,9 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from '../../../utils/aggregateGroupData';
-import { AlignmentOptions } from '../../../config/alignment/alignmentOptions';
 import { INotification } from '../../../types/components/NotificationContainer/NotificationContainer';
 import { HighlightEnum } from '../../../components/HighlightModesPopover/HighlightModesPopover';
-import { CurveEnum, ScaleEnum } from '../../../utils/d3';
+import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from '../../../utils/d3';
 import { SmoothingAlgorithmEnum } from '../../../utils/smoothingData';
 import { RowHeightSize } from '../../../config/table/tableConfigs';
 import getStateFromUrl from '../../../utils/getStateFromUrl';
@@ -61,162 +61,48 @@ const model = createModel<Partial<any>>({
 });
 
 const initialPaginationConfig = {
-  limit: 45,
+  limit: 30,
   offset: null,
   isLatest: false,
 };
 
-function getConfig() {
-  return {
-    grouping: {
-      color: [],
-      stroke: [],
-      chart: [],
-      // TODO refactor boolean value types objects into one
-      reverseMode: {
-        color: false,
-        stroke: false,
-        chart: false,
-      },
-      isApplied: {
-        color: true,
-        stroke: true,
-        chart: true,
-      },
-      persistence: {
-        color: false,
-        stroke: false,
-      },
-      seed: {
-        color: 10,
-        stroke: 10,
-      },
-      paletteIndex: 0,
-    },
-    chart: {
-      highlightMode: HighlightEnum.Off,
-      displayOutliers: true,
-      zoomMode: false,
-      axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
-      curveInterpolation: CurveEnum.Linear,
-      smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
-      smoothingFactor: 0,
-      alignmentConfig: {
-        metric: '',
-        type: AlignmentOptions.STEP,
-      },
-      aggregationConfig: {
-        methods: {
-          area: AggregationAreaMethods.MIN_MAX,
-          line: AggregationLineMethods.MEAN,
-        },
-        isApplied: false,
-        isEnabled: false,
-      },
-      tooltip: {
-        content: {},
-        display: true,
-        selectedParams: [],
-      },
-      focusedState: {
-        active: false,
-        key: null,
-        xValue: null,
-        yValue: null,
-        chartIndex: null,
-      },
-    },
-    select: {
-      metrics: [],
-      query: '',
-      advancedMode: false,
-      advancedQuery: '',
-    },
-    // @TODO get from local storage
-    table: {
-      rowHeight: RowHeightSize.md,
-      sortFields: [],
-      hiddenColumns: [],
-      columnsWidths: {},
-      columnsOrder: {
-        left: [],
-        middle: [],
-        right: [],
-      },
-    },
-    pagination: initialPaginationConfig,
-  };
-}
+let liveUpdateInstance: LiveUpdateService | null;
 
-function resetModelOnError(detail?: any) {
+function updateData(newData: any) {
+  const { data, params, metricsColumns } = processData(newData);
   const modelState = model.getState();
+  const tableData = getDataAsTableRows(data, metricsColumns, params);
+  const tableColumns = getRunsTableColumns(
+    metricsColumns,
+    params,
+    data[0]?.config,
+    model.getState()?.config?.table.columnsOrder!,
+    model.getState()?.config?.table.hiddenColumns!,
+  );
   model.setState({
-    data: [],
-    rowData: [],
+    data,
+    rowData: newData,
     requestIsPending: false,
     infiniteIsPending: false,
-    tableColumns: [],
-    tableData: [],
+    tableColumns,
+    tableData: tableData.rows,
+    sameValueColumns: tableData.sameValueColumns,
     config: {
       ...modelState?.config,
       pagination: {
-        ...initialPaginationConfig,
+        ...modelState?.config.pagination,
+        isLatest: false,
       },
     },
   });
 
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
-}
-
-function exceptionHandler(detail: any) {
-  let message = '';
-
-  if (detail.name === 'SyntaxError') {
-    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
-  } else {
-    message = detail.message || 'Something went wrong';
-  }
-
-  onNotificationAdd({
-    id: Date.now(),
-    severity: 'error',
-    message,
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: tableData.rows,
+    newColumns: tableColumns,
+    hiddenColumns: modelState?.config.table.hiddenColumns!,
   });
-
-  // reset model
-  resetModelOnError(detail);
 }
-
-function prepareModelStateToCall(isInitial: boolean) {
-  const config = model.getState()?.config;
-  if (isInitial) {
-    model.setState({
-      config: {
-        ...config,
-        pagination: initialPaginationConfig,
-      },
-      notifyData: [],
-      rowData: [],
-      tableColumns: [],
-      tableData: [],
-      data: [],
-    });
-  }
-
-  model.setState({
-    requestIsPending: isInitial,
-    infiniteIsPending: !isInitial,
-  });
-
-  return model.getState();
-}
-
 function getRunsData(isInitial = true) {
   // isInitial: true --> when search button clicked or data is loading at the first time
   const modelState = prepareModelStateToCall(isInitial);
@@ -224,6 +110,8 @@ function getRunsData(isInitial = true) {
 
   const query = configData?.select?.query || '';
   const pagination = configData?.pagination;
+
+  liveUpdateInstance?.stop().then();
 
   const { call, abort } = runsService.getRunsData(
     query,
@@ -235,7 +123,7 @@ function getRunsData(isInitial = true) {
     call: async () => {
       try {
         const stream = await call(exceptionHandler);
-        let gen = adjustable_reader(stream);
+        let gen = adjustable_reader(stream as ReadableStream<any>);
         let buffer_pairs = decode_buffer_pairs(gen);
         let decodedPairs = decodePathsVals(buffer_pairs);
         let objects = iterFoldTree(decodedPairs, 1);
@@ -284,20 +172,181 @@ function getRunsData(isInitial = true) {
             },
           },
         });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: configData.table.hiddenColumns!,
-          });
-        }, 0);
-      } catch (e) {
-        console.error(e);
+
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+          hiddenColumns: configData.table.hiddenColumns!,
+        });
+
+        liveUpdateInstance?.start({
+          q: query,
+          limit: pagination.limit + runsData?.length || 0,
+        });
+      } catch (ex) {
+        if (ex.name === 'AbortError') {
+          // Abort Error
+        } else {
+          console.log('Unhandled error: ', ex);
+        }
       }
     },
     abort,
   };
+}
+
+function getConfig() {
+  return {
+    grouping: {
+      color: [],
+      stroke: [],
+      chart: [],
+      // TODO refactor boolean value types objects into one
+      reverseMode: {
+        color: false,
+        stroke: false,
+        chart: false,
+      },
+      isApplied: {
+        color: true,
+        stroke: true,
+        chart: true,
+      },
+      persistence: {
+        color: false,
+        stroke: false,
+      },
+      seed: {
+        color: 10,
+        stroke: 10,
+      },
+      paletteIndex: 0,
+    },
+    chart: {
+      highlightMode: HighlightEnum.Off,
+      displayOutliers: true,
+      zoomMode: false,
+      axesScaleType: { xAxis: ScaleEnum.Linear, yAxis: ScaleEnum.Linear },
+      curveInterpolation: CurveEnum.Linear,
+      smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
+      smoothingFactor: 0,
+      alignmentConfig: {
+        metric: '',
+        type: AlignmentOptionsEnum.STEP,
+      },
+      aggregationConfig: {
+        methods: {
+          area: AggregationAreaMethods.MIN_MAX,
+          line: AggregationLineMethods.MEAN,
+        },
+        isApplied: false,
+        isEnabled: false,
+      },
+      tooltip: {
+        content: {},
+        display: true,
+        selectedParams: [],
+      },
+      focusedState: {
+        active: false,
+        key: null,
+        xValue: null,
+        yValue: null,
+        chartIndex: null,
+      },
+    },
+    select: {
+      metrics: [],
+      query: '',
+      advancedMode: false,
+      advancedQuery: '',
+    },
+    // @TODO get from local storage
+    table: {
+      rowHeight: RowHeightSize.md,
+      sortFields: [],
+      hiddenColumns: [],
+      columnsWidths: {},
+      columnsOrder: {
+        left: [],
+        middle: [],
+        right: [],
+      },
+    },
+    pagination: initialPaginationConfig,
+    liveUpdate: {
+      delay: 7000,
+      enabled: false,
+    },
+  };
+}
+
+function resetModelOnError(detail?: any) {
+  const modelState = model.getState();
+  model.setState({
+    data: [],
+    rowData: [],
+    requestIsPending: false,
+    infiniteIsPending: false,
+    tableColumns: [],
+    tableData: [],
+    config: {
+      ...modelState?.config,
+      pagination: {
+        ...initialPaginationConfig,
+      },
+    },
+  });
+
+  const tableRef: any = model.getState()?.refs?.tableRef;
+  tableRef.current?.updateData({
+    newData: [],
+    newColumns: [],
+  });
+}
+
+function exceptionHandler(detail: any) {
+  let message = '';
+
+  if (detail.name === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  } else {
+    message = detail.message || 'Something went wrong';
+  }
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'error',
+    message,
+  });
+
+  // reset model
+  resetModelOnError(detail);
+}
+
+function prepareModelStateToCall(isInitial: boolean) {
+  const config = model.getState()?.config;
+  if (isInitial) {
+    model.setState({
+      config: {
+        ...config,
+        pagination: initialPaginationConfig,
+      },
+      notifyData: [],
+      rowData: [],
+      tableColumns: [],
+      tableData: [],
+      data: [],
+    });
+  }
+
+  model.setState({
+    requestIsPending: isInitial,
+    infiniteIsPending: !isInitial,
+  });
+
+  return model.getState();
 }
 
 function getLastRunsData(lastRow: any) {
@@ -333,11 +382,18 @@ function setDefaultAppConfigData() {
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
+
+  const liveUpdateConfigHash = getItem('runsLUConfig');
+  const luConfig = liveUpdateConfigHash
+    ? JSON.parse(decode(liveUpdateConfigHash))
+    : getConfig().liveUpdate;
+
   const configData: IMetricAppConfig = _.merge(getConfig(), {
     chart, // not useful
     grouping, // not useful
     select,
     table,
+    liveUpdate: luConfig,
   });
 
   model.setState({
@@ -354,6 +410,7 @@ function initialize(appId: string = '') {
     },
     groupingSelectOptions: [],
   });
+
   if (!appId) {
     const searchParam = new URLSearchParams(window.location.search);
     const searchFromUrl = searchParam.get('search');
@@ -368,7 +425,22 @@ function initialize(appId: string = '') {
   }
   setDefaultAppConfigData();
 
+  const liveUpdateState = model.getState()?.config.liveUpdate;
+
+  if (liveUpdateState.enabled) {
+    liveUpdateInstance = new LiveUpdateService(
+      'runs',
+      updateData,
+      liveUpdateState.delay,
+    );
+  }
+
   return getRunsData();
+}
+
+function destroy() {
+  liveUpdateInstance?.clear();
+  liveUpdateInstance = null; //@TODO check is this need or not
 }
 
 function getFilteredRow(
@@ -394,7 +466,7 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  // TODO need to get data and params from state not from processData
+  // @TODO need to get data and params from state not from processData
   const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
@@ -486,17 +558,17 @@ function getFilteredGroupingOptions(
 }
 
 function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
+  groupConfig,
   grouping,
+  groupName,
 }: IGetGroupingPersistIndex) {
-  const configHash = encode(groupValues[groupKey].config as {});
+  const configHash = encode(groupConfig as {}, true);
   let index = BigInt(0);
   for (let i = 0; i < configHash.length; i++) {
     const charCode = configHash.charCodeAt(i);
     if (charCode > 47 && charCode < 58) {
       index += BigInt(
-        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed.color),
+        (charCode - 48) * Math.ceil(Math.pow(16, i) / grouping.seed[groupName]),
       );
     } else if (charCode > 96 && charCode < 103) {
       index += BigInt(
@@ -574,8 +646,7 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
 
       if (grouping.persistence.color && grouping.isApplied.color) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: colorConfig,
           grouping,
           groupName: 'color',
         });
@@ -601,8 +672,7 @@ function groupData(data: any): IMetricsCollection<IMetric>[] {
       const dasharrayKey = encode(dasharrayConfig);
       if (grouping.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: dasharrayConfig,
           grouping,
           groupName: 'stroke',
         });
@@ -732,7 +802,7 @@ function getDataAsTableRows(
     }
     metricsCollection.data.forEach((metric: any) => {
       const metricsRowValues = { ...initialMetricsRowData };
-      metric.run.traces.map((trace: any) => {
+      metric.run.traces.forEach((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
         ] = formatValue(trace.last_value.last);
@@ -744,7 +814,9 @@ function getDataAsTableRows(
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
-        run: metric.run.props.name ?? '-',
+        run: moment(metric.run.props.creation_time * 1000).format(
+          'HH:mm:ss · D MMM, YY',
+        ),
         metric: metric.metric_name,
         ...metricsRowValues,
       };
@@ -870,9 +942,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[RunsExplorer][Table] Reset table columns order');
   }
@@ -950,7 +1022,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[RunsExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[RunsExplorer][Table] Show all table columns');
   }
 }
@@ -987,8 +1059,46 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
   }
 }
 
+function changeLiveUpdateConfig(config: { enabled?: boolean; delay?: number }) {
+  const state = model.getState();
+  const configData = state?.config;
+  const liveUpdateConfig = configData.liveUpdate;
+
+  if (!liveUpdateConfig?.enabled && config.enabled) {
+    const query = configData?.select?.query || '';
+    const pagination = configData?.pagination;
+
+    liveUpdateInstance = new LiveUpdateService(
+      'runs',
+      updateData,
+      config.delay || liveUpdateConfig.delay,
+    );
+    liveUpdateInstance.start({
+      q: query,
+      limit: pagination.limit + state?.rowData?.length || 0,
+    });
+  } else {
+    liveUpdateInstance?.clear();
+    liveUpdateInstance = null;
+  }
+  const newLiveUpdateConfig = {
+    ...liveUpdateConfig,
+    ...config,
+  };
+  model.setState({
+    // @ts-ignore
+    config: {
+      ...configData,
+      liveUpdate: newLiveUpdateConfig,
+    },
+  });
+
+  setItem('runsLUConfig', encode(newLiveUpdateConfig));
+}
+
 const runAppModel = {
   ...model,
+  destroy,
   initialize,
   getRunsData,
   getLastRunsData,
@@ -1003,6 +1113,7 @@ const runAppModel = {
   onTableDiffShow,
   updateColumnsWidths,
   setDefaultAppConfigData,
+  changeLiveUpdateConfig,
 };
 
 export default runAppModel;

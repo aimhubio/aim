@@ -1,15 +1,14 @@
 @font-face {
   font-family: 'icomoon';
-  src: url('./fonts/icomoon.eot?kjaeuj');
-  src: url('./fonts/icomoon.eot?kjaeuj#iefix') format('embedded-opentype'),
-    url('./fonts/icomoon.ttf?kjaeuj') format('truetype'),
-    url('./fonts/icomoon.woff?kjaeuj') format('woff'),
-    url('./fonts/icomoon.svg?kjaeuj#icomoon') format('svg');
+  src: url('./fonts/icomoon.eot?yhjq77');
+  src: url('./fonts/icomoon.eot?yhjq77#iefix') format('embedded-opentype'),
+    url('./fonts/icomoon.ttf?yhjq77') format('truetype'),
+    url('./fonts/icomoon.woff?yhjq77') format('woff'),
+    url('./fonts/icomoon.svg?yhjq77#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
-
 [class^='icon-'],
 [class*=' icon-'] {
   /* use !important to prevent issues with browser extensions that change fonts */
@@ -26,6 +25,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-full-docs:before {
+  content: '\e952';
+}
+.icon-live-demo:before {
+  content: '\e953';
+}
+.icon-co:before {
+  content: '\e954';
+}
 .icon-sort-arrow-down:before {
   content: '\e91b';
 }
@@ -98,7 +106,7 @@
 .icon-arrow-right:before {
   content: '\e913';
 }
-.icon-manage-calumn:before {
+.icon-manage-column:before {
   content: '\e914';
 }
 .icon-long-arrow-right:before {

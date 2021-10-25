@@ -13,10 +13,14 @@
   position: relative;
   color: $pico;
   &:hover {
-    background-color: #1473e6;
+    background-color: $primary-color;
     color: #fff;
+    .ExploreAimCard__desc,
+    .ExploreAimCard__title {
+      color: #fff;
+    }
     .ExploreAimCard__icon {
-      color: #1473e6;
+      color: $primary-color;
       background-color: #fff;
     }
   }
@@ -27,7 +31,7 @@
     border-radius: 50%;
     width: 2.75rem;
     height: 2.75rem;
-    background: #1473e6;
+    background: $primary-color;
     color: #fff;
     margin-bottom: 0.875rem;
     transition: all 0.3s ease-out;
@@ -36,15 +40,11 @@
     }
   }
   &__title {
-    font-family: 'Inter SemiBold', sans-serif;
-    font-size: $text-md;
-    line-height: 1.0625rem;
     margin: 0;
   }
   &__desc {
-    font-weight: 400;
-    font-size: 0.75rem;
     margin-top: 0.5rem;
+    display: inline-block;
   }
   &__arrow__icon {
     position: absolute;

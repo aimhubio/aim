@@ -1,6 +1,3 @@
-Aim
-===
-
 .. mdinclude:: overview.md
 
 .. raw:: html
@@ -16,7 +13,6 @@ Aim
    quick_start/3_steps.md
    quick_start/first_run.md
    quick_start/integrations.md
-   quick_start/why_aim.md
 
 
 .. toctree::
@@ -28,6 +24,13 @@ Aim
    ref_ql
    ref_cli
    ref_storage
+
+.. toctree::
+   :maxdepth: 2
+   :name: api
+   :caption: Guides
+
+   guide_integrations.rst
 
 .. toctree::
    :maxdepth: 1

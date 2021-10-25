@@ -11,11 +11,7 @@ do
     # downgrade to pip-18
     $PYTHON_ROOT/bin/pip install --upgrade pip==18
   fi
-  for pkg_name in 'aim' 'aim-cli'
-  do
-    export AIM_PKG_NAME=${pkg_name}
-    $PYTHON_ROOT/bin/python setup.py bdist_wheel -d linux_dist
-  done
+  $PYTHON_ROOT/bin/python setup.py bdist_wheel -d linux_dist
 done
 
 # produce multilinux wheels

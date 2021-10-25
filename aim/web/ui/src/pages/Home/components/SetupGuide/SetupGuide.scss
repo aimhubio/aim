@@ -6,10 +6,7 @@
     padding: 1.5rem 2.5rem 1.5rem 1.5rem;
     flex: 1 100%;
     h3 {
-      font-size: 1.125rem;
       margin: 0 0 0.5rem;
-      font-family: 'Inter SemiBold', sans-serif;
-      color: $pico;
     }
 
     h2 {
@@ -32,11 +29,6 @@
       span {
         display: inline-block;
         margin-top: 0.5rem;
-        font-style: normal;
-        font-weight: 500;
-        font-size: $text-md;
-        line-height: 17px;
-        color: #031123;
       }
       &:last-child {
         margin-right: 0;
@@ -53,9 +45,19 @@
         transition: all 0.3s ease-out;
         cursor: pointer;
         i {
-          font-size: 1.375rem;
           color: $primary-color;
           transition: all 0.3s ease-out;
+        }
+        &_co {
+          margin-left: 1px;
+          font-size: 1.875rem;
+        }
+        &_fullDocs {
+          margin-bottom: 1px;
+          font-size: 1.3125rem;
+        }
+        &_liveDemo {
+          font-size: 1.375rem;
         }
         &:hover {
           color: #ffffff;

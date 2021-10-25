@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   Box,
-  TextField,
   Checkbox,
   Divider,
   InputBase,
   Popper,
+  TextField,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
@@ -13,7 +13,6 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
-import Button from 'components/Button/Button';
 
 import useModel from 'hooks/model/useModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
@@ -25,9 +24,10 @@ import {
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { Badge, Button, Icon } from 'components/kit';
+import contextToString from 'utils/contextToString';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './SelectForm.scss';
 
@@ -41,7 +41,7 @@ function SelectForm({
   const searchRef = React.useRef<any>(null);
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchRef.current = paramsAppModel.getParamsData();
+    searchRef.current = paramsAppModel.getParamsData(true);
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef.abort();
@@ -49,26 +49,27 @@ function SelectForm({
     };
   }, []);
 
-  function handleParamsSearch() {
+  function handleParamsSearch(e: React.ChangeEvent<any>) {
+    e.preventDefault();
     searchRef.current.call();
   }
 
-  function onSelect(event: object, value: any): void {
+  function onSelect(event: object, value: ISelectParamsOption[]): void {
     const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectMetricsOption) => {
+      (acc: { [key: string]: number }, curr: ISelectParamsOption) => {
         acc[curr.label] = ++acc[curr.label] || 0;
         return acc;
       },
       {},
     );
     onParamsSelectChange(
-      value.filter((option: any) => lookup[option.label] === 0),
+      value.filter((option: ISelectParamsOption) => lookup[option.label] === 0),
     );
   }
 
-  function handleDelete(field: any): void {
+  function handleDelete(field: string): void {
     let fieldData = [...selectedParamsData?.params].filter(
-      (opt: any) => opt.label !== field,
+      (opt: ISelectParamsOption) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);
   }
@@ -89,23 +90,30 @@ function SelectForm({
 
   const paramsOptions: ISelectParamsOption[] = React.useMemo(() => {
     let data: ISelectParamsOption[] = [];
+    const systemOptions: ISelectParamsOption[] = [];
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
+        let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
           let label: string = Object.keys(val)
-            .map((item) => `${item}=${val[item]}`)
+            .map((item) => `${item}="${val[item]}"`)
             .join(', ');
           let index: number = data.length;
-          data.push({
-            label: `${key} ${label}`,
-            group: 'metrics',
+          let option: ISelectParamsOption = {
+            label: `${system ? formatSystemMetricName(key) : key} ${label}`,
+            group: system ? formatSystemMetricName(key) : key,
             type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
             value: {
               param_name: key,
               context: val,
             },
-          });
+          };
+          if (system) {
+            systemOptions.push(option);
+          } else {
+            data.push(option);
+          }
         }
       }
     }
@@ -123,7 +131,7 @@ function SelectForm({
         });
       });
     }
-    return data;
+    return data.concat(systemOptions);
   }, [projectsData]);
 
   const open: boolean = !!anchorEl;
@@ -219,7 +227,7 @@ function SelectForm({
                     {selectedParamsData?.params?.map(
                       (tag: ISelectParamsOption) => {
                         return (
-                          <TagLabel
+                          <Badge
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}
@@ -253,16 +261,18 @@ function SelectForm({
         </Box>
 
         <div className='Params__SelectForm__TextField'>
-          <TextField
-            fullWidth
-            size='small'
-            variant='outlined'
-            spellCheck={false}
-            inputProps={{ style: { height: '0.687rem' } }}
-            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-            value={selectedParamsData?.query}
-            onChange={({ target }) => onSelectRunQueryChange(target.value)}
-          />
+          <form onSubmit={handleParamsSearch}>
+            <TextField
+              fullWidth
+              size='small'
+              variant='outlined'
+              spellCheck={false}
+              inputProps={{ style: { height: '0.687rem' } }}
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+              value={selectedParamsData?.query}
+              onChange={({ target }) => onSelectRunQueryChange(target.value)}
+            />
+          </form>
         </div>
       </div>
     </div>

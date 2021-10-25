@@ -163,7 +163,7 @@ function TagForm({
         <TextField
           label='Label'
           variant='outlined'
-          className='TagForm__tagFormContainer__labelField TextField__OutLined__Small'
+          className='TagForm__tagFormContainer__labelField TextField__OutLined__Medium'
           onChange={(e) => onChange(e, 'name')}
           value={name}
           size='small'

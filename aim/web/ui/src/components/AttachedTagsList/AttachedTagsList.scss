@@ -11,10 +11,11 @@
   &__title {
     text-transform: uppercase;
     color: tint($pico, 50);
-    font-family: 'Inter Regular';
+    font-weight: 500;
   }
 
   &__noAttachedTags {
+    font-weight: 500;
     font-size: 0.688rem;
     color: tint($pico, 30);
   }
@@ -23,29 +24,29 @@
     display: flex;
     flex-wrap: wrap;
 
-    .TagLabel {
+    .Badge {
       margin-bottom: 0.5rem;
       margin-right: 0.5rem;
     }
   }
 
   &__ControlPopover__anchor {
-     .icon-edit {
-       width: 24px;
-       height: 24px;
-       display: flex;
-       align-items: center;
-       justify-content: center;
-     }
+    .icon-edit {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-     .icon-edit:hover {
-       color: $primary-color
-     }
+    .icon-edit:hover {
+      color: $primary-color;
+    }
 
-     &.active{
-       color: $primary-color
-     }
-   }
+    &.active {
+      color: $primary-color;
+    }
+  }
 
   &__ControlPopover__attach {
     .icon-plus {
@@ -57,7 +58,7 @@
     text-transform: uppercase;
     color: tint($pico, 50);
     background: inherit;
-    font-family: 'Inter Regular';
+    font-weight: 500;
     border: unset;
   }
 }

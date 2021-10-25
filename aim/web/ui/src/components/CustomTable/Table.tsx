@@ -250,6 +250,7 @@ function Table(props) {
                 sortByColumn={(order) => props.onSort(col.sortableKey, order)}
                 onRowHover={props.onRowHover}
                 onRowClick={props.onRowClick}
+                columnOptions={col.columnOptions}
               />
             ))}
           </div>
@@ -319,12 +320,59 @@ function Table(props) {
                       }
                       onRowHover={props.onRowHover}
                       onRowClick={props.onRowClick}
+                      columnOptions={col.columnOptions}
                     />
                   );
                 }}
               </VariableSizeList>
             )}
           </AutoResizer>
+          {/* {middlePane.map((col, index) => (
+            <Column
+              key={col.key}
+              topHeader={props.topHeader}
+              showTopHeaderContent={
+                props.topHeader &&
+                sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
+                  ?.topHeader !== col.topHeader
+              }
+              showTopHeaderBorder={
+                props.topHeader &&
+                sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
+                  ?.topHeader !== col.topHeader
+              }
+              col={col}
+              data={props.data}
+              groups={props.groups}
+              expanded={expanded}
+              expand={expand}
+              togglePin={togglePin}
+              pinnedTo={null}
+              firstColumn={index === 0 && leftPane.length === 0}
+              width={props.columnsWidths?.[col.key]}
+              updateColumnWidth={props.updateColumnsWidths}
+              headerMeta={props.headerMeta}
+              isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
+              hideColumn={() =>
+                props.setExcludedFields?.([
+                  ...(props.excludedFields || []),
+                  col.key,
+                ])
+              }
+              paneFirstColumn={index === 0}
+              paneLastColumn={index === middlePane.length - 1}
+              moveColumn={(dir) => moveColumn(col.key, 'middle', index, dir)}
+              sortable={
+                col.sortableKey &&
+                props.sortFields.findIndex((f) => f[0] === col.sortableKey) ===
+                  -1
+              }
+              sortByColumn={(order) => props.onSort(col.sortableKey, order)}
+              onRowHover={props.onRowHover}
+              onRowClick={props.onRowClick}
+              columnOptions={col.columnOptions}
+            />
+          ))} */}
         </div>
         {rightPane.length > 0 && (
           <div className='Table__pane Table__pane--right'>
@@ -384,6 +432,7 @@ function Table(props) {
                 sortByColumn={(order) => props.onSort(col.sortableKey, order)}
                 onRowHover={props.onRowHover}
                 onRowClick={props.onRowClick}
+                columnOptions={col.columnOptions}
               />
             ))}
           </div>

@@ -184,9 +184,10 @@ const drawParallelHoverAttributes = ({
       dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
       mousePosition = [
         xScale(activePoint.xValue),
-        yScale[dimensionLabel](activePoint.yValue),
+        yScale[dimensionLabel](activePoint.yValue) + margin.top,
       ];
     }
+
     if (dimensionLabel && mousePosition.length === 2) {
       const { mouseX, mouseY } = getCoordinates({
         mouse: mousePosition,
@@ -486,13 +487,14 @@ const drawParallelHoverAttributes = ({
     const { focusedState } = attributesRef.current;
     if (
       focusedState?.chartIndex === index &&
-      focusedState?.active &&
       focusedState?.key &&
       focusedState?.xValue &&
       focusedState.yValue
     ) {
       updateFocusedChart({ force: true });
-      drawFocusedCircle(focusedState.key);
+      if (focusedState?.active) {
+        drawFocusedCircle(focusedState.key);
+      }
     }
   }
 

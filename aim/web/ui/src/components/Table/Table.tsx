@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
-import Button from 'components/Button/Button';
+import { Button, Icon, Text } from 'components/kit';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
@@ -18,8 +18,7 @@ import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/M
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import { RowHeightSize, rowCeilSizeConfig } from 'config/table/tableConfigs';
-import Icon from 'components/Icon/Icon';
+import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
 import TableLoader from '../TableLoader/TableLoader';
 
 import './Table.scss';
@@ -327,7 +326,7 @@ const Table = React.forwardRef(function Table(
 
   function onGroupExpandToggle(groupKey) {
     if (Array.isArray(groupKey)) {
-      expandedGroups.current = expandedGroups.current;
+      expandedGroups.current = groupKey;
     } else if (expandedGroups.current.includes(groupKey)) {
       expandedGroups.current = expandedGroups.current.filter(
         (item) => item !== groupKey,
@@ -433,11 +432,6 @@ const Table = React.forwardRef(function Table(
           props.infiniteLoadHandler &&
           isDownScrolling
         ) {
-          // const index = windowEdges.endIndex - 15 - 3; // 15: offset, 3: header rows
-          // if (index + 5 >= rowData.length) {
-          //   props.infiniteLoadHandler(index);
-          // }
-
           if (
             target.scrollTop + target.offsetHeight >
             target.scrollHeight - 2 * rowHeight
@@ -495,7 +489,7 @@ const Table = React.forwardRef(function Table(
                           opened ? 'opened' : ''
                         }`}
                       >
-                        <Icon name='manage-calumn' />
+                        <Icon name='manage-column' />
                         <span>Manage Columns</span>
                       </Button>
                     )}
@@ -607,7 +601,7 @@ const Table = React.forwardRef(function Table(
                 )}
               </div>
               {onExport && (
-                <div className='flex fac'>
+                <div className='fac'>
                   <Button
                     fullWidth
                     variant='outlined'
@@ -616,7 +610,9 @@ const Table = React.forwardRef(function Table(
                     onClick={onExport}
                     startIcon={<Icon fontSize={14} name='download' />}
                   >
-                    Export
+                    <Text size={14} color='inherit'>
+                      Export
+                    </Text>
                   </Button>
                 </div>
               )}

@@ -1,4 +1,4 @@
-@use '../abstracts' as *;
+@use 'src/styles/abstracts' as *;
 
 * {
   margin: 0;
@@ -13,7 +13,8 @@ html {
 }
 body {
   font-size: 1em;
-  font-family: 'Inter Regular', sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
   color: $text-color;
   height: 100%;
 }

@@ -1,4 +1,3 @@
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -8,7 +7,7 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { CurveEnum } from 'utils/d3';
+import { AlignmentOptionsEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
@@ -38,6 +37,10 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  liveUpdateConfig: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartTitleData {
@@ -134,6 +137,7 @@ interface IMetricAppConfig {
     smoothingFactor: number;
     focusedState: IFocusedState;
     aggregationConfig: IAggregationConfig;
+    densityType: DensityOptions;
     alignmentConfig: IAlignmentConfig;
     tooltip: IChartTooltip;
   };
@@ -157,6 +161,10 @@ interface IMetricAppConfig {
     };
     height: string;
   };
+  liveUpdate: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IChartZoom {
@@ -177,7 +185,7 @@ export interface IChartTooltip {
 
 export interface IAlignmentConfig {
   metric: string;
-  type: AlignmentOptions;
+  type: AlignmentOptionsEnum;
 }
 
 export interface IAggregationConfig {
@@ -230,10 +238,7 @@ export interface IOnGroupingModeChangeParams {
 }
 
 export interface IGetGroupingPersistIndex {
-  groupValues: {
-    [key: string]: IMetricsCollection<IMetric>;
-  };
-  groupKey: string;
+  groupConfig: {};
   grouping: IMetricAppConfig['grouping'];
   groupName: 'color' | 'stroke';
 }

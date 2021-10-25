@@ -37,6 +37,7 @@ $border-radius: 0.2rem;
   min-height: 100%;
   box-sizing: border-box;
   content-visibility: auto;
+  contain: content;
 }
 
 .Table__pane {
@@ -47,6 +48,7 @@ $border-radius: 0.2rem;
   min-height: 100%;
   box-sizing: border-box;
   z-index: 0;
+  contain: content;
 }
 
 .Table__action__icon {
@@ -79,6 +81,7 @@ $border-radius: 0.2rem;
   width: -webkit-fill-available;
   width: -moz-available;
   max-width: 500px;
+  contain: content;
 
   &:last-of-type {
     .Table__cell,
@@ -126,6 +129,11 @@ $border-radius: 0.2rem;
 .Table__action__popup__body {
   min-width: 180px;
   padding: 0.5rem;
+
+  &__panelTitle {
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+  }
 }
 
 .Table__action__anchor {
@@ -133,7 +141,7 @@ $border-radius: 0.2rem;
 }
 
 .Table__action__popup__item {
-  padding: $space-xxs $space-xs;
+  padding: $space-xxs $space-xs !important;
   text-transform: capitalize;
   cursor: pointer;
   display: flex;
@@ -154,10 +162,10 @@ $border-radius: 0.2rem;
     background-color: $primary-lighter;
     color: $primary-darker;
   }
-
-  i {
+  &_icon {
+    width: 0.875rem;
+    display: flex;
     margin-right: 1rem;
-    font-size: 0.75rem;
   }
 }
 
@@ -165,12 +173,12 @@ $border-radius: 0.2rem;
   display: flex;
   align-items: center;
   font-size: $text-md;
-  padding: 0 $space-sm;
+  padding: 0 $space-xs;
   border-bottom: 1px solid $border-color;
   border-right: 1px solid $border-color;
   text-align: left;
   box-sizing: border-box;
-  background-color: inherit;
+  background-color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -334,7 +342,6 @@ $border-radius: 0.2rem;
 
 .Table__group {
   margin-top: var(--group-margin);
-  background-color: $cuddle-10;
   border-top: 1px solid $border-color;
 
   .Table__cell:last-of-type {
@@ -349,6 +356,7 @@ $border-radius: 0.2rem;
       .Table__column {
         &:first-of-type {
           .Table__group {
+            border-left: 1px solid $border-color;
             margin-left: var(--group-margin);
             border-top-left-radius: $border-radius;
             border-bottom-left-radius: $border-radius;
@@ -394,6 +402,9 @@ $border-radius: 0.2rem;
   display: flex;
   flex: 1;
   color: $pico;
+  .Badge {
+    margin-right: $space-xxxs;
+  }
 }
 
 .Popover__body {
@@ -409,38 +420,39 @@ $border-radius: 0.2rem;
   flex: 1;
   align-items: center;
   cursor: pointer;
-}
-
-.Table__group__config__chart {
-  display: flex;
-  width: 1rem;
-  height: 1rem;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.5em;
-  box-shadow: inset 0 0 0 1px #e8e8e8;
-  border-radius: $border-radius;
-  font-size: 0.6rem;
-}
-
-.Table__group__config__stroke {
-  display: block;
-  background-color: #fff;
-  width: 2.5rem;
-  height: 1rem;
-  margin-left: 0.5rem;
-  border: 1px solid;
-  border-radius: $border-radius;
-  padding: 0 0.3rem;
-
-  & > line {
-    stroke: #333;
-    stroke-width: 2;
+  &__chart {
+    display: flex;
+    width: 1.25rem;
+    height: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5em;
+    border: 1px solid $cuddle-50;
+    border-radius: $border-radius;
+    font-size: 0.6rem;
   }
-}
+  &__stroke {
+    display: block;
+    background-color: #fff;
+    width: 2.5rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    border: 1px solid;
+    border-radius: $border-radius;
+    padding: 0 0.3rem;
 
-.Table__group__config__itemsCount {
-  flex: 1;
-  text-align: right;
-  margin-left: 0.5rem;
+    & > line {
+      stroke: #333;
+      stroke-width: 2;
+    }
+  }
+  &__itemsCount {
+    flex: 1;
+    text-align: right;
+    margin-left: 0.5rem;
+  }
+
+  &__popover {
+    margin-left: $space-xxs;
+  }
 }

@@ -1,0 +1,189 @@
+@use 'src/styles/abstracts' as *;
+
+.Switcher {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 0.625rem;
+  color: #fff;
+  position: relative;
+  user-select: none;
+  border: none;
+
+  &__circle {
+    border-radius: 0.625rem;
+    background-color: #fff;
+    transition: all 0.1s linear;
+    position: absolute;
+    left: 2px;
+    top: 0.125rem;
+  }
+
+  &__leftLabel,
+  &__rightLabel {
+    transition: all 0.18s ease-out;
+    position: absolute;
+    top: 4px;
+    line-height: 8px;
+  }
+
+  &__leftLabel {
+    left: 4px;
+    transform: scale(0);
+  }
+
+  &__rightLabel {
+    transform: scale(1);
+    right: 4px;
+  }
+
+  &__checked {
+    .Switcher__leftLabel {
+      transform: scale(1);
+    }
+
+    .Switcher__rightLabel {
+      transform: scale(0);
+    }
+  }
+
+  &__primary {
+    background-color: $pico-50;
+
+    &.Switcher__checked {
+      background-color: $primary-color;
+    }
+  }
+
+  &__secondary {
+    background-color: $pico-50;
+
+    &.Switcher__checked {
+      background-color: $pico;
+    }
+  }
+
+  &__small {
+    height: 0.8125rem;
+    width: 1.5rem;
+    font-size: 0.5rem;
+    .Switcher__circle {
+      width: 0.5625rem;
+      border-radius: 0.5rem;
+      height: 0.5625rem;
+      line-height: 0.5625rem;
+      top: 2px;
+      &__checked {
+        left: calc(100% - 11px);
+      }
+    }
+    &:hover {
+      .Switcher__circle {
+        width: 0.675rem;
+        &__checked {
+          left: calc(100% - 13px);
+        }
+      }
+    }
+    .Switcher__leftLabel,
+    .Switcher__rightLabel {
+      top: 3px;
+      font-size: 7px;
+      line-height: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__medium {
+    height: 1rem;
+    width: 2rem;
+    line-height: 8px;
+
+    .Switcher__circle {
+      font-size: 0.75rem;
+      width: 0.75rem;
+      height: 0.75rem;
+      &__checked {
+        left: calc(100% - 14px);
+      }
+    }
+    &:hover {
+      .Switcher__circle {
+        width: 0.9375rem;
+        &__checked {
+          left: calc(100% - 17px);
+        }
+      }
+    }
+  }
+
+  &__large {
+    height: 1.25rem;
+    width: 2.5rem;
+    font-size: 10px;
+    line-height: 10px;
+
+    .Switcher__circle {
+      width: 1rem;
+      height: 1rem;
+      &__checked {
+       left: calc(100% - 18px);
+      }
+    }
+    &:hover {
+      .Switcher__circle {
+        width: 1.25rem;
+        &__checked {
+          left: calc(100% - 22px);
+        }
+      }
+    }
+
+    .Switcher__leftLabel,
+    .Switcher__rightLabel {
+      font-size: 10px;
+      line-height: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 5px;
+    }
+  }
+
+  &__outlined {
+    border: 0.0625rem solid $pico-50;
+    background-color: #fff;
+    color: $pico-50;
+
+    &.Switcher__primary {
+      &.Switcher__small {
+        .Switcher__rightLabel {
+          top: 2px;
+          right: 2px;
+        }
+
+        .Switcher__leftLabel {
+          top: 2px;
+          left: 2px;
+        }
+      }
+
+      .Switcher__circle {
+        color: $pico-50;
+        background-color: $pico-50;
+        top: 1px;
+        &__checked {
+          color: $primary-color;
+          background-color: $primary-color;
+        }
+      }
+
+      &.Switcher__checked {
+        border-color: $primary-color;
+        background-color: #fff;
+        color: $primary-color;
+      }
+    }
+  }
+}

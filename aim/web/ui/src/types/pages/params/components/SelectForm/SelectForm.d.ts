@@ -12,6 +12,6 @@ export interface ISelectParamsOption {
   type: string;
   value?: {
     param_name: string;
-    context: object;
+    context: object | null | any;
   };
 }

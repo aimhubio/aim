@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   Box,
-  TextField,
   Checkbox,
   Divider,
   InputBase,
   Popper,
+  TextField,
+  Tooltip,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
@@ -22,13 +23,13 @@ import COLORS from 'config/colors/colors';
 import contextToString from 'utils/contextToString';
 
 import {
-  ISelectMetricsOption,
   ISelectFormProps,
+  ISelectMetricsOption,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
-import Button from 'components/Button/Button';
+import { Button, Icon, Badge } from 'components/kit';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './SelectForm.scss';
 
@@ -53,8 +54,9 @@ function SelectForm({
     };
   }, []);
 
-  function handleMetricSearch() {
-    searchMetricsRef.current = metricAppModel.getMetricsData();
+  function handleMetricSearch(e: React.ChangeEvent<any>): void {
+    e.preventDefault();
+    searchMetricsRef.current = metricAppModel.getMetricsData(true);
     searchMetricsRef.current.call();
   }
 
@@ -96,39 +98,52 @@ function SelectForm({
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
+    const systemOptions: ISelectMetricsOption[] = [];
     let index: number = 0;
     if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        data.push({
-          label: key,
-          group: key,
-          color: COLORS[0][index % COLORS[0].length],
-          value: {
-            metric_name: key,
-            context: null,
-          },
-        });
+      for (let key in projectsData?.metrics) {
+        let system: boolean = isSystemMetric(key);
+        let option = getOption(system, key, index);
+        if (system) {
+          systemOptions.push(option);
+        } else {
+          data.push(option);
+        }
         index++;
-
-        for (let val of projectsData.metrics[key]) {
+        for (let val of projectsData?.metrics[key]) {
           if (!isEmpty(val)) {
             let label = contextToString(val);
-            data.push({
-              label: `${key} ${label}`,
-              group: key,
-              color: COLORS[0][index % COLORS[0].length],
-              value: {
-                metric_name: key,
-                context: val,
-              },
-            });
+            let option = getOption(system, key, index, val);
+            option.label = `${option.label} ${label}`;
+            if (system) {
+              systemOptions.push(option);
+            } else {
+              data.push(option);
+            }
             index++;
           }
         }
       }
     }
-    return data;
+    return data.concat(systemOptions);
   }, [projectsData]);
+
+  function getOption(
+    system: boolean,
+    key: string,
+    index: number,
+    val: object | null = null,
+  ): ISelectMetricsOption {
+    return {
+      label: `${system ? formatSystemMetricName(key) : key}`,
+      group: system ? formatSystemMetricName(key) : key,
+      color: COLORS[0][index % COLORS[0].length],
+      value: {
+        metric_name: key,
+        context: val,
+      },
+    };
+  }
 
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
@@ -149,21 +164,28 @@ function SelectForm({
           >
             {selectedMetricsData?.advancedMode ? (
               <div className='SelectForm__textarea'>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  spellCheck={false}
-                  rows={3}
-                  variant='outlined'
-                  placeholder={
-                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  }
-                  value={selectedMetricsData?.advancedQuery ?? ''}
-                  onChange={({ target }) =>
-                    onSelectAdvancedQueryChange(target.value)
-                  }
-                />
+                <form onSubmit={handleMetricSearch}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    size='small'
+                    spellCheck={false}
+                    rows={3}
+                    variant='outlined'
+                    placeholder={
+                      'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                    }
+                    value={selectedMetricsData?.advancedQuery ?? ''}
+                    onChange={({ target }) =>
+                      onSelectAdvancedQueryChange(target.value)
+                    }
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        handleMetricSearch(e);
+                      }
+                    }}
+                  />
+                </form>
               </div>
             ) : (
               <>
@@ -251,7 +273,7 @@ function SelectForm({
                     {selectedMetricsData?.metrics?.map(
                       (tag: ISelectMetricsOption) => {
                         return (
-                          <TagLabel
+                          <Badge
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}
@@ -276,16 +298,18 @@ function SelectForm({
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              spellCheck={false}
-              inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              value={selectedMetricsData?.query ?? ''}
-              onChange={({ target }) => onSelectRunQueryChange(target.value)}
-            />
+            <form onSubmit={handleMetricSearch}>
+              <TextField
+                fullWidth
+                size='small'
+                variant='outlined'
+                spellCheck={false}
+                inputProps={{ style: { height: '0.687rem' } }}
+                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                value={selectedMetricsData?.query ?? ''}
+                onChange={({ target }) => onSelectRunQueryChange(target.value)}
+              />
+            </form>
           </div>
         )}
       </div>
@@ -302,19 +326,37 @@ function SelectForm({
           Search
         </Button>
         <div className='SelectForm__search__actions'>
-          <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
-            <Icon name='reset' />
-          </Button>
-          <Button
-            className={selectedMetricsData?.advancedMode ? 'active' : ''}
-            withOnlyIcon={true}
-            onClick={toggleEditMode}
+          <Tooltip title='Reset query'>
+            <div>
+              <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
+                <Icon name='reset' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip
+            title={
+              selectedMetricsData?.advancedMode
+                ? 'Switch to default mode'
+                : 'Enable advanced search mode '
+            }
           >
-            <Icon name='edit' />
-          </Button>
-          <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
-            <Icon name='copy' />
-          </Button>
+            <div>
+              <Button
+                className={selectedMetricsData?.advancedMode ? 'active' : ''}
+                withOnlyIcon={true}
+                onClick={toggleEditMode}
+              >
+                <Icon name='edit' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title='Copy search query'>
+            <div>
+              <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
+                <Icon name='copy' />
+              </Button>
+            </div>
+          </Tooltip>
         </div>
       </div>
     </div>

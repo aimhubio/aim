@@ -5,7 +5,7 @@ import { TextField } from '@material-ui/core';
 import { useFormik } from 'formik';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
 import './Tags.scss';
