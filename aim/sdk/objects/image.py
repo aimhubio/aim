@@ -45,7 +45,9 @@ class Image(CustomObject):
         return self.storage['width'], self.storage['height']
 
     def to_pil_image(self):
-        return pil_open(BytesIO(self.storage['data']))
+        pil_img = pil_open(BytesIO(self.storage['data']))
+        assert pil_img.size == self.size
+        return pil_img
 
     def json(self):
         return {
