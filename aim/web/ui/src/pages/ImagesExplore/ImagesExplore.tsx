@@ -148,6 +148,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               }
               onStepIntervalChange={imagesExploreAppModel.onStepIntervalChange}
               imagesData={imagesExploreData?.imagesData}
+              imagesBlobs={imagesExploreData?.imagesBlobs}
               isLoading={imagesExploreData?.requestIsPending}
             />
           </div>

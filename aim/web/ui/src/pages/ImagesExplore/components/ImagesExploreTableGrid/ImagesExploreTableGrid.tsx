@@ -42,16 +42,16 @@ function getImagesExploreTableColumns(
         ? 'right'
         : null,
     },
-    {
-      key: 'metric',
-      content: <span>Metric</span>,
-      topHeader: 'Metrics',
-      pin: order?.left?.includes('metric')
-        ? 'left'
-        : order?.right?.includes('metric')
-        ? 'right'
-        : null,
-    },
+    // {
+    //   key: 'metric',
+    //   content: <span>Metric</span>,
+    //   topHeader: 'Metrics',
+    //   pin: order?.left?.includes('metric')
+    //     ? 'left'
+    //     : order?.right?.includes('metric')
+    //     ? 'right'
+    //     : null,
+    // },
     {
       key: 'context',
       content: <span>Context</span>,

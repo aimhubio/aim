@@ -12,6 +12,7 @@ import './ImagesPanel.scss';
 
 function ImagesPanel({
   imagesData,
+  imagesBlobs,
   stepSlice,
   indexSlice,
   indexRange,
@@ -82,7 +83,11 @@ function ImagesPanel({
             </div>
           </div>
           <div className='ImagesPanel__imagesContainer'>
-            <ImagesSet data={imagesData} title={'root'} />
+            <ImagesSet
+              data={imagesData}
+              title={'root'}
+              imagesBlobs={imagesBlobs}
+            />
           </div>
         </div>
       ) : (

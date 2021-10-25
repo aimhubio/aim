@@ -45,6 +45,8 @@ import moment from 'moment';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { formatValue } from 'utils/formatValue';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import getValueByField from 'utils/getValueByField';
+import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
 const model = createModel<Partial<any>>({
   requestIsPending: false,
@@ -173,12 +175,18 @@ function getImagesData() {
   }
   const modelState: any = model.getState();
   const configData = modelState?.config;
+  const stepSlice = modelState?.config?.images?.stepSlice;
+  const indexSlice = modelState?.config?.images?.indexSlice;
   // const metric = configData?.chart.alignmentConfig.metric;
   // let query = getQueryStringFromSelect(configData?.select);
   imagesRequestRef = imagesExploreService.getImagesExploreData({
     q: '',
-    record_range: '10:100',
-    index_range: '5:50',
+    record_range: stepSlice
+      ? `${modelState?.config?.images?.stepSlice[0]}:${modelState?.config?.images?.stepSlice[1]}`
+      : '10:100',
+    index_range: indexSlice
+      ? `${modelState?.config?.images?.indexSlice[0]}:${modelState?.config?.images?.indexSlice[1]}`
+      : '5:50',
     record_density: 50,
     index_density: 5,
   });
@@ -195,15 +203,26 @@ function getImagesData() {
         queryIsEmpty: false,
       });
       const stream = await imagesRequestRef.call(exceptionHandler);
-      const runData = await getRunData(stream);
-      console.log(runData);
+      const runData = await getImagesMetricsData(stream);
+      const uris: string[] = [];
+      runData.forEach((run: any) => {
+        run.traces.forEach((imageData: any) => {
+          imageData.values.forEach((stepData: any) => {
+            stepData.forEach((image: any) => {
+              uris.push(image.blob_uri);
+            });
+          });
+        });
+      });
+      const imagesBlobs: { [key: string]: string } = await getImagesBlobsData(
+        uris,
+      );
       if (configData) {
-        setModelData(runData, configData);
+        setModelData(runData, configData, imagesBlobs);
       }
       // }
     },
-    // abort: imagesRequestRef.abort,
-    abort: () => {},
+    abort: imagesRequestRef.abort,
   };
 }
 
@@ -227,21 +246,17 @@ function getAppConfigData(appId: string) {
 function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
-  URIs: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: any[] = [];
   let params: string[] = [];
-  let uris: string[] = [];
   data.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params, run.params));
-
     run.traces.forEach((imageData: any) => {
       imageData.values.forEach((stepData: any, stepIndex: number) => {
         stepData.forEach((image: any) => {
           const metricKey = encode({
             runHash: run.hash,
-            metricName: imageData.metric_name,
             traceContext: imageData.context,
             index: image.index,
             step: stepIndex + 1,
@@ -250,12 +265,10 @@ function processData(data: IRun<IMetricTrace>[]): {
             step: stepIndex + 1,
             index: image.index,
             src: image.blob_uri,
-            metric_name: imageData.name,
             context: imageData.context,
             run: _.omit(run, 'images'),
             key: metricKey,
           });
-          uris.push(image.blob_uri);
         });
       });
     });
@@ -273,23 +286,30 @@ function processData(data: IRun<IMetricTrace>[]): {
     ),
   );
   const uniqParams = _.uniq(params);
-  imagesExploreService
-    .getImagesByURIs(uris)
-    .call()
-    .then((a) => getRunData(a).then((b) => console.log(b)));
   // setTooltipData(processedData, uniqParams);
   return {
     data: processedData,
     params: uniqParams,
-    URIs: uris,
   };
 }
 
-function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
+function setModelData(
+  rawData: any[],
+  configData: IImagesExploreAppConfig,
+  imagesBlobs: { [key: string]: string },
+) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
-  const tableData = getDataAsTableRows(data, params, false, configData);
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const tableData = getDataAsTableRows(
+    data,
+    params,
+    false,
+    configData,
+    groupingSelectOptions,
+  );
   const config = configData;
+  console.log(rawData[0].ranges);
   config.images = {
     stepRange: rawData[0].ranges.record_range as number[],
     indexRange: rawData[0].ranges.index_range as number[],
@@ -305,6 +325,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     params,
     data,
     imagesData: getDataAsImageSet(data),
+    imagesBlobs,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
@@ -316,7 +337,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       // onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
-    groupingSelectOptions: [...getGroupingSelectOptions(params)],
+    groupingSelectOptions,
   });
 }
 
@@ -325,7 +346,14 @@ function updateModelData(
   shouldURLUpdate?: boolean,
 ): void {
   const { data, params } = processData(model.getState()?.rawData);
-  const tableData = getDataAsTableRows(data, params, false, configData);
+  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const tableData = getDataAsTableRows(
+    data,
+    params,
+    false,
+    configData,
+    groupingSelectOptions,
+  );
   const tableColumns = getImagesExploreTableColumns(
     params,
     data[0]?.config,
@@ -334,7 +362,6 @@ function updateModelData(
     configData.table.sortFields,
     // onSortChange,
   );
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
     newData: tableData.rows,
@@ -552,7 +579,9 @@ function onResetConfigData(): void {
   }
 }
 
-async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
+async function getImagesMetricsData(
+  stream: ReadableStream<IRun<IMetricTrace>[]>,
+) {
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
   let decodedPairs = decodePathsVals(buffer_pairs);
@@ -562,11 +591,59 @@ async function getRunData(stream: ReadableStream<IRun<IMetricTrace>[]>) {
   for await (let [keys, val] of objects) {
     runData.push({
       ...(val as any),
-      [keys[0]]: val,
       hash: keys[0],
     });
   }
   return runData;
+}
+
+async function getImagesBlobsData(uris: string[]) {
+  const stream = await imagesExploreService.getImagesByURIs(uris).call();
+  let gen = adjustable_reader(stream);
+  let buffer_pairs = decode_buffer_pairs(gen);
+  let decodedPairs = decodePathsVals(buffer_pairs);
+  let objects = iterFoldTree(decodedPairs, 1);
+  // function blobToBase64(blob: any) {
+  //   return new Promise((resolve, _) => {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => resolve(reader.result);
+  //     reader.readAsDataURL(blob);
+  //   });
+  // }
+
+  // function simpler_way(buffer: any) {
+  //   var tmp;
+
+  //   tmp = new TextDecoder('utf-8').decode(buffer); //to UTF-8 text.
+  //   tmp = unescape(encodeURIComponent(tmp)); //to binary-string.
+  //   tmp = btoa(tmp); //BASE64.
+  //   return tmp;
+
+  //you can stop here.
+  //but if you need to return an ArrayBuffer of the BASE64 result,
+  //for example to be passed from a Worker back to a client,
+  //by using 'postMessage' + Transferable object (much faster see: https://developer.mozilla.org/en-US/docs/Web/API/Transferable),
+  //uncomment lines below:
+
+  //tmp = (new TextEncoder("utf-8")).encode(tmp);    //to Uint8Array.
+  //tmp = tmp.buffer;                                //to ArrayBuffer.
+  //return tmp;
+  // }
+
+  const imagesBlobs: { [key: string]: string } = {};
+  for await (let [keys, val] of objects) {
+    // var u8 = new Uint8Array(val as any);
+    // // var blob = new Blob([u8 as any], { type: 'image/jpeg' });
+    // // var imageUrl = URL.createObjectURL(blob);
+    // var decoder = new TextDecoder('utf8');
+    // var imgsrc =
+    //   'data:image/jpeg;base64,' +
+    //   btoa(unescape(encodeURIComponent(decoder.decode(u8))));
+    // var b64encoded = window.btoa(decoder.decode(u8));
+
+    imagesBlobs[keys[0]] = val as string;
+  }
+  return imagesBlobs;
 }
 
 function getDataAsImageSet(data: any) {
@@ -593,6 +670,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IImagesExploreAppConfig,
+  groupingSelectOptions: any,
   dynamicUpdate?: boolean,
 ): { rows: any[] | any; sameValueColumns: string[] } {
   if (!processedData) {
@@ -611,6 +689,11 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
+      const groupConfigData: { [key: string]: string } = {};
+      for (let key in metricsCollection.config) {
+        groupConfigData[getValueByField(groupingSelectOptions, key)] =
+          metricsCollection.config[key];
+      }
       const groupHeaderRow = {
         meta: {
           // chartIndex:
@@ -621,6 +704,7 @@ function getDataAsTableRows(
           // color: metricsCollection.color,
           dasharray: null,
           itemsCount: metricsCollection.data.length,
+          config: groupConfigData,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -659,7 +743,7 @@ function getDataAsTableRows(
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
         run: metric.run.props.name,
-        metric: metric.metric_name,
+        // metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         // value:
         //   closestIndex === null
@@ -932,8 +1016,15 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config } = model.getState() as any;
-  const tableData = getDataAsTableRows(data, params, true, config);
+  const { data, params, config, groupingSelectOptions } =
+    model.getState() as any;
+  const tableData = getDataAsTableRows(
+    data,
+    params,
+    true,
+    config,
+    groupingSelectOptions,
+  );
   const tableColumns: ITableColumn[] = getImagesExploreTableColumns(
     params,
     data[0]?.config,

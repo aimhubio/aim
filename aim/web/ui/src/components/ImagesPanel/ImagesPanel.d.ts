@@ -1,5 +1,6 @@
 export interface IImagesPanelProps {
   imagesData: any;
+  imagesBlobs: { [key: string]: value };
   stepSlice: number[];
   indexSlice: number[];
   indexRange: number[];
