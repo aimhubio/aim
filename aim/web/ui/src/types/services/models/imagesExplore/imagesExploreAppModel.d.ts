@@ -8,13 +8,14 @@ export interface IImagesExploreAppConfig {
       groupBy: boolean;
     };
   };
-  images?: {
-    stepSlice: number[];
-    indexSlice: number[];
-    stepRange: number[];
-    indexRange: number[];
-    stepInterval: number;
-    indexInterval: number;
+  images: {
+    recordSlice?: number[];
+    indexSlice?: number[];
+    stepRange?: number[];
+    indexRange?: number[];
+    recordDensity?: number;
+    indexDensity?: number;
+    calcRanges: boolean;
   };
   select: {
     metrics: ISelectMetricsOption[];

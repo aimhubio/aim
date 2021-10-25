@@ -135,18 +135,18 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             }`}
           >
             <ImagesPanel
-              stepSlice={imagesExploreData?.config?.images?.stepSlice}
+              recordSlice={imagesExploreData?.config?.images?.recordSlice}
               indexSlice={imagesExploreData?.config?.images?.indexSlice}
               indexRange={imagesExploreData?.config?.images?.indexRange}
-              indexInterval={imagesExploreData?.config?.images?.indexInterval}
-              stepInterval={imagesExploreData?.config?.images?.stepInterval}
+              indexDensity={imagesExploreData?.config?.images?.indexDensity}
+              recordDensity={imagesExploreData?.config?.images?.recordDensity}
               stepRange={imagesExploreData?.config?.images?.stepRange}
-              onStepSliceChange={imagesExploreAppModel.onStepSliceChange}
+              onRecordSliceChange={imagesExploreAppModel.onRecordSliceChange}
               onIndexSliceChange={imagesExploreAppModel.onIndexSliceChange}
-              onIndexIntervalChange={
-                imagesExploreAppModel.onIndexIntervalChange
+              onIndexDensityChange={imagesExploreAppModel.onIndexDensityChange}
+              onRecordDensityChange={
+                imagesExploreAppModel.onRecordDensityChange
               }
-              onStepIntervalChange={imagesExploreAppModel.onStepIntervalChange}
               imagesData={imagesExploreData?.imagesData}
               imagesBlobs={imagesExploreData?.imagesBlobs}
               isLoading={imagesExploreData?.requestIsPending}

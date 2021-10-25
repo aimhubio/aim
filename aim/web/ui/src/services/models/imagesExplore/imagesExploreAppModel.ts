@@ -69,6 +69,7 @@ function getConfig(): IImagesExploreAppConfig {
       advancedMode: false,
       advancedQuery: '',
     },
+    images: { calcRanges: true },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
       rowHeight: RowHeightSize.md,
@@ -131,6 +132,23 @@ let imagesRequestRef: {
   abort: () => void;
 };
 
+function getAppConfigData(appId: string) {
+  if (appRequestRef) {
+    appRequestRef.abort();
+  }
+  appRequestRef = appsService.fetchApp(appId);
+  return {
+    call: async () => {
+      const appData = await appRequestRef.call();
+      const configData: any = _.merge(getConfig(), appData.state);
+      model.setState({
+        config: configData,
+      });
+    },
+    abort: appRequestRef.abort,
+  };
+}
+
 function resetModelOnError(detail?: any) {
   model.setState({
     data: [],
@@ -175,21 +193,25 @@ function getImagesData() {
   }
   const modelState: any = model.getState();
   const configData = modelState?.config;
-  const stepSlice = modelState?.config?.images?.stepSlice;
-  const indexSlice = modelState?.config?.images?.indexSlice;
+  const recordSlice = configData.images?.recordSlice;
+  const indexSlice = configData.images?.indexSlice;
+  const recordDensity = configData.images?.recordDensity;
+  const indexDensity = configData.images?.indexDensity;
+  const calcRanges = configData.images.calcRanges;
   // const metric = configData?.chart.alignmentConfig.metric;
   // let query = getQueryStringFromSelect(configData?.select);
-  imagesRequestRef = imagesExploreService.getImagesExploreData({
-    q: '',
-    record_range: stepSlice
-      ? `${modelState?.config?.images?.stepSlice[0]}:${modelState?.config?.images?.stepSlice[1]}`
-      : '10:100',
-    index_range: indexSlice
-      ? `${modelState?.config?.images?.indexSlice[0]}:${modelState?.config?.images?.indexSlice[1]}`
-      : '5:50',
-    record_density: 50,
-    index_density: 5,
-  });
+  let imageDataBody: any = { q: '', calc_ranges: calcRanges };
+  if (recordSlice) {
+    imageDataBody = {
+      ...imageDataBody,
+      record_range: recordSlice ? `${recordSlice[0]}:${recordSlice[1]}` : '',
+      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1]}` : '',
+      record_density: recordDensity ?? '',
+      index_density: indexDensity ?? '',
+    };
+  }
+  imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
+
   return {
     call: async () => {
       // if (query === '') {
@@ -226,23 +248,6 @@ function getImagesData() {
   };
 }
 
-function getAppConfigData(appId: string) {
-  if (appRequestRef) {
-    appRequestRef.abort();
-  }
-  appRequestRef = appsService.fetchApp(appId);
-  return {
-    call: async () => {
-      const appData = await appRequestRef.call();
-      const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({
-        config: configData,
-      });
-    },
-    abort: appRequestRef.abort,
-  };
-}
-
 function processData(data: IRun<IMetricTrace>[]): {
   data: IMetricsCollection<IMetric>[];
   params: string[];
@@ -266,7 +271,7 @@ function processData(data: IRun<IMetricTrace>[]): {
             index: image.index,
             src: image.blob_uri,
             context: imageData.context,
-            run: _.omit(run, 'images'),
+            run: _.omit(run, 'traces'),
             key: metricKey,
           });
         });
@@ -287,6 +292,7 @@ function processData(data: IRun<IMetricTrace>[]): {
   );
   const uniqParams = _.uniq(params);
   // setTooltipData(processedData, uniqParams);
+
   return {
     data: processedData,
     params: uniqParams,
@@ -310,12 +316,17 @@ function setModelData(
   );
   const config = configData;
   config.images = {
-    stepRange: rawData[0].ranges.record_range as number[],
-    indexRange: rawData[0].ranges.index_range as number[],
-    stepSlice: config?.images?.stepSlice || rawData[0].ranges.record_range,
-    indexSlice: config?.images?.indexSlice || rawData[0].ranges.index_range,
-    stepInterval: config?.images?.stepInterval || 50,
-    indexInterval: config?.images?.indexInterval || 5,
+    stepRange: !config.images.calcRanges
+      ? config.images.stepRange
+      : (rawData[0].ranges.record_range as number[]),
+    indexRange: !config.images.calcRanges
+      ? config.images.indexRange
+      : (rawData[0].ranges.index_range as number[]),
+    recordSlice: config.images.recordSlice || rawData[0].ranges.record_range,
+    indexSlice: config.images.indexSlice || rawData[0].ranges.index_range,
+    recordDensity: config.images.recordDensity || 50,
+    indexDensity: config.images.indexDensity || 5,
+    calcRanges: false,
   };
   model.setState({
     requestIsPending: false,
@@ -602,45 +613,10 @@ async function getImagesBlobsData(uris: string[]) {
   let buffer_pairs = decode_buffer_pairs(gen);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
-  // function blobToBase64(blob: any) {
-  //   return new Promise((resolve, _) => {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => resolve(reader.result);
-  //     reader.readAsDataURL(blob);
-  //   });
-  // }
-
-  // function simpler_way(buffer: any) {
-  //   var tmp;
-
-  //   tmp = new TextDecoder('utf-8').decode(buffer); //to UTF-8 text.
-  //   tmp = unescape(encodeURIComponent(tmp)); //to binary-string.
-  //   tmp = btoa(tmp); //BASE64.
-  //   return tmp;
-
-  //you can stop here.
-  //but if you need to return an ArrayBuffer of the BASE64 result,
-  //for example to be passed from a Worker back to a client,
-  //by using 'postMessage' + Transferable object (much faster see: https://developer.mozilla.org/en-US/docs/Web/API/Transferable),
-  //uncomment lines below:
-
-  //tmp = (new TextEncoder("utf-8")).encode(tmp);    //to Uint8Array.
-  //tmp = tmp.buffer;                                //to ArrayBuffer.
-  //return tmp;
-  // }
 
   const imagesBlobs: { [key: string]: string } = {};
   for await (let [keys, val] of objects) {
-    // var u8 = new Uint8Array(val as any);
-    // // var blob = new Blob([u8 as any], { type: 'image/jpeg' });
-    // // var imageUrl = URL.createObjectURL(blob);
-    // var decoder = new TextDecoder('utf8');
-    // var imgsrc =
-    //   'data:image/jpeg;base64,' +
-    //   btoa(unescape(encodeURIComponent(decoder.decode(u8))));
-    // var b64encoded = window.btoa(decoder.decode(u8));
-
-    imagesBlobs[keys[0]] = val as string;
+    imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
   }
   return imagesBlobs;
 }
@@ -658,6 +634,7 @@ function getDataAsImageSet(data: any) {
       }, [] as any);
       _.set(imageSetData, path, group.data);
     });
+    console.log(imageSetData);
     return isEmpty(imageSetData) ? data[0].data : imageSetData;
   } else {
     return {};
@@ -1149,6 +1126,7 @@ function onSelectRunQueryChange(query: string) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, query },
+      images: { ...configData.images, calcRanges: true },
     };
 
     updateURL(newConfig);
@@ -1225,6 +1203,7 @@ function onSelectAdvancedQueryChange(query: string) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
+      images: { ...configData.images, calcRanges: true },
     };
 
     updateURL(newConfig);
@@ -1242,8 +1221,8 @@ function onImagesExploreSelectChange(data: any[]) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, metrics: data },
+      images: { ...configData.images, calcRanges: true },
     };
-
     updateURL(newConfig);
 
     model.setState({
@@ -1401,7 +1380,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
   );
 }
 
-function onStepSliceChange(
+function onRecordSliceChange(
   event: ChangeEvent<{}>,
   newValue: number | number[],
 ) {
@@ -1410,7 +1389,7 @@ function onStepSliceChange(
   if (configData?.images) {
     const images = {
       ...configData.images,
-      stepSlice: newValue,
+      recordSlice: newValue,
     };
     const config = {
       ...configData,
@@ -1443,13 +1422,13 @@ function onIndexSliceChange(
   }
 }
 
-function onIndexIntervalChange(event: ChangeEvent<{ value: number }>) {
+function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images && +event.target.value > 0) {
     const images = {
       ...configData.images,
-      indexInterval: +event.target.value,
+      indexDensity: +event.target.value,
     };
     const config = {
       ...configData,
@@ -1461,13 +1440,13 @@ function onIndexIntervalChange(event: ChangeEvent<{ value: number }>) {
   }
 }
 
-function onStepIntervalChange(event: ChangeEvent<{ value: number }>) {
+function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images && +event.target.value > 0) {
     const images = {
       ...configData.images,
-      stepInterval: +event.target.value,
+      recordDensity: +event.target.value,
     };
     const config = {
       ...configData,
@@ -1515,10 +1494,10 @@ const imagesExploreAppModel = {
   onTableDiffShow,
   onRowHeightChange,
   onImageVisibilityChange,
-  onStepSliceChange,
+  onRecordSliceChange,
   onIndexSliceChange,
-  onIndexIntervalChange,
-  onStepIntervalChange,
+  onIndexDensityChange,
+  onRecordDensityChange,
 };
 
 export default imagesExploreAppModel;

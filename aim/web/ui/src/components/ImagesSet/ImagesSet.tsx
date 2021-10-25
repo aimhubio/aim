@@ -1,31 +1,28 @@
 import React from 'react';
-import imageExplorerMockData from 'services/models/imagesExplore/imagesExploreMockData';
 import './ImageSet.scss';
 
-const ImagesSet = React.forwardRef(function ImageSet(
-  { data, title, imagesBlobs }: any,
-  ref,
-): React.FunctionComponentElement<React.ReactNode> {
+const ImagesSet = ({
+  data,
+  title,
+  imagesBlobs,
+}: any): React.FunctionComponentElement<React.ReactNode> => {
   return (
     <div className='ImagesSet'>
       {Array.isArray(data) ? (
         <div className='ImagesSet__container'>
           <span className='ImagesSet__container__title'>{title}</span>
           <div className='ImagesSet__container__imagesBox'>
-            {data.map(({ src }, index) => (
+            {data.map(({ src, height, width, step, index }, i) => (
               <div
-                key={index}
+                key={i}
                 className='ImagesSet__container__imagesBox__imageBox'
+                style={{ height, width }}
               >
+                <p>
+                  `index=${index},step={step}`
+                </p>
                 <img
-                  // src={
-                  //   imageExplorerMockData[0].images[0].values[0][0]
-                  //     .blob as string
-                  // }
-                  src={
-                    'data:image/png;base64, ' +
-                    'AGIAJwCJAFAATgBHAA0ACgAaAAoAAAAAAAAADQBJAEgARABSAAAAAAAAABwAAAAAAAAAHAAIAAAAAAAAAAAAVwBmAIAASAAAAAAAAQAAAEkARABBAFQAeACcAGMAYAAYAMwAgABZAEgASACoAK4AYwC9ANQAsgD/AN8A6wAZABgAGAAYAFgAYAASAHIAbABWADYAAgDBAAwADAAMAAwATwAmAAUAfgC+AHgAkACBAIEAgQCBABEAKgBnALgAlwAfAMoA+gCXAPQAlQDhANkA+wCbAMgAJgAKAN0A/gD7APcA7wDfAL8AxwC2AH0A/wCIAMUAvgCAADkA2QB/AP8AngDlAGYA0ACeAIUAzQA1AHwAjACzAP4ARgChAAoAMQDBAFkAnwD+AH8AZABIAGEAYgDAAAUAuAD3AP0AdQDDACkAyQCgAPwA8QDhAIIAHABGAFwAsgCBAB8A/gD+AC0AlwDEACUAqwC7AOsA7wDfAGkA0gC4AGQABQBiAP8A/ADdAI0A2wDiAJ8AfwB/ADoAQACZACwAqAAyAHoAIQCmACwADADXAA4AYQDTAKQAPgDlAOkA3wC/AH8AfwBtAMMAIgAlAFEAdAD3AO8A3wC/AH8ATwD6AGEASgCJADsAXQD9APsA9wDvAN8AYwCBAJgAgQAkALQA+gD2AN8AvwB/AP8AHgAOAOAAxACQADIAXwDzAOgA7wDfAL8AfwC/ALQAcgCjAIoAswAwADAAMAAwAAQABgAyADAAXADfAPwAtwDnAAMANgBXAFIAHwAAAAAARQAXAF4AgABrAEwAAAA7AAAAAAAAAAAASQBFAE4ARACuAEIAYACC'
-                  }
+                  src={'data:image/png;base64, ' + imagesBlobs?.[src]}
                   alt=''
                 />
               </div>
@@ -40,6 +37,7 @@ const ImagesSet = React.forwardRef(function ImageSet(
               key={key}
               data={data[keyName]}
               title={keyName}
+              imagesBlobs={imagesBlobs}
               // grouping={grouping}
             />
           ))}
@@ -47,6 +45,6 @@ const ImagesSet = React.forwardRef(function ImageSet(
       )}
     </div>
   );
-});
+};
 
 export default React.memo(ImagesSet);
