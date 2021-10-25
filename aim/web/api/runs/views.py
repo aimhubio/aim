@@ -107,7 +107,8 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
                  responses={400: {'model': QuerySyntaxErrorOut}})
 def run_images_search_api(q: Optional[str] = '',
                           record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                          index_range: Optional[str] = '', index_density: Optional[int] = 5):
+                          index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                          calc_ranges: Optional[bool] = False):
     # Get project
     project = Project()
     if not project.exists():
@@ -139,7 +140,8 @@ def run_images_search_api(q: Optional[str] = '',
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    streamer = image_search_result_streamer(traces, record_range, record_density, index_range, index_density)
+    streamer = image_search_result_streamer(traces, record_range, record_density,
+                                            index_range, index_density, calc_ranges)
     return StreamingResponse(streamer)
 
 
