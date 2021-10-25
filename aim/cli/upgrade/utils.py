@@ -89,7 +89,7 @@ def check_repo_integrity(repo: Repo, legacy_run_map: dict):
     try:
         ok = True
         with click.progressbar(repo.iter_runs(),
-                               item_show_func=lambda r: (f'Checking run {r.hashname}' if r else '')) as runs:
+                               item_show_func=lambda r: (f'Checking run {r.hash}' if r else '')) as runs:
             for run in runs:
                 legacy_hash = run.get(['v2_params', 'run_hash'])
                 run_metrics = legacy_run_map.pop(legacy_hash)
@@ -99,7 +99,7 @@ def check_repo_integrity(repo: Repo, legacy_run_map: dict):
                     if not run_metrics[metric_name]:
                         del run_metrics[metric_name]
                 if run_metrics:
-                    click.echo(f'Run \'{run.hashname}\' [\'{legacy_hash}\'] missing metrics \'{run_metrics.keys()}\'.')
+                    click.echo(f'Run \'{run.hash}\' [\'{legacy_hash}\'] missing metrics \'{run_metrics.keys()}\'.')
                     ok = False
         if legacy_run_map:
             click.echo(f'Repo missing runs \'{legacy_run_map.keys()}\'.')

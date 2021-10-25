@@ -2,7 +2,7 @@
 
 .Runs_Search_Bar {
   display: flex;
-  border-bottom: $border-main;
+  border-bottom: $border-separator;
   padding: 1rem 1.5rem;
   align-items: center;
   input {
@@ -10,9 +10,5 @@
   }
   form {
     width: 100%;
-  }
-  &__Button {
-    width: 100px;
-    height: 2rem !important;
   }
 }

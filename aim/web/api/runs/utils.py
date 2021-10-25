@@ -66,7 +66,10 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
     x_axis_values = []
     x_axis_iters = []
     for idx in iters:
-        x_val = x_trace.values[idx.item()]
+        try:
+            x_val = x_trace.values[idx.item()]
+        except KeyError:
+            x_val = None
         if x_val:
             x_axis_iters.append(idx.item())
             x_axis_values.append(x_val)
@@ -87,9 +90,9 @@ def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> 
 
 def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str) -> bytes:
     for run_data in requested_runs:
-        run_hashname = run_data.run_id
+        run_hash = run_data.run_id
         requested_traces = run_data.traces
-        run = Run(hashname=run_hashname, read_only=True)
+        run = Run(run_hash, read_only=True)
 
         traces_list = []
         for trace_data in requested_traces:
@@ -112,7 +115,7 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
                 'x_axis_iters': x_axis_iters,
             })
         run_dict = {
-            run_hashname: traces_list
+            run_hash: traces_list
         }
         encoded_tree = encode_tree(run_dict)
         yield collect_run_streamable_data(encoded_tree)
@@ -147,7 +150,7 @@ def metric_search_result_streamer(traces: SequenceCollection, steps_num: int, x_
 
         if run:
             run_dict = {
-                run.hashname: {
+                run.hash: {
                     'params': run.get(...),
                     'traces': traces_list,
                     'props': get_run_props(run)
@@ -163,7 +166,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
         run_dict = {
-            run.hashname: {
+            run.hash: {
                 'params': run.get(...),
                 'traces': run.collect_metrics_info(),
                 'props': get_run_props(run)

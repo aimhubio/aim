@@ -107,7 +107,8 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
                  responses={400: {'model': QuerySyntaxErrorOut}})
 def run_images_search_api(q: Optional[str] = '',
                           record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                          index_range: Optional[str] = '', index_density: Optional[int] = 5):
+                          index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                          calc_ranges: Optional[bool] = False):
     # Get project
     project = Project()
     if not project.exists():
@@ -139,7 +140,8 @@ def run_images_search_api(q: Optional[str] = '',
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    streamer = image_search_result_streamer(traces, record_range, record_density, index_range, index_density)
+    streamer = image_search_result_streamer(traces, record_range, record_density,
+                                            index_range, index_density, calc_ranges)
     return StreamingResponse(streamer)
 
 
@@ -159,7 +161,7 @@ async def run_params_api(run_id: str):
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
-    run = project.repo.get_run(hashname=run_id)
+    run = project.repo.get_run(run_id)
     if not run:
         raise HTTPException(status_code=404)
 
@@ -177,7 +179,7 @@ async def run_traces_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
-    run = project.repo.get_run(hashname=run_id)
+    run = project.repo.get_run(run_id)
     if not run:
         raise HTTPException(status_code=404)
 
@@ -202,7 +204,7 @@ async def update_run_properties_api(run_id: str, run_in: StructuredRunUpdateIn, 
         run.archived = run_in.archived
 
     return {
-        'id': run.hashname,
+        'id': run.hash,
         'status': 'OK'
     }
 
@@ -217,7 +219,7 @@ async def add_run_tag_api(run_id: str, tag_in: StructuredRunAddTagIn, factory=De
         tag = run.add_tag(tag_in.tag_name)
 
     return {
-        'id': run.hashname,
+        'id': run.hash,
         'tag_id': tag.uuid,
         'status': 'OK'
     }
@@ -233,7 +235,7 @@ async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_fa
         removed = run.remove_tag(tag_id)
 
     return {
-        'id': run.hashname,
+        'id': run.hash,
         'removed': removed,
         'status': 'OK'
     }

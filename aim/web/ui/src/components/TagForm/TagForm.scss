@@ -31,16 +31,16 @@
         &__colorButton {
           border-radius: 50%;
           margin: 5px;
-          width: 39px;
-          height: 39px;
+          width: 50px;
+          height: 50px;
           min-width: auto;
           padding: 0;
           display: flex;
           justify-content: center;
           align-items: center;
           .MuiButton-label {
-            width: 24px;
-            height: 24px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -48,8 +48,8 @@
             position: relative;
           }
           &__content {
-            width: 24px;
-            height: 24px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             opacity: 0.2;
           }
@@ -57,8 +57,8 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             transform: translate(-50%, -50%);
           }

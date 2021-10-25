@@ -1,6 +1,6 @@
 <div align="center">
 
-| :zap: You are looking at Aim v3.0.0 beta! Try out at <a href="http://play.aimstack.io:10001/metrics?grouping=2KhRameHik98oBj8Bsw6VRdcA7KuW5Y2kZtNEFLDLRtdSb1RVR7k9p9QkRk9Tvai2qWdRFPzisMBiA5RNazdhRaE56LwugevHBFTsESJULie39yCghtVnq5CuWSA2B8MuPn3Dg6XRqVrsC7BpJE16jRKnZ7dZ7xonbkXiAM2TPL3YRByWYrre6J3hUPB7BdfUJz57sdPjnF3G72SbQUGEWXKZQKHNyQCjEkPbKNxQUKxh7wXeMB3PF1gqjGtGSEihL5LsT7jmnPBr5Mfr4dHp2mbUGSt8cQNydQhC1iPW53jXnZ77TdSnoHjGT1xLuSTyUzhLBpaPPMokZPV7cmi2FybEGWmVd53athLrBmuVx8PffZCpUoXUDbwZS4fzrgp9HBZhsfUunmJzqADxg3SxYny4k2dLoVer3ULiBzXExPkXaNsRaiJbM8ZTXsPVfVZbgCR1zyBHSogayxSZBdqdVD8rY5K&chart=Cm6b4V1xjN1vWwfnKhWBAJ491MNYk6oJHwWJtyKVe6zu6D7ShYbPyEyVuVgyn73j7KNbhSnhLnU6evCrpnHa338r8cXeEYtgUoNhxxBbYuVdUXqAox1334Uzc59hFxtbDfeL2MtZVh2JoLqiyEjnSqeqX6FWbWKAF61ivoFdkutMnDyhKCT9SoZYgLr9y1wR8CssfX2rwN4JUWT8k2Jr84WJ1vpAhrcB3xERKF3rAddQsczC1wE7824Qk3WVKAttLTLG5FVidFh9XkTD4Sdzf7DZ1DYoqiHs9zBFM2LASd7rz42fkmmrrz7koHoFQG6787QLuGBRDZTvYvCT8JeLbXpTdLtKXbvU3dboKqdbv7u9FvsCc7ir1SQeignKE7EKihcFSXf97QKLNXxNPdeyiwdGuj8Cj4kHfYwqRGUcjxMSihV45Y7F3x2W8zUvKB6uJLEnpDAufhcN7mLbzrjNRQ5mfW2GfgoJ5a6nrhzcUMbkztokkKpgokm2tZ23XWfyEq6WMxRxdXCrBMeuE5EgbfeResip87GcxW5o784gfG8xRaGdS596sQhLfgT4FPzytUqyHXU4upwfb65jGrUzG1dsiaiB1rZyXKpw6riKLCNNvRXVTnzRenQpyHzJBqDccyMSehy8T4ThFSjniSvsk1jKbsVgq2rA3RMyLJf9Z85cpx3hx7RmrJTCNv2aZtb3xXH3bEBms9u2XVCrykVsrSSRP4Tv3vjsbuMDdpAy5RscUCqPgFhJdHzTEaZGTzVL214rRWNum5RBgpcdK3QGtVWwAPXV2jirEpoUhqFEv4gTKX3KXL6LUPsi7jYPGNbMWAcovt3fTgVCrWZeaHRcSG3WKJX5La2vkjnDmhHNs4SbDjS6ze31iaz2fCwzSZ9v3ca4pVtWezPbHpBZVpZd4FG4Lt3oKDG2xvKP9w1Q1jP77hM4eozJxTFiTgQxH4S8mpnfYbxrnmVwxhAu4PKRmevEZkJPVX1hMN6yykqFz7RrhvG4yQ8muYEYWv5DkzycptNy9bDEmDxVAk2CRnvbdo6jYnWbh77t1JEZdhJoCaVSHk6MovrdLoc5X8jxEbcDU7xBL3wj5ecULt3tYq5aoFeNHHCTBxWnk2gA5iLZNA7rBNtQuEzBpN1kjh&select=7zY8Ghyd8kPXab3LdBmLqMwxSSWcZypz9sHYtcG8bSoniZPTnXp2oTf9TrxEu55XfP546wpJrzzEXCGpczGdS9z8coMktqf7j2EbUveJeLRBSPBPw83ru5MxhMSA3FysZ5nTiroEqNktj2ux67ExzjkheiJhWkf5oJNrKYEPuM8adYhjBH2Ez5Ma1uiNZfQxu1mt18iqX3DcFAc3BjjH3WXE3guqpk4bFzk16JB8Nz4pvhsuBDH6XUuGQsZEzoKRbbELYVMozcABWWn47w35XcT9YE4Bmyk8vuJuCY7wmN5wHxt8BiNAGoh9UQGcRqrWV55swMGy3v3Yfkfo9YSDZCEbs47gJ7kAbfLEGe4EPr2yv9h3mu5NuScU5fajDiGrt4oREeBK1SH3EqnPS8qznn4cumJccEBsPGzc88vQY3rHvyzD5LTrnmPxDUARm9HYeLq61nUJPjpUErEPwV37wiYzZrE8o3j8oVm4cwo1fczfffXjG7NkmqSVheZ">play.aimstack.io</a> :zap: <br /> Check out the docs <a href="https://aimstack.readthedocs.io/en/latest/">here</a>  |
+| :zap: Try out Aim at <a href="http://play.aimstack.io:10001/metrics?grouping=2KhRameHik98oBj8Bsw6VRdcA7KuW5Y2kZtNEFLDLRtdSb1RVR7k9p9QkRk9Tvai2qWdRFPzisMBiA5RNazdhRaE56LwugevHBFTsESJULie39yCghtVnq5CuWSA2B8MuPn3Dg6XRqVrsC7BpJE16jRKnZ7dZ7xonbkXiAM2TPL3YRByWYrre6J3hUPB7BdfUJz57sdPjnF3G72SbQUGEWXKZQKHNyQCjEkPbKNxQUKxh7wXeMB3PF1gqjGtGSEihL5LsT7jmnPBr5Mfr4dHp2mbUGSt8cQNydQhC1iPW53jXnZ77TdSnoHjGT1xLuSTyUzhLBpaPPMokZPV7cmi2FybEGWmVd53athLrBmuVx8PffZCpUoXUDbwZS4fzrgp9HBZhsfUunmJzqADxg3SxYny4k2dLoVer3ULiBzXExPkXaNsRaiJbM8ZTXsPVfVZbgCR1zyBHSogayxSZBdqdVD8rY5K&chart=Cm6b4V1xjN1vWwfnKhWBAJ491MNYk6oJHwWJtyKVe6zu6D7ShYbPyEyVuVgyn73j7KNbhSnhLnU6evCrpnHa338r8cXeEYtgUoNhxxBbYuVdUXqAox1334Uzc59hFxtbDfeL2MtZVh2JoLqiyEjnSqeqX6FWbWKAF61ivoFdkutMnDyhKCT9SoZYgLr9y1wR8CssfX2rwN4JUWT8k2Jr84WJ1vpAhrcB3xERKF3rAddQsczC1wE7824Qk3WVKAttLTLG5FVidFh9XkTD4Sdzf7DZ1DYoqiHs9zBFM2LASd7rz42fkmmrrz7koHoFQG6787QLuGBRDZTvYvCT8JeLbXpTdLtKXbvU3dboKqdbv7u9FvsCc7ir1SQeignKE7EKihcFSXf97QKLNXxNPdeyiwdGuj8Cj4kHfYwqRGUcjxMSihV45Y7F3x2W8zUvKB6uJLEnpDAufhcN7mLbzrjNRQ5mfW2GfgoJ5a6nrhzcUMbkztokkKpgokm2tZ23XWfyEq6WMxRxdXCrBMeuE5EgbfeResip87GcxW5o784gfG8xRaGdS596sQhLfgT4FPzytUqyHXU4upwfb65jGrUzG1dsiaiB1rZyXKpw6riKLCNNvRXVTnzRenQpyHzJBqDccyMSehy8T4ThFSjniSvsk1jKbsVgq2rA3RMyLJf9Z85cpx3hx7RmrJTCNv2aZtb3xXH3bEBms9u2XVCrykVsrSSRP4Tv3vjsbuMDdpAy5RscUCqPgFhJdHzTEaZGTzVL214rRWNum5RBgpcdK3QGtVWwAPXV2jirEpoUhqFEv4gTKX3KXL6LUPsi7jYPGNbMWAcovt3fTgVCrWZeaHRcSG3WKJX5La2vkjnDmhHNs4SbDjS6ze31iaz2fCwzSZ9v3ca4pVtWezPbHpBZVpZd4FG4Lt3oKDG2xvKP9w1Q1jP77hM4eozJxTFiTgQxH4S8mpnfYbxrnmVwxhAu4PKRmevEZkJPVX1hMN6yykqFz7RrhvG4yQ8muYEYWv5DkzycptNy9bDEmDxVAk2CRnvbdo6jYnWbh77t1JEZdhJoCaVSHk6MovrdLoc5X8jxEbcDU7xBL3wj5ecULt3tYq5aoFeNHHCTBxWnk2gA5iLZNA7rBNtQuEzBpN1kjh&select=7zY8Ghyd8kPXab3LdBmLqMwxSSWcZypz9sHYtcG8bSoniZPTnXp2oTf9TrxEu55XfP546wpJrzzEXCGpczGdS9z8coMktqf7j2EbUveJeLRBSPBPw83ru5MxhMSA3FysZ5nTiroEqNktj2ux67ExzjkheiJhWkf5oJNrKYEPuM8adYhjBH2Ez5Ma1uiNZfQxu1mt18iqX3DcFAc3BjjH3WXE3guqpk4bFzk16JB8Nz4pvhsuBDH6XUuGQsZEzoKRbbELYVMozcABWWn47w35XcT9YE4Bmyk8vuJuCY7wmN5wHxt8BiNAGoh9UQGcRqrWV55swMGy3v3Yfkfo9YSDZCEbs47gJ7kAbfLEGe4EPr2yv9h3mu5NuScU5fajDiGrt4oREeBK1SH3EqnPS8qznn4cumJccEBsPGzc88vQY3rHvyzD5LTrnmPxDUARm9HYeLq61nUJPjpUErEPwV37wiYzZrE8o3j8oVm4cwo1fczfffXjG7NkmqSVheZ">play.aimstack.io</a> :zap: |
 |---|
   
 <br />
@@ -49,7 +49,7 @@
 
 Aim is open-source, self-hosted AI experiment tracking tool. Use Aim to deeply inspect hundreds of hyperparameter-sensitive training runs at once.
 
-# Getting Started in 3 Steps
+## Getting Started in 3 Steps
 
 Follow the steps below to get started with Aim.
 
@@ -58,7 +58,7 @@ Follow the steps below to get started with Aim.
 _Prerequisite: You need to have python3 and pip3 installed in your environment before installing Aim_
 
 ```shell
-$ pip3 install aim==3.0.0b6
+$ pip3 install aim
 ```
 
 **2. Integrate Aim with your code**
@@ -178,3 +178,42 @@ _See documentation [here](#xgboost)._
 ```shell
 $ aim up
 ```
+
+## Roadmap 
+
+**Done**
+- [x] Live updates (End: _Oct 18 2021_)
+
+**In progress:**
+- [ ] Images tracking and visualization (Start: _Oct 18 2021_)
+- [ ] Centralized tracking server (Start: _Oct 18 2021_)
+
+### TODO: Nov 1 - Feb 1
+
+**Track and Explore:**
+  - [ ] Distributions tracking and visualization
+  - [ ] Transcripts tracking and visualization
+  - [ ] Runs side-by-side comparison
+
+**Data Backup:**
+  - [ ] Cloud storage support: aws s3, gsc, azure storage
+
+**Reproducibility:**
+  - [ ] Track git info, env vars, CLI arguments, dependencies
+  - [ ] Collect stdout, stderr logs
+
+**Integrations:**
+  - [ ] Colab integration
+  - [ ] Jupyter integration
+  - [ ] plotly integration
+  - [ ] Kubeflow integration
+  - [ ] Streamlit integration
+  - [ ] Raytune integration
+
+## Community
+
+If you have questions please:
+
+1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
+1. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
+1. [Join our slack](https://slack.aimstack.io/)

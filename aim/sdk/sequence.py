@@ -66,11 +66,15 @@ class Sequence(Generic[T]):
     def track(self, value, track_time: float, step: int, epoch: int):
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
         # not the actual implementation execution time.
-        val = deepcopy(value)
-        track_rate_warning = self.run.repo.tracking_queue.register_task(
-            self._track_impl, val, track_time, step, epoch)
-        if track_rate_warning:
-            self.run.track_rate_warn()
+
+        if self.run.track_in_thread:
+            val = deepcopy(value)
+            track_rate_warning = self.run.repo.tracking_queue.register_task(
+                self._track_impl, val, track_time, step, epoch)
+            if track_rate_warning:
+                self.run.track_rate_warn()
+        else:
+            self._track_impl(value, track_time, step, epoch)
 
     def _track_impl(self, value, track_time: float, step: int, epoch: int):
         try:
@@ -153,7 +157,10 @@ class Sequence(Generic[T]):
         return self._timestamps
 
     def __bool__(self) -> bool:
-        return bool(self.values)
+        try:
+            return bool(self.values)
+        except ValueError:
+            return False
 
     def __len__(self) -> int:
         return len(self.values)

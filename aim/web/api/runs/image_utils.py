@@ -27,7 +27,7 @@ def img_record_to_encodable(image_record, trace, step):
     for idx, img in image_record:
         img_dump = img.json()
         image_resource_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))
-        img_dump['blob_uri'] = URIService.generate_uri(trace.run.hashname, 'seqs', image_resource_path)
+        img_dump['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', image_resource_path)
         img_dump['index'] = idx
         img_list.append(img_dump)
     return img_list
@@ -46,7 +46,7 @@ def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) ->
             rec_start = min(trace.first_step(), rec_start) if rec_start else trace.first_step()
             rec_stop = max(trace.last_step(), rec_stop)
             idx_stop = max(trace.record_length(), idx_stop)
-        trace_cache[run.hashname] = {
+        trace_cache[run.hash] = {
             'run': run,
             'traces': run_traces
         }
@@ -73,13 +73,14 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
 
 def image_search_result_streamer(traces: SequenceCollection,
                                  rec_range: IndexRange, rec_density: int,
-                                 idx_range: IndexRange, idx_density: int):
+                                 idx_range: IndexRange, idx_density: int,
+                                 calc_total_ranges: bool):
     record_range_missing = rec_range.start is None or rec_range.stop is None
     index_range_missing = idx_range.start is None or idx_range.stop is None
     run_traces = {}
 
     trcs_rec_range, trcs_idx_range = IndexRange(None, None), IndexRange(None, None)
-    if record_range_missing or index_range_missing:
+    if record_range_missing or index_range_missing or calc_total_ranges:
         trcs_rec_range, trcs_idx_range = get_record_and_index_range(traces, trace_cache=run_traces)
 
     rec_start = rec_range.start if rec_range.start is not None else trcs_rec_range.start
@@ -93,12 +94,15 @@ def image_search_result_streamer(traces: SequenceCollection,
     rec_slice = slice(rec_start, rec_stop, rec_step)
     idx_slice = slice(idx_start, idx_stop, idx_step)
 
-    def pack_run_data(run_: Run, traces_: list, rec_slice: slice, idx_slice: slice):
+    def _pack_run_data(run_: Run, traces_: list):
+        _rec_range = trcs_rec_range if record_range_missing or calc_total_ranges else rec_range
+        _idx_range = trcs_idx_range if index_range_missing or calc_total_ranges else idx_range
+
         run_dict = {
-            run_.hashname: {
+            run_.hash: {
                 'ranges': {
-                    'record_range': [rec_slice.start, rec_slice.stop],
-                    'index_range': [idx_slice.start, idx_slice.stop],
+                    'record_range': [_rec_range.start, _rec_range.stop],
+                    'index_range': [_idx_range.start, _idx_range.stop],
                     'record_slice': [rec_slice.start, rec_slice.stop, rec_slice.step],
                     'index_slice': [idx_slice.start, idx_slice.stop, idx_slice.step]
                 },
@@ -115,15 +119,17 @@ def image_search_result_streamer(traces: SequenceCollection,
             traces_list = []
             for trace in run_info['traces']:
                 traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
-            yield pack_run_data(run_info['run'], traces_list, rec_slice, idx_slice)
+            yield _pack_run_data(run_info['run'], traces_list)
     else:
         for run_trace_collection in traces.iter_runs():
             traces_list = []
             for trace in run_trace_collection.iter():
                 traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
-            yield pack_run_data(run_trace_collection.run, traces_list, rec_slice, idx_slice)
+            yield _pack_run_data(run_trace_collection.run, traces_list)
 
 
 def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
     uri_service = URIService(repo=repo)
-    yield from uri_service.request_batch(uri_batch=uri_batch)
+    batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
+    for it in batch_iterator:
+        yield collect_run_streamable_data(encode_tree(it))

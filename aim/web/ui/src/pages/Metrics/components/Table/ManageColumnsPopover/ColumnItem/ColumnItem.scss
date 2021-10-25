@@ -5,8 +5,12 @@
   margin-bottom: 0.25em;
   border-radius: 0.25em;
   padding: 0.25em 0.5em;
-  background-color: tint($cuddle, 90);
+  background-color: $cuddle-10;
   display: flex;
+
+  &.highlighted {
+    background-color: $cuddle-30;
+  }
 
   div {
     display: flex;
