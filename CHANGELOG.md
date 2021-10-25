@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix update when nearest circles of active(mouse) point changed (KaroMourad)
 - Sort metrics data in ascending order for X-axis (KaroMourad)
 
 ## 3.0.1 Oct 22 2021
