@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Sort metrics data in ascending order for X-axis (KaroMourad)
+
 ## 3.0.1 Oct 22 2021
 
 - Check telemetry_enabled option on segment initialization (VkoHov)
