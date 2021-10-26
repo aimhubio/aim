@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useRouteMatch, useHistory } from 'react-router-dom';
+import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
@@ -83,7 +83,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
         metricAppModel.getMetricsData().call();
-        metricAppModel.setDefaultAppConfigData();
       });
     } else {
       metricAppModel.setDefaultAppConfigData();
@@ -112,8 +111,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     };
   }, []);
-
-  // Add effect to recover state from URL when browser history navigation is used
 
   return (
     <Metrics

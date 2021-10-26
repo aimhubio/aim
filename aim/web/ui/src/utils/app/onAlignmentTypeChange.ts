@@ -1,7 +1,7 @@
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import { IModel, State } from 'types/services/models/model';
 import * as analytics from 'services/analytics';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+import { AlignmentOptionsEnum } from '../d3';
 
 export default function onAlignmentTypeChange<M extends State>({
   type,
@@ -9,7 +9,7 @@ export default function onAlignmentTypeChange<M extends State>({
   appName,
   updateModelData,
 }: {
-  type: AlignmentOptions;
+  type: AlignmentOptionsEnum;
   model: IModel<M>;
   appName: string;
   updateModelData: (
@@ -21,7 +21,7 @@ export default function onAlignmentTypeChange<M extends State>({
   if (configData?.chart) {
     const alignmentConfig = { ...configData.chart.alignmentConfig, type };
 
-    if (type !== AlignmentOptions.CUSTOM_METRIC) {
+    if (type !== AlignmentOptionsEnum.CUSTOM_METRIC) {
       alignmentConfig.metric = '';
     }
     configData.chart = {
@@ -31,7 +31,7 @@ export default function onAlignmentTypeChange<M extends State>({
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[${appName}Explorer][Chart] Align X axis by "${AlignmentOptions[
+    `[${appName}Explorer][Chart] Align X axis by "${AlignmentOptionsEnum[
       type
     ].toLowerCase()}"`,
   );

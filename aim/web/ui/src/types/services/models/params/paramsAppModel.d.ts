@@ -72,7 +72,6 @@ export interface IParamsAppConfig {
       stroke: number;
     };
     paletteIndex: number;
-    selectOptions: IGroupingSelectOption[];
   };
   chart?: {
     curveInterpolation: CurveEnum;

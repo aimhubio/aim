@@ -1,6 +1,8 @@
 export function filterArrayByIndexes(
   missingIndexes: number[],
-  array: number[],
+  array: number[] | Float64Array,
 ) {
-  return array.filter((item, index) => missingIndexes.indexOf(index) === -1);
+  return new Float64Array(
+    array.filter((item, index) => missingIndexes.indexOf(index) === -1),
+  );
 }

@@ -23,11 +23,11 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { CurveEnum } from 'utils/d3';
 import {
-  GroupNameType,
   IAppData,
   IMetricAppConfig,
   IMetricsCollection,
   IMetricTableRowData,
+  IOnGroupingSelectChangeParams,
   ITooltipData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -62,6 +62,8 @@ import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
 import updateSortFields from 'utils/app/updateTableSortFields';
+import getValueByField from 'utils/getValueByField';
+import { getFilteredGroupingOptions } from 'utils/app/getFilteredGroupingOptions';
 
 // TODO need to implement state type
 const model = createModel<Partial<any>>({
@@ -104,7 +106,6 @@ function getConfig() {
         stroke: 10,
       },
       paletteIndex: 0,
-      selectOptions: [],
     },
     chart: {
       curveInterpolation: CurveEnum.Linear,
@@ -179,11 +180,7 @@ function updateData(newData: any) {
   const { data, params, metricsColumns } = processData(newData);
 
   const configData = model.getState()?.config;
-  if (configData) {
-    configData.grouping.selectOptions = [
-      ...getGroupingSelectOptions({ params }),
-    ];
-  }
+  const groupingSelectOptions = [...getGroupingSelectOptions({ params })];
 
   const sortFields = model.getState()?.config?.table.sortFields;
 
@@ -193,6 +190,7 @@ function updateData(newData: any) {
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
 
   const tableColumns = getParamsTableColumns(
@@ -203,6 +201,8 @@ function updateData(newData: any) {
     configData.table.hiddenColumns!,
     sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
 
   if (!model.getState()?.requestIsPending) {
@@ -217,6 +217,7 @@ function updateData(newData: any) {
     highPlotData: getDataAsLines(data),
     chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
       processedData: data,
+      groupingSelectOptions,
       model: model as IModel<IParamsAppModelState>,
     }),
     params,
@@ -227,7 +228,7 @@ function updateData(newData: any) {
     tableColumns: tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     isParamsLoading: false,
-    groupingSelectOptions: [...getGroupingSelectOptions({ params })],
+    groupingSelectOptions,
   });
 }
 
@@ -297,7 +298,6 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
-
   const tableConfigHash = getItem('paramsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
@@ -341,63 +341,80 @@ function getParamsData(shouldUrlUpdate?: boolean) {
         });
       } else {
         model.setState({ isParamsLoading: true });
-        const stream = await getRunsRequestRef.call(exceptionHandler);
-        let gen = adjustable_reader(stream);
-        let buffer_pairs = decode_buffer_pairs(gen);
-        let decodedPairs = decodePathsVals(buffer_pairs);
-        let objects = iterFoldTree(decodedPairs, 1);
 
-        const runData: IRun<IParamTrace>[] = [];
-        for await (let [keys, val] of objects) {
-          runData.push({ ...(val as any), hash: keys[0] });
-        }
+        try {
+          const stream = await getRunsRequestRef.call(exceptionHandler);
+          let gen = adjustable_reader(stream);
+          let buffer_pairs = decode_buffer_pairs(gen);
+          let decodedPairs = decodePathsVals(buffer_pairs);
+          let objects = iterFoldTree(decodedPairs, 1);
 
-        const { data, params, metricsColumns } = processData(runData);
-        const configData = model.getState()?.config;
-        if (configData) {
-          configData.grouping.selectOptions = [
+          const runData: IRun<IParamTrace>[] = [];
+          for await (let [keys, val] of objects) {
+            runData.push({ ...(val as any), hash: keys[0] });
+          }
+
+          const { data, params, metricsColumns } = processData(runData);
+          const configData = model.getState()?.config;
+          const groupingSelectOptions = [
             ...getGroupingSelectOptions({ params }),
           ];
-        }
-
-        const tableData = getDataAsTableRows(
-          data,
-          metricsColumns,
-          params,
-          false,
-          configData,
-        );
-        const sortFields = model.getState()?.config?.table.sortFields;
-
-        model.setState({
-          data,
-          highPlotData: getDataAsLines(data),
-          chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
+          tooltipData = getTooltipData({
             processedData: data,
-            model: model as IModel<IParamsAppModelState>,
-          }),
-          params,
-          metricsColumns,
-          rawData: runData,
-          config: configData,
-          tableData: tableData.rows,
-          tableColumns: getParamsTableColumns(
+            paramKeys: params,
+            groupingSelectOptions,
+            model,
+          });
+
+          const tableData = getDataAsTableRows(
+            data,
             metricsColumns,
             params,
-            data[0]?.config,
-            configData.table.columnsOrder!,
-            configData.table.hiddenColumns!,
-            sortFields,
-            onSortChange,
-          ),
-          sameValueColumns: tableData.sameValueColumns,
-          isParamsLoading: false,
-          groupingSelectOptions: [...getGroupingSelectOptions({ params })],
-        });
+            false,
+            configData,
+            groupingSelectOptions,
+          );
+          const sortFields = model.getState()?.config?.table.sortFields;
 
-        liveUpdateInstance?.start({
-          q: select?.query,
-        });
+          model.setState({
+            data,
+            highPlotData: getDataAsLines(data),
+            chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
+              processedData: data,
+              groupingSelectOptions,
+              model: model as IModel<IParamsAppModelState>,
+            }),
+            params,
+            metricsColumns,
+            rawData: runData,
+            config: configData,
+            tableData: tableData.rows,
+            tableColumns: getParamsTableColumns(
+              metricsColumns,
+              params,
+              data[0]?.config,
+              configData.table.columnsOrder!,
+              configData.table.hiddenColumns!,
+              sortFields,
+              onSortChange,
+              configData.grouping as any,
+              onGroupingSelectChange,
+            ),
+            sameValueColumns: tableData.sameValueColumns,
+            isParamsLoading: false,
+            groupingSelectOptions,
+          });
+
+          liveUpdateInstance?.start({
+            q: select?.query,
+          });
+        } catch (ex) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ', ex);
+          }
+        }
       }
     },
     abort: () => getRunsRequestRef.abort(),
@@ -476,8 +493,6 @@ function processData(data: IRun<IParamTrace>[]): {
     ),
   );
   const uniqParams = _.uniq(params);
-
-  tooltipData = getTooltipData({ processedData, paramKeys: uniqParams, model });
 
   return {
     data: processedData,
@@ -603,31 +618,45 @@ function getDataAsLines(
     .filter((data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions));
 }
 
-function getFilteredGroupingOptions(
-  grouping: IParamsAppConfig['grouping'],
-  groupName: GroupNameType,
-): string[] {
-  if (!grouping) {
-    return [];
-  }
-  const { selectOptions, reverseMode, isApplied } = grouping;
-
-  const filteredOptions = [...selectOptions]
-    .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-    .map((item) => item.value);
-  return isApplied[groupName]
-    ? reverseMode[groupName]
-      ? filteredOptions
-      : grouping[groupName]
-    : [];
-}
+// separated
+// function getFilteredGroupingOptions(
+//   grouping: IParamsAppConfig['grouping'],
+//   groupName: GroupNameType,
+// ): string[] {
+//   if (!grouping) {
+//     return [];
+//   }
+//   const { reverseMode, isApplied } = grouping;
+//   const groupingSelectOptions = model.getState()?.groupingSelectOptions;
+//   if (groupingSelectOptions) {
+//     const filteredOptions = [...groupingSelectOptions]
+//       .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+//       .map((item) => item.value);
+//     return isApplied[groupName]
+//       ? reverseMode[groupName]
+//         ? filteredOptions
+//         : grouping[groupName]
+//       : [];
+//   } else {
+//     return [];
+//   }
+// }
 
 function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
   const grouping = model.getState()!.config!.grouping;
   const { paletteIndex } = grouping;
-  const groupByColor = getFilteredGroupingOptions(grouping, 'color');
-  const groupByStroke = getFilteredGroupingOptions(grouping, 'stroke');
-  const groupByChart = getFilteredGroupingOptions(grouping, 'chart');
+  const groupByColor = getFilteredGroupingOptions({
+    groupName: 'color',
+    model,
+  });
+  const groupByStroke = getFilteredGroupingOptions({
+    groupName: 'stroke',
+    model,
+  });
+  const groupByChart = getFilteredGroupingOptions({
+    groupName: 'chart',
+    model,
+  });
   if (
     groupByColor.length === 0 &&
     groupByStroke.length === 0 &&
@@ -689,8 +718,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
 
       if (grouping.persistence.color && grouping.isApplied.color) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: colorConfig,
           grouping,
           groupName: 'color',
         });
@@ -716,8 +744,7 @@ function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
       const dasharrayKey = encode(dasharrayConfig);
       if (grouping.persistence.stroke && grouping.isApplied.stroke) {
         let index = getGroupingPersistIndex({
-          groupValues,
-          groupKey,
+          groupConfig: dasharrayConfig,
           grouping,
           groupName: 'stroke',
         });
@@ -851,19 +878,19 @@ function onActivePointChange(
   });
 }
 
-function onParamsSelectChange(data: any[]) {
-  const configData: IParamsAppConfig = model.getState()?.config;
-  if (configData?.select) {
-    const newConfig = {
-      ...configData,
-      select: { ...configData.select, params: data },
-    };
-
-    model.setState({
-      config: newConfig,
-    });
-  }
-}
+// function onParamsSelectChange(data: any[]) {
+//   const configData: IParamsAppConfig = model.getState()?.config;
+//   if (configData?.select) {
+//     const newConfig = {
+//       ...configData,
+//       select: { ...configData.select, params: data },
+//     };
+//
+//     model.setState({
+//       config: newConfig,
+//     });
+//   }
+// }
 
 // function onSelectRunQueryChange(query: string) {
 //   const configData: IParamsAppConfig = model.getState()?.config;
@@ -901,18 +928,18 @@ function onParamsSelectChange(data: any[]) {
 //   ];
 // }
 //
-// function onGroupingSelectChange({
-//   groupName,
-//   list,
-// }: IOnGroupingSelectChangeParams) {
-//   const configData: IParamsAppConfig = model.getState()?.config;
-//   if (configData?.grouping) {
-//     configData.grouping = { ...configData.grouping, [groupName]: list };
-//     updateModelData(configData, true);
-//   }
-//   analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
-// }
-//
+function onGroupingSelectChange({
+  groupName,
+  list,
+}: IOnGroupingSelectChangeParams) {
+  const configData: IParamsAppConfig = model.getState()?.config;
+  if (configData?.grouping) {
+    configData.grouping = { ...configData.grouping, [groupName]: list };
+    updateModelData(configData, true);
+  }
+  analytics.trackEvent(`[ParamsExplorer] Group by ${groupName}`);
+}
+
 // function onGroupingModeChange({
 //   groupName,
 //   value,
@@ -973,12 +1000,20 @@ function updateModelData(
   const { data, params, metricsColumns } = processData(
     model.getState()?.rawData as IRun<IParamTrace>[],
   );
+  const groupingSelectOptions = [...getGroupingSelectOptions({ params })];
+  tooltipData = getTooltipData({
+    processedData: data,
+    paramKeys: params,
+    groupingSelectOptions,
+    model,
+  });
   const tableData = getDataAsTableRows(
     data,
     metricsColumns,
     params,
     false,
     configData,
+    groupingSelectOptions,
   );
   const tableColumns = getParamsTableColumns(
     metricsColumns,
@@ -988,6 +1023,8 @@ function updateModelData(
     configData.table?.hiddenColumns!,
     configData.table?.sortFields,
     onSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -1006,9 +1043,10 @@ function updateModelData(
     highPlotData: getDataAsLines(data),
     chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
       processedData: data,
+      groupingSelectOptions,
       model: model as IModel<IParamsAppModelState>,
     }),
-    groupingSelectOptions: [...getGroupingSelectOptions({ params })],
+    groupingSelectOptions,
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
@@ -1021,6 +1059,7 @@ function getDataAsTableRows(
   paramKeys: string[],
   isRawData: boolean,
   config: IParamsAppConfig,
+  groupingSelectOptions: any,
 ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
   if (!processedData) {
     return {
@@ -1050,6 +1089,11 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
+      const groupConfigData: { [key: string]: string } = {};
+      for (let key in metricsCollection.config) {
+        groupConfigData[getValueByField(groupingSelectOptions, key)] =
+          metricsCollection.config[key];
+      }
       const groupHeaderRow = {
         meta: {
           chartIndex:
@@ -1060,6 +1104,7 @@ function getDataAsTableRows(
           color: metricsCollection.color,
           dasharray: metricsCollection.dasharray,
           itemsCount: metricsCollection.data.length,
+          config: groupConfigData,
         },
         key: groupKey!,
         groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -1080,7 +1125,7 @@ function getDataAsTableRows(
 
     metricsCollection.data.forEach((metric: any) => {
       const metricsRowValues = { ...initialMetricsRowData };
-      metric.run.traces.map((trace: any) => {
+      metric.run.traces.forEach((trace: any) => {
         metricsRowValues[
           `${trace.metric_name}_${contextToString(trace.context)}`
         ] = formatValue(trace.last_value.last);
@@ -1096,11 +1141,17 @@ function getDataAsTableRows(
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
-        run: metric.run.props.name ?? '-',
+        run: moment(metric.run.props.creation_time * 1000).format(
+          'HH:mm:ss · D MMM, YY',
+        ),
         metric: metric.metric_name,
         ...metricsRowValues,
       };
       rowIndex++;
+
+      for (let key in metricsRowValues) {
+        columnsValues[key] = ['-'];
+      }
 
       [
         'experiment',
@@ -1175,7 +1226,9 @@ function getDataAsTableRows(
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length === 1
-            ? columnsValues[columnKey][0]
+            ? paramKeys.includes(columnKey)
+              ? formatValue(columnsValues[columnKey][0])
+              : columnsValues[columnKey][0]
             : columnsValues[columnKey];
       }
     }
@@ -1305,13 +1358,15 @@ function getDataAsTableRows(
 // }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  const { data, params, config, metricsColumns } = model.getState() as any;
+  const { data, params, config, metricsColumns, groupingSelectOptions } =
+    model.getState() as any;
   const tableData = getDataAsTableRows(
     data,
     metricsColumns,
     params,
     true,
     config,
+    groupingSelectOptions,
   );
   const tableColumns: ITableColumn[] = getParamsTableColumns(
     metricsColumns,
@@ -1650,14 +1705,14 @@ function updateURL(configData = model.getState()!.config!) {
 // }
 
 // set empty array to config.table.sortFields
-function onSortReset() {
-  updateSortFields({
-    sortFields: [],
-    model,
-    appName: 'params',
-    updateModelData,
-  });
-}
+// function onSortReset() {
+//   updateSortFields({
+//     sortFields: [],
+//     model,
+//     appName: 'params',
+//     updateModelData,
+//   });
+// }
 
 /**
  * function onSortChange has 3 major functionalities

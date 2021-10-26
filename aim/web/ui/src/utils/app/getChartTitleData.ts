@@ -1,16 +1,20 @@
 import {
   IChartTitle,
   IChartTitleData,
+  IGroupingSelectOption,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import { formatValue } from '../formatValue';
+import getValueByField from '../getValueByField';
 
 export default function getChartTitleData<D, M extends State>({
   processedData,
+  groupingSelectOptions,
   model,
 }: {
   processedData: IMetricsCollection<D>[];
+  groupingSelectOptions: IGroupingSelectOption[];
   model: IModel<M>;
 }): IChartTitleData {
   if (!processedData) {
@@ -23,9 +27,8 @@ export default function getChartTitleData<D, M extends State>({
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[groupItemKey.replace('run.params.', '')] = formatValue(
-              metricsCollection.config[groupItemKey],
-            );
+            acc[getValueByField(groupingSelectOptions || [], groupItemKey)] =
+              formatValue(metricsCollection.config[groupItemKey]);
           }
           return acc;
         },

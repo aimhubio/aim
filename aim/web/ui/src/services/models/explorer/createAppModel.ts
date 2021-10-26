@@ -5,7 +5,6 @@ import { saveAs } from 'file-saver';
 import * as analytics from 'services/analytics';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -48,6 +47,7 @@ import {
   IAggregationConfig,
   IChartTooltip,
   ITooltipData,
+  IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IRun,
@@ -115,12 +115,17 @@ import onTableRowHover from 'utils/app/onTableRowHover';
 import onTableSortChange from 'utils/app/onTableSortChange';
 import onZoomChange from 'utils/app/onZoomChange';
 import setAggregationEnabled from 'utils/app/setAggregationEnabled';
-import toggleSelectAdvancedMode from 'utils/app/toggleAdvancedMode';
+import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import updateUrlParam from 'utils/app/updateUrlParam';
 import contextToString from 'utils/contextToString';
-import { ChartTypeEnum, ScaleEnum, CurveEnum } from 'utils/d3';
+import {
+  ChartTypeEnum,
+  ScaleEnum,
+  CurveEnum,
+  AlignmentOptionsEnum,
+} from 'utils/d3';
 import {
   adjustable_reader,
   decode_buffer_pairs,
@@ -160,6 +165,8 @@ import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
 import { DensityOptions } from 'config/enums/densityEnum';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
+import getValueByField from '../../../utils/getValueByField';
+import sortDependingArrays from '../../../utils/app/sortDependingArrays';
 
 /**
  * function createAppModel has 2 major functionalities:
@@ -257,7 +264,7 @@ function createAppModel({
             smoothingFactor: 0,
             alignmentConfig: {
               metric: '',
-              type: AlignmentOptions.STEP,
+              type: AlignmentOptionsEnum.STEP,
             },
             densityType: DensityOptions.Minimum,
             aggregationConfig: {
@@ -318,7 +325,6 @@ function createAppModel({
               stroke: 10,
             },
             paletteIndex: 0,
-            selectOptions: [],
           };
         }
         if (components?.table) {
@@ -517,6 +523,7 @@ function createAppModel({
       paramKeys: string[],
       isRowData: boolean,
       config: IMetricAppConfig,
+      groupingSelectOptions: IGroupingSelectOption[],
       dynamicUpdate?: boolean,
     ): {
       rows: IMetricTableRowData[] | any;
@@ -541,16 +548,22 @@ function createAppModel({
           const columnsValues: { [key: string]: string[] } = {};
 
           if (metricsCollection.config !== null) {
+            const groupConfigData: { [key: string]: string } = {};
+            for (let key in metricsCollection.config) {
+              groupConfigData[getValueByField(groupingSelectOptions, key)] =
+                metricsCollection.config[key];
+            }
             const groupHeaderRow = {
               meta: {
                 chartIndex:
-                  config?.grouping?.chart?.length! > 0 ||
+                  config?.grouping?.chart.length ||
                   config?.grouping?.reverseMode.chart
                     ? metricsCollection.chartIndex + 1
                     : null,
                 color: metricsCollection.color,
                 dasharray: metricsCollection.dasharray,
                 itemsCount: metricsCollection.data.length,
+                config: groupConfigData,
               },
               key: groupKey!,
               groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
@@ -599,23 +612,23 @@ function createAppModel({
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment ?? 'default',
-              run: metric.run.props.name,
-              metric: metric.metric_name,
-              context: Object.entries(metric.context).map((entry) =>
-                entry.join(':'),
+              run: moment(metric.run.props.creation_time * 1000).format(
+                'HH:mm:ss · D MMM, YY',
               ),
+              metric: metric.metric_name,
+              context: contextToString(metric.context)?.split(',') || [''],
               value:
                 closestIndex === null
                   ? '-'
-                  : `${metric.data.values[closestIndex] ?? '-'}`,
+                  : formatValue(metric.data.values[closestIndex]),
               step:
                 closestIndex === null
                   ? '-'
-                  : `${metric.data.steps[closestIndex] ?? '-'}`,
+                  : formatValue(metric.data.steps[closestIndex]),
               epoch:
                 closestIndex === null
                   ? '-'
-                  : `${metric.data.epochs[closestIndex] ?? '-'}`,
+                  : formatValue(metric.data.epochs[closestIndex]),
               time:
                 closestIndex !== null
                   ? metric.data.timestamps[closestIndex]
@@ -723,7 +736,9 @@ function createAppModel({
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
                 columnsValues[columnKey].length === 1
-                  ? columnsValues[columnKey][0]
+                  ? paramKeys.includes(columnKey)
+                    ? formatValue(columnsValues[columnKey][0])
+                    : columnsValues[columnKey][0]
                   : columnsValues[columnKey];
             }
           }
@@ -803,12 +818,12 @@ function createAppModel({
               axesScaleType: configData?.chart?.axesScaleType,
             });
 
-            let yValues = values;
+            let processedValues = values;
             if (
               configData?.chart?.smoothingAlgorithm &&
               configData.chart.smoothingFactor
             ) {
-              yValues = getSmoothenedData({
+              processedValues = getSmoothenedData({
                 smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
                 smoothingFactor: configData.chart.smoothingFactor,
                 data: values,
@@ -827,14 +842,14 @@ function createAppModel({
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               data: {
-                values,
+                values: processedValues,
                 steps,
                 epochs,
                 timestamps: timestamps.map((timestamp) =>
                   Math.round(timestamp * 1000),
                 ),
                 xValues: steps,
-                yValues,
+                yValues: processedValues,
               },
             } as IMetric);
           }),
@@ -856,14 +871,6 @@ function createAppModel({
       const uniqParams = _.uniq(params);
       const uniqContexts = _.uniq(contexts);
 
-      if (components?.charts?.[0]) {
-        tooltipData = getTooltipData({
-          processedData,
-          paramKeys: uniqParams,
-          model,
-        });
-      }
-
       return {
         data: processedData,
         params: uniqParams,
@@ -878,16 +885,24 @@ function createAppModel({
       const { data, params, contexts } = processData(
         model.getState()?.rawData as IRun<IMetricTrace>[],
       );
+      const groupingSelectOptions = [
+        ...getGroupingSelectOptions({ params, contexts }),
+      ];
+      tooltipData = getTooltipData({
+        processedData: data,
+        paramKeys: params,
+        groupingSelectOptions,
+        model,
+      });
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
         params,
         false,
         configData,
+        groupingSelectOptions,
       );
-      const groupingSelectOptions = [
-        ...getGroupingSelectOptions({ params, contexts }),
-      ];
+
       const tableColumns = getMetricsTableColumns(
         params,
         data[0]?.config,
@@ -896,6 +911,8 @@ function createAppModel({
         configData?.chart?.aggregationConfig.methods,
         configData.table?.sortFields,
         onSortChange,
+        configData.grouping as any,
+        onModelGroupingSelectChange,
       );
       const tableRef: any = model.getState()?.refs?.tableRef;
       tableRef.current?.updateData({
@@ -912,11 +929,15 @@ function createAppModel({
         config: configData,
         data,
         lineChartData: getDataAsLines(data),
-        chartTitleData: getChartTitleData<IMetric, IMetricAppModelState>({
+        chartTitleData: getChartTitleData<
+          IMetric,
+          Partial<IMetricAppModelState>
+        >({
           processedData: data,
+          groupingSelectOptions,
           model: model as IModel<IMetricAppModelState>,
         }),
-        aggregatedData: getAggregatedData<IMetricAppModelState>({
+        aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
           processedData: data,
           model: model as IModel<IMetricAppModelState>,
         }),
@@ -936,13 +957,40 @@ function createAppModel({
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
+      const groupingSelectOptions = [
+        ...getGroupingSelectOptions({ params, contexts }),
+      ];
+      tooltipData = getTooltipData({
+        processedData: data,
+        paramKeys: params,
+        groupingSelectOptions,
+        model,
+      });
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
         params,
         false,
         configData,
+        groupingSelectOptions,
       );
+      const tableColumns = getMetricsTableColumns(
+        params,
+        data[0]?.config,
+        configData.table?.columnsOrder!,
+        configData.table?.hiddenColumns!,
+        configData?.chart?.aggregationConfig.methods,
+        sortFields,
+        onSortChange,
+        configData.grouping as any,
+        onModelGroupingSelectChange,
+      );
+      if (!model.getState()?.requestIsPending) {
+        model.getState()?.refs?.tableRef?.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
+      }
       model.setState({
         requestIsPending: false,
         rawData,
@@ -955,6 +1003,7 @@ function createAppModel({
           Partial<IMetricAppModelState>
         >({
           processedData: data,
+          groupingSelectOptions,
           model: model as IModel<IMetricAppModelState>,
         }),
         aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
@@ -962,29 +1011,19 @@ function createAppModel({
           model: model as IModel<IMetricAppModelState>,
         }),
         tableData: tableData.rows,
-        tableColumns: getMetricsTableColumns(
-          params,
-          data[0]?.config,
-          configData?.table?.columnsOrder!,
-          configData?.table?.hiddenColumns!,
-          configData?.chart?.aggregationConfig.methods,
-          sortFields,
-          onSortChange,
-        ),
+        tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
-        groupingSelectOptions: [
-          ...getGroupingSelectOptions({ params, contexts }),
-        ],
+        groupingSelectOptions,
       });
     }
 
     function alignData(
       data: IMetricsCollection<IMetric>[],
-      type: AlignmentOptions = model.getState()!.config?.chart?.alignmentConfig
-        .type!,
+      type: AlignmentOptionsEnum = model.getState()!.config!.chart
+        ?.alignmentConfig.type!,
     ): IMetricsCollection<IMetric>[] {
       switch (type) {
-        case AlignmentOptions.STEP:
+        case AlignmentOptionsEnum.STEP:
           for (let i = 0; i < data.length; i++) {
             const metricCollection = data[i];
             for (let j = 0; j < metricCollection.data.length; j++) {
@@ -997,12 +1036,13 @@ function createAppModel({
             }
           }
           break;
-        case AlignmentOptions.EPOCH:
+        case AlignmentOptionsEnum.EPOCH:
           for (let i = 0; i < data.length; i++) {
             const metricCollection = data[i];
             for (let j = 0; j < metricCollection.data.length; j++) {
               const metric = metricCollection.data[j];
               const epochs: { [key: number]: number[] } = {};
+
               metric.data.epochs.forEach((epoch, i) => {
                 if (epochs.hasOwnProperty(epoch)) {
                   epochs[epoch].push(metric.data.steps[i]);
@@ -1028,7 +1068,7 @@ function createAppModel({
             }
           }
           break;
-        case AlignmentOptions.RELATIVE_TIME:
+        case AlignmentOptionsEnum.RELATIVE_TIME:
           for (let i = 0; i < data.length; i++) {
             const metricCollection = data[i];
             for (let j = 0; j < metricCollection.data.length; j++) {
@@ -1042,6 +1082,7 @@ function createAppModel({
                   timestamps[timestamp] = [metric.data.steps[i]];
                 }
               });
+
               metric.data = {
                 ...metric.data,
                 xValues: [
@@ -1060,11 +1101,12 @@ function createAppModel({
             }
           }
           break;
-        case AlignmentOptions.ABSOLUTE_TIME:
+        case AlignmentOptionsEnum.ABSOLUTE_TIME:
           for (let i = 0; i < data.length; i++) {
             const metricCollection = data[i];
             for (let j = 0; j < metricCollection.data.length; j++) {
               const metric = metricCollection.data[j];
+
               metric.data = {
                 ...metric.data,
                 xValues: [...metric.data.timestamps],
@@ -1073,7 +1115,7 @@ function createAppModel({
             }
           }
           break;
-        case AlignmentOptions.CUSTOM_METRIC:
+        case AlignmentOptionsEnum.CUSTOM_METRIC:
           let missingTraces = false;
           for (let i = 0; i < data.length; i++) {
             const metricCollection = data[i];
@@ -1088,10 +1130,21 @@ function createAppModel({
                   ...new Float64Array(metric.x_axis_values.blob),
                 ];
                 if (xAxisValues.length === metric.data.values.length) {
+                  const { sortedXValues, sortedArrays } = sortDependingArrays(
+                    [...xAxisValues],
+                    {
+                      yValues: [...metric.data.values],
+                      epochs: [...metric.data.epochs],
+                      steps: [...metric.data.steps],
+                      timestamps: [...metric.data.timestamps],
+                      values: [...metric.data.values],
+                    },
+                  );
+
                   metric.data = {
                     ...metric.data,
-                    xValues: [...xAxisValues.sort((a, b) => a - b)],
-                    yValues: [...metric.data.values],
+                    ...sortedArrays,
+                    xValues: sortedXValues,
                   };
                 } else {
                   metric.data.steps.forEach((step, index) => {
@@ -1119,13 +1172,22 @@ function createAppModel({
                     missingIndexes,
                     metric.data.yValues,
                   );
+
+                  const { sortedXValues, sortedArrays } = sortDependingArrays(
+                    [...xAxisValues],
+                    {
+                      yValues: [...yValues],
+                      epochs: [...epochs],
+                      steps: [...steps],
+                      timestamps: [...timestamps],
+                      values: [...values],
+                    },
+                  );
+
                   metric.data = {
-                    epochs,
-                    steps,
-                    timestamps,
-                    values,
-                    xValues: [...xAxisValues],
-                    yValues: [...yValues],
+                    ...metric.data,
+                    ...sortedArrays,
+                    xValues: sortedXValues,
                   };
                 }
               } else {
@@ -1134,22 +1196,14 @@ function createAppModel({
             }
           }
           if (missingTraces) {
-            let configData = model.getState()?.config;
-            onModelNotificationAdd({
-              id: Date.now(),
-              severity: 'error',
-              message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'error',
+                message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+              },
+              model,
             });
-            if (configData?.chart) {
-              configData.chart = {
-                ...configData.chart,
-                alignmentConfig: {
-                  metric: '',
-                  type: AlignmentOptions.STEP,
-                },
-              };
-              model.setState({ config: configData });
-            }
           }
           break;
         default:
@@ -1161,6 +1215,7 @@ function createAppModel({
     function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
       const configData = model.getState()!.config;
       const grouping = configData!.grouping;
+      const { paletteIndex = 0 } = grouping || {};
       const groupByColor = getFilteredGroupingOptions({
         groupName: 'color',
         model,
@@ -1225,18 +1280,16 @@ function createAppModel({
       const dasharrayConfigsMap: { [key: string]: number } = {};
       const chartIndexConfigsMap: { [key: string]: number } = {};
 
-      const { paletteIndex } = grouping;
-
       for (let groupKey in groupValues) {
         const groupValue = groupValues[groupKey];
 
         if (groupByColor.length > 0) {
           const colorConfig = _.pick(groupValue.config, groupByColor);
           const colorKey = encode(colorConfig);
-          if (grouping.persistence.color && grouping.isApplied.color) {
+
+          if (grouping?.persistence.color && grouping.isApplied.color) {
             let index = getGroupingPersistIndex({
-              groupValues,
-              groupKey,
+              groupConfig: colorConfig,
               grouping,
               groupName: 'color',
             });
@@ -1260,10 +1313,9 @@ function createAppModel({
         if (groupByStroke.length > 0) {
           const dasharrayConfig = _.pick(groupValue.config, groupByStroke);
           const dasharrayKey = encode(dasharrayConfig);
-          if (grouping.persistence.stroke && grouping.isApplied.stroke) {
+          if (grouping?.persistence.stroke && grouping.isApplied.stroke) {
             let index = getGroupingPersistIndex({
-              groupValues,
-              groupKey,
+              groupConfig: dasharrayConfig,
               grouping,
               groupName: 'stroke',
             });
@@ -1301,10 +1353,10 @@ function createAppModel({
       return aggregateGroupData({
         groupData: groups,
         methods: {
-          area: chartConfig.aggregationConfig.methods.area,
-          line: chartConfig.aggregationConfig.methods.line,
+          area: chartConfig!.aggregationConfig.methods.area,
+          line: chartConfig!.aggregationConfig.methods.line,
         },
-        scale: chartConfig.axesScaleType,
+        scale: chartConfig!.axesScaleType,
       });
     }
 
@@ -1321,27 +1373,15 @@ function createAppModel({
 
     function getDataAsLines(
       processedData: IMetricsCollection<IMetric>[],
-      configData = model.getState()?.config,
     ): ILine[][] {
       if (!processedData) {
         return [];
       }
-      const { smoothingAlgorithm, smoothingFactor } = configData?.chart || {};
       const lines = processedData
         .map((metricsCollection: IMetricsCollection<IMetric>) =>
           metricsCollection.data
             .filter((metric) => !metric.isHidden)
             .map((metric: IMetric) => {
-              let yValues;
-              if (smoothingAlgorithm && smoothingFactor) {
-                yValues = getSmoothenedData({
-                  smoothingAlgorithm,
-                  smoothingFactor,
-                  data: metric.data.yValues,
-                });
-              } else {
-                yValues = metric.data.yValues;
-              }
               return {
                 ...metric,
                 groupKey: metricsCollection.key,
@@ -1351,7 +1391,7 @@ function createAppModel({
                 selectors: [metric.key, metric.key, metric.run.hash],
                 data: {
                   xValues: metric.data.xValues,
-                  yValues,
+                  yValues: metric.data.yValues,
                 },
               };
             }),
@@ -1362,7 +1402,8 @@ function createAppModel({
     }
 
     function onExportTableData(): void {
-      const { data, params, config } = model.getState() as IMetricAppModelState;
+      const { data, params, config, groupingSelectOptions } =
+        model.getState() as IMetricAppModelState;
 
       const tableData = getDataAsTableRows(
         data,
@@ -1370,6 +1411,7 @@ function createAppModel({
         params,
         true,
         config,
+        groupingSelectOptions,
       );
       const tableColumns: ITableColumn[] = getMetricsTableColumns(
         params,
@@ -1431,7 +1473,7 @@ function createAppModel({
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
       ): void => {
-        const { data, params, refs, config } =
+        const { data, params, refs, config, groupingSelectOptions } =
           model.getState() as IMetricAppModelState;
         if (!!config) {
           const tableRef: any = refs?.tableRef;
@@ -1443,6 +1485,7 @@ function createAppModel({
               params,
               false,
               config,
+              groupingSelectOptions,
               true,
             );
             if (tableRef) {
@@ -1497,6 +1540,20 @@ function createAppModel({
       50,
     );
 
+    function onModelGroupingSelectChange({
+      groupName,
+      list,
+    }: IOnGroupingSelectChangeParams): void {
+      onGroupingSelectChange({
+        groupName,
+        list,
+        model,
+        appName,
+        updateModelData,
+        setAggregationEnabled,
+      });
+    }
+
     function onModelBookmarkCreate({
       name,
       description,
@@ -1530,7 +1587,7 @@ function createAppModel({
       onTableSortChange({ field, model, appName, updateModelData, value });
     }
 
-    function setModelComponentRefs(refElement: any): void {
+    function setModelComponentRefs(refElement: object): void {
       setComponentRefs({ refElement, model });
     }
 
@@ -1600,19 +1657,7 @@ function createAppModel({
 
     if (grouping) {
       Object.assign(methods, {
-        onGroupingSelectChange({
-          groupName,
-          list,
-        }: IOnGroupingSelectChangeParams): void {
-          onGroupingSelectChange({
-            groupName,
-            list,
-            model,
-            appName,
-            updateModelData,
-            setAggregationEnabled,
-          });
-        },
+        onGroupingSelectChange: onModelGroupingSelectChange,
         onGroupingModeChange({
           groupName,
           value,
@@ -1717,9 +1762,15 @@ function createAppModel({
           });
         },
         onAlignmentMetricChange(metric: string): Promise<void> {
-          return onAlignmentMetricChange({ metric, model, setModelData });
+          return onAlignmentMetricChange({
+            metric,
+            model,
+            appName,
+            updateModelData,
+            setModelData,
+          });
         },
-        onAlignmentTypeChange(type: AlignmentOptions): void {
+        onAlignmentTypeChange(type: AlignmentOptionsEnum): void {
           onAlignmentTypeChange({ type, model, appName, updateModelData });
         },
         onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
@@ -1769,10 +1820,10 @@ function createAppModel({
           });
         },
         onTableResizeModeChange(mode: ResizeModeEnum): void {
-          onTableResizeModeChange({ mode, model, appName, updateModelData });
+          onTableResizeModeChange({ mode, model, appName });
         },
         onTableResizeEnd(tableHeight: string): void {
-          onTableResizeEnd({ tableHeight, model, appName, updateModelData });
+          onTableResizeEnd({ tableHeight, model, appName });
         },
         onSortReset(): void {
           updateSortFields({ sortFields: [], model, appName, updateModelData });
@@ -1897,7 +1948,7 @@ function createAppModel({
               const stream = await call((detail) =>
                 exceptionHandler({ detail, model }),
               );
-              let gen = adjustable_reader(stream);
+              let gen = adjustable_reader(stream as ReadableStream<any>);
               let buffer_pairs = decode_buffer_pairs(gen);
               let decodedPairs = decodePathsVals(buffer_pairs);
               let objects = iterFoldTree(decodedPairs, 1);
@@ -1958,8 +2009,12 @@ function createAppModel({
                   hiddenColumns: configData.table.hiddenColumns!,
                 });
               }, 0);
-            } catch (e) {
-              console.error(e);
+            } catch (ex) {
+              if (ex.name === 'AbortError') {
+                // Abort Error
+              } else {
+                console.log('Unhandled error: ', ex);
+              }
             }
           },
           abort,
@@ -2099,6 +2154,7 @@ function createAppModel({
       function groupData(data: any): IMetricsCollection<IMetric>[] {
         const configData = model.getState()!.config;
         const grouping = configData!.grouping;
+        const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions({
           groupName: 'color',
           model,
@@ -2161,7 +2217,6 @@ function createAppModel({
         const colorConfigsMap: { [key: string]: number } = {};
         const dasharrayConfigsMap: { [key: string]: number } = {};
         const chartIndexConfigsMap: { [key: string]: number } = {};
-        const { paletteIndex } = grouping;
 
         for (let groupKey in groupValues) {
           const groupValue = groupValues[groupKey];
@@ -2172,8 +2227,7 @@ function createAppModel({
 
             if (grouping.persistence.color && grouping.isApplied.color) {
               let index = getGroupingPersistIndex({
-                groupValues,
-                groupKey,
+                groupConfig: colorConfig,
                 grouping,
                 groupName: 'color',
               });
@@ -2199,8 +2253,7 @@ function createAppModel({
             const dasharrayKey = encode(dasharrayConfig);
             if (grouping.persistence.stroke && grouping.isApplied.stroke) {
               let index = getGroupingPersistIndex({
-                groupValues,
-                groupKey,
+                groupConfig: dasharrayConfig,
                 grouping,
                 groupName: 'stroke',
               });
@@ -2682,11 +2735,9 @@ function createAppModel({
         const { data, params, metricsColumns } = processData(newData);
 
         const configData = model.getState()?.config;
-        if (configData) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions({ params }),
-          ];
-        }
+        const groupingSelectOptions = [...getGroupingSelectOptions({ params })];
+
+        const sortFields = model.getState()?.config?.table.sortFields;
 
         const tableData = getDataAsTableRows(
           data,
@@ -2694,14 +2745,34 @@ function createAppModel({
           params,
           false,
           configData,
+          groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+
+        const tableColumns = getParamsTableColumns(
+          metricsColumns,
+          params,
+          data[0]?.config,
+          configData.table.columnsOrder!,
+          configData.table.hiddenColumns!,
+          sortFields,
+          onSortChange,
+          configData.grouping as any,
+          onModelGroupingSelectChange,
+        );
+
+        if (!model.getState()?.requestIsPending) {
+          model.getState()?.refs?.tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+          });
+        }
 
         model.setState({
           data,
           highPlotData: getDataAsLines(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
             processedData: data,
+            groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
           params,
@@ -2709,18 +2780,10 @@ function createAppModel({
           rawData: newData,
           config: configData,
           tableData: tableData.rows,
-          tableColumns: getParamsTableColumns(
-            metricsColumns,
-            params,
-            data[0]?.config,
-            configData.table.columnsOrder!,
-            configData.table.hiddenColumns!,
-            sortFields,
-            onSortChange,
-          ),
+          tableColumns: tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           requestIsPending: false,
-          groupingSelectOptions: [...getGroupingSelectOptions({ params })],
+          groupingSelectOptions,
         });
       }
 
@@ -2810,17 +2873,25 @@ function createAppModel({
                 requestIsPending: true,
                 queryIsEmpty: false,
               });
-              const stream = await runsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
-              const runData = await getRunData(stream);
-              if (configData) {
-                setModelData(runData, configData);
-              }
+              try {
+                const stream = await runsRequestRef.call((detail) =>
+                  exceptionHandler({ detail, model }),
+                );
+                const runData = await getRunData(stream);
+                if (configData) {
+                  setModelData(runData, configData);
+                }
 
-              liveUpdateInstance?.start({
-                q: configData?.select?.query,
-              });
+                liveUpdateInstance?.start({
+                  q: configData?.select?.query,
+                });
+              } catch (ex) {
+                if (ex.name === 'AbortError') {
+                  // Abort Error
+                } else {
+                  console.log('Unhandled error: ', ex);
+                }
+              }
             }
           },
           abort: () => runsRequestRef.abort(),
@@ -2833,10 +2904,8 @@ function createAppModel({
         paramKeys: string[],
         isRowData: boolean,
         config: IParamsAppConfig,
-      ): {
-        rows: IMetricTableRowData[] | any;
-        sameValueColumns: string[];
-      } {
+        groupingSelectOptions: IGroupingSelectOption[],
+      ): { rows: IMetricTableRowData[] | any; sameValueColumns: string[] } {
         if (!processedData) {
           return {
             rows: [],
@@ -2868,6 +2937,11 @@ function createAppModel({
             const columnsValues: { [key: string]: string[] } = {};
 
             if (metricsCollection.config !== null) {
+              const groupConfigData: { [key: string]: string } = {};
+              for (let key in metricsCollection.config) {
+                groupConfigData[getValueByField(groupingSelectOptions, key)] =
+                  metricsCollection.config[key];
+              }
               const groupHeaderRow = {
                 meta: {
                   chartIndex:
@@ -2878,6 +2952,7 @@ function createAppModel({
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
+                  config: groupConfigData,
                 },
                 key: groupKey!,
                 groupRowsKeys: metricsCollection.data.map(
@@ -2900,7 +2975,7 @@ function createAppModel({
 
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
-              metric.run.traces.map((trace: any) => {
+              metric.run.traces.forEach((trace: any) => {
                 metricsRowValues[
                   `${trace.metric_name}_${contextToString(trace.context)}`
                 ] = formatValue(trace.last_value.last);
@@ -2916,11 +2991,17 @@ function createAppModel({
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment ?? 'default',
-                run: metric.run.props.name ?? '-',
+                run: moment(metric.run.props.creation_time * 1000).format(
+                  'HH:mm:ss · D MMM, YY',
+                ),
                 metric: metric.metric_name,
                 ...metricsRowValues,
               };
               rowIndex++;
+
+              for (let key in metricsRowValues) {
+                columnsValues[key] = ['-'];
+              }
 
               [
                 'experiment',
@@ -2962,7 +3043,7 @@ function createAppModel({
                           onRowVisibilityChange({
                             metricKey: rowValues.key,
                             model,
-                            appName,
+                            appName: 'params',
                             updateModelData,
                           });
                         },
@@ -2978,7 +3059,7 @@ function createAppModel({
                           onRowVisibilityChange({
                             metricKey: rowValues.key,
                             model,
-                            appName,
+                            appName: 'params',
                             updateModelData,
                           });
                         },
@@ -2995,7 +3076,9 @@ function createAppModel({
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
                   columnsValues[columnKey].length === 1
-                    ? columnsValues[columnKey][0]
+                    ? paramKeys.includes(columnKey)
+                      ? formatValue(columnsValues[columnKey][0])
+                      : columnsValues[columnKey][0]
                     : columnsValues[columnKey];
               }
             }
@@ -3018,10 +3101,7 @@ function createAppModel({
         processedData: IMetricsCollection<IParam>[],
         configData = model.getState()?.config,
       ): { dimensions: IDimensionsType; data: any }[] {
-        if (
-          !processedData ||
-          (configData?.select?.params && _.isEmpty(configData.select.params))
-        ) {
+        if (!processedData || _.isEmpty(configData.select.params)) {
           return [];
         }
         const dimensionsObject: any = {};
@@ -3040,7 +3120,7 @@ function createAppModel({
               .filter((run) => !run.isHidden)
               .map((run: IParam) => {
                 const values: { [key: string]: string | number | null } = {};
-                configData.select!.params.forEach(
+                configData.select.params.forEach(
                   ({ type, label, value }: ISelectParamsOption) => {
                     const dimension = dimensionsObject[chartIndex];
                     if (!dimension[label] && type === 'params') {
@@ -3108,41 +3188,47 @@ function createAppModel({
           _.groupBy(flattedLines, 'chartIndex'),
         );
 
-        return Object.keys(dimensionsObject).map((keyOfDimension, i) => {
-          const dimensions: IDimensionsType = {};
-          Object.keys(dimensionsObject[keyOfDimension]).forEach(
-            (key: string) => {
-              if (
-                dimensionsObject[keyOfDimension][key].scaleType === 'linear'
-              ) {
-                dimensions[key] = {
-                  scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                  domainData: [
-                    Math.min(...dimensionsObject[keyOfDimension][key].values),
-                    Math.max(...dimensionsObject[keyOfDimension][key].values),
-                  ],
-                  displayName:
-                    dimensionsObject[keyOfDimension][key].displayName,
-                  dimensionType:
-                    dimensionsObject[keyOfDimension][key].dimensionType,
-                };
-              } else {
-                dimensions[key] = {
-                  scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                  domainData: [...dimensionsObject[keyOfDimension][key].values],
-                  displayName:
-                    dimensionsObject[keyOfDimension][key].displayName,
-                  dimensionType:
-                    dimensionsObject[keyOfDimension][key].dimensionType,
-                };
-              }
-            },
+        return Object.keys(dimensionsObject)
+          .map((keyOfDimension, i) => {
+            const dimensions: IDimensionsType = {};
+            Object.keys(dimensionsObject[keyOfDimension]).forEach(
+              (key: string) => {
+                if (
+                  dimensionsObject[keyOfDimension][key].scaleType === 'linear'
+                ) {
+                  dimensions[key] = {
+                    scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+                    domainData: [
+                      Math.min(...dimensionsObject[keyOfDimension][key].values),
+                      Math.max(...dimensionsObject[keyOfDimension][key].values),
+                    ],
+                    displayName:
+                      dimensionsObject[keyOfDimension][key].displayName,
+                    dimensionType:
+                      dimensionsObject[keyOfDimension][key].dimensionType,
+                  };
+                } else {
+                  dimensions[key] = {
+                    scaleType: dimensionsObject[keyOfDimension][key].scaleType,
+                    domainData: [
+                      ...dimensionsObject[keyOfDimension][key].values,
+                    ],
+                    displayName:
+                      dimensionsObject[keyOfDimension][key].displayName,
+                    dimensionType:
+                      dimensionsObject[keyOfDimension][key].dimensionType,
+                  };
+                }
+              },
+            );
+            return {
+              dimensions,
+              data: groupedByChartIndex[i],
+            };
+          })
+          .filter(
+            (data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions),
           );
-          return {
-            dimensions,
-            data: groupedByChartIndex[i],
-          };
-        });
       }
 
       function setModelData(
@@ -3151,11 +3237,14 @@ function createAppModel({
       ): void {
         const { data, params, metricsColumns } = processData(rawData);
 
-        if (configData?.grouping) {
-          configData.grouping.selectOptions = [
-            ...getGroupingSelectOptions({ params }),
-          ];
-        }
+        const groupingSelectOptions = [...getGroupingSelectOptions({ params })];
+
+        tooltipData = getTooltipData({
+          processedData: data,
+          paramKeys: params,
+          groupingSelectOptions,
+          model,
+        });
 
         const tableData = getDataAsTableRows(
           data,
@@ -3163,6 +3252,7 @@ function createAppModel({
           params,
           false,
           configData,
+          groupingSelectOptions,
         );
         const sortFields = model.getState()?.config?.table.sortFields;
 
@@ -3172,6 +3262,7 @@ function createAppModel({
           highPlotData: getDataAsLines(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
             processedData: data,
+            groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
           params,
@@ -3187,14 +3278,17 @@ function createAppModel({
             configData.table?.hiddenColumns!,
             sortFields,
             onSortChange,
+            configData.grouping as any,
+            onModelGroupingSelectChange,
           ),
           sameValueColumns: tableData.sameValueColumns,
-          groupingSelectOptions: [...getGroupingSelectOptions({ params })],
+          groupingSelectOptions,
         });
       }
 
       function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
         const grouping = model.getState()!.config!.grouping;
+        const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions({
           groupName: 'color',
           model,
@@ -3258,7 +3352,6 @@ function createAppModel({
         const colorConfigsMap: { [key: string]: number } = {};
         const dasharrayConfigsMap: { [key: string]: number } = {};
         const chartIndexConfigsMap: { [key: string]: number } = {};
-        const { paletteIndex } = grouping;
 
         for (let groupKey in groupValues) {
           const groupValue = groupValues[groupKey];
@@ -3269,8 +3362,7 @@ function createAppModel({
 
             if (grouping.persistence.color && grouping.isApplied.color) {
               let index = getGroupingPersistIndex({
-                groupValues,
-                groupKey,
+                groupConfig: colorConfig,
                 grouping,
                 groupName: 'color',
               });
@@ -3296,8 +3388,7 @@ function createAppModel({
             const dasharrayKey = encode(dasharrayConfig);
             if (grouping.persistence.stroke && grouping.isApplied.stroke) {
               let index = getGroupingPersistIndex({
-                groupValues,
-                groupKey,
+                groupConfig: dasharrayConfig,
                 grouping,
                 groupName: 'stroke',
               });
@@ -3337,7 +3428,7 @@ function createAppModel({
         metricsColumns: any;
       } {
         const configData = model.getState()?.config;
-        const grouping = configData?.grouping;
+        const grouping = model.getState()?.config?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
         const paletteIndex: number = grouping?.paletteIndex || 0;
@@ -3374,13 +3465,6 @@ function createAppModel({
         );
         const uniqParams = _.uniq(params);
 
-        if (components?.charts?.[0]) {
-          tooltipData = getTooltipData({
-            processedData,
-            paramKeys: uniqParams,
-            model,
-          });
-        }
         return {
           data: processedData,
           params: uniqParams,
@@ -3392,8 +3476,8 @@ function createAppModel({
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
       ): void {
-        const { refs, config } = model.getState();
-        if (config.table?.resizeMode !== ResizeModeEnum.Hide) {
+        const { refs, config } = model.getState() as any;
+        if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
             tableRef.current?.setHoveredRow?.(activePoint.key);
@@ -3427,8 +3511,9 @@ function createAppModel({
               },
             },
           };
+
           if (
-            config.chart?.focusedState.active !== focusedStateActive ||
+            config.chart.focusedState.active !== focusedStateActive ||
             (config.chart.focusedState.active &&
               (activePoint.key !== config.chart.focusedState.key ||
                 activePoint.xValue !== config.chart.focusedState.xValue))
@@ -3441,7 +3526,7 @@ function createAppModel({
       }
 
       function onExportTableData(): void {
-        const { data, params, config, metricsColumns } =
+        const { data, params, config, metricsColumns, groupingSelectOptions } =
           model.getState() as IParamsAppModelState;
         const tableData = getDataAsTableRows(
           data,
@@ -3449,6 +3534,7 @@ function createAppModel({
           params,
           true,
           config,
+          groupingSelectOptions,
         );
         const tableColumns: ITableColumn[] = getParamsTableColumns(
           metricsColumns,
@@ -3511,12 +3597,20 @@ function createAppModel({
         const { data, params, metricsColumns } = processData(
           model.getState()?.rawData as IRun<IParamTrace>[],
         );
+        const groupingSelectOptions = [...getGroupingSelectOptions({ params })];
+        tooltipData = getTooltipData({
+          processedData: data,
+          paramKeys: params,
+          groupingSelectOptions,
+          model,
+        });
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
           params,
           false,
           configData,
+          groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
           metricsColumns,
@@ -3526,6 +3620,8 @@ function createAppModel({
           configData.table?.hiddenColumns!,
           configData.table?.sortFields,
           onSortChange,
+          configData.grouping as any,
+          onModelGroupingSelectChange,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef.current?.updateData({
@@ -3535,7 +3631,7 @@ function createAppModel({
         });
 
         if (shouldURLUpdate) {
-          updateURL({ configData, appName });
+          updateURL(configData);
         }
 
         model.setState({
@@ -3544,12 +3640,26 @@ function createAppModel({
           highPlotData: getDataAsLines(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
             processedData: data,
+            groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
-          groupingSelectOptions: [...getGroupingSelectOptions({ params })],
+          groupingSelectOptions,
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+        });
+      }
+
+      function onModelGroupingSelectChange({
+        groupName,
+        list,
+      }: IOnGroupingSelectChangeParams): void {
+        onGroupingSelectChange({
+          groupName,
+          list,
+          model,
+          appName,
+          updateModelData,
         });
       }
 
@@ -3650,18 +3760,7 @@ function createAppModel({
 
       if (grouping) {
         Object.assign(methods, {
-          onGroupingSelectChange({
-            groupName,
-            list,
-          }: IOnGroupingSelectChangeParams): void {
-            onGroupingSelectChange({
-              groupName,
-              list,
-              model,
-              appName,
-              updateModelData,
-            });
-          },
+          onGroupingSelectChange: onModelGroupingSelectChange,
           onGroupingModeChange({
             groupName,
             value,
@@ -3772,13 +3871,13 @@ function createAppModel({
             });
           },
           onTableResizeModeChange(mode: ResizeModeEnum): void {
-            onTableResizeModeChange({ mode, model, appName, updateModelData });
+            onTableResizeModeChange({ mode, model, appName });
           },
           onTableDiffShow(): void {
             onTableDiffShow({ model, appName, updateModelData });
           },
           onTableResizeEnd(tableHeight: string): void {
-            onTableResizeEnd({ tableHeight, model, appName, updateModelData });
+            onTableResizeEnd({ tableHeight, model, appName });
           },
           onSortReset(): void {
             updateSortFields({

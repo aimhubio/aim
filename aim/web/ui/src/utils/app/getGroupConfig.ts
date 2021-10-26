@@ -1,15 +1,19 @@
 import _ from 'lodash-es';
 import {
   GroupNameType,
+  IGroupingSelectOption,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+import getValueByField from '../getValueByField';
 
-export default function getGroupConfig<M extends State>({
+export default function getGroupConfig<D, M extends State>({
   metricsCollection,
+  groupingSelectOptions,
   model,
 }: {
-  metricsCollection: IMetricsCollection<any>;
+  metricsCollection: IMetricsCollection<D>;
+  groupingSelectOptions: IGroupingSelectOption[];
   model: IModel<M>;
 }) {
   const groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'];
@@ -21,8 +25,9 @@ export default function getGroupConfig<M extends State>({
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [paramKey.replace('run.params.', '')]: JSON.stringify(
-            _.get(metricsCollection.config, paramKey, '-'),
+          [getValueByField(groupingSelectOptions || [], paramKey)]: _.get(
+            metricsCollection.config,
+            paramKey,
           ),
         });
         return acc;

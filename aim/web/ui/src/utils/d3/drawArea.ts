@@ -88,11 +88,11 @@ function drawArea(props: IDrawAreaProps): void {
     .append('clipPath')
     .attr('id', 'circles-rect-clip-' + index)
     .append('rect')
-    .attr('x', 0)
+    .attr('x', -10)
     .attr('y', 0)
     .attr(
       'width',
-      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius,
+      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius + 10,
     )
     .attr(
       'height',

@@ -60,6 +60,7 @@ function drawParallelAxes({
       ?.append('g')
       .attr('class', 'Axis')
       .data([keyOfDimension])
+      .attr('stroke-width', 0.6)
       .attr('transform', `translate(${xScale(keyOfDimension)})`)
       .call(yAxis);
 

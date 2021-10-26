@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { ITableProps } from 'types/components/Table/Table';
@@ -489,7 +489,7 @@ const Table = React.forwardRef(function Table(
                           opened ? 'opened' : ''
                         }`}
                       >
-                        <Icon name='manage-calumn' />
+                        <Icon name='manage-column' />
                         <span>Manage Columns</span>
                       </Button>
                     )}
@@ -601,7 +601,7 @@ const Table = React.forwardRef(function Table(
                 )}
               </div>
               {onExport && (
-                <div className='flex fac'>
+                <div className='fac'>
                   <Button
                     fullWidth
                     variant='outlined'
@@ -610,7 +610,9 @@ const Table = React.forwardRef(function Table(
                     onClick={onExport}
                     startIcon={<Icon fontSize={14} name='download' />}
                   >
-                    Export
+                    <Text size={14} color='inherit'>
+                      Export
+                    </Text>
                   </Button>
                 </div>
               )}

@@ -6,6 +6,7 @@ from tests.base import ApiTestBase
 from tests.utils import decode_encoded_tree_stream
 
 from aim.storage.treeutils import decode_tree
+from aim.sdk.run import Run
 
 
 class TestRunApi(ApiTestBase):
@@ -17,7 +18,7 @@ class TestRunApi(ApiTestBase):
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
         self.assertEqual(1, len(decoded_response))
-        for hashname, run in decoded_response.items():
+        for _, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']))
             for trace in run['traces']:
                 self.assertAlmostEqual(0.99, trace['last_value']['last'])
@@ -33,8 +34,8 @@ class TestRunApi(ApiTestBase):
         self.assertEqual(1, len(decoded_response))
 
         offset = ''
-        for hashname, run in decoded_response.items():
-            offset = hashname
+        for run_hash, run in decoded_response.items():
+            offset = run_hash
             self.assertEqual('Run # 2', run['props']['name'])
 
         response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
@@ -44,7 +45,7 @@ class TestRunApi(ApiTestBase):
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024 * 1024)))
         self.assertEqual(1, len(decoded_response))
-        for hashname, run in decoded_response.items():
+        for run_hash, run in decoded_response.items():
             self.assertEqual('Run # 3', run['props']['name'])
 
     def test_search_metrics_api_default_step(self):
@@ -99,17 +100,17 @@ class TestRunApi(ApiTestBase):
 
     def test_search_aligned_metrics_api(self):
         client = self.client
-        hash_names = []
+        run_hashes = []
         for run, _ in zip(self.repo.iter_runs(), range(2)):
-            hash_names.append(run.hashname)
+            run_hashes.append(run.hash)
 
         response = client.post('/api/runs/search/metric/align/', json={
             'align_by': 'accuracy',
             'runs': [{
-                'run_id': hash_names[0],
+                'run_id': run_hashes[0],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 100, 1], 'context': {'is_training': False}}]
             }, {
-                'run_id': hash_names[1],
+                'run_id': run_hashes[1],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 100, 1], 'context': {'is_training': True, 'subset': 'train'}}]
             }]
         })
@@ -117,9 +118,9 @@ class TestRunApi(ApiTestBase):
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
         self.assertEqual(2, len(decoded_response))
-        self.assertListEqual(hash_names, list(decoded_response.keys()))
-        self.assertEqual([], decoded_response[hash_names[1]])
-        traces = decoded_response[hash_names[0]][0]
+        self.assertListEqual(run_hashes, list(decoded_response.keys()))
+        self.assertEqual([], decoded_response[run_hashes[1]])
+        traces = decoded_response[run_hashes[0]][0]
         self.assertEqual('loss', traces['metric_name'])
         self.assertDictEqual({'is_training': False}, traces['context'])
         self.assertEqual(99, traces['x_axis_values']['shape'])
@@ -127,17 +128,17 @@ class TestRunApi(ApiTestBase):
     @pytest.mark.skip(reason="low priority. requires more investigation.")
     def test_search_aligned_metrics_api_with_wrong_context(self):
         client = self.client
-        hash_names = []
+        run_hashes = []
         for run, _ in zip(self.repo.iter_runs(), range(2)):
-            hash_names.append(run.hashname)
+            run_hashes.append(run.hash)
 
         response = client.post('/api/runs/search/metric/align/', json={
             'align_by': 'accuracy',
             'runs': [{
-                'run_id': hash_names[0],
+                'run_id': run_hashes[0],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 20, 1], 'context': {'is_training': True, 'subset': 'training'}}]
             }, {
-                'run_id': hash_names[1],
+                'run_id': run_hashes[1],
                 'traces': [{'metric_name': 'loss', 'slice': [0, 10, 1], 'context': {'is_training': True, 'subset': 'val'}}]
             }]
         })
@@ -152,7 +153,7 @@ class TestRunApi(ApiTestBase):
 
         self.assertEqual('Run # 1', run.name)
         client = self.client
-        response = client.get(f'/api/runs/{run.hashname}/info/')
+        response = client.get(f'/api/runs/{run.hash}/info/')
         self.assertEqual(200, response.status_code)
 
         data = response.json()
@@ -179,7 +180,7 @@ class TestRunApi(ApiTestBase):
             {'metric_name': 'accuracy', 'context': {'is_training': False}},
             {'metric_name': 'loss', 'context': {'is_training': True, 'subset': 'train'}}
         ]
-        response = client.post(f'/api/runs/{run.hashname}/traces/get-batch/', json=requested_traces)
+        response = client.post(f'/api/runs/{run.hash}/traces/get-batch/', json=requested_traces)
         self.assertEqual(200, response.status_code)
 
         traces_batch = response.json()
@@ -193,7 +194,7 @@ class TestRunApi(ApiTestBase):
         self.assertEqual(True, traces_batch[1]['context']['is_training'])
         self.assertEqual('train', traces_batch[1]['context']['subset'])
 
-    def _find_run_by_name(self, name: str):
+    def _find_run_by_name(self, name: str) -> Run:
         repo = self.repo
         for run in repo.iter_runs():
             if run.name == name or run['name'] == name:

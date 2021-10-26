@@ -2,6 +2,7 @@ import React from 'react';
 import { Popover } from '@material-ui/core';
 
 import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
+import stopPropagation from 'utils/stopPropagation';
 
 import './ControlPopover.scss';
 
@@ -40,6 +41,7 @@ function ControlPopover({
       <Popover
         open={open && !!anchorEl}
         anchorEl={anchorEl}
+        onClick={stopPropagation}
         onClose={handleClose}
         anchorPosition={{ left: 20, top: 0 }}
         anchorOrigin={
@@ -56,9 +58,12 @@ function ControlPopover({
         }
         PaperProps={{ className: 'ControlPopover' }}
       >
-        <div className='ControlPopover__container'>
+        <div onClick={stopPropagation} className='ControlPopover__container'>
           {title && (
-            <div className={`ControlPopover__title ${titleClassName}`}>
+            <div
+              onClick={stopPropagation}
+              className={`ControlPopover__title ${titleClassName}`}
+            >
               {title}
             </div>
           )}

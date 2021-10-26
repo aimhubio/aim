@@ -28,6 +28,8 @@ import {
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { Button, Icon, Badge } from 'components/kit';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './SelectForm.scss';
 
@@ -96,39 +98,52 @@ function SelectForm({
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
+    const systemOptions: ISelectMetricsOption[] = [];
     let index: number = 0;
     if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        data.push({
-          label: key,
-          group: key,
-          color: COLORS[0][index % COLORS[0].length],
-          value: {
-            metric_name: key,
-            context: null,
-          },
-        });
+      for (let key in projectsData?.metrics) {
+        let system: boolean = isSystemMetric(key);
+        let option = getOption(system, key, index);
+        if (system) {
+          systemOptions.push(option);
+        } else {
+          data.push(option);
+        }
         index++;
-
-        for (let val of projectsData.metrics[key]) {
+        for (let val of projectsData?.metrics[key]) {
           if (!isEmpty(val)) {
             let label = contextToString(val);
-            data.push({
-              label: `${key} ${label}`,
-              group: key,
-              color: COLORS[0][index % COLORS[0].length],
-              value: {
-                metric_name: key,
-                context: val,
-              },
-            });
+            let option = getOption(system, key, index, val);
+            option.label = `${option.label} ${label}`;
+            if (system) {
+              systemOptions.push(option);
+            } else {
+              data.push(option);
+            }
             index++;
           }
         }
       }
     }
-    return data;
+    return data.concat(systemOptions);
   }, [projectsData]);
+
+  function getOption(
+    system: boolean,
+    key: string,
+    index: number,
+    val: object | null = null,
+  ): ISelectMetricsOption {
+    return {
+      label: `${system ? formatSystemMetricName(key) : key}`,
+      group: system ? formatSystemMetricName(key) : key,
+      color: COLORS[0][index % COLORS[0].length],
+      value: {
+        metric_name: key,
+        context: val,
+      },
+    };
+  }
 
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
@@ -164,6 +179,11 @@ function SelectForm({
                     onChange={({ target }) =>
                       onSelectAdvancedQueryChange(target.value)
                     }
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        handleMetricSearch(e);
+                      }
+                    }}
                   />
                 </form>
               </div>

@@ -2,7 +2,6 @@ import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 import getQueryStringFromSelect from './getQuertStringFromSelect';
-import updateURL from './updateURL';
 
 export default function toggleSelectAdvancedMode<M extends State>({
   model,
@@ -13,9 +12,9 @@ export default function toggleSelectAdvancedMode<M extends State>({
 }): void {
   const configData = model.getState()?.config;
   if (configData?.select) {
-    let query = configData?.select?.advancedQuery
-      ? configData.select.advancedQuery
-      : getQueryStringFromSelect(configData?.select);
+    let query =
+      configData.select.advancedQuery ||
+      getQueryStringFromSelect(configData?.select);
     if (query === '()') {
       query = '';
     }
@@ -27,8 +26,6 @@ export default function toggleSelectAdvancedMode<M extends State>({
         advancedMode: !configData.select.advancedMode,
       },
     };
-
-    updateURL({ configData: newConfig, appName });
 
     model.setState({ config: newConfig });
   }

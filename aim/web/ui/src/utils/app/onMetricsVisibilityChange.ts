@@ -39,14 +39,12 @@ export default function onMetricVisibilityChange<M extends State>({
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem(`${appName}Table`, encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(
-    `[MetricsExplorer][Table] ${
+    `[${appName}Explorer][Table] ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'

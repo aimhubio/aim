@@ -1,28 +1,33 @@
 import _ from 'lodash-es';
-import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
+  IGroupingSelectOption,
   IMetricsCollection,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
-import { IParam } from 'types/services/models/params/paramsAppModel';
 import getGroupConfig from './getGroupConfig';
 
-export default function getTooltipData<M extends State>({
+export default function getTooltipData<D, M extends State>({
   processedData,
   paramKeys,
+  groupingSelectOptions,
   model,
 }: {
-  processedData: IMetricsCollection<IMetric | IParam | any>[];
+  processedData: IMetricsCollection<D>[];
   paramKeys: string[];
+  groupingSelectOptions: IGroupingSelectOption[];
   model: IModel<M>;
 }): ITooltipData {
   const data: ITooltipData = {};
 
   for (let metricsCollection of processedData) {
-    const groupConfig = getGroupConfig({ metricsCollection, model });
+    const groupConfig = getGroupConfig({
+      metricsCollection,
+      groupingSelectOptions,
+      model,
+    });
 
-    for (let metric of metricsCollection.data) {
+    for (let metric of metricsCollection.data as any) {
       data[metric.key] = {
         runHash: metric.run.hash,
         metricName: metric.metric_name,
@@ -30,9 +35,7 @@ export default function getTooltipData<M extends State>({
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: JSON.stringify(
-              _.get(metric, `run.params.${paramKey}`, '-'),
-            ),
+            [paramKey]: _.get(metric, `run.params.${paramKey}`),
           });
           return acc;
         }, {}),

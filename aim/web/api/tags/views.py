@@ -110,9 +110,9 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
 
     tag_runs = []
     for tagged_run in tag.runs:
-        run = Run(hashname=tagged_run.hashname, read_only=True)
+        run = Run(tagged_run.hash, read_only=True)
         tag_runs.append({
-            'run_id': tagged_run.hashname,
+            'run_id': tagged_run.hash,
             'name': tagged_run.name,
             'creation_time': run.creation_time,
             'end_time': run.end_time,

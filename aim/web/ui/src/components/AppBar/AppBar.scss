@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   min-height: 2.3rem;
-  border-bottom: $border-main;
+  border-bottom: $border-separator;
   border-left: $border-main;
   border-right: $border-main;
   padding-left: 1.5rem;
@@ -13,6 +13,7 @@
 .AppBar__title {
   flex: 1;
   text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
 
 .AppBar__content {

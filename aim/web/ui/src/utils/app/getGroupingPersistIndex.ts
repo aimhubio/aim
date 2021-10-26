@@ -1,24 +1,12 @@
 import { encode } from '../encoder/encoder';
-import {
-  IMetricAppConfig,
-  IMetricsCollection,
-} from 'types/services/models/metrics/metricsAppModel';
-import { IMetric } from 'types/services/models/metrics/metricModel';
+import { IGetGroupingPersistIndex } from 'types/services/models/metrics/metricsAppModel';
 
 export function getGroupingPersistIndex({
-  groupValues,
-  groupKey,
+  groupConfig,
   grouping,
   groupName,
-}: {
-  groupValues: {
-    [key: string]: IMetricsCollection<IMetric>;
-  };
-  groupKey: string;
-  grouping: IMetricAppConfig['grouping'];
-  groupName: 'color' | 'stroke';
-}) {
-  const configHash = encode(groupValues[groupKey].config as {}, true);
+}: IGetGroupingPersistIndex) {
+  const configHash = encode(groupConfig as {}, true);
   let index = BigInt(0);
   if (grouping?.hasOwnProperty('seed')) {
     for (let i = 0; i < configHash.length; i++) {
@@ -35,6 +23,5 @@ export function getGroupingPersistIndex({
       }
     }
   }
-
   return index;
 }

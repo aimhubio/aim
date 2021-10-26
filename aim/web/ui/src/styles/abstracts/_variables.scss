@@ -34,26 +34,26 @@ $primary-lighter: #dfe6f7;
 $primary-light: #7a94cc;
 
 // tinted colors
-$primary-color-90: #2C81E9;
-$primary-color-80: #438FEB;
-$primary-color-70: #5B9DEE;
-$primary-color-60: #72ABF0;
+$primary-color-90: #2c81e9;
+$primary-color-80: #438feb;
+$primary-color-70: #5b9dee;
+$primary-color-60: #72abf0;
 $primary-color-50: #89b9f2;
-$primary-color-40: #A1C7F5;
-$primary-color-30: #D0E3FA;
+$primary-color-40: #a1c7f5;
+$primary-color-30: #d0e3fa;
+$primary-color-20: #dceafb;
 $primary-color-10: #e8f1fc;
 $primary-color-5: #f3f8fe;
 
-
 $pico-100: #1c2852;
-$pico-90: #2A355A;
+$pico-90: #2a355a;
 $pico-80: #414b6d;
 $pico-70: #606986;
-$pico-60: #6B728B;
+$pico-60: #6b728b;
 $pico-50: #83899e;
-$pico-40: #A4A9BA;
-$pico-30: #B5B9C5;
-$pico-20: #D2D4DC;
+$pico-40: #a4a9ba;
+$pico-30: #b5b9c5;
+$pico-20: #d2d4dc;
 $pico-10: #e8eaee;
 $pico-5: #f4f4f6;
 
@@ -64,24 +64,25 @@ $cuddle-30: #ebf0f8;
 $cuddle-20: #f2f5fa;
 $cuddle-10: #f8fafd;
 
-$warning-color-80: #EDC949;
-$warning-color-50: #F4DD8D;
-$warning-color-10: #FDF8E8;
-$warning-color-5: #F7F7F3;
+$warning-color-80: #edc949;
+$warning-color-50: #f4dd8d;
+$warning-color-10: #fdf8e8;
+$warning-color-5: #f7f7f3;
 
-$success-color-80: #55D29D;
-$success-color-50: #95E3C2;
-$success-color-10: #EAF9F3;
-$success-color-5: #EEF7F8;
+$success-color-80: #55d29d;
+$success-color-50: #95e3c2;
+$success-color-10: #eaf9f3;
+$success-color-5: #eef7f8;
 
-$error-color-80: #EB716D;
-$error-color-50: #F3A7A4;
-$error-color-10: #FDEDED;
-$error-color-5: #F7F1F5;
+$error-color-80: #eb716d;
+$error-color-50: #f3a7a4;
+$error-color-10: #fdeded;
+$error-color-5: #f7f1f5;
 
 //border
 $border-color-main: $primary-color-10;
 $border-main: 0.0625rem solid $border-color-main;
+$border-separator: 0.0625rem solid $primary-color-20;
 $radius-main: 0.375rem;
 $border-color-secondary: $cuddle-20;
 $border-secondary: 0.0625rem solid $border-color-secondary;
@@ -115,7 +116,6 @@ $space-xxs: $space-unit * 0.375;
 $space-xs: $space-unit * 0.5;
 $space-sm: $space-unit * 0.75;
 $space-md: $space-unit * 1.25;
-$space-xs: $space-unit * 0.5;
 //- to container
 $col-sm: 540px; // (max-width: 540px)
 $col-md: 720px; // (max-width: 720px)
