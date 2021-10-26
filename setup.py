@@ -47,7 +47,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.7',
+    'aimrocks==0.0.9',
     'cachetools>=4.0.0',
     'click>=7.0',
     'filelock>=3.0.0',
