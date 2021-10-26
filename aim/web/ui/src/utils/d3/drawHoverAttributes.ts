@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import moment from 'moment';
+import { isEqual } from 'lodash-es';
 
 import {
   IDrawHoverAttributesProps,
@@ -59,12 +60,15 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     );
   }
 
-  function getClosestCircle(mouseX: number, mouseY: number): INearestCircle {
-    const nearestCirclesByMouseX: INearestCircle[] = getNearestCircles(mouseX);
+  function getClosestCircle(
+    mouseX: number,
+    mouseY: number,
+    nearestCircles: INearestCircle[],
+  ): INearestCircle {
     let closestCircles: INearestCircle[] = [];
     let minRadius = null;
     // Find closest circles
-    for (let circle of nearestCirclesByMouseX) {
+    for (let circle of nearestCircles) {
       const rX = Math.abs(circle.x - mouseX);
       const rY = Math.abs(circle.y - mouseY);
       const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));
@@ -435,6 +439,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
 
     attributesRef.current.xStep = attributesRef.current.xScale.invert(mouseX);
     attributesRef.current.dataSelector = dataSelector;
+    attributesRef.current.nearestCircles = nearestCircles;
   }
 
   function clearHoverAttributes(): void {
@@ -476,7 +481,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       force ||
       circle.key !== attributesRef.current.activePoint?.key ||
       circle.x !== attributesRef.current.activePoint?.xPos ||
-      circle.y !== attributesRef.current.activePoint?.yPos
+      circle.y !== attributesRef.current.activePoint?.yPos ||
+      !isEqual(attributesRef.current.nearestCircles, nearestCircles)
     ) {
       setCirclesHighlightMode();
       drawCircles(nearestCircles);
@@ -490,6 +496,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const activePoint = getActivePoint(circle);
     attributesRef.current.xStep = activePoint.xValue;
     attributesRef.current.activePoint = activePoint;
+    attributesRef.current.nearestCircles = nearestCircles;
     return activePoint;
   }
 
@@ -516,10 +523,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     if (mousePosition?.length) {
       const [mouseX, mouseY] = mousePosition;
 
-      const closestCircle = getClosestCircle(mouseX, mouseY);
-      const nearestCircles = getNearestCircles(closestCircle.x);
+      const nearestCircles = getNearestCircles(mouseX);
+      const closestCircle = getClosestCircle(mouseX, mouseY, nearestCircles);
       const activePoint = drawAttributes(closestCircle, nearestCircles, force);
-
       if (focusedStateActive) {
         drawFocusedCircle(activePoint.key);
       }

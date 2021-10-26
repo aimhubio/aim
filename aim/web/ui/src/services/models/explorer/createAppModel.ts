@@ -165,8 +165,8 @@ import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
 import { DensityOptions } from 'config/enums/densityEnum';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
-import getValueByField from '../../../utils/getValueByField';
-import sortDependingArrays from '../../../utils/app/sortDependingArrays';
+import getValueByField from 'utils/getValueByField';
+import sortDependingArrays from 'utils/app/sortDependingArrays';
 
 /**
  * function createAppModel has 2 major functionalities:
@@ -935,11 +935,11 @@ function createAppModel({
         >({
           processedData: data,
           groupingSelectOptions,
-          model: model as IModel<IMetricAppModelState>,
+          model: model as IModel<Partial<IMetricAppModelState>>,
         }),
         aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
           processedData: data,
-          model: model as IModel<IMetricAppModelState>,
+          model: model as IModel<Partial<IMetricAppModelState>>,
         }),
         tableData: tableData.rows,
         tableColumns,
@@ -3631,7 +3631,7 @@ function createAppModel({
         });
 
         if (shouldURLUpdate) {
-          updateURL(configData);
+          updateURL({ configData, appName });
         }
 
         model.setState({
