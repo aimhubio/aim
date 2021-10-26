@@ -634,7 +634,6 @@ function getDataAsImageSet(data: any) {
       }, [] as any);
       _.set(imageSetData, path, group.data);
     });
-    console.log(imageSetData);
     return isEmpty(imageSetData) ? data[0].data : imageSetData;
   } else {
     return {};
