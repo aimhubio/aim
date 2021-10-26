@@ -252,7 +252,7 @@ function paramsTableRowRenderer(
         content: (
           <Button
             withOnlyIcon={true}
-            size='small'
+            size='medium'
             onClick={actions?.toggleVisibility}
             className='Table__action__icon'
             aria-pressed='false'
