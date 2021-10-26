@@ -95,8 +95,7 @@ function TooltipContentPopover({
             <TextField
               {...params}
               variant='outlined'
-              label='Select Params'
-              placeholder='Select'
+              placeholder='Select Params'
             />
           )}
           renderOption={(option, { selected }) => (

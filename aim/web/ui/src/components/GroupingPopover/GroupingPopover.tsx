@@ -103,8 +103,7 @@ function GroupingPopover({
               <TextField
                 {...params}
                 variant='outlined'
-                label='Select Params'
-                placeholder='Select'
+                placeholder='Select Params'
               />
             )}
             renderTags={(value, getTagProps) => (
@@ -172,6 +171,7 @@ function GroupingPopover({
                   size={12}
                   tint={50}
                   component='h3'
+                  weight={400}
                   className='GroupingPopover__subtitle'
                 >
                   Advanced options

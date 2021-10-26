@@ -20,7 +20,7 @@ function StrokePopoverAdvanced({
   return (
     <div className='StrokePopoverAdvanced'>
       <div className='StrokePopoverAdvanced__container'>
-        <Text component='h3' size={12} tint={50} className='subtitle'>
+        <Text component='h3' size={12} tint={50}>
           Stroke Style persistence
         </Text>
         <Text

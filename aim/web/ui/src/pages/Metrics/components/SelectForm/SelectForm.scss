@@ -76,8 +76,8 @@
         margin: 0 0.25rem;
       }
       &.active {
-        border: 0.0625rem solid $primary-color;
-        background-color: tint($primary-color, 95);
+        border: $border-main-active;
+        background-color: $primary-color-5;
       }
     }
   }

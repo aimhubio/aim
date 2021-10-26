@@ -37,11 +37,11 @@
     }
 
     &.active {
-      background-color: tint($primary-color, 90);
+      background-color: $primary-color-10;
     }
     &.outlined {
-      background-color: tint($primary-color, 90);
-      border: 0.0625rem solid tint($primary-color, 30);
+      background-color: $primary-color-10;
+      border: $border-main-active;
     }
   }
   &__button_small {

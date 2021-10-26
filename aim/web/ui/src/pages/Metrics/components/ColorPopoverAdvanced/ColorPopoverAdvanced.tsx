@@ -31,7 +31,7 @@ function ColorPopoverAdvanced({
   return (
     <div className='ColorPopoverAdvanced'>
       <div className='ColorPopoverAdvanced__persistence'>
-        <Text component='h3' size={12} className='subtitle'>
+        <Text component='h3' size={12} tint={50}>
           colors persistence
         </Text>
         <Text
