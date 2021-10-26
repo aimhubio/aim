@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Remove grouping select options from Params app config (VkoHov)
 - Sort metrics data in ascending order for X-axis (KaroMourad)
 
 ## 3.0.1 Oct 22 2021
@@ -14,7 +15,15 @@
 
 ## 3.0.0 Oct 21 2021
 
-- TODO [GA]: Highlight v3 core improvements
+- Completely revamped UI:
+  - Runs, metrics and params explorers
+  - Bookmarks, Tags, Homepage
+  - New UI works smooth with ~500 metrics displayed at the same time with full Aim table interactions
+
+- Completely revamped storage:
+  - 10x faster embedded storage based on Rocksdb
+  - Average run query execution time on ~2000 runs: 0.784s
+  - Average metrics query execution time on ~2000 runs with 6000 metrics: 1.552s
 
 ## 2.7.1 Jun 30 2021
 

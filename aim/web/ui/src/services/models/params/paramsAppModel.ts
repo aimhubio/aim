@@ -106,7 +106,6 @@ function getConfig() {
         stroke: 10,
       },
       paletteIndex: 0,
-      selectOptions: [],
     },
     chart: {
       curveInterpolation: CurveEnum.Linear,
@@ -182,9 +181,6 @@ function updateData(newData: any) {
 
   const configData = model.getState()?.config;
   const groupingSelectOptions = [...getGroupingSelectOptions(params)];
-  if (configData) {
-    configData.grouping.selectOptions = groupingSelectOptions;
-  }
 
   const sortFields = model.getState()?.config?.table.sortFields;
 
@@ -294,7 +290,6 @@ function setDefaultAppConfigData() {
     getStateFromUrl('chart') || getConfig().chart;
   const select: IParamsAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
-
   const tableConfigHash = getItem('paramsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
@@ -353,9 +348,6 @@ function getParamsData(shouldUrlUpdate?: boolean) {
           const groupingSelectOptions = [...getGroupingSelectOptions(params)];
           setTooltipData(data, params, groupingSelectOptions);
           const configData = model.getState()?.config;
-          if (configData) {
-            configData.grouping.selectOptions = groupingSelectOptions;
-          }
 
           const tableData = getDataAsTableRows(
             data,
@@ -712,16 +704,20 @@ function getFilteredGroupingOptions(
   grouping: IParamsAppConfig['grouping'],
   groupName: GroupNameType,
 ): string[] {
-  const { selectOptions, reverseMode, isApplied } = grouping;
-
-  const filteredOptions = [...selectOptions]
-    .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-    .map((item) => item.value);
-  return isApplied[groupName]
-    ? reverseMode[groupName]
-      ? filteredOptions
-      : grouping[groupName]
-    : [];
+  const { reverseMode, isApplied } = grouping;
+  const groupingSelectOptions = model.getState()?.groupingSelectOptions;
+  if (groupingSelectOptions) {
+    const filteredOptions = [...groupingSelectOptions]
+      .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+      .map((item) => item.value);
+    return isApplied[groupName]
+      ? reverseMode[groupName]
+        ? filteredOptions
+        : grouping[groupName]
+      : [];
+  } else {
+    return [];
+  }
 }
 
 function groupData(data: IParam[]): IMetricsCollection<IParam>[] {
