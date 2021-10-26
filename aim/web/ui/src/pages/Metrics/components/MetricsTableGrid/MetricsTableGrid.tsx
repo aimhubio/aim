@@ -193,54 +193,69 @@ function getMetricsTableColumns(
       topHeader: '',
       pin: 'right',
     },
-  ].concat(
-    paramColumns.map((param) => {
-      const paramKey = `run.params.${param}`;
-      const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === paramKey,
-      );
-
-      return {
-        key: param,
-        content: (
-          <span>
-            {param}
-            {onSort && (
-              <TableSortIcons
-                onSort={() => onSort(paramKey)}
-                sortFields={sortFields}
-                sort={Array.isArray(sortItem) ? sortItem[1] : null}
-              />
-            )}
-          </span>
-        ),
-        topHeader: 'Params',
-        pin: order?.left?.includes(param)
+  ]
+    .concat([
+      {
+        key: 'system',
+        content: <span>Metric</span>,
+        topHeader: 'System Metrics',
+        pin: order?.left?.includes('epoch')
           ? 'left'
-          : order?.right?.includes(param)
+          : order?.right?.includes('epoch')
           ? 'right'
           : null,
-        columnOptions: ['color', 'stroke', 'chart'].map(
-          (groupName: string) => ({
-            value: `${
-              grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
-            }group by ${groupName}`,
-            onClick: () => {
-              if (onGroupingToggle) {
-                onGroupingToggle({
-                  groupName,
-                  list: grouping?.[groupName]?.includes(paramKey)
-                    ? grouping?.[groupName].filter((item) => item !== paramKey)
-                    : grouping?.[groupName].concat([paramKey]),
-                } as IOnGroupingSelectChangeParams);
-              }
-            },
-            icon: icons[groupName],
-          }),
-        ),
-      };
-    }),
-  );
+      },
+    ])
+    .concat(
+      paramColumns.map((param) => {
+        const paramKey = `run.params.${param}`;
+        const sortItem: SortField = sortFields?.find(
+          (value) => value[0] === paramKey,
+        );
+
+        return {
+          key: param,
+          content: (
+            <span>
+              {param}
+              {onSort && (
+                <TableSortIcons
+                  onSort={() => onSort(paramKey)}
+                  sortFields={sortFields}
+                  sort={Array.isArray(sortItem) ? sortItem[1] : null}
+                />
+              )}
+            </span>
+          ),
+          topHeader: 'Params',
+          pin: order?.left?.includes(param)
+            ? 'left'
+            : order?.right?.includes(param)
+            ? 'right'
+            : null,
+          columnOptions: ['color', 'stroke', 'chart'].map(
+            (groupName: string) => ({
+              value: `${
+                grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
+              }group by ${groupName}`,
+              onClick: () => {
+                if (onGroupingToggle) {
+                  onGroupingToggle({
+                    groupName,
+                    list: grouping?.[groupName]?.includes(paramKey)
+                      ? grouping?.[groupName].filter(
+                          (item) => item !== paramKey,
+                        )
+                      : grouping?.[groupName].concat([paramKey]),
+                  } as IOnGroupingSelectChangeParams);
+                }
+              },
+              icon: icons[groupName],
+            }),
+          ),
+        };
+      }),
+    );
 
   if (groupFields) {
     columns.push({
