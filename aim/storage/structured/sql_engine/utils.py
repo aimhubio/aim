@@ -13,11 +13,15 @@ T = TypeVar('T')
 
 class ModelMappedProperty:
     def __init__(self, name: str, mapped_name: str = None,
-                 get_modifier: Callable = None, with_setter: bool = True, autogenerate: bool = True):
+                 get_modifier: Callable = None,
+                 with_setter: bool = True,
+                 direct_setter: bool = False,
+                 autogenerate: bool = True):
         self.name = name
         self.mapped_name = mapped_name or self.name
         self.get_modifier = get_modifier
         self.with_setter = with_setter
+        self.direct_setter = direct_setter
         self.autogenerate = autogenerate
 
     def generate_property(self):
@@ -28,20 +32,26 @@ class ModelMappedProperty:
                 return getattr(object_._model, self.mapped_name) if object_._model else None
 
         setter = None
-        if self.with_setter:
+        if self.with_setter or self.direct_setter:
+            def direct_setter(object_, value):
+                engine = object_._session.bind
+                table_name = object_._model.__tablename__
+                with engine.begin() as conn:
+                    sql = text(f'UPDATE {table_name} SET {self.mapped_name} = :val WHERE id = :id')
+                    conn.execute(sql, {'val': value, 'id': object_._id})
+
             def setter(object_, value):
                 assert object_._model
                 try:
                     setattr(object_._model, self.mapped_name, value)
                     object_._session.add(object_._model)
                 except Exception:
-                    engine = object_._session.bind
-                    table_name = object_._model.__tablename__
-                    with engine.begin() as conn:
-                        sql = text(f'UPDATE {table_name} SET {self.mapped_name} = :val WHERE id = :id')
-                        conn.execute(sql, {'val': value, 'id': object_._id})
+                    direct_setter(object_, value)
 
-        return property(getter, setter)
+        if self.direct_setter:
+            return property(getter, direct_setter)
+        else:
+            return property(getter, setter)
 
 
 class ModelMappedCollection(Collection[T]):
