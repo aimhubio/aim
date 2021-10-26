@@ -2,18 +2,21 @@ from aim.storage import encoding
 from aim.storage.encoding.encoding_native cimport decode_path
 
 from aim.storage.types import AimObject, AimObjectPath
-from aim.storage.utils import ArrayFlag, ObjectFlag
+from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 
-from typing import Any, Iterator, List, Tuple, Union
+from aim.storage.object import CustomObject
+from aim.storage.inmemorytreeview import InMemoryTreeView
+
+from typing import Any, Iterator, Tuple, Union
 
 
 def unfold_tree(
     obj: AimObject,
     *,
-    path: Tuple[Union[int, str], ...] = (),
+    path: AimObjectPath = (),
     unfold_array: bool = True,
     depth: int = None
-) -> Iterator[Tuple[Tuple[Union[int, str], ...], Any]]:
+) -> Iterator[Tuple[AimObjectPath, Any]]:
     if depth == 0:
         yield path, obj
         return
@@ -38,6 +41,11 @@ def unfold_tree(
             yield path, ObjectFlag
         for key, val in obj.items():
             yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
+    elif hasattr(obj, "_aim_encode"):
+        aim_name, aim_obj = obj._aim_encode()
+        yield path, CustomObjectFlagType(aim_name)
+        for key, val in obj.storage.items():
+            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
     else:
         raise NotImplementedError
 
@@ -57,22 +65,23 @@ cpdef val_to_node(
         return dict()
     elif val == ArrayFlag:
         return []
+    elif isinstance(val, CustomObjectFlagType):
+        return CustomObject._aim_decode(val.aim_name, InMemoryTreeView(container={}))
     else:
         return val
 
 
 def fold_tree(
-    paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
+    paths_vals: Iterator[Tuple[AimObjectPath, Any]],
     strict: bool = True
 ) -> AimObject:
     (keys, val), = iter_fold_tree(paths_vals,
                                   level=0, strict=strict)
-    # TODO raise KeyError here
     return val
 
 
 def iter_fold_tree(
-    paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]],
+    paths_vals: Iterator[Tuple[AimObjectPath, Any]],
     level: int = 0,
     strict: bool = True
 ):
@@ -80,13 +89,8 @@ def iter_fold_tree(
     stack = []
     path = []
 
-    # # TODO remove
-    # paths_vals = list(paths_vals)
-    # L = paths_vals
-    # paths_vals = iter(paths_vals)
     try:
         keys, val = next(paths_vals)
-        # assert not keys
         if keys:
             raise StopIteration
         node = val_to_node(val)
@@ -113,7 +117,6 @@ def iter_fold_tree(
         node = val_to_node(val, strict=strict)
 
         if len(keys) == len(path):
-            # override with new
             stack.pop()
             path.pop()
 
@@ -134,29 +137,18 @@ def iter_fold_tree(
                 stack[-1].append(node)
         elif isinstance(stack[-1], dict):
             stack[-1][key_to_add] = node
+        elif isinstance(stack[-1], CustomObject):
+            stack[-1].storage[key_to_add] = node
         else:
             raise ValueError
         stack.append(node)
-
-        # # stack.pop()
-        # stack.append(new_state)
-
-    # while path != keys[:len(path)]:
-    #     last_state = stack.pop()
-    #     if len(stack) == level:
-    #         yield path, last_state
-    #     path.pop()
-
-    # if level == 0:
-    #     yield (), stack[0]
 
     if level < len(stack):
         yield tuple(path[:level]), stack[level]
 
 
-
 def encode_paths_vals(
-    paths_vals: Iterator[Tuple[Tuple[Union[int, str], ...], Any]]
+    paths_vals: Iterator[Tuple[AimObjectPath, Any]]
 ) -> Iterator[Tuple[bytes, bytes]]:
     for path, val in paths_vals:
         path = encoding.encode_path(path)

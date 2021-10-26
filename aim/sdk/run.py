@@ -4,18 +4,17 @@ import datetime
 import os
 
 from time import time
-from collections import Counter
-from copy import deepcopy
+from weakref import WeakValueDictionary
 
 from aim.sdk.errors import RepoIntegrityError
+from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash, get_object_typename
-from aim.sdk.num_utils import convert_to_py_number
+from aim.sdk.utils import generate_run_hash
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
 from aim.storage.hashing import hash_auto
-from aim.storage.context import Context, MetricDescriptor
+from aim.storage.context import Context
 from aim.storage.treeview import TreeView
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
@@ -179,6 +178,8 @@ class Run(StructuredRunMixin):
     _finalize_message_shown = False
     _track_warning_shown = False
 
+    track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
+
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
@@ -187,27 +188,12 @@ class Run(StructuredRunMixin):
         self._constructed = False
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
-        self.track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
 
         self._finalized = False
 
-        if repo is None:
-            from aim.sdk.repo import Repo
-            repo = Repo.default_repo_path()
-        if isinstance(repo, str):
-            from aim.sdk.repo import Repo, RepoStatus
-            repo_status = Repo.check_repo_status(repo)
-            if repo_status == RepoStatus.UPDATE_REQUIRED:
-                logger.error(f'Trying to start Run on repository {repo}, which is out of date. '
-                             f'Please upgrade repository with the following command: '
-                             f'`aim upgrade --repo {repo} 2to3`.')
-                raise RuntimeError()
-            elif repo_status == RepoStatus.MISSING:
-                repo = Repo.from_path(repo, init=True)
-            else:
-                repo = Repo.from_path(repo)
+        self.repo: Repo = None
+        self._set_repo(repo)
 
-        self.repo = repo
         self.read_only = read_only
         if not read_only:
             logger.debug(f'Opening Run {self.hash} in write mode')
@@ -216,6 +202,7 @@ class Run(StructuredRunMixin):
         self._props = None
 
         self.contexts: Dict[Context, int] = dict()
+        self.sequence_trackers: Dict[Tuple[Context, str], Sequence] = WeakValueDictionary()
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', self.hash, read_only=read_only, from_union=True
@@ -229,9 +216,9 @@ class Run(StructuredRunMixin):
             'seqs', self.hash, read_only=read_only
         ).tree().view('seqs').view('chunks').view(self.hash)
 
-        self.series_counters: Dict[Tuple[Context, str], int] = Counter()
-
         self._system_resource_tracker: ResourceTracker = None
+        self._prepare_resource_tracker(system_tracking_interval)
+
         if not read_only:
             try:
                 self.meta_run_attrs_tree.first()
@@ -240,7 +227,6 @@ class Run(StructuredRunMixin):
                 self[...] = {}
             self.meta_run_tree['end_time'] = None
             self.props
-            self._prepare_resource_tracker(system_tracking_interval)
         if experiment:
             self.experiment = experiment
         self._constructed = True
@@ -297,7 +283,7 @@ class Run(StructuredRunMixin):
         return self.meta_run_attrs_tree.collect(key, strict=strict)
 
     def _prepare_resource_tracker(self, tracking_interval: int):
-        if tracking_interval and isinstance(tracking_interval, int) and tracking_interval > 0:
+        if not self.read_only and tracking_interval and isinstance(tracking_interval, int) and tracking_interval > 0:
             try:
                 self._system_resource_tracker = ResourceTracker(self.track, tracking_interval)
             except ValueError:
@@ -336,68 +322,22 @@ class Run(StructuredRunMixin):
         Appends the tracked value to metric series specified by `name` and `context`.
         """
 
-        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
-        # not the actual implementation execution time.
         track_time = time()
-        if self.track_in_thread:
-            val = deepcopy(value)
-            track_rate_warning = self.repo.tracking_queue.register_task(
-                self._track_impl, val, track_time, name, step, epoch, context=context)
-            if track_rate_warning:
-                self.track_rate_warn()
-        else:
-            self._track_impl(value, track_time, name, step, epoch, context=context)
-
-    def _track_impl(
-        self,
-        value,
-        track_time: float,
-        name: str,
-        step: int = None,
-        epoch: int = None,
-        *,
-        context: AimObject = None,
-    ):
-        # TODO move to Metric
-        if context is None:
-            context = {}
-
-        try:
-            val = convert_to_py_number(value)
-        except ValueError:
-            # value is not a number
-            val = value
 
         ctx = Context(context)
-        metric = MetricDescriptor(name, ctx)
-
+        ctx_dict = ctx.to_dict()
         if ctx not in self.contexts:
-            self.meta_tree['contexts', ctx.idx] = ctx.to_dict()
-            self.meta_run_tree['contexts', ctx.idx] = ctx.to_dict()
+            self.meta_tree['contexts', ctx.idx] = ctx_dict
+            self.meta_run_tree['contexts', ctx.idx] = ctx_dict
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        val_view = self.series_run_tree.view(metric.selector).array('val').allocate()
-        epoch_view = self.series_run_tree.view(metric.selector).array('epoch').allocate()
-        time_view = self.series_run_tree.view(metric.selector).array('time').allocate()
-
-        max_idx = self.series_counters.get((ctx, name), None)
-        if max_idx is None:
-            max_idx = len(val_view)
-        if max_idx == 0:
+        sequence = self.sequence_trackers.get((ctx, name))
+        if sequence is None:
             self.meta_tree['traces', ctx.idx, name] = 1
-            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = get_object_typename(val)
-        self.meta_run_tree['traces', ctx.idx, name, "last"] = val
-
-        self.series_counters[ctx, name] = max_idx + 1
-
-        # TODO perform assignments in an atomic way
-
-        if step is None:
-            step = max_idx
-        val_view[step] = val
-        epoch_view[step] = epoch
-        time_view[step] = track_time
+            sequence = Sequence(name, ctx, self)
+            self.sequence_trackers[(ctx, name)] = sequence
+        sequence.track(value, track_time, step, epoch)
 
     @property
     def props(self):
@@ -419,9 +359,6 @@ class Run(StructuredRunMixin):
                     self._props.experiment = 'default'
             if self.repo.run_props_cache_hint:
                 sdb.caches[self.repo.run_props_cache_hint][self.hash] = self._props
-
-    def metric_tree(self, name: str, context: Context) -> TreeView:
-        return self.series_run_tree.view((context.idx, name))
 
     def iter_metrics_info(self) -> Iterator[Tuple[str, Context, 'Run']]:
         """Iterator for all run metrics info.
@@ -501,6 +438,24 @@ class Run(StructuredRunMixin):
     def _calc_hash(self) -> int:
         # TODO maybe take read_only flag into account?
         return hash_auto((self.hash, hash(self.repo)))
+
+    def _set_repo(self, repo):
+        if repo is None:
+            from aim.sdk.repo import Repo
+            repo = Repo.default_repo_path()
+        if isinstance(repo, str):
+            from aim.sdk.repo import Repo, RepoStatus
+            repo_status = Repo.check_repo_status(repo)
+            if repo_status == RepoStatus.UPDATE_REQUIRED:
+                logger.error(f'Trying to start Run on repository {repo}, which is out of date. '
+                             f'Please upgrade repository with the following command: '
+                             f'`aim upgrade --repo {repo} 2to3`.')
+                raise RuntimeError()
+            elif repo_status == RepoStatus.MISSING:
+                repo = Repo.from_path(repo, init=True)
+            else:
+                repo = Repo.from_path(repo)
+        self.repo = repo
 
     def __hash__(self) -> int:
         if self._hash is None:

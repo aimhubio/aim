@@ -1,20 +1,21 @@
 export interface IImagesPanelProps {
   imagesData: any;
-  stepSlice: number[];
+  imagesBlobs: { [key: string]: value };
+  recordSlice: number[];
   indexSlice: number[];
   indexRange: number[];
   stepRange: number[];
-  indexInterval: number;
-  stepInterval: number;
+  indexDensity: number;
+  recordDensity: number;
   onIndexSliceChange: (
     event: ChangeEvent<{}>,
     newValue: number | number[],
   ) => void;
-  onStepSliceChange: (
+  onRecordSliceChange: (
     event: ChangeEvent<{}>,
     newValue: number | number[],
   ) => void;
-  onStepIntervalChange: (event: ChangeEvent<{ value: number }>) => void;
-  onIndexIntervalChange: (event: ChangeEvent<{ value: number }>) => void;
+  onRecordDensityChange: (event: ChangeEvent<{ value: number }>) => void;
+  onIndexDensityChange: (event: ChangeEvent<{ value: number }>) => void;
   isLoading: boolean;
 }
