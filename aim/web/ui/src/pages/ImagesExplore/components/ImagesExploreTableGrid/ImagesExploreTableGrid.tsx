@@ -9,7 +9,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
-import { Icon, Badge, Button } from 'components/kit';
+import { Icon, Button, Badge } from 'components/kit';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -42,16 +42,16 @@ function getImagesExploreTableColumns(
         ? 'right'
         : null,
     },
-    {
-      key: 'metric',
-      content: <span>Metric</span>,
-      topHeader: 'Metrics',
-      pin: order?.left?.includes('metric')
-        ? 'left'
-        : order?.right?.includes('metric')
-        ? 'right'
-        : null,
-    },
+    // {
+    //   key: 'metric',
+    //   content: <span>Metric</span>,
+    //   topHeader: 'Metrics',
+    //   pin: order?.left?.includes('metric')
+    //     ? 'left'
+    //     : order?.right?.includes('metric')
+    //     ? 'right'
+    //     : null,
+    // },
     {
       key: 'context',
       content: <span>Context</span>,

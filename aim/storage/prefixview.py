@@ -1,5 +1,6 @@
 from aim.storage.container import Container
 from aim.storage.treeview import TreeView
+from aim.storage.containertreeview import ContainerTreeView
 
 from typing import Iterator, Tuple
 
@@ -408,7 +409,7 @@ class PrefixView(Container):
             will behave as a (possibly deep) dict-like object:
             `tree[b'meta'][b'x'] == b'123'`
         """
-        return TreeView(self)
+        return ContainerTreeView(self)
 
     def batch(self):
         """Creates a new batch object to store operations in before executing

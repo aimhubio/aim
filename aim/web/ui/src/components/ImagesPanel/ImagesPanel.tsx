@@ -1,5 +1,6 @@
 import React from 'react';
 import { Slider, TextField } from '@material-ui/core';
+import { isEmpty } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -11,16 +12,17 @@ import './ImagesPanel.scss';
 
 function ImagesPanel({
   imagesData,
-  stepSlice,
+  imagesBlobs,
+  recordSlice,
   indexSlice,
   indexRange,
   stepRange,
-  indexInterval,
-  stepInterval,
+  indexDensity,
+  recordDensity,
   onIndexSliceChange,
-  onStepSliceChange,
-  onStepIntervalChange,
-  onIndexIntervalChange,
+  onRecordSliceChange,
+  onRecordDensityChange,
+  onIndexDensityChange,
   isLoading,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -30,7 +32,7 @@ function ImagesPanel({
       height='100%'
       loaderComponent={<TableLoader />}
     >
-      {imagesData ? (
+      {!isEmpty(imagesData) ? (
         <div className='ImagesPanel'>
           <div className='ImagesPanel__slidersContainer'>
             <div className='ImagesPanel__slidersContainer__sliderContainer'>
@@ -39,8 +41,8 @@ function ImagesPanel({
               </p>
               <div className='ImagesPanel__slidersContainer__sliderContainer__sliderBox'>
                 <Slider
-                  value={stepSlice}
-                  onChange={onStepSliceChange}
+                  value={recordSlice}
+                  onChange={onRecordSliceChange}
                   min={stepRange[0]}
                   max={stepRange[1]}
                   valueLabelDisplay='auto'
@@ -49,10 +51,10 @@ function ImagesPanel({
               </div>
               <TextField
                 type='number'
-                value={stepInterval}
+                value={recordDensity}
                 size='small'
                 variant='outlined'
-                onChange={onStepIntervalChange}
+                onChange={onRecordDensityChange}
                 className='TextField__TextArea__OutLined__Small ImagesPanel__slidersContainer__sliderContainer__intervalField'
               />
             </div>
@@ -73,15 +75,19 @@ function ImagesPanel({
               <TextField
                 type='number'
                 size='small'
-                value={indexInterval}
-                onChange={onIndexIntervalChange}
+                value={indexDensity}
+                onChange={onIndexDensityChange}
                 variant='outlined'
                 className='TextField__TextArea__OutLined__Small ImagesPanel__slidersContainer__sliderContainer__intervalField'
               />
             </div>
           </div>
           <div className='ImagesPanel__imagesContainer'>
-            <ImagesSet data={imagesData} title={'root'} />
+            <ImagesSet
+              data={imagesData}
+              title={'root'}
+              imagesBlobs={imagesBlobs}
+            />
           </div>
         </div>
       ) : (
