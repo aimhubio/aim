@@ -1,4 +1,5 @@
-import PIL
+from PIL.Image import Image as PILImage, open as pil_open
+from io import BytesIO
 
 from aim.storage.object import CustomObject
 
@@ -11,10 +12,12 @@ class Image(CustomObject):
         super().__init__()
 
         self.caption = caption
-        assert isinstance(image, PIL.Image.Image)
-        self.storage['data'] = image.tobytes()
+        assert isinstance(image, PILImage)
+        image_bytes_p = BytesIO()
+        image.save(image_bytes_p, format='png')
+        self.storage['data'] = image_bytes_p.getvalue()
 
-        self.storage['mode'] = image.mode
+        self.storage['format'] = 'png'
         self.storage['width'], self.storage['height'] = image.size
 
     @property
@@ -26,6 +29,10 @@ class Image(CustomObject):
         self.storage['caption'] = value
 
     @property
+    def format(self):
+        return self.storage['format']
+
+    @property
     def width(self):
         return self.storage['width']
 
@@ -35,16 +42,17 @@ class Image(CustomObject):
 
     @property
     def size(self):
-        self.storage['width'], self.storage['height']
+        return self.storage['width'], self.storage['height']
 
     def to_pil_image(self):
-        return PIL.Image.frombytes(mode=self.storage['mode'],
-                                   size=(self.storage['width'], self.storage['height']),
-                                   data=self.storage['data'])
+        pil_img = pil_open(BytesIO(self.storage['data']))
+        assert pil_img.size == self.size
+        return pil_img
 
     def json(self):
         return {
             'caption': self.caption,
+            'format': self.format,
             'width': self.width,
             'height': self.height,
         }
