@@ -11,7 +11,7 @@ const getComponentBaseCode = (name) => `
     
     import './styles.scss';
     
-    function TestTest({
+    function ${name}({
       title,
     }: I${name}Props): React.FunctionComponentElement<React.ReactNode> {
       return (
@@ -21,7 +21,9 @@ const getComponentBaseCode = (name) => `
       );
     }
     
-    export default React.memo<I${name}Props>(TestTest);
+    ${name}.displayName = ${name};
+    
+    export default React.memo<I${name}Props>(${name});
 `;
 
 const getExportsBaseCode = (name) => `
