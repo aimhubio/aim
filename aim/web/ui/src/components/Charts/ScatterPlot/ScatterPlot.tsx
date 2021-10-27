@@ -16,7 +16,7 @@ const margin = { top: 50, right: 50, bottom: 60, left: 60 };
  *  const dataSets: DataSet[] = [
        {
           label: 'Blue',
-          src: [
+          data: [
             [20, 30],
             [15, 100],
             [100, 30],
@@ -27,7 +27,7 @@ const margin = { top: 50, right: 50, bottom: 60, left: 60 };
         },
        {
           label: 'Yellow',
-          src: [
+          data: [
             [10, 100],
             [20, 100],
             [12, 70],

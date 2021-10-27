@@ -46,7 +46,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr('groupKey', (line: ILine) => line.groupKey)
       .attr(
-        'src-selector',
+        'data-selector',
         (line: ILine) =>
           `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
       )

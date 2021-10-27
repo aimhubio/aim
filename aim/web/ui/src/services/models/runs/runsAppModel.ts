@@ -105,7 +105,7 @@ function updateData(newData: any) {
   });
 }
 function getRunsData(isInitial = true) {
-  // isInitial: true --> when search button clicked or src is loading at the first time
+  // isInitial: true --> when search button clicked or data is loading at the first time
   const modelState = prepareModelStateToCall(isInitial);
   const configData = modelState?.config;
 
@@ -463,7 +463,7 @@ function getFilteredRow(
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
-  // @TODO need to get src and params from state not from processData
+  // @TODO need to get data and params from state not from processData
   const { data, params, metricsColumns } = processData(
     model.getState()?.rowData as IRun<IMetricTrace>[],
   );
@@ -516,7 +516,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[RunsExplorer][Table] Export runs src to CSV');
+  analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
 }
 
 function onNotificationDelete(id: number) {

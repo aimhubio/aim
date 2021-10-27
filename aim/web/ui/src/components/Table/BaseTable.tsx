@@ -231,7 +231,7 @@ class BaseTable extends React.PureComponent {
    *
    * Calling `forceUpdate` on `Table` may not re-render the inner Grid since it uses `shallowCompare` as a performance optimization.
    * Use this method if you want to manually trigger a re-render.
-   * This may be appropriate if the underlying row src has changed but the row sizes themselves have not.
+   * This may be appropriate if the underlying row data has changed but the row sizes themselves have not.
    */
   forceUpdateTable() {
     this.table && this.table.forceUpdateTable();
@@ -256,7 +256,7 @@ class BaseTable extends React.PureComponent {
   }
 
   /**
-   * Reset row height cache, useful if `src` changed entirely, should be used only in dynamic mode(estimatedRowHeight is provided)
+   * Reset row height cache, useful if `data` changed entirely, should be used only in dynamic mode(estimatedRowHeight is provided)
    */
   resetRowHeightCache() {
     if (!this.props.estimatedRowHeight) return;

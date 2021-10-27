@@ -236,7 +236,7 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     const newActiveLine = linesNodeRef.current.select(`[id=Line-${key}]`);
 
     if (!newActiveLine.empty()) {
-      const dataSelector = newActiveLine.attr('src-selector');
+      const dataSelector = newActiveLine.attr('data-selector');
       drawHighlightedLines(dataSelector);
 
       // set active line

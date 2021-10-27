@@ -26,7 +26,7 @@ export interface IChartPanelProps {
   zoom?: Partial<IChartZoom>;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,
-  //   'src' | 'index' | 'syncHoverState'
+  //   'data' | 'index' | 'syncHoverState'
   // >[];
   // TODO need to fix type later
   chartProps: any[];
