@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 3.0.2 Oct 27 2021
 
+- Switch to aimrocks 0.0.9 - built on rocksdb 6.25.3 (alberttorosyan)
 - Remove grouping select options from Params app config (VkoHov)
 - Sort metrics data in ascending order for X-axis (KaroMourad)
 
