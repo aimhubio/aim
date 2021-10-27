@@ -2154,7 +2154,7 @@ function createAppModel({
       function groupData(data: any): IMetricsCollection<IMetric>[] {
         const configData = model.getState()!.config;
         const grouping = configData!.grouping;
-        const { paletteIndex } = grouping;
+
         const groupByColor = getFilteredGroupingOptions({
           groupName: 'color',
           model,
@@ -2217,6 +2217,7 @@ function createAppModel({
         const colorConfigsMap: { [key: string]: number } = {};
         const dasharrayConfigsMap: { [key: string]: number } = {};
         const chartIndexConfigsMap: { [key: string]: number } = {};
+        const { paletteIndex = 0 } = grouping || {};
 
         for (let groupKey in groupValues) {
           const groupValue = groupValues[groupKey];
@@ -2841,7 +2842,7 @@ function createAppModel({
         model.setState({ config: configData });
       }
 
-      function getParamsData(): {
+      function getParamsData(shouldUrlUpdate?: boolean): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -2849,6 +2850,9 @@ function createAppModel({
           runsRequestRef.abort();
         }
         const configData = model.getState()?.config;
+        if (shouldUrlUpdate) {
+          updateURL({ configData, appName });
+        }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         return {
           call: async () => {
