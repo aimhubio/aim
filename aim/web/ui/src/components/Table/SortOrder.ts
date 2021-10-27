@@ -3,11 +3,11 @@
  */
 const SortOrder = {
   /**
-   * Sort data in ascending order
+   * Sort src in ascending order
    */
   ASC: 'asc',
   /**
-   * Sort data in descending order
+   * Sort src in descending order
    */
   DESC: 'desc',
 };

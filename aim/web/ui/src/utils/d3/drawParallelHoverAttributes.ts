@@ -392,7 +392,7 @@ const drawParallelHoverAttributes = ({
     const newActiveLine = linesNodeRef.current.selectAll(`[id=Line-${key}]`);
 
     if (!isEmpty(newActiveLine.nodes())) {
-      const linesSelectorToHighlight = newActiveLine.attr('data-selector');
+      const linesSelectorToHighlight = newActiveLine.attr('src-selector');
       // set highlighted lines
       highlightedNodeRef.current = linesNodeRef.current
         .selectAll(`[data-selector=${linesSelectorToHighlight}]`)

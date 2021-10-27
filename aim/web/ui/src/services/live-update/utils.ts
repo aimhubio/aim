@@ -78,7 +78,7 @@ function stringToArrayBuffer(str: string): ArrayBuffer {
 
 /**
  * createTransferableData
- * Useful to convert transferable data to non-transferable getting from Worker
+ * Useful to convert transferable src to non-transferable getting from Worker
  * @param {ArrayBufferLike} data - buffer
  * convert buffer to JSON parse result
  */
@@ -96,7 +96,7 @@ export function createTransferableData(data: any): Buffer {
 
 /**
  * getDataFromTransferable
- * Useful to convert transferable data to non-transferable getting from Worker
+ * Useful to convert transferable src to non-transferable getting from Worker
  * @param {ArrayBufferLike} data - buffer
  * convert buffer to JSON parse result
  */

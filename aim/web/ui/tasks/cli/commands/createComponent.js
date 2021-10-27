@@ -11,7 +11,7 @@ const {
   getStylesBaseCode,
   getComponentBaseCode,
   getExportsBaseCode,
-} = require('../data/componentData');
+} = require('../src/componentData');
 
 const messages = {
   ERROR_NAME: "error: Component's name missing.",

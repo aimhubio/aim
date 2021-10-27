@@ -1842,7 +1842,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[MetricsExplorer] Export runs data to CSV');
+  analytics.trackEvent('[MetricsExplorer] Export runs src to CSV');
 }
 
 /**
@@ -2317,7 +2317,7 @@ function onTableResizeEnd(tableHeight: string) {
   }
 }
 
-// internal function to update config.table.sortFields and cache data
+// internal function to update config.table.sortFields and cache src
 function updateSortFields(sortFields: SortField[]) {
   const configData: IMetricAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {

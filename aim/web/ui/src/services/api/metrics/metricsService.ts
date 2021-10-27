@@ -12,12 +12,12 @@ const endpoints = {
 function getMetricsData(params: {}): IApiRequest<ReadableStream> {
   return API.getStream<ReadableStream>(endpoints.GET_METRICS, params);
 
-  // We will not remove this part yet, though we will need to refactor mock data structure
+  // We will not remove this part yet, though we will need to refactor mock src structure
   // due to API schema changes
 
   // return {
   //   call: () => ({
-  //     then: (resolve: (data: IRun<IMetricTrace | IParamTrace>[]) => void, reject?: unknown) => {
+  //     then: (resolve: (src: IRun<IMetricTrace | IParamTrace>[]) => void, reject?: unknown) => {
   //       setTimeout(() => {
   //         const mock = generateMetrics(200, 100);
   //         resolve(mock);

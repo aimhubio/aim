@@ -6,7 +6,7 @@ type NumberValue = number | { valueOf(): number };
  * getMinValue, using d3.min()
  * @param {Iterable<Array<NumberValue>>} data - chart dataset
  * @param {Number} index - the index of column
- * @return - the max value of data set
+ * @return - the max value of src set
  */
 export const getMaxValue = (
   data: Iterable<Array<NumberValue>>,

@@ -1450,7 +1450,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
+  analytics.trackEvent('[ParamsExplorer] Export runs src to CSV');
 }
 
 function onNotificationDelete(id: number) {
@@ -1712,7 +1712,7 @@ function onTableResizeEnd(tableHeight: string) {
   }
 }
 
-// internal function to update config.table.sortFields and cache data
+// internal function to update config.table.sortFields and cache src
 function updateSortFields(sortFields: SortField[]) {
   const configData: IParamsAppConfig | undefined = model.getState()?.config;
   if (configData?.table) {
