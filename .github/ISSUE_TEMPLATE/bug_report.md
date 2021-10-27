@@ -22,6 +22,7 @@ assignees: ''
 
 - Aim Version (e.g., 3.0.1)
 - Python version
+- pip version
 - OS (e.g., Linux)
 - Any other relevant information
 
