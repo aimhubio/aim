@@ -21,7 +21,7 @@ const getComponentBaseCode = (name) => `
       );
     }
     
-    ${name}.displayName = ${name};
+    ${name}.displayName = '${name}';
     
     export default React.memo<I${name}Props>(${name});
 `;
