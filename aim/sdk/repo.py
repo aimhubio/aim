@@ -10,7 +10,7 @@ from weakref import WeakValueDictionary
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 
-from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
@@ -58,7 +58,6 @@ class Repo:
             Recommended to use ``aim init`` command instead.
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
-    _default_path = None  # for unit-tests
 
     tracking_queue = _get_tracking_queue()
 
@@ -71,7 +70,7 @@ class Repo:
             self._mount_root, self.root_path = mount_remote_repo(path)
         else:
             self.root_path = path
-        self.path = os.path.join(self.root_path, AIM_REPO_NAME)
+        self.path = os.path.join(self.root_path, get_aim_repo_name())
 
         if init:
             os.makedirs(self.path, exist_ok=True)
@@ -104,18 +103,11 @@ class Repo:
     def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
 
-    @staticmethod
-    def set_default_path(path: str):
-        Repo._default_path = path
-
     @classmethod
     def default_repo_path(cls) -> str:
-        if cls._default_path:
-            repo_path = cls._default_path
-        else:
-            repo_path, found = search_aim_repo(os.path.curdir)
-            if not found:
-                repo_path = os.getcwd()
+        repo_path, found = search_aim_repo(os.path.curdir)
+        if not found:
+            repo_path = os.getcwd()
         return repo_path
 
     @classmethod
@@ -163,7 +155,7 @@ class Repo:
             True if repository exists, False otherwise.
         """
         path = clean_repo_path(path)
-        aim_repo_path = os.path.join(path, AIM_REPO_NAME)
+        aim_repo_path = os.path.join(path, get_aim_repo_name())
         return os.path.exists(aim_repo_path)
 
     @classmethod
@@ -177,7 +169,7 @@ class Repo:
         repo = cls._pool.get(path)
         if repo is not None:
             del cls._pool[path]
-        aim_repo_path = os.path.join(path, AIM_REPO_NAME)
+        aim_repo_path = os.path.join(path, get_aim_repo_name())
         shutil.rmtree(aim_repo_path)
 
     @classmethod

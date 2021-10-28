@@ -3,7 +3,7 @@ import json
 import re
 import hashlib
 
-from aim.sdk.configs import AIM_REPO_NAME
+from aim.sdk.configs import get_aim_repo_name
 from aim.sdk.utils import clean_repo_path
 from aim.cli.upgrade._legacy_repo.repo.utils import get_experiment_run_path
 from aim.cli.upgrade._legacy_repo.configs import AIM_CONFIG_FILE_NAME, AIM_COMMIT_INDEX_DIR_NAME
@@ -20,7 +20,7 @@ class AimRepo:
                  mode=WRITING_MODE):
         self._config = {}
         path = clean_repo_path(path)
-        self.path = repo_full_path or os.path.join(path, AIM_REPO_NAME)
+        self.path = repo_full_path or os.path.join(path, get_aim_repo_name())
         self.config_path = os.path.join(self.path, AIM_CONFIG_FILE_NAME)
         self.hash = hashlib.md5(self.path.encode('utf-8')).hexdigest()
 
