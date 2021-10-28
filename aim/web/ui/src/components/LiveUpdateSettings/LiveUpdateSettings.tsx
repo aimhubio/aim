@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switcher } from 'components/kit';
+import { Switcher, Text } from 'components/kit';
 
 import './LiveUpdateSettings.scss';
 
@@ -13,8 +13,10 @@ function LiveUpdateSettings(
   props: ILiveUpdateSettingsProp,
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='App_LiveUpdateSettings_Container'>
-      <span className='LiveUpdateText'>Live update:</span>
+    <div className='LiveUpdateSettings'>
+      <Text className='LiveUpdateSettings__Text' size={14}>
+        Live Update:
+      </Text>
       <Switcher
         checked={Boolean(props.enabled)}
         onChange={() => {

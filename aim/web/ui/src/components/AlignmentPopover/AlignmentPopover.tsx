@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MenuItem } from '@material-ui/core';
+import { Divider, MenuItem } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -84,14 +84,14 @@ function AlignmentPopover({
     }, [projectsDataMetrics]);
 
   return (
-    <div className='AlignmentPopover__container'>
-      <div className='AlignmentPopover__container__densityOptions AlignmentPopover__container__options'>
+    <div className='AlignmentPopover'>
+      <div>
         <Text
           component='p'
           size={12}
           color='primary'
           tint={50}
-          className='AlignmentPopover__container__options__title'
+          className='AlignmentPopover__subtitle'
         >
           Density:
         </Text>
@@ -106,13 +106,14 @@ function AlignmentPopover({
           </MenuItem>
         ))}
       </div>
-      <div className='AlignmentPopover__container__options'>
+      <Divider className='AlignmentPopover__Divider' />
+      <div>
         <Text
           component='p'
           size={12}
           color='primary'
           tint={50}
-          className='AlignmentPopover__container__options__title'
+          className='AlignmentPopover__subtitle'
         >
           Alignment:
         </Text>
@@ -127,17 +128,17 @@ function AlignmentPopover({
           </MenuItem>
         ))}
       </div>
-      <div className='AlignmentPopover__container__selectContainer AlignmentPopover__container__options'>
+      <div className='AlignmentPopover__selectContainer'>
         <Text
           component='p'
           size={12}
           color='primary'
           tint={50}
-          className='AlignmentPopover__container__options__title'
+          className='AlignmentPopover__subtitle'
         >
           Metric:
         </Text>
-        <div className='AlignmentPopover__container__selectContainer__selectBox'>
+        <div className='AlignmentPopover__selectContainer__selectBox'>
           <Dropdown
             size='large'
             isColored

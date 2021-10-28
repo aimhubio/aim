@@ -2,19 +2,20 @@
 
 .SmoothingPopover {
   width: 24.5rem;
-}
-
-.SmoothingPopover__section {
-  padding: 1rem;
-  &:last-child {
-    border-top: $border-main;
+  padding: $space-xs;
+  &__Divider {
+    margin: $space-xs 0;
   }
-}
 
-.SmoothingPopover__subtitle {
-  display: block;
-  color: $text-color-50;
-  font-size: $text-sm;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  &__subtitle {
+    text-transform: uppercase;
+    padding: $space-xs $space-xs;
+  }
+  &__ToggleButton {
+    padding: 0 $space-xs;
+  }
+
+  &__Slider {
+    margin: 0 $space-xs;
+  }
 }

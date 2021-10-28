@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .MuiAutocomplete-paper {
-  box-shadow: unset;
+  // box-shadow: unset;
   margin: unset;
 }
 
@@ -18,8 +18,7 @@
     }
 
     .SelectForm__option__label {
-      margin-left: 0.5rem;
-      font-size: $text-md;
+      margin-left: $space-xs;
     }
   }
 }

@@ -93,7 +93,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         {renderPopoverHeader()}
         {_.isEmpty(groupConfig) ? null : (
           <div>
-            <Divider className='PopoverContent__divider' />
+            <Divider />
             <div className='PopoverContent__box'>
               <div className='PopoverContent__subtitle1'>Group Config</div>
               {Object.keys(groupConfig).map((groupConfigKey: string) =>
@@ -115,7 +115,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         )}
         {_.isEmpty(params) ? null : (
           <div>
-            <Divider className='PopoverContent__divider' />
+            <Divider />
             <div className='PopoverContent__box'>
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
@@ -129,7 +129,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         {focusedState?.active && runHash ? (
           <>
             <div>
-              <Divider className='PopoverContent__divider' />
+              <Divider />
               <div className='PopoverContent__box'>
                 <Link
                   to={PathEnum.Run_Detail.replace(':runHash', runHash)}
@@ -143,7 +143,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               </div>
             </div>
             <div>
-              <Divider className='PopoverContent__divider' />
+              <Divider />
               <div className='PopoverContent__box'>
                 <AttachedTagsList runHash={runHash} />
               </div>

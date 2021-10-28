@@ -51,7 +51,7 @@ function Grouping({
   onShuffleChange,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='Grouping__container'>
+    <div className='Grouping'>
       {groupingPopovers(singleGrouping).map(
         ({ title, advancedTitle, groupName, AdvancedComponent }) => {
           return (
