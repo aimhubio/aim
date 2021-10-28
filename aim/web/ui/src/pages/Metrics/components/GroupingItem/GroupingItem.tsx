@@ -3,7 +3,7 @@ import React from 'react';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 
 import './GroupingItem.scss';
@@ -30,7 +30,7 @@ function GroupingItem({
     <ControlPopover
       title={title}
       anchor={({ onAnchorClick, opened }) => (
-        <div onClick={onAnchorClick} className={'GroupingItem__container'}>
+        <div onClick={onAnchorClick} className={'GroupingItem'}>
           <div
             className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
               groupingData?.[groupName]?.length > 0 ? 'outlined' : ''
@@ -38,7 +38,7 @@ function GroupingItem({
           >
             <Icon name={icons[groupName] as IconName} />
           </div>
-          <span>{groupName}</span>
+          <Text>{groupName}</Text>
         </div>
       )}
       component={

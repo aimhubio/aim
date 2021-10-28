@@ -18,7 +18,7 @@
 }
 
 .Params__Controls__icon {
-  color: tint($text-color, 30);
+  color: $pico-70;
   font-size: 1.125rem;
 
   &.active {
@@ -34,23 +34,21 @@
   position: relative;
   align-items: center;
   justify-content: center;
-  transition: background-color .18s ease-out;
+  transition: background-color 0.18s ease-out;
   border: 0.0625rem solid transparent;
-  border-radius: 6px;
+  border-radius: $border-radius-main;
 
   &.active {
-    background-color: tint($primary-color, 90);
+    background-color: $primary-color-10;
     &.outlined {
-      border: 0.0625rem solid tint($primary-color, 30);
+      border: $border-main-active;
     }
   }
 
   &:hover {
-    background-color: tint($pico, 95);
-
+    background-color: $pico-5;
     .icon-arrow-left {
       opacity: 1;
     }
   }
-
 }
