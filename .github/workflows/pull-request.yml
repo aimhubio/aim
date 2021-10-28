@@ -30,12 +30,12 @@ jobs:
           python -m pip install -r requirements.dev.txt
           python -m pip install -r requirements.txt
           python -m pip install -e .
-      - name: unit-tests
-        run: |
-          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
       - name: code style checks
         run: |
           flake8 aim
+      - name: unit-tests
+        run: |
+          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
       - name: configure AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -43,5 +43,5 @@ jobs:
           aws-secret-access-key: ${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
       - name: perf tests
-        run: |  # put the real perf tests script run here
-          aws s3 ls s3://${{ secrets.AIM_LOGS_S3_BUCKET }}
+        run: |
+         pytest performance_tests
