@@ -14,7 +14,6 @@ class TestRunDataCollectionExecutionTime(TestBase):
     def test_collect_runs_data(self, query_key, query):
         query_execution_time = collect_runs_data(self.repo, query)
         test_name = f'test_collect_runs_data_{query_key}'
-        assert False, f'{test_name} {query_execution_time}'
         baseline = get_baseline(test_name)
         if baseline:
             self.assertInRange(query_execution_time, baseline)
@@ -27,7 +26,6 @@ class TestMetricDataCollectionExecutionTime(TestBase):
     def test_collect_metrics_data(self, query_key, query):
         query_execution_time = collect_metrics_data(self.repo, query)
         test_name = f'test_collect_metrics_data_{query_key}'
-        assert False, f'{test_name} {query_execution_time}'
         baseline = get_baseline(test_name)
         if baseline:
             self.assertInRange(query_execution_time, baseline)
