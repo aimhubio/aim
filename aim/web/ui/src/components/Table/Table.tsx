@@ -234,8 +234,10 @@ const Table = React.forwardRef(function Table(
         }
 
         if (groups) {
-          for (let groupKey in dataRef.current) {
-            if (dataRef.current[groupKey].data.groupRowsKeys.includes(rowKey)) {
+          for (let groupKey in dataRef?.current) {
+            if (
+              dataRef?.current[groupKey].data?.groupRowsKeys?.includes(rowKey)
+            ) {
               if (expandedGroups.current.includes(groupKey)) {
                 scrollToElement();
               } else {

@@ -17,6 +17,9 @@ import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import contextToString from 'utils/contextToString';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -193,69 +196,54 @@ function getMetricsTableColumns(
       topHeader: '',
       pin: 'right',
     },
-  ]
-    .concat([
-      {
-        key: 'system',
-        content: <span>Metric</span>,
-        topHeader: 'System Metrics',
-        pin: order?.left?.includes('epoch')
+  ].concat(
+    paramColumns.map((param) => {
+      const paramKey = `run.params.${param}`;
+      const sortItem: SortField = sortFields?.find(
+        (value) => value[0] === paramKey,
+      );
+
+      return {
+        key: param,
+        content: (
+          <span>
+            {param}
+            {onSort && (
+              <TableSortIcons
+                onSort={() => onSort(paramKey)}
+                sortFields={sortFields}
+                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+              />
+            )}
+          </span>
+        ),
+        topHeader: 'Params',
+        pin: order?.left?.includes(param)
           ? 'left'
-          : order?.right?.includes('epoch')
+          : order?.right?.includes(param)
           ? 'right'
           : null,
-      },
-    ])
-    .concat(
-      paramColumns.map((param) => {
-        const paramKey = `run.params.${param}`;
-        const sortItem: SortField = sortFields?.find(
-          (value) => value[0] === paramKey,
-        );
-
-        return {
-          key: param,
-          content: (
-            <span>
-              {param}
-              {onSort && (
-                <TableSortIcons
-                  onSort={() => onSort(paramKey)}
-                  sortFields={sortFields}
-                  sort={Array.isArray(sortItem) ? sortItem[1] : null}
-                />
-              )}
-            </span>
-          ),
-          topHeader: 'Params',
-          pin: order?.left?.includes(param)
-            ? 'left'
-            : order?.right?.includes(param)
-            ? 'right'
-            : null,
-          columnOptions: ['color', 'stroke', 'chart'].map(
-            (groupName: string) => ({
-              value: `${
-                grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
-              }group by ${groupName}`,
-              onClick: () => {
-                if (onGroupingToggle) {
-                  onGroupingToggle({
-                    groupName,
-                    list: grouping?.[groupName]?.includes(paramKey)
-                      ? grouping?.[groupName].filter(
-                          (item) => item !== paramKey,
-                        )
-                      : grouping?.[groupName].concat([paramKey]),
-                  } as IOnGroupingSelectChangeParams);
-                }
-              },
-              icon: icons[groupName],
-            }),
-          ),
-        };
-      }),
-    );
+        columnOptions: ['color', 'stroke', 'chart'].map(
+          (groupName: string) => ({
+            value: `${
+              grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
+            }group by ${groupName}`,
+            onClick: () => {
+              if (onGroupingToggle) {
+                onGroupingToggle({
+                  groupName,
+                  list: grouping?.[groupName]?.includes(paramKey)
+                    ? grouping?.[groupName].filter((item) => item !== paramKey)
+                    : grouping?.[groupName].concat([paramKey]),
+                } as IOnGroupingSelectChangeParams);
+              }
+            },
+            icon: icons[groupName],
+          }),
+        ),
+      };
+    }),
+  );
 
   if (groupFields) {
     columns.push({
@@ -314,7 +302,23 @@ function metricsTableRowRenderer(
     const row: { [key: string]: any } = {};
     for (let i = 0; i < columns.length; i++) {
       const col = columns[i];
-      if (col === 'context') {
+      if (col === 'metric') {
+        let metricName: string = isSystemMetric(rowData[col])
+          ? formatSystemMetricName(rowData[col])
+          : rowData[col];
+        row.metric = {
+          content:
+            Array.isArray(rowData.metric) && rowData.metric.length > 1 ? (
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={`${rowData.context.length} values`}
+              />
+            ) : (
+              <span>{metricName}</span>
+            ),
+        };
+      } else if (col === 'context') {
         row[col] = {
           content:
             rowData.context.length > 1 ? (
@@ -327,7 +331,7 @@ function metricsTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context}
+                label={rowData.context[0] || 'No Context'}
               />
             ),
         };
@@ -382,10 +386,17 @@ function metricsTableRowRenderer(
           </Link>
         ),
       },
-      metric: rowData.metric,
+      metric: isSystemMetric(rowData.metric)
+        ? formatSystemMetricName(rowData.metric)
+        : rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <Badge key={item} size='small' color={COLORS[0][0]} label={item} />
+          <Badge
+            key={item}
+            size='small'
+            color={COLORS[0][0]}
+            label={item || 'No Context'}
+          />
         )),
       },
       value: rowData.value,

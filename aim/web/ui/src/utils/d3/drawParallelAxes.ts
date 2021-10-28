@@ -9,6 +9,8 @@ import {
   gradientStartColor,
   gradientEndColor,
 } from 'utils/d3';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -93,19 +95,23 @@ function drawParallelAxes({
         }, ${i % 2 === 0 ? -25 : -40})`,
       )
       .html(() => {
-        const [label1, label2 = ''] = displayName.split(' ');
+        let [label1, label2 = ''] = displayName.split(' ');
         const styledLabel2 = label2
           ? `<span style='font-style: italic'>${label2}</span>`
           : '';
+        let label = isSystemMetric(label1)
+          ? formatSystemMetricName(label1)
+          : label1;
         return `
             <div title='${displayName}'
                 class='xAxisLabel__container xAxisLabel__container__${dimensionType} 
                 ${i === first ? 'left' : i === last ? 'right' : ''}' 
             >
-               <div class='xAxisLabel'>${label1} ${styledLabel2}</div>
+               <div class='xAxisLabel'>${label} ${styledLabel2}</div>
             </div>
           `;
       });
+
     axesRef.current.yAxes[keyOfDimension] = axes;
   });
 

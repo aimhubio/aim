@@ -6,6 +6,8 @@ import contextToString from 'utils/contextToString';
 import COLORS from 'config/colors/colors';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
 import { Badge } from 'components/kit';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 function RunMetricCard({
   batch,
@@ -46,7 +48,9 @@ function RunMetricCard({
           Metric
         </p>
         <p className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'>
-          {batch?.metric_name}
+          {isSystemMetric(batch?.metric_name)
+            ? formatSystemMetricName(batch?.metric_name)
+            : batch?.metric_name}
         </p>
         {contextToString(batch?.context)
           ?.split(',')

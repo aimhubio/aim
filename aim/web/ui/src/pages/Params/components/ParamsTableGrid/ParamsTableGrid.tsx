@@ -13,6 +13,8 @@ import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 const icons: { [key: string]: string } = {
   color: 'coloring-bold',
@@ -100,14 +102,16 @@ function getParamsTableColumns(
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
           key: `${key}_${metricContext}`,
-          content: (
+          content: isSystemMetric(key) ? (
+            <span>{formatSystemMetricName(key)}</span>
+          ) : (
             <Badge
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'No context' : metricContext}
             />
           ),
-          topHeader: key,
+          topHeader: isSystemMetric(key) ? 'System Metrics' : key,
           pin: order?.left?.includes(`${key}_${metricContext}`)
             ? 'left'
             : order?.right?.includes(`${key}_${metricContext}`)
