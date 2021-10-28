@@ -35,7 +35,7 @@ class ContainerTreeView(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath],
         resolve: bool = True
-    ) -> 'ContainerTreeView':
+    ):
         prefix = E.encode_path(path)
 
         container_view = self.container.view(prefix)
@@ -43,12 +43,11 @@ class ContainerTreeView(TreeView):
         # Okay, but let's decide if we want to initialize a CustomObject view
         if not resolve:
             return tree_view
-        try:
-            flag = decode(container_view[b''])
-            if isinstance(flag, CustomObjectFlagType):
-                return CustomObject._aim_decode(flag.aim_name, tree_view)
-        except:
-            pass
+
+        flag = decode(container_view.get(b'', default=b'\0'))
+        if isinstance(flag, CustomObjectFlagType):
+            return CustomObject._aim_decode(flag.aim_name, tree_view)
+
         return tree_view
 
     def make_array(
@@ -176,7 +175,7 @@ class ContainerTreeView(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> TreeArrayView:
-        return TreeArrayView(self.view(path, resolve=False))
+        return TreeArrayView(self.subtree(path))
 
     def first(
         self,

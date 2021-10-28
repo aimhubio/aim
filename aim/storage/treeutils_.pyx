@@ -4,7 +4,8 @@ from aim.storage.encoding.encoding_native cimport decode_path
 from aim.storage.types import AimObject, AimObjectPath
 from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 
-from aim.storage.object import CustomObjectBase
+from aim.storage.object import CustomObjectBase, CustomObject
+from aim.storage.treeview import TreeView
 from aim.storage.inmemorytreeview import InMemoryTreeView
 
 from typing import Any, Iterator, Tuple, Union

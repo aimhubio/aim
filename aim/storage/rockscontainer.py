@@ -152,14 +152,23 @@ class RocksContainer(Container):
 
         The `default` is :obj:`None` by default.
         """
-        raise NotImplementedError
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     def __getitem__(
         self,
         key: bytes
     ) -> bytes:
-        """Returns the value by the given `key`."""
-        return self.db.get(key=key)
+        """Returns the value by the given `key`.
+
+        Raises :obj:`KeyError` if the `key` is not found.
+        """
+        value = self.db.get(key=key)
+        if value is None:
+            raise KeyError(key)
+        return value
 
     def set(
         self,

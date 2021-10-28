@@ -12,7 +12,7 @@ from typing import Any, Dict, Iterator, Tuple, Union
 class InMemoryTreeView(TreeView):
     def __init__(
         self,
-        container
+        container: AimObject
     ) -> None:
         self.container = container
 
@@ -30,8 +30,9 @@ class InMemoryTreeView(TreeView):
 
     def view(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> 'InMemoryTreeView':
+        path: Union[AimObjectKey, AimObjectPath],
+        resolve: bool = True
+    ):
         if isinstance(path, (int, str)):
             path = (path,)
         assert path
@@ -65,7 +66,8 @@ class InMemoryTreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath] = (),
         strict: bool = True
     ) -> AimObject:
-        assert strict
+        if not strict:
+            raise NotImplementedError("Non-strict mode is not supported yet.")
 
         if path == Ellipsis:
             path = ()
@@ -132,7 +134,7 @@ class InMemoryTreeView(TreeView):
         level: int = None
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         if level is not None:
-            raise NotImplementedError()
+            raise NotImplementedError("Level iteration not supported yet.")
         container = self.container
         for key in path:
             container = container[key]
@@ -160,13 +162,13 @@ class InMemoryTreeView(TreeView):
         AimObjectPath,
         AimObject
     ]]:
-        raise NotImplementedError()
+        raise NotImplementedError("Level iteration not supported yet.")
 
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> TreeArrayView:
-        return TreeArrayView(self.view(path, resolve=False))
+        return TreeArrayView(self.subtree(path))
 
     def first(
         self,

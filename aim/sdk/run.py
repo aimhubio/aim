@@ -208,15 +208,15 @@ class Run(StructuredRunMixin):
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', hashname, read_only=read_only, from_union=True
-        ).tree().view('meta', resolve=False)
-        self.meta_run_tree: TreeView = self.meta_tree.view('chunks', resolve=False).view(hashname, resolve=False)
+        ).tree().subtree('meta')
+        self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(hashname)
 
-        self.meta_attrs_tree: TreeView = self.meta_tree.view('attrs', resolve=False)
-        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs', resolve=False)
+        self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
+        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
             'seqs', hashname, read_only=read_only
-        ).tree().view('seqs', resolve=False).view('chunks', resolve=False).view(hashname, resolve=False)
+        ).tree().subtree('seqs').subtree('chunks').subtree(hashname)
 
         self.series_counters: Dict[Tuple[Context, str], int] = Counter()
 
@@ -357,9 +357,9 @@ class Run(StructuredRunMixin):
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        val_view = self.series_run_tree.view(metric.selector, resolve=False).array('val').allocate()
-        epoch_view = self.series_run_tree.view(metric.selector, resolve=False).array('epoch').allocate()
-        time_view = self.series_run_tree.view(metric.selector, resolve=False).array('time').allocate()
+        val_view = self.series_run_tree.subtree(metric.selector).array('val').allocate()
+        epoch_view = self.series_run_tree.subtree(metric.selector).array('epoch').allocate()
+        time_view = self.series_run_tree.subtree(metric.selector).array('time').allocate()
 
         max_idx = self.series_counters.get((ctx, name), None)
         if max_idx is None:
@@ -400,7 +400,7 @@ class Run(StructuredRunMixin):
                 sdb.caches[self.repo.run_props_cache_hint][self.hashname] = self._props
 
     def metric_tree(self, name: str, context: Context) -> TreeView:
-        return self.series_run_tree.view((context.idx, name), resolve=False)
+        return self.series_run_tree.subtree((context.idx, name))
 
     def iter_metrics_info(self) -> Iterator[Tuple[str, Context, 'Run']]:
         """Iterator for all run metrics info.
@@ -408,7 +408,7 @@ class Run(StructuredRunMixin):
         Yields:
             tuples of (metric_name, context, run) where run is the Run object itself.
         """
-        for ctx_idx, run_ctx_view in self.meta_run_tree.view('traces', resolve=False).items():
+        for ctx_idx, run_ctx_view in self.meta_run_tree.subtree('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
@@ -456,7 +456,7 @@ class Run(StructuredRunMixin):
         Returns:
              :obj:`list`: list of metric's `context`, `metric_name` and last tracked value triplets.
         """
-        metrics = self.meta_run_tree.view('traces', resolve=False)
+        metrics = self.meta_run_tree.subtree('traces')
         metrics_overview = []
         for idx in metrics.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
