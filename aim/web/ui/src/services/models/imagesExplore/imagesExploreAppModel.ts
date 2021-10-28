@@ -44,11 +44,16 @@ import JsonToCSV from 'utils/JsonToCSV';
 import moment from 'moment';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { formatValue } from 'utils/formatValue';
-import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import {
+  IImageData,
+  IImageRunData,
+  IImagesExploreAppConfig,
+  IImagesExploreAppModelState,
+} from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
-const model = createModel<Partial<any>>({
+const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
 });
 
@@ -191,13 +196,17 @@ function getImagesData() {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
-  const modelState: any = model.getState();
-  const configData = modelState?.config;
-  const recordSlice = configData.images?.recordSlice;
-  const indexSlice = configData.images?.indexSlice;
-  const recordDensity = configData.images?.recordDensity;
-  const indexDensity = configData.images?.indexDensity;
-  const calcRanges = configData.images.calcRanges;
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  const recordSlice: number[] | undefined = configData?.images?.recordSlice as
+    | number[]
+    | undefined;
+  const indexSlice: number[] | undefined = configData?.images?.indexSlice as
+    | number[]
+    | undefined;
+  const recordDensity = configData?.images?.recordDensity;
+  const indexDensity = configData?.images?.indexDensity;
+  const calcRanges = configData?.images.calcRanges;
   // const metric = configData?.chart.alignmentConfig.metric;
   // let query = getQueryStringFromSelect(configData?.select);
   let imageDataBody: any = { q: '', calc_ranges: calcRanges };
@@ -214,52 +223,32 @@ function getImagesData() {
 
   return {
     call: async () => {
-      // if (query === '') {
-      //   model.setState({
-      //     requestIsPending: false,
-      //     queryIsEmpty: true,
-      //   });
-      // } else {
       model.setState({
         requestIsPending: true,
         queryIsEmpty: false,
       });
       const stream = await imagesRequestRef.call(exceptionHandler);
       const runData = await getImagesMetricsData(stream);
-      const uris: string[] = [];
-      runData.forEach((run: any) => {
-        run.traces.forEach((imageData: any) => {
-          imageData.values.forEach((stepData: any) => {
-            stepData.forEach((image: any) => {
-              uris.push(image.blob_uri);
-            });
-          });
-        });
-      });
-      const imagesBlobs: { [key: string]: string } = await getImagesBlobsData(
-        uris,
-      );
       if (configData) {
-        setModelData(runData, configData, imagesBlobs);
+        setModelData(runData, configData);
       }
-      // }
     },
     abort: imagesRequestRef.abort,
   };
 }
 
-function processData(data: IRun<IMetricTrace>[]): {
-  data: IMetricsCollection<IMetric>[];
+function processData(data: any[]): {
+  data: IMetricsCollection<IImageData>[];
   params: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: any[] = [];
   let params: string[] = [];
-  data.forEach((run: any) => {
+  data.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     run.traces.forEach((imageData: any) => {
-      imageData.values.forEach((stepData: any, stepIndex: number) => {
-        stepData.forEach((image: any) => {
+      imageData.values.forEach((stepData: IImageData[], stepIndex: number) => {
+        stepData.forEach((image: IImageData) => {
           const metricKey = encode({
             runHash: run.hash,
             traceContext: imageData.context,
@@ -267,9 +256,8 @@ function processData(data: IRun<IMetricTrace>[]): {
             step: imageData.iters[stepIndex],
           });
           metrics.push({
+            ...image,
             step: imageData.iters[stepIndex],
-            index: image.index,
-            src: image.blob_uri,
             context: imageData.context,
             run: _.omit(run, 'traces'),
             key: metricKey,
@@ -299,11 +287,7 @@ function processData(data: IRun<IMetricTrace>[]): {
   };
 }
 
-function setModelData(
-  rawData: any[],
-  configData: IImagesExploreAppConfig,
-  imagesBlobs: { [key: string]: string },
-) {
+function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params } = processData(rawData);
   const groupingSelectOptions = [...getGroupingSelectOptions(params)];
@@ -335,7 +319,6 @@ function setModelData(
     params,
     data,
     imagesData: getDataAsImageSet(data),
-    imagesBlobs,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
@@ -355,7 +338,7 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params } = processData(model.getState()?.rawData);
+  const { data, params } = processData(model.getState()?.rawData as any[]);
   const groupingSelectOptions = [...getGroupingSelectOptions(params)];
   const tableData = getDataAsTableRows(
     data,
@@ -395,12 +378,16 @@ function updateModelData(
   });
 }
 
-function getFilteredGroupingOptions(grouping: any): string[] {
+function getFilteredGroupingOptions(
+  grouping: IImagesExploreAppConfig['grouping'],
+): string[] {
   const { reverseMode, isApplied } = grouping;
-  const groupingSelectOptions: any = model.getState()?.groupingSelectOptions;
+  const groupingSelectOptions:
+    | IImagesExploreAppModelState['groupingSelectOptions']
+    | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
     const filteredOptions = [...groupingSelectOptions]
-      .filter((opt: any) => grouping['groupBy'].indexOf(opt.value) === -1)
+      .filter((opt) => grouping['groupBy'].indexOf(opt.value as never) === -1)
       .map((item) => item.value);
     return isApplied['groupBy']
       ? reverseMode['groupBy']
@@ -441,7 +428,7 @@ function getGroupingSelectOptions(
   ];
 }
 
-function groupData(data: IMetric[]): any {
+function groupData(data: any[]): any {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()!.config;
   const grouping = configData!.grouping;
@@ -480,7 +467,9 @@ function groupData(data: IMetric[]): any {
   return Object.values(groupValues);
 }
 
-function setComponentRefs(refElement: React.MutableRefObject<any> | object) {
+function setComponentRefs(
+  refElement: React.MutableRefObject<HTMLElement | any> | object,
+) {
   const modelState = model.getState();
   if (modelState?.refs) {
     modelState.refs = Object.assign(modelState.refs, refElement);
@@ -608,24 +597,25 @@ async function getImagesMetricsData(
 }
 
 async function getImagesBlobsData(uris: string[]) {
+  const imagesBlobs: { [key: string]: string } =
+    model.getState()?.imagesBlobs || {};
   const stream = await imagesExploreService.getImagesByURIs(uris).call();
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
-  const imagesBlobs: { [key: string]: string } = {};
   for await (let [keys, val] of objects) {
     imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
   }
-  return imagesBlobs;
+  model.setState({ imagesBlobs });
 }
 
-function getDataAsImageSet(data: any) {
+function getDataAsImageSet(data: any[]) {
   if (!isEmpty(data)) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
-    const imageSetData: any = {};
+    const imageSetData: object = {};
     const groupFields = configData?.grouping?.groupBy;
     data.forEach((group: any) => {
       const path = groupFields?.reduce((acc: any, field: any) => {
@@ -641,7 +631,7 @@ function getDataAsImageSet(data: any) {
 }
 
 function getDataAsTableRows(
-  processedData: IMetricsCollection<IMetric>[],
+  processedData: IMetricsCollection<IImageData>[],
   paramKeys: string[],
   isRawData: boolean,
   config: IImagesExploreAppConfig,
@@ -659,7 +649,7 @@ function getDataAsTableRows(
 
   let rowIndex = 0;
   const sameValueColumns: string[] = [];
-  processedData.forEach((metricsCollection: IMetricsCollection<IMetric>) => {
+  processedData.forEach((metricsCollection: IMetricsCollection<IImageData>) => {
     const groupKey = metricsCollection.key;
     const columnsValues: { [key: string]: string[] } = {};
 
@@ -671,12 +661,6 @@ function getDataAsTableRows(
       }
       const groupHeaderRow = {
         meta: {
-          // chartIndex:
-          //   config.grouping.chart.length > 0 ||
-          //   config.grouping.reverseMode.chart
-          //     ? metricsCollection.chartIndex + 1
-          //     : null,
-          // color: metricsCollection.color,
           dasharray: null,
           itemsCount: metricsCollection.data.length,
           config: groupConfigData,
@@ -687,10 +671,6 @@ function getDataAsTableRows(
         run: '',
         metric: '',
         context: [],
-        // value: '',
-        // step: '',
-        // epoch: '',
-        // time: '',
         children: [],
       };
 
@@ -700,12 +680,7 @@ function getDataAsTableRows(
       };
     }
 
-    metricsCollection.data.forEach((metric: IMetric) => {
-      // const closestIndex =
-      //   xValue === null
-      //     ? null
-      //     : getClosestValue(metric.data.xValues as number[], xValue as number)
-      //         .index;
+    metricsCollection.data.forEach((metric: any) => {
       const rowValues: any = {
         rowMeta: {
           color: metricsCollection.color ?? metric.color,
@@ -718,16 +693,7 @@ function getDataAsTableRows(
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
         experiment: metric.run.props.experiment ?? 'default',
         run: metric.run.props.name,
-        // metric: metric.metric_name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
-        // value:
-        //   closestIndex === null
-        //     ? '-'
-        //     : `${metric.data.values[closestIndex] ?? '-'}`,
-        // step: metric.data.steps[metric.data.steps.length - 1],
-        // epoch: metric.data.epochs[metric.data.steps.length - 1],
-        // time:
-        //   closestIndex !== null ? metric.data.timestamps[closestIndex] : null,
         parentId: groupKey,
       };
       rowIndex++;
@@ -992,7 +958,7 @@ function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
   const { data, params, config, groupingSelectOptions } =
-    model.getState() as any;
+    model.getState() as IImagesExploreAppModelState;
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -1160,7 +1126,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
 
 function onSearchQueryCopy(): void {
   const selectedMetricsData = model.getState()?.config?.select;
-  let query = getQueryStringFromSelect(selectedMetricsData);
+  let query = getQueryStringFromSelect(selectedMetricsData as any);
   navigator.clipboard.writeText(query);
   onNotificationAdd({
     id: Date.now(),
@@ -1381,7 +1347,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
 
 function onRecordSliceChange(
   event: ChangeEvent<{}>,
-  newValue: number | number[],
+  newValue: number[] | number,
 ) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
@@ -1402,7 +1368,7 @@ function onRecordSliceChange(
 
 function onIndexSliceChange(
   event: ChangeEvent<{}>,
-  newValue: number | number[],
+  newValue: number[] | number,
 ) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
@@ -1497,6 +1463,7 @@ const imagesExploreAppModel = {
   onIndexSliceChange,
   onIndexDensityChange,
   onRecordDensityChange,
+  getImagesBlobsData,
 };
 
 export default imagesExploreAppModel;

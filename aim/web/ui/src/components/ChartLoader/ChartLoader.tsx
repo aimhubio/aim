@@ -1,5 +1,7 @@
 import React from 'react';
 import { Skeleton } from '@material-ui/lab';
+import _ from 'lodash-es';
+
 import { IChartLoaderProps } from 'types/components/ChartLoader/ChartLoader';
 
 import './ChartLoader.scss';
@@ -12,16 +14,18 @@ function ChartLoader({
       <div className='ChartLoader__chart'>
         <span>Loading...</span>
       </div>
-      <div className='ChartLoader__controls'>
-        {[...Array(controlsCount)].map((i, index) => (
-          <Skeleton
-            key={index}
-            variant='rect'
-            style={{ minHeight: 35, height: 35, width: 35, minWidth: 35 }}
-            animation='wave'
-          />
-        ))}
-      </div>
+      {!_.isEmpty(controlsCount) && (
+        <div className='ChartLoader__controls'>
+          {[...Array(controlsCount)].map((i, index) => (
+            <Skeleton
+              key={index}
+              variant='rect'
+              style={{ minHeight: 35, height: 35, width: 35, minWidth: 35 }}
+              animation='wave'
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

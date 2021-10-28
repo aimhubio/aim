@@ -17,5 +17,6 @@ export interface IImagesPanelProps {
   ) => void;
   onRecordDensityChange: (event: ChangeEvent<{ value: number }>) => void;
   onIndexDensityChange: (event: ChangeEvent<{ value: number }>) => void;
+  getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
 }

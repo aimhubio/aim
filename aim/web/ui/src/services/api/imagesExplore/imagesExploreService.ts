@@ -10,14 +10,6 @@ function getImagesExploreData(params: {}): IApiRequest<ReadableStream> {
   return API.getStream<ReadableStream>(endpoints.GET_IMAGES, params);
 }
 
-// function getImagesByURIs(body: string[]) {
-//   return API.post(endpoints.GET_IMAGES_BY_URIS, body, {
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//   });
-// }
-
 function getImagesByURIs(body: string[]): IApiRequest<any> {
   return API.getStream<IApiRequest<any>>(endpoints.GET_IMAGES_BY_URIS, body, {
     method: 'POST',

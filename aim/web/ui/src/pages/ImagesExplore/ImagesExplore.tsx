@@ -147,6 +147,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onRecordDensityChange={
                 imagesExploreAppModel.onRecordDensityChange
               }
+              getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
               imagesBlobs={imagesExploreData?.imagesBlobs}
               isLoading={imagesExploreData?.requestIsPending}
