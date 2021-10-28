@@ -16,6 +16,16 @@ class TestBase(unittest.TestCase):
         self.repo.structured_db.invalidate_all_caches()
         self.repo.run_props_cache_hint = None
 
+    @staticmethod
+    def assertInRange(new, base, max_deviation=0.05):
+        deviation = 1 - new/base
+        failure_message = f'new value: {new} \n' \
+                          f'baseline: {base} \n' \
+                          f'deviation: {deviation} \n' \
+                          f'expected max deviation: {max_deviation}'
+        assert deviation <= max_deviation, failure_message
+        assert deviation >= -max_deviation, failure_message
+
 
 class ApiTestBase(TestBase):
     @classmethod
