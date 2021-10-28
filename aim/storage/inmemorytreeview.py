@@ -2,7 +2,6 @@ from copy import deepcopy
 
 from aim.storage.types import CustomObjectBase
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.container import Container
 from aim.storage.arrayview import TreeArrayView
 from aim.storage.treeview import TreeView
 
@@ -15,18 +14,6 @@ class InMemoryTreeView(TreeView):
         container: AimObject
     ) -> None:
         self.container = container
-
-    def preload(
-        self
-    ):
-        pass
-
-    def finalize(
-        self,
-        *,
-        index: 'Container'
-    ):
-        pass
 
     def view(
         self,
@@ -80,22 +67,6 @@ class InMemoryTreeView(TreeView):
             container = container[key]
 
         return deepcopy(container)
-
-    def __getitem__(
-        self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> AimObject:
-        return self.collect(path)
-
-    def get(
-        self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(path)
-        except KeyError:
-            return default
 
     def __delitem__(
         self,

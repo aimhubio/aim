@@ -73,22 +73,6 @@ class ContainerTreeView(TreeView):
         except KeyError:
             raise KeyError('No key {} is present.'.format(path))
 
-    def __getitem__(
-        self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> AimObject:
-        return self.collect(path)
-
-    def get(
-        self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(path)
-        except KeyError:
-            return default
-
     def __delitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath]
