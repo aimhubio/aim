@@ -31,4 +31,11 @@ class CustomObjectFlagType:
         self.aim_name = aim_name
 
     def __repr__(self):
-        return f"<CustomObjectFlag type={aim_name}>"
+        return f"<CustomObjectFlag type={self.aim_name}>"
+
+
+__all__ = [
+    'ArrayFlag',
+    'ObjectFlag',
+    'CustomObjectFlagType',
+]
