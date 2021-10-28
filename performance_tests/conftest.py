@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import shutil
 import boto3
 import tarfile
@@ -20,13 +21,14 @@ def _init_test_repo():
     tarfile_name = f'data/{AIM_PERFORMANCE_LOG_FILE_NAME}'
     # download the archive
     if not os.path.exists(tarfile_name):
+        Path('data').mkdir(exist_ok=True)
         s3 = boto3.client('s3')
         # needs `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` env variables set up to run locally
         s3.download_file(AIM_PERFORMANCE_BUCKET_NAME,
                          AIM_PERFORMANCE_LOG_FILE_NAME,
                          tarfile_name)
     # extract the archive
-    tar = tarfile.open(tarfile_name, "r:gz")
+    tar = tarfile.open(tarfile_name, 'r:gz')
     tar.extractall()
     tar.close()
 
