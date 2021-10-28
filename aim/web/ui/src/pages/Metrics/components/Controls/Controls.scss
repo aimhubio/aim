@@ -17,9 +17,8 @@
 }
 
 .Controls__icon {
-  color: tint($text-color, 30);
+  color: $pico-70;
   font-size: 1.125rem;
-
   &.active {
     color: $primary-color;
   }
@@ -35,20 +34,20 @@
   justify-content: center;
   transition: background-color 0.18s ease-out;
   border: 0.0625rem solid transparent;
-  border-radius: 6px;
+  border-radius: $border-radius-main;
 
   &.active {
-    background-color: tint($primary-color, 90);
+    background-color: $primary-color-10;
 
     &.outlined {
-      border: 0.0625rem solid tint($primary-color, 30);
+      border: $border-main-active;
     }
   }
 
   &.disabled {
     cursor: initial;
     i {
-      color: tint($pico, 50);
+      color: $pico-50;
     }
     &:hover {
       background-color: transparent;
@@ -56,7 +55,7 @@
   }
 
   &:hover {
-    background-color: tint($pico, 95);
+    background-color: $pico-5;
 
     .icon-arrow-left {
       opacity: 1;
@@ -77,7 +76,7 @@
     opacity: 0;
     font-size: 0.45rem;
     transition: all 0.18s ease-out;
-    color: tint($pico, 70);
+    color: $pico-30;
   }
 }
 
