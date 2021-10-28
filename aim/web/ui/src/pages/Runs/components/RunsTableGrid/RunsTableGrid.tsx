@@ -44,10 +44,11 @@ function getRunsTableColumns(
     },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
+      const systemMetric: boolean = isSystemMetric(key);
       acc = [
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
-          key: `${key}_${metricContext}`,
+          key: `${systemMetric ? key : `${key}_${metricContext}`}`,
           content: isSystemMetric(key) ? (
             <span>{formatSystemMetricName(key)}</span>
           ) : (
