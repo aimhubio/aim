@@ -187,7 +187,7 @@ class Repo:
     @classmethod
     def get_version(cls, path: str):
         path = clean_repo_path(path)
-        version_file_path = os.path.join(path, '.aim', 'VERSION')
+        version_file_path = os.path.join(path, get_aim_repo_name(), 'VERSION')
         if os.path.exists(version_file_path):
             with open(version_file_path, 'r') as version_fh:
                 return version_fh.read()
