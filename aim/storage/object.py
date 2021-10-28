@@ -39,6 +39,7 @@ class CustomObject(CustomObjectBase):
 
     def __deepcopy__(self, memodict={}):
         cls = self.__class__
+        # TODO Implement `__deepcopy__` in `TreeView`
         storage = InMemoryTreeView(container=self.storage[...])
         result = cls.__new__(cls, _storage=storage)
         memodict[id(self)] = result
