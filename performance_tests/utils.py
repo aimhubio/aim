@@ -1,21 +1,23 @@
 import os
 import time
 
+from aim.sdk import Repo
 from aim.web.api.runs.utils import get_run_props
 
 
 def timing(f):
     def wrap(*args, **kw):
         ts = time.time()
-        for _ in range(5):
+        for _ in range(10):
             f(*args, **kw)
         te = time.time()
-        return (te-ts)/5
+        return (te-ts)/10
     return wrap
 
 
 @timing
-def collect_runs_data(repo, query):
+def collect_runs_data(query):
+    repo = Repo.default_repo()
     runs = repo.query_runs(query)
     runs_dict = {}
     for run_trace_collection in runs.iter_runs():
@@ -26,11 +28,10 @@ def collect_runs_data(repo, query):
             'props': get_run_props(run)
         }
 
-    del runs_dict
-
 
 @timing
-def collect_metrics_data(repo, query):
+def collect_metrics_data(query):
+    repo = Repo.default_repo()
     runs_dict = {}
     runs = repo.query_metrics(query=query)
     for run_trace_collection in runs.iter_runs():
@@ -54,19 +55,18 @@ def collect_metrics_data(repo, query):
                 'params': run[...],
                 'props': get_run_props(run),
             }
-    del runs_dict
 
 
 @timing
-def query_runs(repo, query):
+def query_runs(query):
+    repo = Repo.default_repo()
     runs = list(repo.query_runs(query=query).iter_runs())
-    del runs
 
 
 @timing
-def query_metrics(repo, query):
+def query_metrics(query):
+    repo = Repo.default_repo()
     metrics = list(repo.query_metrics(query=query).iter())
-    del metrics
 
 
 def check_in_range(base, new):

@@ -2,29 +2,17 @@ import unittest
 from fastapi.testclient import TestClient
 
 from tests.utils import truncate_api_db
-from aim.sdk.repo import Repo
 
 from aim.web.run import app
 
 
 class TestBase(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.repo = Repo.default_repo()
-
-    def tearDown(self) -> None:
-        self.repo.structured_db.invalidate_all_caches()
-        self.repo.run_props_cache_hint = None
-
     @staticmethod
-    def assertInRange(new, base, max_deviation=0.05):
-        deviation = 1 - new/base
-        failure_message = f'new value: {new} \n' \
-                          f'baseline: {base} \n' \
-                          f'deviation: {deviation} \n' \
-                          f'expected max deviation: {max_deviation}'
-        assert deviation <= max_deviation, failure_message
-        assert deviation >= -max_deviation, failure_message
+    def assertInRange(new, base):
+        upper_limit = base * 1.10
+        lower_limit = base * 0.85
+        failure_message = f'execution time {new}  is out of allowed range [{lower_limit},{upper_limit}]'
+        assert lower_limit <= new <= upper_limit, failure_message
 
 
 class ApiTestBase(TestBase):
