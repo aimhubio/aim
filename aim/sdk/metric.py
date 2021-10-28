@@ -73,7 +73,7 @@ class Metric(Sequence):
         }
 
         if include_run:
-            data['run'] = [self.run.hash] * len(indices)
+            data['run.hash'] = [self.run.hash] * len(indices)
             for path, val in treeutils.unfold_tree(self.run[...],
                                                    unfold_array=False,
                                                    depth=3):
@@ -88,12 +88,12 @@ class Metric(Sequence):
                     val = json.dumps(val)
                 data[s] = [val for _ in indices]
         if include_name:
-            data['metric'] = [self.name for _ in indices]
+            data['metric.name'] = [self.name for _ in indices]
         if include_context:
             for path, val in treeutils.unfold_tree(self.context.to_dict(),
                                                    unfold_array=False,
                                                    depth=3):
-                s = 'context'
+                s = 'metric.context'
                 for key in path:
                     if isinstance(key, str):
                         s += f'.{key}'

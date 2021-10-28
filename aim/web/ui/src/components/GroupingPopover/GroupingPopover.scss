@@ -4,18 +4,14 @@
   width: 25rem;
 
   h3 {
-    color: #324480;
     text-transform: uppercase;
-    padding: 0;
-    margin: 0;
-    font-weight: 500;
   }
 
-  .GroupingPopover__container__select {
+  &__container__select {
     padding: 1rem;
   }
 
-  .GroupingPopover__toggleMode__div {
+  &__toggleMode__div {
     display: flex;
     flex-direction: column;
     border-top: $border-main;
@@ -23,14 +19,11 @@
     padding: 1rem;
   }
 
-  .GroupingPopover__subtitle {
-    font-size: $text-sm;
-    text-transform: uppercase;
-    color: $text-color-50;
-    margin-bottom: 0.5rem;
+  &__subtitle {
+    margin-bottom: 0.75rem;
   }
 
-  .GroupingPopover__accordion__container {
+  &__accordion__container {
     box-shadow: unset;
     margin: 0 !important;
 
@@ -53,7 +46,7 @@
     }
   }
 
-  .GroupingPopover__advanced__component {
+  &__advanced__component {
     padding-bottom: 0.875rem;
   }
 

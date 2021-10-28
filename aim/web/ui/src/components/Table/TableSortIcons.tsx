@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'components/kit';
+import { Icon, Button } from 'components/kit';
 
 type Props = {
   sort: string | null;
@@ -7,9 +7,16 @@ type Props = {
   onSort: () => void;
 };
 
-export default function TableSortIcons(props: Props) {
+export default function TableSortIcons(
+  props: Props,
+): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <span className='TableColumn__SortIcon' onClick={props.onSort}>
+    <Button
+      withOnlyIcon
+      className='TableColumn__SortButton'
+      size='small'
+      onClick={props.onSort}
+    >
       <Icon
         name='sort-arrow-up'
         color={props.sort === 'asc' ? '#3C4043' : '#83899E'}
@@ -18,6 +25,6 @@ export default function TableSortIcons(props: Props) {
         name='sort-arrow-down'
         color={props.sort === 'desc' ? '#3C4043' : '#83899E'}
       />
-    </span>
+    </Button>
   );
 }
