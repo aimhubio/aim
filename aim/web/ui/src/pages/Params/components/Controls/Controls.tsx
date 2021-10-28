@@ -49,7 +49,7 @@ function Controls(
       </Tooltip>
       <div>
         <ControlPopover
-          title='Select Tooltip Params'
+          title='Display in Tooltip'
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Tooltip Params'>
               <div

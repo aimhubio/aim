@@ -16,7 +16,10 @@
   border: $border-main;
   border-radius: $border-radius-md;
   display: inline-block;
-  & button:first-child {
-    margin-right: 0.25rem;
+  & button {
+    border-radius: 0.25rem !important;
+    &:first-child {
+      margin-right: 0.25rem;
+    }
   }
 }
