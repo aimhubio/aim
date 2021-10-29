@@ -34,10 +34,12 @@ function Column({
   onRowHover,
   onRowClick,
   columnOptions,
+  listWindow,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
   const widthClone = React.useRef(width);
+  const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
   function resizeStart({ target }) {
     setIsResizing(true);
@@ -84,6 +86,13 @@ function Column({
       document.removeEventListener('mouseup', resizeEnd);
     };
   }, []);
+
+  const isHidden =
+    columnRef.current &&
+    listWindow &&
+    (columnRef.current.offsetLeft < listWindow.left - 1500 ||
+      columnRef.current.offsetLeft > listWindow.left + listWindow.width + 1500);
+
   return (
     <div
       className={classNames({
@@ -94,6 +103,7 @@ function Column({
         minWidth: maxWidth,
         maxWidth,
       }}
+      ref={columnRef}
     >
       {topHeader && (
         <div
@@ -277,121 +287,124 @@ function Column({
           </>
         )}
       </div>
-      {groups
-        ? Object.keys(data).map((groupKey) => (
-            <div
-              key={groupKey}
-              className='Table__group'
-              style={
-                col.key === '#' && data[groupKey].data.meta.color
-                  ? {
-                      borderLeft: 'none',
+      {!isHidden &&
+        (groups
+          ? Object.keys(data).map((groupKey) => (
+              <div
+                key={groupKey}
+                className='Table__group'
+                style={
+                  col.key === '#' && data[groupKey].data.meta.color
+                    ? {
+                        borderLeft: 'none',
+                      }
+                    : null
+                }
+              >
+                {col.key === '#' ? (
+                  <div
+                    className={classNames({
+                      Table__cell: true,
+                      Table__group__config__cell: true,
+                      Table__group__header__cell: true,
+                      expanded: expanded[groupKey],
+                      expandable: true,
+                    })}
+                    style={
+                      data[groupKey].data.meta.color
+                        ? {
+                            boxShadow: `inset 3px 0 0 0 ${data[groupKey].data.meta.color}`,
+                          }
+                        : null
                     }
-                  : null
-              }
-            >
-              {col.key === '#' ? (
-                <div
-                  className={classNames({
-                    Table__cell: true,
-                    Table__group__config__cell: true,
-                    Table__group__header__cell: true,
-                    expanded: expanded[groupKey],
-                    expandable: true,
-                  })}
-                  style={
-                    data[groupKey].data.meta.color
-                      ? {
-                          boxShadow: `inset 3px 0 0 0 ${data[groupKey].data.meta.color}`,
-                        }
-                      : null
-                  }
-                >
-                  <GroupConfig
-                    config={data[groupKey].data.meta}
-                    expand={expand}
-                    expanded={expanded}
-                    groupKey={groupKey}
-                  />
-                </div>
-              ) : col.key === 'actions' ? (
-                <div
-                  className={classNames({
-                    Table__cell: true,
-                    Table__group__config__cell: true,
-                    Table__group__header__cell: true,
-                    expanded: expanded[groupKey],
-                    expandable: true,
-                  })}
-                >
-                  <GroupActions
-                    expand={expand}
-                    expanded={expanded}
-                    groupKeys={Object.keys(data)}
-                    groupKey={groupKey}
-                  />
-                </div>
-              ) : (
-                <Cell
-                  index={groupKey}
-                  col={col}
-                  item={
-                    typeof data[groupKey].data[col.key] === 'object' &&
-                    data[groupKey].data[col.key]?.hasOwnProperty('content')
-                      ? {
-                          ...data[groupKey].data[col.key],
-                          props: {
-                            ...data[groupKey].data[col.key]?.props,
-                            onClick: (e) => expand(groupKey),
-                          },
-                        }
-                      : {
-                          content: data[groupKey].data[col.key],
-                          props: {
-                            onClick: (e) => expand(groupKey),
-                          },
-                        }
-                  }
-                  className={classNames({
-                    Table__group__header__cell: true,
-                    expanded: expanded[groupKey],
-                    expandable: true,
-                  })}
-                />
-              )}
-              {expanded[groupKey] && (
-                <>
-                  {data[groupKey]?.items?.map((item, i) => (
-                    <Cell
-                      key={col.key + i}
-                      index={item.index}
-                      col={col}
-                      item={item[col.key]}
-                      className={`rowKey-${item.key}${
-                        item.isHidden ? ' hidden' : ''
-                      }`}
-                      isConfigColumn={col.key === '#'}
-                      metadata={firstColumn ? item.rowMeta : null}
-                      onRowHover={() => onRowHover(item)}
-                      onRowClick={() => onRowClick(item)}
+                  >
+                    <GroupConfig
+                      config={data[groupKey].data.meta}
+                      expand={expand}
+                      expanded={expanded}
+                      groupKey={groupKey}
                     />
-                  ))}
-                </>
-              )}
-            </div>
-          ))
-        : data.map((item, i) => (
-            <Cell
-              key={col.key + i}
-              index={item.index}
-              col={col}
-              item={item[col.key]}
-              className={`rowKey-${item.key}${item.isHidden ? ' hidden' : ''}`}
-              metadata={firstColumn ? item.rowMeta : null}
-              onRowHover={() => onRowHover(item)}
-              onRowClick={() => onRowClick(item)}
-            />
-          ))}
+                  </div>
+                ) : col.key === 'actions' ? (
+                  <div
+                    className={classNames({
+                      Table__cell: true,
+                      Table__group__config__cell: true,
+                      Table__group__header__cell: true,
+                      expanded: expanded[groupKey],
+                      expandable: true,
+                    })}
+                  >
+                    <GroupActions
+                      expand={expand}
+                      expanded={expanded}
+                      groupKeys={Object.keys(data)}
+                      groupKey={groupKey}
+                    />
+                  </div>
+                ) : (
+                  <Cell
+                    index={groupKey}
+                    col={col}
+                    item={
+                      typeof data[groupKey].data[col.key] === 'object' &&
+                      data[groupKey].data[col.key]?.hasOwnProperty('content')
+                        ? {
+                            ...data[groupKey].data[col.key],
+                            props: {
+                              ...data[groupKey].data[col.key]?.props,
+                              onClick: (e) => expand(groupKey),
+                            },
+                          }
+                        : {
+                            content: data[groupKey].data[col.key],
+                            props: {
+                              onClick: (e) => expand(groupKey),
+                            },
+                          }
+                    }
+                    className={classNames({
+                      Table__group__header__cell: true,
+                      expanded: expanded[groupKey],
+                      expandable: true,
+                    })}
+                  />
+                )}
+                {expanded[groupKey] && (
+                  <>
+                    {data[groupKey]?.items?.map((item, i) => (
+                      <Cell
+                        key={col.key + i}
+                        index={item.index}
+                        col={col}
+                        item={item[col.key]}
+                        className={`rowKey-${item.key}${
+                          item.isHidden ? ' hidden' : ''
+                        }`}
+                        isConfigColumn={col.key === '#'}
+                        metadata={firstColumn ? item.rowMeta : null}
+                        onRowHover={() => onRowHover(item)}
+                        onRowClick={() => onRowClick(item)}
+                      />
+                    ))}
+                  </>
+                )}
+              </div>
+            ))
+          : data.map((item, i) => (
+              <Cell
+                key={col.key + i}
+                index={item.index}
+                col={col}
+                item={item[col.key]}
+                className={`rowKey-${item.key}${
+                  item.isHidden ? ' hidden' : ''
+                }`}
+                metadata={firstColumn ? item.rowMeta : null}
+                onRowHover={() => onRowHover(item)}
+                onRowClick={() => onRowClick(item)}
+              />
+            )))}
     </div>
   );
 }

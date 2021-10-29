@@ -76,11 +76,15 @@ const Table = React.forwardRef(function Table(
   const dataRef = React.useRef(data);
   const columnsRef = React.useRef(columns ?? []);
   const hiddenColumnsRef = React.useRef(hiddenColumns);
+  const scrollTopMutableRef = React.useRef({ top: 0 });
 
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns ?? []);
   const [expanded, setExpanded] = React.useState({});
-  const scrollTopMutableRef = React.useRef({ top: 0 });
+  const [listWindow, setListWindow] = React.useState({
+    left: 0,
+    width: 0,
+  });
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -395,6 +399,13 @@ const Table = React.forwardRef(function Table(
     }
   }
 
+  function setListWindowMeasurements() {
+    setListWindow({
+      left: tableContainerRef.current?.scrollLeft,
+      width: tableContainerRef.current?.offsetWidth,
+    });
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -439,6 +450,7 @@ const Table = React.forwardRef(function Table(
             props.infiniteLoadHandler();
           }
         }
+        setListWindowMeasurements();
       }, 100);
     }
 
@@ -448,6 +460,12 @@ const Table = React.forwardRef(function Table(
       }
     };
   }, [custom, rowData]);
+
+  React.useEffect(() => {
+    if (custom) {
+      setListWindowMeasurements();
+    }
+  }, [custom]);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
@@ -644,6 +662,7 @@ const Table = React.forwardRef(function Table(
                       onGroupExpandToggle={onGroupExpandToggle}
                       onRowHover={rowHoverHandler}
                       onRowClick={rowClickHandler}
+                      listWindow={listWindow}
                       {...props}
                     />
                   </div>

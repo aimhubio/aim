@@ -298,6 +298,7 @@ function Table(props) {
               onRowHover={props.onRowHover}
               onRowClick={props.onRowClick}
               columnOptions={col.columnOptions}
+              listWindow={props.listWindow}
             />
           ))}
         </div>
