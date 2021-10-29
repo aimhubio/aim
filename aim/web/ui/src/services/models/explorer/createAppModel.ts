@@ -482,11 +482,19 @@ function createAppModel({
               queryIsEmpty: false,
             });
             liveUpdateInstance?.stop().then();
-            const stream = await metricsRequestRef.call((detail) =>
-              exceptionHandler({ detail, model }),
-            );
-            const runData = await getRunData(stream);
-            updateData(runData);
+            try {
+              const stream = await metricsRequestRef.call((detail) =>
+                exceptionHandler({ detail, model }),
+              );
+              const runData = await getRunData(stream);
+              updateData(runData);
+            } catch (ex) {
+              if (ex.name === 'AbortError') {
+                // Abort Error
+              } else {
+                console.log('Unhandled error: ', ex);
+              }
+            }
 
             liveUpdateInstance?.start({
               q: query,

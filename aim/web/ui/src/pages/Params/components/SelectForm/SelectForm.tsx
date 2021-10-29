@@ -24,7 +24,8 @@ import {
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
-import { Badge, Button, Icon } from 'components/kit';
+import { Badge, Button, Icon, Text } from 'components/kit';
+
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
@@ -204,9 +205,9 @@ function SelectForm({
                             checkedIcon={<CheckBoxIcon />}
                             checked={selected}
                           />
-                          <span className='SelectForm__option__label'>
+                          <Text className='SelectForm__option__label' size={14}>
                             {option.label}
-                          </span>
+                          </Text>
                         </React.Fragment>
                       );
                     }}
