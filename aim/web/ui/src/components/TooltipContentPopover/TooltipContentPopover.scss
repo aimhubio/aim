@@ -1,15 +1,19 @@
-.TooltipContentPopover__container {
+@use 'src/styles/abstracts' as *;
 
-  .TooltipContentPopover__params {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    width: 25rem;
-    height: 100%;
-    max-height: 20rem;
-
-    .TooltipContentPopover__toggle {
-      margin-top: 1rem;
-    }
+.TooltipContentPopover {
+  width: 25rem;
+  padding: $space-xs;
+  display: flex;
+  flex-direction: column;
+  max-height: 20rem;
+  &__subtitle {
+    text-transform: uppercase;
+    margin: $space-xs 0;
+  }
+  &__Divider {
+    margin: $space-unit 0 $space-xs;
+  }
+  &__section {
+    margin: 0 $space-xs;
   }
 }

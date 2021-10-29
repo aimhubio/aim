@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question
+    url: http://github.com/aimhubio/aim/discussions/new
+    about: Ask and answer Aim related questions
+  - name: 💬 Slack
+    url: http://slack.aimstack.io
+    about: Chat with our community
