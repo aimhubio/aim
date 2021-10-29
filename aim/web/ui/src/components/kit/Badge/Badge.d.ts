@@ -6,7 +6,6 @@ export interface IBadgeProps {
   label: string;
   color?: string;
   startIcon?: IconName;
-  variant?: 'default' | 'outlined';
   size?: 'xSmall' | 'small' | 'medium' | 'large' | 'xLarge';
   onDelete?: (label: string) => void;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;

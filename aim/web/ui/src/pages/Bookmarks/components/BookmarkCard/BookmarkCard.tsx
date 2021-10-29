@@ -22,21 +22,20 @@ function BookmarkCard({
 }: IBookmarkCardProps): React.FunctionComponentElement<React.ReactNode> {
   const [openModal, setOpenModal] = React.useState<boolean>(false);
 
-  function handleOpenModal() {
+  function handleOpenModal(): void {
     setOpenModal(true);
   }
-  function handleCloseModal() {
+  function handleCloseModal(): void {
     setOpenModal(false);
   }
 
-  function handleBookmarkDelete() {
+  function handleBookmarkDelete(): void {
     onBookmarkDelete(id);
   }
 
-  const tags: { label: string }[] =
-    React.useMemo(() => {
-      return select[type]?.map((val: any) => ({ label: val.label }));
-    }, [select]) || [];
+  const tags: { label: string }[] = React.useMemo(() => {
+    return select[type]?.map((val: any) => ({ label: val.label })) || [];
+  }, [select]);
 
   return (
     <div className='BookmarkCard__container'>

@@ -1,9 +1,21 @@
 @use 'src/styles/abstracts' as *;
 
 .Badge {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
   height: 1.75rem;
   border-radius: 0.375rem;
   font-weight: 500;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-decoration: none;
+
+  &__label {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
   i {
     display: flex;
     align-items: center;
@@ -13,12 +25,8 @@
     margin: 0;
   }
 
-  &__icon__wrapper {
-    display: flex;
-    align-items: center;
-    justify-self: center;
-  }
-  &__delete__icon__wrapper {
+  &__deleteIcon,
+  &__startIcon {
     width: 1.125rem;
     height: 1.125rem;
     margin-left: unset;
@@ -27,9 +35,9 @@
     justify-content: center;
     border-radius: $border-radius-xs;
     transition: all 0.18s ease-out;
-    &:hover {
-      background-color: inherit;
-    }
+  }
+  &__deleteIcon {
+    cursor: pointer;
   }
   &__select {
     margin-top: $space-xxxs;
@@ -42,7 +50,12 @@
     &:hover {
       background-color: $cuddle-10;
     }
-    .Badge__delete__icon__wrapper {
+    .Badge__startIcon {
+      i {
+        color: $text-color;
+      }
+    }
+    .Badge__deleteIcon {
       i {
         color: $text-color;
       }
@@ -59,12 +72,19 @@
       font-size: 0.4375rem;
       margin-bottom: 1px;
     }
-    .MuiChip-label {
+    .Badge__label {
       padding: 0 $space-xs;
     }
-    .Badge__delete__icon__wrapper {
+    .Badge__deleteIcon,
+    .Badge__startIcon {
       width: 0.875rem;
       height: 0.875rem;
+    }
+    .Badge__deleteIcon {
+      margin-right: 0.25rem;
+    }
+    .Badge__startIcon {
+      margin-left: 0.25rem;
     }
   }
   &__small {
@@ -77,11 +97,17 @@
   &__medium {
     height: 1.5rem;
     font-size: $text-md;
-    .MuiChip-label {
+    .Badge__label {
       padding: 0 $space-sm;
     }
     i {
       font-size: $text-xxs;
+    }
+    .Badge__deleteIcon {
+      margin-right: $space-xs;
+    }
+    .Badge__startIcon {
+      margin-left: $space-xs;
     }
   }
 
@@ -89,11 +115,17 @@
   &__xLarge {
     font-size: $text-md;
     height: 1.75rem;
-    .MuiChip-label {
+    .Badge__label {
       padding: 0 $space-sm;
     }
-    .Badge__delete__icon__wrapper {
+    .Badge__deleteIcon {
       margin-right: $space-xs;
+      i {
+        font-size: $text-xxs;
+      }
+    }
+    .Badge__startIcon {
+      margin-left: $space-xs;
       i {
         font-size: $text-xxs;
       }
@@ -101,7 +133,7 @@
   }
   &__xLarge {
     height: 2rem;
-    .MuiChip-label {
+    .Badge__label {
       padding: 0 $space-unit;
     }
   }
