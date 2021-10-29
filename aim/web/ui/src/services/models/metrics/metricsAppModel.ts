@@ -814,6 +814,39 @@ function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
   });
 }
 
+/**
+ * Sort X-axis values in ascending order
+ * Sort rest arrays values based on corresponding X-axis value order
+ *
+ * @property {number[]} xValues - X-axis values
+ * @property {{key: number[]}} restArrays - object of arrays
+ * */
+function sortDependingArrays(
+  xValues: number[],
+  restArrays: { [key: string]: number[] } = {},
+): {
+  sortedXValues: number[];
+  sortedArrays: { [key: string]: number[] };
+} {
+  const sortedXValues: number[] = [];
+  const sortedArrays: { [key: string]: number[] } = {};
+  const restArraysKeys = Object.keys(restArrays);
+  for (let arrKey of restArraysKeys) {
+    sortedArrays[arrKey] = [];
+  }
+
+  xValues
+    .map((value, i) => ({ i, value }))
+    .sort((a, b) => a.value - b.value)
+    .forEach((xObj, i) => {
+      sortedXValues[i] = xValues[xObj.i];
+      for (let arrKey of restArraysKeys) {
+        sortedArrays[arrKey][i] = restArrays[arrKey][xObj.i];
+      }
+    });
+  return { sortedXValues, sortedArrays };
+}
+
 function alignData(
   data: IMetricsCollection<IMetric>[],
   type: AlignmentOptionsEnum = model.getState()!.config!.chart.alignmentConfig
@@ -839,6 +872,7 @@ function alignData(
         for (let j = 0; j < metricCollection.data.length; j++) {
           const metric = metricCollection.data[j];
           const epochs: { [key: number]: number[] } = {};
+
           metric.data.epochs.forEach((epoch, i) => {
             if (epochs.hasOwnProperty(epoch)) {
               epochs[epoch].push(metric.data.steps[i]);
@@ -878,6 +912,7 @@ function alignData(
               timestamps[timestamp] = [metric.data.steps[i]];
             }
           });
+
           metric.data = {
             ...metric.data,
             xValues: [
@@ -901,6 +936,7 @@ function alignData(
         const metricCollection = data[i];
         for (let j = 0; j < metricCollection.data.length; j++) {
           const metric = metricCollection.data[j];
+
           metric.data = {
             ...metric.data,
             xValues: [...metric.data.timestamps],
@@ -924,10 +960,21 @@ function alignData(
               ...new Float64Array(metric.x_axis_values.blob),
             ];
             if (xAxisValues.length === metric.data.values.length) {
+              const { sortedXValues, sortedArrays } = sortDependingArrays(
+                [...xAxisValues],
+                {
+                  yValues: [...metric.data.values],
+                  epochs: [...metric.data.epochs],
+                  steps: [...metric.data.steps],
+                  timestamps: [...metric.data.timestamps],
+                  values: [...metric.data.values],
+                },
+              );
+
               metric.data = {
                 ...metric.data,
-                xValues: [...xAxisValues],
-                yValues: [...metric.data.values],
+                ...sortedArrays,
+                xValues: sortedXValues,
               };
             } else {
               metric.data.steps.forEach((step, index) => {
@@ -955,13 +1002,22 @@ function alignData(
                 missingIndexes,
                 metric.data.yValues,
               );
+
+              const { sortedXValues, sortedArrays } = sortDependingArrays(
+                [...xAxisValues],
+                {
+                  yValues: [...yValues],
+                  epochs: [...epochs],
+                  steps: [...steps],
+                  timestamps: [...timestamps],
+                  values: [...values],
+                },
+              );
+
               metric.data = {
-                epochs,
-                steps,
-                timestamps,
-                values,
-                xValues: [...xAxisValues],
-                yValues: [...yValues],
+                ...metric.data,
+                ...sortedArrays,
+                xValues: sortedXValues,
               };
             }
           } else {

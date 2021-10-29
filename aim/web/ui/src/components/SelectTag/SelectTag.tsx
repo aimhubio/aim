@@ -47,7 +47,7 @@ function SelectTag({
           })}
         </div>
       ) : null}
-      <Divider className='SelectTag__divider' />
+      <Divider />
       <div className='SelectTag__createTag__container'>
         <Link to={PathEnum.Tags} component={RouteLink} underline='none'>
           <Button

@@ -10,14 +10,14 @@
 
   &__title {
     text-transform: uppercase;
-    color: tint($pico, 50);
+    color: $pico-50;
     font-weight: 500;
   }
 
   &__noAttachedTags {
     font-weight: 500;
     font-size: 0.688rem;
-    color: tint($pico, 30);
+    color: $pico-70;
   }
 
   &__tags {
@@ -56,7 +56,7 @@
 
   &__ControlPopover__title {
     text-transform: uppercase;
-    color: tint($pico, 50);
+    color: $pico-50;
     background: inherit;
     font-weight: 500;
     border: unset;

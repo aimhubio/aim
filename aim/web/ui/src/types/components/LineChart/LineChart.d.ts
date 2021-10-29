@@ -1,6 +1,7 @@
 import { CurveEnum } from 'utils/d3';
 import {
   IActivePoint,
+  INearestCircle,
   ISyncHoverStateParams,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
@@ -59,6 +60,7 @@ export interface IBrushRef {
 export interface IAttributesRef {
   focusedState?: IFocusedState;
   activePoint?: IActivePoint;
+  nearestCircles?: INearestCircle[];
   xStep?: number;
   lineKey?: string;
   dataSelector?: string;

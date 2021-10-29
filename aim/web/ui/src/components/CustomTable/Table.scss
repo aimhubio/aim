@@ -230,7 +230,7 @@ $border-radius: 0.2rem;
   }
 
   &.active {
-    background-color: tint($primary-color, 95);
+    background-color: $primary-color-5;
   }
 
   &.hidden {
