@@ -10,7 +10,10 @@ import {
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
-import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
+import {
+  IParamsAppConfig,
+  IParamsAppModelState,
+} from 'types/services/models/params/paramsAppModel';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import * as analytics from 'services/analytics';
 import getStateFromUrl from 'utils/getStateFromUrl';
@@ -20,7 +23,9 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const paramsData = useModel<any>(paramsAppModel);
+  const paramsData = useModel<Partial<IParamsAppModelState> | any>(
+    paramsAppModel,
+  );
   const route = useRouteMatch<any>();
   const history = useHistory();
 
@@ -43,11 +48,14 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
         paramsAppModel.getParamsData().call();
-        paramsAppModel.setDefaultAppConfigData();
       });
     } else {
       paramsAppModel.setDefaultAppConfigData();
     }
+    const paramsRequestRef = paramsAppModel.getParamsData();
+    paramsRequestRef.call();
+    analytics.pageView('[ParamsExplorer]');
+
     const unListenHistory = history.listen(() => {
       if (!!paramsData.config) {
         if (
@@ -60,9 +68,6 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         }
       }
     });
-    analytics.pageView('[ParamsExplorer]');
-    const paramsRequestRef = paramsAppModel.getParamsData();
-    paramsRequestRef.call();
     return () => {
       paramsAppModel.destroy();
       paramsRequestRef.abort();

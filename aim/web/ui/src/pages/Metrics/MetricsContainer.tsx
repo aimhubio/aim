@@ -51,6 +51,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const metricsData = useModel<Partial<IMetricAppModelState> | any>(
     metricAppModel,
   );
+
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -90,6 +91,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     const metricsRequestRef = metricAppModel.getMetricsData();
     metricsRequestRef.call();
     analytics.pageView('[MetricsExplorer]');
+
     const unListenHistory = history.listen(() => {
       if (!!metricsData.config) {
         if (

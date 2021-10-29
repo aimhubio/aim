@@ -191,6 +191,7 @@ function createAppModel({
 }: IAppInitialConfig) {
   const model = createModel<IAppModelState>({
     requestIsPending: false,
+    config: getConfig(),
   });
 
   let appRequestRef: {
@@ -438,7 +439,7 @@ function createAppModel({
       }
     }
 
-    function getMetricsData(): {
+    function getMetricsData(shouldUrlUpdate?: boolean): {
       call: () => Promise<void>;
       abort: () => void;
     } {
@@ -446,6 +447,9 @@ function createAppModel({
         metricsRequestRef.abort();
       }
       const configData = model.getState()?.config;
+      if (shouldUrlUpdate) {
+        updateURL({ configData, appName });
+      }
       const metric = configData?.chart?.alignmentConfig?.metric;
       let query = getQueryStringFromSelect(configData?.select);
       metricsRequestRef = metricsService.getMetricsData({
@@ -478,12 +482,10 @@ function createAppModel({
               queryIsEmpty: false,
             });
             liveUpdateInstance?.stop().then();
-
             const stream = await metricsRequestRef.call((detail) =>
               exceptionHandler({ detail, model }),
             );
             const runData = await getRunData(stream);
-
             updateData(runData);
 
             liveUpdateInstance?.start({
@@ -764,9 +766,7 @@ function createAppModel({
         ? JSON.parse(decode(liveUpdateConfigHash))
         : config.liveUpdate;
 
-      const defaultConfig: IMetricAppConfig = {
-        liveUpdate: luConfig,
-      };
+      const defaultConfig: IMetricAppConfig = { liveUpdate: luConfig };
 
       if (grouping) {
         defaultConfig.grouping =
@@ -908,7 +908,7 @@ function createAppModel({
         data[0]?.config,
         configData.table?.columnsOrder!,
         configData.table?.hiddenColumns!,
-        configData?.chart?.aggregationConfig.methods,
+        configData.chart?.aggregationConfig.methods,
         configData.table?.sortFields,
         onSortChange,
         configData.grouping as any,
@@ -2732,62 +2732,6 @@ function createAppModel({
         }
       }
 
-      function updateData(newData: any): void {
-        const { data, params, metricsColumns } = processData(newData);
-
-        const configData = model.getState()?.config;
-        const groupingSelectOptions = [...getGroupingSelectOptions({ params })];
-
-        const sortFields = model.getState()?.config?.table.sortFields;
-
-        const tableData = getDataAsTableRows(
-          data,
-          metricsColumns,
-          params,
-          false,
-          configData,
-          groupingSelectOptions,
-        );
-
-        const tableColumns = getParamsTableColumns(
-          metricsColumns,
-          params,
-          data[0]?.config,
-          configData.table.columnsOrder!,
-          configData.table.hiddenColumns!,
-          sortFields,
-          onSortChange,
-          configData.grouping as any,
-          onModelGroupingSelectChange,
-        );
-
-        if (!model.getState()?.requestIsPending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
-
-        model.setState({
-          data,
-          highPlotData: getDataAsLines(data),
-          chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
-            processedData: data,
-            groupingSelectOptions,
-            model: model as IModel<IParamsAppModelState>,
-          }),
-          params,
-          metricsColumns,
-          rawData: newData,
-          config: configData,
-          tableData: tableData.rows,
-          tableColumns: tableColumns,
-          sameValueColumns: tableData.sameValueColumns,
-          requestIsPending: false,
-          groupingSelectOptions,
-        });
-      }
-
       function getAppConfigData(appId: string): {
         call: () => Promise<void>;
         abort: () => void;
@@ -2842,6 +2786,13 @@ function createAppModel({
         model.setState({ config: configData });
       }
 
+      function updateData(newData: IRun<IParamTrace>[]): void {
+        const configData = model.getState()?.config;
+        if (configData) {
+          setModelData(newData, configData);
+        }
+      }
+
       function getParamsData(shouldUrlUpdate?: boolean): {
         call: () => Promise<void>;
         abort: () => void;
@@ -2857,8 +2808,6 @@ function createAppModel({
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.params)) {
-              liveUpdateInstance?.stop().then();
-
               let state: Partial<IParamsAppModelState> = {};
               if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
                 state.highPlotData = [];
@@ -2877,14 +2826,13 @@ function createAppModel({
                 requestIsPending: true,
                 queryIsEmpty: false,
               });
+              liveUpdateInstance?.stop().then();
               try {
                 const stream = await runsRequestRef.call((detail) =>
                   exceptionHandler({ detail, model }),
                 );
                 const runData = await getRunData(stream);
-                if (configData) {
-                  setModelData(runData, configData);
-                }
+                updateData(runData);
 
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
@@ -2898,7 +2846,7 @@ function createAppModel({
               }
             }
           },
-          abort: () => runsRequestRef.abort(),
+          abort: runsRequestRef.abort,
         };
       }
 
@@ -3047,7 +2995,7 @@ function createAppModel({
                           onRowVisibilityChange({
                             metricKey: rowValues.key,
                             model,
-                            appName: 'params',
+                            appName,
                             updateModelData,
                           });
                         },
@@ -3063,7 +3011,7 @@ function createAppModel({
                           onRowVisibilityChange({
                             metricKey: rowValues.key,
                             model,
-                            appName: 'params',
+                            appName,
                             updateModelData,
                           });
                         },
@@ -3260,6 +3208,25 @@ function createAppModel({
         );
         const sortFields = model.getState()?.config?.table.sortFields;
 
+        const tableColumns = getParamsTableColumns(
+          metricsColumns,
+          params,
+          data[0]?.config,
+          configData.table?.columnsOrder!,
+          configData.table?.hiddenColumns!,
+          sortFields,
+          onSortChange,
+          configData.grouping as any,
+          onModelGroupingSelectChange,
+        );
+
+        if (!model.getState()?.requestIsPending) {
+          model.getState()?.refs?.tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+          });
+        }
+
         model.setState({
           requestIsPending: false,
           data,
@@ -3274,17 +3241,7 @@ function createAppModel({
           rawData,
           config: configData,
           tableData: tableData.rows,
-          tableColumns: getParamsTableColumns(
-            metricsColumns,
-            params,
-            data[0]?.config,
-            configData.table?.columnsOrder!,
-            configData.table?.hiddenColumns!,
-            sortFields,
-            onSortChange,
-            configData.grouping as any,
-            onModelGroupingSelectChange,
-          ),
+          tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
         });

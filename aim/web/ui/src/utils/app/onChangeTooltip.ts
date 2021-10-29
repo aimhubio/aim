@@ -6,6 +6,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 import filterTooltipContent from 'utils/filterTooltipContent';
+import updateURL from './updateURL';
 
 export default function onChangeTooltip<M extends State>({
   tooltip,
@@ -40,6 +41,7 @@ export default function onChangeTooltip<M extends State>({
     };
 
     model.setState({ config: configData });
+    updateURL({ configData, appName });
   }
   analytics.trackEvent(`[${appName}Explorer] Change tooltip content`);
 }

@@ -8,7 +8,7 @@ import getRunData from './getRunData';
 import onNotificationAdd from './onNotificationAdd';
 import { AlignmentOptionsEnum } from '../d3';
 import updateURL from './updateURL';
-import { IAppModelConfig } from '../../types/services/models/explorer/createAppModel';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export default async function onAlignmentMetricChange<M extends State>({
   metric,

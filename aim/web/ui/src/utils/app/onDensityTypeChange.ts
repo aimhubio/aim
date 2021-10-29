@@ -17,11 +17,14 @@ export default async function onDensityTypeChange<M extends State>({
   };
 }): Promise<void> {
   const modelState = model.getState();
-  const configData = modelState?.config;
+  let configData = modelState?.config;
   if (configData?.chart) {
-    configData.chart = {
-      ...configData.chart,
-      densityType: type,
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        densityType: type,
+      },
     };
     model.setState({ config: configData });
   }
