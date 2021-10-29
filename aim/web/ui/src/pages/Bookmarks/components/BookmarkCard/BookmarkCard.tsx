@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import { Button, Icon, Badge } from 'components/kit';
+import { Button, Icon, Badge, Text } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
@@ -42,7 +42,9 @@ function BookmarkCard({
     <div className='BookmarkCard__container'>
       <div className='BookmarkCard__top'>
         <div className='BookmarkCard__title__section'>
-          <span className='BookmarkCard__title'>{name}</span>
+          <Text size={18} weight={600} component='h3' tint={100}>
+            {name}
+          </Text>
           <div className='flex fac fjc'>
             <NavLink to={`/${type}/${app_id}`}>
               <Button
@@ -61,7 +63,9 @@ function BookmarkCard({
             </span>
           </div>
         </div>
-        <p>{description}</p>
+        <Text size={12} weight={400} tint={100} component='p'>
+          {description}
+        </Text>
       </div>
       {select.advancedMode ? (
         <div className='BookmarkCard__bottom'>
@@ -98,7 +102,7 @@ function BookmarkCard({
         onCancel={handleCloseModal}
         onSubmit={handleBookmarkDelete}
         text='Are you sure you want to delete this bookmark?'
-        icon={<Icon name='delete' />}
+        icon={<Icon fontSize={28} color='#1c2852' name='delete' />}
         title='Are you sure?'
       />
     </div>
