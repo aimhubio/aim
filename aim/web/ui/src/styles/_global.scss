@@ -37,17 +37,3 @@
     max-width: $col-xxl;
   }
 }
-
-html body .Select__Chip {
-  color: $pico-80;
-  background-color: $cuddle-10;
-  border: 0.0625rem solid $cuddle-50;
-  margin-right: 0.25rem;
-  margin-top: 0.25rem;
-  i {
-    color: $pico-80;
-    &:hover {
-      color: inherit;
-    }
-  }
-}
