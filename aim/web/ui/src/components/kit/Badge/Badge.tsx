@@ -1,45 +1,87 @@
 import React from 'react';
-import { Chip } from '@material-ui/core';
-import { IBadgeProps } from './Badge.d';
+import styled from 'styled-components';
 
+import { IBadgeProps } from './Badge.d';
 import { Icon } from '../index';
 
 import './Badge.scss';
 
+/**
+ * @property {string} id - id of Badge
+ * @property {string} label - label of Badge
+ * @property {string} color - Badge color
+ * @property {string} size - size of Badge
+ * @property {maxWidth} string - maximum width of Badge
+ * @property {React.CSSProperties} style - applies inline styles
+ * @property {string} className - component className
+ * @property {boolean} selectBadge - defines if Badge renders in Select component
+ * @property {function} onDelete - delete callBack function
+ * @property {function}  onClick - handling on Badge click function
+ */
+
+const BadgeContainer = styled.div`
+  ${(props) =>
+    props.color &&
+    `background-color: ${props.color}1a;
+  color: ${props.color};
+  border: 0.0625rem solid ${props.color};`}
+`;
+
+const BadgeIcon = styled.span`
+  ${(props) =>
+    props.color &&
+    `&:hover {
+    background-color: ${props.color}2a}
+  }`}
+`;
+
 function Badge({
   id,
   label,
-  color,
-  iconName,
-  variant = 'default',
-  onDelete,
-  onClick,
+  color = '',
   size = 'medium',
-  maxWidth = 'auto',
   style,
   className = '',
+  startIcon,
+  maxWidth = '100%',
+  selectBadge,
+  onDelete,
+  onClick,
 }: IBadgeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Chip
+    <BadgeContainer
+      color={color}
       id={id}
       style={{
-        backgroundColor: `${color}1a`,
-        color,
-        border: `0.0625rem solid ${color}`,
-        maxWidth,
         ...style,
+        maxWidth,
       }}
-      size='small'
-      className={`Badge Badge${'__' + size} ${className}`}
-      variant={variant}
-      label={label}
+      role='button'
+      className={`Badge Badge${'__' + size} ${className} ${
+        color ? '' : 'Badge__default'
+      } ${selectBadge ? 'Badge__select' : ''}`}
       data-name={label}
-      icon={iconName && <Icon color={color} name={iconName} />}
-      deleteIcon={<Icon color={color} name='close' />}
-      {...(onDelete && { onDelete: () => onDelete(label) })}
       onClick={onClick}
-    />
+    >
+      {startIcon && (
+        <span className='Badge__startIcon'>
+          <Icon color={color} name={startIcon} />
+        </span>
+      )}
+      <span className='Badge__label'>{label}</span>
+      {onDelete && (
+        <BadgeIcon
+          color={color}
+          onClick={() => onDelete(label)}
+          className='Badge__deleteIcon'
+        >
+          <Icon color={color} name='close' />
+        </BadgeIcon>
+      )}
+    </BadgeContainer>
   );
 }
+
+Badge.displayName = 'Badge';
 
 export default Badge;
