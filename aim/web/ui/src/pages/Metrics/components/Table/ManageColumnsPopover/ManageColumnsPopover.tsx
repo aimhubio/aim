@@ -3,7 +3,7 @@ import { Button, Divider, InputBase } from '@material-ui/core';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import ColumnItem from './ColumnItem/ColumnItem';
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 
 import './ManageColumnsPopover.scss';
 
@@ -286,10 +286,14 @@ function ManageColumnsPopover({
             })
           }
         >
-          reset columns order
+          <Text size={12} tint={100}>
+            reset columns order
+          </Text>
         </Button>
         <Button variant='text' size='small' onClick={onTableDiffShow}>
-          show table diff
+          <Text size={12} tint={100}>
+            show table diff
+          </Text>
         </Button>
         <Divider
           style={{ margin: '0 0.875rem' }}
@@ -301,14 +305,20 @@ function ManageColumnsPopover({
           size='small'
           onClick={() => onColumnsVisibilityChange([])}
         >
-          <Icon name='eye-show-outline' /> show all
+          <Icon name='eye-show-outline' />
+          <Text size={12} tint={100}>
+            show all
+          </Text>
         </Button>
         <Button
           variant='text'
           size='small'
           onClick={() => onColumnsVisibilityChange(['all'])}
         >
-          <Icon name='eye-outline-hide' /> hide all
+          <Icon name='eye-outline-hide' />
+          <Text size={12} tint={100}>
+            hide all
+          </Text>
         </Button>
       </div>
     </DragDropContext>
