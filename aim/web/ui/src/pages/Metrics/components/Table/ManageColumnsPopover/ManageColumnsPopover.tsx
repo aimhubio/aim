@@ -32,7 +32,7 @@ function ManageColumnsPopover({
   hiddenColumns,
 }: any) {
   const [state, setState] = React.useState<any>(initialData);
-  const [searchKey, setSearchKey] = React.useState<any>('');
+  const [searchKey, setSearchKey] = React.useState<string>('');
 
   function onDragEnd(result: any) {
     const { destination, source, draggableId } = result;
