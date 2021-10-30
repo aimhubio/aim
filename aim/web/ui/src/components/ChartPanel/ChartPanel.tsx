@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, PopoverPosition, GridSize, Typography } from '@material-ui/core';
+import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
 import _ from 'lodash-es';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
@@ -7,6 +7,7 @@ import { chartTypesConfig } from './config';
 import { ChartTypeEnum } from 'utils/d3';
 
 import ChartPopover from './ChartPopover/ChartPopover';
+import { Text } from 'components/kit';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -131,9 +132,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     <Grid container className='ChartPanel__container'>
       {props.panelResizing ? (
         <div className='ChartPanel__resizing'>
-          <Typography variant='subtitle1' color='primary'>
+          <Text size={14} color='info'>
             Release to resize
-          </Typography>
+          </Text>
         </div>
       ) : (
         <>

@@ -25,7 +25,6 @@ import {
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import { Badge, Button, Icon, Text } from 'components/kit';
-import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
@@ -218,9 +217,9 @@ function SelectForm({
                   flexItem
                 />
                 {selectedParamsData?.params.length === 0 && (
-                  <span className='SelectForm__tags__empty'>
+                  <Text tint={50} size={14} weight={400}>
                     No params are selected
-                  </span>
+                  </Text>
                 )}
                 {selectedParamsData?.params.length > 0 && (
                   <Box className='SelectForm__tags ScrollBar__hidden'>
