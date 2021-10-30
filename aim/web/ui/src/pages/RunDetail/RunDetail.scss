@@ -10,14 +10,12 @@
       color: $text-color;
       &__pageName {
         margin-right: 0.4375em;
-        color: $pico-70;
         text-transform: capitalize;
+        text-decoration: none;
       }
       &__runHash {
         margin-left: 0.4375em;
         text-transform: lowercase;
-        font-family: 'Inter SemiBold', sans-serif;
-        color: $pico;
       }
     }
     &__headerContainer {
@@ -32,15 +30,6 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        &__experimentName {
-          font-size: $text-md;
-          font-family: 'Inter SemiBold', sans-serif;
-          color: $pico;
-        }
-        &__experimentDate {
-          font-size: $text-sm;
-          font-weight: 500;
-        }
       }
       &__tagsBox {
         display: flex;
@@ -80,7 +69,8 @@
           }
           &.Mui-selected {
             color: $pico;
-            font-family: 'Inter SemiBold', sans-serif;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
             position: relative;
             border-right: none;
             &::before {
@@ -156,15 +146,8 @@
       &__metricDetailBox {
         border-top: 0.0625rem solid $cuddle-50;
         padding: 1rem 1.5rem 1.5rem;
-        &__title {
-          font-size: 0.625rem;
-          color: $pico;
-        }
         &__metricName {
           margin: $space-xs 0;
-          font-size: 1.125rem;
-          font-family: 'Inter SemiBold', sans-serif;
-          color: $pico;
         }
         .SelectForm__tags__item {
           margin-top: 0.5rem;
@@ -187,21 +170,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  &__buttonUnarchive {
-    background: $pico-50;
-    color: white;
-  }
   &__infoBox {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    &__title {
-      font-size: $text-md;
-      font-weight: 600;
-    }
+
     &__message {
-      font-size: $text-sm;
-      font-weight: normal;
+      margin-top: $space-xxxs;
     }
   }
 }
