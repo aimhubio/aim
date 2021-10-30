@@ -9,9 +9,9 @@ import {
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { ToggleButton, Icon } from 'components/kit';
+import getValueByField from 'utils/getValueByField';
 
 import './SortPopover.scss';
-import getValueByField from 'utils/getValueByField';
 
 function SortPopover({
   sortOptions,
