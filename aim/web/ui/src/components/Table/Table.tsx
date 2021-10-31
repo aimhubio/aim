@@ -20,6 +20,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
 import TableLoader from '../TableLoader/TableLoader';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import './Table.scss';
 
@@ -467,6 +468,12 @@ const Table = React.forwardRef(function Table(
       setListWindowMeasurements();
     }
   }, [custom]);
+
+  const observerReturnCallback = React.useCallback(() => {
+    setListWindowMeasurements();
+  }, []);
+
+  useResizeObserver(observerReturnCallback, tableContainerRef);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening

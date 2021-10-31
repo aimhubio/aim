@@ -78,6 +78,9 @@ function Column({
   function resetWidth() {
     updateColumnWidth(col.key, widthClone.current, true);
     setMaxWidth(undefined);
+    if (columnRef.current) {
+      columnRef.current.style.width = 'initial';
+    }
   }
 
   React.useEffect(() => {
@@ -87,11 +90,12 @@ function Column({
     };
   }, []);
 
-  const isHidden =
-    columnRef.current &&
-    listWindow &&
-    (columnRef.current.offsetLeft < listWindow.left - 1500 ||
-      columnRef.current.offsetLeft > listWindow.left + listWindow.width + 1500);
+  const isInViewPort =
+    !listWindow ||
+    !columnRef.current ||
+    (columnRef.current &&
+      columnRef.current.offsetLeft > listWindow.left - 1000 &&
+      columnRef.current.offsetLeft < listWindow.left + listWindow.width + 500);
 
   return (
     <div
@@ -102,6 +106,7 @@ function Column({
       style={{
         minWidth: maxWidth,
         maxWidth,
+        width: columnRef.current?.offsetWidth ?? 'initial',
       }}
       ref={columnRef}
     >
@@ -287,7 +292,7 @@ function Column({
           </>
         )}
       </div>
-      {!isHidden &&
+      {isInViewPort &&
         (groups
           ? Object.keys(data).map((groupKey) => (
               <div
