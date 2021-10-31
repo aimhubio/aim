@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 
 import { IDrawAreaProps } from 'types/utils/d3/drawArea';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 import { CircleEnum } from './index';
 
 function drawArea(props: IDrawAreaProps): void {
@@ -108,7 +110,16 @@ function drawArea(props: IDrawAreaProps): void {
   const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
   const keys = Object.keys(chartTitle);
   const titleText = keys
-    ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
+    ? `${keys
+        .map((key) => {
+          let splitValue = chartTitle[key].split('"')[1];
+          return `${key}=${
+            isSystemMetric(splitValue)
+              ? formatSystemMetricName(splitValue)
+              : chartTitle[key]
+          }`;
+        })
+        .join(', ')}`
     : '';
 
   if (titleText) {

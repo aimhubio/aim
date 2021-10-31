@@ -3,10 +3,10 @@ import React from 'react';
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 import AppBar from 'components/AppBar/AppBar';
-
-import './Bookmarks.scss';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+
+import './Bookmarks.scss';
 
 function Bookmarks({
   data,
