@@ -46,7 +46,7 @@
   &__default {
     color: #414b6d;
     background-color: $cuddle-10;
-    border: 0.0625rem solid $cuddle-50;
+    border: $border-grey;
     &:hover {
       background-color: $cuddle-10;
     }
