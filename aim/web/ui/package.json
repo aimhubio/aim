@@ -57,8 +57,9 @@
     "build": "react-scripts build && gzipper c -i js,css,html ./build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "analyze-bundles": "node tasks/bundle-analyzer.js"
+    "analyze-bundles": "node tasks/bundle-analyzer.js",
+    "lint": "eslint src/*/**/*.{js,jsx,ts,tsx}",
+    "lint:fix": "eslint src/*/**/*.{js,ts,jsx,tsx} --quiet --fix"
   },
   "homepage": "/static-files",
   "eslintConfig": {
@@ -89,7 +90,97 @@
         }
       ],
       "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn"
+      "react-hooks/exhaustive-deps": "warn",
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+            "unknown"
+          ],
+          "pathGroups": [
+            {
+              "pattern": "*.+(css|sass|less|scss|pcss|styl)",
+              "group": "unknown",
+              "patternOptions": { "matchBase": true },
+              "position": "after"
+            },
+            {
+              "pattern": "*",
+              "group": "external",
+              "position": "before"
+            },
+            {
+              "pattern": "@+/**",
+              "group": "external",
+              "position": "before"
+            },
+            {
+              "pattern": "assets/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "components/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "config/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "fonts/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "hooks/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "pages/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "routes/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "services/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "styles/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "types/**",
+              "group": "unknown",
+              "position": "before"
+            },
+            {
+              "pattern": "utils/**",
+              "group": "unknown",
+              "position": "before"
+            }
+          ],
+          "pathGroupsExcludedImportTypes": [],
+          "warnOnUnassignedImports": true,
+          "newlines-between": "always"
+        }
+      ]
     },
     "plugins": [
       "react",
@@ -130,6 +221,7 @@
     "comlink-loader": "^2.0.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
