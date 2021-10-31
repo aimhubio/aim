@@ -103,7 +103,11 @@ function Column({
             borderRight: showTopHeaderBorder ? '' : 'none',
           }}
         >
-          {showTopHeaderContent && col.topHeader && <p>{col.topHeader}</p>}
+          {showTopHeaderContent && col.topHeader && (
+            <Text component='p' tint={100} size={14} weight={600}>
+              {col.topHeader}
+            </Text>
+          )}
         </div>
       )}
       <div
@@ -112,8 +116,10 @@ function Column({
           minWidth: col.minWidth,
         }}
       >
-        {firstColumn ? headerMeta : null}
-        {col.content}
+        <Text tint={100} size={14} weigh={600}>
+          {firstColumn ? headerMeta : null}
+          {col.content}
+        </Text>
         {col.key !== 'actions' && col.key !== '#' && (
           <>
             <ControlPopover
