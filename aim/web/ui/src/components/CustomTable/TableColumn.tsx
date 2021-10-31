@@ -9,7 +9,6 @@ import Cell from './TableCell';
 import ControlPopover from '../ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
-import { decode } from 'utils/encoder/encoder';
 
 function Column({
   topHeader,
@@ -107,6 +106,8 @@ function Column({
         minWidth: maxWidth,
         maxWidth,
         width: columnRef.current?.offsetWidth ?? 'initial',
+        boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
+        filter: isInViewPort ? null : 'blur(2px)',
       }}
       ref={columnRef}
     >

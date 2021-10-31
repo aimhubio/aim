@@ -469,6 +469,18 @@ const Table = React.forwardRef(function Table(
     }
   }, [custom]);
 
+  React.useEffect(() => {
+    if (custom) {
+      requestAnimationFrame(() => {
+        updateHoveredRow(
+          `rowKey-${
+            activeRowKey.current ? activeRowKey.current : hoveredRowKey.current
+          }`,
+        );
+      });
+    }
+  }, [custom, listWindow]);
+
   const observerReturnCallback = React.useCallback(() => {
     setListWindowMeasurements();
   }, []);
