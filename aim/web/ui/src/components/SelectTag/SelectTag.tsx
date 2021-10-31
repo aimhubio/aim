@@ -39,7 +39,7 @@ function SelectTag({
                   color={tag.color}
                   label={tag.name}
                   id={tag.id}
-                  iconName={tagAttached && 'check'}
+                  startIcon={tagAttached && 'check'}
                   onClick={onSelectBadge}
                 />
               </div>

@@ -48,11 +48,11 @@
 }
 
 .BookmarkCard__selected__metrics {
-  margin-top: 1rem;
+  margin-top: 0.875rem;
   width: 100%;
   white-space: nowrap;
   overflow: auto;
-
+  padding: 0.125rem 0;
   .Badge {
     margin-right: 0.5rem;
   }

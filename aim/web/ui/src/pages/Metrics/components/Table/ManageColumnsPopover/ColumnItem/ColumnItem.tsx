@@ -2,6 +2,8 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { Icon } from 'components/kit';
 
 import './ColumnItem.scss';
@@ -27,7 +29,11 @@ function ColumnItem(props: any) {
             />
           </span>
           <div>
-            <span className='ColumnItem__name'>{props.data}</span>
+            <span className='ColumnItem__name'>
+              {isSystemMetric(props.data)
+                ? formatSystemMetricName(props.data)
+                : props.data}
+            </span>
             <span
               className='ColumnItem__drag__icon'
               {...provided.dragHandleProps}

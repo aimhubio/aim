@@ -7,6 +7,8 @@ import { Badge } from 'components/kit';
 import COLORS from 'config/colors/colors';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 function getRunsTableColumns(
   metricsColumns: any,
@@ -42,18 +44,21 @@ function getRunsTableColumns(
     },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
+      const systemMetric: boolean = isSystemMetric(key);
       acc = [
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
-          key: `${key}_${metricContext}`,
-          content: (
+          key: `${systemMetric ? key : `${key}_${metricContext}`}`,
+          content: isSystemMetric(key) ? (
+            <span>{formatSystemMetricName(key)}</span>
+          ) : (
             <Badge
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'No context' : metricContext}
             />
           ),
-          topHeader: key,
+          topHeader: isSystemMetric(key) ? 'System Metrics' : key,
           pin: order?.left?.includes(`${key}_${metricContext}`)
             ? 'left'
             : order?.right?.includes(`${key}_${metricContext}`)
