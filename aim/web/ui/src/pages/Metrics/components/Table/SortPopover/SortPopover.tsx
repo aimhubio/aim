@@ -8,10 +8,10 @@ import {
 
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
-import ToggleButton from 'components/ToggleButton/ToggleButton';
-import Icon from 'components/Icon/Icon';
+import { ToggleButton, Icon } from 'components/kit';
 
 import './SortPopover.scss';
+import getValueByField from 'utils/getValueByField';
 
 function SortPopover({
   sortOptions,
@@ -19,6 +19,8 @@ function SortPopover({
   onSort,
   onReset,
 }: ISortPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  let [inputValue, setInputValue] = React.useState('');
+
   function onChange(
     e: object,
     values: IGroupingSelectOption[],
@@ -32,16 +34,23 @@ function SortPopover({
       onSort(sortFields[0][0], 'none');
     }
   }
+
   function handleDelete(field: string): void {
     onSort(field, 'none');
   }
 
   const selectOptions: IGroupingSelectOption[] = React.useMemo(() => {
     const filtered: IGroupingSelectOption[] = [...sortOptions].filter(
-      (options) => options.group === 'params',
+      (options) => options.group === 'run',
     );
-    return filtered;
-  }, [sortOptions]);
+    return inputValue.trim() !== ''
+      ? filtered
+          .slice()
+          .sort(
+            (a, b) => a.label.indexOf(inputValue) - b.label.indexOf(inputValue),
+          )
+      : filtered;
+  }, [sortOptions, inputValue]);
 
   return (
     <div className='SortPopover__container'>
@@ -52,10 +61,8 @@ function SortPopover({
           multiple
           disableCloseOnSelect
           options={selectOptions}
-          value={selectOptions.filter(
-            (option) => sortFields.findIndex((f) => f[0] === option.value) > -1,
-          )}
           onChange={onChange}
+          onInputChange={(e, value, reason) => setInputValue(value)}
           groupBy={(option) => option.group}
           getOptionLabel={(option) => option.label}
           getOptionSelected={(option, value) => option.value === value.value}
@@ -64,7 +71,7 @@ function SortPopover({
             <TextField
               {...params}
               variant='outlined'
-              label='Select Metrics'
+              label='Select Options'
               placeholder='Select'
             />
           )}
@@ -108,7 +115,7 @@ function SortPopover({
               leftValue={'asc'}
               rightValue={'desc'}
               value={field[1] as string}
-              title={field[0]}
+              title={getValueByField(selectOptions, field[0])}
             />
           </div>
         ))}

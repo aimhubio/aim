@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useRouteMatch, useHistory } from 'react-router-dom';
+import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import Metrics from './Metrics';
 import usePanelResize from 'hooks/resize/usePanelResize';
@@ -36,6 +36,7 @@ import {
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import * as analytics from 'services/analytics';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
@@ -78,7 +79,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
         metricAppModel.getMetricsData().call();
-        metricAppModel.setDefaultAppConfigData();
       });
     } else {
       metricAppModel.setDefaultAppConfigData();
@@ -107,8 +107,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     };
   }, []);
-
-  // Add effect to recover state from URL when browser history navigation is used
 
   return (
     <Metrics
@@ -152,6 +150,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       alignmentConfig={
         metricsData?.config?.chart.alignmentConfig as IAlignmentConfig
       }
+      densityType={metricsData?.config?.chart.densityType as DensityOptions}
       selectedMetricsData={
         metricsData?.config?.select as IMetricAppConfig['select']
       }
@@ -193,6 +192,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onResetConfigData={metricAppModel.onResetConfigData}
       onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
       onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
+      onDensityTypeChange={metricAppModel.onDensityTypeChange}
       onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
       onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
       onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}

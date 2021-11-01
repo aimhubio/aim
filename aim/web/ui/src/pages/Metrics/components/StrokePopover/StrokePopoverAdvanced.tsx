@@ -1,11 +1,9 @@
 import React from 'react';
-import { Box, Switch } from '@material-ui/core';
 
 import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
-import Button from 'components/Button/Button';
+import { Button, Switcher, Text } from 'components/kit';
 
 import './StrokePopoverAdvanced.scss';
-import Switcher from 'components/Switcher/Switcher';
 
 function StrokePopoverAdvanced({
   onPersistenceChange,
@@ -20,13 +18,19 @@ function StrokePopoverAdvanced({
     return true;
   }
   return (
-    <Box className='StrokePopoverAdvanced'>
+    <div className='StrokePopoverAdvanced'>
       <div className='StrokePopoverAdvanced__container'>
-        <h3 className='subtitle'>Stroke Style persistence</h3>
-        <span className='StrokePopoverAdvanced__container__span'>
+        <Text component='h3' size={12} tint={50}>
+          Stroke Style persistence
+        </Text>
+        <Text
+          component='p'
+          size={14}
+          className='StrokePopoverAdvanced__container__p'
+        >
           Enable persistent mode for stroke styles so that each group always has
           the same stroke style regardless to its order
-        </span>
+        </Text>
         <div className='flex fac fjb'>
           <div className='StrokePopoverAdvanced__Switcher__button__container'>
             <Switcher
@@ -35,9 +39,9 @@ function StrokePopoverAdvanced({
               onChange={() => onPersistenceChange('stroke')}
               size='large'
             />
-            <span className='ColorPopoverAdvanced__container__span'>
+            <Text size={14} className='ColorPopoverAdvanced__container__span'>
               Enable
-            </span>
+            </Text>
           </div>
           {persistence && (
             <Button
@@ -51,7 +55,7 @@ function StrokePopoverAdvanced({
           )}
         </div>
       </div>
-    </Box>
+    </div>
   );
 }
 

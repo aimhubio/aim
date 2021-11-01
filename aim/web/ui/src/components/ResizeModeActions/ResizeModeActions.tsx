@@ -1,10 +1,10 @@
 import React from 'react';
 
-import Button from 'components/Button/Button';
-import Icon from 'components/Icon/Icon';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { IResizeModeActions } from 'types/components/ResizeModeActions/ResizeModeActions';
-import { IconName } from 'types/components/Icon/Icon';
+import { IconName } from 'components/kit/Icon';
+
+import { Button, Icon } from 'components/kit';
 
 import './ResizeModeActions.scss';
 

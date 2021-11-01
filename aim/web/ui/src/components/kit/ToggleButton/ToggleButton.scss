@@ -1,0 +1,25 @@
+@use 'src/styles/abstracts' as *;
+
+.ToggleButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ToggleButton__title {
+  font-size: $text-md;
+}
+
+.ToggleButton__container {
+  padding: 0.25rem;
+  border: $border-main;
+  border-radius: $border-radius-md;
+  display: inline-block;
+  & button {
+    border-radius: 0.25rem !important;
+    &:first-child {
+      margin-right: 0.25rem;
+    }
+  }
+}

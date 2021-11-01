@@ -6,18 +6,16 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  Typography,
 } from '@material-ui/core';
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
 
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
-import Icon from 'components/Icon/Icon';
-import Button from 'components/Button/Button';
+import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
+import { Button, Icon, Text } from 'components/kit';
 
 import './MetricsBar.scss';
-import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 
 function MetricsBar({
   onBookmarkCreate,
@@ -53,14 +51,14 @@ function MetricsBar({
         <ControlPopover
           title='Bookmark'
           anchor={({ onAnchorClick }) => (
-            <Button
-              color='secondary'
-              className='MetricsBar__item__bookmark'
-              size='small'
-              onClick={onAnchorClick}
-            >
-              <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-              <Icon name='bookmarks' />
+            <Button color='secondary' size='small' onClick={onAnchorClick}>
+              <Text size={14} className='MetricsBar__item__bookmark__Text'>
+                Bookmark
+              </Text>
+              <Icon
+                name='bookmarks'
+                className='MetricsBar__item__bookmark__Icon'
+              />
             </Button>
           )}
           component={
@@ -81,8 +79,14 @@ function MetricsBar({
           size='small'
           onClick={() => handleBookmarkClick('create')}
         >
-          <span className='MetricsBar__item__bookmark__span'>Bookmark</span>
-          <Icon name='bookmarks' />
+          <Text size={14} className='MetricsBar__item__bookmark__Text'>
+            Bookmark
+          </Text>
+          <Icon
+            fontSize={14}
+            name='bookmarks'
+            className='MetricsBar__item__bookmark__Icon'
+          />
         </Button>
       )}
       <div className='MetricsBar__menu'>
@@ -95,7 +99,11 @@ function MetricsBar({
               size='small'
               onClick={onAnchorClick}
             >
-              <Icon name='menu' />
+              <Icon
+                fontSize={16}
+                name='menu'
+                className='MetricsBar__item__bookmark__Icon'
+              />
             </Button>
           )}
           component={
@@ -126,7 +134,9 @@ function MetricsBar({
       >
         <DialogTitle id='form-dialog-title'>Update Bookmark</DialogTitle>
         <DialogContent>
-          <Typography>Do you want to update bookmark?</Typography>
+          <Text size={16} component='p' weight={500}>
+            Do you want to update bookmark?
+          </Text>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClosePopover} color='primary'>

@@ -3,7 +3,7 @@ import { Button, Divider, InputBase } from '@material-ui/core';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import ColumnItem from './ColumnItem/ColumnItem';
-import Icon from 'components/Icon/Icon';
+import { Icon } from 'components/kit';
 
 import './ManageColumnsPopover.scss';
 
@@ -32,6 +32,7 @@ function ManageColumnsPopover({
   hiddenColumns,
 }: any) {
   const [state, setState] = React.useState<any>(initialData);
+  const [searchKey, setSearchKey] = React.useState<any>('');
 
   function onDragEnd(result: any) {
     const { destination, source, draggableId } = result;
@@ -123,6 +124,31 @@ function ManageColumnsPopover({
     setState(newState);
   }, [columnsData]);
 
+  React.useEffect(() => {
+    const midPane = document.querySelectorAll(
+      '.ColumnList__items__wrapper',
+    )?.[1];
+    if (!!midPane) {
+      if (searchKey && searchKey.trim() !== '') {
+        const firstHighlightedCol: any = midPane.querySelector(
+          '.ColumnItem__container.highlighted',
+        );
+        if (!!firstHighlightedCol) {
+          midPane.scrollTop =
+            firstHighlightedCol?.offsetTop -
+            firstHighlightedCol?.parentNode?.offsetTop -
+            6;
+        }
+      } else {
+        midPane.scrollTop = 0;
+      }
+    }
+  }, [searchKey]);
+
+  function onSearchKeyChange(e: any) {
+    setSearchKey(e.target.value);
+  }
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className='ManageColumns__container'>
@@ -167,6 +193,8 @@ function ManageColumnsPopover({
               </div>
               <InputBase
                 placeholder='Search'
+                value={searchKey}
+                onChange={onSearchKeyChange}
                 inputProps={{ 'aria-label': 'search' }}
               />
             </div>
@@ -188,6 +216,8 @@ function ManageColumnsPopover({
                       key={index}
                       data={data}
                       index={index}
+                      hasSearchableItems
+                      searchKey={searchKey}
                       isHidden={!!hiddenColumns?.includes(data)}
                       onClick={() =>
                         onColumnsVisibilityChange(

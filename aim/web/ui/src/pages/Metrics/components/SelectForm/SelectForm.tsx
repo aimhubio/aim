@@ -27,9 +27,9 @@ import {
   ISelectMetricsOption,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
-import Button from 'components/Button/Button';
+import { Button, Icon, Badge, Text } from 'components/kit';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import './SelectForm.scss';
 
@@ -98,39 +98,52 @@ function SelectForm({
 
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
+    const systemOptions: ISelectMetricsOption[] = [];
     let index: number = 0;
     if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        data.push({
-          label: key,
-          group: key,
-          color: COLORS[0][index % COLORS[0].length],
-          value: {
-            metric_name: key,
-            context: null,
-          },
-        });
+      for (let key in projectsData?.metrics) {
+        let system: boolean = isSystemMetric(key);
+        let option = getOption(system, key, index);
+        if (system) {
+          systemOptions.push(option);
+        } else {
+          data.push(option);
+        }
         index++;
-
-        for (let val of projectsData.metrics[key]) {
+        for (let val of projectsData?.metrics[key]) {
           if (!isEmpty(val)) {
             let label = contextToString(val);
-            data.push({
-              label: `${key} ${label}`,
-              group: key,
-              color: COLORS[0][index % COLORS[0].length],
-              value: {
-                metric_name: key,
-                context: val,
-              },
-            });
+            let option = getOption(system, key, index, val);
+            option.label = `${option.label} ${label}`;
+            if (system) {
+              systemOptions.push(option);
+            } else {
+              data.push(option);
+            }
             index++;
           }
         }
       }
     }
-    return data;
+    return data.concat(systemOptions);
   }, [projectsData]);
+
+  function getOption(
+    system: boolean,
+    key: string,
+    index: number,
+    val: object | null = null,
+  ): ISelectMetricsOption {
+    return {
+      label: `${system ? formatSystemMetricName(key) : key}`,
+      group: system ? formatSystemMetricName(key) : key,
+      color: COLORS[0][index % COLORS[0].length],
+      value: {
+        metric_name: key,
+        context: val,
+      },
+    };
+  }
 
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
@@ -140,143 +153,146 @@ function SelectForm({
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
   return (
-    <div className='SelectForm__container'>
-      <div className='SelectForm__metrics__container'>
-        <Box display='flex'>
-          <Box
-            width='100%'
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            {selectedMetricsData?.advancedMode ? (
-              <div className='SelectForm__textarea'>
-                <form onSubmit={handleMetricSearch}>
-                  <TextField
-                    fullWidth
-                    multiline
+    <div className='SelectForm'>
+      <div className='SelectForm__container__metrics'>
+        <Box
+          width='100%'
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          {selectedMetricsData?.advancedMode ? (
+            <div className='SelectForm__textarea'>
+              <form onSubmit={handleMetricSearch}>
+                <TextField
+                  fullWidth
+                  multiline
+                  size='small'
+                  spellCheck={false}
+                  rows={3}
+                  variant='outlined'
+                  placeholder={
+                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                  }
+                  value={selectedMetricsData?.advancedQuery ?? ''}
+                  onChange={({ target }) =>
+                    onSelectAdvancedQueryChange(target.value)
+                  }
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      handleMetricSearch(e);
+                    }
+                  }}
+                />
+              </form>
+            </div>
+          ) : (
+            <>
+              <Box display='flex' alignItems='center'>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={handleClick}
+                  aria-describedby={id}
+                >
+                  <Icon name='plus' style={{ marginRight: '0.5rem' }} />
+                  Metrics
+                </Button>
+                <Popper
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  placement='bottom-start'
+                  className='SelectForm__Popper'
+                >
+                  <Autocomplete
+                    open
+                    onClose={handleClose}
+                    multiple
+                    className='Autocomplete__container'
                     size='small'
-                    spellCheck={false}
-                    rows={3}
-                    variant='outlined'
-                    placeholder={
-                      'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                    }
-                    value={selectedMetricsData?.advancedQuery ?? ''}
-                    onChange={({ target }) =>
-                      onSelectAdvancedQueryChange(target.value)
-                    }
-                  />
-                </form>
-              </div>
-            ) : (
-              <>
-                <Box display='flex' alignItems='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleClick}
-                    aria-describedby={id}
-                  >
-                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />
-                    Metrics
-                  </Button>
-                  <Popper
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    placement='bottom-start'
-                    className='SelectForm__Popper'
-                  >
-                    <Autocomplete
-                      open
-                      onClose={handleClose}
-                      multiple
-                      className='Autocomplete__container'
-                      size='small'
-                      disablePortal={true}
-                      disableCloseOnSelect
-                      options={metricsOptions}
-                      value={selectedMetricsData?.metrics ?? ''}
-                      onChange={onSelect}
-                      groupBy={(option) => option.group}
-                      getOptionLabel={(option) => option.label}
-                      renderTags={() => null}
-                      disableClearable={true}
-                      ListboxProps={{
-                        style: {
-                          height: 400,
-                        },
-                      }}
-                      renderInput={(params) => (
-                        <InputBase
-                          ref={params.InputProps.ref}
-                          inputProps={params.inputProps}
-                          spellCheck={false}
-                          placeholder='Search'
-                          autoFocus={true}
-                          className='SelectForm__metric__select'
-                        />
-                      )}
-                      renderOption={(option) => {
-                        let selected: boolean =
-                          !!selectedMetricsData?.metrics.find(
-                            (item: ISelectMetricsOption) =>
-                              item.label === option.label,
-                          )?.label;
-                        return (
-                          <React.Fragment>
-                            <Checkbox
-                              color='primary'
-                              icon={<CheckBoxOutlineBlank />}
-                              checkedIcon={<CheckBoxIcon />}
-                              checked={selected}
-                              size='small'
-                            />
-                            <span className='SelectForm__option__label'>
-                              {option.label}
-                            </span>
-                          </React.Fragment>
-                        );
-                      }}
-                    />
-                  </Popper>
-                  <Divider
-                    style={{ margin: '0 1rem' }}
-                    orientation='vertical'
-                    flexItem
-                  />
-                  {selectedMetricsData?.metrics.length === 0 && (
-                    <span className='SelectForm__tags__empty'>
-                      No metrics are selected
-                    </span>
-                  )}
-                  <Box className='Metrics__SelectForm__tags ScrollBar__hidden'>
-                    {selectedMetricsData?.metrics?.map(
-                      (tag: ISelectMetricsOption) => {
-                        return (
-                          <TagLabel
-                            key={tag.label}
-                            color={tag.color}
-                            label={tag.label}
-                            onDelete={handleDelete}
-                          />
-                        );
+                    disablePortal={true}
+                    disableCloseOnSelect
+                    options={metricsOptions}
+                    value={selectedMetricsData?.metrics ?? ''}
+                    onChange={onSelect}
+                    groupBy={(option) => option.group}
+                    getOptionLabel={(option) => option.label}
+                    renderTags={() => null}
+                    disableClearable={true}
+                    ListboxProps={{
+                      style: {
+                        height: 400,
                       },
+                    }}
+                    renderInput={(params) => (
+                      <InputBase
+                        ref={params.InputProps.ref}
+                        inputProps={params.inputProps}
+                        spellCheck={false}
+                        placeholder='Search'
+                        autoFocus={true}
+                        className='SelectForm__metric__select'
+                      />
                     )}
-                  </Box>
-                </Box>
-                {selectedMetricsData?.metrics.length > 1 && (
-                  <span
-                    onClick={() => onMetricsSelectChange([])}
-                    className='SelectForm__clearAll'
-                  >
-                    <Icon name='close' />
-                  </span>
+                    renderOption={(option) => {
+                      let selected: boolean =
+                        !!selectedMetricsData?.metrics.find(
+                          (item: ISelectMetricsOption) =>
+                            item.label === option.label,
+                        )?.label;
+                      return (
+                        <React.Fragment>
+                          <Checkbox
+                            color='primary'
+                            icon={<CheckBoxOutlineBlank />}
+                            checkedIcon={<CheckBoxIcon />}
+                            checked={selected}
+                            size='small'
+                          />
+                          <Text className='SelectForm__option__label' size={14}>
+                            {option.label}
+                          </Text>
+                        </React.Fragment>
+                      );
+                    }}
+                  />
+                </Popper>
+                <Divider
+                  style={{ margin: '0 1rem' }}
+                  orientation='vertical'
+                  flexItem
+                />
+                {selectedMetricsData?.metrics.length === 0 && (
+                  <Text tint={50} size={14} weight={400}>
+                    No metrics are selected
+                  </Text>
                 )}
-              </>
-            )}
-          </Box>
+                <div className='Metrics__SelectForm__tags ScrollBar__hidden'>
+                  {selectedMetricsData?.metrics?.map(
+                    (tag: ISelectMetricsOption) => {
+                      return (
+                        <Badge
+                          key={tag.label}
+                          color={tag.color}
+                          label={tag.label}
+                          onDelete={handleDelete}
+                        />
+                      );
+                    },
+                  )}
+                </div>
+              </Box>
+              {selectedMetricsData?.metrics.length > 1 && (
+                <span
+                  onClick={() => onMetricsSelectChange([])}
+                  className='SelectForm__clearAll'
+                >
+                  <Icon name='close' />
+                </span>
+              )}
+            </>
+          )}
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
@@ -296,7 +312,7 @@ function SelectForm({
         )}
       </div>
 
-      <div className='SelectForm__search__container'>
+      <div className='SelectForm__container__search'>
         <Button
           fullWidth
           color='primary'

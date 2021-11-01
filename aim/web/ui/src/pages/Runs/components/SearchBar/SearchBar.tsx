@@ -1,10 +1,11 @@
 import React from 'react';
-import './SearchBar.scss';
-import searchImg from 'assets/icons/search.svg';
+import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import { Divider, TextField } from '@material-ui/core';
-import Button from 'components/Button/Button';
-import SearchIcon from '@material-ui/icons/Search';
+
+import searchImg from 'assets/icons/search.svg';
+import { Button } from 'components/kit';
 import runAppModel from 'services/models/runs/runsAppModel';
+import './SearchBar.scss';
 
 function SearchBar({
   isRunsDataLoading,
@@ -53,8 +54,7 @@ function SearchBar({
         color='primary'
         onClick={handleRunSearch}
         variant='contained'
-        size='small'
-        startIcon={<SearchIcon color='inherit' />}
+        startIcon={<SearchOutlined color='inherit' />}
         disabled={isRunsDataLoading}
       >
         Search

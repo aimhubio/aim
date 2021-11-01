@@ -32,7 +32,7 @@ class Session:
         self._repo_path = self._repo.path
         self._run = Run(run, repo=self._repo, experiment=experiment,
                         system_tracking_interval=system_tracking_interval)
-        self._run_hash = self._run.hashname
+        self._run_hash = self._run.hash
         self.active = True
 
         Session.sessions.setdefault(self._repo_path, [])

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ScaleEnum } from 'utils/d3';
-import ToggleButton from 'components/ToggleButton/ToggleButton';
+import { Text, ToggleButton } from 'components/kit';
 import {
   IAxesScalePopoverProps,
   IAxesScaleState,
@@ -21,8 +21,15 @@ function AxesScalePopover(
   }
 
   return (
-    <div className='AxesScalePopover__container'>
-      <span className='AxesScalePopover__subtitle'>Select Axes Scale:</span>
+    <div className='AxesScalePopover'>
+      <Text
+        size={12}
+        tint={50}
+        component='p'
+        className='AxesScalePopover__subtitle'
+      >
+        Select Axes Scale:
+      </Text>
       <div className='AxesScalePopover__select'>
         <ToggleButton
           title='X-axis scale:'

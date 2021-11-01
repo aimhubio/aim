@@ -1,10 +1,12 @@
+@use 'src/styles/abstracts' as *;
+
 .MuiAutocomplete-paper {
-  box-shadow: unset;
+  // box-shadow: unset;
   margin: unset;
 }
 
 .MuiAutocomplete-popperDisablePortal {
-  position: initial !important; 
+  position: initial !important;
 }
 
 .MuiAutocomplete-listbox {
@@ -16,8 +18,7 @@
     }
 
     .SelectForm__option__label {
-      margin-left: 0.5rem;
-      font-size: $text-md;
+      margin-left: $space-xs;
     }
   }
 }

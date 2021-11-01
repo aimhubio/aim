@@ -5,15 +5,47 @@
   max-height: inherit;
   font-size: $text-sm;
   line-height: 15px;
-  color: tint($pico, 20);
+  color: $pico-80;
+  background-color: transparent;
 
   .PopoverContent {
     max-height: inherit;
     overflow: auto;
     padding-bottom: 3px;
 
+    &__box {
+      padding: 0.625rem 1rem;
+    }
+
+    &__valueContainer {
+      display: flex;
+      //align-items: center;
+      margin-top: 0.4rem;
+    }
+
+    &__valueContainer:first-child {
+      margin-top: 0;
+    }
+
     &__value {
-      margin-top: 5px;
+      margin-top: 0.25rem;
+    }
+
+    &__value:first-child {
+      margin-top: 0;
+    }
+
+    &__headerValue {
+      margin-left: 0.4rem;
+    }
+
+    &__axisValue {
+      margin-top: 0.125rem;
+    }
+
+    &__contextValue {
+      margin-left: 0.5rem;
+      font-weight: 400;
     }
 
     &__runDetails {
@@ -30,17 +62,14 @@
       }
     }
 
-    &__divider {
-      background: tint($primary-color, 85);
-    }
-
     &__subtitle1 {
-      color: tint($pico, 50);
+      color: $pico-50;
       text-transform: uppercase;
+      font-weight: 500;
     }
 
     &__subtitle2 {
-      font-family: 'Inter SemiBold', sans-serif;
+      font-weight: 600;
       text-transform: capitalize;
       color: $text-color;
       margin-top: 8px;

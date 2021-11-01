@@ -1,21 +1,29 @@
-.AlignmentPopover__container {
-    width: 16.5rem;
-}
-.AlignmentPopover__title {
-    padding: 0.5rem;
-}
+@use 'src/styles/abstracts' as *;
 
-.AlignmentPopover__types {
-    padding: 0.5rem;
-}
+.AlignmentPopover {
+  width: 16.5rem;
+  padding: $space-xs;
 
-.AlignmentPopover__select {
-    border-top: 1px solid #E8F1FC;
-    padding: 0.5rem;
+  &__subtitle {
+    padding: $space-xs;
+    text-transform: uppercase;
+  }
+
+  &__Divider {
+    margin: $space-xs 0;
+  }
+
+  &__selectContainer {
     display: flex;
-    align-items: center;
-    span {
-        margin-right: 1rem;
+    flex-direction: column;
+    &__selectBox {
+      padding: 0 $space-xs;
     }
+    span {
+      margin-right: $space-unit;
+    }
+    &__select {
+      margin: 0 $space-xs;
+    }
+  }
 }
-

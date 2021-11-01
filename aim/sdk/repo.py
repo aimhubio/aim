@@ -10,10 +10,10 @@ from weakref import WeakValueDictionary
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 
-from aim.sdk.configs import AIM_REPO_NAME
+from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
-from aim.sdk.metric import QueryRunMetricCollection, QueryMetricCollection
+from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -36,6 +36,12 @@ class RepoStatus(Enum):
     UPDATED = 4
 
 
+def _get_tracking_queue():
+    if os.getenv(AIM_ENABLE_TRACKING_THREAD, False):
+        return TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
+    return None
+
+
 # TODO make this api thread-safe
 class Repo:
     """Aim repository object.
@@ -53,7 +59,7 @@ class Repo:
     _pool = WeakValueDictionary()  # TODO: take read only into account
     _default_path = None  # for unit-tests
 
-    tracking_queue = TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
+    tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
@@ -81,6 +87,7 @@ class Repo:
 
         self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
+        self._encryption_key = None
         if init:
             self.structured_db.run_upgrades()
 
@@ -266,37 +273,59 @@ class Repo:
         else:
             raise StopIteration
 
-    def get_run(self, hashname: str) -> Optional['Run']:
+    def get_run(self, run_hash: str) -> Optional['Run']:
         """Get run if exists.
 
         Args:
-            hashname (str): Run hashname.
+            run_hash (str): Run hash.
         Returns:
-            :obj:`Run` object if hashname is found in repository. `None` otherwise.
+            :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
         # TODO: [MV] optimize existence check for run
-        if hashname is None or hashname not in self.meta_tree.subtree('chunks').keys():
+        if run_hash is None or run_hash not in self.meta_tree.subtree('chunks').keys():
             return None
         else:
-            return Run(hashname, repo=self, read_only=True)
+            return Run(run_hash, repo=self, read_only=True)
 
-    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunMetricCollection:
+    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunSequenceCollection:
         """Get runs satisfying query expression.
 
         Args:
              query (:obj:`str`, optional): query expression.
                 If not specified, query results will include all runs.
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
-             offset (:obj:`str`, optional): `hashname` of Run to skip to.
+             offset (:obj:`str`, optional): `hash` of Run to skip to.
         Returns:
-            :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
+            :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
-        db = self.structured_db
-        cache_name = 'runs_cache'
-        db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
-        self.run_props_cache_hint = cache_name
-        return QueryRunMetricCollection(self, query, paginated, offset)
+        self._prepare_runs_cache()
+        # TODO [AT]: check other Sequence types once Run explorer is ready.
+        from aim.sdk.metric import Metric
+        return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
+
+    def query_metrics(self, query: str = '') -> QuerySequenceCollection:
+        """Get metrics satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`MetricCollection`: Iterable for metrics matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.metric import Metric
+        return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
+
+    def query_images(self, query: str = '') -> QuerySequenceCollection:
+        """Get image collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for image sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.image_sequence import Images
+        return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
 
     @property
     def run_props_cache_hint(self):
@@ -306,20 +335,25 @@ class Repo:
     def run_props_cache_hint(self, cache: str):
         self._run_props_cache_hint = cache
 
-    def query_metrics(self, query: str = '') -> QueryMetricCollection:
-        """Get metrics satisfying query expression.
+    @property
+    def encryption_key(self):
+        from cryptography.fernet import Fernet
 
-        Args:
-             query (str): query expression.
-        Returns:
-            :obj:`MetricCollection`: Iterable for metrics matching query expression.
-        """
-        db = self.structured_db
-        cache_name = 'runs_cache'
-        db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hashname)
-        self.run_props_cache_hint = cache_name
-        return QueryMetricCollection(repo=self, query=query)
+        if self._encryption_key:
+            return self._encryption_key
+
+        encryption_key_path = os.path.join(self.path, 'ENCRYPTION_KEY')
+        if not os.path.exists(encryption_key_path):
+            with open(encryption_key_path, 'w') as key_fp:
+                encryption_key = Fernet.generate_key().decode()
+                key_fp.write(encryption_key + '\n')
+        else:
+            with open(encryption_key_path, 'r') as key_fp:
+                encryption_key = key_fp.readline()
+
+        self._encryption_key = encryption_key
+
+        return encryption_key
 
     def _get_meta_tree(self):
         return self.request(
@@ -355,6 +389,13 @@ class Repo:
             return meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
+
+    def _prepare_runs_cache(self):
+        db = self.structured_db
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hash)
+        self.run_props_cache_hint = cache_name
 
     def __del__(self):
         if self._mount_root:

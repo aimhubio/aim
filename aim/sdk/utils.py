@@ -3,6 +3,8 @@ import pathlib
 import uuid
 from typing import Union
 
+from aim.storage.object import CustomObject
+
 
 def search_aim_repo(path):
     found = False
@@ -43,3 +45,19 @@ def clean_repo_path(repo_path: Union[str, pathlib.Path]) -> str:
         repo_path = os.path.expanduser('~') + repo_path[1:]
 
     return os.path.abspath(repo_path)
+
+
+def get_object_typename(obj) -> str:
+    if isinstance(obj, (bool, int, float, str, bytes)):
+        return type(obj).__name__
+    if isinstance(obj, dict):
+        return 'object'
+    if isinstance(obj, (tuple, list)):
+        if len(obj) == 0:
+            # element type is unknown yet.
+            return 'list'
+        element_typename = get_object_typename(obj[0])
+        return f'list({element_typename})'
+    if isinstance(obj, CustomObject):
+        return obj.get_typename()
+    return 'unknown'

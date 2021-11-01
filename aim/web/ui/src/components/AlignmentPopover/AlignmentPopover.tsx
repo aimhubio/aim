@@ -1,84 +1,156 @@
-import React from 'react';
-import { MenuItem, Select } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Divider, MenuItem } from '@material-ui/core';
 
 import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
-import { AlignmentOptions } from 'config/alignment/alignmentOptions';
+import { DensityOptions } from 'config/enums/densityEnum';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { AlignmentOptionsEnum } from 'utils/d3';
+import { Text, Dropdown } from 'components/kit';
 
 import './AlignmentPopover.scss';
 
-const alignmentList: { type: AlignmentOptions; name: string }[] = [
+const alignmentList: { type: AlignmentOptionsEnum; name: string }[] = [
   {
-    type: AlignmentOptions.STEP,
+    type: AlignmentOptionsEnum.STEP,
     name: 'Step',
   },
   {
-    type: AlignmentOptions.EPOCH,
+    type: AlignmentOptionsEnum.EPOCH,
     name: 'Epoch',
   },
   {
-    type: AlignmentOptions.RELATIVE_TIME,
+    type: AlignmentOptionsEnum.RELATIVE_TIME,
     name: 'Relative Time',
   },
   {
-    type: AlignmentOptions.ABSOLUTE_TIME,
+    type: AlignmentOptionsEnum.ABSOLUTE_TIME,
     name: 'Absolute Time',
+  },
+];
+
+const densityList: { type: DensityOptions; name: string }[] = [
+  {
+    type: DensityOptions.Minimum,
+    name: 'Minimum',
+  },
+  {
+    type: DensityOptions.Medium,
+    name: 'Medium',
+  },
+  {
+    type: DensityOptions.Maximum,
+    name: 'Maximum',
   },
 ];
 
 function AlignmentPopover({
   onAlignmentTypeChange,
+  onDensityTypeChange,
   onAlignmentMetricChange,
   alignmentConfig,
+  densityType,
   projectsDataMetrics,
 }: IAlignmentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  function handleTypeChange(e: React.ChangeEvent<any>) {
+  const [open, setOpen] = useState<boolean>(false);
+  function handleAlignmentTypeChange(e: React.ChangeEvent<any>): void {
     const { id } = e.target;
     onAlignmentTypeChange(+id);
   }
 
-  function onMetricChange(e: React.ChangeEvent<any>) {
-    const value = e.target.value;
-    onAlignmentMetricChange(value);
+  function handleDensityTypeChange(e: React.ChangeEvent<any>): void {
+    const { id } = e.target;
+    onDensityTypeChange(+id);
   }
 
-  const metricOptions: string[] = React.useMemo(() => {
-    let data: string[] = [];
-    if (projectsDataMetrics) {
-      for (let key in projectsDataMetrics) {
-        data.push(key);
-      }
+  function onMetricChange(
+    field: { value: string; label: string } | null,
+  ): void {
+    if (field) {
+      onAlignmentMetricChange(field.value);
     }
-    return data;
-  }, [projectsDataMetrics]);
+  }
+
+  const metricOptions: { value: string; label: string }[] =
+    React.useMemo(() => {
+      let data: { value: string; label: string }[] = [];
+      if (projectsDataMetrics) {
+        for (let key in projectsDataMetrics) {
+          if (!isSystemMetric(key)) {
+            data.push({ value: key, label: key });
+          }
+        }
+      }
+      return data;
+    }, [projectsDataMetrics]);
 
   return (
-    <div className='AlignmentPopover__container'>
-      <div className='AlignmentPopover__types'>
-        {alignmentList.map(({ name, type }) => (
+    <div className='AlignmentPopover'>
+      <div>
+        <Text
+          component='p'
+          size={12}
+          color='primary'
+          tint={50}
+          className='AlignmentPopover__subtitle'
+        >
+          Density:
+        </Text>
+        {densityList.map(({ name, type }) => (
           <MenuItem
             key={name}
-            selected={type === alignmentConfig.type}
+            selected={type === densityType}
             id={`${type}`}
-            onClick={handleTypeChange}
+            onClick={handleDensityTypeChange}
           >
             {name}
           </MenuItem>
         ))}
       </div>
-      <div className='AlignmentPopover__select'>
-        <span>Metric:</span>
-        <Select
-          fullWidth
-          // variant='outlined'
-          value={alignmentConfig.metric}
-          onChange={onMetricChange}
+      <Divider className='AlignmentPopover__Divider' />
+      <div>
+        <Text
+          component='p'
+          size={12}
+          color='primary'
+          tint={50}
+          className='AlignmentPopover__subtitle'
         >
-          {metricOptions.map((metric) => (
-            <MenuItem key={metric} value={metric}>
-              {metric}
-            </MenuItem>
-          ))}
-        </Select>
+          Alignment:
+        </Text>
+        {alignmentList.map(({ name, type }) => (
+          <MenuItem
+            key={name}
+            selected={type === alignmentConfig.type}
+            id={`${type}`}
+            onClick={handleAlignmentTypeChange}
+          >
+            {name}
+          </MenuItem>
+        ))}
+      </div>
+      <div className='AlignmentPopover__selectContainer'>
+        <Text
+          component='p'
+          size={12}
+          color='primary'
+          tint={50}
+          className='AlignmentPopover__subtitle'
+        >
+          Metric:
+        </Text>
+        <div className='AlignmentPopover__selectContainer__selectBox'>
+          <Dropdown
+            size='large'
+            isColored
+            onChange={onMetricChange}
+            value={alignmentConfig.metric}
+            options={metricOptions}
+            onMenuOpen={() => setOpen(true)}
+            onMenuClose={() => setOpen(false)}
+            open={open}
+            withPortal
+          />
+        </div>
       </div>
     </div>
   );

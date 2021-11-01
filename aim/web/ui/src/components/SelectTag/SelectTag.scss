@@ -6,7 +6,7 @@
   &__tags {
     padding: 0 1rem;
 
-    .TagLabel {
+    .Badge {
       margin: 0;
     }
 
@@ -14,13 +14,13 @@
       padding: 0;
     }
 
-    &__tagLabel {
+    &__badge {
       display: inline-block;
       margin-bottom: 0.5rem;
       margin-right: 0.5rem;
 
       &.outlined {
-        border: 1px solid #1473E6;
+        border: 1px solid #1473e6;
         padding: 3px;
         border-radius: 9px;
       }
@@ -30,9 +30,5 @@
   &__createTag__container {
     padding: 0.625rem 1rem;
     text-align: center;
-  }
-
-  &__divider {
-    background: tint($primary-color, 85);
   }
 }

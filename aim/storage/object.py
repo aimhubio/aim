@@ -23,7 +23,11 @@ class CustomObject(CustomObjectBase):
     def by_name(name: str):
         return CustomObject.registry[name]
 
-    def __new__(cls, *args, _storage = None, **kwargs):
+    @classmethod
+    def get_typename(cls):
+        return cls.AIM_NAME
+
+    def __new__(cls, *args, _storage=None, **kwargs):
         obj = super().__new__(cls)
 
         if _storage is None:
@@ -32,6 +36,14 @@ class CustomObject(CustomObjectBase):
         else:
             obj.storage = _storage
         return obj
+
+    def __deepcopy__(self, memodict={}):
+        cls = self.__class__
+        # TODO Implement `__deepcopy__` in `TreeView`
+        storage = InMemoryTreeView(container=self.storage[...])
+        result = cls.__new__(cls, _storage=storage)
+        memodict[id(self)] = result
+        return result
 
     def _aim_encode(self):
         # TODO more effective

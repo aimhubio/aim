@@ -11,9 +11,9 @@ import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 // @ts-ignore
 import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
-import Icon from 'components/Icon/Icon';
 import { Tooltip } from '@material-ui/core';
 
+import { Icon } from 'components/kit';
 import './Controls.scss';
 
 function Controls(
@@ -24,7 +24,7 @@ function Controls(
       <div>
         <ControlPopover
           title='Select Aggregation Method'
-          open={!!props.aggregationConfig.isEnabled}
+          open={props.aggregationConfig.isEnabled}
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip
               title={
@@ -74,9 +74,9 @@ function Controls(
       </div>
       <div>
         <ControlPopover
-          title='Align X-Axis by'
+          title='X-Axis properties'
           anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Align X-Axis'>
+            <Tooltip title='X-Axis properties'>
               <div
                 onClick={onAnchorClick}
                 className={`Controls__anchor ${opened ? 'active' : ''}`}
@@ -92,8 +92,10 @@ function Controls(
             <AlignmentPopover
               projectsDataMetrics={props.projectsDataMetrics}
               alignmentConfig={props.alignmentConfig}
+              densityType={props.densityType}
               onAlignmentMetricChange={props.onAlignmentMetricChange}
               onAlignmentTypeChange={props.onAlignmentTypeChange}
+              onDensityTypeChange={props.onDensityTypeChange}
             />
           }
         />
@@ -197,7 +199,7 @@ function Controls(
       </div>
       <div>
         <ControlPopover
-          title='Select Tooltip Params'
+          title='Display In Tooltip'
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Tooltip Params'>
               <div
@@ -230,6 +232,11 @@ function Controls(
                 className={`Controls__anchor ${
                   props.zoom?.active ? 'active' : ''
                 }`}
+                onClick={() => {
+                  if (props.zoom) {
+                    props.onZoomChange?.({ active: !props.zoom.active });
+                  }
+                }}
               >
                 <span
                   className={`Controls__anchor__arrow ${
@@ -239,20 +246,12 @@ function Controls(
                 >
                   <Icon name='arrow-left' />
                 </span>
-                <span
-                  onClick={() => {
-                    if (props.zoom) {
-                      props.onZoomChange?.({ active: !props.zoom.active });
-                    }
-                  }}
-                >
-                  <Icon
-                    className={`Controls__icon ${
-                      props.zoom?.active ? 'active' : ''
-                    }`}
-                    name='zoom-in'
-                  />
-                </span>
+                <Icon
+                  className={`Controls__icon ${
+                    props.zoom?.active ? 'active' : ''
+                  }`}
+                  name='zoom-in'
+                />
               </div>
             </Tooltip>
           )}
@@ -274,6 +273,13 @@ function Controls(
                 className={`Controls__anchor ${
                   props.zoom?.history.length ? '' : 'disabled'
                 }`}
+                onClick={() => {
+                  if (props.zoom?.history.length) {
+                    props.onZoomChange?.({
+                      history: [...props.zoom.history].slice(0, -1),
+                    });
+                  }
+                }}
               >
                 {props.zoom?.history.length ? (
                   <span
@@ -285,17 +291,7 @@ function Controls(
                     <Icon name='arrow-left' />
                   </span>
                 ) : null}
-                <span
-                  onClick={() => {
-                    if (props.zoom?.history.length) {
-                      props.onZoomChange?.({
-                        history: [...props.zoom.history].slice(0, -1),
-                      });
-                    }
-                  }}
-                >
-                  <Icon className='Controls__icon' name='zoom-out' />
-                </span>
+                <Icon className='Controls__icon' name='zoom-out' />
               </div>
             </Tooltip>
           )}

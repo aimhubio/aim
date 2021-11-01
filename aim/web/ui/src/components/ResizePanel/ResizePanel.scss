@@ -6,8 +6,6 @@
   display: flex;
   align-items: center;
   height: 0.5rem;
-  // border-top: 0.125rem solid $primary-color-10;
-  // border-bottom: 0.125rem solid $primary-color-10;
   background-color: $primary-color-10;
   transition: all 0.15s ease-out;
   transition-delay: 0.3s;
@@ -23,7 +21,7 @@
     }
   }
   &__fullHeight {
-    background-color: tint($cuddle, 90);
+    background-color: $cuddle-10;
     border-top: $border-main;
     display: flex;
     justify-content: center;

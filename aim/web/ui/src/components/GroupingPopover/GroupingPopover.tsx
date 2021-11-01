@@ -12,14 +12,12 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import ToggleButton from 'components/ToggleButton/ToggleButton';
+import { ToggleButton, Icon, Badge, Text } from 'components/kit';
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
-  IGroupingSelectOption,
   GroupNameType,
+  IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
-import Icon from 'components/Icon/Icon';
-import TagLabel from 'components/TagLabel/TagLabel';
 
 import './GroupingPopover.scss';
 
@@ -31,6 +29,8 @@ function GroupingPopover({
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  let [inputValue, setInputValue] = React.useState('');
+
   function onChange(e: object, values: IGroupingSelectOption[]): void {
     onSelect({
       groupName,
@@ -70,16 +70,32 @@ function GroupingPopover({
     <div className='GroupingPopover'>
       <div className='GroupingPopover__container'>
         <div className='GroupingPopover__container__select'>
-          <h3 className='GroupingPopover__subtitle'>
+          <Text
+            size={12}
+            tint={50}
+            component='h3'
+            className='GroupingPopover__subtitle'
+          >
             Select Fields for grouping by {groupName}
-          </h3>
+          </Text>
           <Autocomplete
             size='small'
             multiple
             disableCloseOnSelect
-            options={groupingSelectOptions}
+            options={
+              inputValue.trim() !== ''
+                ? groupingSelectOptions
+                    .slice()
+                    .sort(
+                      (a, b) =>
+                        a.label.indexOf(inputValue) -
+                        b.label.indexOf(inputValue),
+                    )
+                : groupingSelectOptions
+            }
             value={values}
             onChange={onChange}
+            onInputChange={(e, value) => setInputValue(value)}
             groupBy={(option) => option.group}
             getOptionLabel={(option) => option.label}
             getOptionSelected={(option, value) => option.value === value.value}
@@ -87,14 +103,13 @@ function GroupingPopover({
               <TextField
                 {...params}
                 variant='outlined'
-                label='Select Params'
-                placeholder='Select'
+                placeholder='Select Params'
               />
             )}
             renderTags={(value, getTagProps) => (
               <div style={{ maxHeight: 110, overflow: 'auto' }}>
                 {value.map((selected, i) => (
-                  <TagLabel
+                  <Badge
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}
@@ -120,7 +135,14 @@ function GroupingPopover({
           />
         </div>
         <div className='GroupingPopover__toggleMode__div'>
-          <h3 className='GroupingPopover__subtitle'>select grouping mode</h3>
+          <Text
+            size={12}
+            tint={50}
+            component='h3'
+            className='GroupingPopover__subtitle'
+          >
+            select grouping mode
+          </Text>
           <ToggleButton
             title='Select Mode'
             id='yAxis'
@@ -145,9 +167,15 @@ function GroupingPopover({
                 }
                 id='panel1c-header'
               >
-                <span className='GroupingPopover__subtitle'>
+                <Text
+                  size={12}
+                  tint={50}
+                  component='h3'
+                  weight={400}
+                  className='GroupingPopover__subtitle'
+                >
                   Advanced options
-                </span>
+                </Text>
               </AccordionSummary>
               <AccordionDetails style={{ padding: 0 }}>
                 {advancedComponent}

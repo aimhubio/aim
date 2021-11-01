@@ -1,0 +1,40 @@
+@use 'src/styles/abstracts' as *;
+
+html .Badge {
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  padding: 0 0.5rem;
+  font-style: normal;
+  font-weight: 500;
+
+  i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $text-sm;
+    width: unset;
+    height: unset;
+    margin: 0;
+    padding-left: 1rem;
+  }
+
+  span {
+    font-size: $text-md;
+  }
+
+  &__small {
+    height: 1.5rem;
+    padding: 0 0.35rem;
+    font-style: normal;
+    font-weight: 500;
+
+    span {
+      font-size: $text-sm;
+    }
+
+    i {
+      padding-left: 0;
+      font-size: 0.5625rem;
+    }
+  }
+}
