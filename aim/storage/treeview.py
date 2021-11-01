@@ -61,7 +61,10 @@ class TreeView:
         path: Union[AimObjectKey, AimObjectPath] = (),
         default: Any = None
     ) -> AimObject:
-        ...
+        try:
+            return self[path]
+        except KeyError:
+            return default
 
     @abstractmethod
     def __delitem__(
