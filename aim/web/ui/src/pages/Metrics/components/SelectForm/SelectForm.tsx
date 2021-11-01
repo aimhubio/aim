@@ -273,6 +273,7 @@ function SelectForm({
                     (tag: ISelectMetricsOption) => {
                       return (
                         <Badge
+                          size='large'
                           key={tag.label}
                           color={tag.color}
                           label={tag.label}
