@@ -13,26 +13,31 @@
     border-radius: 0;
     padding-left: 1.25rem;
     box-shadow: none;
-    border: 0.0625rem solid #ebf0f8;
+    border: $border-grey;
+    &__tabs {
+      .MuiTab-textColorInherit {
+        opacity: 1;
+        font-weight: 500;
+        font-size: $text-md;
+        text-transform: none;
+        &.MuiInputBase-input {
+          font-weight: 600;
+        }
+      }
+      .Mui-selected {
+        font-weight: 600;
+        color: $pico;
+      }
+    }
     .PrivateTabIndicator-root-5 {
       height: 0.1875rem;
-    }
-    .MuiTab-textColorInherit {
-      color: $text-color;
-      opacity: 1;
-      font-weight: 500;
-      font-size: $text-md;
-      text-transform: none;
-      &.MuiInputBase-input {
-        font-weight: 600;
-      }
     }
   }
   &__TagList {
     position: relative;
     height: 100%;
-    border-left: 0.0625rem solid #dee6f3;
-    border-right: 0.0625rem solid #dee6f3;
+    border-left: $border-grey;
+    border-right: $border-grey;
     &__tagListBusyLoader {
       padding-top: 100px;
     }
@@ -42,7 +47,7 @@
       align-items: center;
       padding: 1.25rem;
       background: #ffffff;
-      border-bottom: 0.0625rem solid #ebf0f8;
+      border-bottom: $border-grey;
       .MuiInputBase-root {
         height: 2rem;
         padding-left: 0.8125rem;
@@ -110,10 +115,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        &__title {
-          font-weight: 600;
-          font-size: $text-md;
-        }
       }
     }
     &__overLayContainer {
@@ -133,11 +134,10 @@
   height: calc(100% - 40px);
   width: 100%;
   position: relative;
-  &__commentContainer {
+  &__commentCell {
     max-width: 600px;
     word-break: break-word;
     z-index: 99900;
-
     &__actionsContainer {
       right: 0;
       top: 0;
@@ -175,8 +175,8 @@
         border-bottom: none;
       }
       &-cell {
-        border-right: 1px solid #dee6f3;
-        border-bottom: 1px solid #dee6f3;
+        border-right: $border-grey;
+        border-bottom: $border-grey;
         padding: 0 15px;
         &:last-child {
           border-right: none;
@@ -189,8 +189,8 @@
         background: #e8f1fc;
       }
       &-cell {
-        border-right: 1px solid #dee6f3;
-        border-bottom: 1px solid #dee6f3;
+        border-right: $border-grey;
+        border-bottom: $border-grey;
         padding-left: 15px;
         padding-right: 15px;
         position: relative;
@@ -208,32 +208,13 @@
     }
   }
 
-  &__runContainer {
-    &__runBox {
-      padding-left: 5px;
-      display: flex;
-      align-items: center;
-      &__runIconBox {
-        width: 1rem;
-        height: 1rem;
-        border-radius: 50%;
-        border: 1px solid $primary-color;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 8px;
-        &__runIcon {
-          width: 4px;
-          height: 4px;
-          background: $primary-color;
-          border-radius: 50%;
-        }
-      }
-      &__runText {
-        font-weight: 500;
-        font-size: $text-md;
-        color: $primary-color;
-      }
+  &__runsCell {
+    display: flex;
+    align-items: center;
+    &--iconBox {
+      font-size: 1rem;
+      color: $primary-color;
+      margin-right: $space-xs;
     }
   }
 }
@@ -246,7 +227,7 @@
     align-items: center;
     padding: 0 20px 0 13px;
     height: 40px;
-    border-bottom: 1px solid #dee6f3;
+    border-bottom: $border-grey;
     &__headerActionsBox {
       display: flex;
       align-items: center;
@@ -292,7 +273,7 @@
     }
   }
   &__footerBox {
-    border-top: 1px solid #dee6f3;
+    border-top: $border-grey;
     height: 64px;
     display: flex;
     justify-content: center;
@@ -306,10 +287,6 @@
 .TagDelete {
   &__contentContainer {
     padding: 20px;
-    &__contentTitle {
-      font-size: $text-md;
-      font-weight: 600;
-    }
     &__contentBox {
       display: flex;
       align-items: center;
@@ -319,15 +296,12 @@
         margin-bottom: 0;
       }
       &__warningText {
-        font-size: $text-sm;
-        font-weight: normal;
-        word-break: break-all;
         margin-bottom: 15px;
       }
     }
   }
   &__footerBox {
-    border-top: 1px solid #dee6f3;
+    border-top: $border-grey;
     height: 64px;
     display: flex;
     justify-content: center;

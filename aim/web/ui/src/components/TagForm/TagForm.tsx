@@ -10,6 +10,7 @@ import tagsAppModel from 'services/models/tags/tagsAppModel';
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
 
 import './TagForm.scss';
+import { Badge, Text } from 'components/kit';
 
 const useStyles = makeStyles({
   tagColor: {
@@ -160,91 +161,64 @@ function TagForm({
   return (
     <div className='TagForm'>
       <div className='TagForm__tagFormContainer'>
+        <Text component='p' tint={60}>
+          Name
+        </Text>
         <TextField
-          label='Label'
+          placeholder='Name'
           variant='outlined'
-          className='TagForm__tagFormContainer__labelField TextField__OutLined__Medium'
+          className='TagForm__tagFormContainer__TextField TextField__OutLined__Medium'
           onChange={(e) => onChange(e, 'name')}
           value={name}
           size='small'
           error={!!(touched.name && errors.name)}
           helperText={touched.name && errors.name}
         />
+        <Text component='p' tint={60}>
+          Comment
+        </Text>
         <TextField
-          label='Comment'
+          placeholder='Comment'
           variant='outlined'
           onChange={(e) => onChange(e, 'comment')}
-          className='TagForm__tagFormContainer__commentField TextField__TextArea__OutLined__Small'
+          className='TagForm__tagFormContainer__TextField TextField__TextArea__OutLined__Small'
           multiline
           value={comment}
           error={!!(touched.comment && errors.comment)}
           helperText={touched.comment && errors.comment}
         />
         <div className='TagForm__tagFormContainer__colorContainer'>
-          <p className='TagForm__tagFormContainer__containerTitle'>Colors</p>
+          <Text component='p' tint={50}>
+            Colors
+          </Text>
           <div className='TagForm__tagFormContainer__colorContainer__colorBox'>
             {colors}
           </div>
         </div>
         <div className='TagForm__tagFormContainer__previewContainer'>
-          <p className='TagForm__tagFormContainer__containerTitle'>Preview</p>
+          <Text component='p' tint={30}>
+            Preview
+          </Text>
           <div className='TagForm__tagFormContainer__previewContainer__tagPreviewBox'>
-            <div
-              className='TagForm__tagFormContainer__previewContainer__tagPreviewBox__tagPreview'
-              style={{ borderColor: color }}
-            >
-              <span
-                className='TagForm__tagFormContainer__previewContainer__tagPreviewBox__tagPreview__content'
-                style={{ background: color }}
-              >
-                {name || 'Tag Preview'}
-              </span>
-            </div>
-            <span
-              className='TagForm__tagFormContainer__previewContainer__tagPreviewBox__tagPreview__label'
-              style={{ color }}
-            >
-              {name || 'Tag Preview'}
-            </span>
+            <Badge label={name || 'Tag Preview'} color={color} />
           </div>
         </div>
       </div>
       <div className='TagForm__tagFormFooterContainer'>
-        {editMode ? (
-          <>
-            <Button
-              onClick={onResetButtonClick}
-              className='TagForm__tagFormFooterContainer__secondaryButton'
-            >
-              Reset
-            </Button>
-            <Button
-              onClick={onSaveButtonClick}
-              variant='contained'
-              color='primary'
-              className='TagForm__tagFormFooterContainer__primaryButton'
-            >
-              Save
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              onClick={onCloseModal}
-              className='TagForm__tagFormFooterContainer__secondaryButton'
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={onCreateButtonClick}
-              variant='contained'
-              color='primary'
-              className='TagForm__tagFormFooterContainer__primaryButton'
-            >
-              Create
-            </Button>
-          </>
-        )}
+        <Button
+          onClick={editMode ? onResetButtonClick : onCloseModal}
+          className='TagForm__tagFormFooterContainer__cancelButton'
+          color='secondary'
+        >
+          {editMode ? 'Reset' : 'Cancel'}
+        </Button>
+        <Button
+          onClick={editMode ? onSaveButtonClick : onCreateButtonClick}
+          variant='contained'
+          color='primary'
+        >
+          {editMode ? 'Save' : 'Create'}
+        </Button>
       </div>
     </div>
   );

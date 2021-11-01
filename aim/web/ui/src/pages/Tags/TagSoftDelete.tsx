@@ -43,17 +43,9 @@ function TagSoftDelete({
       } this tag?`}
       icon={
         archivedRef.current?.archived ? (
-          <Icon
-            name='eye-show-outline'
-            className='TagSoftDelete__contentContainer__iconContainer__icon'
-            fontSize='large'
-          />
+          <Icon name='eye-show-outline' />
         ) : (
-          <Icon
-            name='delete'
-            className='TagSoftDelete__contentContainer__iconContainer__icon'
-            fontSize='large'
-          />
+          <Icon name='eye-outline-hide' />
         )
       }
       title='Are you sure?'
