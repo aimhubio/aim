@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import moment from 'moment';
-import { Box, Paper, Tab, Tabs } from '@material-ui/core';
+import { Paper, Tab, Tabs } from '@material-ui/core';
 import { NavLink, useParams } from 'react-router-dom';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
@@ -11,7 +11,7 @@ import RunDetailParamsTab from './RunDetailParamsTab';
 import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailSettingsTab from './RunDetailSettingsTab';
 import AppBar from 'components/AppBar/AppBar';
-import { Badge } from 'components/kit';
+import { Badge, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import * as analytics from 'services/analytics';
 
@@ -48,21 +48,28 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 className='RunDetail__runDetailContainer__appBarTitleBox__pageName'
                 to='/runs'
               >
-                {'Runs'}
+                <Text tint={70} size={16} weight={600}>
+                  Runs
+                </Text>
               </NavLink>
               /
-              <p className='RunDetail__runDetailContainer__appBarTitleBox__runHash'>
+              <Text
+                className='RunDetail__runDetailContainer__appBarTitleBox__runHash'
+                size={16}
+                tint={100}
+                weight={600}
+              >
                 {runHash}
-              </p>
+              </Text>
             </div>
           }
         />
         <div className='RunDetail__runDetailContainer__headerContainer'>
           <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
-            <p className='RunDetail__runDetailContainer__headerContainer__infoBox__experimentName'>
+            <Text component='p' weight={600} size={14} tint={100}>
               Experiment: {runData?.runInfo?.experiment}
-            </p>
-            <p className='RunDetail__runDetailContainer__headerContainer__infoBox__experimentDate'>
+            </Text>
+            <Text component='p' tint={100}>
               {`${moment(runData?.runInfo?.creation_time * 1000).format(
                 'DD MMM YYYY ~ HH:mm A',
               )} ~ ${
@@ -73,13 +80,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                       runData?.runInfo?.end_time * 1000,
                     )
               }`}
-            </p>
+            </Text>
           </div>
-          <Box className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
+          <div className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
             {runData?.runInfo?.tags.map((tag: any, i: number) => (
               <Badge color={tag.color} label={tag.name} key={i} />
             ))}
-          </Box>
+          </div>
         </div>
         <Paper className='RunDetail__runDetailContainer__tabsContainer'>
           <Tabs
