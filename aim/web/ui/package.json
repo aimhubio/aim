@@ -59,7 +59,7 @@
     "eject": "react-scripts eject",
     "analyze-bundles": "node tasks/bundle-analyzer.js",
     "lint": "eslint src/*/**/*.{js,jsx,ts,tsx}",
-    "lint:fix": "eslint src/*/**/*.{js,ts,jsx,tsx} --quiet --fix"
+    "format:fix": "eslint src/*/**/*.{js,ts,jsx,tsx} --quiet --fix"
   },
   "homepage": "/static-files",
   "eslintConfig": {
@@ -122,57 +122,57 @@
             },
             {
               "pattern": "assets/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "components/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "config/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "fonts/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "hooks/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "pages/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "routes/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "services/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "styles/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "types/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             },
             {
               "pattern": "utils/**",
-              "group": "unknown",
+              "group": "parent",
               "position": "before"
             }
           ],
