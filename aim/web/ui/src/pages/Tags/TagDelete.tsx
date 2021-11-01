@@ -5,7 +5,7 @@ import { TextField } from '@material-ui/core';
 import { useFormik } from 'formik';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
 import './Tags.scss';
@@ -66,9 +66,14 @@ function TagDelete({
       text='Are you sure you want to delete this tag?'
       icon={<Icon name='delete' />}
     >
-      <p className='TagDelete__contentContainer__contentBox__warningText'>
+      <Text
+        component='p'
+        weight={400}
+        tint={100}
+        className='TagDelete__contentContainer__contentBox__warningText'
+      >
         {`Please type "${tagInfo?.name}" to confirm:`}
-      </p>
+      </Text>
       <TextField
         label='Name'
         value={name}

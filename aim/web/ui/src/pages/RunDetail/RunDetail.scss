@@ -25,7 +25,7 @@
       height: 4.25rem;
       border-right: $border-main;
       border-left: $border-main;
-      border-bottom: $border-secondary;
+      border-bottom: $border-grey-lighter;
       display: flex;
       justify-content: space-between;
       &__infoBox {
@@ -57,7 +57,7 @@
     &__tabsContainer {
       border-right: $border-main;
       border-left: $border-main;
-      border-bottom: $border-secondary;
+      border-bottom: $border-grey-lighter;
       padding-left: 1.5rem;
       .MuiTabs-root {
         height: 40px;
@@ -128,7 +128,7 @@
 .RunDetailParamsTab {
   padding: 1.5rem;
   margin: 0.75rem;
-  border: 0.0625rem solid $cuddle-50;
+  border: $border-grey;
   border-radius: 0.5rem;
   height: 100%;
 }
@@ -142,7 +142,7 @@
     align-items: stretch;
     height: 100%;
     &__chartContainer {
-      border: 0.0625rem solid $cuddle-50;
+      border: $border-grey;
       border-radius: 0.5rem;
       margin: 0.75rem;
       width: calc(50% - 24px);
@@ -154,7 +154,7 @@
         }
       }
       &__metricDetailBox {
-        border-top: 0.0625rem solid $cuddle-50;
+        border-top: $border-grey;
         padding: 1rem 1.5rem 1.5rem;
         &__title {
           font-size: 0.625rem;
@@ -180,7 +180,7 @@
 
 .RunDetailSettingsTab {
   padding: 1.5rem;
-  border: 0.0625rem solid $cuddle-50;
+  border: $border-grey;
   border-radius: 0.5rem;
   height: 5.25rem;
   margin: 0 10.25rem;

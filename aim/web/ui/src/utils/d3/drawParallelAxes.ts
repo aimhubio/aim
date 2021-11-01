@@ -1,3 +1,4 @@
+import _ from 'lodash-es';
 import * as d3 from 'd3';
 import {
   IDrawParallelAxesProps,
@@ -9,6 +10,8 @@ import {
   gradientStartColor,
   gradientEndColor,
 } from 'utils/d3';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -18,7 +21,7 @@ function drawParallelAxes({
   dimensions,
   plotBoxRef,
 }: IDrawParallelAxesProps): void {
-  if (!axesNodeRef?.current) {
+  if (!axesNodeRef?.current && !dimensions && _.isEmpty(dimensions)) {
     return;
   }
   const keysOfDimensions = Object.keys(dimensions);
@@ -93,19 +96,23 @@ function drawParallelAxes({
         }, ${i % 2 === 0 ? -25 : -40})`,
       )
       .html(() => {
-        const [label1, label2 = ''] = displayName.split(' ');
+        let [label1, label2 = ''] = displayName.split(' ');
         const styledLabel2 = label2
           ? `<span style='font-style: italic'>${label2}</span>`
           : '';
+        let label = isSystemMetric(label1)
+          ? formatSystemMetricName(label1)
+          : label1;
         return `
             <div title='${displayName}'
                 class='xAxisLabel__container xAxisLabel__container__${dimensionType} 
                 ${i === first ? 'left' : i === last ? 'right' : ''}' 
             >
-               <div class='xAxisLabel'>${label1} ${styledLabel2}</div>
+               <div class='xAxisLabel'>${label} ${styledLabel2}</div>
             </div>
           `;
       });
+
     axesRef.current.yAxes[keyOfDimension] = axes;
   });
 
@@ -113,11 +120,13 @@ function drawParallelAxes({
   attributesRef.current.yScale = yScale;
   const lastYScale =
     attributesRef.current.yScale[keysOfDimensions[keysOfDimensions.length - 1]];
-  const range = lastYScale.range();
-  attributesRef.current.yColorIndicatorScale = d3
-    .scaleSequential()
-    .domain(range)
-    .interpolator(d3.interpolateRgb(gradientStartColor, gradientEndColor));
+  const range = lastYScale?.range();
+  if (range) {
+    attributesRef.current.yColorIndicatorScale = d3
+      .scaleSequential()
+      .domain(range)
+      .interpolator(d3.interpolateRgb(gradientStartColor, gradientEndColor));
+  }
 }
 
 export default drawParallelAxes;

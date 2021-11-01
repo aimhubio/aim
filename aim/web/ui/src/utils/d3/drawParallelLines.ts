@@ -76,7 +76,11 @@ function linesRenderer({
         ) {
           nextStep++;
         }
-        if (nextStep + i < keysOfDimensions.length) {
+        if (
+          nextStep + i < keysOfDimensions.length &&
+          line[keysOfDimensions[i - 1]] &&
+          line[keysOfDimensions[i + nextStep]]
+        ) {
           arrayOfPathData[pathDataArrayIndex + 1] = {
             dimensionList: [
               keysOfDimensions[i - 1],
@@ -139,6 +143,9 @@ function drawParallelLine({
   color,
   key,
 }: IDrawParallelLineProps) {
+  if (!linesNodeRef.current) {
+    return;
+  }
   linesNodeRef.current
     .append('path')
     .lower()

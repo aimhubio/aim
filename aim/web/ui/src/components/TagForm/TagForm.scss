@@ -4,25 +4,18 @@
   &__tagFormContainer {
     padding: 20px;
     border-bottom: 1px solid #f2f5fa;
-    &__labelField {
+    &__TextField {
       width: 100%;
+      margin-top: $space-xxxs;
       margin-bottom: 20px;
     }
-    &__commentField {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    &__containerTitle {
-      font-weight: 500;
-      font-size: $text-md;
-      margin-left: 10px;
-      margin-bottom: 6px;
-    }
+
     &__colorContainer {
       margin-bottom: 20px;
       &__colorBox {
+        margin-top: $space-xxxs;
         padding: 5px;
-        border: 1px solid #bdcee8;
+        border: 0.0625rem solid $cuddle;
         border-radius: 6px;
         width: 100%;
         display: flex;
@@ -67,7 +60,8 @@
     }
     &__previewContainer {
       &__tagPreviewBox {
-        border: 1px solid #bdcee8;
+        margin-top: $space-xxxs;
+        border: 0.0625rem solid $cuddle;
         border-radius: 6px;
         width: 100%;
         display: flex;
@@ -75,37 +69,6 @@
         align-items: center;
         height: 56px;
         position: relative;
-
-        &__tagPreview {
-          height: 24px;
-          border: 1px solid;
-          max-width: 90%;
-          overflow: hidden;
-          border-radius: 6px;
-          &__content {
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            color: transparent;
-            padding: 1px 32px 4px;
-            overflow: hidden;
-            max-width: calc(100% - 104px);
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-          &__label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            font-weight: 500;
-            font-size: $text-md;
-            transform: translate(-50%, -50%);
-            overflow: hidden;
-            max-width: calc(100% - 104px);
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
       }
     }
   }
@@ -114,20 +77,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    &__secondaryButton {
-      margin-right: 10px;
-      height: 32px;
-      font-weight: 500;
-      font-size: $text-md;
-      color: $text-color;
-      text-transform: none;
-    }
-    &__primaryButton {
-      height: 32px;
-      font-weight: 500;
-      font-size: $text-md;
-      color: $white;
-      text-transform: none;
+    &__cancelButton {
+      margin-right: $space-sm;
     }
   }
 }

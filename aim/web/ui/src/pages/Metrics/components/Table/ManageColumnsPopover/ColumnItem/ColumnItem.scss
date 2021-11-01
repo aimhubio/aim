@@ -1,10 +1,10 @@
 @use 'src/styles/abstracts' as *;
 
-.ColumnItem__container {
+.ColumnItem {
   border: $border-main;
-  margin-bottom: 0.25em;
-  border-radius: 0.25em;
-  padding: 0.25em 0.5em;
+  margin-bottom: $space-xxxs;
+  border-radius: $space-xxxs;
+  padding: $space-xxxs $space-xs;
   background-color: $cuddle-10;
   display: flex;
 
@@ -18,30 +18,29 @@
     align-items: center;
     flex: 1;
   }
-}
 
-.ColumnItem__toggle {
-  margin-right: 0.785rem;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
+  &__toggle {
+    margin-right: 0.785rem;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+  }
 
-.ColumnItem__name {
-  display: inline-block;
-  max-width: 130px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: $text-sm;
-  flex: 1;
-}
+  &__name {
+    display: inline-block;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
 
-.ColumnItem__drag__icon {
-  display: flex;
-  i {
-    font-size: 0.625rem;
+  &__iconDrag {
+    display: flex;
+    i {
+      font-size: 0.625rem;
+    }
   }
 }

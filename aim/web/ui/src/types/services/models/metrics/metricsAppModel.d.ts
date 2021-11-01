@@ -17,11 +17,12 @@ import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { DensityOptions } from 'config/enums/densityEnum';
 
 export interface IMetricAppModelState {
   refs: {
-    tableRef: { current: ITableRef | null };
-    chartPanelRef: { current: IChartPanelRef | null };
+    tableRef?: { current: ITableRef | null };
+    chartPanelRef?: { current: IChartPanelRef | null };
   };
   requestIsPending: boolean | null;
   queryIsEmpty: boolean;
@@ -102,8 +103,8 @@ export interface IAggregationData {
 
 export type SortField = [string, 'asc' | 'desc'];
 
-interface IMetricAppConfig {
-  grouping: {
+export interface IMetricAppConfig {
+  grouping?: {
     color: string[];
     stroke: string[];
     chart: string[];
@@ -127,7 +128,7 @@ interface IMetricAppConfig {
     };
     paletteIndex: number;
   };
-  chart: {
+  chart?: {
     highlightMode: HighlightEnum;
     ignoreOutliers: boolean;
     zoom: IChartZoom;
@@ -141,13 +142,13 @@ interface IMetricAppConfig {
     alignmentConfig: IAlignmentConfig;
     tooltip: IChartTooltip;
   };
-  select: {
+  select?: {
     metrics: ISelectMetricsOption[];
     query: string;
     advancedMode: boolean;
     advancedQuery: string;
   };
-  table: {
+  table?: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
     sortFields?: SortField[];
@@ -161,7 +162,7 @@ interface IMetricAppConfig {
     };
     height: string;
   };
-  liveUpdate: {
+  liveUpdate?: {
     delay: number;
     enabled: boolean;
   };

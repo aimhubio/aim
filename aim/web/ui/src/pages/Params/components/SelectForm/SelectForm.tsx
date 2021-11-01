@@ -25,7 +25,6 @@ import {
 } from 'types/pages/params/components/SelectForm/SelectForm';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import { Badge, Button, Icon, Text } from 'components/kit';
-import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
@@ -39,18 +38,19 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
+
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchRef.current = paramsAppModel.getParamsData(true);
     paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef.abort();
-      searchRef.current.abort();
+      paramsMetricsRequestRef?.abort();
+      searchRef.current?.abort();
     };
   }, []);
 
   function handleParamsSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    searchRef.current = paramsAppModel.getParamsData(true);
     searchRef.current.call();
   }
 
@@ -218,9 +218,9 @@ function SelectForm({
                   flexItem
                 />
                 {selectedParamsData?.params.length === 0 && (
-                  <span className='SelectForm__tags__empty'>
+                  <Text tint={50} size={14} weight={400}>
                     No params are selected
-                  </span>
+                  </Text>
                 )}
                 {selectedParamsData?.params.length > 0 && (
                   <Box className='SelectForm__tags ScrollBar__hidden'>
@@ -228,6 +228,7 @@ function SelectForm({
                       (tag: ISelectParamsOption) => {
                         return (
                           <Badge
+                            size='large'
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}

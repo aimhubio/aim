@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 
 import { IDrawAreaProps } from 'types/utils/d3/drawArea';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { isSystemMetric } from 'utils/isSystemMetric';
 import { CircleEnum } from './index';
 
 function drawArea(props: IDrawAreaProps): void {
@@ -44,6 +46,16 @@ function drawArea(props: IDrawAreaProps): void {
     height: height - margin.top - margin.bottom,
   };
 
+  const offsetWidth =
+    width - margin.left - margin.right >= 0
+      ? width - margin.left - margin.right
+      : 0;
+
+  const offsetHeight =
+    height - margin.top - margin.bottom >= 0
+      ? height - margin.top - margin.bottom
+      : 0;
+
   visArea.style('width', `${width}px`).style('height', `${height}px`);
 
   svgNodeRef.current = visArea
@@ -59,8 +71,8 @@ function drawArea(props: IDrawAreaProps): void {
     .attr('x', margin.left)
     .attr('y', margin.top)
     .attr('class', 'backgroundRect')
-    .attr('width', width - margin.left - margin.right)
-    .attr('height', height - margin.top - margin.bottom)
+    .attr('width', offsetWidth)
+    .attr('height', offsetHeight)
     .style('fill', 'transparent');
 
   plotNodeRef.current = svgNodeRef.current
@@ -77,8 +89,8 @@ function drawArea(props: IDrawAreaProps): void {
     .append('rect')
     .attr('x', 0)
     .attr('y', 0)
-    .attr('width', width - margin.left - margin.right)
-    .attr('height', height - margin.top - margin.bottom);
+    .attr('width', offsetWidth)
+    .attr('height', offsetHeight);
 
   attributesNodeRef.current = plotNodeRef.current
     .append('g')
@@ -90,21 +102,24 @@ function drawArea(props: IDrawAreaProps): void {
     .append('rect')
     .attr('x', -10)
     .attr('y', 0)
-    .attr(
-      'width',
-      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius + 10,
-    )
-    .attr(
-      'height',
-      height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius,
-    );
+    .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 10)
+    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius);
 
   const titleMarginTop = 4;
   const titleMarginBottom = 6;
   const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
   const keys = Object.keys(chartTitle);
   const titleText = keys
-    ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
+    ? `${keys
+        .map((key) => {
+          let splitValue = chartTitle[key].split('"')[1];
+          return `${key}=${
+            isSystemMetric(splitValue)
+              ? formatSystemMetricName(splitValue)
+              : chartTitle[key]
+          }`;
+        })
+        .join(', ')}`
     : '';
 
   if (titleText) {

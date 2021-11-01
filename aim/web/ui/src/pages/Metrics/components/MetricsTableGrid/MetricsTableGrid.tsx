@@ -17,6 +17,9 @@ import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import contextToString from 'utils/contextToString';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -245,7 +248,13 @@ function getMetricsTableColumns(
   if (groupFields) {
     columns.push({
       key: '#',
-      content: <span style={{ textAlign: 'right' }}>#</span>,
+      content: (
+        <span
+          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
+        >
+          #
+        </span>
+      ),
       topHeader: 'Grouping',
       pin: 'left',
     });
@@ -299,7 +308,23 @@ function metricsTableRowRenderer(
     const row: { [key: string]: any } = {};
     for (let i = 0; i < columns.length; i++) {
       const col = columns[i];
-      if (col === 'context') {
+      if (col === 'metric') {
+        let metricName: string = isSystemMetric(rowData[col])
+          ? formatSystemMetricName(rowData[col])
+          : rowData[col];
+        row.metric = {
+          content:
+            Array.isArray(rowData.metric) && rowData.metric.length > 1 ? (
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={`${rowData.context.length} values`}
+              />
+            ) : (
+              <span>{metricName}</span>
+            ),
+        };
+      } else if (col === 'context') {
         row[col] = {
           content:
             rowData.context.length > 1 ? (
@@ -312,7 +337,7 @@ function metricsTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context}
+                label={rowData.context[0] || 'No Context'}
               />
             ),
         };
@@ -367,10 +392,17 @@ function metricsTableRowRenderer(
           </Link>
         ),
       },
-      metric: rowData.metric,
+      metric: isSystemMetric(rowData.metric)
+        ? formatSystemMetricName(rowData.metric)
+        : rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <Badge key={item} size='small' color={COLORS[0][0]} label={item} />
+          <Badge
+            key={item}
+            size='small'
+            color={COLORS[0][0]}
+            label={item || 'No Context'}
+          />
         )),
       },
       value: rowData.value,
