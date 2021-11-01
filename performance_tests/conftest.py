@@ -1,8 +1,9 @@
-import os
-from pathlib import Path
-import shutil
 import boto3
+import os
+import shutil
 import tarfile
+import time
+from pathlib import Path
 
 from aim.web.utils import exec_cmd
 from aim.cli.up.utils import build_db_upgrade_command
@@ -44,10 +45,9 @@ def _upgrade_api_db():
 
 def pytest_sessionstart(session):
     os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATH
-    os.environ[AIM_ENV_MODE_KEY] = 'perf-test'
 
     _init_test_repo()
-    _upgrade_api_db()
+    time.sleep(5)
 
 
 def pytest_sessionfinish(session, exitstatus):

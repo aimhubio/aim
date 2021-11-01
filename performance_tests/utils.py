@@ -69,10 +69,6 @@ def query_metrics(query):
     metrics = list(repo.query_metrics(query=query).iter())
 
 
-def check_in_range(base, new):
-    return 0.95 * base <= new <= 1.05 * base
-
-
 def get_baseline_filename():
     import performance_tests
     performance_tests_path = os.path.dirname(performance_tests.__file__)

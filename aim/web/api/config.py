@@ -23,10 +23,6 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/.aim-test-repo/aim_db'.format(get_root_path())
 
 
-class PerfTestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/.aim-performance-repo/aim_db'.format(get_root_path())
-
-
 class ProductionConfig(Config):
     """
     Production Configuration
@@ -38,6 +34,5 @@ class ProductionConfig(Config):
 config = {
     'dev': DevelopmentConfig,
     'test': TestConfig,
-    'perf-test': PerfTestConfig,
     'prod': ProductionConfig,
 }
