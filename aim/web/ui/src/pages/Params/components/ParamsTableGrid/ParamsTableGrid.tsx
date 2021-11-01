@@ -125,7 +125,7 @@ function getParamsTableColumns(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
       const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === `run.params.${paramKey}`,
+        (value) => value[0] === paramKey,
       );
 
       return {
