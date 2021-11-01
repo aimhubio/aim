@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Accordion,
   AccordionDetails,
@@ -13,6 +14,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { ToggleButton, Icon, Badge, Text } from 'components/kit';
+
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
   GroupNameType,

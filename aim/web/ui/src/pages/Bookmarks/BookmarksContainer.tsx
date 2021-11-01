@@ -1,10 +1,13 @@
 import React from 'react';
 
 import useModel from 'hooks/model/useModel';
+
 import bookmarkAppModel from 'services/models/bookmarks/bookmarksAppModel';
-import Bookmarks from './Bookmarks';
 import * as analytics from 'services/analytics';
+
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
+
+import Bookmarks from './Bookmarks';
 
 function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
   const bookmarksRequestRef = React.useRef(bookmarkAppModel.getBookmarksData());

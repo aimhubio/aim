@@ -1,22 +1,27 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
-import Params from './Params';
-import paramsAppModel from 'services/models/params/paramsAppModel';
+import { RowHeightSize } from 'config/table/tableConfigs';
+
 import useModel from 'hooks/model/useModel';
+import usePanelResize from 'hooks/resize/usePanelResize';
+
+import paramsAppModel from 'services/models/params/paramsAppModel';
+import * as analytics from 'services/analytics';
+
 import {
   IChartTitleData,
   IChartTooltip,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
-import usePanelResize from 'hooks/resize/usePanelResize';
 import {
   IParamsAppConfig,
   IParamsAppModelState,
 } from 'types/services/models/params/paramsAppModel';
-import { RowHeightSize } from 'config/table/tableConfigs';
-import * as analytics from 'services/analytics';
+
 import getStateFromUrl from 'utils/getStateFromUrl';
+
+import Params from './Params';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const chartElemRef = React.useRef<HTMLDivElement>(null);

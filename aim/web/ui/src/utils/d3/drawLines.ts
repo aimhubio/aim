@@ -1,14 +1,18 @@
-import { CurveEnum } from './';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import { IDrawLinesProps } from 'types/utils/d3/drawLines';
-import { toQuadrupleData, toTupleData } from 'utils/toFormatData';
-import lineGenerator from './lineGenerator';
 import { IProcessedData } from 'types/utils/d3/processData';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import areaGenerator from './areaGenerator';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
-import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
+import { AggregationAreaMethods } from 'utils/aggregateGroupData';
+import { toQuadrupleData, toTupleData } from 'utils/toFormatData';
+
+import lineGenerator from './lineGenerator';
+import areaGenerator from './areaGenerator';
+
+import { CurveEnum } from './';
 
 function drawLines(props: IDrawLinesProps): void {
   const {

@@ -1,23 +1,29 @@
-import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IGroupingSelectOption,
   IChartTooltip,
   IFocusedState,
 } from 'metrics/metricsAppModel';
-import { CurveEnum } from 'utils/d3';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { ITableRef } from 'components/Table/Table';
+import { IChartPanelRef } from 'components/ChartPanel/ChartPanel';
+import { INotification } from 'components/NotificationContainer/NotificationContainer';
+
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { ITableColumn } from 'pages/metrics/components/TableColumns/TableColumns';
+
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
+
+import { CurveEnum } from 'utils/d3';
+import { IDimensionsType } from 'utils/d3/drawParallelAxes';
+
 import {
   IChartTitleData,
   IMetricsCollection,
   ITooltipData,
   SortField,
 } from '../metrics/metricsAppModel';
-import { ITableRef } from 'components/Table/Table';
-import { IChartPanelRef } from 'components/ChartPanel/ChartPanel';
-import { ITableColumn } from 'pages/metrics/components/TableColumns/TableColumns';
-import { INotification } from 'components/NotificationContainer/NotificationContainer';
-import { IDimensionsType } from 'utils/d3/drawParallelAxes';
 
 export interface IParamsAppModelState {
   refs: {

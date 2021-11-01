@@ -60,8 +60,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "analyze-bundles": "node tasks/bundle-analyzer.js",
-    "lint": "eslint src/*/**/*.{js,jsx,ts,tsx}",
-    "format:fix": "eslint src/*/**/*.{js,ts,jsx,tsx} --quiet --fix"
+    "lint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
+    "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix"
   },
   "homepage": "/static-files",
   "eslintConfig": {

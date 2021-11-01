@@ -1,7 +1,9 @@
 import * as analytics from 'services/analytics';
+
 import { IModel, State } from 'types/services/models/model';
-import onColumnsVisibilityChange from './onColumnsVisibilityChange';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import onColumnsVisibilityChange from './onColumnsVisibilityChange';
 
 export function onTableDiffShow<M extends State>({
   model,

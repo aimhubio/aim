@@ -1,23 +1,27 @@
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import { RowHeightSize } from 'config/table/tableConfigs';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { DensityOptions } from 'config/enums/densityEnum';
 
 export interface IMetricAppModelState {
   refs: {

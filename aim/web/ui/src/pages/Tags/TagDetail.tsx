@@ -2,12 +2,14 @@ import React, { memo, useEffect } from 'react';
 import { isEmpty } from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import tagsAppModel from 'services/models/tags/tagsAppModel';
-import TagRunsTable from './TagRunsTable';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Badge, Button, Icon } from 'components/kit';
 
+import tagsAppModel from 'services/models/tags/tagsAppModel';
+
 import { ITagDetailProps } from 'types/pages/tags/Tags';
+
+import TagRunsTable from './TagRunsTable';
 
 import './Tags.scss';
 

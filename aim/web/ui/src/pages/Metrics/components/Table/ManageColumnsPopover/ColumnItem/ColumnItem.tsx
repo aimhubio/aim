@@ -2,9 +2,10 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 
+import { Icon, Text } from 'components/kit';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import { Icon, Text } from 'components/kit';
 
 import './ColumnItem.scss';
 

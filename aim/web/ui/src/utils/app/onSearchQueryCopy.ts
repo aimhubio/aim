@@ -1,6 +1,7 @@
+import { IModel, State } from 'types/services/models/model';
+
 import onNotificationAdd from './onNotificationAdd';
 import getQueryStringFromSelect from './getQuertStringFromSelect';
-import { IModel, State } from 'types/services/models/model';
 
 function onSearchQueryCopy<M extends State>(model: IModel<M>): void {
   const selectedMetricsData = model.getState()?.config?.select;

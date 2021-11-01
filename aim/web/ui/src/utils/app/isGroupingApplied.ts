@@ -1,5 +1,6 @@
-import { getFilteredGroupingOptions } from './getFilteredGroupingOptions';
 import { IModel, State } from 'types/services/models/model';
+
+import { getFilteredGroupingOptions } from './getFilteredGroupingOptions';
 
 export default function isGroupingApplied<M extends State>(
   model: IModel<M>,

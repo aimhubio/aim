@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import {
   GroupNameType,

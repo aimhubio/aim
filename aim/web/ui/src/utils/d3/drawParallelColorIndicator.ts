@@ -1,4 +1,5 @@
 import { IDrawParallelColorIndicator } from 'types/utils/d3/drawParallelColorIndicator';
+
 import { gradientStartColor, gradientEndColor } from './index';
 
 function drawParallelColorIndicator({

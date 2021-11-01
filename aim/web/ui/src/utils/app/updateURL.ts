@@ -1,6 +1,8 @@
-import { encode } from '../encoder/encoder';
-import updateUrlParam from './updateUrlParam';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import { encode } from '../encoder/encoder';
+
+import updateUrlParam from './updateUrlParam';
 
 export default function updateURL({
   configData,

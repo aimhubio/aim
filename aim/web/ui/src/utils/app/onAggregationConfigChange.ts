@@ -1,9 +1,12 @@
 import _ from 'lodash-es';
+
 import * as analytics from 'services/analytics';
+
 import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
-import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 
 export default function onAggregationConfigChange<M extends State>({
   aggregationConfig,

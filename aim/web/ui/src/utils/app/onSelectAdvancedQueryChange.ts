@@ -1,4 +1,5 @@
 import { IModel, State } from 'types/services/models/model';
+
 import updateURL from './updateURL';
 
 export default function onSelectAdvancedQueryChange<M extends State>({

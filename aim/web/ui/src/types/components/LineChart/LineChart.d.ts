@@ -1,4 +1,5 @@
-import { CurveEnum } from 'utils/d3';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import {
   IActivePoint,
   INearestCircle,
@@ -14,7 +15,8 @@ import {
   IChartZoom,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
+import { CurveEnum } from 'utils/d3';
 
 export interface ILine {
   key: string;

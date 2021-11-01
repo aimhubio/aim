@@ -1,14 +1,17 @@
-import * as analytics from 'services/analytics';
-
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
+
+import * as analytics from 'services/analytics';
 import metricsService from 'services/api/metrics/metricsService';
+
 import { IAlignMetricsDataParams } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import { AlignmentOptionsEnum } from '../d3';
+
 import getRunData from './getRunData';
 import onNotificationAdd from './onNotificationAdd';
-import { AlignmentOptionsEnum } from '../d3';
 import updateURL from './updateURL';
-import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export default async function onAlignmentMetricChange<M extends State>({
   metric,

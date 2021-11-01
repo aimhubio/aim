@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import { Button, Switcher, Text } from 'components/kit';
+
+import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 
 import './StrokePopoverAdvanced.scss';
 

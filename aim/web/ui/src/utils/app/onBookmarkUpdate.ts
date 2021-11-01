@@ -1,9 +1,11 @@
-import * as analytics from 'services/analytics';
-
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+
+import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
+
 import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
 import onNotificationAdd from './onNotificationAdd';
 
 export default function onBookmarkUpdate<M extends State>({

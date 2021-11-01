@@ -1,10 +1,12 @@
 import _ from 'lodash-es';
+
 import {
   IGroupingSelectOption,
   IMetricsCollection,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
 import getGroupConfig from './getGroupConfig';
 
 export default function getTooltipData<D, M extends State>({

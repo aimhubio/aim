@@ -1,7 +1,15 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Divider, Link, Paper } from '@material-ui/core';
 import _ from 'lodash-es';
+
+import { Divider, Link, Paper } from '@material-ui/core';
+
+import { Icon, Text } from 'components/kit';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+
+import { PathEnum } from 'config/enums/routesEnum';
+
+import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 
 import contextToString from 'utils/contextToString';
 import {
@@ -9,10 +17,6 @@ import {
   getKeyByAlignment,
 } from 'utils/formatByAlignment';
 import { AlignmentOptionsEnum, ChartTypeEnum } from 'utils/d3';
-import { PathEnum } from 'config/enums/routesEnum';
-import { Icon, Text } from 'components/kit';
-import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
-import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';

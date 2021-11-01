@@ -1,10 +1,12 @@
 import React from 'react';
 // import AssignmentTurnedInOutlinedIcon from '@material-kit/icons/AssignmentTurnedInOutlined';
 import Highlight, { defaultProps } from 'prism-react-renderer';
+
 import theme from 'prism-react-renderer/themes/nightOwlLight';
 
-import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
 import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
+
+import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
 
 import './CodeBlock.scss';
 

@@ -1,5 +1,14 @@
 import React from 'react';
 
+import useResizeObserver from 'hooks/window/useResizeObserver';
+
+import {
+  IAttributesRef,
+  IBrushRef,
+  ILineChartProps,
+} from 'types/components/LineChart/LineChart';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
+
 import {
   drawArea,
   clearArea,
@@ -10,13 +19,6 @@ import {
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
-import useResizeObserver from 'hooks/window/useResizeObserver';
-import {
-  IAttributesRef,
-  IBrushRef,
-  ILineChartProps,
-} from 'types/components/LineChart/LineChart';
-import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,

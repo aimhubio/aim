@@ -1,13 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import routes, { IRoute } from 'routes/routes';
+
 import { Drawer } from '@material-ui/core';
 
+import logoImg from 'assets/logo.svg';
+
 import { Icon } from 'components/kit';
-import { PathEnum } from 'config/enums/routesEnum';
 import { IconName } from 'components/kit/Icon';
 
-import logoImg from 'assets/logo.svg';
+import { PathEnum } from 'config/enums/routesEnum';
+
+import routes, { IRoute } from 'routes/routes';
 
 import './Sidebar.scss';
 

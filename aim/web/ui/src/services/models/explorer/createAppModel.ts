@@ -2,14 +2,16 @@ import _ from 'lodash';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
-import * as analytics from 'services/analytics';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import {
   metricsTableRowRenderer,
   getMetricsTableColumns,
@@ -22,9 +24,16 @@ import {
   getRunsTableColumns,
   runsTableRowRenderer,
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
+
+import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
 import metricsService from 'services/api/metrics/metricsService';
 import runsService from 'services/api/runs/runsService';
+import createMetricModel from 'services/models/metrics/metricModel';
+import { createRunModel } from 'services/models/metrics/runModel';
+import createModel from 'services/models/model';
+import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
@@ -66,6 +75,12 @@ import {
 } from 'types/services/models/runs/runsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
+import {
+  IAppInitialConfig,
+  IAppModelConfig,
+  IAppModelState,
+} from 'types/services/models/explorer/createAppModel';
+
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
@@ -144,29 +159,20 @@ import getUrlWithParam from 'utils/getUrlWithParam';
 import JsonToCSV from 'utils/JsonToCSV';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { getItem, setItem } from 'utils/storage';
-import createMetricModel from 'services/models/metrics/metricModel';
-import { createRunModel } from 'services/models/metrics/runModel';
-import createModel from 'services/models/model';
 import { decode, encode } from 'utils/encoder/encoder';
-import { AppDataTypeEnum, AppNameEnum } from './index';
-import {
-  IAppInitialConfig,
-  IAppModelConfig,
-  IAppModelState,
-} from 'types/services/models/explorer/createAppModel';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import onResetConfigData from 'utils/app/onResetConfigData';
 import onShuffleChange from 'utils/app/onShuffleChange';
-import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
-import { DensityOptions } from 'config/enums/densityEnum';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
+
+import { AppDataTypeEnum, AppNameEnum } from './index';
 
 /**
  * function createAppModel has 2 major functionalities:

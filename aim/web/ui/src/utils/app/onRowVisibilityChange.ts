@@ -1,7 +1,8 @@
 import { IModel, State } from 'types/services/models/model';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
-import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export default function onRowVisibilityChange<M extends State>({
   metricKey,

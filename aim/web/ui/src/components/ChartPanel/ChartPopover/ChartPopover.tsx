@@ -1,9 +1,12 @@
 import React from 'react';
+
 import { Popover, PopoverPosition } from '@material-ui/core';
 
-import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
-import getPositionBasedOnOverflow from 'utils/getPositionBasedOnOverflow';
 import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent';
+
+import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
+
+import getPositionBasedOnOverflow from 'utils/getPositionBasedOnOverflow';
 
 import './ChartPopover.scss';
 
