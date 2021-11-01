@@ -1,9 +1,10 @@
 import React, { memo } from 'react';
 import ReactJson from 'react-json-view';
+import { isEmpty } from 'lodash-es';
+
 import { IRunDetailParamsTabProps } from 'types/pages/runs/Runs';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
-import { isEmpty } from 'lodash-es';
 
 function RunDetailParamsTab({
   runParams,
