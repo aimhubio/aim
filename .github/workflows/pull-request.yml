@@ -44,4 +44,4 @@ jobs:
           aws-region: us-east-2
       - name: perf tests
         run: |
-         pytest performance_tests
+         pytest performance_tests || pytest --lf performance_tests
