@@ -6,7 +6,6 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
-// @ts-ignore
 import { IControlProps } from 'types/pages/params/components/Controls/Controls';
 
 import { CurveEnum } from 'utils/d3';

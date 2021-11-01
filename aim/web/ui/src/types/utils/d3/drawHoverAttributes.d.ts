@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { ILineChartProps } from 'components/LineChart/LineChart';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 

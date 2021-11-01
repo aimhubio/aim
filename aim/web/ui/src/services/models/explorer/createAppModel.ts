@@ -2366,7 +2366,7 @@ function createAppModel({
           }
           metricsCollection.data.forEach((metric: any) => {
             const metricsRowValues = { ...initialMetricsRowData };
-            metric.run.traces.map((trace: any) => {
+            metric.run.traces.forEach((trace: any) => {
               metricsRowValues[
                 `${trace.metric_name}_${contextToString(trace.context)}`
               ] = formatValue(trace.last_value.last);

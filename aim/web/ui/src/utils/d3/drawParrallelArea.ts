@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import { IDrawAreaProps } from 'types/utils/d3/drawArea';
 
 import { CircleEnum } from './index';
+
 function drawParallelArea(props: IDrawAreaProps): void {
   const {
     index = 0,

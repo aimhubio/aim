@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 import { IGetAxisScale } from './getAxisScale';
@@ -44,7 +43,6 @@ export interface IDrawParallelHoverAttributesProps {
   }>;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   linesNodeRef: React.MutableRefObject<>;
-  index: number;
   highlightedNodeRef: React.MutableRefObject<>;
   isVisibleColorIndicator: boolean;
 }

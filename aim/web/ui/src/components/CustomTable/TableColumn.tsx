@@ -9,8 +9,6 @@ import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
-import { decode } from 'utils/encoder/encoder';
-
 import ControlPopover from '../ControlPopover/ControlPopover';
 
 import Cell from './TableCell';
