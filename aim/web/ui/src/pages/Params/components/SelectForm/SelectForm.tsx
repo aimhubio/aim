@@ -38,18 +38,19 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
+
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
-    searchRef.current = paramsAppModel.getParamsData(true);
     paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef.abort();
-      searchRef.current.abort();
+      paramsMetricsRequestRef?.abort();
+      searchRef.current?.abort();
     };
   }, []);
 
   function handleParamsSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    searchRef.current = paramsAppModel.getParamsData(true);
     searchRef.current.call();
   }
 
