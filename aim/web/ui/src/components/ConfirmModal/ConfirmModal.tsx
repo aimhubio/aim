@@ -1,7 +1,7 @@
 import React from 'react';
 import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
 import { Dialog, DialogContentText, DialogTitle } from '@material-ui/core';
-import { Button } from 'components/kit';
+import { Button, Text } from 'components/kit';
 
 import './ConfirmModal.scss';
 
@@ -22,16 +22,27 @@ function ConfirmModal(
         <div className='ConfirmModal__Icon flex fjc fac'>{props.icon}</div>
         <div className='flex fdc'>
           {props.title && (
-            <DialogTitle className='ConfirmModal__Title' id='dialog-title'>
+            <Text
+              size={14}
+              className='ConfirmModal__Title'
+              tint={100}
+              component='h4'
+              weight={600}
+            >
               {props.title}
-            </DialogTitle>
+            </Text>
           )}
 
-          <div className='ConfirmModal__Content'>
+          <div>
             {props.text && (
-              <DialogContentText className='Text' id='dialog-description'>
+              <Text
+                className='ConfirmModal__description'
+                weight={400}
+                component='p'
+                id='dialog-description'
+              >
                 {props.text || ''}
-              </DialogContentText>
+              </Text>
             )}
             {props.children && props.children}
           </div>
