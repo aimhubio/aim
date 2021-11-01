@@ -248,7 +248,13 @@ function getMetricsTableColumns(
   if (groupFields) {
     columns.push({
       key: '#',
-      content: <span style={{ textAlign: 'right' }}>#</span>,
+      content: (
+        <span
+          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
+        >
+          #
+        </span>
+      ),
       topHeader: 'Grouping',
       pin: 'left',
     });

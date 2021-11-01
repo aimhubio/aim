@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 
 import './ColumnItem.scss';
 
@@ -13,7 +13,7 @@ function ColumnItem(props: any) {
     <Draggable draggableId={props.data} index={props.index}>
       {(provided) => (
         <div
-          className={classNames('ColumnItem__container', {
+          className={classNames('ColumnItem', {
             highlighted:
               props.hasSearchableItems &&
               !!props.searchKey &&
@@ -29,13 +29,13 @@ function ColumnItem(props: any) {
             />
           </span>
           <div>
-            <span className='ColumnItem__name'>
+            <Text tint={100} className='ColumnItem__name'>
               {isSystemMetric(props.data)
                 ? formatSystemMetricName(props.data)
                 : props.data}
-            </span>
+            </Text>
             <span
-              className='ColumnItem__drag__icon'
+              className='ColumnItem__iconDrag'
               {...provided.dragHandleProps}
             >
               <Icon name='drag' />
