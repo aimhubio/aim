@@ -4,7 +4,7 @@ from typing import Iterator, Tuple
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .treeview import TreeView
+    from aim.storage.treeview import TreeView
 
 
 class Container:

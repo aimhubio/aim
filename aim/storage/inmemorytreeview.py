@@ -2,7 +2,6 @@ from copy import deepcopy
 
 from aim.storage.types import CustomObjectBase
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.container import Container
 from aim.storage.arrayview import TreeArrayView
 from aim.storage.treeview import TreeView
 
@@ -12,26 +11,15 @@ from typing import Any, Dict, Iterator, Tuple, Union
 class InMemoryTreeView(TreeView):
     def __init__(
         self,
-        container
+        container: AimObject
     ) -> None:
         self.container = container
 
-    def preload(
-        self
-    ):
-        pass
-
-    def finalize(
-        self,
-        *,
-        index: 'Container'
-    ):
-        pass
-
     def view(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> 'InMemoryTreeView':
+        path: Union[AimObjectKey, AimObjectPath],
+        resolve: bool = True
+    ):
         if isinstance(path, (int, str)):
             path = (path,)
         assert path
@@ -65,7 +53,8 @@ class InMemoryTreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath] = (),
         strict: bool = True
     ) -> AimObject:
-        assert strict
+        if not strict:
+            raise NotImplementedError("Non-strict mode is not supported yet.")
 
         if path == Ellipsis:
             path = ()
@@ -78,22 +67,6 @@ class InMemoryTreeView(TreeView):
             container = container[key]
 
         return deepcopy(container)
-
-    def __getitem__(
-        self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> AimObject:
-        return self.collect(path)
-
-    def get(
-        self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(path)
-        except KeyError:
-            return default
 
     def __delitem__(
         self,
@@ -132,7 +105,7 @@ class InMemoryTreeView(TreeView):
         level: int = None
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         if level is not None:
-            raise NotImplementedError()
+            raise NotImplementedError("Level iteration not supported yet.")
         container = self.container
         for key in path:
             container = container[key]
@@ -160,13 +133,13 @@ class InMemoryTreeView(TreeView):
         AimObjectPath,
         AimObject
     ]]:
-        raise NotImplementedError()
+        raise NotImplementedError("Level iteration not supported yet.")
 
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> TreeArrayView:
-        return TreeArrayView(self.view(path))
+        return TreeArrayView(self.subtree(path))
 
     def first(
         self,

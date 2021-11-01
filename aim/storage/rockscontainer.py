@@ -8,7 +8,6 @@ from typing import Iterator, Optional, Tuple
 
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
-from aim.storage.treeview import TreeView
 from aim.storage.containertreeview import ContainerTreeView
 
 
@@ -124,8 +123,8 @@ class RocksContainer(Container):
         """Preload the Container in the read mode."""
         self.db
 
-    def tree(self) -> 'TreeView':
-        """Return a :obj:`TreeView` which enables hierarchical view and access
+    def tree(self) -> 'ContainerTreeView':
+        """Return a :obj:`ContainerTreeView` which enables hierarchical view and access
         to the container records.
 
         This is achieved by prefixing groups and using `PATH_SENTINEL` as a
@@ -152,14 +151,23 @@ class RocksContainer(Container):
 
         The `default` is :obj:`None` by default.
         """
-        raise NotImplementedError
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     def __getitem__(
         self,
         key: bytes
     ) -> bytes:
-        """Returns the value by the given `key`."""
-        return self.db.get(key=key)
+        """Returns the value by the given `key`.
+
+        Raises :obj:`KeyError` if the `key` is not found.
+        """
+        value = self.db.get(key=key)
+        if value is None:
+            raise KeyError(key)
+        return value
 
     def set(
         self,

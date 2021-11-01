@@ -206,15 +206,15 @@ class Run(StructuredRunMixin):
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', self.hash, read_only=read_only, from_union=True
-        ).tree().view('meta')
-        self.meta_run_tree: TreeView = self.meta_tree.view('chunks').view(self.hash)
+        ).tree().subtree('meta')
+        self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
-        self.meta_attrs_tree: TreeView = self.meta_tree.view('attrs')
-        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs')
+        self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
+        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
             'seqs', self.hash, read_only=read_only
-        ).tree().view('seqs').view('chunks').view(self.hash)
+        ).tree().subtree('seqs').subtree('chunks').subtree(self.hash)
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval)
@@ -371,7 +371,7 @@ class Run(StructuredRunMixin):
     def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, 'Run']]:
         if isinstance(dtypes, str):
             dtypes = (dtypes,)
-        for ctx_idx, run_ctx_dict in self.meta_run_tree.view('traces').items():
+        for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
@@ -423,7 +423,7 @@ class Run(StructuredRunMixin):
         Returns:
              :obj:`list`: list of metric's `context`, `metric_name` and last tracked value triplets.
         """
-        metrics = self.meta_run_tree.view('traces')
+        metrics = self.meta_run_tree.subtree('traces')
         metrics_overview = []
         for idx in metrics.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()

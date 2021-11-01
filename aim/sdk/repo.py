@@ -93,7 +93,7 @@ class Repo:
 
     @property
     def meta_tree(self):
-        return self.request('meta', read_only=True, from_union=True).tree().view('meta')
+        return self.request('meta', read_only=True, from_union=True).tree().subtree('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -256,7 +256,7 @@ class Repo:
             next :obj:`Run` in readonly mode .
         """
         self.meta_tree.preload()
-        for run_name in self.meta_tree.view('chunks').keys():
+        for run_name in self.meta_tree.subtree('chunks').keys():
             yield Run(run_name, repo=self, read_only=True)
 
     def iter_runs_from_cache(self, offset: str = None) -> Iterator['Run']:
@@ -282,7 +282,7 @@ class Repo:
             :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
         # TODO: [MV] optimize existence check for run
-        if run_hash is None or run_hash not in self.meta_tree.view('chunks').keys():
+        if run_hash is None or run_hash not in self.meta_tree.subtree('chunks').keys():
             return None
         else:
             return Run(run_hash, repo=self, read_only=True)
@@ -358,7 +358,7 @@ class Repo:
     def _get_meta_tree(self):
         return self.request(
             'meta', read_only=True, from_union=True
-        ).tree().view('meta')
+        ).tree().subtree('meta')
 
     def collect_metrics_info(self) -> Dict[str, list]:
         """Utility function for getting metric names and contexts for all runs.

@@ -4,7 +4,8 @@ from aim.storage.encoding.encoding_native cimport decode_path
 from aim.storage.types import AimObject, AimObjectPath
 from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 
-from aim.storage.object import CustomObject
+from aim.storage.object import CustomObjectBase, CustomObject
+from aim.storage.treeview import TreeView
 from aim.storage.inmemorytreeview import InMemoryTreeView
 
 from typing import Any, Iterator, Tuple, Union
@@ -41,11 +42,14 @@ def unfold_tree(
             yield path, ObjectFlag
         for key, val in obj.items():
             yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
-    elif hasattr(obj, "_aim_encode"):
+    elif isinstance(obj, CustomObjectBase):
         aim_name, aim_obj = obj._aim_encode()
         yield path, CustomObjectFlagType(aim_name)
         for key, val in obj.storage.items():
             yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
+    elif isinstance(obj, TreeView):
+        # TODO we need to implement TreeView.traverse()
+        raise NotImplementedError
     else:
         raise NotImplementedError
 

@@ -33,19 +33,21 @@ class ContainerTreeView(TreeView):
 
     def view(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> 'ContainerTreeView':
+        path: Union[AimObjectKey, AimObjectPath],
+        resolve: bool = True
+    ):
         prefix = E.encode_path(path)
 
         container_view = self.container.view(prefix)
         tree_view = ContainerTreeView(container_view)
         # Okay, but let's decide if we want to initialize a CustomObject view
-        try:
-            flag = decode(container_view[b''])
-            if isinstance(flag, CustomObjectFlagType):
-                return CustomObject._aim_decode(flag.aim_name, tree_view)
-        except:
-            pass
+        if not resolve:
+            return tree_view
+
+        flag = decode(container_view.get(b'', default=b'\0'))
+        if isinstance(flag, CustomObjectFlagType):
+            return CustomObject._aim_decode(flag.aim_name, tree_view)
+
         return tree_view
 
     def make_array(
@@ -70,22 +72,6 @@ class ContainerTreeView(TreeView):
             return treeutils.decode_tree(it, strict=strict)
         except KeyError:
             raise KeyError('No key {} is present.'.format(path))
-
-    def __getitem__(
-        self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> AimObject:
-        return self.collect(path)
-
-    def get(
-        self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        default: Any = None
-    ) -> AimObject:
-        try:
-            return self.__getitem__(path)
-        except KeyError:
-            return default
 
     def __delitem__(
         self,
@@ -173,7 +159,7 @@ class ContainerTreeView(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> TreeArrayView:
-        return TreeArrayView(self.view(path))
+        return TreeArrayView(self.subtree(path))
 
     def first(
         self,
