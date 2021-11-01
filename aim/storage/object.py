@@ -14,7 +14,7 @@ class CustomObject(CustomObjectBase):
     def alias(name: str, exist_ok: bool = True):
         def decorator(cls):
             if name in CustomObject.registry and not exist_ok:
-                raise ValueError('hey-hoy-hoparr, arden ka')
+                raise ValueError(f'CustomObject `{name}` is already registered')
             CustomObject.registry[name] = cls
             return cls
         return decorator
