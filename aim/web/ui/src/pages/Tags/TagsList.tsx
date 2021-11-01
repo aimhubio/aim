@@ -7,7 +7,7 @@ import TagDetail from './TagDetail';
 import TagSoftDelete from './TagSoftDelete';
 import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
 import TagDelete from './TagDelete';
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 import * as analytics from 'services/analytics';
 
 import './Tags.scss';
@@ -116,9 +116,9 @@ function TagsList({
       >
         <div className='Tags__TagList__modalContainer'>
           <div className='Tags__TagList__modalContainer__titleBox'>
-            <span className='Tags__TagList__modalContainer__titleBox__title'>
+            <Text component='h4' weight={600} tint={100} size={14}>
               Create Tag
-            </span>
+            </Text>
           </div>
           <div className='Tags__TagList__modalContainer__contentBox'>
             <TagForm onCloseModal={onCreateModalToggle} />
@@ -133,9 +133,9 @@ function TagsList({
       >
         <div className='Tags__TagList__modalContainer'>
           <div className='Tags__TagList__modalContainer__titleBox'>
-            <span className='Tags__TagList__modalContainer__titleBox__title'>
+            <Text component='h4' size={14} tint={100} weight={600}>
               Update Tag
-            </span>
+            </Text>
           </div>
           <div className='Tags__TagList__modalContainer__contentBox'>
             <TagForm

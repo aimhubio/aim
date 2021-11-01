@@ -40,7 +40,7 @@ $table-prefix: BaseTable !default;
   $box-shadow-blur: 4px !default;
   $border: 1px solid #eeeeee !default;
   $header-background-color: #f8f8f8 !default;
-  $header-font-weight: 700 !default;
+  $header-font-weight: 600 !default;
   $row-hovered-background-color: #e2f2ff !default;
   $header-cell-hovered-background-color: #f3f3f3 !default;
   $sort-indicator-hovered-color: #888888 !default;
@@ -100,6 +100,7 @@ $table-prefix: BaseTable !default;
 
       .#{$table-prefix}__header {
         background-color: $header-background-color;
+        color: #1c2852;
       }
     }
 

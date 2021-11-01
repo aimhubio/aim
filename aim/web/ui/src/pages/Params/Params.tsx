@@ -35,7 +35,7 @@ const Params = ({
   tableElemRef,
   groupingData,
   groupingSelectOptions,
-  isParamsLoading,
+  requestIsPending,
   tooltip,
   hiddenMetrics,
   chartTitleData,
@@ -135,7 +135,7 @@ const Params = ({
           >
             <BusyLoaderWrapper
               height='100%'
-              isLoading={isParamsLoading}
+              isLoading={requestIsPending}
               loaderComponent={<ChartLoader />}
             >
               {!!highPlotData?.[0]?.data?.length ? (
@@ -163,7 +163,7 @@ const Params = ({
                   }
                 />
               ) : (
-                isParamsLoading === false && (
+                !requestIsPending && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."
@@ -174,7 +174,9 @@ const Params = ({
           </div>
           <ResizePanel
             className={`Params__ResizePanel${
-              isParamsLoading || highPlotData?.[0]?.data?.length ? '' : '__hide'
+              requestIsPending || highPlotData?.[0]?.data?.length
+                ? ''
+                : '__hide'
             }`}
             panelResizing={panelResizing}
             resizeElemRef={resizeElemRef}
@@ -189,7 +191,7 @@ const Params = ({
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={isParamsLoading}
+              isLoading={requestIsPending}
               className='Params__loader'
               height='100%'
               loaderComponent={<TableLoader />}

@@ -73,7 +73,9 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           </div>
         );
       case ChartTypeEnum.HighPlot:
-        const [metric, context] = (focusedState?.xValue as string)?.split('-');
+        const [metric, context] = (
+          (focusedState?.xValue as string) || ''
+        )?.split('-');
         return (
           <div className='PopoverContent__box'>
             <div className='PopoverContent__value'>

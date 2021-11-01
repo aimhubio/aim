@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 0.0625rem solid $cuddle-50;
+  border: $border-grey;
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -31,11 +31,6 @@
   a {
     text-decoration: none;
   }
-}
-
-.BookmarkCard__title {
-  font-weight: 600;
-  font-size: 18px;
 }
 
 .BookmarkCard__bottom {

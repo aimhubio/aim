@@ -38,7 +38,7 @@ function drawLines(props: IDrawLinesProps): void {
 
   linesRef.current.updateLines = function (data: IProcessedData[]): void {
     linesNodeRef.current
-      .selectAll('.Line')
+      ?.selectAll('.Line')
       .data(data)
       .join('path')
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)

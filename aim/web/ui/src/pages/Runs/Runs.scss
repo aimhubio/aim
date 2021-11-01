@@ -36,8 +36,8 @@
   &__RunList {
     position: relative;
     height: 100%;
-    border-left: 0.0625rem solid #dee6f3;
-    border-right: 0.0625rem solid #dee6f3;
+    border-left: $border-grey;
+    border-right: $border-grey;
     &__runListBusyLoader {
       padding-top: 100px;
     }

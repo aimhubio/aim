@@ -17,21 +17,16 @@
   &__Icon {
     margin-right: 30px;
     font-size: 4.5rem;
-
   }
 
   &__Title {
-    color: $pico;
     padding-left: 0;
     padding-bottom: 5px;
     padding-top: 5px;
   }
 
-  &__Content {
-    .Text {
-      color: $pico;
-      max-width: 260px;
-    }
+  &__description {
+    max-width: 260px;
   }
 
   &__CancelButton {
