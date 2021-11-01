@@ -167,6 +167,7 @@ import { DensityOptions } from 'config/enums/densityEnum';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 /**
  * function createAppModel has 2 major functionalities:
@@ -2324,7 +2325,9 @@ function createAppModel({
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
-                groupByMetricName[`${key}_${metricContext}`] = '-';
+                groupByMetricName[
+                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                ] = '-';
               },
             );
             acc = { ...acc, ...groupByMetricName };
@@ -2362,7 +2365,11 @@ function createAppModel({
             const metricsRowValues = { ...initialMetricsRowData };
             metric.run.traces.map((trace: any) => {
               metricsRowValues[
-                `${trace.metric_name}_${contextToString(trace.context)}`
+                `${
+                  isSystemMetric(trace.metric_name)
+                    ? trace.metric_name
+                    : `${trace.metric_name}_${contextToString(trace.context)}`
+                }`
               ] = formatValue(trace.last_value.last);
             });
             const rowValues: any = {
@@ -2877,7 +2884,9 @@ function createAppModel({
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
-                groupByMetricName[`${key}_${metricContext}`] = '-';
+                groupByMetricName[
+                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                ] = '-';
               },
             );
             acc = { ...acc, ...groupByMetricName };
@@ -2937,7 +2946,11 @@ function createAppModel({
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.forEach((trace: any) => {
                 metricsRowValues[
-                  `${trace.metric_name}_${contextToString(trace.context)}`
+                  `${
+                    isSystemMetric(trace.metric_name)
+                      ? trace.metric_name
+                      : `${trace.metric_name}_${contextToString(trace.context)}`
+                  }`
                 ] = formatValue(trace.last_value.last);
               });
               const rowValues: any = {
@@ -3053,7 +3066,6 @@ function createAppModel({
             }
           },
         );
-
         return { rows, sameValueColumns };
       }
 
