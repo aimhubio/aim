@@ -50,6 +50,7 @@ function Column({
     document.addEventListener('mousemove', resize);
     document.addEventListener('mouseup', resizeEnd);
   }
+
   function resize(evt) {
     let newWidth;
     if (pinnedTo === 'right') {
@@ -64,6 +65,7 @@ function Column({
     document.body.style.userSelect = 'none';
     document.body.style.cursor = 'col-resize';
   }
+
   function resizeEnd() {
     setIsResizing(false);
     document.removeEventListener('mousemove', resize);
@@ -74,6 +76,7 @@ function Column({
       updateColumnWidth(col.key, widthClone.current);
     }, 100);
   }
+
   function resetWidth() {
     updateColumnWidth(col.key, widthClone.current, true);
     setMaxWidth(undefined);
@@ -88,6 +91,12 @@ function Column({
       document.removeEventListener('mouseup', resizeEnd);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (columnRef.current) {
+      columnRef.current.style.width = 'initial';
+    }
+  }, [data, expanded]);
 
   const isInViewPort =
     !listWindow ||

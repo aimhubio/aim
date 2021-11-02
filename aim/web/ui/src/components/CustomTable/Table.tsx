@@ -190,7 +190,6 @@ function Table(props) {
         [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
           true,
       })}
-      onScroll={(e) => console.log('scroll')}
     >
       <div
         className={classNames({
