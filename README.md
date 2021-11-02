@@ -49,7 +49,7 @@
 
 Aim is open-source, self-hosted AI experiment tracking tool. Use Aim to deeply inspect hundreds of hyperparameter-sensitive training runs at once.
 
-## Getting Started in 3 Steps
+# Getting Started in 3 Steps
 
 Follow the steps below to get started with Aim.
 
@@ -179,9 +179,18 @@ _See documentation [here](#xgboost)._
 $ aim up
 ```
 
-## Roadmap
+# Roadmap
 
-:sparkle: View the [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3)
+## Detailed Sprints
+
+:sparkle: The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3)
+
+- The `Backlog` contains the issues we are going to choose from and prioritize weekly
+- The issues are mainly prioritized by the highly-requested features
+
+## High-level roadmap
+
+The high-level features we are going to work on the next few months
 
 **Done**
 - [x] Live updates (End: _Oct 18 2021_)
