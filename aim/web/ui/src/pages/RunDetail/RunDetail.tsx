@@ -1,6 +1,6 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import moment from 'moment';
-import { Paper, Tab, Tabs } from '@material-ui/core';
+import { Paper, Popover, Tab, Tabs } from '@material-ui/core';
 import { NavLink, useParams } from 'react-router-dom';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
@@ -10,27 +10,47 @@ import TabPanel from 'components/TabPanel/TabPanel';
 import RunDetailParamsTab from './RunDetailParamsTab';
 import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailSettingsTab from './RunDetailSettingsTab';
-import AppBar from 'components/AppBar/AppBar';
-import { Badge, Text } from 'components/kit';
+import { Badge, Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import * as analytics from 'services/analytics';
 
 import './RunDetail.scss';
+import classNames from 'classnames';
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const runData = useModel(runDetailAppModel);
+  const containerRef = useRef<any>(null);
   const [value, setValue] = useState(0);
+  const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] = useState(false);
   const { runHash } = useParams<{ runHash: string }>();
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 
+  function onRunsSelectToggle() {
+    setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
+  }
+
   React.useEffect(() => {
     runDetailAppModel.initialize();
     const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
-    runsRequestRef.call();
+    const experimentRequestRef = runDetailAppModel.getExperimentsData();
+    let runsOfExperimentRequestRef: any = null;
+    Promise.all([runsRequestRef.call(), experimentRequestRef.call()]).then(
+      ([runInfo, experiments]: any) => {
+        const selectedExperiment = experiments.find(
+          (experiment: any) => experiment.name === runInfo.props.experiment,
+        );
+        runsOfExperimentRequestRef = runDetailAppModel.getRunsOfExperiment(
+          selectedExperiment.id,
+        );
+        runsOfExperimentRequestRef.call();
+      },
+    );
     return () => {
       runsRequestRef.abort();
+      experimentRequestRef.abort();
+      runsOfExperimentRequestRef?.abort();
     };
   }, [runHash]);
 
@@ -39,13 +59,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <section className='RunDetail container'>
+    <section className='RunDetail container' ref={containerRef}>
       <div className='RunDetail__runDetailContainer'>
-        <AppBar
-          title={
-            <div className='RunDetail__runDetailContainer__appBarTitleBox'>
+        <div className='RunDetail__runDetailContainer__appBarContainer'>
+          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'>
+            <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
               <NavLink
-                className='RunDetail__runDetailContainer__appBarTitleBox__pageName'
+                className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container__pageName'
                 to='/runs'
               >
                 <Text tint={70} size={16} weight={600}>
@@ -54,7 +74,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               </NavLink>
               /
               <Text
-                className='RunDetail__runDetailContainer__appBarTitleBox__runHash'
+                className='RunDetail__runDetailContainer__appBarTitleBox__container__runHash'
                 size={16}
                 tint={100}
                 weight={600}
@@ -62,8 +82,99 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 {runHash}
               </Text>
             </div>
-          }
-        />
+            <Button
+              onClick={onRunsSelectToggle}
+              color={isRunSelectDropdownOpen ? 'primary' : 'default'}
+              size='small'
+              className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler'
+              style={
+                isRunSelectDropdownOpen
+                  ? { background: '#E8F1FC' }
+                  : { background: 'transparent' }
+              }
+              withOnlyIcon
+            >
+              <Icon name={'arrow-down'} />
+            </Button>
+          </div>
+          <Popover
+            // id={id}
+            open={isRunSelectDropdownOpen}
+            onClose={onRunsSelectToggle}
+            // disableEnforceFocus={true}
+            anchorReference='anchorPosition'
+            anchorPosition={{
+              left: containerRef.current?.offsetLeft + 40,
+              top: 35,
+            }}
+            className='RunSelectPopoverWrapper'
+          >
+            <div className='RunSelectPopoverWrapper__headerContainer'>
+              <div className='RunSelectPopoverWrapper__headerContainer__titleContainer'>
+                <Text size={14} tint={100} weight={600}>
+                  Experiments
+                </Text>
+              </div>
+
+              <Icon name='sort-inside' />
+              <div className='RunSelectPopoverWrapper__headerContainer__titleContainer'>
+                <Text size={14} tint={100} weight={600}>
+                  Runs
+                </Text>
+              </div>
+            </div>
+            <div className='RunSelectPopoverWrapper__contentContainer'>
+              <div className='RunSelectPopoverWrapper__contentContainer__experimentsListContainer'>
+                <div className='RunSelectPopoverWrapper__contentContainer__experimentsListContainer__experimentList'>
+                  {runData?.experimentsData?.map((experiment: any) => (
+                    <div
+                      className={classNames(
+                        'RunSelectPopoverWrapper__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                        { selected: runData?.experimentId === experiment.id },
+                      )}
+                      key={experiment.id}
+                    >
+                      <Text
+                        size={14}
+                        tint={
+                          runData?.experimentId === experiment.id ? 100 : 80
+                        }
+                        weight={
+                          runData?.experimentId === experiment.id ? 600 : 500
+                        }
+                        className='RunSelectPopoverWrapper__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
+                      >
+                        {experiment.name}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className='RunSelectPopoverWrapper__contentContainer__runsListContainer'>
+                <div className='RunSelectPopoverWrapper__contentContainer__runsListContainer__runsList'>
+                  {runData?.runsOfExperiment?.map((run: any) => (
+                    <div
+                      className={classNames(
+                        'RunSelectPopoverWrapper__contentContainer__runsListContainer__runsList__runBox',
+                        { selected: runData?.runInfo?.name === run.name },
+                      )}
+                      key={run.id}
+                    >
+                      <Text
+                        size={14}
+                        tint={runData?.runInfo?.name === run.name ? 100 : 80}
+                        weight={runData?.runInfo?.name === run.name ? 600 : 500}
+                        // className='RunSelectPopoverWrapper__contentContainer___runsListContainer__runsList__runBox__experimentName'
+                      >
+                        {run.name}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Popover>
+        </div>
         <div className='RunDetail__runDetailContainer__headerContainer'>
           <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
             <Text component='p' weight={600} size={14} tint={100}>

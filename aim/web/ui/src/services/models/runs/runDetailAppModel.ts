@@ -7,6 +7,7 @@ import createModel from '../model';
 
 const model = createModel<Partial<any>>({
   isRunInfoLoading: false,
+  isExperimentsLoading: false,
   isRunBatchLoading: false,
 });
 
@@ -18,9 +19,37 @@ let getRunsBatchRequestRef: {
   call: () => Promise<any>;
   abort: () => void;
 };
+let getExperimentsDataRequestRef: {
+  call: () => Promise<any>;
+  abort: () => void;
+};
+
+let getRunsOfExperimentRequestRef: {
+  call: () => Promise<any>;
+  abort: () => void;
+};
 
 function initialize() {
   model.init();
+}
+
+function getExperimentsData() {
+  if (getExperimentsDataRequestRef) {
+    getExperimentsDataRequestRef.abort();
+  }
+  getExperimentsDataRequestRef = runsService.getExperimentsData();
+  return {
+    call: async () => {
+      model.setState({ isExperimentsLoading: true });
+      const data = await getExperimentsDataRequestRef.call();
+      model.setState({
+        isExperimentsLoading: false,
+        experimentsData: data,
+      });
+      return data;
+    },
+    abort: getExperimentsDataRequestRef.abort,
+  };
 }
 
 function getRunInfo(runHash: string) {
@@ -38,8 +67,28 @@ function getRunInfo(runHash: string) {
         runInfo: data.props,
         isRunInfoLoading: false,
       });
+      return data;
     },
     abort: getRunsInfoRequestRef.abort,
+  };
+}
+
+function getRunsOfExperiment(runHash: string) {
+  if (getRunsOfExperimentRequestRef) {
+    getRunsOfExperimentRequestRef.abort();
+  }
+  getRunsOfExperimentRequestRef = runsService.getRunsOfExperiment(runHash);
+  return {
+    call: async () => {
+      // model.setState({ isRunInfoLoading: true });
+      const data = await getRunsOfExperimentRequestRef.call();
+      model.setState({
+        runsOfExperiment: data.runs,
+        experimentId: data.id,
+      });
+      // return data;
+    },
+    abort: getRunsOfExperimentRequestRef.abort,
   };
 }
 
@@ -127,6 +176,8 @@ const runDetailAppModel = {
   initialize,
   getRunInfo,
   getRunBatch,
+  getExperimentsData,
+  getRunsOfExperiment,
   archiveRun,
   onNotificationAdd,
   onNotificationDelete,
