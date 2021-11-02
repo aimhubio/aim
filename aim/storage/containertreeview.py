@@ -7,7 +7,7 @@ from aim.storage.container import Container
 from aim.storage import treeutils
 from aim.storage.arrayview import TreeArrayView
 
-from typing import Any, Dict, Iterator, Tuple, Union
+from typing import Iterator, Tuple, Union
 
 from aim.storage.treeview import TreeView
 

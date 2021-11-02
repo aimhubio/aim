@@ -1,5 +1,4 @@
 from aim.storage.container import Container
-from aim.storage.treeview import TreeView
 from aim.storage.containertreeview import ContainerTreeView
 
 from typing import Iterator, Tuple

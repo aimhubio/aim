@@ -151,7 +151,7 @@ def run_images_search_api(q: Optional[str] = '',
 
 
 @runs_router.post('/images/get-batch/')
-def run_traces_batch_api(uri_batch: URIBatchIn):
+def image_blobs_batch_api(uri_batch: URIBatchIn):
     # Get project
     project = Project()
     if not project.exists():
