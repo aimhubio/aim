@@ -32,7 +32,7 @@ jobs:
           python -m pip install -e .
       - name: unit-tests
         run: |
-          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
+          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk --cov=aim/ext tests
       - name: code style checks
         run: |
           flake8 aim
