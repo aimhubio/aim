@@ -179,7 +179,9 @@ _See documentation [here](#xgboost)._
 $ aim up
 ```
 
-## Roadmap 
+## Roadmap
+
+:sparkle: View the [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3)
 
 **Done**
 - [x] Live updates (End: _Oct 18 2021_)
