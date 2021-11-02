@@ -1,12 +1,16 @@
 import React from 'react';
-import { IDrawAxesProps } from './drawAxes';
-import { IProcessedData } from './processData';
-import { CurveEnum } from 'utils/d3';
+
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import {
   IAggregatedData,
   IAggregationConfig,
 } from 'types/services/models/metrics/metricsAppModel';
+
+import { CurveEnum } from 'utils/d3';
+
+import { IDrawAxesProps } from './drawAxes';
+import { IProcessedData } from './processData';
 
 export interface IDrawLinesProps {
   index: number;

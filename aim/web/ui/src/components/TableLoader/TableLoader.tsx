@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Skeleton } from '@material-ui/lab';
 
 import './TableLoader.scss';

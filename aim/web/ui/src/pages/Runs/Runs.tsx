@@ -1,8 +1,10 @@
 import React from 'react';
+
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
 import RunsTable from './RunsTable';
 import RunsBar from './components/RunsBar/RunsBar';
 import SearchBar from './components/SearchBar/SearchBar';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import './Runs.scss';
 

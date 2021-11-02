@@ -1,11 +1,13 @@
 import React from 'react';
-
-// import { classNames } from '../../utils';
-import { Tooltip } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { encode } from 'utils/encoder/encoder';
-import * as analytics from 'services/analytics';
+
+import { Tooltip } from '@material-ui/core';
+
 import { Text } from 'components/kit';
+
+import * as analytics from 'services/analytics';
+
+import { encode } from 'utils/encoder/encoder';
 
 import './HeatMapStyle.scss';
 

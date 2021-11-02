@@ -3,13 +3,15 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
+
 import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 
-import Cell from './TableCell';
-import ControlPopover from '../ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
-import { decode } from 'utils/encoder/encoder';
+
+import ControlPopover from '../ControlPopover/ControlPopover';
+
+import Cell from './TableCell';
 
 function Column({
   topHeader,
@@ -103,7 +105,11 @@ function Column({
             borderRight: showTopHeaderBorder ? '' : 'none',
           }}
         >
-          {showTopHeaderContent && col.topHeader && <p>{col.topHeader}</p>}
+          {showTopHeaderContent && col.topHeader && (
+            <Text component='p' tint={100} size={14} weight={600}>
+              {col.topHeader}
+            </Text>
+          )}
         </div>
       )}
       <div
@@ -112,8 +118,10 @@ function Column({
           minWidth: col.minWidth,
         }}
       >
-        {firstColumn ? headerMeta : null}
-        {col.content}
+        <Text tint={100} size={14} weigh={600}>
+          {firstColumn ? headerMeta : null}
+          {col.content}
+        </Text>
         {col.key !== 'actions' && col.key !== '#' && (
           <>
             <ControlPopover

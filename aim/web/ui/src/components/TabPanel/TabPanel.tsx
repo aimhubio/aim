@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { Box } from '@material-ui/core';
 
 import { ITabPanelProps } from 'types/components/TabPanel/TabPanel';

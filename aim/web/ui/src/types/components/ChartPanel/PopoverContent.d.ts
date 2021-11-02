@@ -3,6 +3,7 @@ import {
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
+
 import { ChartTypeEnum } from 'utils/d3';
 
 export interface IPopoverContentProps {
