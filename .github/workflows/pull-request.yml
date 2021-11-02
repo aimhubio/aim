@@ -18,7 +18,7 @@ jobs:
   run-checks:
     if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
     runs-on: ubuntu-latest
-    name: Run Unit-tests, Code-style checks & Performance tests
+    name: Run Unit-tests & Code-style checks
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -36,12 +36,22 @@ jobs:
       - name: unit-tests
         run: |
           pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
-      - name: configure AWS
-        uses: aws-actions/configure-aws-credentials@v1
+  storage-performance-checks:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
+    runs-on: self-hosted
+    name: Performance tests
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
         with:
-          aws-access-key-id: ${{ secrets.AIM_LOGS_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          ref: ${{ github.head_ref }}
+      - name: install deps
+        run: |
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.dev.txt
+          python -m pip install -r requirements.txt
+          python -m pip install -e .
       - name: perf tests
         run: |
          pytest performance_tests || pytest --lf performance_tests
