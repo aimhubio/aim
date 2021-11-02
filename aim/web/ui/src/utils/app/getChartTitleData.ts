@@ -5,6 +5,7 @@ import {
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
 import { formatValue } from '../formatValue';
 import getValueByField from '../getValueByField';
 

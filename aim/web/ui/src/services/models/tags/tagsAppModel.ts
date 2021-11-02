@@ -1,8 +1,10 @@
 import tagsService from 'services/api/tags/tagsService';
+import * as analytics from 'services/analytics';
+
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITagProps } from 'types/pages/tags/Tags';
+
 import createModel from '../model';
-import * as analytics from 'services/analytics';
 
 const model = createModel<any>({
   isTagsDataLoading: false,

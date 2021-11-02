@@ -2,8 +2,9 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { Icon, Text } from 'components/kit';
-import { IExploreCard } from '../ExploreAim/ExploreAim';
 import { IconName } from 'components/kit/Icon';
+
+import { IExploreCard } from '../ExploreAim/ExploreAim';
 
 import './ExploreAimCard.scss';
 

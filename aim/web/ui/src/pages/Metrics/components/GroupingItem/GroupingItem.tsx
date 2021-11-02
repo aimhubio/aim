@@ -1,10 +1,11 @@
 import React from 'react';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import { Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
+
+import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
 
 import './GroupingItem.scss';
 

@@ -1,9 +1,11 @@
 import React, { memo, useRef } from 'react';
+
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
+import { Icon } from 'components/kit';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+
 import { ITagSoftDeleteProps } from 'types/pages/tags/Tags';
-import { Icon } from 'components/kit';
 
 import './Tags.scss';
 

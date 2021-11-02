@@ -1,6 +1,7 @@
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
-import { DensityOptions } from 'config/enums/densityEnum';
 
 export interface IAlignmentPopoverProps {
   onAlignmentMetricChange: (metric: string) => void;

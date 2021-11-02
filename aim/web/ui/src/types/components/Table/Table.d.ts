@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
-import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 export interface ITableProps {
   custom?: boolean;

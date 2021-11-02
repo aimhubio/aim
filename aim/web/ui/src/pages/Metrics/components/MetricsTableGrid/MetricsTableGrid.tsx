@@ -1,25 +1,28 @@
 import React from 'react';
 import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
-import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
+import { Link } from '@material-ui/core';
+
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import {
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
-import COLORS from 'config/colors/colors';
 import { Button, Icon, Badge } from 'components/kit';
+
+import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
+
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+
+import {
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import contextToString from 'utils/contextToString';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',

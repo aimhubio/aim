@@ -1,19 +1,24 @@
 import React, { memo, useState } from 'react';
 import moment from 'moment';
-import { Paper, Tab, Tabs } from '@material-ui/core';
 import { NavLink, useParams } from 'react-router-dom';
 
-import runDetailAppModel from 'services/models/runs/runDetailAppModel';
-import { processDurationTime } from 'utils/processDurationTime';
-import useModel from 'hooks/model/useModel';
+import { Paper, Tab, Tabs } from '@material-ui/core';
+
 import TabPanel from 'components/TabPanel/TabPanel';
-import RunDetailParamsTab from './RunDetailParamsTab';
-import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
-import RunDetailSettingsTab from './RunDetailSettingsTab';
 import AppBar from 'components/AppBar/AppBar';
 import { Badge, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
+import useModel from 'hooks/model/useModel';
+
+import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
+
+import { processDurationTime } from 'utils/processDurationTime';
+
+import RunDetailParamsTab from './RunDetailParamsTab';
+import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
+import RunDetailSettingsTab from './RunDetailSettingsTab';
 
 import './RunDetail.scss';
 

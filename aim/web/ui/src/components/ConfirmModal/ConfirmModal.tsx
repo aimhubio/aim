@@ -1,7 +1,10 @@
 import React from 'react';
-import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
+
 import { Dialog, DialogContentText, DialogTitle } from '@material-ui/core';
+
 import { Button, Text } from 'components/kit';
+
+import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
 
 import './ConfirmModal.scss';
 

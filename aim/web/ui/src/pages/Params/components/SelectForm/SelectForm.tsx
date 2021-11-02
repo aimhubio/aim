@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Box,
   Checkbox,
@@ -14,17 +15,22 @@ import {
   SearchOutlined,
 } from '@material-ui/icons';
 
-import useModel from 'hooks/model/useModel';
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import projectsModel from 'services/models/projects/projectsModel';
+import { Badge, Button, Icon, Text } from 'components/kit';
+
 import COLORS from 'config/colors/colors';
-import getObjectPaths from 'utils/getObjectPaths';
+
+import useModel from 'hooks/model/useModel';
+
+import projectsModel from 'services/models/projects/projectsModel';
+import paramsAppModel from 'services/models/params/paramsAppModel';
+
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import {
   ISelectFormProps,
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
-import paramsAppModel from 'services/models/params/paramsAppModel';
-import { Badge, Button, Icon, Text } from 'components/kit';
+
+import getObjectPaths from 'utils/getObjectPaths';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 

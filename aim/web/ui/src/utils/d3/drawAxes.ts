@@ -4,9 +4,12 @@ import { Unit } from 'humanize-duration';
 import moment from 'moment';
 
 import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
+
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
-import { AlignmentOptionsEnum } from './index';
+
 import { getKeyByAlignment } from '../formatByAlignment';
+
+import { AlignmentOptionsEnum } from './index';
 
 function drawAxes(props: IDrawAxesProps): void {
   const {

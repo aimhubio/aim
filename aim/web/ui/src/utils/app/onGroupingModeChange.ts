@@ -1,8 +1,10 @@
 import * as analytics from 'services/analytics';
+
 import { IModel, State } from 'types/services/models/model';
-import resetChartZoom from './resetChartZoom';
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import resetChartZoom from './resetChartZoom';
 
 export default function onGroupingModeChange<M extends State>({
   groupName,

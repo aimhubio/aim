@@ -1,7 +1,10 @@
 import moment from 'moment';
+
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
-import { AlignmentKeysEnum, AlignmentOptionsEnum } from './d3';
+
 import { IAlignmentConfig } from '../types/services/models/metrics/metricsAppModel';
+
+import { AlignmentKeysEnum, AlignmentOptionsEnum } from './d3';
 
 function formatValueByAlignment({
   xAxisTickValue,

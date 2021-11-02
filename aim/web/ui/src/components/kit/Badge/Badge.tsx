@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { IBadgeProps } from './Badge.d';
 import { Icon } from '../index';
+
+import { IBadgeProps } from './Badge.d';
 
 import './Badge.scss';
 

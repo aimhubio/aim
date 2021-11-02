@@ -1,7 +1,10 @@
-import * as analytics from 'services/analytics';
 import _ from 'lodash-es';
+
+import * as analytics from 'services/analytics';
+
 import { IChartZoom } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
 import updateURL from './updateURL';
 
 export default function onZoomChange<M extends State>({

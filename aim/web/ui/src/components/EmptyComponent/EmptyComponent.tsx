@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
+
+import noData from 'assets/icons/noData.svg';
+
 import './EmptyComponent.scss';
-import noData from '../../assets/icons/noData.svg';
 
 function EmptyComponent({
   title,

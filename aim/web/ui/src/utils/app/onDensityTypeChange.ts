@@ -1,6 +1,8 @@
-import * as analytics from 'services/analytics';
-import { IModel, State } from 'types/services/models/model';
 import { DensityOptions } from 'config/enums/densityEnum';
+
+import * as analytics from 'services/analytics';
+
+import { IModel, State } from 'types/services/models/model';
 
 export default async function onDensityTypeChange<M extends State>({
   type,

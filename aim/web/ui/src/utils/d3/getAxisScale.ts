@@ -1,7 +1,8 @@
 import * as d3 from 'd3';
 
-import { ScaleEnum } from './index';
 import { IGetAxisScale, IGetAxisScaleProps } from 'types/utils/d3/getAxisScale';
+
+import { ScaleEnum } from './index';
 
 function getScaleBaseFor(scaleType?: ScaleEnum) {
   switch (scaleType) {

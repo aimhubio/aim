@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import { isEqual } from 'lodash-es';
+
 import struct from '@aksel/structjs';
 
 const PATH_SENTINEL = 0xfe;

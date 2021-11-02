@@ -1,14 +1,18 @@
 import React, { ChangeEvent, memo, useRef, useState } from 'react';
+
 import { Button, Dialog, Drawer, TextField } from '@material-ui/core';
 
 import TagForm from 'components/TagForm/TagForm';
+import { Icon, Text } from 'components/kit';
+
+import * as analytics from 'services/analytics';
+
+import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
+
 import TagsTable from './TagsTable';
 import TagDetail from './TagDetail';
 import TagSoftDelete from './TagSoftDelete';
-import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
 import TagDelete from './TagDelete';
-import { Icon, Text } from 'components/kit';
-import * as analytics from 'services/analytics';
 
 import './Tags.scss';
 

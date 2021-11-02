@@ -1,7 +1,7 @@
-import API from '../api';
-
 import { IAppData } from 'types/services/models/metrics/metricsAppModel';
 import { IApiRequest } from 'types/services/services';
+
+import API from '../api';
 
 const endpoints = {
   APPS: 'apps',

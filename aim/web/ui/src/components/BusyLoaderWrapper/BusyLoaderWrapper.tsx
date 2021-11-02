@@ -1,7 +1,10 @@
 import React from 'react';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Skeleton } from '@material-ui/lab';
+
 import { IBusyLoaderWrapperProps } from 'types/components/BusyLoaderWrapper/BusyLoaderWrapper';
+
 import './BusyLoaderWrapper.scss';
 
 function BusyLoaderWrapper({

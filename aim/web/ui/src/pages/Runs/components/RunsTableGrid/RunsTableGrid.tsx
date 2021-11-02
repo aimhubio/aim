@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
+import { Link } from '@material-ui/core';
+
 import { Badge } from 'components/kit';
+
 import COLORS from 'config/colors/colors';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
+
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
