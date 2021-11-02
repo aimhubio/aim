@@ -1,4 +1,4 @@
-from typing import Generic, Union, Tuple, List, TypeVar
+from typing import Generic, Union, Tuple, List, TypeVar, Dict
 from abc import abstractmethod
 from copy import deepcopy
 
@@ -27,6 +27,14 @@ class Sequence(Generic[T]):
     Provides interface to access tracked values, steps, timestamps and epochs.
     Values, epochs and timestamps are accessed via :obj:`aim.storage.arrayview.ArrayView` interface.
     """
+
+    registry: Dict[str, type] = dict()
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        subclass_typename = cls.sequence_name()
+        cls.registry[subclass_typename] = cls
+
     def __init__(
         self,
         name: str,
@@ -37,11 +45,11 @@ class Sequence(Generic[T]):
         self.context = context
         self.run = run
 
-        self._meta_tree = run.meta_run_tree.view(('traces', context.idx, name))
-        self._tree = run.series_run_tree.view((context.idx, name))
-        self._values = self._tree.array('vals')
-        self._epochs = self._tree.array('epoch')
-        self._timestamps = self._tree.array('time')
+        self._meta_tree = run.meta_run_tree.subtree(('traces', context.idx, name))
+        self._series_tree = run.series_run_tree.subtree((context.idx, name))
+        self._values = self._series_tree.array('vals')
+        self._epochs = self._series_tree.array('epoch')
+        self._timestamps = self._series_tree.array('time')
 
         self._length: int = None
         self._hash: int = None
@@ -166,4 +174,4 @@ class Sequence(Generic[T]):
         return len(self.values)
 
     def preload(self):
-        self._tree.preload()
+        self._series_tree.preload()

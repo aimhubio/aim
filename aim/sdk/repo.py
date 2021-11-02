@@ -14,6 +14,7 @@ from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
+from aim.sdk.sequence import Sequence
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -360,23 +361,43 @@ class Repo:
             'meta', read_only=True, from_union=True
         ).tree().subtree('meta')
 
-    def collect_metrics_info(self) -> Dict[str, list]:
-        """Utility function for getting metric names and contexts for all runs.
+    def collect_metrics_info(self, sequence_types: Optional[tuple] = ('metric',)) -> Dict[str, Dict[str, list]]:
+        """Utility function for getting sequence names and contexts for all runs by given sequence types.
+
+        Args:
+            sequence_types (:obj:`tuple[str]`, optional): Sequence types to get tracked sequence names/contexts for.
+            Defaults to 'metric'.
 
         Returns:
-            :obj:`dict`: Tree of metrics and their contexts.
+            :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
         """
         meta_tree = self._get_meta_tree()
-        try:
-            traces = meta_tree.collect('traces')
-        except KeyError:
+        sequence_metrics = {}
+        if isinstance(sequence_types, str):
+            sequence_types = (sequence_types,)
+        for seq_name in sequence_types:
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None:
+                raise ValueError(f'{seq_name} is not a valid Sequence')
+            assert issubclass(seq_cls, Sequence)
+            dtypes = seq_cls.allowed_dtypes()
             traces = {}
-        metrics = defaultdict(list)
-        for ctx_id, trace_metrics in traces.items():
-            for metric in trace_metrics.keys():
-                metrics[metric].append(meta_tree['contexts', ctx_id])
-
-        return metrics
+            for dtype in dtypes:
+                try:
+                    traces.update(meta_tree.collect(('traces_types', dtype)))
+                except KeyError:
+                    pass
+            if 'float' in dtypes:  # old sequences without dtype set are considered float sequences
+                try:
+                    traces.update(meta_tree.collect('traces'))
+                except KeyError:
+                    pass
+            metrics = defaultdict(list)
+            for ctx_id, trace_metrics in traces.items():
+                for metric in trace_metrics.keys():
+                    metrics[metric].append(meta_tree['contexts', ctx_id])
+            sequence_metrics[seq_name] = metrics
+        return sequence_metrics
 
     def collect_params_info(self) -> dict:
         """Utility function for getting run meta-parameters.

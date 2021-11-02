@@ -1,5 +1,6 @@
 import os
 import pytz
+from typing import Optional
 
 from collections import Counter
 from datetime import datetime
@@ -65,13 +66,14 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
 
 
 @projects_router.get('/params/', response_model=ProjectParamsOut)
-async def project_params_api():
+async def project_params_api(sequence_types: Optional[tuple] = ('metric',)):
     project = Project()
 
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return {
+    response = {
         'params': project.repo.collect_params_info(),
-        'metrics': project.repo.collect_metrics_info(),
     }
+    response.update(**project.repo.collect_metrics_info(sequence_types))
+    return response

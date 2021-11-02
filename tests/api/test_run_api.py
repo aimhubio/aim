@@ -19,9 +19,9 @@ class TestRunApi(ApiTestBase):
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
         self.assertEqual(1, len(decoded_response))
         for _, run in decoded_response.items():
-            self.assertEqual(4, len(run['traces']))
-            for trace in run['traces']:
-                self.assertAlmostEqual(0.99, trace['last_value']['last'])
+            self.assertEqual(4, len(run['traces']['metric']))
+            for trace in run['traces']['metric']:
+                self.assertAlmostEqual(0.99, trace['last_value'])
 
     def test_search_runs_api_paginated(self):
         client = self.client
@@ -161,10 +161,10 @@ class TestRunApi(ApiTestBase):
         self.assertEqual(1, run_params['run_index'])
         self.assertEqual(0.001, run_params['hparams']['lr'])
 
-        run_traces_overview = data['traces']
+        run_traces_overview = data['traces']['metric']
         self.assertEqual(4, len(run_traces_overview))
         for trc_overview in run_traces_overview:
-            self.assertAlmostEqual(0.99, trc_overview['last_value']['last'])
+            self.assertAlmostEqual(0.99, trc_overview['last_value'])
 
         run_props = data['props']
 

@@ -3,13 +3,14 @@ import logging
 import datetime
 import os
 
+from collections import defaultdict
 from time import time
 from weakref import WeakValueDictionary
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash
+from aim.sdk.utils import generate_run_hash, get_object_typename
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
@@ -334,7 +335,8 @@ class Run(StructuredRunMixin):
 
         sequence = self.sequence_trackers.get((ctx, name))
         if sequence is None:
-            self.meta_tree['traces', ctx.idx, name] = 1
+            dtype = get_object_typename(value)
+            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
             sequence = Sequence(name, ctx, self)
             self.sequence_trackers[(ctx, name)] = sequence
         sequence.track(value, track_time, step, epoch)
@@ -417,22 +419,47 @@ class Run(StructuredRunMixin):
         metric = Metric(metric_name, context, self)
         return metric if bool(metric) else None
 
-    def collect_metrics_info(self) -> list:
+    def collect_metrics_info(self, skip_last_value=False, sequence_types: Optional[tuple] = ('metric',)) -> Dict[str, list]:
         """Retrieve Run's all metrics general overview.
 
         Returns:
              :obj:`list`: list of metric's `context`, `metric_name` and last tracked value triplets.
         """
         metrics = self.meta_run_tree.subtree('traces')
-        metrics_overview = []
+        metrics_overview = {}
+
+        # build reverse map of sequence supported dtypes
+        dtype_to_sequence_map = defaultdict(list)
+        if isinstance(sequence_types, str):
+            sequence_types = (sequence_types,)
+        for seq_name in sequence_types:
+            metrics_overview[seq_name] = []
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None:
+                raise ValueError(f'{seq_name} is not a valid Sequence')
+            assert issubclass(seq_cls, Sequence)
+            dtypes = seq_cls.allowed_dtypes()
+            for dtype in dtypes:
+                dtype_to_sequence_map[dtype].append(seq_name)
+
         for idx in metrics.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
             for metric_name, value in metrics[idx].items():
-                metrics_overview.append({
-                    'context': ctx_dict,
-                    'metric_name': metric_name,
-                    'last_value': value
-                })
+                if isinstance(value, dict):
+                    dtype = value['dtype']
+                    val = value['last']
+                else:
+                    dtype = 'float'
+                    val = value
+                if dtype in dtype_to_sequence_map:
+                    metric_data = {
+                        'context': ctx_dict,
+                        'metric_name': metric_name,
+                    }
+                    if not skip_last_value:
+                        metric_data['last_value'] = val
+                    for seq_name in dtype_to_sequence_map[dtype]:
+                        metrics_overview[seq_name].append(metric_data)
         return metrics_overview
 
     def _calc_hash(self) -> int:
