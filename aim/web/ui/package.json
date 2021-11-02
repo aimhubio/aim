@@ -59,9 +59,11 @@
     "build": "react-scripts build && gzipper c -i js,css,html ./build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "analyze-bundles": "node tasks/bundle-analyzer.js",
     "lint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
-    "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix"
+    "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix",
+    "analyze-bundles": "node tasks/bundle-analyzer.js",
+    "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
+    "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func"
   },
   "homepage": "/static-files",
   "eslintConfig": {
@@ -232,6 +234,7 @@
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0",
     "progress-bar-webpack-plugin": "^2.1.0",
-    "webpack-bundle-analyzer": "^4.4.2"
+    "webpack-bundle-analyzer": "^4.4.2",
+    "yargs": "^17.2.1"
   }
 }
