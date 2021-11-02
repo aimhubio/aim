@@ -24,7 +24,7 @@ class ResourceTracker(object):
 
     def __init__(self, track, interval: int = STAT_INTERVAL_DEFAULT):
         self._track_func = weakref.WeakMethod(track)
-        self._interval = interval
+        self.interval = interval
 
         try:
             self._process = Process()

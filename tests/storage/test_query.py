@@ -2,6 +2,8 @@ from parameterized import parameterized
 
 from tests.base import PrefilledDataTestBase
 
+from aim.storage.query import syntax_error_check
+
 
 class TestQuery(PrefilledDataTestBase):
 
@@ -67,3 +69,55 @@ class TestQuery(PrefilledDataTestBase):
         q = 'invalid_varialble.get("hparams", "batch_size") == None'
         with self.assertRaises(Exception):
             next(iter(self.repo.query_metrics(q)))
+
+    def test_query_raise_syntax_error(self):
+        q = 'run.hash == "x" && metric.name == "y"'
+        with self.assertRaises(SyntaxError):
+            next(iter(self.repo.query_metrics(q)))
+
+        with self.assertRaises(SyntaxError):
+            next(iter(self.repo.query_runs(q)))
+
+    def test_syntax_error_handling(self):
+        q = 'run.hash == "x" && metric.name == "y"'
+        try:
+            syntax_error_check(q)
+        except SyntaxError as se:
+            self.assertEqual(19, se.offset)  # count for added ()
+            self.assertEqual(1, se.lineno)
+        else:
+            self.fail('SyntaxError is not raised')
+
+
+class TestQueryDefaultExpression(PrefilledDataTestBase):
+    def setUp(self):
+        self.run = next(self.repo.iter_runs())
+        self.run.archived = True
+        self.run_hash = self.run.hash
+
+    def tearDown(self):
+        self.run.archived = False
+
+    def test_default_query_run_results(self):
+        run_hashes = [run.run.hash for run in self.repo.query_runs().iter_runs()]
+        self.assertNotIn(self.run_hash, run_hashes)
+
+    def test_default_query_metric_results(self):
+        run_hashes = [metric.run.hash for metric in self.repo.query_metrics()]
+        self.assertNotIn(self.run_hash, run_hashes)
+
+    def test_query_with_archived_expression_run_results(self):
+        q = 'run.archived == True'
+        run_hashes = []
+        for run in self.repo.query_runs(query=q).iter_runs():
+            run_hashes.append(run.run.hash)
+            self.assertTrue(run.run.archived)
+        self.assertIn(self.run_hash, run_hashes)
+
+    def test_query_without_archived_expression_metric_results(self):
+        q = 'metric.name == "accuracy"'
+        run_hashes = []
+        for metric in self.repo.query_metrics(query=q):
+            run_hashes.append(metric.run.hash)
+            self.assertFalse(metric.run.archived)
+        self.assertNotIn(self.run_hash, run_hashes)
