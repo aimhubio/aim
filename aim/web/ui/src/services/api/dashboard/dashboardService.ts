@@ -1,9 +1,10 @@
-import API from '../api';
 import {
   IAppData,
   IDashboardRequestBody,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IApiRequest } from 'types/services/services';
+
+import API from '../api';
 
 const endpoints = {
   DASHBOARD: 'dashboards',

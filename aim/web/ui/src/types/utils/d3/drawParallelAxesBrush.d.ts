@@ -1,5 +1,5 @@
 import React from 'react';
-import { IGetAxisScale } from './getAxisScale';
+
 import { ILineDataType } from './drawParallelLines';
 import { IDimensionsType } from './drawParallelAxes';
 

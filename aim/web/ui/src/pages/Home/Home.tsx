@@ -1,10 +1,12 @@
 import React from 'react';
 
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
+import { IHomeProps } from 'types/pages/home/Home';
+
 import ExploreAim from './components/ExploreAim/ExploreAim';
 import SetupGuide from './components/SetupGuide/SetupGuide';
 import Activity from './components/Activity/Activity';
-import { IHomeProps } from 'types/pages/home/Home';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import './Home.scss';
 

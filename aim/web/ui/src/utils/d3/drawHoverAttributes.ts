@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 import moment from 'moment';
 import { isEqual } from 'lodash-es';
 
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import {
   IDrawHoverAttributesProps,
   IAxisLineData,
@@ -10,14 +12,15 @@ import {
   ISyncHoverStateParams,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
+
+import { AggregationAreaMethods } from 'utils/aggregateGroupData';
+import getFormattedValue from 'utils/formattedValue';
+import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
+
 import { AlignmentOptionsEnum, CircleEnum } from './index';
 
 import 'components/LineChart/LineChart.scss';
-import getFormattedValue from 'utils/formattedValue';
-import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { AggregationAreaMethods } from 'utils/aggregateGroupData';
-import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
 function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   const {

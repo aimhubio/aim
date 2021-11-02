@@ -1,12 +1,13 @@
 import _ from 'lodash-es';
+
 import {
   IAggregationData,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
-
 import { IAggregateGroupDataParams } from 'types/utils/aggregateGroupData';
-import { ScaleEnum } from './d3';
 import { IMetric } from 'types/services/models/metrics/metricModel';
+
+import { ScaleEnum } from './d3';
 
 export enum AggregationAreaMethods {
   NONE = 0,

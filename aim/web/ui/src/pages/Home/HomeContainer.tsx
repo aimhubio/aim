@@ -1,8 +1,10 @@
 import React from 'react';
 
-import Home from './Home';
-import homeAppModel from 'services/models/home/homeAppModel';
 import useModel from 'hooks/model/useModel';
+
+import homeAppModel from 'services/models/home/homeAppModel';
+
+import Home from './Home';
 
 function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
   const activityRequestRef = React.useRef(homeAppModel.getActivityData());

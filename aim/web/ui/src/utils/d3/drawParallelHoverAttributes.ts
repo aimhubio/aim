@@ -11,10 +11,12 @@ import {
   IParallelNearestCircle,
   IUpdateParallelFocusedChartProps,
 } from 'types/utils/d3/drawParallelHoverAttributes';
-import { getCoordinates, CircleEnum, ScaleEnum } from './';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import getFormattedValue from 'utils/formattedValue';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
+
+import getFormattedValue from 'utils/formattedValue';
+
+import { getCoordinates, CircleEnum, ScaleEnum } from './';
 
 const drawParallelHoverAttributes = ({
   dimensions,
@@ -182,6 +184,7 @@ const drawParallelHoverAttributes = ({
     } else if (activePoint?.xValue && activePoint.yValue) {
       const xPos = xScale(activePoint.xValue);
       dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
+
       mousePosition = [
         xScale(activePoint.xValue),
         yScale[dimensionLabel](activePoint.yValue) + margin.top,

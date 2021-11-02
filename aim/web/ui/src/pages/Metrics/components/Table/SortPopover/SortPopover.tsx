@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Button, Checkbox, TextField } from '@material-ui/core';
 import { Autocomplete, AutocompleteChangeDetails } from '@material-ui/lab';
 import {
@@ -6,12 +7,14 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { ToggleButton, Icon } from 'components/kit';
 
-import './SortPopover.scss';
+import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
+
 import getValueByField from 'utils/getValueByField';
+
+import './SortPopover.scss';
 
 function SortPopover({
   sortOptions,

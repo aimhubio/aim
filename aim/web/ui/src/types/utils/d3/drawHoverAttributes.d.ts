@@ -1,13 +1,15 @@
 import React from 'react';
-import { ILineChartProps } from 'components/LineChart/LineChart';
-import { IProcessedData } from './processData';
+
 import { IAttributesRef } from 'components/LineChart/LineChart';
-import { IGetAxisScale } from './getAxisScale';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import {
   IAggregationConfig,
   IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
+
+import { IGetAxisScale } from './getAxisScale';
+import { IProcessedData } from './processData';
 
 export interface IDrawHoverAttributesProps {
   index: number;

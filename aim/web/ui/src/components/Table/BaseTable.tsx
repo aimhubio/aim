@@ -16,7 +16,6 @@ import ExpandIcon from './ExpandIcon';
 import SortIndicator from './SortIndicator';
 import ColumnResizer from './ColumnResizer';
 import ColumnManager from './ColumnManager';
-
 import {
   renderElement,
   normalizeColumns,

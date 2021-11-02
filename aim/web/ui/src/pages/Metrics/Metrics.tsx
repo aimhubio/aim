@@ -1,24 +1,27 @@
 import React from 'react';
 import { isEmpty } from 'lodash-es';
 
-import SelectForm from './components/SelectForm/SelectForm';
-import Grouping from './components/Grouping/Grouping';
-import Controls from './components/Controls/Controls';
-
-import MetricsBar from './components/MetricsBar/MetricsBar';
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
-import { IMetricProps } from 'types/pages/metrics/Metrics';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
-import { ILine } from 'types/components/LineChart/LineChart';
-import { ChartTypeEnum } from 'utils/d3';
+import ResizePanel from 'components/ResizePanel/ResizePanel';
+
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import ResizePanel from 'components/ResizePanel/ResizePanel';
+
+import { ILine } from 'types/components/LineChart/LineChart';
+import { IMetricProps } from 'types/pages/metrics/Metrics';
+
+import { ChartTypeEnum } from 'utils/d3';
+
+import MetricsBar from './components/MetricsBar/MetricsBar';
+import Controls from './components/Controls/Controls';
+import Grouping from './components/Grouping/Grouping';
+import SelectForm from './components/SelectForm/SelectForm';
 
 import './Metrics.scss';
 
@@ -146,7 +149,7 @@ function Metrics(
                   }
                 />
               ) : (
-                props.requestIsPending === false && (
+                !props.requestIsPending && (
                   <EmptyComponent
                     size='big'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."

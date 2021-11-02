@@ -1,7 +1,8 @@
 import runsService from 'services/api/runs/runsService';
+import * as analytics from 'services/analytics';
+
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IRunBatch } from 'types/pages/runs/Runs';
-import * as analytics from 'services/analytics';
 
 import createModel from '../model';
 
