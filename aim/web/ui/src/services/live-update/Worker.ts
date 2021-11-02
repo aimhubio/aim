@@ -142,7 +142,7 @@ async function stop(): Promise<any> {
       apiMethods = null;
     }
     invariantSuccess(`Stopped ${key.toString()} success`, logging);
-  } catch (e) {
+  } catch (e: any) {
     invariantError(e, logging);
     throw e;
   }

@@ -27,7 +27,7 @@ function createAPIRequestWrapper<ResponseDataType>(
               const data = stream ? response.body : await response.json();
 
               resolve(data);
-            } catch (err) {
+            } catch (err: any) {
               if (typeof exceptionHandler === 'function') {
                 exceptionHandler(err);
               }

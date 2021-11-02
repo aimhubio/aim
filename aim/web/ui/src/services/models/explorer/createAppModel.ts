@@ -488,7 +488,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex) {
+            } catch (ex: any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -2017,7 +2017,7 @@ function createAppModel({
                   hiddenColumns: configData.table.hiddenColumns!,
                 });
               }, 0);
-            } catch (ex) {
+            } catch (ex: any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
