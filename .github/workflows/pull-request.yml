@@ -28,8 +28,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.dev.txt
-          python -m pip install -r requirements.txt
-          python -m pip install -e .
       - name: code style checks
         run: |
           flake8 aim
@@ -37,7 +35,7 @@ jobs:
         run: |
           pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
   storage-performance-checks:
-    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
+    needs: run-checks
     runs-on: self-hosted
     name: Performance tests
     steps:
@@ -48,9 +46,10 @@ jobs:
       - name: install deps
         run: |
           python3 -m venv venv
-          source venv/bin/activate
+          . venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install -r requirements.dev.txt
       - name: perf tests
         run: |
+         . venv/bin/activate
          pytest performance_tests || pytest --lf performance_tests
