@@ -1,18 +1,23 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from typing import Optional
+from typing import Optional, Tuple
 from itertools import chain
 
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.utils import (
-    collect_requested_traces,
+    collect_requested_metric_traces,
     custom_aligned_metrics_streamer,
     get_run_props,
     metric_search_result_streamer,
     run_search_result_streamer
 )
-from aim.web.api.runs.image_utils import image_search_result_streamer, images_batch_result_streamer, IndexRange
+from aim.web.api.runs.image_utils import (
+    collect_requested_image_traces,
+    image_search_result_streamer,
+    images_batch_result_streamer,
+    IndexRange
+)
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
@@ -156,7 +161,7 @@ def run_traces_batch_api(uri_batch: URIBatchIn):
 
 
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
-async def run_params_api(run_id: str):
+async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(('metric',))):
     # Get project
     project = Project()
     if not project.exists():
@@ -165,16 +170,21 @@ async def run_params_api(run_id: str):
     if not run:
         raise HTTPException(status_code=404)
 
+    try:
+        project.repo.check_sequence_types(sequence)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     response = {
         'params': run.get(...),
-        'traces': run.collect_metrics_info(),
+        'traces': run.collect_metrics_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }
     return JSONResponse(response)
 
 
-@runs_router.post('/{run_id}/traces/get-batch/', response_model=RunTracesBatchApiOut)
-async def run_traces_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
+@runs_router.post('/{run_id}/metric/get-batch/', response_model=RunTracesBatchApiOut)
+async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
     # Get project
     project = Project()
     if not project.exists():
@@ -183,7 +193,22 @@ async def run_traces_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
     if not run:
         raise HTTPException(status_code=404)
 
-    traces_data = collect_requested_traces(run, requested_traces)
+    traces_data = collect_requested_metric_traces(run, requested_traces)
+
+    return JSONResponse(traces_data)
+
+
+@runs_router.post('/{run_id}/images/get-batch/', response_model=RunTracesBatchApiOut)
+async def run_images_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+
+    traces_data = collect_requested_image_traces(run, requested_traces)
 
     return JSONResponse(traces_data)
 

@@ -20,9 +20,6 @@ class TraceOverview(TraceBase):
     last_value: float = 0.1
 
 
-RunTracesApiOut = List[TraceOverview]
-
-
 class TraceBaseView(TraceBase):
     values: List[float]
     iters: List[int]
@@ -72,7 +69,7 @@ class MetricSearchRunView(BaseModel):
 
 class RunInfoOut(BaseModel):
     params: dict
-    traces: List[TraceOverview]
+    traces: Dict[str, List[TraceOverview]]
     props: PropsView
 
 

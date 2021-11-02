@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.sdk.metric import Metric
+    from aim.sdk.image_sequence import Images
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
@@ -415,11 +416,38 @@ class Run(StructuredRunMixin):
         Returns:
             :obj:`Metric` object if exists, `None` otherwise.
         """
-        from aim.sdk.metric import Metric
-        metric = Metric(metric_name, context, self)
-        return metric if bool(metric) else None
+        return self._get_sequence('metric', metric_name, context)
 
-    def collect_metrics_info(self, skip_last_value=False, sequence_types: Optional[tuple] = ('metric',)) -> Dict[str, list]:
+    def get_image_sequence(
+            self,
+            metric_name: str,
+            context: Context
+    ) -> Optional['Images']:
+        """Retrieve metric sequence by it's name and context.
+
+        Args:
+             metric_name (str): Tracked metric name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Metric` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('images', metric_name, context)
+
+    def _get_sequence(
+            self,
+            seq_typename: str,
+            sequence_name: str,
+            context: Context
+    ) -> Optional[Sequence]:
+        seq_cls = Sequence.registry.get(seq_typename, None)
+        if seq_cls is None:
+            raise ValueError(f'\'{seq_typename}\' is not a valid Sequence')
+        assert issubclass(seq_cls, Sequence)
+        sequence = seq_cls(sequence_name, context, self)
+        return sequence if bool(sequence) else None
+
+    def collect_metrics_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all metrics general overview.
 
         Returns:
@@ -436,7 +464,7 @@ class Run(StructuredRunMixin):
             metrics_overview[seq_name] = []
             seq_cls = Sequence.registry.get(seq_name, None)
             if seq_cls is None:
-                raise ValueError(f'{seq_name} is not a valid Sequence')
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
             assert issubclass(seq_cls, Sequence)
             dtypes = seq_cls.allowed_dtypes()
             for dtype in dtypes:
@@ -445,19 +473,14 @@ class Run(StructuredRunMixin):
         for idx in metrics.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
             for metric_name, value in metrics[idx].items():
-                if isinstance(value, dict):
-                    dtype = value['dtype']
-                    val = value['last']
-                else:
-                    dtype = 'float'
-                    val = value
+                dtype = value['dtype']
                 if dtype in dtype_to_sequence_map:
                     metric_data = {
                         'context': ctx_dict,
                         'metric_name': metric_name,
                     }
                     if not skip_last_value:
-                        metric_data['last_value'] = val
+                        metric_data['last_value'] = value
                     for seq_name in dtype_to_sequence_map[dtype]:
                         metrics_overview[seq_name].append(metric_data)
         return metrics_overview

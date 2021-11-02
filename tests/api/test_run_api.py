@@ -21,7 +21,7 @@ class TestRunApi(ApiTestBase):
         for _, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']['metric']))
             for trace in run['traces']['metric']:
-                self.assertAlmostEqual(0.99, trace['last_value'])
+                self.assertAlmostEqual(0.99, trace['last_value']['last'])
 
     def test_search_runs_api_paginated(self):
         client = self.client
@@ -164,7 +164,7 @@ class TestRunApi(ApiTestBase):
         run_traces_overview = data['traces']['metric']
         self.assertEqual(4, len(run_traces_overview))
         for trc_overview in run_traces_overview:
-            self.assertAlmostEqual(0.99, trc_overview['last_value'])
+            self.assertIn(trc_overview['metric_name'], ['loss', 'accuracy'])
 
         run_props = data['props']
 
@@ -180,7 +180,7 @@ class TestRunApi(ApiTestBase):
             {'metric_name': 'accuracy', 'context': {'is_training': False}},
             {'metric_name': 'loss', 'context': {'is_training': True, 'subset': 'train'}}
         ]
-        response = client.post(f'/api/runs/{run.hash}/traces/get-batch/', json=requested_traces)
+        response = client.post(f'/api/runs/{run.hash}/metric/get-batch/', json=requested_traces)
         self.assertEqual(200, response.status_code)
 
         traces_batch = response.json()

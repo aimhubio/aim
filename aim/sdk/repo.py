@@ -4,7 +4,7 @@ from enum import Enum
 
 from packaging import version
 from collections import defaultdict
-from typing import Dict, Iterator, NamedTuple, Optional
+from typing import Dict, Tuple, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
@@ -361,7 +361,14 @@ class Repo:
             'meta', read_only=True, from_union=True
         ).tree().subtree('meta')
 
-    def collect_metrics_info(self, sequence_types: Optional[tuple] = ('metric',)) -> Dict[str, Dict[str, list]]:
+    @staticmethod
+    def check_sequence_types(sequence_types: Tuple[str, ...]):
+        for seq_name in sequence_types:
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None or not issubclass(seq_cls, Sequence):
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+
+    def collect_metrics_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
         """Utility function for getting sequence names and contexts for all runs by given sequence types.
 
         Args:
@@ -378,7 +385,7 @@ class Repo:
         for seq_name in sequence_types:
             seq_cls = Sequence.registry.get(seq_name, None)
             if seq_cls is None:
-                raise ValueError(f'{seq_name} is not a valid Sequence')
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
             assert issubclass(seq_cls, Sequence)
             dtypes = seq_cls.allowed_dtypes()
             traces = {}

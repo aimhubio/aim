@@ -168,7 +168,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
         run_dict = {
             run.hash: {
                 'params': run.get(...),
-                'traces': run.collect_metrics_info(),
+                'traces': run.collect_metrics_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }
         }
@@ -181,7 +181,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
             break
 
 
-def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
+def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
     processed_traces_list = []
     for requested_trace in requested_traces:
         metric_name = requested_trace.metric_name

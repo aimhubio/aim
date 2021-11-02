@@ -4,6 +4,7 @@ from collections import namedtuple
 
 from aim.storage.treeutils import encode_tree
 
+from aim.storage.context import Context
 from aim.sdk.objects import Image
 from aim.sdk.run import Run
 from aim.sdk.sequence_collection import SequenceCollection
@@ -11,6 +12,7 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.uri_service import URIService, generate_resource_path
 
 from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data
+from aim.web.api.runs.pydantic_models import TraceBase
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
@@ -133,3 +135,35 @@ def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
     batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
     for it in batch_iterator:
         yield collect_run_streamable_data(encode_tree(it))
+
+
+def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
+                                   rec_num: int = 50, index_num: int = 5) -> List[dict]:
+    processed_traces_list = []
+    for requested_trace in requested_traces:
+        metric_name = requested_trace.metric_name
+        context = Context(requested_trace.context)
+        trace = run.get_image_sequence(metric_name=metric_name, context=context)
+        if not trace:
+            continue
+
+        rec_step = (trace.last_step() - trace.first_step()) // rec_num or 1
+        idx_step = trace.record_length() // index_num or 1
+        rec_slice = slice(trace.first_step(), trace.last_step(), rec_step)
+        idx_slice = slice(0, trace.record_length(), idx_step)
+
+        steps_vals = trace.values.items_slice(_slice=rec_slice)
+        steps = []
+        values = []
+        for step, val in steps_vals:
+            steps.append(step)
+            values.append(img_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+
+        processed_traces_list.append({
+            'metric_name': trace.name,
+            'context': trace.context.to_dict(),
+            'values': values,
+            'iters': steps,
+        })
+
+    return processed_traces_list
