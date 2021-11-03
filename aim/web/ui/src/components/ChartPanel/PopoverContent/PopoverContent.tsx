@@ -129,7 +129,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                         : groupConfig[groupConfigKey][item];
                       return (
                         <div key={item} className='PopoverContent__value'>
-                          {item}: {val}
+                          {item}: {formatValue(val)}
                         </div>
                       );
                     })}
