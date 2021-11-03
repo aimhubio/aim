@@ -1,21 +1,13 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import moment from 'moment';
-import { Paper, Popover, Tab, Tabs } from '@material-ui/core';
-import { Link, NavLink, useParams } from 'react-router-dom';
+import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
-import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+import { Button, Icon, Text } from 'components/kit';
+
 import { processDurationTime } from 'utils/processDurationTime';
-import useModel from 'hooks/model/useModel';
-import TabPanel from 'components/TabPanel/TabPanel';
-import RunDetailParamsTab from './RunDetailParamsTab';
-import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
-import RunDetailSettingsTab from './RunDetailSettingsTab';
-import { Badge, Button, Icon, Text } from 'components/kit';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import * as analytics from 'services/analytics';
 
 import './RunDetail.scss';
-import classNames from 'classnames';
 
 function RunSelectPopoverContent({
   getRunsOfExperiment,
@@ -24,16 +16,31 @@ function RunSelectPopoverContent({
   runsOfExperiment,
   runInfo,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const popoverContentWrapperRef = useRef<any>();
+  console.log(runsOfExperiment);
+  //   const popoverContentWrapperRef = useRef<any>();
+  //   function onScroll(e: any) {
+  //     if (
+  //       popoverContentWrapperRef.current.scrollTop + 268 ===
+  //       popoverContentWrapperRef.current.scrollHeight
+  //     ) {
+  //       console.log('safas');
+  //     }
+  //   }
+  //   useEffect(() => {
+  //     popoverContentWrapperRef.current.addEventListener('scroll', onScroll);
+  //     return () =>
+  //       popoverContentWrapperRef.current.removeEventListener('scroll', onScroll);
+  //   }, [popoverContentWrapperRef]);
 
-  useEffect(() => {
-    console.log(popoverContentWrapperRef);
-  }, [popoverContentWrapperRef]);
+  function onLoadMore() {
+    getRunsOfExperiment(experimentId, {
+      limit: 10,
+      offset: runsOfExperiment[runsOfExperiment.length - 1].run_id,
+    });
+  }
+
   return (
-    <div
-      ref={popoverContentWrapperRef}
-      className='RunSelectPopoverWrapper__selectPopoverContent'
-    >
+    <div className='RunSelectPopoverWrapper__selectPopoverContent'>
       <div className='RunSelectPopoverWrapper__selectPopoverContent__headerContainer'>
         <div className='RunSelectPopoverWrapper__selectPopoverContent__headerContainer__titleContainer'>
           <Text size={14} tint={100} weight={600}>
@@ -72,13 +79,20 @@ function RunSelectPopoverContent({
             ))}
           </div>
         </div>
+
         <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer'>
-          <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'>
+          <div
+            className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'
+            // ref={popoverContentWrapperRef}
+          >
             {runsOfExperiment?.map((run: any) => (
               <Link
                 className={classNames(
                   'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
-                  { selected: runInfo?.name === run.name },
+                  {
+                    selected: runInfo?.name === run.name,
+                    'in-progress': !run?.end_time,
+                  },
                 )}
                 key={run.id}
                 to={`${run.run_id}`}
@@ -90,17 +104,25 @@ function RunSelectPopoverContent({
                 >
                   {`${moment(run.creation_time * 1000).format(
                     'DD MMM YYYY, HH:mm A',
-                  )} | ${
-                    !runInfo?.end_time
-                      ? 'in progress'
-                      : processDurationTime(
-                          run.creation_time * 1000,
-                          run.end_time * 1000,
-                        )
-                  }`}
+                  )} | ${processDurationTime(
+                    run?.creation_time * 1000,
+                    run?.end_time ? run?.end_time * 1000 : Date.now(),
+                  )}`}
                 </Text>
               </Link>
             ))}
+            <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>
+              <Button
+                size='small'
+                variant='contained'
+                className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper__button'
+                onClick={onLoadMore}
+              >
+                <Text weight={500} size={12} color='primary' tint={100}>
+                  Load More
+                </Text>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

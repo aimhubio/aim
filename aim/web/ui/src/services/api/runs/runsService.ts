@@ -23,8 +23,11 @@ function getRunInfo(id: string) {
   return API.get(endpoints.GET_RUN_INFO(id));
 }
 
-function getRunsOfExperiment(id: string) {
-  return API.get(endpoints.GET_RUNS_BY_EXPERIMENT_ID(id));
+function getRunsOfExperiment(
+  id: string,
+  params: { limit: number; offset?: string } = { limit: 10 },
+) {
+  return API.get(endpoints.GET_RUNS_BY_EXPERIMENT_ID(id), params);
 }
 
 function getExperimentsData() {

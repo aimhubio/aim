@@ -10,6 +10,7 @@ const model = createModel<Partial<any>>({
   isRunInfoLoading: false,
   isExperimentsLoading: false,
   isRunBatchLoading: false,
+  isRunsOfExperimentLoading: false,
 });
 
 let getRunsInfoRequestRef: {
@@ -74,18 +75,25 @@ function getRunInfo(runHash: string) {
   };
 }
 
-function getRunsOfExperiment(runHash: string) {
+function getRunsOfExperiment(
+  runHash: string,
+  params?: { limit: number; offset?: string },
+) {
   if (getRunsOfExperimentRequestRef) {
     getRunsOfExperimentRequestRef.abort();
   }
-  getRunsOfExperimentRequestRef = runsService.getRunsOfExperiment(runHash);
+  getRunsOfExperimentRequestRef = runsService.getRunsOfExperiment(
+    runHash,
+    params,
+  );
   return {
     call: async () => {
-      // model.setState({ isRunInfoLoading: true });
+      model.setState({ isRunsOfExperimentLoading: true });
       const data = await getRunsOfExperimentRequestRef.call();
       model.setState({
         runsOfExperiment: data.runs,
         experimentId: data.id,
+        isRunsOfExperimentLoading: false,
       });
       // return data;
     },
