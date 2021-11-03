@@ -1,11 +1,13 @@
 import React, { memo } from 'react';
 import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
-import { TextField } from '@material-ui/core';
 import { useFormik } from 'formik';
+
+import { TextField } from '@material-ui/core';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { Icon, Text } from 'components/kit';
+
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
 import './Tags.scss';

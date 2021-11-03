@@ -1,5 +1,6 @@
-import { encode } from '../encoder/encoder';
 import { IGetGroupingPersistIndex } from 'types/services/models/metrics/metricsAppModel';
+
+import { encode } from '../encoder/encoder';
 
 export function getGroupingPersistIndex({
   groupConfig,

@@ -1,5 +1,7 @@
 import { AppDataTypeEnum, AppNameEnum } from 'services/models/explorer';
+
 import { ChartTypeEnum } from 'utils/d3';
+
 import {
   IMetricAppConfig,
   IMetricAppModelState,

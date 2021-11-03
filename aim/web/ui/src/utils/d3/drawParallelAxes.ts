@@ -1,9 +1,11 @@
 import _ from 'lodash-es';
 import * as d3 from 'd3';
+
 import {
   IDrawParallelAxesProps,
   YScaleType,
 } from 'types/utils/d3/drawParallelAxes';
+
 import {
   getAxisScale,
   ScaleEnum,

@@ -6,8 +6,10 @@ import CodeBlock from 'components/CodeBlock/CodeBlock';
 import { Button, Icon, Badge, Text } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
-import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
+
 import * as analytics from 'services/analytics';
+
+import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
 import './BookmarkCard.scss';
 

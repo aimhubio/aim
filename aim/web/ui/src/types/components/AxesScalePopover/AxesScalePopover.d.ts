@@ -1,4 +1,3 @@
-import { IModel } from 'types/services/models/model';
 import { ScaleEnum } from 'utils/d3';
 
 export interface IAxesScaleState {

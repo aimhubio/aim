@@ -1,5 +1,6 @@
 import React, { useEffect, memo } from 'react';
 import { select } from 'd3';
+
 import { IAxisProps } from '../types';
 
 /**

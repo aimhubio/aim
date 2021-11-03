@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Switcher, Text } from 'components/kit';
 
 import './LiveUpdateSettings.scss';

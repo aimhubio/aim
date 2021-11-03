@@ -1,5 +1,6 @@
-import { SelectProps } from '@material-ui/core';
 import React from 'react';
+
+import { SelectProps } from '@material-ui/core';
 
 export default interface IMultiSelectProps extends SelectProps {
   values: any[];

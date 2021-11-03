@@ -1,5 +1,6 @@
 import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { IModel, State } from 'types/services/models/model';
+
 import updateURL from './updateURL';
 
 export default function onMetricsSelectChange<

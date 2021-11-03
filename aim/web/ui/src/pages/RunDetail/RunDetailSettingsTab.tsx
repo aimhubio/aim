@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 
 import { Button, Text } from 'components/kit';
+
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+
 import { IRunDetailSettingsTabProps } from 'types/pages/runs/Runs';
 
 function RunDetailSettingsTab({

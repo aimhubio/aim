@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { ScaleEnum } from 'utils/d3';
 import { Text, ToggleButton } from 'components/kit';
+
 import {
   IAxesScalePopoverProps,
   IAxesScaleState,
 } from 'types/components/AxesScalePopover/AxesScalePopover';
+
+import { ScaleEnum } from 'utils/d3';
 
 import './AxesScalePopover.scss';
 

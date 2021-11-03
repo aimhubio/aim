@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Tooltip } from '@material-ui/core';
+
 import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
 import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
@@ -9,11 +11,10 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
-// @ts-ignore
-import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
-import { Tooltip } from '@material-ui/core';
-
 import { Icon } from 'components/kit';
+
+import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
+
 import './Controls.scss';
 
 function Controls(

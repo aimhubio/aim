@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
 
 function usePanelResize(

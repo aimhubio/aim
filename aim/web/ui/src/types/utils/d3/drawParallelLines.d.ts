@@ -1,7 +1,10 @@
 import React from 'react';
-import { CurveEnum } from 'utils/d3';
-import { IDimensionsType } from './drawParallelAxes';
+
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+
+import { CurveEnum } from 'utils/d3';
+
+import { IDimensionsType } from './drawParallelAxes';
 
 interface ILineValuesDataType {
   [key: string]: number | string | null;

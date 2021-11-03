@@ -1,7 +1,9 @@
 import React from 'react';
 
-import projectsModel from 'services/models/projects/projectsModel';
 import useModel from 'hooks/model/useModel';
+
+import projectsModel from 'services/models/projects/projectsModel';
+
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 
 const projectDataRequestRef = projectsModel.getProjectsData();

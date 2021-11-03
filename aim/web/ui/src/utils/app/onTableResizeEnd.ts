@@ -1,6 +1,7 @@
+import { IModel, State } from 'types/services/models/model';
+
 import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
-import { IModel, State } from 'types/services/models/model';
 
 export function onTableResizeEnd<M extends State>({
   tableHeight,

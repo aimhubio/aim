@@ -1,7 +1,8 @@
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
-import updateTableSortFields from 'utils/app/updateTableSortFields';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import updateTableSortFields from 'utils/app/updateTableSortFields';
 /**
  * function onSortChange has 3 major functionalities
  *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)

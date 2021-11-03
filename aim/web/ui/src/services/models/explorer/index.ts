@@ -1,6 +1,8 @@
-import createAppModel from './createAppModel';
 import { IAppInitialConfig } from 'types/services/models/explorer/createAppModel';
+
 import { ChartTypeEnum } from 'utils/d3';
+
+import createAppModel from './createAppModel';
 
 /**
  *  Constants and Enums we can create and export from this file

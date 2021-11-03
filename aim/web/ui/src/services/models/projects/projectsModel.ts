@@ -1,10 +1,11 @@
 import projectsService from 'services/api/projects/projectsService';
+import createModel from 'services/models/model';
+
 import {
   IProject,
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
-import createModel from 'services/models/model';
 
 const model = createModel<Partial<IProjectsModelState>>({});
 

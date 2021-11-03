@@ -1,20 +1,23 @@
 import React from 'react';
-import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
 import _ from 'lodash-es';
 
-import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
-import { chartTypesConfig } from './config';
-import { ChartTypeEnum } from 'utils/d3';
+import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
 
-import ChartPopover from './ChartPopover/ChartPopover';
 import { Text } from 'components/kit';
 
-import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
+import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import {
   IActivePoint,
   ISyncHoverStateParams,
 } from 'types/utils/d3/drawHoverAttributes';
+
+import { ChartTypeEnum } from 'utils/d3';
+
+import { chartTypesConfig } from './config';
+import ChartPopover from './ChartPopover/ChartPopover';
 
 import './ChartPanel.scss';
 

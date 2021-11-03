@@ -1,5 +1,7 @@
 import * as analytics from 'services/analytics';
+
 import { IModel, State } from 'types/services/models/model';
+
 import isGroupingApplied from './isGroupingApplied';
 
 export default function setAggregationEnabled<M extends State>({

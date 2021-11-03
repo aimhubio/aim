@@ -1,8 +1,9 @@
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
-import { CurveEnum } from 'utils/d3';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import { CurveEnum } from 'utils/d3';
 
 export default function onCurveInterpolationChange<M extends State>({
   model,

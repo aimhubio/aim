@@ -1,6 +1,8 @@
 import { RowHeightSize } from 'config/table/tableConfigs';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
+
 import { SortField } from '../metrics/metricsAppModel';
 
 export interface IRunsAppModelState {

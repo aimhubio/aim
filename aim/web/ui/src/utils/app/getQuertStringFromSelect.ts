@@ -1,7 +1,8 @@
 import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
+
 import { formatValue } from '../formatValue';
 
-export default function getQueryStringFromSelect<S>(
+export default function getQueryStringFromSelect(
   selectData: IMetricAppConfig['select'],
 ) {
   let query = '';
