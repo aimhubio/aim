@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { MenuItem } from '@material-ui/core';
 
 import { IHighlightModesPopoverProps } from 'types/components/HighlightModesPopover/HighlightModesPopover';

@@ -1,9 +1,10 @@
 import * as analytics from 'services/analytics';
 
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
-import { CurveEnum } from 'utils/d3';
 import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
+import { CurveEnum } from 'utils/d3';
 
 export default function onSmoothingChange<M extends State>({
   args,

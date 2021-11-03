@@ -1,9 +1,12 @@
 import React from 'react';
+
 import { Box, Radio } from '@material-ui/core';
 
-import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
-import COLORS from 'config/colors/colors';
 import { Button, Switcher, Text } from 'components/kit';
+
+import COLORS from 'config/colors/colors';
+
+import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 
 import './ColorPopoverAdvanced.scss';
 

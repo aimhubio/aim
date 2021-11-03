@@ -1,10 +1,12 @@
 import _ from 'lodash-es';
+
 import {
   GroupNameType,
   IGroupingSelectOption,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
 import getValueByField from '../getValueByField';
 
 export default function getGroupConfig<D, M extends State>({

@@ -1,6 +1,9 @@
-import * as analytics from 'services/analytics';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
+import * as analytics from 'services/analytics';
+
 import { IModel, State } from 'types/services/models/model';
+
 import updateURL from './updateURL';
 
 export default function onHighlightModeChange<M extends State>({

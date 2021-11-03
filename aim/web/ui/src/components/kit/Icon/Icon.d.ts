@@ -1,5 +1,6 @@
-import { BoxProps } from '@material-ui/core';
 import React, { CSSProperties } from 'react';
+
+import { BoxProps } from '@material-ui/core';
 
 export interface IIconProps
   extends React.BaseHTMLAttributes<any>,

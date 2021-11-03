@@ -1,6 +1,5 @@
 import { cloneDeep, isNil } from 'lodash-es';
 
-import lineGenerator from './lineGenerator';
 import {
   IDrawParallelLinesProps,
   InitialPathDataType,
@@ -10,6 +9,8 @@ import {
   IGetColorIndicatorScaleValueProps,
 } from 'types/utils/d3/drawParallelLines';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+
+import lineGenerator from './lineGenerator';
 
 const initialPathData: InitialPathDataType = {
   dimensionList: [],

@@ -1,8 +1,10 @@
 import * as d3 from 'd3';
 
 import { IDrawAreaProps } from 'types/utils/d3/drawArea';
+
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+
 import { CircleEnum } from './index';
 
 function drawArea(props: IDrawAreaProps): void {

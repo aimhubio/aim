@@ -1,8 +1,10 @@
-import * as analytics from 'services/analytics';
-
 import { RowHeightEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+
+import * as analytics from 'services/analytics';
+
 import { IModel, State } from 'types/services/models/model';
+
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
 

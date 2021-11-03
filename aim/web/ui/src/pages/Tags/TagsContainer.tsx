@@ -1,9 +1,11 @@
 import React from 'react';
+
 import useModel from 'hooks/model/useModel';
+
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+import * as analytics from 'services/analytics';
 
 import Tags from './Tags';
-import * as analytics from 'services/analytics';
 
 const tagsRequestRef = tagsAppModel.getTagsData();
 

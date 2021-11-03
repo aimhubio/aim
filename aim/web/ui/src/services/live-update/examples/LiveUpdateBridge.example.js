@@ -3,9 +3,11 @@
  */
 /* eslint-disable no-console */
 
+import * as Comlink from 'comlink';
+
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import LUWorker from 'comlink-loader!../Worker';
-import * as Comlink from 'comlink';
+
 import { getDataFromTransferable } from '../utils';
 
 const embeddedAppNames = {

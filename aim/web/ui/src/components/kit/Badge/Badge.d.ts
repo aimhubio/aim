@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IconName } from '../Icon/Icon.d';
 
 export interface IBadgeProps {

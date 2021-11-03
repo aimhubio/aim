@@ -1,4 +1,5 @@
 import * as analytics from 'services/analytics';
+
 import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export default function resetChartZoom({

@@ -1,9 +1,11 @@
 import * as d3 from 'd3';
 
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+
 import { IDrawBrushProps } from 'types/utils/d3/drawBrush';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+
 import getAxisScale from './getAxisScale';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 function drawBrush(props: IDrawBrushProps): void {
   const {

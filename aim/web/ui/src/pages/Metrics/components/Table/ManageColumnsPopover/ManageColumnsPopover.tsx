@@ -1,9 +1,11 @@
 import React from 'react';
-import { Button, Divider, InputBase } from '@material-ui/core';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
-import ColumnItem from './ColumnItem/ColumnItem';
+import { Button, Divider, InputBase } from '@material-ui/core';
+
 import { Icon, Text } from 'components/kit';
+
+import ColumnItem from './ColumnItem/ColumnItem';
 
 import './ManageColumnsPopover.scss';
 

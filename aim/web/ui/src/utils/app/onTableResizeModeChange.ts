@@ -1,8 +1,11 @@
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import * as analytics from 'services/analytics';
+
+import { IModel, State } from 'types/services/models/model';
+
 import { setItem } from '../storage';
 import { encode } from '../encoder/encoder';
-import { IModel, State } from 'types/services/models/model';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 export default function onTableResizeModeChange<M extends State>({
   mode,

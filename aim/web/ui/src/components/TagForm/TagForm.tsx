@@ -2,15 +2,19 @@ import React, { memo, useMemo } from 'react';
 import * as yup from 'yup';
 import { isEmpty, noop } from 'lodash-es';
 import { useFormik } from 'formik';
+
 import { makeStyles } from '@material-ui/core';
 import { Button, TextField } from '@material-ui/core';
 
+import { Badge, Text } from 'components/kit';
+
 import COLORS from 'config/colors/colors';
+
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
 
 import './TagForm.scss';
-import { Badge, Text } from 'components/kit';
 
 const useStyles = makeStyles({
   tagColor: {

@@ -2,8 +2,10 @@ import React, { memo, useEffect, useState } from 'react';
 import { isNil } from 'lodash-es';
 
 import Table from 'components/Table/Table';
-import tagsAppModel from 'services/models/tags/tagsAppModel';
 import { Badge, Button, Icon, Text } from 'components/kit';
+
+import tagsAppModel from 'services/models/tags/tagsAppModel';
+
 import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
 
 function TagsTable({

@@ -1,21 +1,26 @@
 import React, { memo, useRef, useState } from 'react';
 import moment from 'moment';
-import { Paper, Popover, Tab, Tabs } from '@material-ui/core';
 import { NavLink, useParams } from 'react-router-dom';
+import classNames from 'classnames';
 
-import runDetailAppModel from 'services/models/runs/runDetailAppModel';
-import { processDurationTime } from 'utils/processDurationTime';
-import useModel from 'hooks/model/useModel';
+import { Paper, Popover, Tab, Tabs } from '@material-ui/core';
+
 import TabPanel from 'components/TabPanel/TabPanel';
-import RunDetailParamsTab from './RunDetailParamsTab';
-import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
-import RunDetailSettingsTab from './RunDetailSettingsTab';
 import { Badge, Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
+import useModel from 'hooks/model/useModel';
+
+import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
+import { processDurationTime } from 'utils/processDurationTime';
+
+import RunDetailSettingsTab from './RunDetailSettingsTab';
+import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
+import RunDetailParamsTab from './RunDetailParamsTab';
+
 import './RunDetail.scss';
-import classNames from 'classnames';
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const runData = useModel(runDetailAppModel);

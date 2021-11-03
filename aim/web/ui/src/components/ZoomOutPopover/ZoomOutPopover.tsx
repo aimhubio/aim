@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash-es';
+
 import { MenuItem } from '@material-ui/core';
+
 import { IZoomOutPopoverProps } from 'types/components/ZoomOutPopover/ZoomOutPopover';
 
 import './ZoomOutPopover.scss';

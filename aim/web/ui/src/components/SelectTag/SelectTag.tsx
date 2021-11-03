@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
+
 import { Divider, Link } from '@material-ui/core';
+
 import { Badge, Button } from 'components/kit';
+
 import { PathEnum } from 'config/enums/routesEnum';
+
 import { ISelectTagProps } from 'types/components/SelectTag/SelectTag';
 import { ITagInfo } from 'types/pages/tags/Tags';
 

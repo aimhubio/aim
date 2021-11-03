@@ -1,4 +1,5 @@
 import COLORS from 'config/colors/colors';
+
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
   IAggregatedData,

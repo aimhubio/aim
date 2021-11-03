@@ -1,6 +1,7 @@
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
+
 import getQueryStringFromSelect from './getQuertStringFromSelect';
 
 export default function toggleSelectAdvancedMode<M extends State>({

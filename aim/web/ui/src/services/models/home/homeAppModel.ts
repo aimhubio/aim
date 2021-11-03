@@ -1,7 +1,10 @@
-import createModel from '../model';
 import projectsService from 'services/api/projects/projectsService';
+
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+
 import { getItem, setItem } from 'utils/storage';
+
+import createModel from '../model';
 
 const model = createModel<any>({});
 

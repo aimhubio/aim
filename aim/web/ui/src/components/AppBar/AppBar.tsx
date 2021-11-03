@@ -1,5 +1,7 @@
-import { Text } from 'components/kit';
 import React from 'react';
+
+import { Text } from 'components/kit';
+
 import { IAppBarProps } from 'types/components/AppBar/AppBar';
 
 import './AppBar.scss';

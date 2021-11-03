@@ -1,24 +1,29 @@
 import React from 'react';
+import { isEmpty } from 'lodash-es';
 
-import Controls from './components/Controls/Controls';
-import SelectForm from './components/SelectForm/SelectForm';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
-import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 // TODO [GA]: MetricsBar is imported as AppBar.
 // Implement ParamsBar or use unified NavBar for explorers.
-import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import { IParamsProps } from 'types/pages/params/Params';
-import { ChartTypeEnum } from 'utils/d3';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
-import { isEmpty } from 'lodash-es';
 import Table from 'components/Table/Table';
-import { RowHeightSize } from 'config/table/tableConfigs';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+
+import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
+import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+
+import { IParamsProps } from 'types/pages/params/Params';
+
+import { ChartTypeEnum } from 'utils/d3';
+
+import SelectForm from './components/SelectForm/SelectForm';
+import Controls from './components/Controls/Controls';
 
 import './Params.scss';
 

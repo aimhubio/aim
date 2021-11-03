@@ -1,5 +1,6 @@
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IModel, State } from 'types/services/models/model';
+
 import onNotificationDelete from './onNotificationDelete';
 
 export default function onNotificationAdd<
