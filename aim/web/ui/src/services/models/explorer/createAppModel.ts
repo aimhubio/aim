@@ -2017,11 +2017,11 @@ function createAppModel({
                   hiddenColumns: configData.table.hiddenColumns!,
                 });
               }, 0);
-            } catch (ex: any) {
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
-                console.log('Unhandled error: ', ex);
+                console.log('Unhandled error: ');
               }
             }
           },
@@ -2845,7 +2845,7 @@ function createAppModel({
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
-              } catch (ex) {
+              } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {

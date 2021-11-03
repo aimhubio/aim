@@ -27,14 +27,14 @@ function createAPIRequestWrapper<ResponseDataType>(
               const data = stream ? response.body : await response.json();
 
               resolve(data);
-            } catch (err: any) {
+            } catch (err: Error | any) {
               if (typeof exceptionHandler === 'function') {
                 exceptionHandler(err);
               }
               reject(err);
             }
           })
-          .catch((err) => {
+          .catch((err: Error | any) => {
             if (err.name === 'AbortError') {
               // Fetch aborted
             } else {
