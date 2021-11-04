@@ -67,6 +67,7 @@ const Table = React.forwardRef(function Table(
     showResizeContainerActionBar = true,
     resizeMode,
     onSortReset,
+    height = 'calc(100% - 40px)',
     ...props
   }: ITableProps,
   ref,
@@ -669,10 +670,7 @@ const Table = React.forwardRef(function Table(
               )}
             </div>
           )}
-          <div
-            style={{ height: 'calc(100% - 40px)', overflow: 'auto' }}
-            ref={tableContainerRef}
-          >
+          <div style={{ height, overflow: 'auto' }} ref={tableContainerRef}>
             <AutoResizer>
               {({ width, height }) =>
                 custom ? (

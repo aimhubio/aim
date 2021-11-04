@@ -11,6 +11,7 @@ export interface ITableProps {
   topHeader?: boolean;
   data: any[] | null;
   columns: any[];
+  height?: string;
   rowHeight: RowHeight;
   onManageColumns?: (order: any) => void;
   onColumnsVisibilityChange?: (hiddenColumns: string[]) => void;

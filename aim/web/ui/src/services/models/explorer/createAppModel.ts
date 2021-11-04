@@ -628,7 +628,7 @@ function createAppModel({
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
-              experiment: metric.run.props.experiment ?? 'default',
+              experiment: metric.run.props?.experiment?.name ?? 'default',
               run: moment(metric.run.props.creation_time * 1000).format(
                 'HH:mm:ss · D MMM, YY',
               ),
@@ -2384,7 +2384,7 @@ function createAppModel({
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
-              experiment: metric.run.props.experiment ?? 'default',
+              experiment: metric.run.props.experiment.name ?? 'default',
               run: metric.run.props.name ?? '-',
               metric: metric.metric_name,
               ...metricsRowValues,
@@ -2969,7 +2969,7 @@ function createAppModel({
                 index: rowIndex,
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
-                experiment: metric.run.props.experiment ?? 'default',
+                experiment: metric.run.props.experiment.name ?? 'default',
                 run: moment(metric.run.props.creation_time * 1000).format(
                   'HH:mm:ss · D MMM, YY',
                 ),

@@ -189,6 +189,9 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
     def runs(self) -> RunCollection:
         return ModelMappedRunCollection(self._session, collection=self._model.runs)
 
+    def get_runs(self) -> RunCollection:
+        return self.runs
+
     @classmethod
     def find(cls, _id: str, **kwargs) -> Union[IExperiment, SafeNone]:
         session = kwargs.get('session')
@@ -310,6 +313,9 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
     @property
     def runs(self) -> RunCollection:
         return ModelMappedRunCollection(self._session, collection=self._model.runs)
+
+    def get_runs(self) -> RunCollection:
+        return self.runs
 
 
 ModelMappedRunCollection = ModelMappedCollection[ModelMappedRun]
