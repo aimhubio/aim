@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add table columns virtualization (roubkar)
+
 ## 3.0.2 Oct 27 2021
 
 - Switch to aimrocks 0.0.9 - built on rocksdb 6.25.3 (alberttorosyan)
@@ -17,6 +21,7 @@
 ## 3.0.0 Oct 21 2021
 
 - Completely revamped UI:
+
   - Runs, metrics and params explorers
   - Bookmarks, Tags, Homepage
   - New UI works smooth with ~500 metrics displayed at the same time with full Aim table interactions
