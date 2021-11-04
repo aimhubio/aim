@@ -1,18 +1,21 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
+import { Link } from '@material-ui/core';
+
 import { Badge, Button, Icon } from 'components/kit';
+import TableSortIcons from 'components/Table/TableSortIcons';
+
 import COLORS from 'config/colors/colors';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
 
-import TableSortIcons from 'components/Table/TableSortIcons';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 

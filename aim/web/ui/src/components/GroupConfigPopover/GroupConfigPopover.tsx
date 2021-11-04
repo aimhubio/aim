@@ -1,13 +1,15 @@
 import React from 'react';
 
 import { Text } from 'components/kit';
+
 import { IGroupConfigPopoverProps } from 'types/components/GroupConfigPopover/GroupConfigPopover';
+
 import stopPropagation from 'utils/stopPropagation';
 import { formatValue } from 'utils/formatValue';
-
-import './GroupConfigPopover.scss';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+
+import './GroupConfigPopover.scss';
 
 /**
  * @property {Array<{name: string, value: string}>} configData -  array of applied grouping config of line

@@ -1,16 +1,22 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
-import Metrics from './Metrics';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
-import { ITableRef } from 'types/components/Table/Table';
-import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { CurveEnum } from 'utils/d3';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import projectsModel from 'services/models/projects/projectsModel';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import * as analytics from 'services/analytics';
+
+import { ITableRef } from 'types/components/Table/Table';
+import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import {
   IAggregatedData,
   IAggregationConfig,
@@ -27,17 +33,17 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { RowHeightSize } from 'config/table/tableConfigs';
 import {
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-import * as analytics from 'services/analytics';
+
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { CurveEnum } from 'utils/d3';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
-import { DensityOptions } from 'config/enums/densityEnum';
+
+import Metrics from './Metrics';
 
 function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);

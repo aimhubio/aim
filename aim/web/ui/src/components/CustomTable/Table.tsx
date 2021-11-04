@@ -1,14 +1,14 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import './Table.scss';
-
 import React, { useRef, useState, useEffect } from 'react';
-import _ from 'lodash-es';
 import classNames from 'classnames';
 
 import { rowCeilSizeConfig } from 'config/table/tableConfigs';
+
 import Column from './TableColumn';
+
+import './Table.scss';
 
 function Table(props) {
   const columns = props.columns;

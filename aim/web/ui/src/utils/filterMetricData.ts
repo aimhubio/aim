@@ -1,5 +1,6 @@
 import { IGetFilteredValuesParams } from 'types/utils/d3/processData';
 import { IFilterMetricDataParams } from 'types/utils/filterMetricData';
+
 import { ScaleEnum } from './d3';
 
 const isInvalidValue = (

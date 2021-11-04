@@ -1,5 +1,6 @@
-import { encode } from 'utils/encoder/encoder';
 import COLORS from 'config/colors/colors';
+
+import { encode } from 'utils/encoder/encoder';
 /* eslint-disable no-loop-func */
 function randomGenerateLineData(count: number, dimensions: any) {
   const dKeys = Object.keys(dimensions);

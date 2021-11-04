@@ -1,6 +1,7 @@
-import API from '../api';
 import { IApiRequest } from 'types/services/services';
 import { IAlignMetricsDataParams } from 'types/services/models/metrics/metricsAppModel';
+
+import API from '../api';
 // import generateMetrics from './metricsMock';
 // import { IRun } from 'types/services/models/metrics/runModel';
 

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
   GroupNameType,

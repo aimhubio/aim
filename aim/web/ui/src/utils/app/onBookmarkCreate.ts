@@ -1,14 +1,16 @@
-import * as analytics from 'services/analytics';
-
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+
+import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
+
 import {
   IAppData,
   IDashboardData,
 } from 'types/services/models/metrics/metricsAppModel';
-import onNotificationAdd from './onNotificationAdd';
 import { IModel, State } from 'types/services/models/model';
+
+import onNotificationAdd from './onNotificationAdd';
 
 export default async function onBookmarkCreate<M extends State>({
   name,

@@ -1,4 +1,5 @@
 import { IModel, State } from 'types/services/models/model';
+
 import onNotificationAdd from './onNotificationAdd';
 import resetModelOnError from './resetModelOnError';
 

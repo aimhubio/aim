@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Select, { ClearIndicatorProps } from 'react-select';
-import { IDropdownProps } from '.';
-import DropdownCustomOption from './DropdownCustomOption';
+
 import { Icon, Text } from 'components/kit';
+
+import DropdownCustomOption from './DropdownCustomOption';
 import {
   baseSizes,
   indicatorsContainerSizes,
   labelTopPosition,
 } from './config';
+
+import { IDropdownProps } from '.';
 
 import './Dropdown.scss';
 

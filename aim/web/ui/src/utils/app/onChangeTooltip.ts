@@ -5,7 +5,9 @@ import {
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
 import filterTooltipContent from 'utils/filterTooltipContent';
+
 import updateURL from './updateURL';
 
 export default function onChangeTooltip<M extends State>({

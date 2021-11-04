@@ -1,10 +1,13 @@
 import React from 'react';
+
 import { Divider, MenuItem, Slider } from '@material-ui/core';
 
+import { Text, ToggleButton } from 'components/kit';
+
 import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
+
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
-import { Text, ToggleButton } from 'components/kit';
 
 import './SmoothingPopover.scss';
 

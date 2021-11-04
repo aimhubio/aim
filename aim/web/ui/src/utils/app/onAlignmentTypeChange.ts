@@ -1,6 +1,8 @@
-import { IModel, State } from 'types/services/models/model';
 import * as analytics from 'services/analytics';
+
+import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+
 import { AlignmentOptionsEnum } from '../d3';
 
 export default function onAlignmentTypeChange<M extends State>({
