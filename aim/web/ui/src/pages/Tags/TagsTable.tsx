@@ -154,6 +154,7 @@ function TagsTable({
           onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
           onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
           emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
+          height='100%'
         />
       </div>
     </div>
