@@ -1,4 +1,6 @@
 import React from 'react';
+import { isEmpty } from 'lodash-es';
+
 import {
   Box,
   TextField,
@@ -13,20 +15,23 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
-import { isEmpty } from 'lodash-es';
+
+import { Icon, Badge, Button } from 'components/kit';
+
+import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import projectsModel from 'services/models/projects/projectsModel';
-import COLORS from 'config/colors/colors';
-import contextToString from 'utils/contextToString';
 
+import projectsModel from 'services/models/projects/projectsModel';
+import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import {
   ISelectMetricsOption,
   ISelectFormProps,
 } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
-import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
-import { Icon, Badge, Button } from 'components/kit';
+
+import contextToString from 'utils/contextToString';
 
 import './SelectForm.scss';
 

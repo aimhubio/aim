@@ -111,7 +111,9 @@
             {
               "pattern": "*.+(css|sass|less|scss|pcss|styl)",
               "group": "unknown",
-              "patternOptions": { "matchBase": true },
+              "patternOptions": {
+                "matchBase": true
+              },
               "position": "after"
             },
             {
