@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { PopoverProps } from '@material-ui/core';
 
 export default interface IControlPopoverProps extends Partial<PopoverProps> {

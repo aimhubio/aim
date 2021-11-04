@@ -2,24 +2,28 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Button, Icon, Text } from 'components/kit';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
-import { ITableProps } from 'types/components/Table/Table';
-import BaseTable from './BaseTable';
-import AutoResizer from './AutoResizer';
-import CustomTable from '../CustomTable/Table';
-
+import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+
+import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
+
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
-import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
+
+import { ITableProps } from 'types/components/Table/Table';
+
 import TableLoader from '../TableLoader/TableLoader';
-import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+import CustomTable from '../CustomTable/Table';
+
+import AutoResizer from './AutoResizer';
+import BaseTable from './BaseTable';
 
 import './Table.scss';
 
@@ -61,6 +65,7 @@ const Table = React.forwardRef(function Table(
     showResizeContainerActionBar = true,
     resizeMode,
     onSortReset,
+    height = 'calc(100% - 40px)',
     ...props
   }: ITableProps,
   ref,
@@ -233,8 +238,10 @@ const Table = React.forwardRef(function Table(
         }
 
         if (groups) {
-          for (let groupKey in dataRef.current) {
-            if (dataRef.current[groupKey].data.groupRowsKeys.includes(rowKey)) {
+          for (let groupKey in dataRef?.current) {
+            if (
+              dataRef?.current[groupKey].data?.groupRowsKeys?.includes(rowKey)
+            ) {
               if (expandedGroups.current.includes(groupKey)) {
                 scrollToElement();
               } else {
@@ -625,10 +632,7 @@ const Table = React.forwardRef(function Table(
               )}
             </div>
           )}
-          <div
-            style={{ height: 'calc(100% - 40px)', overflow: 'auto' }}
-            ref={tableContainerRef}
-          >
+          <div style={{ height, overflow: 'auto' }} ref={tableContainerRef}>
             <AutoResizer>
               {({ width, height }) =>
                 custom ? (

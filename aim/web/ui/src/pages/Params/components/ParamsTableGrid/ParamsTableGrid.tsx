@@ -1,18 +1,23 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
+import { Link } from '@material-ui/core';
+
 import { Badge, Button, Icon } from 'components/kit';
+import TableSortIcons from 'components/Table/TableSortIcons';
+
 import COLORS from 'config/colors/colors';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { PathEnum } from 'config/enums/routesEnum';
 
-import TableSortIcons from 'components/Table/TableSortIcons';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 const icons: { [key: string]: string } = {
   color: 'coloring-bold',
@@ -96,18 +101,21 @@ function getParamsTableColumns(
     },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
+      const systemMetric: boolean = isSystemMetric(key);
       acc = [
         ...acc,
         ...Object.keys(metricsColumns[key]).map((metricContext) => ({
-          key: `${key}_${metricContext}`,
-          content: (
+          key: `${systemMetric ? key : `${key}_${metricContext}`}`,
+          content: isSystemMetric(key) ? (
+            <span>{formatSystemMetricName(key)}</span>
+          ) : (
             <Badge
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'No context' : metricContext}
             />
           ),
-          topHeader: key,
+          topHeader: isSystemMetric(key) ? 'System Metrics' : key,
           pin: order?.left?.includes(`${key}_${metricContext}`)
             ? 'left'
             : order?.right?.includes(`${key}_${metricContext}`)
@@ -168,7 +176,13 @@ function getParamsTableColumns(
   if (groupFields) {
     columns.push({
       key: '#',
-      content: <span style={{ textAlign: 'right' }}>#</span>,
+      content: (
+        <span
+          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
+        >
+          #
+        </span>
+      ),
       topHeader: 'Grouping',
       pin: 'left',
     });

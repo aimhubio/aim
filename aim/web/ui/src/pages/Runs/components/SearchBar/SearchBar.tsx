@@ -1,10 +1,14 @@
 import React from 'react';
+
 import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import { Divider, TextField } from '@material-ui/core';
 
 import searchImg from 'assets/icons/search.svg';
+
 import { Button } from 'components/kit';
+
 import runAppModel from 'services/models/runs/runsAppModel';
+
 import './SearchBar.scss';
 
 function SearchBar({

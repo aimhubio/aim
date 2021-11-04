@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { forwardRef, memo, useEffect } from 'react';
 import { scaleLinear, axisLeft, axisBottom } from 'd3';
+
 import { getMaxValue } from './util';
 import Circles from './Circles/Circles';
 import Axis from './Axis/Axis';

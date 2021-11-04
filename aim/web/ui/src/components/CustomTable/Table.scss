@@ -173,7 +173,7 @@ $border-radius: 0.2rem;
   display: flex;
   align-items: center;
   font-size: $text-md;
-  padding: 0 $space-xs;
+  padding: 0 $space-unit;
   border-bottom: 1px solid $border-color;
   border-right: 1px solid $border-color;
   text-align: left;
@@ -258,12 +258,9 @@ $border-radius: 0.2rem;
   top: var(--cell-height);
   flex: none;
   background-color: $cuddle-20;
-  padding: $space-xxs $space-sm;
-  font-size: $text-md;
+  padding: $space-xxs $space-unit;
   border-color: $border-color;
-  font-family: 'Inter Medium', sans-serif;
   z-index: 3;
-  color: $pico;
   overflow: visible;
 
   & > *:first-child {
@@ -297,11 +294,9 @@ $border-radius: 0.2rem;
 
 .Table__cell--topHeader {
   top: 0;
-  background-color: $cuddle-20;
-  font-size: $text-md;
-  font-family: 'Inter SemiBold', sans-serif;
   letter-spacing: 0;
-  border-top: 1px solid $border-color;
+  background-color: $cuddle-20;
+  border-top: 0.0625rem solid $border-color;
 }
 
 .Table__header__action__container {
@@ -427,7 +422,7 @@ $border-radius: 0.2rem;
     align-items: center;
     justify-content: center;
     margin-left: 0.5em;
-    border: 1px solid $cuddle-50;
+    border: $border-grey;
     border-radius: $border-radius;
     font-size: 0.6rem;
   }

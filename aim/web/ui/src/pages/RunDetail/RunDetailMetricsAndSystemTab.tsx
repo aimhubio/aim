@@ -1,15 +1,13 @@
 import React, { memo } from 'react';
 import { isEmpty } from 'lodash-es';
 
-import runDetailAppModel from 'services/models/runs/runDetailAppModel';
-
-import {
-  IRunBatch,
-  IRunDetailMetricsAndSystemTabProps,
-} from 'types/pages/runs/Runs';
-import RunMetricCard from './RunMetricCard';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+
+import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+
+import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
+import RunMetricCard from './RunMetricCard';
 
 function RunDetailMetricsAndSystemTab({
   runHash,

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Skeleton } from '@material-ui/lab';
 import _ from 'lodash-es';
+
+import { Skeleton } from '@material-ui/lab';
 
 import { IChartLoaderProps } from 'types/components/ChartLoader/ChartLoader';
 

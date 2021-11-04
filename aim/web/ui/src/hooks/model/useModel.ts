@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IModel } from 'types/services/models/model';
 
 function useModel<StateType>(model: IModel<StateType>): StateType | null {

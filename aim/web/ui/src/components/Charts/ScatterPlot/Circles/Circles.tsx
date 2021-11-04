@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { DEFAULT_CIRCLE_COLOR, DEFAULT_CIRCLE_RADIUS } from '../config';
 
+import { DEFAULT_CIRCLE_COLOR, DEFAULT_CIRCLE_RADIUS } from '../config';
 import { ICircleProps } from '../types';
 
 /**

@@ -1,9 +1,13 @@
 import React from 'react';
+
 import { Alert } from '@material-ui/lab';
 import { Box, Snackbar } from '@material-ui/core';
+
 import successIconImg from 'assets/icons/successIcon.svg';
 import errorIconImg from 'assets/icons/errorIcon.svg';
+
 import { INotificationContainer } from 'types/components/NotificationContainer/NotificationContainer';
+
 import './NotificationContainer.scss';
 
 export default function NotificationContainer({

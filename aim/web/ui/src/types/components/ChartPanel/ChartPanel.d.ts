@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import { ILine, ILineChartProps } from 'types/components/LineChart/LineChart';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IProcessedData } from 'types/utils/d3/processData';
@@ -12,7 +13,8 @@ import {
   IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { ChartTypeEnum } from 'utils/d3';
 
 export interface IChartPanelProps {
   chartType: ChartTypeEnum;

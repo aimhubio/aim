@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+
 import { Divider, MenuItem } from '@material-ui/core';
 
-import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
+import { Text, Dropdown } from 'components/kit';
+
 import { DensityOptions } from 'config/enums/densityEnum';
+
+import { IAlignmentPopoverProps } from 'types/components/AlignmentPopover/AlignmentPopover';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { AlignmentOptionsEnum } from 'utils/d3';
-import { Text, Dropdown } from 'components/kit';
 
 import './AlignmentPopover.scss';
 
