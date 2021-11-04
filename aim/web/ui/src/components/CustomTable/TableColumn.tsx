@@ -9,6 +9,8 @@ import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
+import { viewPortOffset } from 'config/table/tableConfigs';
+
 import ControlPopover from '../ControlPopover/ControlPopover';
 
 import Cell from './TableCell';
@@ -105,8 +107,9 @@ function Column({
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
-      columnRef.current.offsetLeft > listWindow.left - 500 &&
-      columnRef.current.offsetLeft < listWindow.left + listWindow.width + 500);
+      columnRef.current.offsetLeft > listWindow.left - viewPortOffset &&
+      columnRef.current.offsetLeft <
+        listWindow.left + listWindow.width + viewPortOffset);
 
   return (
     <div
