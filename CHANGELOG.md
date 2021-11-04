@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3 Nov 4 2021
+
+- Bump sqlalchemy version to 1.4.1 (alberttorosyan)
+
 ## 3.0.2 Oct 27 2021
 
 - Switch to aimrocks 0.0.9 - built on rocksdb 6.25.3 (alberttorosyan)
