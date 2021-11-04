@@ -51,14 +51,14 @@ function RunSelectPopoverContent({
     <div className='RunSelectPopoverWrapper__selectPopoverContent'>
       <div className='RunSelectPopoverWrapper__selectPopoverContent__headerContainer'>
         <div className='RunSelectPopoverWrapper__selectPopoverContent__headerContainer__titleContainer'>
-          <Text size={14} tint={100} weight={600}>
+          <Text size={14} tint={100} weight={700}>
             Experiments
           </Text>
         </div>
 
         <Icon name='sort-inside' />
         <div className='RunSelectPopoverWrapper__selectPopoverContent__headerContainer__titleContainer'>
-          <Text size={14} tint={100} weight={600}>
+          <Text size={14} tint={100} weight={700}>
             Runs
           </Text>
         </div>

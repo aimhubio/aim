@@ -9,6 +9,7 @@ import TabPanel from 'components/TabPanel/TabPanel';
 import { Badge, Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import StatusLabel from 'components/StatusLabel';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import useModel from 'hooks/model/useModel';
 
@@ -83,42 +84,40 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     <section className='RunDetail container' ref={containerRef}>
       <div className='RunDetail__runDetailContainer'>
         <div className='RunDetail__runDetailContainer__appBarContainer'>
-          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'>
-            <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-              <Text tint={100} size={16} weight={600}>
-                {`Experiment Name / ${
-                  runData?.runInfo?.experiment?.name || ''
-                }`}
-              </Text>
-            </div>
-            <Button
-              onClick={onRunsSelectToggle}
-              disabled={runData?.isExperimentsLoading}
-              color={isRunSelectDropdownOpen ? 'primary' : 'default'}
-              size='small'
-              className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler'
-              style={
-                isRunSelectDropdownOpen
-                  ? { background: '#E8F1FC' }
-                  : { background: 'transparent' }
-              }
-              withOnlyIcon
-            >
-              <Icon name={'arrow-down'} />
-            </Button>
-          </div>
-          {console.log('runData', runData?.runsOfExperiment)}
-          {isRunSelectDropdownOpen && runData?.runsOfExperiment && (
-            <Popover
-              open={true}
-              onClose={onRunsSelectToggle}
-              anchorReference='anchorPosition'
-              anchorPosition={{
-                left: containerRef.current?.offsetLeft + 40,
-                top: 35,
-              }}
-              className='RunSelectPopoverWrapper'
-            >
+          <ControlPopover
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            anchor={({ onAnchorClick, opened }) => (
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'>
+                <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                  <Text tint={100} size={16} weight={600}>
+                    {`Experiment Name / ${
+                      runData?.runInfo?.experiment?.name || ''
+                    }`}
+                  </Text>
+                </div>
+                <Button
+                  onClick={onAnchorClick}
+                  disabled={runData?.isExperimentsLoading}
+                  color={opened ? 'primary' : 'default'}
+                  size='small'
+                  className={classNames(
+                    'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                    { opened: opened },
+                  )}
+                  withOnlyIcon
+                >
+                  <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                </Button>
+              </div>
+            )}
+            component={
               <RunSelectPopoverContent
                 getRunsOfExperiment={getRunsOfExperiment}
                 experimentsData={runData?.experimentsData}
@@ -129,8 +128,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 onRunsSelectToggle={onRunsSelectToggle}
                 dateNow={dateNow}
               />
-            </Popover>
-          )}
+            }
+          />
         </div>
         <div className='RunDetail__runDetailContainer__headerContainer'>
           <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>

@@ -6,6 +6,11 @@ import { IStatusLabelProps } from './types.d';
 
 import './styles.scss';
 
+/**
+ * @property {string} title - label title
+ * @property {string} status - status type
+ * @property {string} className - component className
+ */
 function StatusLabel({
   title,
   status = 'success',
