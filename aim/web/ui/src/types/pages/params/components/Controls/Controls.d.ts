@@ -1,4 +1,5 @@
 import { CurveEnum } from 'utils/d3';
+
 import {
   IChartTooltip,
   IGroupingSelectOption,

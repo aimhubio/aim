@@ -2,10 +2,14 @@ import React, { memo } from 'react';
 import { noop } from 'lodash-es';
 
 import LineChart from 'components/LineChart/LineChart';
-import contextToString from 'utils/contextToString';
+import { Badge, Text } from 'components/kit';
+
 import COLORS from 'config/colors/colors';
+
+import contextToString from 'utils/contextToString';
 import { CurveEnum, ScaleEnum } from 'utils/d3';
-import { Badge } from 'components/kit';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 function RunMetricCard({
   batch,
@@ -42,17 +46,26 @@ function RunMetricCard({
         />
       </div>
       <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox'>
-        <p className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__title'>
+        <Text component='p' size={10}>
           Metric
-        </p>
-        <p className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'>
-          {batch?.metric_name}
-        </p>
+        </Text>
+        <Text
+          component='h4'
+          tint={100}
+          size={18}
+          weight={600}
+          className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'
+        >
+          {isSystemMetric(batch?.metric_name)
+            ? formatSystemMetricName(batch?.metric_name)
+            : batch?.metric_name}
+        </Text>
         {contextToString(batch?.context)
           ?.split(',')
           .map((label: string, i: number) => (
             <Badge
               key={index}
+              size='large'
               color={COLORS[0][(i + index) % COLORS[0].length]}
               label={label || 'No context'}
             />

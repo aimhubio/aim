@@ -1,8 +1,10 @@
 import React, { memo } from 'react';
-import { Button } from 'components/kit';
+
+import { Button, Text } from 'components/kit';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
-import { IRunDetailSettingsTabProps } from 'types/pages/runs/Runs';
+
+import { IRunDetailSettingsTabProps } from './types';
 
 function RunDetailSettingsTab({
   runHash,
@@ -15,29 +17,27 @@ function RunDetailSettingsTab({
   return (
     <div className='RunDetailSettingsTab'>
       <div className='RunDetailSettingsTab__infoBox'>
-        <p className='RunDetailSettingsTab__infoBox__title'>
+        <Text component='h4' weight={600} size={14} tint={100}>
           {isArchived ? 'Unarchive Run' : 'Archive Run'}
-        </p>
-        <p className='RunDetailSettingsTab__infoBox__message'>
+        </Text>
+        <Text
+          component='p'
+          tint={100}
+          weight={400}
+          className='RunDetailSettingsTab__infoBox__message'
+        >
           {isArchived
             ? 'Unarchive runs will appear in search both on Dashboard and Explore.'
             : 'Archived runs will not appear in search both on Dashboard and Explore.'}
-        </p>
+        </Text>
       </div>
-      {isArchived ? (
-        <Button
-          onClick={onRunArchive}
-          color='default'
-          variant='contained'
-          className='RunDetailSettingsTab__buttonUnarchive'
-        >
-          Unarchive
-        </Button>
-      ) : (
-        <Button onClick={onRunArchive} color='secondary' variant='contained'>
-          Archive this run
-        </Button>
-      )}
+      <Button
+        onClick={onRunArchive}
+        style={{ backgroundColor: isArchived ? '#83899E' : '#E64E48' }}
+        variant='contained'
+      >
+        {isArchived ? 'Unarchive' : 'Archive this run'}
+      </Button>
     </div>
   );
 }

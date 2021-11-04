@@ -1,5 +1,6 @@
 import React from 'react';
 import { OptionProps } from 'react-select';
+
 import { Text, Icon } from 'components/kit';
 
 import './Dropdown.scss';

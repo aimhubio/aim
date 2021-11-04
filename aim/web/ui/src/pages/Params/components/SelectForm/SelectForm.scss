@@ -32,11 +32,6 @@
   }
 }
 
-.SelectForm__tags__empty {
-  font-size: $text-md;
-  color: $grey;
-}
-
 .SelectForm__param__select {
   width: 100%;
 
@@ -97,12 +92,16 @@
   position: relative;
 
   &:after {
-    content: "";
+    content: '';
     position: absolute;
     width: 20px;
     height: 34px;
     background: rgba(255, 255, 255, 0.5);
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 92%);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 1) 92%
+    );
     left: -20px;
     top: -5px;
     border-radius: 0;

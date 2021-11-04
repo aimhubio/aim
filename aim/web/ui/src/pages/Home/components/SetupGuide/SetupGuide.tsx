@@ -1,6 +1,8 @@
 import React from 'react';
+
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import { Icon, Text } from 'components/kit';
+
 import { ISetupGuideProps } from 'types/pages/home/components/SetupGuide/SetupGuide';
 
 import './SetupGuide.scss';

@@ -232,6 +232,26 @@ class TestExperimentsApi(StructuredApiTestBase):
         expected_run_names = {f'Run number {i}' for i in range(6, 11)}
         self.assertSetEqual(expected_run_names, run_names)
 
+    def test_get_experiment_runs_paginated_api(self):
+        client = self.client
+        response = client.get('/api/experiments/search', params={'q': 'Experiment 2'})
+        data = response.json()
+
+        exp_uuid = data[0]['id']
+        response = client.get(f'/api/experiments/{exp_uuid}/runs/', params={'limit': 2})
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        self.assertEqual(2, len(data['runs']))
+
+        offset = data['runs'][-1]['run_id']
+
+        response = client.get(f'/api/experiments/{exp_uuid}/runs/', params={'limit': 5, 'offset': offset})
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        run_ids = {run['run_id'] for run in data['runs']}
+        self.assertNotIn(offset, run_ids)
+        self.assertEqual(3, len(data['runs']))
+
     def test_archive_experiment_with_runs(self):
         client = self.client
         response = client.get('/api/experiments/search', params={'q': 'Experiment 2'})

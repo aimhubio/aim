@@ -1,7 +1,15 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { Divider, Link, Paper } from '@material-ui/core';
 import _ from 'lodash-es';
+
+import { Divider, Link, Paper } from '@material-ui/core';
+
+import { Icon, Text } from 'components/kit';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+
+import { PathEnum } from 'config/enums/routesEnum';
+
+import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 
 import contextToString from 'utils/contextToString';
 import {
@@ -9,11 +17,9 @@ import {
   getKeyByAlignment,
 } from 'utils/formatByAlignment';
 import { AlignmentOptionsEnum, ChartTypeEnum } from 'utils/d3';
-import { PathEnum } from 'config/enums/routesEnum';
-import { Icon, Text } from 'components/kit';
-import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
-import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 import { formatValue } from 'utils/formatValue';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 import './PopoverContent.scss';
 
@@ -37,7 +43,11 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             <div className='PopoverContent__valueContainer'>
               <Text>Y: </Text>
               <span className='PopoverContent__headerValue'>
-                <Text weight={400}>{tooltipContent.metricName}</Text>
+                <Text weight={400}>
+                  {isSystemMetric(tooltipContent.metricName)
+                    ? formatSystemMetricName(tooltipContent.metricName)
+                    : tooltipContent.metricName}
+                </Text>
                 <Text className='PopoverContent__contextValue'>
                   {contextToString(tooltipContent.metricContext)}
                 </Text>
@@ -67,11 +77,18 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           </div>
         );
       case ChartTypeEnum.HighPlot:
-        const [metric, context] = (focusedState?.xValue as string)?.split('-');
+        const [metric, context] = (
+          (focusedState?.xValue as string) || ''
+        )?.split('-');
         return (
           <div className='PopoverContent__box'>
             <div className='PopoverContent__value'>
-              <strong>{metric ?? '--'}</strong> {context || null}
+              <strong>
+                {isSystemMetric(metric)
+                  ? formatSystemMetricName(metric)
+                  : metric ?? '--'}
+              </strong>
+              {context || null}
             </div>
             <div className='PopoverContent__value'>
               Value: {focusedState?.yValue ?? '--'}
@@ -102,11 +119,20 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                     <div className='PopoverContent__subtitle2'>
                       {groupConfigKey}
                     </div>
-                    {Object.keys(groupConfig[groupConfigKey]).map((item) => (
-                      <div key={item} className='PopoverContent__value'>
-                        {item}: {formatValue(groupConfig[groupConfigKey][item])}
-                      </div>
-                    ))}
+                    {Object.keys(groupConfig[groupConfigKey]).map((item) => {
+                      let val = isSystemMetric(
+                        groupConfig[groupConfigKey][item],
+                      )
+                        ? formatSystemMetricName(
+                            groupConfig[groupConfigKey][item],
+                          )
+                        : groupConfig[groupConfigKey][item];
+                      return (
+                        <div key={item} className='PopoverContent__value'>
+                          {item}: {val}
+                        </div>
+                      );
+                    })}
                   </React.Fragment>
                 ),
               )}

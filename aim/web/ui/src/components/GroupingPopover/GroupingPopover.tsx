@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Accordion,
   AccordionDetails,
@@ -13,6 +14,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { ToggleButton, Icon, Badge, Text } from 'components/kit';
+
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
   GroupNameType,
@@ -49,18 +51,20 @@ function GroupingPopover({
     });
 
     // Sort selected values by the order of their application
-    return data.sort(
-      (a, b) =>
-        groupingData?.[groupName].indexOf(a.value) -
-        groupingData?.[groupName].indexOf(b.value),
-    );
+    return groupingData
+      ? data.sort(
+          (a, b) =>
+            groupingData[groupName].indexOf(a.value) -
+            groupingData[groupName].indexOf(b.value),
+        )
+      : data;
   }, [groupName, groupingData]);
 
   function handleGroupingMode(val: string | number, id: any) {
     onGroupingModeChange({
       groupName,
       value: val === 'Reverse',
-      options: groupingData.reverseMode[groupName as GroupNameType]
+      options: groupingData?.reverseMode[groupName as GroupNameType]
         ? groupingSelectOptions
         : null,
     });
@@ -113,8 +117,7 @@ function GroupingPopover({
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}
-                    size='small'
-                    className='Select__Chip'
+                    selectBadge={true}
                   />
                 ))}
               </div>
@@ -147,7 +150,7 @@ function GroupingPopover({
             title='Select Mode'
             id='yAxis'
             value={
-              groupingData.reverseMode[groupName as GroupNameType]
+              groupingData?.reverseMode[groupName as GroupNameType]
                 ? 'Reverse'
                 : 'Group'
             }

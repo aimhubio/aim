@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { MenuItem } from '@material-ui/core';
+
 import { RowHeightSize } from 'config/table/tableConfigs';
 
 import './RowHeightPopover.scss';
