@@ -1,8 +1,9 @@
+import { IRunBatch } from 'pages/RunDetail/types';
+
 import runsService from 'services/api/runs/runsService';
 import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IRunBatch } from 'types/pages/runs/Runs';
 
 import createModel from '../model';
 
@@ -67,6 +68,7 @@ function getRunInfo(runHash: string) {
         runParams: data.params,
         runTraces: data.traces,
         runInfo: data.props,
+        experimentId: data.props.experiment.id,
         isRunInfoLoading: false,
       });
       return data;
@@ -78,6 +80,7 @@ function getRunInfo(runHash: string) {
 function getRunsOfExperiment(
   runHash: string,
   params?: { limit: number; offset?: string },
+  isLoadingMore?: boolean,
 ) {
   if (getRunsOfExperimentRequestRef) {
     getRunsOfExperimentRequestRef.abort();
@@ -91,9 +94,11 @@ function getRunsOfExperiment(
       model.setState({ isRunsOfExperimentLoading: true });
       const data = await getRunsOfExperimentRequestRef.call();
       model.setState({
-        runsOfExperiment: data.runs,
-        experimentId: data.id,
+        runsOfExperiment: isLoadingMore
+          ? [...(model.getState().runsOfExperiment || []), ...data.runs]
+          : [...data.runs],
         isRunsOfExperimentLoading: false,
+        experimentId: data.id,
       });
       // return data;
     },

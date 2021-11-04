@@ -27,8 +27,9 @@ import './RunDetail.scss';
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
   const runData = useModel(runDetailAppModel);
-  const containerRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement | any>(null);
   const [value, setValue] = useState(0);
+  const [dateNow, setDateNow] = useState(Date.now());
   const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] = useState(false);
   const { runHash } = useParams<{ runHash: string }>();
 
@@ -41,24 +42,35 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }
 
   React.useEffect(() => {
+    setDateNow(Date.now());
     runDetailAppModel.initialize();
     const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
-    const experimentRequestRef = runDetailAppModel.getExperimentsData();
-    runsRequestRef
-      .call()
-      .then((data) => getRunsOfExperiment(data.props.experiment.id));
-    experimentRequestRef.call();
+    const experimentRequestRef: any = runDetailAppModel.getExperimentsData();
+    experimentRequestRef?.call();
+    runsRequestRef.call();
+
     return () => {
       runsRequestRef.abort();
-      experimentRequestRef.abort();
       runsOfExperimentRequestRef?.abort();
+      experimentRequestRef?.abort();
     };
   }, [runHash]);
 
-  function getRunsOfExperiment(id: string, params?: any) {
+  React.useEffect(() => {
+    if (runData?.experimentId) {
+      getRunsOfExperiment(runData?.experimentId);
+    }
+  }, [runData?.experimentId]);
+
+  function getRunsOfExperiment(
+    id: string,
+    params?: { limit: number; offset?: string },
+    isLoadMore?: boolean,
+  ) {
     runsOfExperimentRequestRef = runDetailAppModel.getRunsOfExperiment(
       id,
       params,
+      isLoadMore,
     );
     runsOfExperimentRequestRef.call();
   }
@@ -74,7 +86,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'>
             <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
               <Text tint={100} size={16} weight={600}>
-                {`Experiment Name / ${runData?.runInfo?.experiment?.name}`}
+                {`Experiment Name / ${
+                  runData?.runInfo?.experiment?.name || ''
+                }`}
               </Text>
             </div>
             <Button
@@ -93,26 +107,30 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               <Icon name={'arrow-down'} />
             </Button>
           </div>
-          <Popover
-            // id={id}
-            open={isRunSelectDropdownOpen}
-            onClose={onRunsSelectToggle}
-            // disableEnforceFocus={true}
-            anchorReference='anchorPosition'
-            anchorPosition={{
-              left: containerRef.current?.offsetLeft + 40,
-              top: 35,
-            }}
-            className='RunSelectPopoverWrapper'
-          >
-            <RunSelectPopoverContent
-              getRunsOfExperiment={getRunsOfExperiment}
-              experimentsData={runData?.experimentsData}
-              experimentId={runData?.experimentId}
-              runsOfExperiment={runData?.runsOfExperiment}
-              runInfo={runData?.runInfo}
-            />
-          </Popover>
+          {console.log('runData', runData?.runsOfExperiment)}
+          {isRunSelectDropdownOpen && runData?.runsOfExperiment && (
+            <Popover
+              open={true}
+              onClose={onRunsSelectToggle}
+              anchorReference='anchorPosition'
+              anchorPosition={{
+                left: containerRef.current?.offsetLeft + 40,
+                top: 35,
+              }}
+              className='RunSelectPopoverWrapper'
+            >
+              <RunSelectPopoverContent
+                getRunsOfExperiment={getRunsOfExperiment}
+                experimentsData={runData?.experimentsData}
+                experimentId={runData?.experimentId}
+                runsOfExperiment={runData?.runsOfExperiment}
+                runInfo={runData?.runInfo}
+                isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
+                onRunsSelectToggle={onRunsSelectToggle}
+                dateNow={dateNow}
+              />
+            </Popover>
+          )}
         </div>
         <div className='RunDetail__runDetailContainer__headerContainer'>
           <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
@@ -129,7 +147,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 runData?.runInfo?.creation_time * 1000,
                 runData?.runInfo?.end_time
                   ? runData?.runInfo?.end_time * 1000
-                  : Date.now(),
+                  : dateNow,
               )}`}
             </Text>
             <StatusLabel

@@ -71,6 +71,9 @@
       border-left: $border-main;
       border-bottom: $border-grey-lighter;
       padding-left: 1.5rem;
+      .PrivateTabIndicator-root-1 {
+        display: none;
+      }
       .MuiTabs-root {
         height: 40px;
         min-height: auto;
@@ -95,7 +98,7 @@
             font-family: 'Inter', sans-serif;
             font-weight: 600;
             position: relative;
-            border-right: none;
+            // border-right: none;
             &::before {
               content: '';
               width: 100%;
@@ -245,6 +248,16 @@
               &:hover {
                 margin-right: 0;
               }
+              &::before {
+                content: '';
+                height: 100%;
+                border-radius: 0.3125rem 0 0 0.3125rem;
+                top: 0;
+                left: 0;
+                background: $denim;
+                width: 0.375rem;
+                position: absolute;
+              }
             }
           }
         }
@@ -264,6 +277,9 @@
             justify-content: center;
             &__button {
               background: $cuddle-30;
+              .MuiCircularProgress-root.MuiCircularProgress-colorPrimary {
+                color: $pico-80;
+              }
               &:hover {
                 background: $cuddle-30;
               }
