@@ -1,0 +1,14 @@
+@use 'src/styles/abstracts' as *;
+
+.CodeCompletion {
+    position: absolute;
+    padding: $space-xs;
+    border: $border-main;
+    background-color: #fff;
+    top: 1.75rem;
+    &__SuggestionItem {
+        color: $pico-60;
+        border-bottom: $border-separator;
+        cursor: pointer;
+    }
+}

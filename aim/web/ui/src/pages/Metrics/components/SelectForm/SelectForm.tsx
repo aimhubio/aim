@@ -17,7 +17,7 @@ import {
   SearchOutlined,
 } from '@material-ui/icons';
 
-import { Button, Icon, Badge, Text } from 'components/kit';
+import { Button, Icon, Badge, Text, CodeCompletion } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
 
@@ -47,6 +47,7 @@ function SelectForm({
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
+  const [caretPosition, setCaretPosition] = React.useState(0);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
 
@@ -312,7 +313,22 @@ function SelectForm({
                 inputProps={{ style: { height: '0.687rem' } }}
                 placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
                 value={selectedMetricsData?.query ?? ''}
-                onChange={({ target }) => onSelectRunQueryChange(target.value)}
+                onChange={({ target }) => {
+                  console.log(
+                    target.selectionStart,
+                    target.selectionEnd,
+                    target.selectionDirection,
+                  );
+
+                  setCaretPosition(target?.selectionEnd || 0);
+                  onSelectRunQueryChange(target.value);
+                }}
+              />
+              <CodeCompletion
+                options={metricsOptions}
+                caretPosition={caretPosition}
+                value={selectedMetricsData?.query ?? ''}
+                onChange={onSelectRunQueryChange}
               />
             </form>
           </div>
