@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add table columns virtualization (roubkar)
+- Add ability to apply grouping by higher level param key (roubkar)
 
 ## 3.0.3 Nov 4 2021
 
