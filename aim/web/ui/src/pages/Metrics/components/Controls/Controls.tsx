@@ -13,7 +13,7 @@ import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
-import { IControlProps } from 'types/pages/metrics/components/controls/Controls';
+import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
 
 import './Controls.scss';
 
