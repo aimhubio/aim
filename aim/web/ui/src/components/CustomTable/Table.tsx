@@ -255,7 +255,7 @@ function Table(props) {
         <div className='Table__pane Table__pane--middle'>
           {middlePane.map((col, index) => (
             <Column
-              key={col.key}
+              key={col.key + index}
               topHeader={props.topHeader}
               showTopHeaderContent={
                 props.topHeader &&

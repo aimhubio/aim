@@ -96,13 +96,13 @@ function Column({
     if (columnRef.current) {
       columnRef.current.style.width = 'initial';
     }
-  }, [data, expanded]);
+  }, [data, expanded, width]);
 
   const isInViewPort =
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
-      columnRef.current.offsetLeft > listWindow.left - 1000 &&
+      columnRef.current.offsetLeft > listWindow.left - 500 &&
       columnRef.current.offsetLeft < listWindow.left + listWindow.width + 500);
 
   return (
@@ -114,7 +114,9 @@ function Column({
       style={{
         minWidth: maxWidth,
         maxWidth,
-        width: columnRef.current?.offsetWidth ?? 'initial',
+        width: isInViewPort
+          ? 'initial'
+          : columnRef.current?.offsetWidth ?? 'initial',
         boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
         filter: isInViewPort ? null : 'blur(2px)',
       }}
