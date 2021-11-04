@@ -1,14 +1,17 @@
+import { IRunBatch } from 'pages/RunDetail/types';
+
 import runsService from 'services/api/runs/runsService';
 import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IRunBatch } from 'types/pages/runs/Runs';
 
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({
   isRunInfoLoading: false,
+  isExperimentsLoading: false,
   isRunBatchLoading: false,
+  isRunsOfExperimentLoading: false,
 });
 
 let getRunsInfoRequestRef: {
@@ -19,9 +22,37 @@ let getRunsBatchRequestRef: {
   call: () => Promise<any>;
   abort: () => void;
 };
+let getExperimentsDataRequestRef: {
+  call: () => Promise<any>;
+  abort: () => void;
+};
+
+let getRunsOfExperimentRequestRef: {
+  call: () => Promise<any>;
+  abort: () => void;
+};
 
 function initialize() {
   model.init();
+}
+
+function getExperimentsData() {
+  if (getExperimentsDataRequestRef) {
+    getExperimentsDataRequestRef.abort();
+  }
+  getExperimentsDataRequestRef = runsService.getExperimentsData();
+  return {
+    call: async () => {
+      model.setState({ isExperimentsLoading: true });
+      const data = await getExperimentsDataRequestRef.call();
+      model.setState({
+        isExperimentsLoading: false,
+        experimentsData: data,
+      });
+      return data;
+    },
+    abort: getExperimentsDataRequestRef.abort,
+  };
 }
 
 function getRunInfo(runHash: string) {
@@ -37,10 +68,41 @@ function getRunInfo(runHash: string) {
         runParams: data.params,
         runTraces: data.traces,
         runInfo: data.props,
+        experimentId: data.props.experiment.id,
         isRunInfoLoading: false,
       });
+      return data;
     },
     abort: getRunsInfoRequestRef.abort,
+  };
+}
+
+function getRunsOfExperiment(
+  runHash: string,
+  params?: { limit: number; offset?: string },
+  isLoadingMore?: boolean,
+) {
+  if (getRunsOfExperimentRequestRef) {
+    getRunsOfExperimentRequestRef.abort();
+  }
+  getRunsOfExperimentRequestRef = runsService.getRunsOfExperiment(
+    runHash,
+    params,
+  );
+  return {
+    call: async () => {
+      model.setState({ isRunsOfExperimentLoading: true });
+      const data = await getRunsOfExperimentRequestRef.call();
+      model.setState({
+        runsOfExperiment: isLoadingMore
+          ? [...(model.getState().runsOfExperiment || []), ...data.runs]
+          : [...data.runs],
+        isRunsOfExperimentLoading: false,
+        experimentId: data.id,
+      });
+      // return data;
+    },
+    abort: getRunsOfExperimentRequestRef.abort,
   };
 }
 
@@ -128,6 +190,8 @@ const runDetailAppModel = {
   initialize,
   getRunInfo,
   getRunBatch,
+  getExperimentsData,
+  getRunsOfExperiment,
   archiveRun,
   onNotificationAdd,
   onNotificationDelete,

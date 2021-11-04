@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash-es';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 
-import { IRunDetailParamsTabProps } from 'types/pages/runs/Runs';
+import { IRunDetailParamsTabProps } from './types';
 
 function RunDetailParamsTab({
   runParams,
