@@ -10,9 +10,9 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 
-import useResizeObserver from 'hooks/window/useResizeObserver';
-
 import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
+
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
