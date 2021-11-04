@@ -1,20 +1,21 @@
 import React, { ChangeEvent } from 'react';
-
 import _, { isEmpty } from 'lodash-es';
-import createModel from '../model';
-import { decode, encode } from 'utils/encoder/encoder';
-import getObjectPaths from 'utils/getObjectPaths';
-import getUrlWithParam from 'utils/getUrlWithParam';
-import getStateFromUrl from 'utils/getStateFromUrl';
-import {
-  adjustable_reader,
-  decode_buffer_pairs,
-  decodePathsVals,
-  iterFoldTree,
-} from 'utils/encoder/streamEncoding';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import moment from 'moment';
 
-// Types
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+
+import {
+  getImagesExploreTableColumns,
+  imagesExploreTableRowRenderer,
+} from 'pages/ImagesExplore/components/ImagesExploreTableGrid/ImagesExploreTableGrid';
+
+import * as analytics from 'services/analytics';
+import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
+import appsService from 'services/api/apps/appsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+
 import {
   GroupNameType,
   IAppData,
@@ -25,33 +26,34 @@ import {
   IOnGroupingSelectChangeParams,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IMetric } from 'types/services/models/metrics/metricModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
-import { getItem, setItem } from 'utils/storage';
-import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import * as analytics from 'services/analytics';
-import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
-import appsService from 'services/api/apps/appsService';
-import dashboardService from 'services/api/dashboard/dashboardService';
-import {
-  getImagesExploreTableColumns,
-  imagesExploreTableRowRenderer,
-} from 'pages/ImagesExplore/components/ImagesExploreTableGrid/ImagesExploreTableGrid';
-import JsonToCSV from 'utils/JsonToCSV';
-import moment from 'moment';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { formatValue } from 'utils/formatValue';
 import {
   IImageData,
   IImageRunData,
   IImagesExploreAppConfig,
   IImagesExploreAppModelState,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+
+import { decode, encode } from 'utils/encoder/encoder';
+import getObjectPaths from 'utils/getObjectPaths';
+import getUrlWithParam from 'utils/getUrlWithParam';
+import getStateFromUrl from 'utils/getStateFromUrl';
+import {
+  adjustable_reader,
+  decode_buffer_pairs,
+  decodePathsVals,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
+import { getItem, setItem } from 'utils/storage';
+import JsonToCSV from 'utils/JsonToCSV';
+import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
+
+import createModel from '../model';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
@@ -550,10 +552,10 @@ function onGroupingApplyChange(): void {
  */
 function updateURL(configData = model.getState()!.config!) {
   const { grouping, select } = configData;
-  const url: string = getUrlWithParam(
-    ['grouping', 'select'],
-    [encode(grouping), encode(select)],
-  );
+  const url: string = getUrlWithParam({
+    grouping: encode(grouping),
+    select: encode(select),
+  });
 
   if (url === `${window.location.pathname}${window.location.search}`) {
     return;
@@ -691,7 +693,7 @@ function getDataAsTableRows(
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
-        experiment: metric.run.props.experiment ?? 'default',
+        experiment: metric.run.props.name ?? 'default',
         run: metric.run.props.name,
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         parentId: groupKey,

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Slider, TextField } from '@material-ui/core';
 import { isEmpty } from 'lodash-es';
+
+import { Slider, TextField } from '@material-ui/core';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+
 import { IImagesPanelProps } from './ImagesPanel.d';
 
 import './ImagesPanel.scss';

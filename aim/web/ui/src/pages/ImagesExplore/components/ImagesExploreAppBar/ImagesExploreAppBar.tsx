@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
+
 import {
   Dialog,
   DialogActions,
@@ -8,8 +9,8 @@ import {
   MenuItem,
   Typography,
 } from '@material-ui/core';
-import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 
+import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Icon, Button } from 'components/kit';

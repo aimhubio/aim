@@ -1,22 +1,29 @@
 import React from 'react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
-import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
-import * as analytics from 'services/analytics';
-import useModel from 'hooks/model/useModel';
-import Grouping from 'pages/Metrics/components/Grouping/Grouping';
-import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import getStateFromUrl from 'utils/getStateFromUrl';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { isEmpty } from 'lodash-es';
+
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
-import { RowHeightSize } from 'config/table/tableConfigs';
 import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
-import usePanelResize from 'hooks/resize/usePanelResize';
-import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import ImagesPanel from 'components/ImagesPanel';
+
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RowHeightSize } from 'config/table/tableConfigs';
+
+import usePanelResize from 'hooks/resize/usePanelResize';
+import useModel from 'hooks/model/useModel';
+
+import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
+import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+
+import * as analytics from 'services/analytics';
+import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+
+import getStateFromUrl from 'utils/getStateFromUrl';
+
+import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
 import './ImagesExplore.scss';
 

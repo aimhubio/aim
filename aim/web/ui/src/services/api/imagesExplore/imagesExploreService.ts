@@ -1,5 +1,6 @@
-import API from '../api';
 import { IApiRequest } from 'types/services/services';
+
+import API from '../api';
 
 const endpoints = {
   GET_IMAGES: 'runs/search/images',

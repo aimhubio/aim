@@ -1,15 +1,18 @@
 import React from 'react';
 import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
-import { Link } from '@material-ui/core';
 import { merge } from 'lodash-es';
 
+import { Link } from '@material-ui/core';
+
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { Icon, Button, Badge } from 'components/kit';
+
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
+
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
-import { Icon, Button, Badge } from 'components/kit';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -231,7 +234,7 @@ function imagesExploreTableRowRenderer(
     return merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData.experiment,
+      experiment: rowData.experiment.name,
       run: {
         content: (
           <Link

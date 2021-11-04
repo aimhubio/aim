@@ -2,8 +2,10 @@ import React, { useRef } from 'react';
 import _ from 'lodash';
 import { VariableSizeList as List } from 'react-window';
 
-import contextToString from 'utils/contextToString';
 import ImagesList from 'components/ImagesList';
+
+import contextToString from 'utils/contextToString';
+
 import { IImageSetProps } from './ImagesSet.d';
 
 import './ImageSet.scss';
