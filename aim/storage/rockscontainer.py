@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 from filelock import FileLock
 
@@ -65,13 +66,13 @@ class RocksContainer(Container):
         if self._db is not None:
             return self._db
 
-        logger.debug(f'opening {self.path} as aimrocks db')
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        locks_dir = self.path.parent.parent / 'locks'
-        locks_dir.mkdir(parents=True, exist_ok=True)
+        if self.read_only:
+            self._optimize_db_for_read()
 
+        logger.debug(f'opening {self.path} as aimrocks db')
         if not self.read_only:
-            self._lock_path = locks_dir / self.path.name
+            lock_path = self.prepare_lock_path()
+            self._lock_path = lock_path
             self._lock = FileLock(str(self._lock_path), timeout=10)
             self._lock.acquire()
 
@@ -487,3 +488,33 @@ class RocksContainer(Container):
         key, value = it.get()
 
         return key, value
+
+    def _optimize_db_for_read(self):
+        """
+        This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
+        db will contain .sst files only which will significantly reduce further open and read operations. Further
+        optimizations can be done by running compactions but this is a costly operation to be performed online.
+        """
+        assert self.read_only
+
+        def non_empty_wal():
+            for wal_path in self.path.glob('*.log'):
+                if os.path.getsize(wal_path) > 0:
+                    return True
+            return False
+
+        if non_empty_wal():
+            # TODO code duplication below
+            lock_path = self.prepare_lock_path()
+
+            with FileLock(str(lock_path), timeout=10):
+                wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
+                wdb.flush()
+                wdb.flush_wal()
+                del wdb
+
+    def prepare_lock_path(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        locks_dir = self.path.parent.parent / 'locks'
+        locks_dir.mkdir(parents=True, exist_ok=True)
+        return locks_dir / self.path.name
