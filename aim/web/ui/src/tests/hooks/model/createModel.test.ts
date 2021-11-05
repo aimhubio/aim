@@ -1,4 +1,5 @@
 import createModel from 'services/models/model';
+
 import { shouldMatchObject } from '../../utils';
 
 const initialState = {

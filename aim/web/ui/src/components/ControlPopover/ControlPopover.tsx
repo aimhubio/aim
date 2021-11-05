@@ -1,9 +1,12 @@
 import React from 'react';
+
 import { Popover } from '@material-ui/core';
 
-import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
-import stopPropagation from 'utils/stopPropagation';
 import { Text } from 'components/kit';
+
+import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
+
+import stopPropagation from 'utils/stopPropagation';
 
 import './ControlPopover.scss';
 

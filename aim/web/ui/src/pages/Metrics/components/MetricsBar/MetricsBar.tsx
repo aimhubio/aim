@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
+
 import {
   Dialog,
   DialogActions,
@@ -7,13 +8,15 @@ import {
   DialogTitle,
   MenuItem,
 } from '@material-ui/core';
-import BookmarkForm from '../BookmarkForm/BookmarkForm';
 
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 import { Button, Icon, Text } from 'components/kit';
+
+import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
+
+import BookmarkForm from '../BookmarkForm/BookmarkForm';
 
 import './MetricsBar.scss';
 

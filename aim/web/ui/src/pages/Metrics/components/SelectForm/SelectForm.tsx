@@ -1,4 +1,6 @@
 import React from 'react';
+import { isEmpty } from 'lodash-es';
+
 import {
   Box,
   Checkbox,
@@ -14,20 +16,23 @@ import {
   CheckBoxOutlineBlank,
   SearchOutlined,
 } from '@material-ui/icons';
-import { isEmpty } from 'lodash-es';
+
+import { Button, Icon, Badge, Text } from 'components/kit';
+
+import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import projectsModel from 'services/models/projects/projectsModel';
-import COLORS from 'config/colors/colors';
-import contextToString from 'utils/contextToString';
 
+import projectsModel from 'services/models/projects/projectsModel';
+import metricAppModel from 'services/models/metrics/metricsAppModel';
+
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import {
   ISelectFormProps,
   ISelectMetricsOption,
 } from 'types/pages/metrics/components/SelectForm/SelectForm';
-import metricAppModel from 'services/models/metrics/metricsAppModel';
-import { Button, Icon, Badge, Text } from 'components/kit';
+
+import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
@@ -72,7 +77,7 @@ function SelectForm({
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedMetricsData?.metrics].filter(
+    let fieldData = [...(selectedMetricsData?.metrics || [])].filter(
       (opt: ISelectMetricsOption) => opt.label !== field,
     );
     onMetricsSelectChange(fieldData);
@@ -214,7 +219,7 @@ function SelectForm({
                     disablePortal={true}
                     disableCloseOnSelect
                     options={metricsOptions}
-                    value={selectedMetricsData?.metrics ?? ''}
+                    value={selectedMetricsData?.metrics}
                     onChange={onSelect}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.label}
@@ -273,6 +278,7 @@ function SelectForm({
                     (tag: ISelectMetricsOption) => {
                       return (
                         <Badge
+                          size='large'
                           key={tag.label}
                           color={tag.color}
                           label={tag.label}
@@ -283,14 +289,15 @@ function SelectForm({
                   )}
                 </div>
               </Box>
-              {selectedMetricsData?.metrics.length > 1 && (
-                <span
-                  onClick={() => onMetricsSelectChange([])}
-                  className='SelectForm__clearAll'
-                >
-                  <Icon name='close' />
-                </span>
-              )}
+              {selectedMetricsData?.metrics &&
+                selectedMetricsData.metrics.length > 1 && (
+                  <span
+                    onClick={() => onMetricsSelectChange([])}
+                    className='SelectForm__clearAll'
+                  >
+                    <Icon name='close' />
+                  </span>
+                )}
             </>
           )}
         </Box>

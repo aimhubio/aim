@@ -1,9 +1,10 @@
-import API from '../api';
 import {
   IProject,
   IProjectParamsMetrics,
 } from 'types/services/models/projects/projectsModel';
 import { IApiRequest } from 'types/services/services';
+
+import API from '../api';
 
 const endpoints = {
   GET_PROJECTS: 'projects',

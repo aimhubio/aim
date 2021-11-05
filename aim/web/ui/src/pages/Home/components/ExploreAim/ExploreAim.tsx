@@ -1,9 +1,11 @@
 import React from 'react';
 
-import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
 import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
+
 import { Icon, Text } from 'components/kit';
+
+import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
 
 import './ExploreAim.scss';
 

@@ -1,9 +1,10 @@
 import _ from 'lodash-es';
 
 import { IProcessData } from 'types/utils/d3/processData';
+import { ILine } from 'types/components/LineChart/LineChart';
+
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { removeOutliers } from 'utils/removeOutliers';
-import { ILine } from 'types/components/LineChart/LineChart';
 
 function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
   let xValues: number[] = [];

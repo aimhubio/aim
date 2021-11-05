@@ -1,7 +1,9 @@
 import React from 'react';
 
-import { ResizeModeEnum } from 'config/enums/tableEnums';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import { IResizePanelProps } from 'types/components/ResizePanel/ResizePanel';
 
 import './ResizePanel.scss';

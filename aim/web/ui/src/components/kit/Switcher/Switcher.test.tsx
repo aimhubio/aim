@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
+
 import Switcher from './Switcher';
 
 const mockClick = jest.fn();

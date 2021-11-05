@@ -1,85 +1,164 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import moment from 'moment';
-import { Box, Paper, Tab, Tabs } from '@material-ui/core';
-import { NavLink, useParams } from 'react-router-dom';
+import { Link, NavLink, useParams } from 'react-router-dom';
+import classNames from 'classnames';
+
+import { Paper, Popover, Tab, Tabs } from '@material-ui/core';
+
+import TabPanel from 'components/TabPanel/TabPanel';
+import { Badge, Button, Icon, Text } from 'components/kit';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import StatusLabel from 'components/StatusLabel';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
+
+import useModel from 'hooks/model/useModel';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
-import { processDurationTime } from 'utils/processDurationTime';
-import useModel from 'hooks/model/useModel';
-import TabPanel from 'components/TabPanel/TabPanel';
-import RunDetailParamsTab from './RunDetailParamsTab';
-import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
-import RunDetailSettingsTab from './RunDetailSettingsTab';
-import AppBar from 'components/AppBar/AppBar';
-import { Badge } from 'components/kit';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import * as analytics from 'services/analytics';
+
+import { processDurationTime } from 'utils/processDurationTime';
+
+import RunDetailSettingsTab from './RunDetailSettingsTab';
+import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
+import RunDetailParamsTab from './RunDetailParamsTab';
+import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
+  let runsOfExperimentRequestRef: any = null;
   const runData = useModel(runDetailAppModel);
+  const containerRef = useRef<HTMLDivElement | any>(null);
   const [value, setValue] = useState(0);
+  const [dateNow, setDateNow] = useState(Date.now());
+  const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] = useState(false);
   const { runHash } = useParams<{ runHash: string }>();
+
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 
+  function onRunsSelectToggle() {
+    setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
+  }
+
   React.useEffect(() => {
+    setDateNow(Date.now());
     runDetailAppModel.initialize();
     const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
+    const experimentRequestRef: any = runDetailAppModel.getExperimentsData();
+    experimentRequestRef?.call();
     runsRequestRef.call();
+
     return () => {
       runsRequestRef.abort();
+      runsOfExperimentRequestRef?.abort();
+      experimentRequestRef?.abort();
     };
   }, [runHash]);
+
+  React.useEffect(() => {
+    if (runData?.experimentId) {
+      getRunsOfExperiment(runData?.experimentId);
+    }
+  }, [runData?.experimentId]);
+
+  function getRunsOfExperiment(
+    id: string,
+    params?: { limit: number; offset?: string },
+    isLoadMore?: boolean,
+  ) {
+    runsOfExperimentRequestRef = runDetailAppModel.getRunsOfExperiment(
+      id,
+      params,
+      isLoadMore,
+    );
+    runsOfExperimentRequestRef.call();
+  }
 
   React.useEffect(() => {
     analytics.pageView('[RunDetail]');
   }, []);
 
   return (
-    <section className='RunDetail container'>
+    <section className='RunDetail container' ref={containerRef}>
       <div className='RunDetail__runDetailContainer'>
-        <AppBar
-          title={
-            <div className='RunDetail__runDetailContainer__appBarTitleBox'>
-              <NavLink
-                className='RunDetail__runDetailContainer__appBarTitleBox__pageName'
-                to='/runs'
-              >
-                {'Runs'}
-              </NavLink>
-              /
-              <p className='RunDetail__runDetailContainer__appBarTitleBox__runHash'>
-                {runHash}
-              </p>
-            </div>
-          }
-        />
+        <div className='RunDetail__runDetailContainer__appBarContainer'>
+          <ControlPopover
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            anchor={({ onAnchorClick, opened }) => (
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'>
+                <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                  <Text tint={100} size={16} weight={600}>
+                    {`Experiment Name / ${
+                      runData?.runInfo?.experiment?.name || ''
+                    }`}
+                  </Text>
+                </div>
+                <Button
+                  onClick={onAnchorClick}
+                  disabled={runData?.isExperimentsLoading}
+                  color={opened ? 'primary' : 'default'}
+                  size='small'
+                  className={classNames(
+                    'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                    { opened: opened },
+                  )}
+                  withOnlyIcon
+                >
+                  <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                </Button>
+              </div>
+            )}
+            component={
+              <RunSelectPopoverContent
+                getRunsOfExperiment={getRunsOfExperiment}
+                experimentsData={runData?.experimentsData}
+                experimentId={runData?.experimentId}
+                runsOfExperiment={runData?.runsOfExperiment}
+                runInfo={runData?.runInfo}
+                isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
+                onRunsSelectToggle={onRunsSelectToggle}
+                dateNow={dateNow}
+              />
+            }
+          />
+        </div>
         <div className='RunDetail__runDetailContainer__headerContainer'>
           <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
-            <p className='RunDetail__runDetailContainer__headerContainer__infoBox__experimentName'>
-              Experiment: {runData?.runInfo?.experiment}
-            </p>
-            <p className='RunDetail__runDetailContainer__headerContainer__infoBox__experimentDate'>
+            <Text
+              component='p'
+              tint={100}
+              size={14}
+              weight={600}
+              className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
+            >
               {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                'DD MMM YYYY ~ HH:mm A',
-              )} ~ ${
-                !runData?.runInfo?.end_time
-                  ? 'in progress'
-                  : processDurationTime(
-                      runData?.runInfo?.creation_time * 1000,
-                      runData?.runInfo?.end_time * 1000,
-                    )
-              }`}
-            </p>
+                'DD MMM YYYY, HH:mm A',
+              )} | ${processDurationTime(
+                runData?.runInfo?.creation_time * 1000,
+                runData?.runInfo?.end_time
+                  ? runData?.runInfo?.end_time * 1000
+                  : dateNow,
+              )}`}
+            </Text>
+            <StatusLabel
+              status={runData?.runInfo?.end_time ? 'alert' : 'success'}
+              title={runData?.runInfo?.end_time ? 'Finished' : 'In Progress'}
+            />
           </div>
-          <Box className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
+          <div className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
             {runData?.runInfo?.tags.map((tag: any, i: number) => (
               <Badge color={tag.color} label={tag.name} key={i} />
             ))}
-          </Box>
+          </div>
         </div>
         <Paper className='RunDetail__runDetailContainer__tabsContainer'>
           <Tabs

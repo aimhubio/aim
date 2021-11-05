@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ITextProps } from './Text.d';
 
 import './Text.scss';

@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { MenuItem } from '@material-ui/core';
+
 import { IZoomInPopoverProps } from 'types/components/ZoomInPopover/ZoomInPopover';
 
 import './ZoomInPopover.scss';

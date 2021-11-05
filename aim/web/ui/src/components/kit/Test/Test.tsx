@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Text } from 'components/kit';
+
 import { ITestProps } from './types.d';
 
 import './styles.scss';

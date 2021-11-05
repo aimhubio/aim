@@ -1,22 +1,30 @@
 import React, { memo } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import * as analytics from 'services/analytics';
 import useModel from 'hooks/model/useModel';
-import { ITableRef } from 'types/components/Table/Table';
+
 import runsAppModel from 'services/models/runs/runsAppModel';
+import * as analytics from 'services/analytics';
+
+import { ITableRef } from 'types/components/Table/Table';
+
+import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+
 import Runs from './Runs';
 
 function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
-  const runsData = useModel(runsAppModel);
+  const runsData = useModel<any>(runsAppModel);
   const history = useHistory();
 
   React.useEffect(() => {
     if (tableRef.current) {
-      runsAppModel.setComponentRefs({
-        tableRef,
+      setComponentRefs({
+        refElement: {
+          tableRef,
+        },
+        model: runsAppModel,
       });
     }
   }, [runsData?.data]);

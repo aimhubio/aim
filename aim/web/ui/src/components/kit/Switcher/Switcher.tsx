@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ISwitcherProps } from './Switcher.d';
 
 import './Switcher.scss';

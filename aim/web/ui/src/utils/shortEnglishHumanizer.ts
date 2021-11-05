@@ -4,20 +4,20 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
   language: 'shortEn',
   languages: {
     shortEn: {
-      y: () => 'y',
-      mo: () => 'mo',
-      w: () => 'w',
-      d: () => 'd',
-      h: () => 'h',
-      m: () => 'm',
-      s: () => 's',
+      y: () => 'year',
+      mo: () => 'mon',
+      w: () => 'week',
+      d: () => 'day',
+      h: () => 'hrs',
+      m: () => 'min',
+      s: () => 'sec',
       ms: () => 'ms',
     },
   },
-  units: ['d', 'h', 'm', 's'],
+  units: ['d', 'h', 'm', 's', 'ms'],
   spacer: '',
   delimiter: ' ',
-  largest: 1,
+  largest: 2,
 });
 
 export default shortEnglishHumanizer;

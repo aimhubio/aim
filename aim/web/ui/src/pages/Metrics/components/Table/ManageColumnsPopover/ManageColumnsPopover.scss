@@ -58,10 +58,7 @@
   justify-content: flex-end;
 
   button {
-    font-size: $text-sm;
     margin-left: 0.5rem;
-    font-family: 'Inter Medium', sans-serif;
-
     &:nth-child(4) {
       margin-left: 0;
     }

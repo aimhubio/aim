@@ -1,7 +1,11 @@
 import { renderHook, act } from '@testing-library/react-hooks';
+
 import useModel from 'hooks/model/useModel';
+
 import createModel from 'services/models/model';
+
 import { IModel } from 'types/services/models/model';
+
 import { shouldMatchObject } from '../../utils';
 
 const initialState = { forHook: true };

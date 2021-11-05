@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IIconProps } from './Icon.d';
 
 function Icon({

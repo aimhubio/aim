@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 import { Button, Switcher, Text } from 'components/kit';
+
+import { IGroupingPopoverAdvancedProps } from 'types/components/GroupingPopover/GroupingPopover';
 
 import './StrokePopoverAdvanced.scss';
 
@@ -12,7 +13,7 @@ function StrokePopoverAdvanced({
   groupingData,
 }: IGroupingPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
   function isShuffleDisabled(): boolean {
-    if (groupingData.reverseMode.stroke || groupingData.stroke.length > 0) {
+    if (groupingData?.reverseMode.stroke || groupingData?.stroke.length) {
       return false;
     }
     return true;

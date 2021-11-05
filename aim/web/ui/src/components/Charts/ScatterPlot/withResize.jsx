@@ -1,5 +1,6 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
+/* eslint-disable react/prop-types */
+
 import { DEFAULT_CONTAINER_HEIGHT, DEFAULT_CONTAINER_WIDTH } from './config';
 
 const INEXPLICABLE_SIZE = 6;

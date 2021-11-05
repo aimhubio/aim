@@ -1,12 +1,14 @@
 import React from 'react';
 
-import BookmarkCard from './components/BookmarkCard/BookmarkCard';
-import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 import AppBar from 'components/AppBar/AppBar';
-
-import './Bookmarks.scss';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+
+import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
+
+import BookmarkCard from './components/BookmarkCard/BookmarkCard';
+
+import './Bookmarks.scss';
 
 function Bookmarks({
   data,
