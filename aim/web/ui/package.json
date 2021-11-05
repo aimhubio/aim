@@ -52,8 +52,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && gzipper c -i js,css,html ./build",
-    "test": "react-scripts test",
-    "test:watch": "react-scripts test --watch",
+    "test": "react-scripts test ",
+    "test:coverage": "react-scripts test --collectCoverage",
+    "test:watch": "react-scripts test --watchAll",
     "eject": "react-scripts eject",
     "format:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "analyze-bundles": "node tasks/bundle-analyzer.js"
@@ -120,6 +121,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/d3": "^7.0.0",
     "@types/md5": "^2.3.1",
     "@types/node-sass": "^4.11.2",
@@ -133,13 +135,13 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "gzipper": "^5.0.1",
+    "husky": "^6.0.0",
     "jss-plugin-template": "^10.7.1",
+    "lint-staged": "^11.0.0",
+    "node-sass": "^6.0.1",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0",
     "progress-bar-webpack-plugin": "^2.1.0",
-    "webpack-bundle-analyzer": "^4.4.2",
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0",
-    "node-sass": "^6.0.1"
+    "webpack-bundle-analyzer": "^4.4.2"
   }
 }
