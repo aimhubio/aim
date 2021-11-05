@@ -1,5 +1,5 @@
 import React from 'react';
-import { ISwitcherProps, SwitcherLabel } from './Switcher.d';
+import { ISwitcherProps } from './Switcher.d';
 
 import './Switcher.scss';
 
@@ -22,10 +22,6 @@ function Switcher({
     onChange(e, !checkedValue);
   }
 
-  function isValidLabel(label: SwitcherLabel | unknown) {
-    return !(label === null || label === undefined);
-  }
-
   React.useEffect(() => {
     if (checked !== checkedValue) {
       setCheckedValue(checked);
@@ -35,22 +31,19 @@ function Switcher({
   return (
     <button
       data-name={name}
+      data-testid='switcher'
       className={`Switcher ${`Switcher__${variant}`} ${`Switcher__${color}`} ${`Switcher__${size} ${
         checkedValue ? 'Switcher__checked' : ''
       }`}`}
       onClick={handleClick}
     >
-      {isValidLabel(leftLabel) && (
-        <span className='Switcher__leftLabel'>{leftLabel}</span>
-      )}
+      {leftLabel && <span className='Switcher__leftLabel'>{leftLabel}</span>}
       <i
         className={`Switcher__circle ${
           checkedValue ? 'Switcher__circle__checked' : ''
         }`}
       />
-      {isValidLabel(rightLabel) && (
-        <span className='Switcher__rightLabel'>{rightLabel}</span>
-      )}
+      {rightLabel && <span className='Switcher__rightLabel'>{rightLabel}</span>}
     </button>
   );
 }
