@@ -22,6 +22,7 @@ from aim.storage.encoding.encoding_native import (
 from aim.storage.encoding.encoding_native import decode_path  # noqa F401
 from aim.storage.utils import ArrayFlag, ArrayFlagType, ObjectFlag, ObjectFlagType, CustomObjectFlagType
 from aim.storage.types import AimObjectKey, AimObjectPath
+from aim.storage.types import BLOB
 
 from typing import Union, Any
 
@@ -55,6 +56,8 @@ def encode(value: Any) -> bytes:
     The first byte of the buffer encodes type of the encoded value and the rest
     are for encoded content.
     """
+    if isinstance(value, BLOB):
+        return value.transform(encode)
 
     if value is None:
         # No need to encode a content for None-values
@@ -105,6 +108,9 @@ def encode(value: Any) -> bytes:
 
 def decode(buffer: bytes):
     """Automatically detect and decode the value from a buffer."""
+
+    if isinstance(buffer, BLOB):
+        return buffer.transform(decode)
 
     # First, we extract type_id and the content buffer
     type_id = buffer[0]
