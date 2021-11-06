@@ -6,12 +6,16 @@ import aimrocks
 
 from typing import Iterator, Optional, Tuple
 
-from aim.storage.container import Container
+from aim.storage.types import BLOB, BLOBResolver
+from aim.storage.container import Container, Key, Value
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
 
 
 logger = logging.getLogger(__name__)
+
+BLOB_SENTINEL = b''
+BLOB_DOMAIN = b'BLOBS\xfe'
 
 
 class RocksContainer(Container):
@@ -56,6 +60,7 @@ class RocksContainer(Container):
         self._wait_if_busy = wait_if_busy  # TODO implement
         self._lock_path: Optional[Path] = None
         self._progress_path: Optional[Path] = None
+
         if not self.read_only:
             self.writable_db
         # TODO check if Containers are reopenable
@@ -144,9 +149,9 @@ class RocksContainer(Container):
 
     def get(
         self,
-        key: bytes,
+        key: Key,
         default=None
-    ) -> bytes:
+    ) -> Value:
         """Returns the value by the given `key` if it exists else `default`.
 
         The `default` is :obj:`None` by default.
@@ -158,8 +163,8 @@ class RocksContainer(Container):
 
     def __getitem__(
         self,
-        key: bytes
-    ) -> bytes:
+        key: Key
+    ) -> Value:
         """Returns the value by the given `key`.
 
         Raises :obj:`KeyError` if the `key` is not found.
@@ -167,12 +172,96 @@ class RocksContainer(Container):
         value = self.db.get(key=key)
         if value is None:
             raise KeyError(key)
+        # We treat b'' as BLOB sentinels.
+        if value == BLOB_SENTINEL:
+            return self._get_blob(key)
         return value
+
+    def _get_blob_resolver(
+        self,
+        key: Key
+    ) -> BLOBResolver:
+        def resolver() -> bytes:
+            data = self[BLOB_DOMAIN + key]
+            assert isinstance(data, bytes)
+            return data
+        return resolver
+
+    def _get_blob(
+        self,
+        key: Key
+    ) -> BLOB:
+        return BLOB(resolver=self._get_blob_resolver(key))
+
+    def _put(
+        self,
+        key: Key,
+        value: Value,
+        *,
+        target = None
+    ):
+        if target is None:
+            target = self.writable_db
+        target.put(key, value)
+
+    def _put_blob(
+        self,
+        key: Key,
+        value: BLOB,
+        *,
+        target = None
+    ):
+        if target is None:
+            target = self.writable_db
+        # TODO TODO TODO encode bytes maybe?
+        self._put(key=BLOB_DOMAIN + key, value=bytes(value), target=target)
+
+    def _delete(
+        self,
+        key: Key,
+        *,
+        target = None
+    ):
+        if target is None:
+            target = self.writable_db
+        target.delete(key)
+
+    def _delete_blob(
+        self,
+        key: Key,
+        *,
+        target = None
+    ):
+        if target is None:
+            target = self.writable_db
+        self._delete(key=BLOB_DOMAIN + key, target=target)
+
+    def _delete_range(
+        self,
+        begin: Key,
+        end: Key,
+        *,
+        target = None
+    ):
+        if target is None:
+            target = self.writable_db
+        target.delete_range((begin, end))
+
+    def _delete_blob_range(
+        self,
+        begin: Key,
+        end: Key,
+        *,
+        target = None
+    ):
+        if target is None:
+            target = self.writable_db
+        self._delete_range(BLOB_DOMAIN + begin, BLOB_DOMAIN + end, target=target)
 
     def set(
         self,
-        key: bytes,
-        value: bytes,
+        key: Key,
+        value: Value,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
@@ -185,24 +274,24 @@ class RocksContainer(Container):
         See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
         more details.
         """
-        if store_batch is not None:
-            target = store_batch
+        if isinstance(value, BLOB):
+            self._put(key=key, value=BLOB_SENTINEL, target=store_batch)
+            self._put_blob(key=key, value=value, target=store_batch)
         else:
-            target = self.writable_db
-
-        target.put(key=key, value=value)
+            self._put(key=key, value=value, target=store_batch)
+            self._delete_blob(key=key, target=store_batch)
 
     def __setitem__(
         self,
-        key: bytes,
-        value: bytes
+        key: Key,
+        value: Value
     ):
         """Set a value for given key."""
-        self.writable_db.put(key=key, value=value)
+        self.set(key=key, value=value)
 
     def delete(
         self,
-        key: bytes,
+        key: Key,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
@@ -216,24 +305,20 @@ class RocksContainer(Container):
         See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
         more details.
         """
-        if store_batch is not None:
-            target = store_batch
-        else:
-            target = self.writable_db
-
-        target.delete(key)
+        self._delete(key, target=store_batch)
+        self._delete_blob(key, target=store_batch)
 
     def __delitem__(
         self,
-        key: bytes
+        key: Key
     ) -> None:
         """Delete a key-value record by the given key."""
-        return self.writable_db.delete(key)
+        self.delete(key)
 
     def delete_range(
         self,
-        begin: bytes,
-        end: bytes,
+        begin: Key,
+        end: Key,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
@@ -247,17 +332,13 @@ class RocksContainer(Container):
         See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
         more details.
         """
-        if store_batch is not None:
-            target = store_batch
-        else:
-            target = self.writable_db
-
-        target.delete_range((begin, end))
+        self._delete_range(begin, end, target=store_batch)
+        self._delete_blob_range(begin, end, target=store_batch)
 
     def items(
         self,
-        prefix: bytes = b''
-    ) -> Iterator[Tuple[bytes, bytes]]:
+        prefix: Key = b''
+    ) -> Iterator[Tuple[Key, Value]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -276,16 +357,18 @@ class RocksContainer(Container):
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
         # TODO return ValuesView, not iterator
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek(prefix)
         for key, val in it:
             if not key.startswith(prefix):
                 break
+            if val == BLOB_SENTINEL:
+                val = self._get_blob(key)
             yield key, val
 
     def walk(
         self,
-        prefix: bytes = b''
+        prefix: Key = b''
     ):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
@@ -300,7 +383,7 @@ class RocksContainer(Container):
         }` and `walker = container.walk()` then:
         `walker.send(b'meta') == b'meta.x'`, `walker.send(b'e.y') == b'e.y'`
         """
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek(prefix)
 
         while True:
@@ -314,8 +397,8 @@ class RocksContainer(Container):
 
     def keys(
         self,
-        prefix: bytes = b''
-    ):
+        prefix: Key = b''
+    ) -> Iterator[Key]:
         """Iterate over all the keys in the prefix range.
 
         The iteration is always performed in lexiographic order.
@@ -334,7 +417,7 @@ class RocksContainer(Container):
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
         # TODO return KeyView, not iterator
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iterkeys()
+        it = self.db.iterkeys()
         it.seek(prefix)
         for key in it:
             if not key.startswith(prefix):
@@ -343,7 +426,7 @@ class RocksContainer(Container):
 
     def values(
         self,
-        prefix: bytes = b''
+        prefix: Key = b''
     ):
         """Iterate over all the values in the given prefix key range.
 
@@ -364,14 +447,9 @@ class RocksContainer(Container):
         """
         raise NotImplementedError
 
-    def update(
-        self
-    ) -> None:
-        raise NotImplementedError
-
     def view(
         self,
-        prefix: bytes = b''
+        prefix: Key = b''
     ) -> 'Container':
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
@@ -422,12 +500,12 @@ class RocksContainer(Container):
 
     def next_key(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: Key = b''
+    ) -> Key:
         """Returns the key that comes (lexicographically) right after the
         provided `key`.
         """
-        it: Iterator[bytes] = self.db.iterkeys()
+        it = self.db.iterkeys()
         it.seek(prefix + b'\x00')
         key = next(it)
 
@@ -438,8 +516,8 @@ class RocksContainer(Container):
 
     def next_value(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: Key = b''
+    ) -> Value:
         """Returns the value for the key that comes (lexicographically) right
         after the provided `key`.
         """
@@ -448,12 +526,12 @@ class RocksContainer(Container):
 
     def next_key_value(
         self,
-        prefix: bytes = b''
-    ) -> Tuple[bytes, bytes]:
+        prefix: Key = b''
+    ) -> Tuple[Key, Value]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek(prefix + b'\x00')
 
         key, value = next(it)
@@ -461,12 +539,15 @@ class RocksContainer(Container):
         if not key.startswith(prefix):
             raise KeyError
 
+        if value == BLOB_SENTINEL:
+            value = self._get_blob(key)
+
         return key, value
 
     def prev_key(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: Key = b''
+    ) -> Key:
         """Returns the key that comes (lexicographically) right before the
         provided `key`.
         """
@@ -475,8 +556,8 @@ class RocksContainer(Container):
 
     def prev_value(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: Key = b''
+    ) -> Value:
         """Returns the value for the key that comes (lexicographically) right
         before the provided `key`.
         """
@@ -485,14 +566,17 @@ class RocksContainer(Container):
 
     def prev_key_value(
         self,
-        prefix: bytes = b''
-    ) -> Tuple[bytes, bytes]:
+        prefix: Key = b''
+    ) -> Tuple[Key, Value]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek_for_prev(prefix + b'\xff')
 
         key, value = it.get()
+
+        if value == BLOB_SENTINEL:
+            value = self._get_blob(key)
 
         return key, value
