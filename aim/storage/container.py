@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from aim.storage.types import BLOB
 
-from typing import Callable, Iterator, Tuple, Union
+from typing import Iterator, Tuple, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

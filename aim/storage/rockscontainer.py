@@ -198,7 +198,7 @@ class RocksContainer(Container):
         key: Key,
         value: Value,
         *,
-        target = None
+        target=None
     ):
         if target is None:
             target = self.writable_db
@@ -209,7 +209,7 @@ class RocksContainer(Container):
         key: Key,
         value: BLOB,
         *,
-        target = None
+        target=None
     ):
         if target is None:
             target = self.writable_db
@@ -220,7 +220,7 @@ class RocksContainer(Container):
         self,
         key: Key,
         *,
-        target = None
+        target=None
     ):
         if target is None:
             target = self.writable_db
@@ -230,7 +230,7 @@ class RocksContainer(Container):
         self,
         key: Key,
         *,
-        target = None
+        target=None
     ):
         if target is None:
             target = self.writable_db
@@ -241,7 +241,7 @@ class RocksContainer(Container):
         begin: Key,
         end: Key,
         *,
-        target = None
+        target=None
     ):
         if target is None:
             target = self.writable_db
@@ -252,7 +252,7 @@ class RocksContainer(Container):
         begin: Key,
         end: Key,
         *,
-        target = None
+        target=None
     ):
         if target is None:
             target = self.writable_db

@@ -101,7 +101,9 @@ class BLOB:
         if self.data is not None:
             return self.__class__(transform(self.data))
 
-        resolver = lambda: transform(bytes(self))
+        def resolver():
+            return transform(bytes(self))
+
         return self.__class__(resolver=resolver)
 
 
