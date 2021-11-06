@@ -67,7 +67,7 @@ class RocksContainer(Container):
             return self._db
 
         if self.read_only:
-            self._optimize_db_for_read()
+            self.optimize_db_for_read()
 
         logger.debug(f'opening {self.path} as aimrocks db')
         if not self.read_only:
@@ -489,7 +489,7 @@ class RocksContainer(Container):
 
         return key, value
 
-    def _optimize_db_for_read(self):
+    def optimize_db_for_read(self):
         """
         This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
         db will contain .sst files only which will significantly reduce further open and read operations. Further
