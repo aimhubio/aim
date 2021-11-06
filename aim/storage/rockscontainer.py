@@ -504,7 +504,6 @@ class RocksContainer(Container):
             return False
 
         if non_empty_wal():
-            # TODO code duplication below
             lock_path = self.prepare_lock_path()
 
             with FileLock(str(lock_path), timeout=10):
