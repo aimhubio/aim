@@ -1,0 +1,50 @@
+import click
+import filelock
+import os
+from typing import TYPE_CHECKING
+
+from multiprocessing.pool import ThreadPool
+from multiprocessing import cpu_count
+from functools import partial
+
+from aim.sdk.run import Run
+from aim.storage.rockscontainer import RocksContainer
+
+if TYPE_CHECKING:
+    from aim.sdk.repo import Repo
+
+
+def finalize_stalled_runs(repo: 'Repo', runs: set):
+    runs_in_progress = []
+    for run_hash in runs:
+        try:
+            run = Run(run_hash=run_hash, repo=repo, system_tracking_interval=None)
+        except filelock.Timeout:
+            runs_in_progress.append(run_hash)
+        else:
+            # TODO: [AT] handle lock timeout on index db (retry logic).
+            run.finalize()
+    if runs_in_progress:
+        click.echo('Skipped indexing for the following runs in progress:')
+        for run_hash in runs_in_progress:
+            click.secho(f'\t\'{run_hash}\'', fg='yellow')
+
+
+def run_flushes_and_compactions(repo: 'Repo', runs_to_skip: set):
+    meta_dbs_path = os.path.join(repo.path, 'meta', 'chunks')
+    seq_dbs_path = os.path.join(repo.path, 'seqs', 'chunks')
+    meta_dbs_names = set(os.listdir(meta_dbs_path)).difference(runs_to_skip)
+    seq_dbs_names = set(os.listdir(seq_dbs_path)).difference(runs_to_skip)
+
+    pool = ThreadPool(cpu_count())
+
+    # TODO [AT] add error handling
+    def optimize_container(path, extra_options):
+        rc = RocksContainer(path, read_only=False, **extra_options)
+        rc.optimize_db_for_read()  # TODO [AT] check once function is available
+
+    meta_containers = (os.path.join(meta_dbs_path, db) for db in meta_dbs_names)
+    pool.map(partial(optimize_container, extra_options={'compaction': True}), meta_containers)
+
+    seq_containers = (os.path.join(meta_dbs_path, db) for db in seq_dbs_names)
+    pool.map(partial(optimize_container, extra_options={}), seq_containers)
