@@ -104,21 +104,20 @@ class RocksContainer(Container):
         for k, v in self.items():
             index[k] = v
 
-        self._progress_path.unlink()
-        self._progress_path = None
-
         self._db.flush()
         self._db.flush_wal()
+
+        self._progress_path.unlink()
+        self._progress_path = None
 
     def close(self):
         """Close all the resources."""
         if self._lock is not None:
+            self._db.flush()
+            self._db.flush_wal()
             self._lock.release()
             self._lock = None
         if self._db is not None:
-            if not self.read_only:
-                self._db.flush()
-                self._db.flush_wal()
             # self._db.close()
             self._db = None
 
