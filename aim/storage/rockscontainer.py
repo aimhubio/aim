@@ -10,6 +10,7 @@ from typing import Iterator, Optional, Tuple
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
 from aim.storage.treeview import TreeView
+from aim.ext.exception_resistant import exception_resistant
 
 
 logger = logging.getLogger(__name__)
@@ -489,6 +490,7 @@ class RocksContainer(Container):
 
         return key, value
 
+    @exception_resistant
     def optimize_db_for_read(self):
         """
         This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
@@ -506,7 +508,7 @@ class RocksContainer(Container):
         if non_empty_wal():
             lock_path = self.prepare_lock_path()
 
-            with FileLock(str(lock_path), timeout=10):
+            with FileLock(str(lock_path), timeout=2):
                 wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
                 wdb.flush()
                 wdb.flush_wal()
