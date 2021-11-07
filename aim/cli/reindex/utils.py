@@ -1,10 +1,10 @@
 import click
 import filelock
 import os
+from psutil import cpu_count
 from typing import TYPE_CHECKING
 
 from multiprocessing.pool import ThreadPool
-from multiprocessing import cpu_count
 from functools import partial
 
 from aim.sdk.run import Run
@@ -36,11 +36,10 @@ def run_flushes_and_compactions(repo: 'Repo', runs_to_skip: set):
     meta_dbs_names = set(os.listdir(meta_dbs_path)).difference(runs_to_skip)
     seq_dbs_names = set(os.listdir(seq_dbs_path)).difference(runs_to_skip)
 
-    pool = ThreadPool(cpu_count())
+    pool = ThreadPool(cpu_count(logical=False))
 
-    # TODO [AT] add error handling
     def optimize_container(path, extra_options):
-        rc = RocksContainer(path, read_only=False, **extra_options)
+        rc = RocksContainer(path, read_only=True, **extra_options)
         rc.optimize_db_for_read()  # TODO [AT] check once function is available
 
     meta_containers = (os.path.join(meta_dbs_path, db) for db in meta_dbs_names)
