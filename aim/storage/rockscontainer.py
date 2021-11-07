@@ -33,8 +33,9 @@ class RocksContainer(Container):
             skip_stats_update_on_db_open=True,
             skip_checking_sst_file_sizes_on_db_open=True,
             max_open_files=-1,
-            write_buffer_size=64 * 1024 * 1024,  # 64MB
-            max_write_buffer_number=3,
+            write_buffer_size=1024 * 1024,  # 1MB
+            db_write_buffer_size=1024 * 1024,  # 1MB
+            max_write_buffer_number=1,
             target_file_size_base=64 * 1024 * 1024,  # 64MB
             max_background_compactions=4,
             level0_file_num_compaction_trigger=8,
@@ -103,12 +104,17 @@ class RocksContainer(Container):
         for k, v in self.items():
             index[k] = v
 
+        self._db.flush()
+        self._db.flush_wal()
+
         self._progress_path.unlink()
         self._progress_path = None
 
     def close(self):
         """Close all the resources."""
         if self._lock is not None:
+            self._db.flush()
+            self._db.flush_wal()
             self._lock.release()
             self._lock = None
         if self._db is not None:
