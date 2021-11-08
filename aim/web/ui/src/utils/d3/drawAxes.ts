@@ -26,6 +26,10 @@ function drawAxes(args: IDrawAxesArgs): void {
     xValues,
     attributesRef,
     humanizerConfigRef,
+    drawBgTickLines = {
+      x: false,
+      y: false,
+    },
   } = args;
 
   if (!axesNodeRef?.current || !axesRef?.current || !svgNodeRef?.current) {
@@ -160,6 +164,9 @@ function drawAxes(args: IDrawAxesArgs): void {
       }
     }
 
+    if (drawBgTickLines.x) {
+      xAxis.tickSize(-height + (margin.top + margin.bottom)).tickSizeOuter(0);
+    }
     return { xAlignmentText, xAxis };
   }
 
@@ -168,7 +175,10 @@ function drawAxes(args: IDrawAxesArgs): void {
     let ticksCount = Math.floor(plotBoxRef.current.height / 20);
     ticksCount = ticksCount > 3 ? (ticksCount < 10 ? ticksCount : 10) : 3;
     yAxis.ticks(ticksCount);
-    yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
+
+    if (drawBgTickLines.y) {
+      yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
+    }
     return yAxis;
   }
 
@@ -179,7 +189,9 @@ function drawAxes(args: IDrawAxesArgs): void {
   axesRef.current.xAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'xAxis')
-    .attr('stroke-width', 0.4)
+    .attr('stroke-width', 0.2)
+    .attr('color', '#8E9BAE')
+    .attr('fill', 'none')
     .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
     .call(xAxis);
 
@@ -197,7 +209,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     .attr('text-anchor', 'end')
     .attr('alignment-baseline', 'ideographic')
     .style('font-size', '0.7em')
-    .style('fill', '#586069') // var(--grey)
+    .style('fill', '#586069')
     .text(xAlignmentText)
     .lower();
 

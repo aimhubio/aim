@@ -91,11 +91,15 @@
     opacity: 0.2;
   }
 
-  .yAxis {
+  .yAxis, .xAxis {
     .tick {
       text {
         color: $text-color;
       }
+    }
+    .domain {
+      stroke: $text-color;
+      stroke-width: 0.4;
     }
   }
 }

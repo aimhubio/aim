@@ -130,6 +130,7 @@ const LineChart = React.forwardRef(function LineChart(
       xValues,
       attributesRef,
       humanizerConfigRef,
+      drawBgTickLines: { y: true },
     });
 
     drawLines({

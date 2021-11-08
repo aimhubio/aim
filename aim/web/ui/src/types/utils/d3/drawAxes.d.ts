@@ -18,4 +18,5 @@ export interface IDrawAxesArgs {
   xValues: number[];
   attributesRef: React.MutableRefObject<IAttributesRef>;
   humanizerConfigRef: React.MutableRefObject<{}>;
+  drawBgTickLines?: { x?: boolean; y?: boolean };
 }
