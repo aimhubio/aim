@@ -8,10 +8,10 @@ from aim.web.api.runs.utils import get_run_props
 def timing(f):
     def wrap(*args, **kw):
         ts = time.time()
-        for _ in range(10):
+        for _ in range(5):
             f(*args, **kw)
         te = time.time()
-        return (te-ts)/10
+        return (te-ts)/5
     return wrap
 
 
