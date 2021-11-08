@@ -19,6 +19,38 @@ Aim package logs your training runs, enables a beautiful UI to compare them and 
 - So far we have built the most advanced open-sourcce Metric comparison tool.
   - Aim helps to save lots of time when comparing 1000s of metrics.
 
+
+## What can you do with Aim?
+
+### Log metrics and other metadata
+
+Use the Aim SDK to log as many metrics as you need for youre training runs.
+Aim users track 1000s of training runs and sometimes more than 100s of metrics per run with los of steps.
+Other metadata types are coming soon (images, distributions etc).
+
+### Query metadata through UI
+Use Aim's powerful pythonic query language to query the logged metadata.
+It's like a python if statement over everything you have tracked
+More details about querying the Aim.
+
+### Training runs explore and activity view
+Use activity view to observe the daily training runs.
+Runs explore will help you to hollistically view all your runs, their metric last values and tracked hyperparameters.
+
+### Metric explore
+Metric explore helps you to compare 100s of metrics within few clicks.
+It helps to save lots of time compared to other open-source experiment tracking tools.
+
+### Params explore
+Params explore helps
+
+### Images explore (coming soon...)
+
+### Query programmatically
+Aim allows to query the tracked metadata through its SDK.
+In fact Aim UI's backend is the Aim SDK and a tiny Fast API web layer. More about this.
+
+
 <div align="center">
 <h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
