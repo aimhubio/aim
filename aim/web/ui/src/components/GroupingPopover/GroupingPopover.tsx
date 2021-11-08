@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Accordion,
   AccordionDetails,
@@ -12,7 +13,8 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { ToggleButton, Icon, Badge } from 'components/kit';
+import { ToggleButton, Icon, Badge, Text } from 'components/kit';
+
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
   GroupNameType,
@@ -49,18 +51,20 @@ function GroupingPopover({
     });
 
     // Sort selected values by the order of their application
-    return data.sort(
-      (a, b) =>
-        groupingData?.[groupName].indexOf(a.value) -
-        groupingData?.[groupName].indexOf(b.value),
-    );
+    return groupingData
+      ? data.sort(
+          (a, b) =>
+            groupingData[groupName].indexOf(a.value) -
+            groupingData[groupName].indexOf(b.value),
+        )
+      : data;
   }, [groupName, groupingData]);
 
   function handleGroupingMode(val: string | number, id: any) {
     onGroupingModeChange({
       groupName,
       value: val === 'Reverse',
-      options: groupingData.reverseMode[groupName as GroupNameType]
+      options: groupingData?.reverseMode[groupName as GroupNameType]
         ? groupingSelectOptions
         : null,
     });
@@ -70,9 +74,14 @@ function GroupingPopover({
     <div className='GroupingPopover'>
       <div className='GroupingPopover__container'>
         <div className='GroupingPopover__container__select'>
-          <h3 className='GroupingPopover__subtitle'>
+          <Text
+            size={12}
+            tint={50}
+            component='h3'
+            className='GroupingPopover__subtitle'
+          >
             Select Fields for grouping by {groupName}
-          </h3>
+          </Text>
           <Autocomplete
             size='small'
             multiple
@@ -98,8 +107,7 @@ function GroupingPopover({
               <TextField
                 {...params}
                 variant='outlined'
-                label='Select Params'
-                placeholder='Select'
+                placeholder='Select Params'
               />
             )}
             renderTags={(value, getTagProps) => (
@@ -109,8 +117,7 @@ function GroupingPopover({
                     key={i}
                     {...getTagProps({ index: i })}
                     label={selected.label}
-                    size='small'
-                    className='Select__Chip'
+                    selectBadge={true}
                   />
                 ))}
               </div>
@@ -131,12 +138,19 @@ function GroupingPopover({
           />
         </div>
         <div className='GroupingPopover__toggleMode__div'>
-          <h3 className='GroupingPopover__subtitle'>select grouping mode</h3>
+          <Text
+            size={12}
+            tint={50}
+            component='h3'
+            className='GroupingPopover__subtitle'
+          >
+            select grouping mode
+          </Text>
           <ToggleButton
             title='Select Mode'
             id='yAxis'
             value={
-              groupingData.reverseMode[groupName as GroupNameType]
+              groupingData?.reverseMode[groupName as GroupNameType]
                 ? 'Reverse'
                 : 'Group'
             }
@@ -156,9 +170,15 @@ function GroupingPopover({
                 }
                 id='panel1c-header'
               >
-                <span className='GroupingPopover__subtitle'>
+                <Text
+                  size={12}
+                  tint={50}
+                  component='h3'
+                  weight={400}
+                  className='GroupingPopover__subtitle'
+                >
                   Advanced options
-                </span>
+                </Text>
               </AccordionSummary>
               <AccordionDetails style={{ padding: 0 }}>
                 {advancedComponent}

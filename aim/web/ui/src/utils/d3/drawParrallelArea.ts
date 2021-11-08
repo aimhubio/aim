@@ -1,6 +1,9 @@
 import * as d3 from 'd3';
+
 import { IDrawAreaProps } from 'types/utils/d3/drawArea';
+
 import { CircleEnum } from './index';
+
 function drawParallelArea(props: IDrawAreaProps): void {
   const {
     index = 0,
@@ -36,6 +39,14 @@ function drawParallelArea(props: IDrawAreaProps): void {
     width: width - margin.left - margin.right,
     height: height - margin.top - margin.bottom,
   };
+  const offsetWidth =
+    width - margin.left - margin.right >= 0
+      ? width - margin.left - margin.right
+      : 0;
+  const offsetHeight =
+    width - margin.left - margin.right >= 0
+      ? width - margin.left - margin.right
+      : 0;
 
   visArea.style('width', `${width}px`).style('height', `${height}px`);
 
@@ -51,8 +62,8 @@ function drawParallelArea(props: IDrawAreaProps): void {
     .attr('x', margin.left)
     .attr('class', 'backgroundRect')
     .attr('y', margin.top)
-    .attr('width', width - margin.left - margin.right)
-    .attr('height', height - margin.top - margin.bottom)
+    .attr('width', offsetWidth)
+    .attr('height', offsetHeight)
     .style('fill', 'transparent');
 
   plotNodeRef.current = svgNodeRef.current
@@ -68,8 +79,8 @@ function drawParallelArea(props: IDrawAreaProps): void {
     .append('rect')
     .attr('x', 0)
     .attr('y', 0)
-    .attr('width', width - margin.left - margin.right)
-    .attr('height', height - margin.top - margin.bottom);
+    .attr('width', offsetWidth)
+    .attr('height', offsetHeight);
 
   attributesNodeRef.current = plotNodeRef.current
     .append('g')
@@ -81,14 +92,8 @@ function drawParallelArea(props: IDrawAreaProps): void {
     .append('rect')
     .attr('x', -7)
     .attr('y', -7)
-    .attr(
-      'width',
-      width - margin.left - margin.right + 2 * CircleEnum.ActiveRadius + 4,
-    )
-    .attr(
-      'height',
-      height - margin.top - margin.bottom + 2 * CircleEnum.ActiveRadius + 4,
-    );
+    .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 4)
+    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 4);
 
   const titleMarginTop = 2;
   const titleHeight = 15;

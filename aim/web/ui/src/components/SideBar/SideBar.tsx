@@ -1,13 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import routes, { IRoute } from 'routes/routes';
+
 import { Drawer } from '@material-ui/core';
 
+import logoImg from 'assets/logo.svg';
+
 import { Icon } from 'components/kit';
-import { PathEnum } from 'config/enums/routesEnum';
 import { IconName } from 'components/kit/Icon';
 
-import logoImg from 'assets/logo.svg';
+import { PathEnum } from 'config/enums/routesEnum';
+
+import routes, { IRoute } from 'routes/routes';
 
 import './Sidebar.scss';
 
@@ -35,7 +38,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   }
 
   return (
-    <div className='Sidebar__container'>
+    <div className='Sidebar'>
       <Drawer
         PaperProps={{ className: 'Sidebar__Paper' }}
         variant='permanent'
@@ -44,8 +47,8 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
         <ul className='Sidebar__List'>
           <NavLink
             exact={true}
-            activeClassName={'Sidebar__anchor__active'}
-            className='Sidebar__anchor'
+            activeClassName={'Sidebar__NavLink--active'}
+            className='Sidebar__NavLink'
             to={routes.HOME.path}
           >
             <li className='Sidebar__List__item'>
@@ -64,16 +67,16 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                     let split = location.pathname.split('/');
                     return split.includes(path.split('/')[1]);
                   }}
-                  activeClassName={'Sidebar__anchor__active'}
-                  className='Sidebar__anchor'
+                  activeClassName={'Sidebar__NavLink--active'}
+                  className='Sidebar__NavLink'
                 >
                   <li className='Sidebar__List__item'>
                     <Icon
-                      className='Sidebar__List__item__icon'
+                      className='Sidebar__List__item--icon'
                       fontSize={24}
                       name={icon as IconName}
                     />
-                    <span className='Sidebar__List__item__text'>
+                    <span className='Sidebar__List__item--text'>
                       {displayName}
                     </span>
                   </li>

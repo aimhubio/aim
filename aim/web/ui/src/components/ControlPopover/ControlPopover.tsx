@@ -1,7 +1,11 @@
 import React from 'react';
+
 import { Popover } from '@material-ui/core';
 
+import { Text } from 'components/kit';
+
 import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
+
 import stopPropagation from 'utils/stopPropagation';
 
 import './ControlPopover.scss';
@@ -64,7 +68,9 @@ function ControlPopover({
               onClick={stopPropagation}
               className={`ControlPopover__title ${titleClassName}`}
             >
-              {title}
+              <Text component='h3' size={14} weight={700} tint={100}>
+                {title}
+              </Text>
             </div>
           )}
           <div className='ControlPopover__component'>

@@ -1,12 +1,14 @@
 import React from 'react';
 
-import { CurveEnum } from 'utils/d3';
+import { Tooltip } from '@material-ui/core';
+
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
-import { Tooltip } from '@material-ui/core';
-// @ts-ignore
+
 import { IControlProps } from 'types/pages/params/components/Controls/Controls';
+
+import { CurveEnum } from 'utils/d3';
 
 import './Controls.scss';
 
@@ -49,7 +51,7 @@ function Controls(
       </Tooltip>
       <div>
         <ControlPopover
-          title='Select Tooltip Params'
+          title='Display in Tooltip'
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Tooltip Params'>
               <div

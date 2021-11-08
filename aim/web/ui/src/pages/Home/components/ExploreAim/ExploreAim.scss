@@ -3,7 +3,7 @@
 .ExploreAim {
   display: flex;
   flex-direction: column;
-  border-left: 0.0625rem solid $cuddle-50;
+  border-left: $border-grey;
   padding: 1.5rem 1.5rem 1.5rem 2.5rem;
   min-width: 600px;
   h2 {
@@ -18,7 +18,7 @@
   &__social {
     margin-top: 2rem;
     &__item {
-      border: 0.0625rem solid $cuddle-50;
+      border: $border-grey;
       border-radius: 0.5rem;
       display: flex;
       align-items: center;

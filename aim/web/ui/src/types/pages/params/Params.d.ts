@@ -1,7 +1,10 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { CurveEnum } from 'utils/d3';
+import { ITableRef } from 'components/Table/Table';
+
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import {
   GroupNameType,
   IChartTitleData,
@@ -15,10 +18,10 @@ import {
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
-import { ITableRef } from 'components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { CurveEnum } from 'utils/d3';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -29,7 +32,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   resizeElemRef: React.RefObject<HTMLDivElement>;
   curveInterpolation: CurveEnum;
   panelResizing: boolean;
-  isParamsLoading: boolean;
+  requestIsPending: boolean;
   highPlotData: any;
   groupingData: IMetricAppConfig['grouping'];
   groupingSelectOptions: IGroupingSelectOption[];
@@ -40,31 +43,18 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tooltip: IChartTooltip;
   chartTitleData: IChartTitleData;
   selectedParamsData: IParamsAppConfig['select'];
-  requestIsPending: boolean;
   onRowHeightChange: any;
   onSortFieldsChange: any;
   onParamVisibilityChange: any;
   onColumnsOrderChange: any;
   tableData: any;
-  tableRowHeight?: any;
-  onTableRowHover?: any;
-  onTableRowClick?: any;
+  onTableRowHover?: (rowKey?: string) => void;
+  onTableRowClick?: (rowKey?: string) => void;
   tableColumns: any;
-  tableRowHeight: any;
   resizeMode: ResizeModeEnum;
   notifyData: INotification[];
-  onSortFieldsChange: any;
-  onParamVisibilityChange: any;
-  onColumnsOrderChange: any;
-  tableData: any;
   tableRowHeight?: any;
-  onTableRowHover?: any;
-  onTableRowClick?: any;
-  tableColumns: any;
-  tableRowHeight: any;
   hiddenColumns: any;
-  onRowHeightChange: any;
-  columnsWidths: { [key: string]: number };
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (

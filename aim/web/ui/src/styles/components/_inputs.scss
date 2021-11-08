@@ -30,7 +30,7 @@ body {
 
 .TextField {
   .MuiOutlinedInput-notchedOutline {
-    border: 0.0625rem solid tint($cuddle, 20) !important;
+    border: 0.0625rem solid $cuddle-70 !important;
   }
 
   &__OutLined {

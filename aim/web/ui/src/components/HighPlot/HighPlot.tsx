@@ -1,5 +1,10 @@
 import React from 'react';
 
+import useResizeObserver from 'hooks/window/useResizeObserver';
+
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
+import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
+
 import {
   drawParallelArea,
   clearArea,
@@ -9,9 +14,6 @@ import {
   drawParallelAxesBrush,
   drawParallelColorIndicator,
 } from 'utils/d3';
-import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
-import useResizeObserver from 'hooks/window/useResizeObserver';
-import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
 import './HighPlot.scss';
 

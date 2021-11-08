@@ -1,7 +1,10 @@
 import React from 'react';
-import Table from 'components/Table/Table';
-import { IRunsTableProps } from 'types/pages/runs/Runs';
+
 import { CircularProgress } from '@material-ui/core';
+
+import Table from 'components/Table/Table';
+
+import { IRunsTableProps } from 'types/pages/runs/Runs';
 
 function RunsTable({
   isRunsDataLoading,

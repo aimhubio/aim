@@ -1,10 +1,13 @@
 import React from 'react';
-import { MenuItem, Slider } from '@material-ui/core';
+
+import { Divider, MenuItem, Slider } from '@material-ui/core';
+
+import { Text, ToggleButton } from 'components/kit';
 
 import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
+
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
-import { ToggleButton } from 'components/kit';
 
 import './SmoothingPopover.scss';
 
@@ -87,19 +90,23 @@ function SmoothingPopover(
   return (
     <div className='SmoothingPopover'>
       <div className='SmoothingPopover__section'>
-        <span className='SmoothingPopover__subtitle'>Chart Smoothing</span>
-        <Slider
-          defaultValue={0}
-          valueLabelDisplay='auto'
-          getAriaValueText={(val) => `${val}s`}
-          value={factor}
-          onChange={handleFactorChange}
-          onChangeCommitted={handleSmoothingData}
-          marks={sliderProps.marks}
-          step={sliderProps.step}
-          max={sliderProps.max}
-          min={sliderProps.min}
-        />
+        <Text tint={50} component='h4' className='SmoothingPopover__subtitle'>
+          Chart Smoothing
+        </Text>
+        <div className='SmoothingPopover__Slider'>
+          <Slider
+            defaultValue={0}
+            valueLabelDisplay='auto'
+            getAriaValueText={(val) => `${val}s`}
+            value={factor}
+            onChange={handleFactorChange}
+            onChangeCommitted={handleSmoothingData}
+            marks={sliderProps.marks}
+            step={sliderProps.step}
+            max={sliderProps.max}
+            min={sliderProps.min}
+          />
+        </div>
         <div>
           <MenuItem
             id={SmoothingAlgorithmEnum.EMA}
@@ -117,22 +124,22 @@ function SmoothingPopover(
           </MenuItem>
         </div>
       </div>
+      <Divider className='SmoothingPopover__Divider' />
       <div className='SmoothingPopover__section'>
-        <span className='SmoothingPopover__subtitle'>
-          Curve Interpolation method:
-        </span>
-        <div>
-          <ToggleButton
-            title='Select Method'
-            onChange={handleInterpolation}
-            id='smoothing'
-            rightLabel='Cubic'
-            leftLabel='Linear'
-            leftValue={CurveEnum.Linear}
-            rightValue={CurveEnum.MonotoneX}
-            value={props.curveInterpolation}
-          />
-        </div>
+        <Text component='h4' tint={50} className='SmoothingPopover__subtitle'>
+          Curve Interpolation method
+        </Text>
+        <ToggleButton
+          className='SmoothingPopover__ToggleButton'
+          title='Select Method'
+          onChange={handleInterpolation}
+          id='smoothing'
+          rightLabel='Cubic'
+          leftLabel='Linear'
+          leftValue={CurveEnum.Linear}
+          rightValue={CurveEnum.MonotoneX}
+          value={props.curveInterpolation}
+        />
       </div>
     </div>
   );

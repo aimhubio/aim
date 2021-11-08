@@ -9,6 +9,7 @@ on:
       - 'aim/web/api/**'
       - 'aim/storage/**'
       - '.github/workflows/pull-request.yml'
+      - 'setup.py'
     types:
       - opened
       - synchronize

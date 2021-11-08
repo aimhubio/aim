@@ -1,29 +1,29 @@
 @use 'src/styles/abstracts' as *;
 
-.AlignmentPopover__container {
+.AlignmentPopover {
   width: 16.5rem;
-  padding: 0.5625rem;
-  &__densityOptions {
-    border-bottom: 1px solid $border-color-main;
+  padding: $space-xs;
+
+  &__subtitle {
+    padding: $space-xs;
+    text-transform: uppercase;
   }
-  &__options {
-    padding-bottom: 0.5rem;
-    &__title {
-      padding: 0.5rem;
-      text-transform: uppercase;
-    }
+
+  &__Divider {
+    margin: $space-xs 0;
   }
+
   &__selectContainer {
     display: flex;
     flex-direction: column;
     &__selectBox {
-      padding: 0 0.5rem;
+      padding: 0 $space-xs;
     }
     span {
-      margin-right: 1rem;
+      margin-right: $space-unit;
     }
     &__select {
-      margin: 0 0.5rem;
+      margin: 0 $space-xs;
     }
   }
 }

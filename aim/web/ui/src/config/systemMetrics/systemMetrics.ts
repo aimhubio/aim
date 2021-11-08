@@ -8,5 +8,5 @@ export const systemMetricsDict: systemMetricsDictType = {
   __system__gpu: 'GPU (%)',
   __system__gpu_memory_percent: 'GPU Memory (%)',
   __system__gpu_power_watts: 'GPU Power (W)',
-  __system__gpu_temp: '__system__gpu_temp',
+  __system__gpu_temp: 'GPU Temperature (°C)',
 };

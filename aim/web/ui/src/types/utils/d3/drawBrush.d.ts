@@ -1,10 +1,12 @@
 import React from 'react';
-import { IGetAxesScaleProps } from './getAxisScale';
+
 import { IChartZoom } from 'types/services/models/metrics/metricsAppModel';
 import {
   IAttributesRef,
   IBrushRef,
 } from 'types/components/LineChart/LineChart';
+
+import { IGetAxesScaleProps } from './getAxisScale';
 
 export interface IDrawBrushProps extends IGetAxesScaleProps {
   index: number;

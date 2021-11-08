@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
+
 import { Divider, Link } from '@material-ui/core';
+
 import { Badge, Button } from 'components/kit';
+
 import { PathEnum } from 'config/enums/routesEnum';
+
 import { ISelectTagProps } from 'types/components/SelectTag/SelectTag';
 import { ITagInfo } from 'types/pages/tags/Tags';
 
@@ -39,7 +43,7 @@ function SelectTag({
                   color={tag.color}
                   label={tag.name}
                   id={tag.id}
-                  iconName={tagAttached && 'check'}
+                  startIcon={tagAttached && 'check'}
                   onClick={onSelectBadge}
                 />
               </div>
@@ -47,7 +51,7 @@ function SelectTag({
           })}
         </div>
       ) : null}
-      <Divider className='SelectTag__divider' />
+      <Divider />
       <div className='SelectTag__createTag__container'>
         <Link to={PathEnum.Tags} component={RouteLink} underline='none'>
           <Button

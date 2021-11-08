@@ -5,7 +5,7 @@
   max-height: inherit;
   font-size: $text-sm;
   line-height: 15px;
-  color: tint($pico, 20);
+  color: $pico-80;
   background-color: transparent;
 
   .PopoverContent {
@@ -29,6 +29,7 @@
 
     &__value {
       margin-top: 0.25rem;
+      word-break: break-word;
     }
 
     &__value:first-child {
@@ -62,12 +63,8 @@
       }
     }
 
-    &__divider {
-      background: tint($primary-color, 85);
-    }
-
     &__subtitle1 {
-      color: tint($pico, 50);
+      color: $pico-50;
       text-transform: uppercase;
       font-weight: 500;
     }

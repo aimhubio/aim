@@ -1,9 +1,11 @@
 import React, { memo, useRef } from 'react';
+
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
+import { Icon } from 'components/kit';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+
 import { ITagSoftDeleteProps } from 'types/pages/tags/Tags';
-import { Icon } from 'components/kit';
 
 import './Tags.scss';
 
@@ -43,17 +45,9 @@ function TagSoftDelete({
       } this tag?`}
       icon={
         archivedRef.current?.archived ? (
-          <Icon
-            name='eye-show-outline'
-            className='TagSoftDelete__contentContainer__iconContainer__icon'
-            fontSize='large'
-          />
+          <Icon name='eye-show-outline' />
         ) : (
-          <Icon
-            name='delete'
-            className='TagSoftDelete__contentContainer__iconContainer__icon'
-            fontSize='large'
-          />
+          <Icon name='eye-outline-hide' />
         )
       }
       title='Are you sure?'

@@ -2,8 +2,10 @@ import React, { memo, useEffect, useState } from 'react';
 import { isNil } from 'lodash-es';
 
 import Table from 'components/Table/Table';
+import { Badge, Button, Icon, Text } from 'components/kit';
+
 import tagsAppModel from 'services/models/tags/tagsAppModel';
-import { Badge, Button, Icon } from 'components/kit';
+
 import { ITagProps, ITagsTableProps } from 'types/pages/tags/Tags';
 
 function TagsTable({
@@ -35,15 +37,13 @@ function TagsTable({
       width: 150,
       cellRenderer: function cellRenderer({ cellData }: any, i: any) {
         return (
-          <div className='TagsTable__runContainer__runBox'>
-            <div className='TagsTable__runContainer__runBox'>
-              <span className='TagsTable__runContainer__runBox__runIconBox'>
-                <span className='TagsTable__runContainer__runBox__runIconBox__runIcon'></span>
-              </span>
-              <span className='TagsTable__runContainer__runBox__runText'>
-                {cellData.count} Runs
-              </span>
-            </div>
+          <div className='TagsTable__runsCell'>
+            <span className='TagsTable__runsCell--iconBox'>
+              <Icon name='Runs' />
+            </span>
+            <Text size={14} color='info'>
+              {cellData.count}
+            </Text>
           </div>
         );
       },
@@ -57,14 +57,16 @@ function TagsTable({
       cellRenderer: function cellRenderer({ cellData, i }: any) {
         return (
           <div
-            className='TagsTable__commentContainer'
+            className='TagsTable__commentCell'
             role='button'
             aria-pressed='false'
             onClick={(e) => e.stopPropagation()}
           >
-            <span>{cellData.description}</span>
+            <Text size={14} tint={100}>
+              {cellData.description}
+            </Text>
             {cellData.id === hoveredRowIndex && (
-              <div className='TagsTable__commentContainer__actionsContainer'>
+              <div className='TagsTable__commentCell__actionsContainer'>
                 {!cellData?.archived && (
                   <Button
                     withOnlyIcon={true}
@@ -134,9 +136,9 @@ function TagsTable({
     <div className='Tags__TagList__tagListBox'>
       {!isTagsDataLoading && !isNil(tagsList) && (
         <div className='Tags__TagList__tagListBox__titleBox'>
-          <span className='Tags__TagList__tagListBox__titleBox__title'>
+          <Text component='h4' size={14} weight={600} tint={100}>
             {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
-          </span>
+          </Text>
         </div>
       )}
       <div className='TagsTable'>
@@ -152,6 +154,7 @@ function TagsTable({
           onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
           onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
           emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
+          height='100%'
         />
       </div>
     </div>

@@ -1,11 +1,16 @@
 import React, { memo, useEffect, useState } from 'react';
+
 import { Paper, Tab, Tabs } from '@material-ui/core';
 
-import { ITagsProps } from 'types/pages/tags/Tags';
 import TabPanel from 'components/TabPanel/TabPanel';
-import TagsList from './TagsList';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
 import * as analytics from 'services/analytics';
+
+import { ITagsProps } from 'types/pages/tags/Tags';
+
+import TagsList from './TagsList';
+
 import './Tags.scss';
 
 function Tags({

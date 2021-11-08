@@ -1,23 +1,17 @@
 @use "src/styles/abstracts" as *;
 
-.AxesScalePopover__container {
+.AxesScalePopover {
   width: 21.5rem;
   padding: 1rem;
-}
 
-.AxesScalePopover__subtitle {
-  font-size: $text-sm;
-  text-transform: uppercase;
-  color: $text-color-50;
-}
+  &__subtitle {
+    text-transform: uppercase;
+  }
 
-.AxesScalePopover__select {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
-
-.AxesScalePopover__select__span {
-  font-size: $text-md;
+  &__select {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: $space-xs;
+  }
 }

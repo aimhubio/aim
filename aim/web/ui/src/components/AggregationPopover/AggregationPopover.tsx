@@ -1,6 +1,11 @@
 import React from 'react';
-import { MenuItem } from '@material-ui/core';
+
+import { Divider, MenuItem } from '@material-ui/core';
+
+import { Text } from 'components/kit';
+
 import { IAggregationPopoverProps } from 'types/components/AggregationPopover/AggregationPopover';
+
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
@@ -31,9 +36,11 @@ function AggregationPopover({
   }
 
   return (
-    <div className='AggregationPopover__container'>
-      <span className='AggregationPopover__subtitle'>Select Line:</span>
-      <div className='AggregationPopover__select__list'>
+    <div className='AggregationPopover'>
+      <Text component='h4' tint={50} className='AggregationPopover__subtitle'>
+        Select Line:
+      </Text>
+      <div>
         <MenuItem
           property='line'
           data-name={AggregationLineMethods.MEAN}
@@ -75,8 +82,11 @@ function AggregationPopover({
           Max
         </MenuItem>
       </div>
-      <span className='AggregationPopover__subtitle'>Select Area:</span>
-      <div className='AggregationPopover__select__list'>
+      <Divider className='AggregationPopover__Divider' />
+      <Text component='h4' tint={50} className='AggregationPopover__subtitle'>
+        Select Area:
+      </Text>
+      <div>
         <MenuItem
           property='area'
           data-name={AggregationAreaMethods.NONE}

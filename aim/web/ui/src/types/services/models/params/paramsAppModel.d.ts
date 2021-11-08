@@ -1,10 +1,51 @@
-import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
 import {
   IGroupingSelectOption,
   IChartTooltip,
   IFocusedState,
 } from 'metrics/metricsAppModel';
+
+import { ITableRef } from 'components/Table/Table';
+import { IChartPanelRef } from 'components/ChartPanel/ChartPanel';
+import { INotification } from 'components/NotificationContainer/NotificationContainer';
+
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { ITableColumn } from 'pages/metrics/components/TableColumns/TableColumns';
+
+import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
+
 import { CurveEnum } from 'utils/d3';
+import { IDimensionsType } from 'utils/d3/drawParallelAxes';
+
+import {
+  IChartTitleData,
+  IMetricsCollection,
+  ITooltipData,
+  SortField,
+} from '../metrics/metricsAppModel';
+
+export interface IParamsAppModelState {
+  refs: {
+    tableRef?: { current: ITableRef | null };
+    chartPanelRef?: { current: IChartPanelRef | null };
+  };
+  requestIsPending: boolean | null;
+  queryIsEmpty: boolean;
+  rawData: IRun<IParamTrace>[];
+  config: IParamsAppConfig;
+  data: IMetricsCollection<IParam>[];
+  highPlotData: { dimensions: IDimensionsType; data: any }[];
+  chartTitleData: IChartTitleData;
+  tooltipData: ITooltipData;
+  tableData: any[];
+  tableColumns: ITableColumn[];
+  sameValueColumns: string[];
+  params: string[];
+  notifyData: INotification[];
+  groupingSelectOptions: IGroupingSelectOption[];
+  metricsColumns: any;
+}
 
 export interface IParam {
   run: IRun<IParamTrace>;
@@ -13,8 +54,8 @@ export interface IParam {
   key: string;
   dasharray: string;
 }
-interface IParamsAppConfig {
-  grouping: {
+export interface IParamsAppConfig {
+  grouping?: {
     color: string[];
     stroke: string[];
     chart: string[];
@@ -38,19 +79,31 @@ interface IParamsAppConfig {
     };
     paletteIndex: number;
   };
-  chart: {
+  chart?: {
     curveInterpolation: CurveEnum;
     isVisibleColorIndicator: boolean;
     focusedState: IFocusedState;
     tooltip: IChartTooltip;
   };
-  select: {
+  select?: {
     params: any; // ISelectMetricsOption[];
     query: string;
   };
-  table: any;
-  onParamsSelectChange: (data) => void;
-  liveUpdateConfig: {
+  table?: {
+    resizeMode: ResizeModeEnum;
+    rowHeight: RowHeightSize;
+    sortFields?: SortField[];
+    hiddenMetrics?: string[];
+    hiddenColumns?: string[];
+    columnsWidths?: { [key: string]: number };
+    columnsOrder?: {
+      left: string[];
+      middle: string[];
+      right: string[];
+    };
+    height: string;
+  };
+  liveUpdate?: {
     delay: number;
     enabled: boolean;
   };

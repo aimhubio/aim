@@ -1,6 +1,10 @@
 import React, { CSSProperties } from 'react';
 
-export interface IIconProps extends React.BaseHTMLAttributes<any> {
+import { BoxProps } from '@material-ui/core';
+
+export interface IIconProps
+  extends React.BaseHTMLAttributes<any>,
+    Partial<React.ComponentType<BoxProps | any>> {
   name: IconName;
   className?: string;
   style?: CSSProperties;

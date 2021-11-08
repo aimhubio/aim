@@ -1,10 +1,12 @@
 import React from 'react';
 
-import GroupingItem from '../GroupingItem/GroupingItem';
 import StrokePopoverAdvanced from 'pages/Metrics/components/StrokePopover/StrokePopoverAdvanced';
 import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
+
 import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
+
+import GroupingItem from '../GroupingItem/GroupingItem';
 
 import './Grouping.scss';
 
@@ -40,7 +42,7 @@ function Grouping({
   onShuffleChange,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='Grouping__container'>
+    <div className='Grouping'>
       {groupingPopovers.map(
         ({ title, advancedTitle, groupName, AdvancedComponent }) => {
           return (

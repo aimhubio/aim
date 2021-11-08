@@ -1,13 +1,16 @@
 import React from 'react';
+
 import { Box, Tooltip } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Badge } from 'components/kit';
 import SelectTag from 'components/SelectTag/SelectTag';
-import { ITagInfo } from 'types/pages/tags/Tags';
-import { IAttachedTagsListProps } from 'types/components/AttachedTagsList/AttachedTagsList';
+
 import runsService from 'services/api/runs/runsService';
 import tagsService from 'services/api/tags/tagsService';
+
+import { ITagInfo } from 'types/pages/tags/Tags';
+import { IAttachedTagsListProps } from 'types/components/AttachedTagsList/AttachedTagsList';
 
 import './AttachedTagsList.scss';
 

@@ -2,27 +2,30 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { Button, Icon, Text } from 'components/kit';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
-import { ITableProps } from 'types/components/Table/Table';
-import BaseTable from './BaseTable';
-import AutoResizer from './AutoResizer';
-import CustomTable from '../CustomTable/Table';
-
+import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+
+import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
+
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
-import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
+
+import { ITableProps } from 'types/components/Table/Table';
+
 import TableLoader from '../TableLoader/TableLoader';
+import CustomTable from '../CustomTable/Table';
+
+import AutoResizer from './AutoResizer';
+import BaseTable from './BaseTable';
 
 import './Table.scss';
-import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 
 const Table = React.forwardRef(function Table(
   {
@@ -62,6 +65,7 @@ const Table = React.forwardRef(function Table(
     showResizeContainerActionBar = true,
     resizeMode,
     onSortReset,
+    height = 'calc(100% - 40px)',
     ...props
   }: ITableProps,
   ref,
@@ -234,8 +238,10 @@ const Table = React.forwardRef(function Table(
         }
 
         if (groups) {
-          for (let groupKey in dataRef.current) {
-            if (dataRef.current[groupKey].data.groupRowsKeys.includes(rowKey)) {
+          for (let groupKey in dataRef?.current) {
+            if (
+              dataRef?.current[groupKey].data?.groupRowsKeys?.includes(rowKey)
+            ) {
               if (expandedGroups.current.includes(groupKey)) {
                 scrollToElement();
               } else {
@@ -459,16 +465,16 @@ const Table = React.forwardRef(function Table(
       className='Tags__TagList__tagListBusyLoader'
     >
       {!isEmpty(rowData) ? (
-        <Box borderColor='grey.400' borderRadius={2} style={{ height: '100%' }}>
+        <div style={{ height: '100%' }}>
           {!hideHeaderActions && (
-            <div className='Table__header__popovers__container'>
+            <div className='Table__header'>
               {showResizeContainerActionBar && (
                 <ResizeModeActions
                   resizeMode={resizeMode}
                   onTableResizeModeChange={onTableResizeModeChange}
                 />
               )}
-              <div className='flex fac Table__header__popovers__buttons'>
+              <div className='flex fac Table__header__buttons'>
                 {onManageColumns && (
                   <ControlPopover
                     title='Manage Table Columns'
@@ -490,7 +496,9 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='manage-column' />
-                        <span>Manage Columns</span>
+                        <Text size={14} tint={100}>
+                          Manage Columns
+                        </Text>
                       </Button>
                     )}
                     component={
@@ -527,7 +535,9 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='eye-outline-hide' />
-                        <span>Hide Rows</span>
+                        <Text size={14} tint={100}>
+                          Hide Rows
+                        </Text>
                       </Button>
                     )}
                     component={<HideRows toggleRowsVisibility={onRowsChange} />}
@@ -554,7 +564,9 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='sort-outside' />
-                        <span>Sort</span>
+                        <Text size={14} tint={100}>
+                          Sort
+                        </Text>
                       </Button>
                     )}
                     component={
@@ -588,7 +600,9 @@ const Table = React.forwardRef(function Table(
                         }`}
                       >
                         <Icon name='row-height' />
-                        <span>Row Height</span>
+                        <Text size={14} tint={100}>
+                          Row Height
+                        </Text>
                       </Button>
                     )}
                     component={
@@ -618,10 +632,7 @@ const Table = React.forwardRef(function Table(
               )}
             </div>
           )}
-          <div
-            style={{ height: 'calc(100% - 40px)', overflow: 'auto' }}
-            ref={tableContainerRef}
-          >
+          <div style={{ height, overflow: 'auto' }} ref={tableContainerRef}>
             <AutoResizer>
               {({ width, height }) =>
                 custom ? (
@@ -686,7 +697,7 @@ const Table = React.forwardRef(function Table(
               }
             </AutoResizer>
           </div>
-        </Box>
+        </div>
       ) : (
         <EmptyComponent size='big' content={emptyText} />
       )}

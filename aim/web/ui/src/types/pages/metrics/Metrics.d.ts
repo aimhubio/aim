@@ -1,8 +1,12 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { CurveEnum } from 'utils/d3';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import { ITableRef } from 'types/components/Table/Table';
 import {
   GroupNameType,
@@ -24,14 +28,13 @@ import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { RowHeightSize } from 'config/table/tableConfigs';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { DensityOptions } from 'config/enums/densityEnum';
+
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { CurveEnum } from 'utils/d3';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -78,7 +81,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   ) => void;
   onHighlightModeChange: (mode: HighlightEnum) => void;
   onSmoothingChange: (props: IOnSmoothingChange) => void;
-  onTableRowHover: (rowKey: string) => void;
+  onTableRowHover: (rowKey?: string) => void;
   onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onAggregationConfigChange: (
