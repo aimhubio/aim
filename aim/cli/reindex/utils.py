@@ -1,6 +1,7 @@
 import click
 import filelock
 import os
+import tqdm
 from psutil import cpu_count
 from typing import TYPE_CHECKING
 
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 
 def finalize_stalled_runs(repo: 'Repo', runs: set):
     runs_in_progress = []
-    for run_hash in runs:
+    for run_hash in tqdm.tqdm(runs, desc='Finalizing stalled runs', total=len(runs)):
         try:
             run = Run(run_hash=run_hash, repo=repo, system_tracking_interval=None)
         except filelock.Timeout:
@@ -42,8 +43,18 @@ def run_flushes_and_compactions(repo: 'Repo', runs_to_skip: set):
         rc = RocksContainer(path, read_only=True, **extra_options)
         rc.optimize_db_for_read()  # TODO [AT] check once function is available
 
-    meta_containers = (os.path.join(meta_dbs_path, db) for db in meta_dbs_names)
-    pool.map(partial(optimize_container, extra_options={'compaction': True}), meta_containers)
+    meta_containers = [os.path.join(meta_dbs_path, db) for db in meta_dbs_names]
+    for _ in tqdm.tqdm(
+        pool.imap_unordered(partial(optimize_container, extra_options={'compaction': True}), meta_containers),
+        desc='Optimizing metadata',
+        total=len(meta_containers)
+    ):
+        pass
 
-    seq_containers = (os.path.join(meta_dbs_path, db) for db in seq_dbs_names)
-    pool.map(partial(optimize_container, extra_options={}), seq_containers)
+    seq_containers = [os.path.join(seq_dbs_path, db) for db in seq_dbs_names]
+    for _ in tqdm.tqdm(
+        pool.imap_unordered(partial(optimize_container, extra_options={}), seq_containers),
+        desc='Optimizing sequence data',
+        total=len(seq_containers)
+    ):
+        pass

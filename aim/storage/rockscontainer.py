@@ -520,6 +520,8 @@ class RocksContainer(Container):
                 wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
                 wdb.flush()
                 wdb.flush_wal()
+                if self._extra_opts.get('compaction'):
+                    wdb.compact_range()
                 del wdb
 
     def prepare_lock_path(self):
