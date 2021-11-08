@@ -51,6 +51,24 @@ Aim allows to query the tracked metadata through its SDK.
 In fact Aim UI's backend is the Aim SDK and a tiny Fast API web layer. More about this.
 
 
+## How Aim works?
+Aim is a python package with three main components:
+- Aim Storage
+  - Aim Storage is a rocksdb based embedded storage where the metadata is stored locally
+- Aim SDK
+  - A simple python interface that allows to track AI metadata
+    - metrics
+    - hyperparameters
+    - images
+    - ...
+- Aim UI
+  - A self-hosted web interface to deeply explore the tracked metadata
+
+Aim SDK is the primary backend of the Aim UI.
+Aim SDK enables an API to programmatically query the logged metadata.
+
+
+
 <div align="center">
 <h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
