@@ -38,6 +38,6 @@ def reindex(repo, finalize_only):
                                   f'\'{repo_path}\'. This process might take a while. Do you want to proceed?')
         if not confirmed:
             return
-    # finalize_stalled_runs(repo_inst, runs=runs_in_progress)
+    finalize_stalled_runs(repo_inst, runs=runs_in_progress)
     if not finalize_only:
         run_flushes_and_compactions(repo_inst, runs_to_skip=runs_in_progress)
