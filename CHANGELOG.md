@@ -4,6 +4,10 @@
 
 - Add ability to apply grouping by higher level param key (roubkar)
 
+## 3.0.5 Nov 9 2021
+
+- Add tqdm package in setup.py required section (mihran113)
+
 ## 3.0.4 Nov 8 2021
 
 - Switch to aimrocks 0.0.10 - exposes data flushing interface (mihran113)
