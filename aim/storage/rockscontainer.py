@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 from filelock import FileLock
 
@@ -9,6 +10,7 @@ from typing import Iterator, Optional, Tuple
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
 from aim.storage.treeview import TreeView
+from aim.ext.exception_resistant import exception_resistant
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +36,9 @@ class RocksContainer(Container):
             skip_stats_update_on_db_open=True,
             skip_checking_sst_file_sizes_on_db_open=True,
             max_open_files=-1,
-            write_buffer_size=64 * 1024 * 1024,  # 64MB
-            max_write_buffer_number=3,
+            write_buffer_size=1024 * 1024,  # 1MB
+            db_write_buffer_size=1024 * 1024,  # 1MB
+            max_write_buffer_number=1,
             target_file_size_base=64 * 1024 * 1024,  # 64MB
             max_background_compactions=4,
             level0_file_num_compaction_trigger=8,
@@ -67,13 +70,13 @@ class RocksContainer(Container):
         if self._db is not None:
             return self._db
 
-        logger.debug(f'opening {self.path} as aimrocks db')
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        locks_dir = self.path.parent.parent / 'locks'
-        locks_dir.mkdir(parents=True, exist_ok=True)
+        if self.read_only:
+            self.optimize_db_for_read()
 
+        logger.debug(f'opening {self.path} as aimrocks db')
         if not self.read_only:
-            self._lock_path = locks_dir / self.path.name
+            lock_path = self.prepare_lock_path()
+            self._lock_path = lock_path
             self._lock = FileLock(str(self._lock_path), timeout=10)
             self._lock.acquire()
 
@@ -105,12 +108,17 @@ class RocksContainer(Container):
         for k, v in self.items():
             index[k] = v
 
+        self._db.flush()
+        self._db.flush_wal()
+
         self._progress_path.unlink()
         self._progress_path = None
 
     def close(self):
         """Close all the resources."""
         if self._lock is not None:
+            self._db.flush()
+            self._db.flush_wal()
             self._lock.release()
             self._lock = None
         if self._db is not None:
@@ -489,3 +497,33 @@ class RocksContainer(Container):
         key, value = it.get()
 
         return key, value
+
+    @exception_resistant
+    def optimize_db_for_read(self):
+        """
+        This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
+        db will contain .sst files only which will significantly reduce further open and read operations. Further
+        optimizations can be done by running compactions but this is a costly operation to be performed online.
+        """
+        assert self.read_only
+
+        def non_empty_wal():
+            for wal_path in self.path.glob('*.log'):
+                if os.path.getsize(wal_path) > 0:
+                    return True
+            return False
+
+        if non_empty_wal():
+            lock_path = self.prepare_lock_path()
+
+            with FileLock(str(lock_path), timeout=2):
+                wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
+                wdb.flush()
+                wdb.flush_wal()
+                del wdb
+
+    def prepare_lock_path(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        locks_dir = self.path.parent.parent / 'locks'
+        locks_dir.mkdir(parents=True, exist_ok=True)
+        return locks_dir / self.path.name

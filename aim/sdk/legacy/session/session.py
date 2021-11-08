@@ -4,7 +4,7 @@ import signal
 import threading
 from typing import Optional
 
-from aim.sdk.legacy.session.utils import exception_resistant
+from aim.ext.exception_resistant import exception_resistant
 from aim.sdk.legacy.deprecation_warning import deprecated
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.resource.tracker import ResourceTracker
