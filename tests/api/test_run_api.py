@@ -170,7 +170,7 @@ class TestRunApi(ApiTestBase):
 
         self.assertLess(run_props['creation_time'], run_props['end_time'])
         self.assertEqual('Run # 1', run_props['name'])
-        self.assertEqual('default', run_props['experiment'])
+        self.assertEqual('default', run_props['experiment']['name'])
         self.assertEqual(0, len(run_props['tags']))
 
     def test_run_traces_batch_api(self):
