@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union
+from typing import Callable, Dict, List, Tuple, Union
 
 
 NoneType = type(None)
@@ -66,6 +66,47 @@ class CustomObjectBase:
     pass
 
 
+BLOBResolver = Callable[[], bytes]
+
+
+class BLOB:
+    def __init__(
+        self,
+        data: bytes = None,
+        resolver: 'BLOBResolver' = None
+    ):
+        self.data = data
+        self.resolver = resolver
+
+    def __bytes__(self):
+        return self.resolve()
+
+    def resolve(self):
+        if self.data is None:
+            assert self.resolver is not None
+            self.data = self.resolver()
+            self.resolver = None
+        return self.data
+
+    def __deepcopy__(self, memo):
+        data = bytes(self)
+        instance = self.__class__(data=data)
+        memo[id(self)] = instance
+        return instance
+
+    def transform(
+        self,
+        transform: Callable[[bytes], bytes]
+    ) -> 'BLOB':
+        if self.data is not None:
+            return self.__class__(transform(self.data))
+
+        def resolver():
+            return transform(bytes(self))
+
+        return self.__class__(resolver=resolver)
+
+
 __all__ = [
     'NoneType',
     'AimObjectKey',
@@ -76,4 +117,6 @@ __all__ = [
     'AimObject',
     'CustomObjectBase',
     'SafeNone',
+    'BLOB',
+    'BLOBResolver',
 ]
