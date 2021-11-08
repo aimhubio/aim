@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - release/**
     paths:
       - 'aim/sdk/**'
       - 'aim/web/api/**'
