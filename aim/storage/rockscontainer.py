@@ -24,7 +24,8 @@ class RocksContainer(Container):
         self,
         path: str,
         read_only: bool = False,
-        wait_if_busy: bool = False
+        wait_if_busy: bool = False,
+        **extra_options
     ) -> None:
         self.path = Path(path)
         self.read_only = read_only
@@ -47,6 +48,7 @@ class RocksContainer(Container):
             max_bytes_for_level_base=512 * 1024 * 1024,  # 512MB
             max_bytes_for_level_multiplier=8,
         )
+        self._extra_opts = extra_options
         # opts.allow_concurrent_memtable_write = False
         # opts.memtable_factory = aimrocks.VectorMemtableFactory()
         # opts.table_factory = aimrocks.PlainTableFactory()
@@ -514,10 +516,12 @@ class RocksContainer(Container):
         if non_empty_wal():
             lock_path = self.prepare_lock_path()
 
-            with FileLock(str(lock_path), timeout=2):
+            with FileLock(str(lock_path)):
                 wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
                 wdb.flush()
                 wdb.flush_wal()
+                if self._extra_opts.get('compaction'):
+                    wdb.compact_range()
                 del wdb
 
     def prepare_lock_path(self):
