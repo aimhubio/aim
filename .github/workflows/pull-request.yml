@@ -2,6 +2,8 @@ name: sanity checks on opened pull requests
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - 'aim/sdk/**'
       - 'aim/web/api/**'
