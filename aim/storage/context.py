@@ -12,6 +12,8 @@ class Context:
         self,
         context: AimObject
     ):
+        if context is None:
+            context = {}
         self._context = deepcopy(context)
         self._hash = None
 

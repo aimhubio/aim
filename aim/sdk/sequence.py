@@ -47,7 +47,7 @@ class Sequence(Generic[T]):
 
         self._meta_tree = run.meta_run_tree.subtree(('traces', context.idx, name))
         self._series_tree = run.series_run_tree.subtree((context.idx, name))
-        self._values = self._series_tree.array('vals')
+        self._values = self._series_tree.array('val')
         self._epochs = self._series_tree.array('epoch')
         self._timestamps = self._series_tree.array('time')
 
