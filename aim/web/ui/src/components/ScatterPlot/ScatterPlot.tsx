@@ -1,43 +1,48 @@
 import React from 'react';
 
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import {
   IAttributesRef,
   IBrushRef,
-  ILineChartProps,
 } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 import {
-  drawArea,
   clearArea,
+  drawArea,
   drawAxes,
-  drawLines,
-  processData,
-  getAxisScale,
   drawBrush,
   drawHoverAttributes,
+  getAxisScale,
+  processData,
+  ScaleEnum,
+  drawPoints,
 } from 'utils/d3';
 
-const LineChart = React.forwardRef(function LineChart(
-  props: ILineChartProps,
+import { IScatterPlotProps } from './types.d';
+
+import './styles.scss';
+
+const ScatterPlot = React.forwardRef(function ScatterPlot(
+  props: IScatterPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
-    index,
-    aggregatedData,
-    aggregationConfig,
-    syncHoverState,
-    axesScaleType,
-    displayOutliers,
-    alignmentConfig,
-    highlightMode,
-    curveInterpolation,
-    chartTitle,
     zoom,
     onZoomChange,
+    syncHoverState,
+    index = 0,
+    axesScaleType = {
+      xAxis: ScaleEnum.Linear,
+      yAxis: ScaleEnum.Linear,
+    },
+    chartTitle,
+    displayOutliers = false,
+    highlightMode = HighlightEnum.Off,
   } = props;
 
   // boxes
@@ -67,8 +72,6 @@ const LineChart = React.forwardRef(function LineChart(
   const axesNodeRef = React.useRef(null);
   const linesNodeRef = React.useRef(null);
   const attributesNodeRef = React.useRef(null);
-  const xAxisLabelNodeRef = React.useRef(null);
-  const yAxisLabelNodeRef = React.useRef(null);
   const highlightedNodeRef = React.useRef(null);
 
   // methods and values refs
@@ -126,23 +129,19 @@ const LineChart = React.forwardRef(function LineChart(
       width,
       height,
       margin,
-      alignmentConfig,
       xValues,
       attributesRef,
       humanizerConfigRef,
     });
 
-    drawLines({
+    drawPoints({
       index,
       data: processedData,
-      linesNodeRef,
-      linesRef,
-      curveInterpolation,
       xScale,
       yScale,
       highlightMode,
-      aggregationConfig,
-      aggregatedData,
+      pointsRef: linesRef,
+      pointsNodeRef: linesNodeRef,
     });
 
     drawHoverAttributes({
@@ -157,13 +156,11 @@ const LineChart = React.forwardRef(function LineChart(
       svgNodeRef,
       bgRectNodeRef,
       attributesNodeRef,
-      xAxisLabelNodeRef,
-      yAxisLabelNodeRef,
       linesNodeRef,
       highlightedNodeRef,
-      aggregationConfig,
       humanizerConfigRef,
-      alignmentConfig,
+      drawAxisLines: { x: false, y: false },
+      drawAxisLabels: { x: false, y: false },
     });
 
     drawBrush({
@@ -195,15 +192,7 @@ const LineChart = React.forwardRef(function LineChart(
         rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
-    [
-      data,
-      zoom,
-      displayOutliers,
-      highlightMode,
-      axesScaleType,
-      curveInterpolation,
-      aggregationConfig,
-    ],
+    [data, zoom, displayOutliers, highlightMode, axesScaleType],
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -221,15 +210,7 @@ const LineChart = React.forwardRef(function LineChart(
         window.cancelAnimationFrame(rafIDRef.current);
       }
     };
-  }, [
-    data,
-    zoom,
-    displayOutliers,
-    highlightMode,
-    axesScaleType,
-    curveInterpolation,
-    aggregationConfig,
-  ]);
+  }, [data, zoom, displayOutliers, highlightMode, axesScaleType]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -257,11 +238,13 @@ const LineChart = React.forwardRef(function LineChart(
   return (
     <div
       ref={parentRef}
-      className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
+      className={`ScatterPlot ${zoom?.active ? 'zoomMode' : ''}`}
     >
       <div ref={visAreaRef} />
     </div>
   );
 });
 
-export default React.memo(LineChart);
+ScatterPlot.displayName = 'ScatterPlot';
+
+export default React.memo(ScatterPlot);

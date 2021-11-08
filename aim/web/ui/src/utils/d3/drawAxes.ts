@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import { Unit } from 'humanize-duration';
 import moment from 'moment';
 
-import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
+import { IDrawAxesArgs } from 'types/utils/d3/drawAxes';
 
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
@@ -11,7 +11,7 @@ import { getKeyByAlignment } from '../formatByAlignment';
 
 import { AlignmentOptionsEnum } from './index';
 
-function drawAxes(props: IDrawAxesProps): void {
+function drawAxes(args: IDrawAxesArgs): void {
   const {
     svgNodeRef,
     axesNodeRef,
@@ -26,7 +26,7 @@ function drawAxes(props: IDrawAxesProps): void {
     xValues,
     attributesRef,
     humanizerConfigRef,
-  } = props;
+  } = args;
 
   if (!axesNodeRef?.current || !axesRef?.current || !svgNodeRef?.current) {
     return;

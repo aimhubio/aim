@@ -3,7 +3,7 @@ import { isNil } from 'lodash-es';
 
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 import {
-  IDrawParallelAxesBrushBrushProps,
+  IDrawParallelAxesBrushBrushArgs,
   IFilterDataByBrushedScaleProps,
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
@@ -17,7 +17,7 @@ function drawParallelAxesBrush({
   data,
   linesRef,
   attributesRef,
-}: IDrawParallelAxesBrushBrushProps): void {
+}: IDrawParallelAxesBrushBrushArgs): void {
   brushRef.current.xScale = attributesRef.current.xScale;
   brushRef.current.yScale = { ...attributesRef.current.yScale };
   brushRef.current.domainsData = Object.keys(dimensions).reduce(

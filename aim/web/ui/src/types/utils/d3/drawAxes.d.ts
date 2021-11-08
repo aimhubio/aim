@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
 import { IAttributesRef } from 'types/components/LineChart/LineChart';
 
-export interface IDrawAxesProps {
+export interface IDrawAxesArgs {
   svgNodeRef: React.MutableRefObject<>;
   plotBoxRef: React.MutableRefObject<>;
   axesNodeRef: React.MutableRefObject<>;

@@ -4,10 +4,10 @@ import { isNil, isEmpty } from 'lodash-es';
 import {
   IActivePoint,
   INearestCircle,
-  ISyncHoverStateParams,
+  ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import {
-  IDrawParallelHoverAttributesProps,
+  IDrawParallelHoverAttributesArgs,
   IParallelNearestCircle,
   IUpdateParallelFocusedChartProps,
 } from 'types/utils/d3/drawParallelHoverAttributes';
@@ -32,7 +32,7 @@ const drawParallelHoverAttributes = ({
   linesNodeRef,
   highlightedNodeRef,
   axesNodeRef,
-}: IDrawParallelHoverAttributesProps) => {
+}: IDrawParallelHoverAttributesArgs) => {
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   let rafID = 0;
 
@@ -480,9 +480,9 @@ const drawParallelHoverAttributes = ({
   }
 
   // Interactions
-  function safeSyncHoverState(params: ISyncHoverStateParams): void {
+  function safeSyncHoverState(args: ISyncHoverStateArgs): void {
     if (typeof syncHoverState === 'function') {
-      syncHoverState(params);
+      syncHoverState(args);
     }
   }
 

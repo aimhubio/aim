@@ -1,10 +1,10 @@
 import * as d3 from 'd3';
 
-import { IDrawAreaProps } from 'types/utils/d3/drawArea';
+import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 
 import { CircleEnum } from './index';
 
-function drawParallelArea(props: IDrawAreaProps): void {
+function drawParallelArea(args: IDrawAreaArgs): void {
   const {
     index = 0,
     parentRef,
@@ -18,7 +18,7 @@ function drawParallelArea(props: IDrawAreaProps): void {
     linesNodeRef,
     attributesNodeRef,
     chartTitle = {},
-  } = props;
+  } = args;
   if (!parentRef?.current || !visAreaRef?.current) {
     return;
   }
