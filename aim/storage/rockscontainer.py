@@ -10,6 +10,7 @@ from aim.storage.types import BLOB, BLOBResolver
 from aim.storage.container import Container, ContainerKey, ContainerValue
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
+from aim.storage.treeview import TreeView
 
 
 logger = logging.getLogger(__name__)
@@ -127,7 +128,7 @@ class RocksContainer(Container):
         """Preload the Container in the read mode."""
         self.db
 
-    def tree(self) -> 'ContainerTreeView':
+    def tree(self) -> 'TreeView':
         """Return a :obj:`ContainerTreeView` which enables hierarchical view and access
         to the container records.
 
