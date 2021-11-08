@@ -36,6 +36,7 @@ def run_flushes_and_compactions(repo: 'Repo', runs_to_skip: set):
     seq_dbs_path = os.path.join(repo.path, 'seqs', 'chunks')
     meta_dbs_names = set(os.listdir(meta_dbs_path)).difference(runs_to_skip)
     seq_dbs_names = set(os.listdir(seq_dbs_path)).difference(runs_to_skip)
+    meta_index_container_path = os.path.join(repo.path, 'meta', 'index')
 
     pool = ThreadPool(cpu_count(logical=False))
 
@@ -50,6 +51,8 @@ def run_flushes_and_compactions(repo: 'Repo', runs_to_skip: set):
         total=len(meta_containers)
     ):
         pass
+
+    optimize_container(meta_index_container_path, extra_options={'compaction': True})
 
     seq_containers = [os.path.join(seq_dbs_path, db) for db in seq_dbs_names]
     for _ in tqdm.tqdm(
