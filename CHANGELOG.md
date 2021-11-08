@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.4 Nov 8 2021
+
+- Switch to aimrocks 0.0.10 - exposes data flushing interface (mihran113)
+- Optimize stored data when runs finalized (mihran113)
+- Update `aim reindex` command to run storage optimizations (alberttorosyan)
+- Storage partial optimizations on metric/run queries (alberttorosyan)
+
 ## 3.0.3 Nov 4 2021
 
 - Bump sqlalchemy version to 1.4.1 (alberttorosyan)
