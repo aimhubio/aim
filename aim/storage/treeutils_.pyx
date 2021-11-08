@@ -2,6 +2,8 @@ from aim.storage import encoding
 from aim.storage.encoding.encoding_native cimport decode_path
 
 from aim.storage.types import AimObject, AimObjectPath
+
+from aim.storage.types import BLOB
 from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 
 from aim.storage.object import CustomObjectBase, CustomObject
@@ -27,6 +29,8 @@ def unfold_tree(
     if obj is None:
         yield path, obj
     elif isinstance(obj, (bool, int, float, str, bytes)):
+        yield path, obj
+    elif isinstance(obj, BLOB):
         yield path, obj
     elif isinstance(obj, (list, tuple)):
         if not unfold_array:
