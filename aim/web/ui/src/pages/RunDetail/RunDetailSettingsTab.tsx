@@ -4,7 +4,7 @@ import { Button, Text } from 'components/kit';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
-import { IRunDetailSettingsTabProps } from 'types/pages/runs/Runs';
+import { IRunDetailSettingsTabProps } from './types';
 
 function RunDetailSettingsTab({
   runHash,

@@ -1,7 +1,7 @@
 export interface IRun<T> {
   params: IRunParams;
   props: {
-    experiment: string | null;
+    experiment: { name: string; id: string } | null;
     name: string;
     creation_time: number;
     end_time: number;

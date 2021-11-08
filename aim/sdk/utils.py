@@ -2,6 +2,7 @@ import os
 import pathlib
 import uuid
 from typing import Union
+from aim.sdk.configs import get_aim_repo_name
 
 from aim.storage.object import CustomObject
 
@@ -10,7 +11,7 @@ def search_aim_repo(path):
     found = False
     path = os.path.abspath(path)
     while path:
-        repo_path = os.path.join(path, '.aim')
+        repo_path = os.path.join(path, get_aim_repo_name())
         if os.path.exists(repo_path) and os.path.isdir(repo_path):
             found = True
             return path, found
@@ -39,8 +40,8 @@ def clean_repo_path(repo_path: Union[str, pathlib.Path]) -> str:
     if repo_path == '~':
         return os.path.expanduser('~')
 
-    if repo_path.endswith('.aim'):
-        repo_path = repo_path[:-4]
+    if repo_path.endswith(get_aim_repo_name()):
+        repo_path = repo_path[:-len(get_aim_repo_name())]
     if repo_path.startswith('~'):
         repo_path = os.path.expanduser('~') + repo_path[1:]
 
