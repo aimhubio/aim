@@ -21,17 +21,20 @@
    :name: api
    :caption: References
 
-   ref_sdk
-   ref_ql
-   ref_cli
-   ref_storage
+   refs/sdk
+   refs/ql
+   refs/cli
+   refs/storage
 
 .. toctree::
    :maxdepth: 2
    :name: api
    :caption: Guides
 
-   guide_integrations.rst
+   guides/integrations/basic_aim_huggingface.md
+   guides/integrations/basic_aim_keras.md
+   guides/integrations/basic_aim_pytorch_lightning.md
+   guides/integrations/basic_aim_xgboost.md
 
 .. toctree::
    :maxdepth: 1
