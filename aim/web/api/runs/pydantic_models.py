@@ -52,6 +52,7 @@ class PropsView(BaseModel):
         id: UUID
         name: str
         color: str
+        description: str
 
     class Experiment(BaseModel):
         id: UUID
