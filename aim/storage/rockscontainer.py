@@ -335,8 +335,8 @@ class RocksContainer(Container):
         """
         target = self.batch() if store_batch is None else store_batch
 
-        self._delete_range(begin, end, target=store_batch)
-        self._delete_blob_range(begin, end, target=store_batch)
+        self._delete_range(begin, end, target=target)
+        self._delete_blob_range(begin, end, target=target)
 
         if store_batch is None:
             self.commit(target)
