@@ -11,56 +11,56 @@ Aim package logs your training runs, enables a beautiful UI to compare them and 
 
 ## Why use Aim?
 
-- When training & evaluating models ML engineers track metadata to analyze the process and outcome
-- Modern AI development revolves around the AI metadata (training metrics, images, distributions etc)
-- Aim helps to track AI metadata and deeply explore them in two ways
-  - programmatically on your favorite notebook
-  - through the Aim UI
-- So far we have built the most advanced open-sourcce Metric comparison tool.
-  - Aim helps to save lots of time when comparing 1000s of metrics.
+- Modern ML development revolves around collection and analysis of AI metadata (training metrics, images, distributions etc) to analyze and explore different aspects of the model performance.
 
+- There is both a need to manually explore and compare the metadata as well as automate for different infrastructure needs.
+
+- Aim helps to track AI metadata and
+  - Explore it manually through the most advanced open-source experiment comparison web UI.
+  - Query programmatically in your favorite notebook or through script for automation.
+
+- Use Aim to seamlessly log your ML metadata in your training environment and explore through UI and code. Aim is free, open-source and self-hosted.
 
 ## What can you do with Aim?
 
-### Log metrics and other metadata
+### Log metrics and params
 
-Use the Aim SDK to log as many metrics as you need for youre training runs.
+Use the Aim SDK to log as many metrics and params as you need for your training and evaluation runs.
 Aim users track 1000s of training runs and sometimes more than 100s of metrics per run with los of steps.
-Other metadata types are coming soon (images, distributions etc).
 
-### Query metadata through UI
-Use Aim's powerful pythonic query language to query the logged metadata.
-It's like a python if statement over everything you have tracked
-More details about querying the Aim.
 
-### Training runs explore and activity view
-Use activity view to observe the daily training runs.
-Runs explore will help you to hollistically view all your runs, their metric last values and tracked hyperparameters.
+### Query metadata on Web UI
+Aim enables a powerful pythonic query language to filter through metadata.
+It's like a python if statement over everything you have tracked. You can use this on all explorer screens.
 
-### Metric explore
-Metric explore helps you to compare 100s of metrics within few clicks.
+
+
+### Runs explorer
+Runs explorer will help you to hollistically view all your runs, each metric last tracked values and tracked hyperparameters.
+
+### Metrics explorer
+Metrics explorer helps you to compare 100s of metrics within a few clicks.
 It helps to save lots of time compared to other open-source experiment tracking tools.
 
-### Params explore
-Params explore helps
+### Params explorer
+Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
 
-### Images explore (coming soon...)
+### Images explorer (coming soon...)
+Track intermediate images and search, compare them on the Images Explorer.
 
-### Query programmatically
-Aim allows to query the tracked metadata through its SDK.
-In fact Aim UI's backend is the Aim SDK and a tiny Fast API web layer. More about this.
+### Query metadata programmatically
+Use the same pythonic if statement to query the data through the Aim SDK programmatically.
 
 
 ## How Aim works?
 Aim is a python package with three main components:
 - Aim Storage
-  - Aim Storage is a rocksdb based embedded storage where the metadata is stored locally
+  - A rocksdb-based embedded storage where the metadata is stored locally
 - Aim SDK
   - A simple python interface that allows to track AI metadata
     - metrics
     - hyperparameters
     - images
-    - ...
 - Aim UI
   - A self-hosted web interface to deeply explore the tracked metadata
 
