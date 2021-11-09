@@ -2029,14 +2029,13 @@ function createAppModel({
                   },
                 },
               });
-              setTimeout(() => {
-                const tableRef: any = model.getState()?.refs?.tableRef;
-                tableRef.current?.updateData({
-                  newData: tableData.rows,
-                  newColumns: tableColumns,
-                  hiddenColumns: configData.table.hiddenColumns!,
-                });
-              }, 0);
+
+              const tableRef: any = model.getState()?.refs?.tableRef;
+              tableRef.current?.updateData({
+                newData: tableData.rows,
+                newColumns: tableColumns,
+                hiddenColumns: configData.table.hiddenColumns!,
+              });
             } catch (ex) {
               if (ex.name === 'AbortError') {
                 // Abort Error
@@ -2586,14 +2585,13 @@ function createAppModel({
             },
           },
         });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: modelState?.config.table.hiddenColumns!,
-          });
-        }, 0);
+
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+          hiddenColumns: modelState?.config.table.hiddenColumns!,
+        });
       }
 
       function destroy(): void {

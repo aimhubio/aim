@@ -40,8 +40,10 @@ function Table(props) {
     .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
   const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
 
+  const groups = !Array.isArray(props.data);
+
   useEffect(() => {
-    if (props.expanded && props.groups) {
+    if (props.expanded && groups) {
       for (let groupKey in props.expanded) {
         if (
           props.expanded[groupKey] &&
@@ -194,10 +196,10 @@ function Table(props) {
       <div
         className={classNames({
           Table: true,
-          'Table--grouped': props.groups,
+          'Table--grouped': groups,
         })}
       >
-        {(props.groups || leftPane.length > 0) && (
+        {(groups || leftPane.length > 0) && (
           <div
             className={classNames({
               Table__pane: true,
@@ -219,7 +221,6 @@ function Table(props) {
                 }
                 col={col}
                 data={props.data}
-                groups={props.groups}
                 expanded={expanded}
                 expand={expand}
                 togglePin={togglePin}
@@ -269,7 +270,6 @@ function Table(props) {
               }
               col={col}
               data={props.data}
-              groups={props.groups}
               expanded={expanded}
               expand={expand}
               togglePin={togglePin}
@@ -327,7 +327,6 @@ function Table(props) {
                 }
                 col={col}
                 data={props.data}
-                groups={props.groups}
                 expanded={expanded}
                 expand={expand}
                 togglePin={togglePin}

@@ -61,7 +61,6 @@ const Table = React.forwardRef(function Table(
     updateColumnsWidths,
     sortFields,
     hiddenRows,
-    groups,
     isLoading,
     showRowClickBehaviour = true,
     showResizeContainerActionBar = true,
@@ -91,6 +90,8 @@ const Table = React.forwardRef(function Table(
     left: 0,
     width: 0,
   });
+
+  let groups = !Array.isArray(rowData);
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -689,7 +690,6 @@ const Table = React.forwardRef(function Table(
                       hiddenRows={hiddenRows}
                       data={rowData}
                       columns={columnsData.filter((col) => !col.isHidden)}
-                      groups={groups}
                       onGroupExpandToggle={onGroupExpandToggle}
                       onRowHover={rowHoverHandler}
                       onRowClick={rowClickHandler}
@@ -748,12 +748,9 @@ function propsComparator(
   prevProps: ITableProps,
   nextProps: ITableProps,
 ): boolean {
-  // add custom here checks here
-  if (prevProps.isLoading !== nextProps.isLoading) {
-    return false;
-  }
+  // Add custom here checks here
 
-  if (prevProps.data !== nextProps.data) {
+  if (prevProps.isLoading !== nextProps.isLoading) {
     return false;
   }
 

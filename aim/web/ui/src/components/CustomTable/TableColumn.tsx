@@ -21,7 +21,6 @@ function Column({
   showTopHeaderBorder,
   col,
   data,
-  groups,
   expanded,
   expand,
   togglePin,
@@ -45,6 +44,9 @@ function Column({
   const widthClone = React.useRef(width);
   const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
+
+  const groups = !Array.isArray(data);
+
   function resizeStart({ target }) {
     setIsResizing(true);
     if (pinnedTo === 'right') {
