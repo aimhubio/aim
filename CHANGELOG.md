@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Improve rendering performance by virtualizing table columns (roubkar)
 - Add ability to apply grouping by higher level param key (roubkar)
 
 ## 3.0.6 Nov 9 2021
