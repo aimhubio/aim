@@ -7,6 +7,7 @@ import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
 
@@ -65,55 +66,7 @@ function ImagesPanel({
       loaderComponent={<ChartLoader controlsCount={0} />}
     >
       {!isEmpty(imagesData) ? (
-        <div className='ImagesPanel' style={{ height: '100%' }}>
-          <div className='ImagesPanel__slidersContainer'>
-            <div className='ImagesPanel__slidersContainer__sliderContainer'>
-              <p className='ImagesPanel__slidersContainer__sliderContainer__title'>
-                Step
-              </p>
-              <div className='ImagesPanel__slidersContainer__sliderContainer__sliderBox'>
-                <Slider
-                  value={recordSlice}
-                  onChange={onRecordSliceChange}
-                  min={stepRange[0]}
-                  max={stepRange[1]}
-                  valueLabelDisplay='auto'
-                  getAriaValueText={(value) => `${value}`}
-                />
-              </div>
-              <TextField
-                type='number'
-                value={recordDensity}
-                size='small'
-                variant='outlined'
-                onChange={onRecordDensityChange}
-                className='TextField__TextArea__OutLined__Small ImagesPanel__slidersContainer__sliderContainer__intervalField'
-              />
-            </div>
-            <div className='ImagesPanel__slidersContainer__sliderContainer'>
-              <p className='ImagesPanel__slidersContainer__sliderContainer__title'>
-                Index
-              </p>
-              <div className='ImagesPanel__slidersContainer__sliderContainer__sliderBox'>
-                <Slider
-                  value={indexSlice}
-                  onChange={onIndexSliceChange}
-                  min={indexRange[0]}
-                  max={indexRange[1]}
-                  valueLabelDisplay='auto'
-                  getAriaValueText={(value) => `${value}`}
-                />
-              </div>
-              <TextField
-                type='number'
-                size='small'
-                value={indexDensity}
-                onChange={onIndexDensityChange}
-                variant='outlined'
-                className='TextField__TextArea__OutLined__Small ImagesPanel__slidersContainer__sliderContainer__intervalField'
-              />
-            </div>
-          </div>
+        <div className='ImagesPanel'>
           <div
             className='ImagesPanel__imagesContainer'
             ref={imagesSetWrapper}
@@ -128,6 +81,18 @@ function ImagesPanel({
               imagesSetWrapper={imagesSetWrapper}
             />
           </div>
+          <ImagesExploreRangePanel
+            recordSlice={recordSlice}
+            indexSlice={indexSlice}
+            indexRange={indexRange}
+            stepRange={stepRange}
+            indexDensity={indexDensity}
+            recordDensity={recordDensity}
+            onIndexSliceChange={onIndexSliceChange}
+            onRecordSliceChange={onRecordSliceChange}
+            onRecordDensityChange={onRecordDensityChange}
+            onIndexDensityChange={onIndexDensityChange}
+          />
         </div>
       ) : (
         <EmptyComponent

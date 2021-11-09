@@ -257,7 +257,7 @@
                 margin-right: 0;
                 border-radius: 0.3125rem 0 0 0.3125rem;
               }
-            
+
               &::before {
                 content: '';
                 height: 100%;
@@ -314,7 +314,7 @@
                 width: 0.375rem;
                 height: 0.375rem;
                 top: 0.6875rem;
-                border-radius: 50%;
+                border-radius: $border-radius-circle;
                 background: $success-color-100;
               }
             }
