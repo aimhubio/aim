@@ -54,7 +54,7 @@ class TreeView:
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ) -> AimObject:
-        ...
+        return self.collect(path)
 
     def get(
         self,

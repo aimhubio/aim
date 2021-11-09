@@ -216,11 +216,7 @@ class Run(StructuredRunMixin):
 
         self.series_run_tree: TreeView = self.repo.request(
             'seqs', self.hash, read_only=read_only
-<<<<<<< HEAD
-        ).tree().view('seqs').view('chunks').view(self.hash)
-=======
         ).tree().subtree('seqs').subtree('chunks').subtree(self.hash)
->>>>>>> d65ae43831434570f596d0aa06c3aa1aaf717d5c
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval)
