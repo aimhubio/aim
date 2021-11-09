@@ -11,10 +11,10 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
 import {
   IActivePoint,
-  ISyncHoverStateParams,
+  ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { ChartTypeEnum, PointSymbolEnum, ScaleEnum } from 'utils/d3';
 
 import { chartTypesConfig } from './config';
 import ChartPopover from './ChartPopover/ChartPopover';
@@ -35,8 +35,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const activePointRef = React.useRef<IActivePoint | null>(null);
 
   const syncHoverState = React.useCallback(
-    (params: ISyncHoverStateParams): void => {
-      const { activePoint, focusedStateActive, dataSelector } = params;
+    (args: ISyncHoverStateArgs): void => {
+      const { activePoint, focusedStateActive, dataSelector } = args;
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {

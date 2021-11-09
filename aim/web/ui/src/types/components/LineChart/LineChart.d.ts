@@ -3,7 +3,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import {
   IActivePoint,
   INearestCircle,
-  ISyncHoverStateParams,
+  ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
@@ -39,14 +39,14 @@ export interface ILineChartProps {
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
-  syncHoverState: (params: ISyncHoverStateParams) => void;
+  syncHoverState: (args: ISyncHoverStateArgs) => void;
   aggregationConfig?: IAggregationConfig;
   chartTitle?: IChartTitle;
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
 }
 
-export interface IUpdateFocusedChartProps {
+export interface IUpdateFocusedChartArgs {
   mousePos?: [number, number];
   focusedStateActive?: boolean;
   force?: boolean;
@@ -75,6 +75,6 @@ export interface IAttributesRef {
     force: boolean = false,
   ) => void;
   updateHoverAttributes?: (xValue: number, dataSelector?: string) => void;
-  updateFocusedChart?: (params?: IUpdateFocusedChartProps) => void;
+  updateFocusedChart?: (args?: IUpdateFocusedChartArgs) => void;
   clearHoverAttributes?: () => void;
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import { ILineDataType } from './drawParallelLines';
 import { IDimensionsType } from './drawParallelAxes';
 
-export interface IDrawParallelAxesBrushBrushProps {
+export interface IDrawParallelAxesBrushBrushArgs {
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;
   brushRef: React.MutableRefObject<>;

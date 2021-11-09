@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.LineChart {
+.ScatterPlot {
   background-color: white;
   height: 100%;
   width: 100%;
@@ -77,49 +77,18 @@
     overflow: hidden;
   }
 
-  .Line {
-    stroke-width: 1.45;
+  .Circle {
     opacity: 1;
-
     &.active {
       opacity: 1;
-      stroke-width: 3px;
     }
-
-    &.aggregated {
-      opacity: 0;
-
-      &.highlighted {
-        opacity: 0.5;
-      }
-
-      &.active {
-        opacity: 0.8;
-      }
-    }
-
     &.highlighted {
       opacity: 1;
-      stroke-width: 2.2px;
     }
   }
 
-  .Lines.highlight > .Line:not(.active):not(.highlighted):not(.aggregated) {
-    stroke-width: 1.45;
+  .Lines.highlight > .Circle:not(.active):not(.highlighted) {
     opacity: 0.2;
-  }
-
-  .AggrLine {
-    opacity: 1;
-    stroke-width: 2.2px;
-  }
-
-  .Lines.highlight > .AggrArea:not(.highlighted) {
-    opacity: 0.2;
-  }
-
-  .AggrArea.highlighted {
-    opacity: 1;
   }
 
   .yAxis, .xAxis {
@@ -133,5 +102,4 @@
       stroke-width: 0.4;
     }
   }
-
 }

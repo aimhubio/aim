@@ -3072,7 +3072,6 @@ function createAppModel({
             }
           },
         );
-
         return { rows, sameValueColumns };
       }
 
@@ -3151,6 +3150,7 @@ function createAppModel({
                     }
                   },
                 );
+
                 return {
                   values,
                   color: color ?? run.color,
