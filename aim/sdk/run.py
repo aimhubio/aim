@@ -3,13 +3,14 @@ import logging
 import datetime
 import os
 
+from collections import defaultdict
 from time import time
 from weakref import WeakValueDictionary
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash
+from aim.sdk.utils import generate_run_hash, get_object_typename
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
@@ -24,6 +25,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.sdk.metric import Metric
+    from aim.sdk.image_sequence import Images
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
@@ -206,15 +208,19 @@ class Run(StructuredRunMixin):
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', self.hash, read_only=read_only, from_union=True
-        ).tree().view('meta')
-        self.meta_run_tree: TreeView = self.meta_tree.view('chunks').view(self.hash)
+        ).tree().subtree('meta')
+        self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
-        self.meta_attrs_tree: TreeView = self.meta_tree.view('attrs')
-        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.view('attrs')
+        self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
+        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
         self.series_run_tree: TreeView = self.repo.request(
             'seqs', self.hash, read_only=read_only
+<<<<<<< HEAD
         ).tree().view('seqs').view('chunks').view(self.hash)
+=======
+        ).tree().subtree('seqs').subtree('chunks').subtree(self.hash)
+>>>>>>> d65ae43831434570f596d0aa06c3aa1aaf717d5c
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval)
@@ -334,7 +340,8 @@ class Run(StructuredRunMixin):
 
         sequence = self.sequence_trackers.get((ctx, name))
         if sequence is None:
-            self.meta_tree['traces', ctx.idx, name] = 1
+            dtype = get_object_typename(value)
+            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
             sequence = Sequence(name, ctx, self)
             self.sequence_trackers[(ctx, name)] = sequence
         sequence.track(value, track_time, step, epoch)
@@ -371,7 +378,7 @@ class Run(StructuredRunMixin):
     def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, 'Run']]:
         if isinstance(dtypes, str):
             dtypes = (dtypes,)
-        for ctx_idx, run_ctx_dict in self.meta_run_tree.view('traces').items():
+        for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
@@ -413,26 +420,73 @@ class Run(StructuredRunMixin):
         Returns:
             :obj:`Metric` object if exists, `None` otherwise.
         """
-        from aim.sdk.metric import Metric
-        metric = Metric(metric_name, context, self)
-        return metric if bool(metric) else None
+        return self._get_sequence('metric', metric_name, context)
 
-    def collect_metrics_info(self) -> list:
+    def get_image_sequence(
+            self,
+            metric_name: str,
+            context: Context
+    ) -> Optional['Images']:
+        """Retrieve metric sequence by it's name and context.
+
+        Args:
+             metric_name (str): Tracked metric name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Metric` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('images', metric_name, context)
+
+    def _get_sequence(
+            self,
+            seq_typename: str,
+            sequence_name: str,
+            context: Context
+    ) -> Optional[Sequence]:
+        seq_cls = Sequence.registry.get(seq_typename, None)
+        if seq_cls is None:
+            raise ValueError(f'\'{seq_typename}\' is not a valid Sequence')
+        assert issubclass(seq_cls, Sequence)
+        sequence = seq_cls(sequence_name, context, self)
+        return sequence if bool(sequence) else None
+
+    def collect_metrics_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all metrics general overview.
 
         Returns:
              :obj:`list`: list of metric's `context`, `metric_name` and last tracked value triplets.
         """
-        metrics = self.meta_run_tree.view('traces')
-        metrics_overview = []
+        metrics = self.meta_run_tree.subtree('traces')
+        metrics_overview = {}
+
+        # build reverse map of sequence supported dtypes
+        dtype_to_sequence_map = defaultdict(list)
+        if isinstance(sequence_types, str):
+            sequence_types = (sequence_types,)
+        for seq_name in sequence_types:
+            metrics_overview[seq_name] = []
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None:
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+            assert issubclass(seq_cls, Sequence)
+            dtypes = seq_cls.allowed_dtypes()
+            for dtype in dtypes:
+                dtype_to_sequence_map[dtype].append(seq_name)
+
         for idx in metrics.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
             for metric_name, value in metrics[idx].items():
-                metrics_overview.append({
-                    'context': ctx_dict,
-                    'metric_name': metric_name,
-                    'last_value': value
-                })
+                dtype = value['dtype']
+                if dtype in dtype_to_sequence_map:
+                    metric_data = {
+                        'context': ctx_dict,
+                        'metric_name': metric_name,
+                    }
+                    if not skip_last_value:
+                        metric_data['last_value'] = value
+                    for seq_name in dtype_to_sequence_map[dtype]:
+                        metrics_overview[seq_name].append(metric_data)
         return metrics_overview
 
     def _calc_hash(self) -> int:

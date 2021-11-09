@@ -40,7 +40,7 @@ class URIService:
         result = decrypted_uri.split(URIService.SEPARATOR, maxsplit=2)
         assert len(result) <= 3
         # extend result length to 3, fill with [None]s
-        result.extend([None]*(3-len(result)))
+        result.extend([None] * (3 - len(result)))
 
         return result
 

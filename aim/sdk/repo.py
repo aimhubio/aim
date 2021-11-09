@@ -4,16 +4,17 @@ from enum import Enum
 
 from packaging import version
 from collections import defaultdict
-from typing import Dict, Iterator, NamedTuple, Optional
+from typing import Dict, Tuple, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 
-from aim.sdk.configs import AIM_REPO_NAME, AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
+from aim.sdk.sequence import Sequence
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -57,7 +58,6 @@ class Repo:
             Recommended to use ``aim init`` command instead.
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
-    _default_path = None  # for unit-tests
 
     tracking_queue = _get_tracking_queue()
 
@@ -70,7 +70,7 @@ class Repo:
             self._mount_root, self.root_path = mount_remote_repo(path)
         else:
             self.root_path = path
-        self.path = os.path.join(self.root_path, AIM_REPO_NAME)
+        self.path = os.path.join(self.root_path, get_aim_repo_name())
 
         if init:
             os.makedirs(self.path, exist_ok=True)
@@ -93,7 +93,7 @@ class Repo:
 
     @property
     def meta_tree(self):
-        return self.request('meta', read_only=True, from_union=True).tree().view('meta')
+        return self.request('meta', read_only=True, from_union=True).tree().subtree('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -104,18 +104,11 @@ class Repo:
     def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
 
-    @staticmethod
-    def set_default_path(path: str):
-        Repo._default_path = path
-
     @classmethod
     def default_repo_path(cls) -> str:
-        if cls._default_path:
-            repo_path = cls._default_path
-        else:
-            repo_path, found = search_aim_repo(os.path.curdir)
-            if not found:
-                repo_path = os.getcwd()
+        repo_path, found = search_aim_repo(os.path.curdir)
+        if not found:
+            repo_path = os.getcwd()
         return repo_path
 
     @classmethod
@@ -163,7 +156,7 @@ class Repo:
             True if repository exists, False otherwise.
         """
         path = clean_repo_path(path)
-        aim_repo_path = os.path.join(path, AIM_REPO_NAME)
+        aim_repo_path = os.path.join(path, get_aim_repo_name())
         return os.path.exists(aim_repo_path)
 
     @classmethod
@@ -177,7 +170,7 @@ class Repo:
         repo = cls._pool.get(path)
         if repo is not None:
             del cls._pool[path]
-        aim_repo_path = os.path.join(path, AIM_REPO_NAME)
+        aim_repo_path = os.path.join(path, get_aim_repo_name())
         shutil.rmtree(aim_repo_path)
 
     @classmethod
@@ -195,7 +188,7 @@ class Repo:
     @classmethod
     def get_version(cls, path: str):
         path = clean_repo_path(path)
-        version_file_path = os.path.join(path, '.aim', 'VERSION')
+        version_file_path = os.path.join(path, get_aim_repo_name(), 'VERSION')
         if os.path.exists(version_file_path):
             with open(version_file_path, 'r') as version_fh:
                 return version_fh.read()
@@ -256,7 +249,7 @@ class Repo:
             next :obj:`Run` in readonly mode .
         """
         self.meta_tree.preload()
-        for run_name in self.meta_tree.view('chunks').keys():
+        for run_name in self.meta_tree.subtree('chunks').keys():
             yield Run(run_name, repo=self, read_only=True)
 
     def iter_runs_from_cache(self, offset: str = None) -> Iterator['Run']:
@@ -282,7 +275,7 @@ class Repo:
             :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
         # TODO: [MV] optimize existence check for run
-        if run_hash is None or run_hash not in self.meta_tree.view('chunks').keys():
+        if run_hash is None or run_hash not in self.meta_tree.subtree('chunks').keys():
             return None
         else:
             return Run(run_hash, repo=self, read_only=True)
@@ -358,25 +351,52 @@ class Repo:
     def _get_meta_tree(self):
         return self.request(
             'meta', read_only=True, from_union=True
-        ).tree().view('meta')
+        ).tree().subtree('meta')
 
-    def collect_metrics_info(self) -> Dict[str, list]:
-        """Utility function for getting metric names and contexts for all runs.
+    @staticmethod
+    def check_sequence_types(sequence_types: Tuple[str, ...]):
+        for seq_name in sequence_types:
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None or not issubclass(seq_cls, Sequence):
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+
+    def collect_metrics_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
+        """Utility function for getting sequence names and contexts for all runs by given sequence types.
+
+        Args:
+            sequence_types (:obj:`tuple[str]`, optional): Sequence types to get tracked sequence names/contexts for.
+            Defaults to 'metric'.
 
         Returns:
-            :obj:`dict`: Tree of metrics and their contexts.
+            :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
         """
         meta_tree = self._get_meta_tree()
-        try:
-            traces = meta_tree.collect('traces')
-        except KeyError:
+        sequence_metrics = {}
+        if isinstance(sequence_types, str):
+            sequence_types = (sequence_types,)
+        for seq_name in sequence_types:
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None:
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+            assert issubclass(seq_cls, Sequence)
+            dtypes = seq_cls.allowed_dtypes()
             traces = {}
-        metrics = defaultdict(list)
-        for ctx_id, trace_metrics in traces.items():
-            for metric in trace_metrics.keys():
-                metrics[metric].append(meta_tree['contexts', ctx_id])
-
-        return metrics
+            for dtype in dtypes:
+                try:
+                    traces.update(meta_tree.collect(('traces_types', dtype)))
+                except KeyError:
+                    pass
+            if 'float' in dtypes:  # old sequences without dtype set are considered float sequences
+                try:
+                    traces.update(meta_tree.collect('traces'))
+                except KeyError:
+                    pass
+            metrics = defaultdict(list)
+            for ctx_id, trace_metrics in traces.items():
+                for metric in trace_metrics.keys():
+                    metrics[metric].append(meta_tree['contexts', ctx_id])
+            sequence_metrics[seq_name] = metrics
+        return sequence_metrics
 
     def collect_params_info(self) -> dict:
         """Utility function for getting run meta-parameters.
