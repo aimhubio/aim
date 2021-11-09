@@ -4,6 +4,10 @@
 
 - Add ability to apply grouping by higher level param key (roubkar)
 
+## 3.0.6 Nov 9 2021
+
+- Fix for blocking container optimization for in progress runs (alberttorosyan)
+
 ## 3.0.5 Nov 9 2021
 
 - Add tqdm package in setup.py required section (mihran113)

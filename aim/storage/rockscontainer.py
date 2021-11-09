@@ -525,7 +525,7 @@ class RocksContainer(Container):
         if non_empty_wal():
             lock_path = self.prepare_lock_path()
 
-            with FileLock(str(lock_path)):
+            with FileLock(str(lock_path), timeout=0):
                 wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
                 wdb.flush()
                 wdb.flush_wal()
