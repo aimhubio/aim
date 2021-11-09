@@ -4,7 +4,6 @@
 
 - Fix for blocking container optimization for in progress runs (alberttorosyan)
 
-
 ## 3.0.5 Nov 9 2021
 
 - Add tqdm package in setup.py required section (mihran113)
