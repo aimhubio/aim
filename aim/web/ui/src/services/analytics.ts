@@ -1,5 +1,5 @@
 //@ts-nocheck
-export const SEGMENT_DEMO_WRITE_KEY = 'Rj1I4AisLSvsvAnPW7OqkoYBUTXJRBHK';
+export const SEGMENT_DEMO_WRITE_KEY = 'Z5rtxFe3gJmZB8JD97c4rqQa9R0q4Gkn';
 export const SEGMENT_WRITE_KEY = 'RrVqLHHD6WDXoFBkodO9KidodTtU92XO';
 export function isDev() {
   return process.env.NODE_ENV === 'development';

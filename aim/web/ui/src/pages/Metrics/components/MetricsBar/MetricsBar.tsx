@@ -14,6 +14,8 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 import { Button, Icon, Text } from 'components/kit';
 
+import { trackEvent } from 'services/analytics';
+
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
 import BookmarkForm from '../BookmarkForm/BookmarkForm';
@@ -118,6 +120,9 @@ function MetricsBar({
                 href='https://github.com/aimhubio/aim#searching-experiments'
                 target='_blank'
                 rel='noreferrer'
+                onClick={() =>
+                  trackEvent('[Homepage] go to github searching experiments')
+                }
               >
                 <MenuItem>Searching Experiments (docs)</MenuItem>
               </a>
