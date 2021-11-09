@@ -42,7 +42,7 @@ def run_flushes_and_compactions(repo: 'Repo', runs_to_skip: set):
 
     def optimize_container(path, extra_options):
         rc = RocksContainer(path, read_only=True, **extra_options)
-        rc.optimize_db_for_read()  # TODO [AT] check once function is available
+        rc.optimize_db_for_read()
 
     meta_containers = [os.path.join(meta_dbs_path, db) for db in meta_dbs_names]
     for _ in tqdm.tqdm(
