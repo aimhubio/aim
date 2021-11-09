@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Test /> -  Renders without crashing 1`] = `
+<DocumentFragment>
+  <div
+    class="Test"
+  >
+    <span
+      class=" Text Text__size_12 Text__weight_500 Text__color_primary"
+    >
+      Test Title 1
+    </span>
+  </div>
+</DocumentFragment>
+`;
