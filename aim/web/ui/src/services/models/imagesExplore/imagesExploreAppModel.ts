@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
+import { saveAs } from 'file-saver';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
@@ -412,19 +413,24 @@ function getFilteredGroupingOptions(
 function getGroupingSelectOptions(
   params: string[] = [],
 ): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params?.map((param) => ({
+  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Other',
+      group: 'run',
+      label: 'run.experiment',
+      value: 'run.props.experiment.name',
+    },
+    {
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
+    ...paramsOptions,
     {
       group: 'Other',
       label: 'step',
@@ -702,8 +708,10 @@ function getDataAsTableRows(
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
-        experiment: metric.run.props.name ?? 'default',
-        run: metric.run.props.name,
+        experiment: metric.run.experiment?.name ?? 'default',
+        run: moment(metric.run.props.creation_time * 1000).format(
+          'HH:mm:ss · D MMM, YY',
+        ),
         context: Object.entries(metric.context).map((entry) => entry.join(':')),
         parentId: groupKey,
       };
