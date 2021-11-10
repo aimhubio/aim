@@ -7,12 +7,14 @@ export interface IProject {
 }
 
 export interface IProjectParamsMetrics {
-  metrics: { [key: string]: { [key: string]: string }[] };
+  metric: { [key: string]: { [key: string]: string }[] };
+  images: { [key: string]: { [key: string]: string }[] };
   params: { [key: string]: any };
 }
 
 export interface IProjectsModelState {
   project?: IProject;
   params?: IProjectParamsMetrics['params'];
-  metrics?: IProjectParamsMetrics['metrics'];
+  images?: IProjectParamsMetrics['params'];
+  metrics?: IProjectParamsMetrics['metric'];
 }

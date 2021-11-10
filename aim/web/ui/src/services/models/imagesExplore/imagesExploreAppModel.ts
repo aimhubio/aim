@@ -209,9 +209,11 @@ function getImagesData() {
   const recordDensity = configData?.images?.recordDensity;
   const indexDensity = configData?.images?.indexDensity;
   const calcRanges = configData?.images.calcRanges;
-  // const metric = configData?.chart.alignmentConfig.metric;
-  // let query = getQueryStringFromSelect(configData?.select);
-  let imageDataBody: any = { q: '', calc_ranges: calcRanges };
+  let query = getQueryStringFromSelect(configData?.select as any);
+  let imageDataBody: any = {
+    q: query !== '()' ? query : '',
+    calc_ranges: calcRanges,
+  };
   if (recordSlice) {
     imageDataBody = {
       ...imageDataBody,
@@ -610,7 +612,7 @@ async function getImagesBlobsData(uris: string[]) {
   for await (let [keys, val] of objects) {
     imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
   }
-  model.setState({ imagesBlobs });
+  model.setState({ imagesBlobs: { ...imagesBlobs } });
 }
 
 function getDataAsImageSet(data: any[]) {
@@ -621,7 +623,7 @@ function getDataAsImageSet(data: any[]) {
     const groupFields = configData?.grouping?.groupBy;
     data.forEach((group: any) => {
       const path = groupFields?.reduce((acc: any, field: any) => {
-        acc.push(`${field}=${_.get(group.data[0], field)}`);
+        acc.push(`${field} = ${_.get(group.data[0], field)}`);
         return acc;
       }, [] as any);
       _.set(imageSetData, path, group.data);
@@ -1150,10 +1152,10 @@ function getQueryStringFromSelect(
       }(${selectData.metrics
         .map((metric) =>
           metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
+            ? `(images.name == "${metric.value.metric_name}")`
             : `${Object.keys(metric.value.context).map(
                 (item) =>
-                  `(metric.name == "${metric.value.metric_name}" and metric.context.${item} == "${metric.value.context[item]}")`,
+                  `(images.name == "${metric.value.metric_name}" and images.context.${item} == "${metric.value.context[item]}")`,
               )}`,
         )
         .join(' or ')})`.trim();

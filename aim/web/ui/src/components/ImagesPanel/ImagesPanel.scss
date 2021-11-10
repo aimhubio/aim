@@ -5,6 +5,8 @@
   flex-direction: column;
   &__imagesContainer {
     overflow-x: auto;
-    height: calc(100% - 2.25rem);
+    height: 100%;
+    padding-left: 1.25rem;
+    padding-top: 0.25rem;
   }
 }

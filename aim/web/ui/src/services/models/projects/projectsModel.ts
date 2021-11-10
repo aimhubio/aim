@@ -34,7 +34,8 @@ function getParamsAndMetrics() {
     call: () =>
       call().then((data: IProjectParamsMetrics) => {
         model.setState({
-          metrics: data.metrics,
+          metrics: data.metric,
+          images: data.images,
           params: removeExampleTypes(data.params),
         });
       }),

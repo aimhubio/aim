@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { isEmpty } from 'lodash-es';
-
-import { Slider, TextField } from '@material-ui/core';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -32,8 +30,7 @@ function ImagesPanel({
   let timeoutID: number = 0;
   let blobUriArray: string[] = [];
   const imagesSetWrapper = useRef<any>({});
-
-  function onScroll() {
+  function onScroll(e?: any) {
     if (timeoutID) {
       window.clearTimeout(timeoutID);
     }
@@ -45,6 +42,11 @@ function ImagesPanel({
       }
     }, 1000);
   }
+
+  const imagesSetKey = useMemo(
+    () => Date.now(),
+    [imagesData, imagesBlobs, imagesSetWrapper],
+  );
 
   useEffect(() => {
     return () => {
@@ -67,11 +69,7 @@ function ImagesPanel({
     >
       {!isEmpty(imagesData) ? (
         <div className='ImagesPanel'>
-          <div
-            className='ImagesPanel__imagesContainer'
-            ref={imagesSetWrapper}
-            style={{ height: '100%' }}
-          >
+          <div className='ImagesPanel__imagesContainer' ref={imagesSetWrapper}>
             <ImagesSet
               data={imagesData}
               title={'root'}
@@ -79,6 +77,7 @@ function ImagesPanel({
               onScroll={onScroll}
               addUriToList={addUriToList}
               imagesSetWrapper={imagesSetWrapper}
+              imagesSetKey={imagesSetKey}
             />
           </div>
           <ImagesExploreRangePanel

@@ -174,7 +174,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
       projectsDataMetrics={
-        projectsData?.metrics as IProjectParamsMetrics['metrics']
+        projectsData?.metrics as IProjectParamsMetrics['metric']
       }
       requestIsPending={metricsData?.requestIsPending}
       resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}

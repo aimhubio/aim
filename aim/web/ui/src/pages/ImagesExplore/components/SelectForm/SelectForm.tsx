@@ -102,8 +102,8 @@ function SelectForm({
   const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
     let data: ISelectMetricsOption[] = [];
     let index: number = 0;
-    if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
+    if (projectsData?.images) {
+      for (let key in projectsData.images) {
         data.push({
           label: key,
           group: key,
@@ -115,7 +115,7 @@ function SelectForm({
         });
         index++;
 
-        for (let val of projectsData.metrics[key]) {
+        for (let val of projectsData.images[key]) {
           if (!isEmpty(val)) {
             let label = contextToString(val);
             data.push({
