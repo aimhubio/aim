@@ -1157,13 +1157,21 @@ function getQueryStringFromSelect(
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
       }(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(images.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(images.name == "${metric.value.metric_name}" and images.context.${item} == "${metric.value.context[item]}")`,
-              )}`,
+        .map(
+          (metric) =>
+            `(images.name == "${metric.value.metric_name}"${
+              metric.value.context === null
+                ? ''
+                : ' and ' +
+                  Object.keys(metric.value.context)
+                    .map(
+                      (item) =>
+                        `images.context.${item} == ${formatValue(
+                          (metric.value.context as any)[item],
+                        )}`,
+                    )
+                    .join(' and ')
+            })`,
         )
         .join(' or ')})`.trim();
     }
