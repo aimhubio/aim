@@ -2,7 +2,23 @@
 
 ## Unreleased
 
+- Improve rendering performance by virtualizing table columns (roubkar)
 - Add ability to apply grouping by higher level param key (roubkar)
+- Add ability to specify repository path during `aim init` via `--repo` argument (rubenaprikyan)
+## 3.0.6 Nov 9 2021
+
+- Fix for blocking container optimization for in progress runs (alberttorosyan)
+
+## 3.0.5 Nov 9 2021
+
+- Add tqdm package in setup.py required section (mihran113)
+
+## 3.0.4 Nov 8 2021
+
+- Switch to aimrocks 0.0.10 - exposes data flushing interface (mihran113)
+- Optimize stored data when runs finalized (mihran113)
+- Update `aim reindex` command to run storage optimizations (alberttorosyan)
+- Storage partial optimizations on metric/run queries (alberttorosyan)
 
 ## 3.0.3 Nov 4 2021
 
