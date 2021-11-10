@@ -229,15 +229,18 @@ function getImagesData() {
 
   return {
     call: async () => {
-      model.setState({
-        requestIsPending: true,
-        queryIsEmpty: false,
-        searchButtonDisabled: true,
-      });
-      const stream = await imagesRequestRef.call(exceptionHandler);
-      const runData = await getImagesMetricsData(stream);
-      if (configData) {
-        setModelData(runData, configData);
+      if (query !== '()') {
+        model.setState({
+          requestIsPending: true,
+          queryIsEmpty: false,
+          searchButtonDisabled: true,
+        });
+
+        const stream = await imagesRequestRef.call(exceptionHandler);
+        const runData = await getImagesMetricsData(stream);
+        if (configData) {
+          setModelData(runData, configData);
+        }
       }
     },
     abort: imagesRequestRef.abort,
@@ -694,7 +697,8 @@ function getDataAsTableRows(
         },
         key: metric.key,
         runHash: metric.run.hash,
-        isHidden: metric.isHidden,
+        // isHidden: metric.isHidden,
+        isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
         dasharray: metricsCollection.dasharray ?? metric.dasharray,
