@@ -254,7 +254,7 @@ function processData(data: any[]): {
   const configData = model.getState()?.config;
   let metrics: any[] = [];
   let params: string[] = [];
-  data.forEach((run: IImageRunData) => {
+  data?.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     run.traces.forEach((imageData: any) => {
       imageData.values.forEach((stepData: IImageData[], stepIndex: number) => {

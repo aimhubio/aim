@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import _ from 'lodash';
-import { VariableSizeList as List } from 'react-window';
+import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
 import ImagesList from 'components/ImagesList';
@@ -67,7 +67,7 @@ const ImagesSet = ({
       ) : (
         <div
           className='ImagesSet__container'
-          key={contextToString(data)?.length}
+          // key={contextToString(data)?.length}
         >
           {index !== 0 && (
             <p className='ImagesSet__container__title'>{title}</p>
@@ -78,25 +78,17 @@ const ImagesSet = ({
               itemCount={Object.keys(data).length}
               itemSize={getItemSize}
               width={'100%'}
-              key={title}
-            >
-              {({ style, index: listCounter }) => {
-                const keyName = Object.keys(data)[listCounter];
-                return (
-                  <div style={style}>
-                    <ImagesSet
-                      data={data[keyName]}
-                      title={keyName}
-                      imagesBlobs={imagesBlobs}
-                      onScroll={onScroll}
-                      addUriToList={addUriToList}
-                      imagesSetWrapper={imagesSetWrapper}
-                      index={index + 1}
-                      imagesSetKey={imagesSetKey}
-                    />
-                  </div>
-                );
+              itemData={{
+                data,
+                imagesBlobs,
+                onScroll,
+                addUriToList,
+                imagesSetWrapper,
+                index,
+                imagesSetKey,
               }}
+            >
+              {ImagesGroupedList}
             </List>
           ) : (
             Object.keys(data).map((keyName, key) => (
@@ -131,3 +123,23 @@ function propsComparator(
 }
 
 export default React.memo(ImagesSet, propsComparator);
+
+const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
+  const { index, style, data } = props;
+  const keyName = Object.keys(data.data)[index];
+
+  return (
+    <div style={style}>
+      <ImagesSet
+        data={data.data[keyName]}
+        title={keyName}
+        imagesBlobs={data.imagesBlobs}
+        onScroll={data.onScroll}
+        addUriToList={data.addUriToList}
+        imagesSetWrapper={data.imagesSetWrapper}
+        index={data.index + 1}
+        imagesSetKey={data.imagesSetKey}
+      />
+    </div>
+  );
+}, areEqual);

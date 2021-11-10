@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React from 'react';
 import { VariableSizeList as List } from 'react-window';
 
 import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
@@ -37,4 +37,4 @@ function ImagesList({
   );
 }
 
-export default memo(ImagesList);
+export default React.memo(ImagesList);

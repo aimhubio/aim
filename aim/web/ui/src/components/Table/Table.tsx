@@ -766,6 +766,10 @@ function propsComparator(
     return false;
   }
 
+  if (prevProps.columnsWidths !== nextProps.columnsWidths) {
+    return false;
+  }
+
   return true;
 }
 

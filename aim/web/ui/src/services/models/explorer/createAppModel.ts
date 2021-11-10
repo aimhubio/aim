@@ -2397,7 +2397,9 @@ function createAppModel({
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment.name ?? 'default',
-              run: metric.run.props.name ?? '-',
+              run: moment(metric.run.props.creation_time * 1000).format(
+                'HH:mm:ss · D MMM, YY',
+              ),
               metric: metric.metric_name,
               ...metricsRowValues,
             };
