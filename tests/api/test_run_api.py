@@ -16,7 +16,7 @@ class TestRunApi(ApiTestBase):
         response = client.get('/api/runs/search/run/', params={'q': 'run["name"] == "Run # 3"'})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
         self.assertEqual(1, len(decoded_response))
         for _, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']['metric']))
@@ -54,7 +54,7 @@ class TestRunApi(ApiTestBase):
         response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"'})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
         for run in decoded_response.values():
             for trace in run['traces']:
                 self.assertEqual([0, 100, 2], trace['slice'])
@@ -79,7 +79,7 @@ class TestRunApi(ApiTestBase):
         response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"', 'p': step_count})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
         if (100 // step_count) <= 1:
             array_last_idx = 99
         else:
@@ -116,7 +116,7 @@ class TestRunApi(ApiTestBase):
         })
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
         self.assertEqual(2, len(decoded_response))
         self.assertListEqual(run_hashes, list(decoded_response.keys()))
         self.assertEqual([], decoded_response[run_hashes[1]])

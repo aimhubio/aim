@@ -48,11 +48,12 @@ def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) ->
             rec_start = min(trace.first_step(), rec_start) if rec_start else trace.first_step()
             rec_stop = max(trace.last_step(), rec_stop)
             idx_stop = max(trace.record_length(), idx_stop)
-        trace_cache[run.hash] = {
-            'run': run,
-            'traces': run_traces
-        }
-    return IndexRange(rec_start, rec_stop), IndexRange(idx_start, idx_stop)
+        if run_traces:
+            trace_cache[run.hash] = {
+                'run': run,
+                'traces': run_traces
+            }
+    return IndexRange(rec_start, rec_stop + 1), IndexRange(idx_start, idx_stop)
 
 
 def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
@@ -84,6 +85,8 @@ def image_search_result_streamer(traces: SequenceCollection,
     trcs_rec_range, trcs_idx_range = IndexRange(None, None), IndexRange(None, None)
     if record_range_missing or index_range_missing or calc_total_ranges:
         trcs_rec_range, trcs_idx_range = get_record_and_index_range(traces, trace_cache=run_traces)
+        if not run_traces:
+            return
 
     rec_start = rec_range.start if rec_range.start is not None else trcs_rec_range.start
     rec_stop = rec_range.stop if rec_range.stop is not None else trcs_rec_range.stop
@@ -127,7 +130,8 @@ def image_search_result_streamer(traces: SequenceCollection,
             traces_list = []
             for trace in run_trace_collection.iter():
                 traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
-            yield _pack_run_data(run_trace_collection.run, traces_list)
+            if traces_list:
+                yield _pack_run_data(run_trace_collection.run, traces_list)
 
 
 def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
