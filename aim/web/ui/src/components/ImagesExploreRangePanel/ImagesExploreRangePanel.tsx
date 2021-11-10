@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { Slider, TextField } from '@material-ui/core';
+import { Slider } from '@material-ui/core';
 
-import { Text } from 'components/kit';
+import { Button, Text } from 'components/kit';
+
+import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 import { IImagesExploreRangePanelProps } from './types.d';
 
@@ -19,7 +21,14 @@ function ImagesExploreRangePanel({
   onRecordSliceChange,
   onRecordDensityChange,
   onIndexDensityChange,
+  searchButtonDisabled,
 }: IImagesExploreRangePanelProps): React.FunctionComponentElement<React.ReactNode> {
+  const searchMetricsRef = React.useRef<any>(null);
+
+  function handleSearch() {
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData();
+    searchMetricsRef.current.call();
+  }
   return (
     <div className='ImagesExploreRangePanel'>
       <div className='ImagesExploreRangePanel__sliderContainer'>
@@ -106,6 +115,16 @@ function ImagesExploreRangePanel({
           className='ImagesExploreRangePanel__sliderContainer__densityField'
         />
       </div>
+      <Button
+        size='small'
+        color='primary'
+        variant='contained'
+        onClick={handleSearch}
+        className={'ImagesExploreRangePanel__searchButton'}
+        disabled={searchButtonDisabled}
+      >
+        Search
+      </Button>
     </div>
   );
 }

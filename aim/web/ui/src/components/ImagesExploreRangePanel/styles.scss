@@ -8,13 +8,14 @@
   justify-content: center;
   background: $white;
   border-top: $border-main;
+  &__searchButton {
+    height: 1.45rem !important;
+  }
   &__sliderContainer {
     display: flex;
     align-items: center;
     height: 100%;
-    &:first-child {
-      margin-right: 4.75rem;
-    }
+    margin-right: 1.75rem;
     &__densityField {
       width: 4rem;
       height: 1.25rem;

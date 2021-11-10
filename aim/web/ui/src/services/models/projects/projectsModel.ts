@@ -27,8 +27,8 @@ function getProjectsData() {
   };
 }
 
-function getParamsAndMetrics() {
-  const { call, abort } = projectsService.getParamsAndMetrics();
+function getProjectParams(sequences: string[] = ['metric']) {
+  const { call, abort } = projectsService.getProjectParams(sequences);
 
   return {
     call: () =>
@@ -62,7 +62,7 @@ function removeExampleTypes(params: IProjectParamsMetrics['params']) {
 const projectsModel = {
   ...model,
   getProjectsData,
-  getParamsAndMetrics,
+  getProjectParams,
 };
 
 export default projectsModel;

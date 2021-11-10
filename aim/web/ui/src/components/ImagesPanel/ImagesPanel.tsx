@@ -26,6 +26,7 @@ function ImagesPanel({
   onIndexDensityChange,
   getImagesBlobsData,
   isLoading,
+  searchButtonDisabled,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   let timeoutID: number = 0;
   let blobUriArray: string[] = [];
@@ -91,6 +92,7 @@ function ImagesPanel({
             onRecordSliceChange={onRecordSliceChange}
             onRecordDensityChange={onRecordDensityChange}
             onIndexDensityChange={onIndexDensityChange}
+            searchButtonDisabled={searchButtonDisabled}
           />
         </div>
       ) : (

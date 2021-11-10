@@ -158,6 +158,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               imagesData={imagesExploreData?.imagesData}
               imagesBlobs={imagesExploreData?.imagesBlobs}
               isLoading={imagesExploreData?.requestIsPending}
+              searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
             />
           </div>
           <ResizePanel

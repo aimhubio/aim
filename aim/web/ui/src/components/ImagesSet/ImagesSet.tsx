@@ -23,7 +23,6 @@ const ImagesSet = ({
   imagesSetWrapper,
   imagesSetKey,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
-  console.log(imagesSetWrapper?.current?.offsetWidth);
   const getItemSize = (index: number) => {
     const imagesHeights: any = getNestedDataHeight(
       _.isArray(Object.values(data)[index])

@@ -52,11 +52,13 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
+import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 
 import createModel from '../model';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
+  searchButtonDisabled: true,
 });
 
 function getConfig(): IImagesExploreAppConfig {
@@ -230,6 +232,7 @@ function getImagesData() {
       model.setState({
         requestIsPending: true,
         queryIsEmpty: false,
+        searchButtonDisabled: true,
       });
       const stream = await imagesRequestRef.call(exceptionHandler);
       const runData = await getImagesMetricsData(stream);
@@ -1366,6 +1369,7 @@ function onRecordSliceChange(
     };
     model.setState({
       config,
+      searchButtonDisabled: false,
     });
   }
 }
@@ -1387,6 +1391,7 @@ function onIndexSliceChange(
     };
     model.setState({
       config,
+      searchButtonDisabled: false,
     });
   }
 }
@@ -1394,10 +1399,10 @@ function onIndexSliceChange(
 function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
-  if (configData?.images && +event.target.value > 0) {
+  if (configData?.images) {
     const images = {
       ...configData.images,
-      indexDensity: +event.target.value,
+      indexDensity: formatToPositiveNumber(+event.target.value),
     };
     const config = {
       ...configData,
@@ -1405,6 +1410,7 @@ function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
     };
     model.setState({
       config,
+      searchButtonDisabled: false,
     });
   }
 }
@@ -1412,10 +1418,10 @@ function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
 function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
-  if (configData?.images && +event.target.value > 0) {
+  if (configData?.images) {
     const images = {
       ...configData.images,
-      recordDensity: +event.target.value,
+      recordDensity: formatToPositiveNumber(+event.target.value),
     };
     const config = {
       ...configData,
@@ -1423,6 +1429,7 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
     };
     model.setState({
       config,
+      searchButtonDisabled: false,
     });
   }
 }

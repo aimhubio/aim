@@ -6,6 +6,17 @@
   &.withLeftBorder {
     border-left: $border-main;
     padding: 0.375rem 0 0 0.625rem;
+    &__container__title {
+      &::after {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: -10px;
+        width: 6px;
+        height: 1px;
+        background: $cuddle-70;
+      }
+    }
   }
 
   &__container {
@@ -15,6 +26,16 @@
       padding-bottom: 0.125rem;
       font-size: $text-sm;
       text-transform: capitalize;
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: -10px;
+        width: 6px;
+        height: 1px;
+        background: $cuddle-70;
+      }
     }
     &__imagesBox {
       padding-bottom: 0.25rem;

@@ -19,4 +19,5 @@ export interface IImagesPanelProps {
   onIndexDensityChange: (event: ChangeEvent<{ value: number }>) => void;
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
+  searchButtonDisabled: boolean;
 }

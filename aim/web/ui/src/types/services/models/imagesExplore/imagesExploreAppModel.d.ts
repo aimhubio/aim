@@ -58,6 +58,7 @@ export interface IImagesExploreAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  searchButtonDisabled: boolean;
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

@@ -5,6 +5,7 @@ export interface IImagesExploreRangePanelProps {
   stepRange: number[];
   indexDensity: number;
   recordDensity: number;
+  searchButtonDisabled: boolean;
   onIndexSliceChange: (
     event: ChangeEvent<{}>,
     newValue: number | number[],
