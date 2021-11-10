@@ -16,7 +16,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import Grouping from 'pages/components/Grouping/Grouping';
 
 import { IParamsProps } from 'types/pages/params/Params';
 

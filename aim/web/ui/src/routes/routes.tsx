@@ -11,6 +11,9 @@ const Bookmarks = React.lazy(
 );
 const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
+const Correlations = React.lazy(
+  () => import('pages/Correlations/CorrelationsContainer'),
+);
 
 export interface IRoute {
   path: PathEnum;
@@ -83,6 +86,13 @@ const routes = {
     component: RunDetail,
     showInSidebar: false,
     displayName: 'Run Detail',
+  },
+  CORRELATIONS: {
+    path: PathEnum.Correlations,
+    component: Correlations,
+    showInSidebar: true,
+    displayName: 'Correlations',
+    icon: 'correlations',
   },
 };
 

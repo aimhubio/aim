@@ -1,34 +1,13 @@
 import React from 'react';
 
-import StrokePopoverAdvanced from 'pages/Metrics/components/StrokePopover/StrokePopoverAdvanced';
-import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
+import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
-import { IGroupingProps } from 'types/pages/metrics/components/Grouping/Grouping';
+import { IGroupingProps } from 'types/pages/components/Grouping/Grouping';
 import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 
 import GroupingItem from '../GroupingItem/GroupingItem';
 
 import './Grouping.scss';
-
-const groupingPopovers = [
-  {
-    title: 'Run Color Settings',
-    advancedTitle: 'Color Advanced Options',
-    groupName: 'color',
-    AdvancedComponent: ColorPopoverAdvanced,
-  },
-  {
-    title: 'Select Fields For Grouping by stroke style',
-    advancedTitle: 'stroke style advanced options',
-    groupName: 'stroke',
-    AdvancedComponent: StrokePopoverAdvanced,
-  },
-  {
-    title: 'Select fields to divide into charts',
-    groupName: 'chart',
-    AdvancedComponent: null,
-  },
-];
 
 function Grouping({
   groupingData,
@@ -40,6 +19,7 @@ function Grouping({
   onGroupingPersistenceChange,
   onGroupingApplyChange,
   onShuffleChange,
+  groupingPopovers = GroupingPopovers,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Grouping'>

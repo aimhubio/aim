@@ -13,66 +13,53 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 
+import Grouping from 'pages/components/Grouping/Grouping';
+import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
+import Controls from 'pages/Correlations/components/Controls/Controls';
+import SelectForm from 'pages/Correlations/components/SelectForm/SelectForm';
+
 import { ILine } from 'types/components/LineChart/LineChart';
-import { IMetricProps } from 'types/pages/metrics/Metrics';
+import { ICorrelationsProps } from 'types/pages/correlations/Correlations';
 
 import { ChartTypeEnum } from 'utils/d3';
 
-import Grouping from '../components/Grouping/Grouping';
-
-import MetricsBar from './components/MetricsBar/MetricsBar';
-import Controls from './components/Controls/Controls';
-import SelectForm from './components/SelectForm/SelectForm';
-
-import './Metrics.scss';
-
-function Metrics(
-  props: IMetricProps,
+function Correlations(
+  props: ICorrelationsProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const chartProps: any[] = React.useMemo(() => {
-    return (props.lineChartData || []).map(
+    return (props.scatterPlotData || []).map(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
-        curveInterpolation: props.curveInterpolation,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
-        aggregatedData: props.aggregatedData?.filter(
-          (data) => data.chartIndex === index,
-        ),
         zoom: props.zoom,
         chartTitle: props.chartTitleData[index],
-        aggregationConfig: props.aggregationConfig,
-        alignmentConfig: props.alignmentConfig,
         onZoomChange: props.onZoomChange,
       }),
     );
   }, [
-    props.lineChartData,
+    props.scatterPlotData,
     props.axesScaleType,
-    props.curveInterpolation,
     props.ignoreOutliers,
     props.highlightMode,
     props.zoom,
     props.chartTitleData,
-    props.aggregatedData,
-    props.aggregationConfig,
-    props.alignmentConfig,
     props.onZoomChange,
   ]);
 
   return (
-    <div ref={props.wrapperElemRef} className='Metrics__container'>
-      <section className='Metrics__section'>
-        <div className='Metrics__section__div Metrics__fullHeight'>
-          <MetricsBar
+    <div ref={props.wrapperElemRef} className='Correlations__container'>
+      <section className='Correlations__section'>
+        <div className='Correlations__section__div Metrics__fullHeight'>
+          <AppBar
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
             liveUpdateConfig={props.liveUpdateConfig}
             onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
-            title={'Metrics explorer'}
+            title={'Correlations explorer'}
           />
-          <div className='Metrics__SelectForm__Grouping__container'>
+          <div className='Correlations__SelectForm__Grouping__container'>
             <SelectForm
               selectedMetricsData={props.selectedMetricsData}
               onMetricsSelectChange={props.onMetricsSelectChange}
@@ -105,16 +92,15 @@ function Metrics(
               height='100%'
               loaderComponent={<ChartLoader controlsCount={9} />}
             >
-              {!!props.lineChartData?.[0]?.length ? (
+              {!!props.scatterPlotData?.[0]?.length ? (
                 <ChartPanel
-                  key={props.lineChartData?.length}
+                  key={props.scatterPlotData?.length}
                   ref={props.chartPanelRef}
                   panelResizing={props.panelResizing}
-                  chartType={ChartTypeEnum.LineChart}
-                  data={props.lineChartData}
+                  chartType={ChartTypeEnum.ScatterPlot}
+                  data={props.scatterPlotData}
                   focusedState={props.focusedState}
                   tooltip={props.tooltip}
-                  alignmentConfig={props.alignmentConfig}
                   zoom={props.zoom}
                   onActivePointChange={props.onActivePointChange}
                   chartProps={chartProps}
@@ -123,28 +109,15 @@ function Metrics(
                     <Controls
                       selectOptions={props.groupingSelectOptions}
                       tooltip={props.tooltip}
-                      smoothingAlgorithm={props.smoothingAlgorithm}
-                      smoothingFactor={props.smoothingFactor}
-                      curveInterpolation={props.curveInterpolation}
-                      densityType={props.densityType}
                       ignoreOutliers={props.ignoreOutliers}
                       zoom={props.zoom}
                       highlightMode={props.highlightMode}
-                      aggregationConfig={props.aggregationConfig}
                       axesScaleType={props.axesScaleType}
-                      alignmentConfig={props.alignmentConfig}
                       onChangeTooltip={props.onChangeTooltip}
                       onIgnoreOutliersChange={props.onIgnoreOutliersChange}
                       onZoomChange={props.onZoomChange}
                       onHighlightModeChange={props.onHighlightModeChange}
                       onAxesScaleTypeChange={props.onAxesScaleTypeChange}
-                      onSmoothingChange={props.onSmoothingChange}
-                      onAggregationConfigChange={
-                        props.onAggregationConfigChange
-                      }
-                      onDensityTypeChange={props.onDensityTypeChange}
-                      onAlignmentTypeChange={props.onAlignmentTypeChange}
-                      onAlignmentMetricChange={props.onAlignmentMetricChange}
                       projectsDataMetrics={props.projectsDataMetrics}
                     />
                   }
@@ -161,7 +134,7 @@ function Metrics(
           </div>
           <ResizePanel
             className={`Metrics__ResizePanel${
-              props.requestIsPending || props.lineChartData?.[0]?.length
+              props.requestIsPending || props.scatterPlotData?.[0]?.length
                 ? ''
                 : '__hide'
             }`}
@@ -235,4 +208,4 @@ function Metrics(
   );
 }
 
-export default React.memo(Metrics);
+export default React.memo(Correlations);

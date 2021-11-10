@@ -5,7 +5,7 @@ import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
 import { Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 
-import { IGroupingItemProps } from 'types/pages/metrics/components/GroupingItem/GroupingItem';
+import { IGroupingItemProps } from 'types/pages/components/GroupingItem/GroupingItem';
 
 import './GroupingItem.scss';
 

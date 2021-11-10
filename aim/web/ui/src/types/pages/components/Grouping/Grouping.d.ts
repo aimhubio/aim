@@ -1,4 +1,9 @@
+import React from 'react';
+
+import { IGroupingPopoverAdvancedProps } from 'components/GroupingPopover/GroupingPopover';
+
 import {
+  GroupNameType,
   IGroupingSelectOption,
   IMetricAppConfig,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -14,4 +19,14 @@ export interface IGroupingProps {
   onGroupingApplyChange: IMetricAppConfig['onGroupingApplyChange'];
   onGroupingPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
   onShuffleChange: IMetricProps['onShuffleChange'];
+  groupingPopovers?: IGroupingPopovers[];
+}
+
+export interface IGroupingPopovers {
+  groupName: GroupNameType;
+  title: string;
+  advancedTitle?: string;
+  AdvancedComponent?: (
+    props: IGroupingPopoverAdvancedProps,
+  ) => React.FunctionComponentElement<React.ReactNode>;
 }
