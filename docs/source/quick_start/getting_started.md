@@ -4,7 +4,7 @@ You only need a few steps to get started with Aim.
 
 ### Installation
 
-Install Aim via pip:
+Install Aim via pip3:
 
 ```shell
 pip3 install aim
@@ -40,9 +40,9 @@ for i in range(10):
     run.track(i, name='acc', step=i, context={ "subset":"train" })
 ```
 
-Details [here](./SDK_basics.html#track-params-and-metrics-with-run).
+More details/examples [here](./SDK_basics.html#track-params-and-metrics-with-run).
 
-Congratulations! Your first run is ready!
+Congrats! Your first run is ready!
 
 ### Run Aim UI
 
