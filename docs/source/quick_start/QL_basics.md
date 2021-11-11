@@ -81,7 +81,7 @@ Run [parameters](./SDK_basics.html#track-params-and-metrics-with-run) could be a
    Only the params that are used in the query will be loaded into memory.
 
    Avoid using chained attributes to not load the whole dictionary into memory.
-   Prefer using **['hparams', 'learning_rate']** instead of **['hparams']['learning_rate']**.
+   Prefer using **['hparams', 'learning_rate']** over **['hparams']['learning_rate']**.
 
 **Query examples:**
 
