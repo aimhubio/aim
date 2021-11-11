@@ -1,84 +1,64 @@
 import React from 'react';
 import styled from 'styled-components';
+import useDropdownMenu from 'react-accessible-dropdown-menu-hook';
+
+import { Text } from 'components/kit';
 
 import './style.scss';
+
 const SuggestionsContainer: any = styled.div`
-  /* left: calc(${(props: any) => props.caretPosition * 12}px - 28px); */
+  left: ${(props: any) => props.suggestionsPosition.left}px;
+  top: ${(props: any) => props.suggestionsPosition.top}px;
+  border: ${(props: any) => props.isEmpty && 'unset'};
 `;
-
 function CodeCompletion({
-  value,
-  options,
-  caretPosition,
-  open = true,
+  suggestionsList,
+  suggestionsPosition,
+  onSuggestionClick,
+  suggestionsRef,
+  inputRef,
 }: any): React.FunctionComponentElement<React.ReactNode> | null {
-  console.log(caretPosition);
-
-  let [suggestionsList, setSuggestionsList] = React.useState<string[]>([]);
-  const list = [
-    'metric.name',
-    'metric.context',
-    'run.hash',
-    'run.params',
-    'run.params.bs',
-    'run.params.lr',
-    'run.params.lr.rr.ss',
-    'run.params.lr.rv.ss',
-    'run.params.lr.dd.ss',
-  ];
-
-  console.log();
-
+  const { buttonProps, itemProps } = useDropdownMenu(suggestionsList.length);
   React.useEffect(() => {
-    setSuggestionsList(getSuggestionsList());
-  }, [value]);
-
-  function getSuggestionsList(): string[] | [] {
-    const suggestions: string[] = [];
-    let result = /\S+$/.exec(value.slice(0, caretPosition))?.[0];
-
-    if (result?.includes('.')) {
-      list.forEach((option) => {
-        let suggest = option.split(`${result}`)[1];
-        let splitSuggest = suggest?.split('.');
-        let splitOption = option.split('.');
-
-        if (splitSuggest?.length === 1) {
-          if (splitSuggest[0] !== '' && splitOption[splitOption.length - 1]) {
-            suggestions.push(splitOption[splitOption.length - 1]);
-          }
-        } else {
-          if (
-            suggestions.indexOf(splitSuggest?.[0]) === -1 &&
-            suggestionsList.indexOf(
-              result?.split('.')?.[result?.split('.')?.length - 1] +
-                splitSuggest?.[0] || '',
-            ) === -1
-          ) {
-            if (splitSuggest?.[0]) suggestions.push(splitSuggest?.[0]);
-          }
-        }
-      });
+    if (suggestionsRef) {
+      suggestionsRef.current.itemProps = { ...itemProps };
+      suggestionsRef.current.buttonProps = { ...buttonProps };
     }
+  }, []);
 
-    return suggestions;
+  function onSuggestionsKeyDown(
+    e: React.KeyboardEvent<HTMLDivElement | any>,
+  ): void {
+    if (e.key === 'Escape') {
+      inputRef.current.focus();
+    } else {
+      if (buttonProps.onKeyDown) {
+        buttonProps?.onKeyDown(e);
+      }
+    }
   }
 
-  return suggestionsList.length > 0 ? (
+  return (
     <SuggestionsContainer
+      {...buttonProps}
       className='CodeCompletion'
-      caretPosition={caretPosition}
+      aria-expanded={true}
+      suggestionsPosition={suggestionsPosition}
+      isEmpty={!suggestionsList.length}
+      onKeyDown={onSuggestionsKeyDown}
     >
-      {suggestionsList.map((suggestion) => (
-        <div
+      {suggestionsList?.map((suggestion: string, index: number) => (
+        <a
+          key={suggestion}
           className='CodeCompletion__SuggestionItem'
-          key={suggestion + Date.now()}
+          onClick={() => onSuggestionClick(suggestion)}
+          {...itemProps[index]}
         >
-          {suggestion}
-        </div>
+          <Text size={14}>{suggestion}</Text>
+        </a>
       ))}
     </SuggestionsContainer>
-  ) : null;
+  );
 }
 
 CodeCompletion.displayName = 'CodeCompletion';

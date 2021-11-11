@@ -2814,7 +2814,7 @@ function createAppModel({
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-        const configData = model.getState()?.config;
+        const configData = { ...model.getState()?.config };
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }

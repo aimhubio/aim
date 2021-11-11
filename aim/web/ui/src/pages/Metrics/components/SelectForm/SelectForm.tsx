@@ -7,7 +7,6 @@ import {
   Divider,
   InputBase,
   Popper,
-  TextField,
   Tooltip,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -17,7 +16,8 @@ import {
   SearchOutlined,
 } from '@material-ui/icons';
 
-import { Button, Icon, Badge, Text, CodeCompletion } from 'components/kit';
+import { Button, Icon, Badge, Text } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/ExpressionAutoComplete';
 
 import COLORS from 'config/colors/colors';
 
@@ -47,10 +47,8 @@ function SelectForm({
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
-  const [caretPosition, setCaretPosition] = React.useState(0);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
-
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
     paramsMetricsRequestRef.call();
@@ -158,6 +156,25 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
+
+  const paramsSuggestions = React.useMemo(() => {
+    let list: string[] = [];
+    if (projectsData?.params) {
+      Object.keys(projectsData?.params).forEach((option: any) => {
+        if (option) {
+          list.push(`run.${option}`);
+          if (projectsData.params) {
+            if (projectsData?.params[option]) {
+              Object.keys(projectsData?.params[option]).forEach((subOption) => {
+                list.push(`run.${option}.${subOption}`);
+              });
+            }
+          }
+        }
+      });
+    }
+    return list;
+  }, []);
   return (
     <div className='SelectForm'>
       <div className='SelectForm__container__metrics'>
@@ -169,28 +186,18 @@ function SelectForm({
         >
           {selectedMetricsData?.advancedMode ? (
             <div className='SelectForm__textarea'>
-              <form onSubmit={handleMetricSearch}>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  spellCheck={false}
-                  rows={3}
-                  variant='outlined'
-                  placeholder={
-                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  }
-                  value={selectedMetricsData?.advancedQuery ?? ''}
-                  onChange={({ target }) =>
-                    onSelectAdvancedQueryChange(target.value)
-                  }
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      handleMetricSearch(e);
-                    }
-                  }}
-                />
-              </form>
+              <ExpressionAutoComplete
+                isTextArea={true}
+                onExpressionChange={onSelectRunQueryChange}
+                onSubmit={handleMetricSearch}
+                value={selectedMetricsData?.query}
+                placeholder='metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                options={[
+                  ...paramsSuggestions,
+                  'metric.name',
+                  'metric.context',
+                ]}
+              />
             </div>
           ) : (
             <>
@@ -304,33 +311,13 @@ function SelectForm({
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <form onSubmit={handleMetricSearch}>
-              <TextField
-                fullWidth
-                size='small'
-                variant='outlined'
-                spellCheck={false}
-                inputProps={{ style: { height: '0.687rem' } }}
-                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-                value={selectedMetricsData?.query ?? ''}
-                onChange={({ target }) => {
-                  console.log(
-                    target.selectionStart,
-                    target.selectionEnd,
-                    target.selectionDirection,
-                  );
-
-                  setCaretPosition(target?.selectionEnd || 0);
-                  onSelectRunQueryChange(target.value);
-                }}
-              />
-              <CodeCompletion
-                options={metricsOptions}
-                caretPosition={caretPosition}
-                value={selectedMetricsData?.query ?? ''}
-                onChange={onSelectRunQueryChange}
-              />
-            </form>
+            <ExpressionAutoComplete
+              onExpressionChange={onSelectRunQueryChange}
+              onSubmit={handleMetricSearch}
+              value={selectedMetricsData?.query}
+              options={paramsSuggestions}
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+            />
           </div>
         )}
       </div>
