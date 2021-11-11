@@ -24,7 +24,12 @@
   overflow: auto;
   max-width: calc(100vw - 40rem);
   min-width: 12rem;
-
+  .Badge {
+    margin-right: 0.5rem;
+    &:last-child {
+      margin-right: 20px;
+    }
+  }
   .TagLabel {
     margin-right: 0.5rem;
     &:last-child {

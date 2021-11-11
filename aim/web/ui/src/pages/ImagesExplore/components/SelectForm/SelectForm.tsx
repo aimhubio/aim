@@ -162,7 +162,7 @@ function SelectForm({
                   rows={3}
                   variant='outlined'
                   placeholder={
-                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                    'images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
                   }
                   value={selectedMetricsData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
@@ -257,6 +257,7 @@ function SelectForm({
                       (tag: ISelectMetricsOption) => {
                         return (
                           <Badge
+                            size='large'
                             key={tag.label}
                             color={tag.color}
                             label={tag.label}
