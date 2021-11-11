@@ -526,7 +526,7 @@ class Run(StructuredRunMixin):
         for idx in traces.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
             for name, value in traces[idx].items():
-                dtype = value['dtype']
+                dtype = value.get('dtype', 'float')  # old sequences without dtype set are considered float sequences
                 if dtype in dtype_to_sequence_type_map:
                     trace_data = {
                         'context': ctx_dict,
