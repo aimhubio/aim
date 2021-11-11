@@ -177,7 +177,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
 
     response = {
         'params': run.get(...),
-        'traces': run.collect_metrics_info(sequence, skip_last_value=True),
+        'traces': run.collect_sequence_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }
     return JSONResponse(response)

@@ -13,7 +13,7 @@ class EncodedNumpyArray(BaseModel):
 
 class TraceBase(BaseModel):
     context: dict
-    metric_name: str
+    name: str
 
 
 class TraceOverview(TraceBase):
@@ -89,7 +89,7 @@ RunSearchApiOut = Dict[str, RunSearchRunView]
 # request models
 class AlignedTraceIn(BaseModel):
     context: dict
-    metric_name: str
+    name: str
     slice: Tuple[int, int, int]
 
 

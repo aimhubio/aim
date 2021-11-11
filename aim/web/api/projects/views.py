@@ -80,5 +80,5 @@ async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(('metri
     response = {
         'params': project.repo.collect_params_info(),
     }
-    response.update(**project.repo.collect_metrics_info(sequence))
+    response.update(**project.repo.collect_sequence_info(sequence))
     return response

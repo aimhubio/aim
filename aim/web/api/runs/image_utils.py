@@ -145,15 +145,15 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
                                    rec_num: int = 50, index_num: int = 5) -> List[dict]:
     processed_traces_list = []
     for requested_trace in requested_traces:
-        metric_name = requested_trace.metric_name
+        trace_name = requested_trace.name
         context = Context(requested_trace.context)
-        trace = run.get_image_sequence(metric_name=metric_name, context=context)
+        trace = run.get_image_sequence(name=trace_name, context=context)
         if not trace:
             continue
 
-        rec_step = (trace.last_step() - trace.first_step()) // rec_num or 1
+        rec_step = (trace.last_step() + 1 - trace.first_step()) // rec_num or 1
         idx_step = trace.record_length() // index_num or 1
-        rec_slice = slice(trace.first_step(), trace.last_step(), rec_step)
+        rec_slice = slice(trace.first_step(), trace.last_step() + 1, rec_step)
         idx_slice = slice(0, trace.record_length(), idx_step)
 
         steps_vals = trace.values.items_slice(_slice=rec_slice)
@@ -164,7 +164,7 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
             values.append(img_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
 
         processed_traces_list.append({
-            'metric_name': trace.name,
+            'name': trace.name,
             'context': trace.context.to_dict(),
             'values': values,
             'iters': steps,

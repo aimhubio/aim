@@ -360,7 +360,7 @@ class Repo:
             if seq_cls is None or not issubclass(seq_cls, Sequence):
                 raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
 
-    def collect_metrics_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
+    def collect_sequence_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
         """Utility function for getting sequence names and contexts for all runs by given sequence types.
 
         Args:

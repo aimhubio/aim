@@ -1,9 +1,4 @@
 from typing import Generic, Union, Tuple, List, TypeVar, Dict
-from abc import abstractmethod
-from copy import deepcopy
-
-from aim.sdk.num_utils import convert_to_py_number
-from aim.sdk.utils import get_object_typename
 
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
@@ -51,7 +46,6 @@ class Sequence(Generic[T]):
         self._epochs = self._series_tree.array('epoch')
         self._timestamps = self._series_tree.array('time')
 
-        self._length: int = None
         self._hash: int = None
 
     def __repr__(self) -> str:
@@ -69,54 +63,6 @@ class Sequence(Generic[T]):
     @classmethod
     def sequence_name(cls) -> str:
         ...
-
-    def track(self, value, track_time: float, step: int, epoch: int):
-        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
-        # not the actual implementation execution time.
-
-        if self.run.track_in_thread:
-            val = deepcopy(value)
-            track_rate_warning = self.run.repo.tracking_queue.register_task(
-                self._track_impl, val, track_time, step, epoch)
-            if track_rate_warning:
-                self.run.track_rate_warn()
-        else:
-            self._track_impl(value, track_time, step, epoch)
-
-    def _track_impl(self, value, track_time: float, step: int, epoch: int):
-        try:
-            val = convert_to_py_number(value)
-        except ValueError:
-            # value is not a number
-            val = value
-
-        val_view = self._values.allocate()
-        epoch_view = self._epochs.allocate()
-        time_view = self._timestamps.allocate()
-
-        max_idx = self._length
-        if max_idx is None:
-            max_idx = len(val_view)
-        step = step or max_idx
-
-        self._length = max_idx + 1
-
-        if max_idx == 0:
-            self._meta_tree['first_step'] = step
-            # TODO [AT] check sequence is homogeneous & handle empty list case
-            self._meta_tree['dtype'] = get_object_typename(val)
-
-        self._meta_tree['last'] = val
-        self._meta_tree['last_step'] = step
-        if isinstance(val, (tuple, list)):
-            record_max_length = self._meta_tree.get('record_max_length', 0)
-            self._meta_tree['record_max_length'] = max(record_max_length, len(val))
-
-        # TODO perform assignments in an atomic way
-
-        val_view[step] = val
-        epoch_view[step] = epoch
-        time_view[step] = track_time
 
     def _calc_hash(self):
         return hash_auto(
