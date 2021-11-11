@@ -39,7 +39,7 @@ function ImagesExploreRangePanel({
           tint={70}
           color='primary'
         >
-          Step:
+          Steps:
         </Text>
         <div className='ImagesExploreRangePanel__sliderContainer__sliderBox'>
           <Slider
@@ -81,7 +81,7 @@ function ImagesExploreRangePanel({
           tint={70}
           color='primary'
         >
-          Index
+          Index:
         </Text>
         <div className='ImagesExploreRangePanel__sliderContainer__sliderBox'>
           <Slider

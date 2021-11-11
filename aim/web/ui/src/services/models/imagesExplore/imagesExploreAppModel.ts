@@ -1226,20 +1226,25 @@ function onImagesExploreSelectChange(data: any[]) {
 function toggleSelectAdvancedMode() {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+
   if (configData?.select) {
+    let query =
+      configData.select.advancedQuery ||
+      getQueryStringFromSelect(configData?.select);
+    if (query === '()') {
+      query = '';
+    }
     const newConfig = {
       ...configData,
       select: {
         ...configData.select,
+        advancedQuery: query,
         advancedMode: !configData.select.advancedMode,
       },
     };
-
     updateURL(newConfig);
 
-    model.setState({
-      config: newConfig,
-    });
+    model.setState({ config: newConfig });
   }
   analytics.trackEvent(
     `[ImagesExplorer] Turn ${
