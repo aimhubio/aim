@@ -51,6 +51,8 @@ class Context:
 
 
 class MetricDescriptor:
+    Selector = Tuple[int, str]
+
     __slots__ = ['_name', '_context', '_hash', '_metric_hash']
 
     def __init__(
@@ -64,7 +66,7 @@ class MetricDescriptor:
         self._metric_hash = None
 
     @property
-    def selector(self) -> Tuple[int, str]:
+    def selector(self) -> Selector:
         return self._context.idx, self._name
 
     @property

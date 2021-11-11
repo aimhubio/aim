@@ -19,12 +19,12 @@ class TestRunContainerData(TestBase):
         empty_context = {}
 
         run = Run(repo=self.repo, system_tracking_interval=None)
-        run.track(1, name='metric 1', context=train_context)
-        run.track(1, name='metric 2', context=train_context)
-        run.track(1, name='metric 1', context=val_context)
-        run.track(1, name='metric 2', context=val_context)
-        run.track(1, name='metric 3', context=val_context)
-        run.track(0, name='metric')
+        run.track(1.0, name='metric 1', context=train_context)
+        run.track(1.0, name='metric 2', context=train_context)
+        run.track(1.0, name='metric 1', context=val_context)
+        run.track(1.0, name='metric 2', context=val_context)
+        run.track(1.0, name='metric 3', context=val_context)
+        run.track(0.0, name='metric')
 
         meta_container_path = os.path.join(self.repo.path, 'meta', 'chunks', run.hash)
         rc = RocksContainer(meta_container_path, read_only=True)
@@ -35,12 +35,13 @@ class TestRunContainerData(TestBase):
             self.assertIn(Context(ctx).idx, contexts)
             self.assertDictEqual(contexts[Context(ctx).idx], ctx)
 
-        traces = tree.view(('meta', 'traces', Context(train_context).idx)).collect()
-        self.assertSetEqual({'metric 1', 'metric 2'}, set(traces.keys()))
-        traces = tree.view(('meta', 'traces', Context(val_context).idx)).collect()
-        self.assertSetEqual({'metric 1', 'metric 2', 'metric 3'}, set(traces.keys()))
-        traces = tree.view(('meta', 'traces', Context(empty_context).idx)).collect()
-        self.assertSetEqual({'metric'}, set(traces.keys()))
+        self.assertSetEqual({'float'}, set(tree.view(('meta', 'traces_types')).keys()))
+        metric_traces = tree.view(('meta', 'traces_types', 'float', Context(train_context).idx)).collect()
+        self.assertSetEqual({'metric 1', 'metric 2'}, set(metric_traces.keys()))
+        metric_traces = tree.view(('meta', 'traces_types', 'float', Context(val_context).idx)).collect()
+        self.assertSetEqual({'metric 1', 'metric 2', 'metric 3'}, set(metric_traces.keys()))
+        metric_traces = tree.view(('meta', 'traces_types', 'float', Context(empty_context).idx)).collect()
+        self.assertSetEqual({'metric'}, set(metric_traces.keys()))
 
     def test_meta_run_tree_contexts_and_names(self):
         train_context = {'subset': 'train'}

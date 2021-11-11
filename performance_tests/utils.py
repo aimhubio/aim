@@ -24,7 +24,7 @@ def collect_runs_data(query):
         run = run_trace_collection.run
         runs_dict[run.hash] = {
             'params': run[...],
-            'traces': run.collect_metrics_info(),
+            'traces': run.collect_sequence_info(),
             'props': get_run_props(run)
         }
 
@@ -42,7 +42,7 @@ def collect_metrics_data(query):
                 run = run_trace_collection.run
             iters, values = trace.values.sparse_numpy()
             traces_list.append({
-                'metric_name': trace.name,
+                'name': trace.name,
                 'context': trace.context.to_dict(),
                 'values': values,
                 'iters': iters,
