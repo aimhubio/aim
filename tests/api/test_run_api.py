@@ -2,14 +2,14 @@ import pytest
 import numpy as np
 from parameterized import parameterized
 
-from tests.base import ApiTestBase
+from tests.base import PrefilledDataApiTestBase
 from tests.utils import decode_encoded_tree_stream
 
 from aim.storage.treeutils import decode_tree
 from aim.sdk.run import Run
 
 
-class TestRunApi(ApiTestBase):
+class TestRunApi(PrefilledDataApiTestBase):
     def test_search_runs_api(self):
         client = self.client
 

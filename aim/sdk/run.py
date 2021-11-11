@@ -489,13 +489,13 @@ class Run(StructuredRunMixin):
 
     def _get_sequence(
             self,
-            seq_typename: str,
+            seq_type: str,
             sequence_name: str,
             context: Context
     ) -> Optional[Sequence]:
-        seq_cls = Sequence.registry.get(seq_typename, None)
+        seq_cls = Sequence.registry.get(seq_type, None)
         if seq_cls is None:
-            raise ValueError(f'\'{seq_typename}\' is not a valid Sequence')
+            raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
         assert issubclass(seq_cls, Sequence)
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
@@ -510,32 +510,32 @@ class Run(StructuredRunMixin):
         traces_overview = {}
 
         # build reverse map of sequence supported dtypes
-        dtype_to_sequence_map = defaultdict(list)
+        dtype_to_sequence_type_map = defaultdict(list)
         if isinstance(sequence_types, str):
             sequence_types = (sequence_types,)
-        for seq_name in sequence_types:
-            traces_overview[seq_name] = []
-            seq_cls = Sequence.registry.get(seq_name, None)
+        for seq_type in sequence_types:
+            traces_overview[seq_type] = []
+            seq_cls = Sequence.registry.get(seq_type, None)
             if seq_cls is None:
-                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+                raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
             assert issubclass(seq_cls, Sequence)
             dtypes = seq_cls.allowed_dtypes()
             for dtype in dtypes:
-                dtype_to_sequence_map[dtype].append(seq_name)
+                dtype_to_sequence_type_map[dtype].append(seq_type)
 
         for idx in traces.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
             for name, value in traces[idx].items():
                 dtype = value['dtype']
-                if dtype in dtype_to_sequence_map:
+                if dtype in dtype_to_sequence_type_map:
                     trace_data = {
                         'context': ctx_dict,
                         'name': name,
                     }
                     if not skip_last_value:
                         trace_data['last_value'] = value
-                    for seq_name in dtype_to_sequence_map[dtype]:
-                        traces_overview[seq_name].append(trace_data)
+                    for seq_type in dtype_to_sequence_type_map[dtype]:
+                        traces_overview[seq_type].append(trace_data)
         return traces_overview
 
     def _calc_hash(self) -> int:

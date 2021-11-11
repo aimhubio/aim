@@ -236,8 +236,9 @@ class TestRunImagesBatchApi(RunImagesTestBase):
 
 
 class TestRunInfoApi(ApiTestBase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
 
         # run1 -> context {'subset': 'train'} -> Image[]
         #      |                              -> integers
@@ -249,21 +250,18 @@ class TestRunInfoApi(ApiTestBase):
         #      -> context {'subset': 'val'}   -> floats
 
         run1 = Run(system_tracking_interval=None)
-        self.run1_hash = run1.hash
-        for step in range(10):
-            images = generate_image_set(img_count=2, caption_prefix=f'Image {step}')
-            run1.track(images, name='image_lists', context={'subset': 'train'})
-            run1.track(random.random(), name='floats', context={'subset': 'train'})
-            run1.track(random.randint(100, 200), name='integers', context={'subset': 'train'})
-            run1.track(random.random(), name='floats', context={'subset': 'val'})
+        cls.run1_hash = run1.hash
+        images = generate_image_set(img_count=2, caption_prefix=f'Image 0')
+        run1.track(images, name='image_lists', context={'subset': 'train'})
+        run1.track(random.random(), name='floats', context={'subset': 'train'})
+        run1.track(random.randint(100, 200), name='integers', context={'subset': 'train'})
+        run1.track(random.random(), name='floats', context={'subset': 'val'})
 
         run2 = Run(system_tracking_interval=None)
-        for step in range(10):
-            images = generate_image_set(img_count=1, caption_prefix=f'Image {step}')
-            run2.track(images[0], name='single_images', context={'subset': 'val'})
-            run2.track(random.random(), name='floats', context={'subset': 'train'})
-            run2.track(random.random(), name='floats', context={'subset': 'val'})
-        self.run2_hash = run2.hash
+        run2.track(images[0], name='single_images', context={'subset': 'val'})
+        run2.track(random.random(), name='floats', context={'subset': 'train'})
+        run2.track(random.random(), name='floats', context={'subset': 'val'})
+        cls.run2_hash = run2.hash
 
     def test_run_info_get_images_only_api(self):
         client = self.client
@@ -283,9 +281,13 @@ class TestRunInfoApi(ApiTestBase):
         self.assertDictEqual({'subset': 'val'}, response_data['traces']['images'][0]['context'])
         self.assertEqual('single_images', response_data['traces']['images'][0]['name'])
 
-    def test_run_info_get_images_and_metrics_api(self):
+    @parameterized.expand([
+        ({'sequence': ('metric', 'images')},),  # metrics only
+        (None,)                                 # default
+    ])
+    def test_run_info_get_images_and_metrics_api(self, qparams):
         client = self.client
-        response = client.get(f'api/runs/{self.run1_hash}/info', params={'sequence': ('images', 'metric')})
+        response = client.get(f'api/runs/{self.run1_hash}/info', params=qparams)
         self.assertEqual(200, response.status_code)
         response_data = response.json()
         self.assertEqual(2, len(response_data['traces']))
@@ -317,22 +319,23 @@ class TestRunInfoApi(ApiTestBase):
         self.assertDictEqual({'subset': 'val'}, metrics_data[0]['context'])
         self.assertDictEqual({'subset': 'train'}, metrics_data[1]['context'])
 
-    @parameterized.expand([
-        ({'sequence': 'metric'},),  # metrics only
-        (None,)                     # default
-    ])
-    def test_run_info_get_metrics_only_api(self, params):
+    def test_run_info_get_metrics_only_api(self):
         client = self.client
-        response = client.get(f'api/runs/{self.run1_hash}/info', params=params)
+        response = client.get(f'api/runs/{self.run1_hash}/info', params={'sequence': 'metric'})
         self.assertEqual(200, response.status_code)
         response_data = response.json()
         self.assertEqual(1, len(response_data['traces']))
         self.assertIn('metric', response_data['traces'])
         self.assertEqual(3, len(response_data['traces']['metric']))
 
-        response = client.get(f'api/runs/{self.run2_hash}/info', params=params)
+        response = client.get(f'api/runs/{self.run2_hash}/info', params={'sequence': 'metric'})
         self.assertEqual(200, response.status_code)
         response_data = response.json()
         self.assertEqual(1, len(response_data['traces']))
         self.assertIn('metric', response_data['traces'])
         self.assertEqual(2, len(response_data['traces']['metric']))
+
+    def test_invalid_sequence_type(self):
+        client = self.client
+        response = client.get(f'api/runs/{self.run1_hash}/info', params={'sequence': 'non-existing-sequence'})
+        self.assertEqual(400, response.status_code)

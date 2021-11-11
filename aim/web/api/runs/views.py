@@ -161,7 +161,7 @@ def image_blobs_batch_api(uri_batch: URIBatchIn):
 
 
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
-async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(('metric',))):
+async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(())):
     # Get project
     project = Project()
     if not project.exists():
@@ -170,10 +170,13 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
     if not run:
         raise HTTPException(status_code=404)
 
-    try:
-        project.repo.check_sequence_types(sequence)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if sequence != ():
+        try:
+            project.repo.validate_sequence_types(sequence)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+    else:
+        sequence = project.repo.available_sequence_types()
 
     response = {
         'params': run.get(...),
