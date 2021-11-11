@@ -1,16 +1,15 @@
-## AimQL Basics
+## Search Basics
 
 ### Introduction
 
 Aim enables a powerful query language(AimQL) to filter through all the stored metadata. 
 
-AimQL filters Aim data using **python expression**.
-It’s like a python if statement over everything you have tracked.
-Hence, nearly any python compatible expression is available. See [security restrictions](#security-restrictions).
+AimQL filters the tracked metadata using **python expression**.
+Think of it as a python if statement over everything you have tracked.
+Hence, nearly any python compatible expression is available with [security restrictions](#security-restrictions) in place.
 
-When iterating over entities the python expression is evaluated in a Boolean context.
-If it is true (evaluates to a value that is “truthy”), then the current entity(e.g. run, metric) is yielded.
-Otherwise, the entity is skipped over.
+The data is saved as diff types of entities (e.g. `run`, `metric`). The search queries are written against these entities.
+When iterating over entities the python expression is evaluated in a Boolean context. When the value is _"truthy"_, then the current entity is yielded. Otherwise the entity is skipped over.
 
 .. note::
    Currently, AimQL is only used for filtering data, and has no role in sorting or aggregating the data.
@@ -56,8 +55,7 @@ Aim SDK will collect and store the above metadata in `.aim` repo.
 
 #### Searching runs
 
-When iterating over runs the current [Run](./SDK_basics.html#create-a-run) is accessible via `run` instance in the query context.
-It has the following default properties.
+When searching runs, use the `run` keyword which represents the [Run](./SDK_basics.html#create-a-run) object. It has the following properties:
 
 | Property | Description |
 | -------- | ----------- |
@@ -72,16 +70,18 @@ It has the following default properties.
 Run [parameters](./SDK_basics.html#track-params-and-metrics-with-run) could be accessed both via chained properties and attributes.
 
 .. note::
+
    The two following examples are equal:
     - run.hparams.learning_rate == 32
-    - run['hparams', 'learning_rate'] == 32
+    - run["hparams", "learning_rate"] == 32
 
 .. warning::
    AimQL has been designed to be highly performant.
    Only the params that are used in the query will be loaded into memory.
 
-   Avoid using chained attributes to not load the whole dictionary into memory.
-   Prefer using **['hparams', 'learning_rate']** over **['hparams']['learning_rate']**.
+   If you use the **['hparams']['learning_rate']** syntax Aim will load the whole dictionary into memory. The search performance will be impacted.
+
+   We recommend to use either **['hparams', 'learning_rate']** or **hparams.learning_rate** syntax which are equivalent to each other in terms of the performance.
 
 **Query examples:**
 
@@ -112,8 +112,7 @@ run.learning_rate in [0.0001, 0.005]
 
 #### Searching metrics
 
-When iterating over metrics the current [Metric](./SDK_basics.html#track-params-and-metrics-with-run) is accessible via `metric` instance in the query context.
-The related [Run](./SDK_basics.html#create-a-run) is still accessible via [run instance](#searching-runs).
+When iterating over metrics, use the `metric` keyword which represents the tracked [metric](./SDK_basics.html#track-params-and-metrics-with-run). While searching metrics, you can also refer to the related runs via the `run` keyword.
 
 `metric` has the following default properties.
 
@@ -170,22 +169,11 @@ metric.name == "loss" and run.learning_rate >= 0.001
 | `loss { "subset":"train" }` | `run_3 <hash=a32c912>` |
 | `loss { "subset":"test" }` | `run_3 <hash=a32c912>` |
 
-### Use cases: UI and SDK
-
-AimQL can be used both on UI and SDK.
-
-#### Searching on UI
-
-[todo]
-
-#### Searching via SDK
-
-[todo]
-
 ### Security restrictions
 
-AimQL expression is executed with [RestrictedPython](https://github.com/zopefoundation/RestrictedPython).
+AimQL expression is evaluated with [RestrictedPython](https://github.com/zopefoundation/RestrictedPython).
 
 **RestrictedPython** is a tool that helps to define a subset of the Python language which allows to provide a program input into a trusted environment.
 
-See applied restrictions [here](https://github.com/aimhubio/aim/blob/e0a089516d0aaf200411358bcb43e7673e02a852/aim/storage/query.py#L150).
+We have followed these [restrictions](https://github.com/aimhubio/aim/blob/e0a089516d0aaf200411358bcb43e7673e02a852/aim/storage/query.py#L150) to avoid security risks such as executing a non-safe function via AimQL.
+
