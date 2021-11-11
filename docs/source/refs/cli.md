@@ -1,4 +1,4 @@
-## Command Line Interface
+## Aim CLI
 
 Aim CLI offers a simple interface to easily organize and record your experiments.
 Paired with the Python Library, Aim is a powerful utility to record, search and compare AI experiments.
