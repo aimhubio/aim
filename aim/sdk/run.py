@@ -359,12 +359,11 @@ class Run(StructuredRunMixin):
         dtype = get_object_typename(value)
 
         ctx = Context(context)
-        ctx_dict = ctx.to_dict()
         metric = MetricDescriptor(name, ctx)
 
         if ctx not in self.contexts:
-            self.meta_tree['contexts', ctx.idx] = ctx_dict
-            self.meta_run_tree['contexts', ctx.idx] = ctx_dict
+            self.meta_tree['contexts', ctx.idx] = context
+            self.meta_run_tree['contexts', ctx.idx] = context
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
