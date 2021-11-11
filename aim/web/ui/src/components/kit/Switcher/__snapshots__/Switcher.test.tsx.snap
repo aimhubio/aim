@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Switcher /> - Renders Correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="Switcher Switcher__contained Switcher__primary Switcher__medium Switcher__checked"
+    data-name="switcher"
+    data-testid="switcher"
+  >
+    <span
+      class="Switcher__leftLabel"
+    >
+      left label
+    </span>
+    <i
+      class="Switcher__circle Switcher__circle__checked"
+    />
+    <span
+      class="Switcher__rightLabel"
+    >
+      right label
+    </span>
+  </button>
+</DocumentFragment>
+`;
