@@ -40,11 +40,8 @@ class Sequence(Generic[T]):
         self.context = context
         self.run = run
 
-        self._meta_tree = run.meta_run_tree.subtree(('traces', context.idx, name))
+        self._sequence_meta_tree = None
         self._series_tree = run.series_run_tree.subtree((context.idx, name))
-        self._values = self._series_tree.array('val')
-        self._epochs = self._series_tree.array('epoch')
-        self._timestamps = self._series_tree.array('time')
 
         self._hash: int = None
 
@@ -82,7 +79,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns values ArrayView.
         """
-        return self._values
+        return self._series_tree.array('val')
 
     @property
     def indices(self) -> List[int]:
@@ -99,7 +96,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns epochs ArrayView.
         """
-        return self._epochs
+        return self._series_tree.array('epoch')
 
     @property
     def timestamps(self) -> ArrayView[float]:
@@ -107,7 +104,13 @@ class Sequence(Generic[T]):
 
             :getter: Returns timestamps ArrayView.
         """
-        return self._timestamps
+        return self._series_tree.array('time')
+
+    @property
+    def _meta_tree(self):
+        if self._sequence_meta_tree is None:
+            self._sequence_meta_tree = self.run.meta_run_tree.subtree(('traces', self.context.idx, self.name))
+        return self._sequence_meta_tree
 
     def __bool__(self) -> bool:
         try:
