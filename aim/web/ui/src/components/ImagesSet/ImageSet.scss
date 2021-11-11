@@ -25,7 +25,6 @@
     &__title {
       padding-bottom: 0.125rem;
       font-size: $text-sm;
-      text-transform: capitalize;
       position: relative;
       &::after {
         content: '';
