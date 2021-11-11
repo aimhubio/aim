@@ -22,6 +22,11 @@ $ aim init
 Creates `.aim` directory to save the recorded experiments to.
 Running `aim init` in an existing repository will prompt the user for re-initialization.
 
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+
   **_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
   **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
