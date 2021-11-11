@@ -47,8 +47,12 @@ class TestRunFinalizedAt(TestBase):
 
 
 class TestRunFinalizedAtWithTrackingQueue(TestRunFinalizedAt):
-    def setUp(self):
-        os.environ[AIM_ENABLE_TRACKING_THREAD] = 'ON'
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        Run.track_in_thread = True
 
-    def tearDown(self):
-        del os.environ[AIM_ENABLE_TRACKING_THREAD]
+    @classmethod
+    def tearDownClass(cls) -> None:
+        Run.track_in_thread = False
+        super().tearDownClass()
