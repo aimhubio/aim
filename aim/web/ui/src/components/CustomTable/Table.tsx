@@ -40,8 +40,10 @@ function Table(props) {
     .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
   const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
 
+  const groups = !Array.isArray(props.data);
+
   useEffect(() => {
-    if (props.expanded && props.groups) {
+    if (props.expanded && groups) {
       for (let groupKey in props.expanded) {
         if (
           props.expanded[groupKey] &&
@@ -194,10 +196,10 @@ function Table(props) {
       <div
         className={classNames({
           Table: true,
-          'Table--grouped': props.groups,
+          'Table--grouped': groups,
         })}
       >
-        {(props.groups || leftPane.length > 0) && (
+        {(groups || leftPane.length > 0) && (
           <div
             className={classNames({
               Table__pane: true,
@@ -219,7 +221,6 @@ function Table(props) {
                 }
                 col={col}
                 data={props.data}
-                groups={props.groups}
                 expanded={expanded}
                 expand={expand}
                 togglePin={togglePin}
@@ -255,7 +256,7 @@ function Table(props) {
         <div className='Table__pane Table__pane--middle'>
           {middlePane.map((col, index) => (
             <Column
-              key={col.key}
+              key={col.key + index}
               topHeader={props.topHeader}
               showTopHeaderContent={
                 props.topHeader &&
@@ -269,7 +270,6 @@ function Table(props) {
               }
               col={col}
               data={props.data}
-              groups={props.groups}
               expanded={expanded}
               expand={expand}
               togglePin={togglePin}
@@ -297,6 +297,7 @@ function Table(props) {
               onRowHover={props.onRowHover}
               onRowClick={props.onRowClick}
               columnOptions={col.columnOptions}
+              listWindow={props.listWindow}
             />
           ))}
         </div>
@@ -326,7 +327,6 @@ function Table(props) {
                 }
                 col={col}
                 data={props.data}
-                groups={props.groups}
                 expanded={expanded}
                 expand={expand}
                 togglePin={togglePin}
