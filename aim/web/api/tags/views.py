@@ -1,7 +1,8 @@
 from fastapi import HTTPException, Depends
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional
 
-from aim.web.api.utils import APIRouter
+from aim.web.api.projects.project import Project
 from aim.web.api.utils import object_factory
 from aim.web.api.tags.pydantic_models import (
     TagCreateIn,
@@ -102,11 +103,18 @@ async def delete_tag_api(tag_id: str, factory=Depends(object_factory)):
 
 @tags_router.get('/{tag_id}/runs/', response_model=TagGetRunsOut)
 async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
+    project = Project()
+
     tag = factory.find_tag(tag_id)
     if not tag:
         raise HTTPException
 
     from aim.sdk.run import Run
+
+    cache_name = 'tag_runs'
+    project.repo.run_props_cache_hint = cache_name
+    project.repo.structured_db.invalidate_cache(cache_name)
+    project.repo.structured_db.init_cache(cache_name, tag.get_runs, lambda run_: run_.hash)
 
     tag_runs = []
     for tagged_run in tag.runs:
@@ -118,6 +126,10 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
             'end_time': run.end_time,
             'experiment': tagged_run.experiment.name if tagged_run.experiment else None
         })
+
+    project.repo.structured_db.invalidate_cache(cache_name)
+    project.repo.run_props_cache_hint = None
+
     response = {
         'id': tag.uuid,
         'runs': tag_runs

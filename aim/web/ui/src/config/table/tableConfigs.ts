@@ -18,3 +18,5 @@ export const rowCeilSizeConfig = {
     name: 'large',
   },
 };
+
+export const viewPortOffset = 500;

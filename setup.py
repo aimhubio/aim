@@ -47,7 +47,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.9',
+    'aimrocks==0.0.10',
     'cachetools>=4.0.0',
     'click>=7.0',
     'filelock>=3.0.0',
@@ -58,13 +58,14 @@ REQUIRED = [
     'psutil>=5.6.7',
     'py3nvml>=0.2.5',
     'RestrictedPython>=5.1',
+    'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
     'async-exit-stack>=1.0.0',
     'async-generator>=1.0',
     'fastapi>=0.65.0,<0.68.0',
     'pytz>=2019.1',
-    'SQLAlchemy>=1.3.0',
+    'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
 ]
 

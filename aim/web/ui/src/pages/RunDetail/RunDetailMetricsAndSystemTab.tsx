@@ -6,11 +6,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
-import {
-  IRunBatch,
-  IRunDetailMetricsAndSystemTabProps,
-} from 'types/pages/runs/Runs';
-
+import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
 import RunMetricCard from './RunMetricCard';
 
 function RunDetailMetricsAndSystemTab({

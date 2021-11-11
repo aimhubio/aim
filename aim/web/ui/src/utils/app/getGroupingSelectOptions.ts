@@ -23,7 +23,7 @@ export default function getGroupingSelectOptions({
     {
       group: 'run',
       label: 'run.experiment',
-      value: 'run.props.experiment',
+      value: 'run.props.experiment.name',
     },
     {
       group: 'run',

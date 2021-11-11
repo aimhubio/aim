@@ -1,6 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .Tags {
+  height: 100vh;
   &__tabPanel {
     height: calc(100% - 50px);
     position: relative;
