@@ -37,6 +37,16 @@ Features:
 
 <img style="border: 1px solid #1d2253" src="../_static/images/ui_basics/params.png" />
 
+### Single run page
+Explore all the metadata associated with a run on the single run page.
+It's accessible from all the tables and tooltips.
+
+Features:
+- See all the logged params of a run
+- See all the tracked metrics(including system metrics)
+
+<img style="border: 1px solid #1d2253" src="../_static/images/ui_basics/single_run.png" />
+
 ### Images explorer (coming soon...)
 Track intermediate images and search, compare them on the Images Explorer.
 
