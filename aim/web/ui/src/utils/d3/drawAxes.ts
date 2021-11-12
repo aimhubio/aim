@@ -37,11 +37,12 @@ function drawAxes(props: IDrawAxesProps): void {
     let xAlignmentText = '';
     const [first, last] = attributesRef.current.xScale.domain();
 
+    const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
+
     switch (alignmentConfig?.type) {
       case AlignmentOptionsEnum.EPOCH:
         {
-          xAlignmentText =
-            _.capitalize(getKeyByAlignment(alignmentConfig)) + 's';
+          xAlignmentText = alignmentKey ? alignmentKey + 's' : '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -52,7 +53,7 @@ function drawAxes(props: IDrawAxesProps): void {
         break;
       case AlignmentOptionsEnum.RELATIVE_TIME:
         {
-          xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig));
+          xAlignmentText = alignmentKey || '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 85);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -119,7 +120,7 @@ function drawAxes(props: IDrawAxesProps): void {
         break;
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
         {
-          xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig));
+          xAlignmentText = alignmentKey || '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -144,7 +145,7 @@ function drawAxes(props: IDrawAxesProps): void {
         break;
       case AlignmentOptionsEnum.CUSTOM_METRIC:
         {
-          xAlignmentText = alignmentConfig?.metric;
+          xAlignmentText = alignmentConfig?.metric || '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -152,7 +153,7 @@ function drawAxes(props: IDrawAxesProps): void {
         }
         break;
       default: {
-        xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig)) + 's';
+        xAlignmentText = alignmentKey ? alignmentKey + 's' : 'Steps';
 
         let ticksCount = Math.floor(plotBoxRef.current.width / 90);
         ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
