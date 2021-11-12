@@ -33,8 +33,6 @@ Aim users track 1000s of training runs and sometimes more than 100s of metrics p
 Aim enables a powerful pythonic query language to filter through metadata.
 It's like a python if statement over everything you have tracked. You can use this on all explorer screens.
 
-
-
 ### Runs explorer
 Runs explorer will help you to hollistically view all your runs, each metric last tracked values and tracked hyperparameters.
 
