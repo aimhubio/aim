@@ -15,8 +15,8 @@ export interface IImagesExploreAppConfig {
     indexSlice?: number[] | number;
     stepRange?: number[];
     indexRange?: number[];
-    recordDensity?: number;
-    indexDensity?: number;
+    recordDensity?: string;
+    indexDensity?: string;
     calcRanges: boolean;
   };
   select: {

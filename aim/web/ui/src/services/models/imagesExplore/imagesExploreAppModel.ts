@@ -120,6 +120,8 @@ function setDefaultAppConfigData() {
     getStateFromUrl('grouping') || getConfig().grouping;
   const select: IImagesExploreAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+  const images: IImagesExploreAppConfig['images'] =
+    getStateFromUrl('images') || getConfig().images;
   const tableConfigHash = getItem('imagesExploreTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
@@ -128,6 +130,7 @@ function setDefaultAppConfigData() {
     grouping,
     select,
     table,
+    images,
   });
 
   model.setState({
@@ -319,8 +322,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       : (rawData[0].ranges.index_range as number[]),
     recordSlice: config.images.recordSlice || rawData[0].ranges.record_range,
     indexSlice: config.images.indexSlice || rawData[0].ranges.index_range,
-    recordDensity: config.images.recordDensity || 50,
-    indexDensity: config.images.indexDensity || 5,
+    recordDensity: config.images.recordDensity || '50',
+    indexDensity: config.images.indexDensity || '5',
     calcRanges: false,
   };
   model.setState({
@@ -564,11 +567,14 @@ function onGroupingApplyChange(): void {
  *    2. Stores updated URL in localStorage if App is not in the bookmark state
  * @param {IImagesExploreAppConfig} configData - the current state of the app config
  */
-function updateURL(configData = model.getState()!.config!) {
-  const { grouping, select } = configData;
+function updateURL(
+  configData: IImagesExploreAppConfig = model.getState()!.config!,
+) {
+  const { grouping, select, images } = configData;
   const url: string = getUrlWithParam({
     grouping: encode(grouping),
     select: encode(select),
+    images: encode(images),
   });
 
   if (url === `${window.location.pathname}${window.location.search}`) {
@@ -1392,6 +1398,8 @@ function onRecordSliceChange(
       ...configData,
       images,
     };
+
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled: false,
@@ -1414,6 +1422,8 @@ function onIndexSliceChange(
       ...configData,
       images,
     };
+
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled: false,
@@ -1433,6 +1443,8 @@ function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
       ...configData,
       images,
     };
+
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled: false,
@@ -1452,6 +1464,8 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
       ...configData,
       images,
     };
+
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled: false,
