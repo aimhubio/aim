@@ -11,8 +11,8 @@ class ProjectApiOut(BaseModel):
 
 class ProjectParamsOut(BaseModel):
     params: Dict
-    metric: Optional[Dict[str, list]] = {}
-    images: Optional[Dict[str, list]] = {}
+    metric: Optional[Dict[str, list]] = None
+    images: Optional[Dict[str, list]] = None
 
 
 class ProjectActivityApiOut(BaseModel):

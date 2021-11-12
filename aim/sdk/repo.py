@@ -354,13 +354,17 @@ class Repo:
         ).tree().subtree('meta')
 
     @staticmethod
-    def check_sequence_types(sequence_types: Tuple[str, ...]):
+    def available_sequence_types():
+        return Sequence.registry.keys()
+
+    @staticmethod
+    def validate_sequence_types(sequence_types: Tuple[str, ...]):
         for seq_name in sequence_types:
             seq_cls = Sequence.registry.get(seq_name, None)
             if seq_cls is None or not issubclass(seq_cls, Sequence):
                 raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
 
-    def collect_metrics_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
+    def collect_sequence_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
         """Utility function for getting sequence names and contexts for all runs by given sequence types.
 
         Args:
@@ -371,32 +375,37 @@ class Repo:
             :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
         """
         meta_tree = self._get_meta_tree()
-        sequence_metrics = {}
+        sequence_traces = {}
         if isinstance(sequence_types, str):
             sequence_types = (sequence_types,)
-        for seq_name in sequence_types:
-            seq_cls = Sequence.registry.get(seq_name, None)
+        for seq_type in sequence_types:
+            seq_cls = Sequence.registry.get(seq_type, None)
             if seq_cls is None:
-                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+                raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
             assert issubclass(seq_cls, Sequence)
             dtypes = seq_cls.allowed_dtypes()
-            traces = {}
+            dtype_traces = []
             for dtype in dtypes:
                 try:
-                    traces.update(meta_tree.collect(('traces_types', dtype)))
+                    dtype_trace_tree = meta_tree.collect(('traces_types', dtype))
+                    for ctx_id, seqs in dtype_trace_tree.items():
+                        for seq_name in seqs.keys():
+                            dtype_traces.append((ctx_id, seq_name))
                 except KeyError:
                     pass
             if 'float' in dtypes:  # old sequences without dtype set are considered float sequences
                 try:
-                    traces.update(meta_tree.collect('traces'))
+                    dtype_trace_tree = meta_tree.collect('traces')
+                    for ctx_id, seqs in dtype_trace_tree.items():
+                        for seq_name in seqs.keys():
+                            dtype_traces.append((ctx_id, seq_name))
                 except KeyError:
                     pass
-            metrics = defaultdict(list)
-            for ctx_id, trace_metrics in traces.items():
-                for metric in trace_metrics.keys():
-                    metrics[metric].append(meta_tree['contexts', ctx_id])
-            sequence_metrics[seq_name] = metrics
-        return sequence_metrics
+            traces_info = defaultdict(list)
+            for ctx_id, seq_name in dtype_traces:
+                traces_info[seq_name].append(meta_tree['contexts', ctx_id])
+            sequence_traces[seq_type] = traces_info
+        return sequence_traces
 
     def collect_params_info(self) -> dict:
         """Utility function for getting run meta-parameters.

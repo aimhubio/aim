@@ -65,20 +65,23 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
     }
 
 
-@projects_router.get('/params/', response_model=ProjectParamsOut)
-async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(('metric',))):
+@projects_router.get('/params/', response_model=ProjectParamsOut, response_model_exclude_defaults=True)
+async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
     project = Project()
 
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    try:
-        project.repo.check_sequence_types(sequence)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if sequence != ():
+        try:
+            project.repo.validate_sequence_types(sequence)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+    else:
+        sequence = project.repo.available_sequence_types()
 
     response = {
         'params': project.repo.collect_params_info(),
     }
-    response.update(**project.repo.collect_metrics_info(sequence))
+    response.update(**project.repo.collect_sequence_info(sequence))
     return response

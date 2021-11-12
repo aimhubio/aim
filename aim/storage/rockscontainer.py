@@ -9,10 +9,8 @@ from typing import Iterator, Optional, Tuple
 
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
-from aim.storage.treeview import TreeView
-from aim.ext.exception_resistant import exception_resistant
 from aim.storage.containertreeview import ContainerTreeView
-
+from aim.ext.exception_resistant import exception_resistant
 
 
 logger = logging.getLogger(__name__)
