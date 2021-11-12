@@ -341,7 +341,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
       sortFields,
-      // onSortChange,
+      onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -367,7 +367,7 @@ function updateModelData(
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
     configData.table.sortFields,
-    // onSortChange,
+    onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -996,6 +996,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     data[0]?.config,
     config?.table.columnsOrder!,
     config?.table.hiddenColumns!,
+    config?.table.sortFields,
+    onSortChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
