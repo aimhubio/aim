@@ -1117,7 +1117,7 @@ function onSelectRunQueryChange(query: string) {
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, query },
+      select: { ...configData.select, advancedQuery: query, query },
       images: { ...configData.images, calcRanges: true },
     };
 
