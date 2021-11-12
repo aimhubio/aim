@@ -189,7 +189,7 @@ export interface IChartTooltip {
 }
 
 export interface IAlignmentConfig {
-  metric: string;
+  metric?: string;
   type: AlignmentOptionsEnum;
 }
 

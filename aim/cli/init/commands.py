@@ -13,7 +13,7 @@ from aim.sdk.utils import clean_repo_path
 def init(repo):
     """
     Initializes new repository in the --repo directory.
-    Initializes new repository in the current working directory if --repo argument is provided:
+    Initializes new repository in the current working directory if --repo argument is not provided:
      - Creates .aim directory & runs upgrades for structured DB
     """
     repo_path = clean_repo_path(repo) or os.getcwd()
