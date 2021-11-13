@@ -6,16 +6,18 @@ import { CodeCompletion } from 'components/kit';
 
 import getCaretCoordinates from 'utils/getCaretPosition';
 
+import { IExpressionAutoComplete } from '.';
+
 import './styles.scss';
 
 function ExpressionAutoComplete({
   onExpressionChange,
   onSubmit,
-  value,
+  value = '',
   options,
   isTextArea,
   placeholder,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: IExpressionAutoComplete): React.FunctionComponentElement<React.ReactNode> {
   const [caretPosition, setCaretPosition] = React.useState(0);
   const [suggestionsPosition, setSuggestionsPosition] = React.useState({
     left: 0,

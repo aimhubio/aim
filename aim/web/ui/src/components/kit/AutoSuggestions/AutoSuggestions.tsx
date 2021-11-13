@@ -4,6 +4,8 @@ import useDropdownMenu from 'react-accessible-dropdown-menu-hook';
 
 import { Text } from 'components/kit';
 
+import { IAutoSuggestionsProps } from './type';
+
 import './style.scss';
 
 const SuggestionsContainer: any = styled.div`
@@ -11,13 +13,13 @@ const SuggestionsContainer: any = styled.div`
   top: ${(props: any) => props.suggestionsPosition.top}px;
   border: ${(props: any) => props.isEmpty && 'unset'};
 `;
-function CodeCompletion({
+function AutoSuggestions({
   suggestionsList,
   suggestionsPosition,
   onSuggestionClick,
   suggestionsRef,
   inputRef,
-}: any): React.FunctionComponentElement<React.ReactNode> | null {
+}: IAutoSuggestionsProps): React.FunctionComponentElement<React.ReactNode> | null {
   const { buttonProps, itemProps } = useDropdownMenu(suggestionsList.length);
   React.useEffect(() => {
     if (suggestionsRef) {
@@ -61,6 +63,6 @@ function CodeCompletion({
   );
 }
 
-CodeCompletion.displayName = 'CodeCompletion';
+AutoSuggestions.displayName = 'AutoSuggestions';
 
-export default CodeCompletion;
+export default AutoSuggestions;
