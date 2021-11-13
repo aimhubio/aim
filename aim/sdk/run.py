@@ -21,6 +21,7 @@ from aim.storage.context import Context, MetricDescriptor
 from aim.storage.treeview import TreeView
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.cleanup import AutoClean
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
@@ -159,6 +160,54 @@ class StructuredRunMixin:
         return self.props.remove_tag(tag_id)
 
 
+class RunResources(AutoClean['Run']):
+    PRIORITY = 30
+
+    def __init__(self, instance: 'Run') -> None:
+        """
+        Prepare the `Run` for automatic cleanup.
+
+        Args:
+            instance: The `Run` instance to be cleaned up.
+        """
+        super().__init__(instance)
+
+        self.read_only = instance.read_only
+        self.name = instance.name
+        self.meta_run_tree = instance.meta_run_tree
+        self.repo = instance.repo
+        self._system_resource_tracker = instance._system_resource_tracker
+
+    def finalize_run(self):
+        """
+        Finalize the run by indexing all the data.
+        """
+        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
+        index = self.repo._get_container('meta/index',
+                                         read_only=False,
+                                         from_union=False).view(b'')
+        logger.debug(f'Indexing Run {self.name}...')
+        self.meta_run_tree.finalize(index=index)
+
+    def finalize_system_tracker(self):
+        """
+        Stop the system resource tracker before closing the run.
+        """
+        if self._system_resource_tracker is not None:
+            logger.debug('Stopping resource tracker')
+            self._system_resource_tracker.stop()
+
+    def _close(self) -> None:
+        """
+        Close the `Run` instance resources and trigger indexing.
+        """
+        if self.read_only:
+            logger.debug(f'Run {self.name} is read-only, skipping cleanup')
+            return
+        self.finalize_system_tracker()
+        self.finalize_run()
+
+
 class Run(StructuredRunMixin):
     """Run object used for tracking metrics.
 
@@ -179,7 +228,6 @@ class Run(StructuredRunMixin):
     """
 
     _idx_to_ctx: Dict[int, Context] = dict()
-    _finalize_message_shown = False
     _track_warning_shown = False
 
     track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
@@ -189,7 +237,7 @@ class Run(StructuredRunMixin):
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
-        self._constructed = False
+        self._resources: RunResources = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
 
@@ -233,7 +281,8 @@ class Run(StructuredRunMixin):
             self.props
         if experiment:
             self.experiment = experiment
-        self._constructed = True
+
+        self._resources = RunResources(self)
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
@@ -565,20 +614,10 @@ class Run(StructuredRunMixin):
             self._hash = self._calc_hash()
         return self._hash
 
-    def __del__(self):
-        if self.read_only or not self._constructed:
+    def close(self):
+        if self._resources is None:
             return
-        if self._system_resource_tracker:
-            self._system_resource_tracker.stop()
-
-        logger.debug(f'finalizing {self}')
-        self.finalize(skip_wait=True)
-
-    @classmethod
-    def finalize_msg(cls):
-        if not cls._finalize_message_shown:
-            logger.warning('Finalizing runs.')
-            cls._finalize_message_shown = True
+        self._resources.close()
 
     @classmethod
     def track_rate_warn(cls):
@@ -589,15 +628,6 @@ class Run(StructuredRunMixin):
             cls._track_warning_shown = True
 
     def finalize(self, skip_wait=False):
-        if self._finalized:
+        if self._resources is None:
             return
-        self._finalized = True
-        self.finalize_msg()
-        if not skip_wait and self.track_in_thread:
-            self.repo.tracking_queue.wait_for_finish()
-
-        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
-        index = self.repo._get_container('meta/index',
-                                         read_only=False,
-                                         from_union=False).view(b'')
-        self.meta_run_tree.finalize(index=index)
+        self._resources.finalize_run()

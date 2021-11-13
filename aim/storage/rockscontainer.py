@@ -7,6 +7,8 @@ import aimrocks
 
 from typing import Iterator, Optional, Tuple
 
+from aim.ext.cleanup import AutoClean
+
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
@@ -14,6 +16,35 @@ from aim.ext.exception_resistant import exception_resistant
 
 
 logger = logging.getLogger(__name__)
+
+
+class RocksAutoClean(AutoClean):
+    PRIORITY = 60
+
+    def __init__(self, instance: 'RocksContainer') -> None:
+        """
+        Prepare the `RocksContainer` for automatic cleanup.
+
+        Args:
+            instance: The `RocksContainer` instance to be cleaned up.
+        """
+        super().__init__(instance)
+        self._lock = None
+        self._db = None
+
+    def _close(self):
+        """
+        Close the RocksDB instances, flush memtables and WAL.
+        Finally, release the lock.
+        """
+        if self._lock is not None:
+            if self._db is not None:
+                self._db.flush()
+                self._db.flush_wal()
+            self._lock.release()
+            self._lock = None
+        if self._db is not None:
+            self._db = None
 
 
 class RocksContainer(Container):
@@ -27,6 +58,8 @@ class RocksContainer(Container):
         wait_if_busy: bool = False,
         **extra_options
     ) -> None:
+        self._resources: RocksAutoClean = None
+
         self.path = Path(path)
         self.read_only = read_only
         self._db_opts = dict(
@@ -56,14 +89,34 @@ class RocksContainer(Container):
         # opts.write_buffer_size = 67108864
         # opts.arena_block_size = 67108864
 
-        self._db = None
-        self._lock = None
         self._wait_if_busy = wait_if_busy  # TODO implement
         self._lock_path: Optional[Path] = None
         self._progress_path: Optional[Path] = None
+
+        self._resources = RocksAutoClean(self)
+
         if not self.read_only:
             self.writable_db
         # TODO check if Containers are reopenable
+
+    # The following properties are linked to self._resources to
+    # ensure that the resources are closed when the container gone.
+
+    @property
+    def _db(self):
+        return self._resources._db
+
+    @_db.setter
+    def _db(self, value):
+        self._resources._db = value
+
+    @property
+    def _lock(self):
+        return self._resources._lock
+
+    @_lock.setter
+    def _lock(self, value):
+        self._resources._lock = value
 
     @property
     def db(self) -> aimrocks.DB:
@@ -116,18 +169,9 @@ class RocksContainer(Container):
 
     def close(self):
         """Close all the resources."""
-        if self._lock is not None:
-            self._db.flush()
-            self._db.flush_wal()
-            self._lock.release()
-            self._lock = None
-        if self._db is not None:
-            # self._db.close()
-            self._db = None
-
-    def __del__(self):
-        """Automatically close all the resources after being garbage-collected"""
-        self.close()
+        if self._resources is None:
+            return
+        self._resources.close()
 
     def preload(self):
         """Preload the Container in the read mode."""
