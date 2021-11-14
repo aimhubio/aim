@@ -30,7 +30,7 @@ function ImagesExploreRangePanel({
     searchMetricsRef.current.call();
   }
   return (
-    <div className='ImagesExploreRangePanel'>
+    <form className='ImagesExploreRangePanel' onSubmit={handleSearch}>
       <div className='ImagesExploreRangePanel__sliderContainer'>
         <Text
           className='ImagesExploreRangePanel__sliderContainer__title'
@@ -49,6 +49,11 @@ function ImagesExploreRangePanel({
             max={stepRange[1]}
             valueLabelDisplay='auto'
             getAriaValueText={(value) => `${value}`}
+            onKeyPress={(e) => {
+              if (e.which === 13) {
+                handleSearch();
+              }
+            }}
           />
         </div>
         <Text
@@ -91,6 +96,11 @@ function ImagesExploreRangePanel({
             max={indexRange[1]}
             valueLabelDisplay='auto'
             getAriaValueText={(value) => `${value}`}
+            onKeyPress={(e) => {
+              if (e.which === 13) {
+                handleSearch();
+              }
+            }}
           />
         </div>
         <Text
@@ -115,17 +125,20 @@ function ImagesExploreRangePanel({
           className='ImagesExploreRangePanel__sliderContainer__densityField'
         />
       </div>
-      <Button
-        size='small'
-        color='primary'
-        variant='contained'
-        onClick={handleSearch}
-        className={'ImagesExploreRangePanel__searchButton'}
-        disabled={searchButtonDisabled}
-      >
-        Search
-      </Button>
-    </div>
+      <div className='ImagesExploreRangePanel__searchButtonContainer'>
+        <Button
+          size='small'
+          color='primary'
+          variant='contained'
+          type='submit'
+          onClick={handleSearch}
+          className='ImagesExploreRangePanel__searchButtonContainer__searchButton'
+          disabled={searchButtonDisabled}
+        >
+          Apply
+        </Button>
+      </div>
+    </form>
   );
 }
 

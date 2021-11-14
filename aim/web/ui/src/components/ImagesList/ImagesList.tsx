@@ -9,7 +9,7 @@ function ImagesList({
   data,
   imagesBlobs,
   onScroll,
-  imagesSetWrapper,
+  imageSetWrapperWidth,
   addUriToList,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -20,7 +20,7 @@ function ImagesList({
         (imageFixedHeight / data[index].height) * data[index].width
       }
       layout='horizontal'
-      width={imagesSetWrapper.current?.offsetWidth || 0}
+      width={imageSetWrapperWidth || 0}
       onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
     >

@@ -7,8 +7,6 @@ import ImagesList from 'components/ImagesList';
 
 import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
 
-import contextToString from 'utils/contextToString';
-
 import { IImageSetProps } from './ImagesSet.d';
 
 import './ImageSet.scss';
@@ -20,8 +18,9 @@ const ImagesSet = ({
   onScroll,
   addUriToList,
   index = 0,
-  imagesSetWrapper,
   imagesSetKey,
+  imageSetWrapperHeight,
+  imageSetWrapperWidth,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   const getItemSize = (index: number) => {
     const imagesHeights: any = getNestedDataHeight(
@@ -54,27 +53,26 @@ const ImagesSet = ({
             <span className='ImagesSet__container__title'>{title}</span>
           )}
           <div className='ImagesSet__container__imagesBox'>
-            <ImagesList
-              data={data}
-              imagesBlobs={imagesBlobs}
-              onScroll={onScroll}
-              addUriToList={addUriToList}
-              imagesSetWrapper={imagesSetWrapper}
-              index={index + 1}
-            />
+            {imageSetWrapperWidth && (
+              <ImagesList
+                data={data}
+                imagesBlobs={imagesBlobs}
+                onScroll={onScroll}
+                addUriToList={addUriToList}
+                imageSetWrapperWidth={imageSetWrapperWidth}
+                index={index + 1}
+              />
+            )}
           </div>
         </div>
       ) : (
-        <div
-          className='ImagesSet__container'
-          // key={contextToString(data)?.length}
-        >
+        <div className='ImagesSet__container'>
           {index !== 0 && (
             <p className='ImagesSet__container__title'>{title}</p>
           )}
           {index === 0 ? (
             <List
-              height={imagesSetWrapper?.current?.offsetHeight || 0}
+              height={imageSetWrapperHeight || 0}
               itemCount={Object.keys(data).length}
               itemSize={getItemSize}
               width={'100%'}
@@ -83,7 +81,8 @@ const ImagesSet = ({
                 imagesBlobs,
                 onScroll,
                 addUriToList,
-                imagesSetWrapper,
+                imageSetWrapperHeight,
+                imageSetWrapperWidth,
                 index,
                 imagesSetKey,
               }}
@@ -99,7 +98,8 @@ const ImagesSet = ({
                 imagesBlobs={imagesBlobs}
                 onScroll={onScroll}
                 addUriToList={addUriToList}
-                imagesSetWrapper={imagesSetWrapper}
+                imageSetWrapperHeight={imageSetWrapperHeight}
+                imageSetWrapperWidth={imageSetWrapperWidth}
                 index={index + 1}
                 imagesSetKey={imagesSetKey}
               />
@@ -136,7 +136,8 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
         imagesBlobs={data.imagesBlobs}
         onScroll={data.onScroll}
         addUriToList={data.addUriToList}
-        imagesSetWrapper={data.imagesSetWrapper}
+        imageSetWrapperHeight={data.imageSetWrapperHeight}
+        imageSetWrapperWidth={data.imageSetWrapperWidth}
         index={data.index + 1}
         imagesSetKey={data.imagesSetKey}
       />

@@ -1,11 +1,14 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { isEmpty } from 'lodash-es';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import { isEmpty, debounce } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
+import { Text } from 'components/kit';
+
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
 
@@ -27,11 +30,20 @@ function ImagesPanel({
   getImagesBlobsData,
   isLoading,
   searchButtonDisabled,
+  imagesWrapperRef,
+  panelResizing,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   let timeoutID: number = 0;
   let blobUriArray: string[] = [];
-  const imagesSetWrapper = useRef<any>({});
-  function onScroll(e?: any) {
+  const [offsetWidth, setOffsetWidth] = useState(
+    imagesWrapperRef?.current?.offsetWidth,
+  );
+
+  useResizeObserver(
+    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
+    imagesWrapperRef,
+  );
+  function onScroll() {
     if (timeoutID) {
       window.clearTimeout(timeoutID);
     }
@@ -46,8 +58,24 @@ function ImagesPanel({
 
   const imagesSetKey = useMemo(
     () => Date.now(),
-    [imagesData, imagesBlobs, imagesSetWrapper],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      imagesData,
+      imagesBlobs,
+      imagesWrapperRef?.current?.offsetHeight,
+      imagesWrapperRef?.current?.offsetWidth,
+    ],
   );
+
+  useEffect(() => {
+    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesWrapperRef?.current?.offsetWidth]);
+
+  useEffect(() => {
+    onScroll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blobUriArray]);
 
   useEffect(() => {
     return () => {
@@ -68,38 +96,51 @@ function ImagesPanel({
       height='100%'
       loaderComponent={<ChartLoader controlsCount={0} />}
     >
-      {!isEmpty(imagesData) ? (
-        <div className='ImagesPanel'>
-          <div className='ImagesPanel__imagesContainer' ref={imagesSetWrapper}>
-            <ImagesSet
-              data={imagesData}
-              title={'root'}
-              imagesBlobs={imagesBlobs}
-              onScroll={onScroll}
-              addUriToList={addUriToList}
-              imagesSetWrapper={imagesSetWrapper}
-              imagesSetKey={imagesSetKey}
-            />
-          </div>
-          <ImagesExploreRangePanel
-            recordSlice={recordSlice}
-            indexSlice={indexSlice}
-            indexRange={indexRange}
-            stepRange={stepRange}
-            indexDensity={indexDensity}
-            recordDensity={recordDensity}
-            onIndexSliceChange={onIndexSliceChange}
-            onRecordSliceChange={onRecordSliceChange}
-            onRecordDensityChange={onRecordDensityChange}
-            onIndexDensityChange={onIndexDensityChange}
-            searchButtonDisabled={searchButtonDisabled}
-          />
+      {panelResizing ? (
+        <div className='ImagesPanel__resizing'>
+          <Text size={14} color='info'>
+            Release to resize
+          </Text>
         </div>
       ) : (
-        <EmptyComponent
-          size='big'
-          content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-        />
+        <>
+          {!isEmpty(imagesData) ? (
+            <div className='ImagesPanel'>
+              <div className='ImagesPanel__imagesContainer'>
+                <ImagesSet
+                  data={imagesData}
+                  title={'root'}
+                  imagesBlobs={imagesBlobs}
+                  onScroll={onScroll}
+                  addUriToList={addUriToList}
+                  imagesSetKey={imagesSetKey}
+                  imageSetWrapperHeight={
+                    imagesWrapperRef?.current?.offsetHeight - 36
+                  }
+                  imageSetWrapperWidth={offsetWidth}
+                />
+              </div>
+              <ImagesExploreRangePanel
+                recordSlice={recordSlice}
+                indexSlice={indexSlice}
+                indexRange={indexRange}
+                stepRange={stepRange}
+                indexDensity={indexDensity}
+                recordDensity={recordDensity}
+                onIndexSliceChange={onIndexSliceChange}
+                onRecordSliceChange={onRecordSliceChange}
+                onRecordDensityChange={onRecordDensityChange}
+                onIndexDensityChange={onIndexDensityChange}
+                searchButtonDisabled={searchButtonDisabled}
+              />
+            </div>
+          ) : (
+            <EmptyComponent
+              size='big'
+              content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+            />
+          )}
+        </>
       )}
     </BusyLoaderWrapper>
   );

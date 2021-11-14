@@ -1,6 +1,7 @@
 export interface IImagesPanelProps {
   imagesData: any;
   imagesBlobs: { [key: string]: value };
+  imagesWrapperRef: React.MutableRefObject<any>;
   recordSlice: number[];
   indexSlice: number[];
   indexRange: number[];
@@ -20,4 +21,5 @@ export interface IImagesPanelProps {
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   searchButtonDisabled: boolean;
+  panelResizing: boolean;
 }

@@ -254,25 +254,34 @@ function getImagesData() {
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
+  highLevelParams: string[];
+  contexts: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: any[] = [];
   let params: string[] = [];
+  let highLevelParams: string[] = [];
+  let contexts: string[] = [];
   data?.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
-    run.traces.forEach((imageData: any) => {
-      imageData.values.forEach((stepData: IImageData[], stepIndex: number) => {
+    highLevelParams = highLevelParams.concat(
+      getObjectPaths(run.params, run.params, '', false, true),
+    );
+    run.traces.forEach((trace: any) => {
+      contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
+      trace.values.forEach((stepData: IImageData[], stepIndex: number) => {
         stepData.forEach((image: IImageData) => {
           const metricKey = encode({
             runHash: run.hash,
-            traceContext: imageData.context,
+            traceContext: trace.context,
             index: image.index,
-            step: imageData.iters[stepIndex],
+            step: trace.iters[stepIndex],
           });
           metrics.push({
             ...image,
-            step: imageData.iters[stepIndex],
-            context: imageData.context,
+            image_name: image.caption,
+            step: trace.iters[stepIndex],
+            context: trace.context,
             run: _.omit(run, 'traces'),
             key: metricKey,
           });
@@ -293,18 +302,24 @@ function processData(data: any[]): {
     ),
   );
   const uniqParams = _.uniq(params);
+  const uniqHighLevelParams = _.uniq(highLevelParams);
+  const uniqContexts = _.uniq(contexts);
   // setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
     params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
+    contexts: uniqContexts,
   };
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params } = processData(rawData);
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const { data, params, contexts } = processData(rawData);
+  const groupingSelectOptions = [
+    ...getGroupingSelectOptions({ params, contexts }),
+  ];
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -352,8 +367,12 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params } = processData(model.getState()?.rawData as any[]);
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const { data, params, contexts } = processData(
+    model.getState()?.rawData as any[],
+  );
+  const groupingSelectOptions = [
+    ...getGroupingSelectOptions({ params, contexts }),
+  ];
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -413,13 +432,23 @@ function getFilteredGroupingOptions(
   }
 }
 
-function getGroupingSelectOptions(
-  params: string[] = [],
-): IGroupingSelectOption[] {
+function getGroupingSelectOptions({
+  params,
+  contexts = [],
+}: {
+  params: string[];
+  contexts?: string[];
+}): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     group: 'run',
     label: `run.${param}`,
     value: `run.params.${param}`,
+  }));
+
+  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
+    group: 'images',
+    label: `image.context.${context}`,
+    value: `context.${context}`,
   }));
 
   return [
@@ -435,15 +464,21 @@ function getGroupingSelectOptions(
     },
     ...paramsOptions,
     {
-      group: 'Other',
+      group: 'record',
       label: 'step',
       value: 'step',
     },
     {
-      group: 'Other',
+      group: 'record',
       label: 'index',
       value: 'index',
     },
+    {
+      group: 'images',
+      label: 'image_name',
+      value: 'image_name',
+    },
+    ...contextOptions,
   ];
 }
 
@@ -504,8 +539,6 @@ function onGroupingSelectChange({
     model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
-    // resetChartZoom(configData);
-    // setAggregationEnabled(configData);
     updateModelData(configData, true);
   }
   analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
@@ -638,10 +671,13 @@ function getDataAsImageSet(data: any[]) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const groupFields = configData?.grouping?.groupBy;
+    const groupBy = [...(configData?.grouping?.groupBy || [])];
+    const groupFields = configData?.grouping?.reverseMode?.groupBy
+      ? groupBy.reverse()
+      : groupBy;
     data.forEach((group: any) => {
       const path = groupFields?.reduce((acc: any, field: any) => {
-        acc.push(`${field} = ${_.get(group.data[0], field)}`);
+        acc.push(`${field} = ${formatValue(_.get(group.data[0], field))}`);
         return acc;
       }, [] as any);
       _.set(imageSetData, path, group.data);
@@ -709,7 +745,6 @@ function getDataAsTableRows(
         },
         key: metric.key,
         runHash: metric.run.hash,
-        // isHidden: metric.isHidden,
         isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
         index: rowIndex,
         color: metricsCollection.color ?? metric.color,
