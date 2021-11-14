@@ -14,11 +14,12 @@ const SuggestionsContainer: any = styled.div`
   border: ${(props: any) => props.isEmpty && 'unset'};
 `;
 function AutoSuggestions({
+  inputRef,
+  suggestionsRef,
   suggestionsList,
   suggestionsPosition,
   onSuggestionClick,
-  suggestionsRef,
-  inputRef,
+  setSuggestionsList,
 }: IAutoSuggestionsProps): React.FunctionComponentElement<React.ReactNode> | null {
   const { buttonProps, itemProps } = useDropdownMenu(suggestionsList.length);
   React.useEffect(() => {
@@ -40,6 +41,12 @@ function AutoSuggestions({
     }
   }
 
+  function onSuggestionsBlur(e: React.FocusEvent<HTMLDivElement>): void {
+    if (!e.relatedTarget) {
+      setSuggestionsList([]);
+    }
+  }
+
   return (
     <SuggestionsContainer
       {...buttonProps}
@@ -48,6 +55,7 @@ function AutoSuggestions({
       suggestionsPosition={suggestionsPosition}
       isEmpty={!suggestionsList.length}
       onKeyDown={onSuggestionsKeyDown}
+      onBlur={onSuggestionsBlur}
     >
       {suggestionsList?.map((suggestion: string, index: number) => (
         <a

@@ -6,4 +6,5 @@ export interface IAutoSuggestionsProps {
   suggestionsRef: React.RefObject;
   inputRef: React.MutableRefObject<HTMLInputElement | HTMLTextAreaElement>;
   onSuggestionClick: (suggestion: string) => void;
+  setSuggestionsList: (list: string[]) => void;
 }

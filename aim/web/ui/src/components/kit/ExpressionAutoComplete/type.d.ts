@@ -1,4 +1,4 @@
-export interface IExpressionAutoComplete {
+export interface IExpressionAutoCompleteProps {
   onExpressionChange: (value: string) => void;
   onSubmit: (
     e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement | any>,

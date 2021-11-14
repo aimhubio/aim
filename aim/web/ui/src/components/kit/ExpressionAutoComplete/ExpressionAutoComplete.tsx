@@ -6,7 +6,7 @@ import { CodeCompletion } from 'components/kit';
 
 import getCaretCoordinates from 'utils/getCaretPosition';
 
-import { IExpressionAutoComplete } from '.';
+import { IExpressionAutoCompleteProps } from './type';
 
 import './styles.scss';
 
@@ -17,7 +17,7 @@ function ExpressionAutoComplete({
   options,
   isTextArea,
   placeholder,
-}: IExpressionAutoComplete): React.FunctionComponentElement<React.ReactNode> {
+}: IExpressionAutoCompleteProps): React.FunctionComponentElement<React.ReactNode> {
   const [caretPosition, setCaretPosition] = React.useState(0);
   const [suggestionsPosition, setSuggestionsPosition] = React.useState({
     left: 0,
@@ -140,6 +140,14 @@ function ExpressionAutoComplete({
     return suggestions;
   }
 
+  function onFieldBlur(
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ): void {
+    if (!e.relatedTarget) {
+      setSuggestionsList([]);
+    }
+  }
+
   return (
     <div className='ExpressionAutoComplete'>
       {isTextArea ? (
@@ -154,6 +162,7 @@ function ExpressionAutoComplete({
           }`}
           onKeyDown={onInputKeyDown}
           onChange={onValueChange}
+          onBlur={onFieldBlur}
         />
       ) : (
         <input
@@ -167,6 +176,7 @@ function ExpressionAutoComplete({
           placeholder={placeholder}
           onKeyDown={onInputKeyDown}
           onChange={onValueChange}
+          onBlur={onFieldBlur}
         />
       )}
       <CodeEditor
@@ -186,6 +196,7 @@ function ExpressionAutoComplete({
           suggestionsRef={suggestionsRef}
           suggestionsList={suggestionsList}
           suggestionsPosition={suggestionsPosition}
+          setSuggestionsList={setSuggestionsList}
           onSuggestionClick={onSuggestionClick}
         />
       ) : null}
