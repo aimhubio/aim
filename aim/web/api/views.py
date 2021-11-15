@@ -11,11 +11,11 @@ statics_router = APIRouter()
 @statics_router.get('/static-files/{path:path}/')
 async def serve_static_files(path):
     from aim import web
-    static_file_root = os.path.join(os.path.dirname(web.__file__), 'ui', 'build')
-    static_file_name = os.path.join(static_file_root, path)
+    static_files_root = os.path.join(os.path.dirname(web.__file__), 'ui', 'build')
+    static_file_name = '/'.join((static_files_root, path))
 
     # check if path is leading inside ui/build directory
-    if not Path(static_file_root) in Path(static_file_name).resolve().parents:
+    if not Path(static_files_root) in Path(static_file_name).resolve().parents:
         raise HTTPException(404)
 
     compressed_file_name = '{}.gz'.format(static_file_name)
