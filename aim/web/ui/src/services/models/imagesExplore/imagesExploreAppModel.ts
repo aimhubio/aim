@@ -244,6 +244,7 @@ function getImagesData() {
         const runData = await getImagesMetricsData(stream);
         if (configData) {
           setModelData(runData, configData);
+          updateURL(configData);
         }
       }
     },
@@ -1494,11 +1495,11 @@ function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
       ...configData,
       images,
     };
-
-    updateURL(config);
+    const searchButtonDisabled =
+      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled: false,
+      searchButtonDisabled,
     });
   }
 }
@@ -1515,11 +1516,11 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
       ...configData,
       images,
     };
-
-    updateURL(config);
+    const searchButtonDisabled =
+      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled: false,
+      searchButtonDisabled,
     });
   }
 }
