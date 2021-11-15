@@ -15,6 +15,7 @@
    quick_start/getting_started.md
    quick_start/SDK_basics.md
    quick_start/QL_basics.md
+   quick_start/UI_basics.md
    quick_start/integrations.md
 
 .. toctree::
