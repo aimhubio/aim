@@ -17,10 +17,8 @@ function ImagesExploreRangePanel({
   stepRange,
   indexDensity,
   recordDensity,
-  onIndexSliceChange,
-  onRecordSliceChange,
-  onRecordDensityChange,
-  onIndexDensityChange,
+  onSliceRangeChange,
+  onDensityChange,
   searchButtonDisabled,
 }: IImagesExploreRangePanelProps): React.FunctionComponentElement<React.ReactNode> {
   const searchMetricsRef = React.useRef<any>(null);
@@ -29,6 +27,7 @@ function ImagesExploreRangePanel({
     searchMetricsRef.current = imagesExploreAppModel.getImagesData();
     searchMetricsRef.current.call();
   }
+
   return (
     <form className='ImagesExploreRangePanel' onSubmit={handleSearch}>
       <div className='ImagesExploreRangePanel__sliderContainer'>
@@ -44,7 +43,7 @@ function ImagesExploreRangePanel({
         <div className='ImagesExploreRangePanel__sliderContainer__sliderBox'>
           <Slider
             value={recordSlice}
-            onChange={onRecordSliceChange}
+            onChange={(e, value) => onSliceRangeChange('recordSlice', value)}
             min={stepRange[0]}
             max={stepRange[1]}
             valueLabelDisplay='auto'
@@ -73,9 +72,14 @@ function ImagesExploreRangePanel({
         </Text>
         <input
           type='number'
+          data-key='recordDensity'
           value={recordDensity}
-          onChange={onRecordDensityChange}
-          className='ImagesExploreRangePanel__sliderContainer__densityField'
+          onChange={onDensityChange}
+          className={`ImagesExploreRangePanel__sliderContainer__densityField ${
+            recordDensity == 0
+              ? 'ImagesExploreRangePanel__sliderContainer__densityField-invalid'
+              : ''
+          }`}
         />
       </div>
       <div className='ImagesExploreRangePanel__sliderContainer'>
@@ -91,7 +95,7 @@ function ImagesExploreRangePanel({
         <div className='ImagesExploreRangePanel__sliderContainer__sliderBox'>
           <Slider
             value={indexSlice}
-            onChange={onIndexSliceChange}
+            onChange={(e, value) => onSliceRangeChange('indexSlice', value)}
             min={indexRange[0]}
             max={indexRange[1]}
             valueLabelDisplay='auto'
@@ -120,9 +124,14 @@ function ImagesExploreRangePanel({
         </Text>
         <input
           type='number'
+          data-key='indexDensity'
           value={indexDensity}
-          onChange={onIndexDensityChange}
-          className='ImagesExploreRangePanel__sliderContainer__densityField'
+          onChange={onDensityChange}
+          className={`ImagesExploreRangePanel__sliderContainer__densityField ${
+            indexDensity == 0
+              ? 'ImagesExploreRangePanel__sliderContainer__densityField-invalid'
+              : ''
+          }`}
         />
       </div>
       <div className='ImagesExploreRangePanel__searchButtonContainer'>

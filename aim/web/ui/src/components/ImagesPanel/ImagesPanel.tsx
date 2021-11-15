@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { isEmpty, debounce } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -23,10 +23,8 @@ function ImagesPanel({
   stepRange,
   indexDensity,
   recordDensity,
-  onIndexSliceChange,
-  onRecordSliceChange,
-  onRecordDensityChange,
-  onIndexDensityChange,
+  onSliceRangeChange,
+  onDensityChange,
   getImagesBlobsData,
   isLoading,
   searchButtonDisabled,
@@ -128,10 +126,8 @@ function ImagesPanel({
                 stepRange={stepRange}
                 indexDensity={indexDensity}
                 recordDensity={recordDensity}
-                onIndexSliceChange={onIndexSliceChange}
-                onRecordSliceChange={onRecordSliceChange}
-                onRecordDensityChange={onRecordDensityChange}
-                onIndexDensityChange={onIndexDensityChange}
+                onSliceRangeChange={onSliceRangeChange}
+                onDensityChange={onDensityChange}
                 searchButtonDisabled={searchButtonDisabled}
               />
             </div>
