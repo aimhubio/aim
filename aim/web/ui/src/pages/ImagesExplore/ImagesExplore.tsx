@@ -148,12 +148,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               indexDensity={imagesExploreData?.config?.images?.indexDensity}
               recordDensity={imagesExploreData?.config?.images?.recordDensity}
               stepRange={imagesExploreData?.config?.images?.stepRange}
-              onRecordSliceChange={imagesExploreAppModel.onRecordSliceChange}
-              onIndexSliceChange={imagesExploreAppModel.onIndexSliceChange}
-              onIndexDensityChange={imagesExploreAppModel.onIndexDensityChange}
-              onRecordDensityChange={
-                imagesExploreAppModel.onRecordDensityChange
-              }
+              onSliceRangeChange={imagesExploreAppModel.onSliceRangeChange}
+              onDensityChange={imagesExploreAppModel.onDensityChange}
               getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
               imagesBlobs={imagesExploreData?.imagesBlobs}

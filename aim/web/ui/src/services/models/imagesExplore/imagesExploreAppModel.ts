@@ -1435,61 +1435,37 @@ function onImageVisibilityChange(metricsKeys: string[]) {
   );
 }
 
-function onRecordSliceChange(
-  event: ChangeEvent<{}>,
-  newValue: number[] | number,
-) {
+function onSliceRangeChange(key: string, newValue: number[] | number) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      recordSlice: newValue,
+      [key]: newValue,
     };
     const config = {
       ...configData,
       images,
     };
 
-    updateURL(config);
+    const searchButtonDisabled: boolean =
+      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled: false,
+      searchButtonDisabled,
     });
   }
 }
 
-function onIndexSliceChange(
-  event: ChangeEvent<{}>,
-  newValue: number[] | number,
-) {
+function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
+  let { value } = e.target;
+  let key: string = e.target.getAttribute('data-key') || '';
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      indexSlice: newValue,
-    };
-    const config = {
-      ...configData,
-      images,
-    };
-
-    updateURL(config);
-    model.setState({
-      config,
-      searchButtonDisabled: false,
-    });
-  }
-}
-
-function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.images) {
-    const images = {
-      ...configData.images,
-      indexDensity: formatToPositiveNumber(+event.target.value),
+      [key]: formatToPositiveNumber(+value),
     };
     const config = {
       ...configData,
@@ -1561,9 +1537,8 @@ const imagesExploreAppModel = {
   onTableDiffShow,
   onRowHeightChange,
   onImageVisibilityChange,
-  onRecordSliceChange,
-  onIndexSliceChange,
-  onIndexDensityChange,
+  onSliceRangeChange,
+  onDensityChange,
   onRecordDensityChange,
   getImagesBlobsData,
 };
