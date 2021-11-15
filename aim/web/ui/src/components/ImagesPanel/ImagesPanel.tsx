@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty, debounce } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
@@ -33,7 +33,7 @@ function ImagesPanel({
   imagesWrapperRef,
   panelResizing,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  let timeoutID: number = 0;
+  let timeoutID = useRef(0);
   let blobUriArray: string[] = [];
   const [offsetWidth, setOffsetWidth] = useState(
     imagesWrapperRef?.current?.offsetWidth,
@@ -43,11 +43,12 @@ function ImagesPanel({
     () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
     imagesWrapperRef,
   );
-  function onScroll() {
-    if (timeoutID) {
-      window.clearTimeout(timeoutID);
+
+  function onScroll(e?: any) {
+    if (timeoutID.current) {
+      window.clearTimeout(timeoutID.current);
     }
-    timeoutID = window.setTimeout(() => {
+    timeoutID.current = window.setTimeout(() => {
       if (!isEmpty(blobUriArray)) {
         getImagesBlobsData(blobUriArray).then(() => {
           blobUriArray = [];
@@ -79,7 +80,7 @@ function ImagesPanel({
 
   useEffect(() => {
     return () => {
-      timeoutID && window.clearTimeout(timeoutID);
+      timeoutID.current && window.clearTimeout(timeoutID.current);
     };
   }, []);
 
