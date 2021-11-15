@@ -87,7 +87,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {isSystemMetric(metric)
                   ? formatSystemMetricName(metric)
                   : metric ?? '--'}
-              </strong>
+              </strong>{' '}
               {context || null}
             </div>
             <div className='PopoverContent__value'>
