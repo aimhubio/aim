@@ -272,10 +272,16 @@ function processData(data: any[]): {
       trace.values.forEach((stepData: IImageData[], stepIndex: number) => {
         stepData.forEach((image: IImageData) => {
           const metricKey = encode({
+            name: trace.trace_name,
             runHash: run.hash,
             traceContext: trace.context,
             index: image.index,
             step: trace.iters[stepIndex],
+          });
+          const seqKey = encode({
+            name: trace.trace_name,
+            runHash: run.hash,
+            traceContext: trace.context,
           });
           metrics.push({
             ...image,
@@ -284,6 +290,7 @@ function processData(data: any[]): {
             context: trace.context,
             run: _.omit(run, 'traces'),
             key: metricKey,
+            seqKey: seqKey,
           });
         });
       });
@@ -724,7 +731,9 @@ function getDataAsTableRows(
           config: groupConfigData,
         },
         key: groupKey!,
-        groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
+        groupRowsKeys: metricsCollection.data.map(
+          (metric) => (metric as any).seqKey,
+        ),
         experiment: '',
         run: '',
         metric: '',
@@ -738,89 +747,94 @@ function getDataAsTableRows(
       };
     }
 
-    metricsCollection.data.forEach((metric: any) => {
-      const rowValues: any = {
-        rowMeta: {
+    Object.values(_.groupBy(metricsCollection.data, 'seqKey'))
+      .map((v) => v[0])
+      .forEach((metric: any) => {
+        const rowValues: any = {
+          rowMeta: {
+            color: metricsCollection.color ?? metric.color,
+          },
+          key: metric.key,
+          runHash: metric.run.hash,
+          // isHidden: metric.isHidden,
+          isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
+          index: rowIndex,
           color: metricsCollection.color ?? metric.color,
-        },
-        key: metric.key,
-        runHash: metric.run.hash,
-        isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
-        index: rowIndex,
-        color: metricsCollection.color ?? metric.color,
-        dasharray: metricsCollection.dasharray ?? metric.dasharray,
-        experiment: metric.run.experiment?.name ?? 'default',
-        run: moment(metric.run.props.creation_time * 1000).format(
-          'HH:mm:ss · D MMM, YY',
-        ),
-        context: Object.entries(metric.context).map((entry) => entry.join(':')),
-        parentId: groupKey,
-      };
-      rowIndex++;
+          dasharray: metricsCollection.dasharray ?? metric.dasharray,
+          experiment: metric.run.experiment?.name ?? 'default',
+          run: moment(metric.run.props.creation_time * 1000).format(
+            'HH:mm:ss · D MMM, YY',
+          ),
+          context: Object.entries(metric.context).map((entry) =>
+            entry.join(':'),
+          ),
+          parentId: groupKey,
+        };
+        rowIndex++;
 
-      [
-        'experiment',
-        'run',
-        'metric',
-        'context',
-        'step',
-        'epoch',
-        'time',
-      ].forEach((key) => {
-        if (columnsValues.hasOwnProperty(key)) {
-          if (
-            _.findIndex(columnsValues[key], (value) =>
-              _.isEqual(rowValues[key], value),
-            ) === -1
-          ) {
-            columnsValues[key].push(rowValues[key]);
-          }
-        } else {
-          columnsValues[key] = [rowValues[key]];
-        }
-      });
-
-      if (!dynamicUpdate) {
-        paramKeys.forEach((paramKey) => {
-          const value = _.get(metric.run.params, paramKey, '-');
-          rowValues[paramKey] = formatValue(value);
-          if (columnsValues.hasOwnProperty(paramKey)) {
+        [
+          'experiment',
+          'run',
+          'metric',
+          'context',
+          'step',
+          'epoch',
+          'time',
+        ].forEach((key) => {
+          if (columnsValues.hasOwnProperty(key)) {
             if (
-              _.findIndex(columnsValues[paramKey], (paramValue) =>
-                _.isEqual(value, paramValue),
+              _.findIndex(columnsValues[key], (value) =>
+                _.isEqual(rowValues[key], value),
               ) === -1
             ) {
-              columnsValues[paramKey].push(value);
+              columnsValues[key].push(rowValues[key]);
             }
           } else {
-            columnsValues[paramKey] = [value];
+            columnsValues[key] = [rowValues[key]];
           }
         });
-      }
-      if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(
-          isRawData
-            ? rowValues
-            : imagesExploreTableRowRenderer(rowValues, {
-                toggleVisibility: (e) => {
-                  e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
-                },
-              }),
-        );
-      } else {
-        rows.push(
-          isRawData
-            ? rowValues
-            : imagesExploreTableRowRenderer(rowValues, {
-                toggleVisibility: (e) => {
-                  e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
-                },
-              }),
-        );
-      }
-    });
+
+        if (!dynamicUpdate) {
+          paramKeys.forEach((paramKey) => {
+            const value = _.get(metric.run.params, paramKey, '-');
+            rowValues[paramKey] = formatValue(value);
+            if (columnsValues.hasOwnProperty(paramKey)) {
+              if (
+                _.findIndex(columnsValues[paramKey], (paramValue) =>
+                  _.isEqual(value, paramValue),
+                ) === -1
+              ) {
+                columnsValues[paramKey].push(value);
+              }
+            } else {
+              columnsValues[paramKey] = [value];
+            }
+          });
+        }
+        if (metricsCollection.config !== null) {
+          rows[groupKey!].items.push(
+            isRawData
+              ? rowValues
+              : imagesExploreTableRowRenderer(rowValues, {
+                  toggleVisibility: (e) => {
+                    e.stopPropagation();
+                    onRowVisibilityChange(rowValues.key);
+                  },
+                }),
+          );
+        } else {
+          rows.push(
+            isRawData
+              ? rowValues
+              : imagesExploreTableRowRenderer(rowValues, {
+                  toggleVisibility: (e) => {
+                    e.stopPropagation();
+                    onRowVisibilityChange(rowValues.key);
+                  },
+                }),
+          );
+        }
+      });
 
     for (let columnKey in columnsValues) {
       if (columnsValues[columnKey].length === 1) {

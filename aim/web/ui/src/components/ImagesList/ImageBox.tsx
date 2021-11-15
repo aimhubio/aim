@@ -14,9 +14,14 @@ const ImageBox = ({
   const { format, blob_uri } = data;
 
   useEffect(() => {
-    addUriToList(blob_uri);
+    let timeoutID = setTimeout(() => addUriToList(blob_uri), 900);
+
+    return () => {
+      clearTimeout(timeoutID);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div style={style}>
