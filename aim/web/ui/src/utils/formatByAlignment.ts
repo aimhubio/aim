@@ -44,7 +44,7 @@ function getKeyByAlignment(alignmentConfig?: IAlignmentConfig): string {
     case AlignmentOptionsEnum.RELATIVE_TIME:
       return AlignmentKeysEnum.RELATIVE_TIME.replace('_', ' ');
     case AlignmentOptionsEnum.CUSTOM_METRIC:
-      return alignmentConfig.metric;
+      return alignmentConfig?.metric || '';
     default:
       return '';
   }

@@ -171,6 +171,7 @@ import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -2028,14 +2029,13 @@ function createAppModel({
                   },
                 },
               });
-              setTimeout(() => {
-                const tableRef: any = model.getState()?.refs?.tableRef;
-                tableRef.current?.updateData({
-                  newData: tableData.rows,
-                  newColumns: tableColumns,
-                  hiddenColumns: configData.table.hiddenColumns!,
-                });
-              }, 0);
+
+              const tableRef: any = model.getState()?.refs?.tableRef;
+              tableRef.current?.updateData({
+                newData: tableData.rows,
+                newColumns: tableColumns,
+                hiddenColumns: configData.table.hiddenColumns!,
+              });
             } catch (ex) {
               if (ex.name === 'AbortError') {
                 // Abort Error
@@ -2343,7 +2343,9 @@ function createAppModel({
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
-                groupByMetricName[`${key}_${metricContext}`] = '-';
+                groupByMetricName[
+                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                ] = '-';
               },
             );
             acc = { ...acc, ...groupByMetricName };
@@ -2381,7 +2383,11 @@ function createAppModel({
             const metricsRowValues = { ...initialMetricsRowData };
             metric.run.traces.forEach((trace: any) => {
               metricsRowValues[
-                `${trace.metric_name}_${contextToString(trace.context)}`
+                `${
+                  isSystemMetric(trace.metric_name)
+                    ? trace.metric_name
+                    : `${trace.metric_name}_${contextToString(trace.context)}`
+                }`
               ] = formatValue(trace.last_value.last);
             });
             const rowValues: any = {
@@ -2579,14 +2585,13 @@ function createAppModel({
             },
           },
         });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: modelState?.config.table.hiddenColumns!,
-          });
-        }, 0);
+
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+          hiddenColumns: modelState?.config.table.hiddenColumns!,
+        });
       }
 
       function destroy(): void {
@@ -2896,7 +2901,9 @@ function createAppModel({
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
-                groupByMetricName[`${key}_${metricContext}`] = '-';
+                groupByMetricName[
+                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                ] = '-';
               },
             );
             acc = { ...acc, ...groupByMetricName };
@@ -2956,7 +2963,11 @@ function createAppModel({
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.forEach((trace: any) => {
                 metricsRowValues[
-                  `${trace.metric_name}_${contextToString(trace.context)}`
+                  `${
+                    isSystemMetric(trace.metric_name)
+                      ? trace.metric_name
+                      : `${trace.metric_name}_${contextToString(trace.context)}`
+                  }`
                 ] = formatValue(trace.last_value.last);
               });
               const rowValues: any = {
