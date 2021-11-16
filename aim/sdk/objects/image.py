@@ -4,6 +4,7 @@ from io import BytesIO
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
+
 @CustomObject.alias('aim.image')
 class Image(CustomObject):
     AIM_NAME = 'aim.image'
