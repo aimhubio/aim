@@ -18,7 +18,7 @@ class InMemoryTreeView(TreeView):
     def view(
         self,
         path: Union[AimObjectKey, AimObjectPath],
-        resolve: bool = True
+        resolve: bool = False
     ):
         if isinstance(path, (int, str)):
             path = (path,)

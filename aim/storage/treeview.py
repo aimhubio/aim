@@ -31,7 +31,7 @@ class TreeView:
     def view(
         self,
         path: Union[AimObjectKey, AimObjectPath],
-        resolve: bool = True
+        resolve: bool = False
     ):
         ...
 

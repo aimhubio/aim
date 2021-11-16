@@ -5,16 +5,18 @@
    <div style="display:none">
 
 .. toctree::
+   overview.md
+
+.. toctree::
    :maxdepth: 1
    :name: start
    :caption: Quick Start
 
-   overview.md
-   quick_start/3_steps.md
+   quick_start/getting_started.md
    quick_start/SDK_basics.md
-   quick_start/first_run.md
+   quick_start/QL_basics.md
+   quick_start/UI_basics.md
    quick_start/integrations.md
-
 
 .. toctree::
    :maxdepth: 2
