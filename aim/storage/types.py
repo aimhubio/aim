@@ -1,4 +1,5 @@
-from typing import Callable, Dict, List, Tuple, Union
+from typing import Callable, Dict, List, Tuple, Union, Generic, TypeVar
+from copy import deepcopy
 
 
 NoneType = type(None)
@@ -66,45 +67,46 @@ class CustomObjectBase:
     pass
 
 
-BLOBResolver = Callable[[], bytes]
+BLOBLoader = Callable[[], AimObjectPrimitive]
+T = TypeVar('T')
 
 
-class BLOB:
+class BLOB(Generic[T]):
     def __init__(
         self,
-        data: bytes = None,
-        resolver: 'BLOBResolver' = None
+        data: T = None,
+        loader: 'BLOBLoader' = None
     ):
-        self.data = data
-        self.resolver = resolver
+        self.data: T = data
+        self.loader_f = loader
 
     def __bytes__(self):
-        return self.resolve()
+        return bytes(self.load())
 
-    def resolve(self):
+    def load(self) -> T:
         if self.data is None:
-            assert self.resolver is not None
-            self.data = self.resolver()
-            self.resolver = None
+            assert self.loader_f is not None
+            self.data = self.loader_f()
+            self.loader_f = None
         return self.data
 
     def __deepcopy__(self, memo):
-        data = bytes(self)
-        instance = self.__class__(data=data)
+        data = self.load()
+        instance = self.__class__(data=deepcopy(data, memo=memo))
         memo[id(self)] = instance
         return instance
 
     def transform(
         self,
-        transform: Callable[[bytes], bytes]
+        transform_f: Callable[[AimObjectPrimitive], T]
     ) -> 'BLOB':
         if self.data is not None:
-            return self.__class__(transform(self.data))
+            return self.__class__(transform_f(self.data))
 
-        def resolver():
-            return transform(bytes(self))
+        def loader():
+            return transform_f(self.load())
 
-        return self.__class__(resolver=resolver)
+        return self.__class__(loader=loader)
 
 
 __all__ = [
@@ -118,5 +120,5 @@ __all__ = [
     'CustomObjectBase',
     'SafeNone',
     'BLOB',
-    'BLOBResolver',
+    'BLOBLoader',
 ]

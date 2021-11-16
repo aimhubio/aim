@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from aim.storage.types import BLOB
 
 ContainerKey = bytes
-ContainerValue = Union[bytes, 'BLOB']
+ContainerValue = Union[bytes, 'BLOB[bytes]']
 
 
 class Container:

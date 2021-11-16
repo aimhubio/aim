@@ -7,7 +7,7 @@ import aimrocks
 
 from typing import Iterator, Optional, Tuple
 
-from aim.storage.types import BLOB, BLOBResolver
+from aim.storage.types import BLOB, BLOBLoader
 from aim.storage.container import Container, ContainerKey, ContainerValue
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
@@ -186,21 +186,21 @@ class RocksContainer(Container):
             return self._get_blob(key)
         return value
 
-    def _get_blob_resolver(
+    def _get_blob_loader(
         self,
         key: ContainerKey
-    ) -> BLOBResolver:
-        def resolver() -> bytes:
+    ) -> BLOBLoader:
+        def loader() -> bytes:
             data = self[BLOB_DOMAIN + key]
             assert isinstance(data, bytes)
             return data
-        return resolver
+        return loader
 
     def _get_blob(
         self,
         key: ContainerKey
-    ) -> BLOB:
-        return BLOB(resolver=self._get_blob_resolver(key))
+    ) -> BLOB[bytes]:
+        return BLOB[bytes](loader=self._get_blob_loader(key))
 
     def _put(
         self,
