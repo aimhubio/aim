@@ -75,19 +75,19 @@ class BLOB(Generic[T]):
     def __init__(
         self,
         data: T = None,
-        loader: 'BLOBLoader' = None
+        loader_fn: 'BLOBLoader' = None
     ):
         self.data: T = data
-        self.loader_f = loader
+        self.loader_fn = loader_fn
 
     def __bytes__(self):
         return bytes(self.load())
 
     def load(self) -> T:
         if self.data is None:
-            assert self.loader_f is not None
-            self.data = self.loader_f()
-            self.loader_f = None
+            assert self.loader_fn is not None
+            self.data = self.loader_fn()
+            self.loader_fn = None
         return self.data
 
     def __deepcopy__(self, memo):
@@ -98,15 +98,15 @@ class BLOB(Generic[T]):
 
     def transform(
         self,
-        transform_f: Callable[[AimObjectPrimitive], T]
+        transform_fn: Callable[[AimObjectPrimitive], T]
     ) -> 'BLOB':
         if self.data is not None:
-            return self.__class__(transform_f(self.data))
+            return self.__class__(transform_fn(self.data))
 
         def loader():
-            return transform_f(self.load())
+            return transform_fn(self.load())
 
-        return self.__class__(loader=loader)
+        return self.__class__(loader_fn=loader)
 
 
 __all__ = [

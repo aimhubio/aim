@@ -200,7 +200,7 @@ class RocksContainer(Container):
         self,
         key: ContainerKey
     ) -> BLOB[bytes]:
-        return BLOB[bytes](loader=self._get_blob_loader(key))
+        return BLOB[bytes](loader_fn=self._get_blob_loader(key))
 
     def _put(
         self,
