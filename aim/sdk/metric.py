@@ -17,7 +17,7 @@ class Metric(Sequence):
 
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
-        return 'float', 'int'
+        return 'float', 'float64', 'int'
 
     def dataframe(
         self,
