@@ -39,24 +39,9 @@ let properties = [
   'MozTabSize',
 ];
 
-let isBrowser = typeof window !== 'undefined';
-let isFirefox = isBrowser && (window as any).mozInnerScreenX != null;
+let isFirefox = (window as any).mozInnerScreenX != null;
 
 function getCaretCoordinates(element: any, position: any) {
-  if (!isBrowser) {
-    throw new Error(
-      'textarea-caret-position#getCaretCoordinates should only be called in a browser',
-    );
-  }
-
-  //   let debug = (options && options.debug) || false;
-  //   if (debug) {
-  //     let el: any = document.querySelector(
-  //       '#input-textarea-caret-position-mirror-div',
-  //     );
-  //     if (el) el.parentNode.removeChild(el);
-  //   }
-
   // The mirror div will replicate the textarea's style
   let div: any = document.createElement('div');
   div.id = 'input-textarea-caret-position-mirror-div';
