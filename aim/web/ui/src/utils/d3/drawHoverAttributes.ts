@@ -132,13 +132,10 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
         xAxisValueText = Math.floor(xAxisTickValue);
         break;
       case AlignmentOptionsEnum.RELATIVE_TIME:
-        xAxisValueText = shortEnglishHumanizer(
-          Math.round(xAxisTickValue * 1000),
-          {
-            ...humanizerConfigRef.current,
-            maxDecimalPoints: 2,
-          },
-        );
+        xAxisValueText = shortEnglishHumanizer(Math.round(xAxisTickValue), {
+          ...humanizerConfigRef.current,
+          maxDecimalPoints: 2,
+        });
         break;
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
         xAxisValueText = moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');

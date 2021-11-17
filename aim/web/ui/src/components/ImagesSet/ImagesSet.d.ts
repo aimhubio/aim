@@ -5,5 +5,7 @@ export interface IImageSetProps {
   onScroll: () => void;
   addUriToList: (blobUrl: string) => void;
   index?: number;
-  imagesSetWrapper?: MutableRefObject<any>;
+  imagesSetKey: number;
+  imageSetWrapperHeight?: number;
+  imageSetWrapperWidth?: number;
 }

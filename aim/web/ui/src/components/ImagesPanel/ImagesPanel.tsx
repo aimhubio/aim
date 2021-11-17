@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty } from 'lodash-es';
-
-import { Slider, TextField } from '@material-ui/core';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
+import { Text } from 'components/kit';
+
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
 
@@ -21,22 +23,30 @@ function ImagesPanel({
   stepRange,
   indexDensity,
   recordDensity,
-  onIndexSliceChange,
-  onRecordSliceChange,
-  onRecordDensityChange,
-  onIndexDensityChange,
+  onSliceRangeChange,
+  onDensityChange,
   getImagesBlobsData,
   isLoading,
+  applyButtonDisabled,
+  imagesWrapperRef,
+  panelResizing,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  let timeoutID: number = 0;
+  let timeoutID = useRef(0);
   let blobUriArray: string[] = [];
-  const imagesSetWrapper = useRef<any>({});
+  const [offsetWidth, setOffsetWidth] = useState(
+    imagesWrapperRef?.current?.offsetWidth,
+  );
 
-  function onScroll() {
-    if (timeoutID) {
-      window.clearTimeout(timeoutID);
+  useResizeObserver(
+    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
+    imagesWrapperRef,
+  );
+
+  function onScroll(e?: any) {
+    if (timeoutID.current) {
+      window.clearTimeout(timeoutID.current);
     }
-    timeoutID = window.setTimeout(() => {
+    timeoutID.current = window.setTimeout(() => {
       if (!isEmpty(blobUriArray)) {
         getImagesBlobsData(blobUriArray).then(() => {
           blobUriArray = [];
@@ -45,9 +55,30 @@ function ImagesPanel({
     }, 1000);
   }
 
+  const imagesSetKey = useMemo(
+    () => Date.now(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      imagesData,
+      imagesBlobs,
+      imagesWrapperRef?.current?.offsetHeight,
+      imagesWrapperRef?.current?.offsetWidth,
+    ],
+  );
+
+  useEffect(() => {
+    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesWrapperRef?.current?.offsetWidth]);
+
+  useEffect(() => {
+    onScroll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blobUriArray]);
+
   useEffect(() => {
     return () => {
-      timeoutID && window.clearTimeout(timeoutID);
+      timeoutID.current && window.clearTimeout(timeoutID.current);
     };
   }, []);
 
@@ -64,76 +95,51 @@ function ImagesPanel({
       height='100%'
       loaderComponent={<ChartLoader controlsCount={0} />}
     >
-      {!isEmpty(imagesData) ? (
-        <div className='ImagesPanel' style={{ height: '100%' }}>
-          <div className='ImagesPanel__slidersContainer'>
-            <div className='ImagesPanel__slidersContainer__sliderContainer'>
-              <p className='ImagesPanel__slidersContainer__sliderContainer__title'>
-                Step
-              </p>
-              <div className='ImagesPanel__slidersContainer__sliderContainer__sliderBox'>
-                <Slider
-                  value={recordSlice}
-                  onChange={onRecordSliceChange}
-                  min={stepRange[0]}
-                  max={stepRange[1]}
-                  valueLabelDisplay='auto'
-                  getAriaValueText={(value) => `${value}`}
-                />
-              </div>
-              <TextField
-                type='number'
-                value={recordDensity}
-                size='small'
-                variant='outlined'
-                onChange={onRecordDensityChange}
-                className='TextField__TextArea__OutLined__Small ImagesPanel__slidersContainer__sliderContainer__intervalField'
-              />
-            </div>
-            <div className='ImagesPanel__slidersContainer__sliderContainer'>
-              <p className='ImagesPanel__slidersContainer__sliderContainer__title'>
-                Index
-              </p>
-              <div className='ImagesPanel__slidersContainer__sliderContainer__sliderBox'>
-                <Slider
-                  value={indexSlice}
-                  onChange={onIndexSliceChange}
-                  min={indexRange[0]}
-                  max={indexRange[1]}
-                  valueLabelDisplay='auto'
-                  getAriaValueText={(value) => `${value}`}
-                />
-              </div>
-              <TextField
-                type='number'
-                size='small'
-                value={indexDensity}
-                onChange={onIndexDensityChange}
-                variant='outlined'
-                className='TextField__TextArea__OutLined__Small ImagesPanel__slidersContainer__sliderContainer__intervalField'
-              />
-            </div>
-          </div>
-          <div
-            className='ImagesPanel__imagesContainer'
-            ref={imagesSetWrapper}
-            style={{ height: '100%' }}
-          >
-            <ImagesSet
-              data={imagesData}
-              title={'root'}
-              imagesBlobs={imagesBlobs}
-              onScroll={onScroll}
-              addUriToList={addUriToList}
-              imagesSetWrapper={imagesSetWrapper}
-            />
-          </div>
+      {panelResizing ? (
+        <div className='ImagesPanel__resizing'>
+          <Text size={14} color='info'>
+            Release to resize
+          </Text>
         </div>
       ) : (
-        <EmptyComponent
-          size='big'
-          content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-        />
+        <>
+          <div className='ImagesPanel'>
+            {!isEmpty(imagesData) ? (
+              <div className='ImagesPanel__imagesContainer'>
+                <ImagesSet
+                  data={imagesData}
+                  title={'root'}
+                  imagesBlobs={imagesBlobs}
+                  onScroll={onScroll}
+                  addUriToList={addUriToList}
+                  imagesSetKey={imagesSetKey}
+                  imageSetWrapperHeight={
+                    imagesWrapperRef?.current?.offsetHeight - 36
+                  }
+                  imageSetWrapperWidth={offsetWidth}
+                />
+              </div>
+            ) : (
+              <EmptyComponent
+                size='big'
+                content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+              />
+            )}
+            {stepRange && indexRange && (
+              <ImagesExploreRangePanel
+                recordSlice={recordSlice}
+                indexSlice={indexSlice}
+                indexRange={indexRange}
+                stepRange={stepRange}
+                indexDensity={indexDensity}
+                recordDensity={recordDensity}
+                onSliceRangeChange={onSliceRangeChange}
+                onDensityChange={onDensityChange}
+                applyButtonDisabled={applyButtonDisabled}
+              />
+            )}
+          </div>
+        </>
       )}
     </BusyLoaderWrapper>
   );

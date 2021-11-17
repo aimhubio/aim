@@ -1,7 +1,14 @@
+@use "sass:math";
+
 @function tint($color, $percentage) {
   @return mix(transparent, $color, $percentage);
 }
 
 @function shade($color, $percentage) {
   @return mix(black, $color, $percentage);
+}
+
+
+@function toRem($px) {
+  @return #{math.div($px, 16px)}rem;
 }

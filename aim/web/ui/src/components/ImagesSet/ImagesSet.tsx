@@ -1,8 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import _ from 'lodash';
-import { VariableSizeList as List } from 'react-window';
+import { VariableSizeList as List, areEqual } from 'react-window';
+import classNames from 'classnames';
 
 import ImagesList from 'components/ImagesList';
+
+import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
 
 import contextToString from 'utils/contextToString';
 
@@ -17,32 +20,26 @@ const ImagesSet = ({
   onScroll,
   addUriToList,
   index = 0,
-  imagesSetWrapper,
+  imagesSetKey,
+  imageSetWrapperHeight,
+  imageSetWrapperWidth,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
-  const imagesBoxRef = useRef<any>({});
-
   const getItemSize = (index: number) => {
     const imagesHeights: any = getNestedDataHeight(
       _.isArray(Object.values(data)[index])
         ? [Object.values(data)[index]]
         : Object.values(data)[index],
     );
-    return imagesHeights + (_.isArray(Object.values(data)[index]) ? 21 : 46);
+    return imagesHeights + (_.isArray(Object.values(data)[index]) ? 20 : 40);
   };
 
   function getNestedDataHeight(data: any): number {
     let objectData = !_.isArray(data[0]) ? Object.values(data) : data;
     const calculatedHeight = objectData.reduce((acc: number, item: any) => {
       if (!_.isArray(item)) {
-        acc += 46 + getNestedDataHeight(item);
+        acc += 23 + getNestedDataHeight(item);
       } else {
-        let height = 0;
-        item.forEach((image) => {
-          if (height < image.height) {
-            height = image.height;
-          }
-        });
-        acc += 46 + height;
+        acc += 27 + imageFixedHeight;
       }
       return acc;
     }, 0);
@@ -51,19 +48,23 @@ const ImagesSet = ({
   }
 
   return (
-    <div className='ImagesSet'>
+    <div className={classNames('ImagesSet', { withLeftBorder: index > 1 })}>
       {Array.isArray(data) ? (
         <div className='ImagesSet__container'>
-          <span className='ImagesSet__container__title'>{title}</span>
-          <div className='ImagesSet__container__imagesBox' ref={imagesBoxRef}>
-            <ImagesList
-              data={data}
-              imagesBlobs={imagesBlobs}
-              onScroll={onScroll}
-              imagesBoxRef={imagesBoxRef}
-              addUriToList={addUriToList}
-              index={index + 1}
-            />
+          {index !== 0 && (
+            <span className='ImagesSet__container__title'>{title}</span>
+          )}
+          <div className='ImagesSet__container__imagesBox'>
+            {imageSetWrapperWidth && (
+              <ImagesList
+                data={data}
+                imagesBlobs={imagesBlobs}
+                onScroll={onScroll}
+                addUriToList={addUriToList}
+                imageSetWrapperWidth={imageSetWrapperWidth}
+                index={index + 1}
+              />
+            )}
           </div>
         </div>
       ) : (
@@ -71,29 +72,27 @@ const ImagesSet = ({
           className='ImagesSet__container'
           key={contextToString(data)?.length}
         >
-          <p className='ImagesSet__container__title'>{title}</p>
+          {index !== 0 && (
+            <p className='ImagesSet__container__title'>{title}</p>
+          )}
           {index === 0 ? (
             <List
-              height={imagesSetWrapper?.current?.offsetHeight || 0}
+              height={imageSetWrapperHeight || 0}
               itemCount={Object.keys(data).length}
               itemSize={getItemSize}
               width={'100%'}
-            >
-              {({ style, index: listCounter }) => {
-                const keyName = Object.keys(data)[listCounter];
-                return (
-                  <div style={style}>
-                    <ImagesSet
-                      data={data[keyName]}
-                      title={keyName}
-                      imagesBlobs={imagesBlobs}
-                      onScroll={onScroll}
-                      addUriToList={addUriToList}
-                      index={index + 1}
-                    />
-                  </div>
-                );
+              itemData={{
+                data,
+                imagesBlobs,
+                onScroll,
+                addUriToList,
+                imageSetWrapperHeight,
+                imageSetWrapperWidth,
+                index,
+                imagesSetKey,
               }}
+            >
+              {ImagesGroupedList}
             </List>
           ) : (
             Object.keys(data).map((keyName, key) => (
@@ -104,7 +103,10 @@ const ImagesSet = ({
                 imagesBlobs={imagesBlobs}
                 onScroll={onScroll}
                 addUriToList={addUriToList}
+                imageSetWrapperHeight={imageSetWrapperHeight}
+                imageSetWrapperWidth={imageSetWrapperWidth}
                 index={index + 1}
+                imagesSetKey={imagesSetKey}
               />
             ))
           )}
@@ -114,4 +116,36 @@ const ImagesSet = ({
   );
 };
 
-export default React.memo(ImagesSet);
+function propsComparator(
+  prevProps: IImageSetProps,
+  nextProps: IImageSetProps,
+): boolean {
+  if (prevProps.imagesSetKey !== nextProps.imagesSetKey) {
+    return false;
+  }
+
+  return true;
+}
+
+export default React.memo(ImagesSet, propsComparator);
+
+const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
+  const { index, style, data } = props;
+  const keyName = Object.keys(data.data)[index];
+
+  return (
+    <div style={style}>
+      <ImagesSet
+        data={data.data[keyName]}
+        title={keyName}
+        imagesBlobs={data.imagesBlobs}
+        onScroll={data.onScroll}
+        addUriToList={data.addUriToList}
+        imageSetWrapperHeight={data.imageSetWrapperHeight}
+        imageSetWrapperWidth={data.imageSetWrapperWidth}
+        index={data.index + 1}
+        imagesSetKey={data.imagesSetKey}
+      />
+    </div>
+  );
+}, areEqual);

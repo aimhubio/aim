@@ -67,6 +67,19 @@ const routes = {
     showInSidebar: false,
     displayName: 'ParamsId',
   },
+  IMAGE_EXPLORE: {
+    path: PathEnum.Images_Explore,
+    component: ImagesExplore,
+    showInSidebar: true,
+    displayName: 'Images',
+    icon: 'images',
+  },
+  IMAGE_EXPLORE_ID: {
+    path: PathEnum.Images_Explore_Id,
+    component: ImagesExplore,
+    showInSidebar: false,
+    displayName: 'ImagesId',
+  },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
     component: Bookmarks,
@@ -86,19 +99,6 @@ const routes = {
     component: RunDetail,
     showInSidebar: false,
     displayName: 'Run Detail',
-  },
-  IMAGE_EXPLORE: {
-    path: PathEnum.Images_Explore,
-    component: ImagesExplore,
-    showInSidebar: true,
-    displayName: 'Images',
-    icon: 'images',
-  },
-  IMAGE_EXPLORE_ID: {
-    path: PathEnum.Images_Explore_Id,
-    component: ImagesExplore,
-    showInSidebar: false,
-    displayName: 'ImagesId',
   },
 };
 

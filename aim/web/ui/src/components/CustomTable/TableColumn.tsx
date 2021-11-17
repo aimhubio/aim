@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
+import { isNil } from 'lodash-es';
 
 import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 
@@ -491,7 +492,7 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           component={<GroupConfigPopover configData={configData} />}
         />
       )}
-      {config.chartIndex !== null && config.chartIndex !== 0 && (
+      {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
         <Tooltip title='Group chart index'>
           <span className='Table__group__config__chart'>
             {config.chartIndex}

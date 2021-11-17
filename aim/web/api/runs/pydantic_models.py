@@ -13,14 +13,11 @@ class EncodedNumpyArray(BaseModel):
 
 class TraceBase(BaseModel):
     context: dict
-    metric_name: str
+    name: str
 
 
 class TraceOverview(TraceBase):
     last_value: float = 0.1
-
-
-RunTracesApiOut = List[TraceOverview]
 
 
 class TraceBaseView(TraceBase):
@@ -73,7 +70,7 @@ class MetricSearchRunView(BaseModel):
 
 class RunInfoOut(BaseModel):
     params: dict
-    traces: List[TraceOverview]
+    traces: Dict[str, List[TraceOverview]]
     props: PropsView
 
 
@@ -92,7 +89,7 @@ RunSearchApiOut = Dict[str, RunSearchRunView]
 # request models
 class AlignedTraceIn(BaseModel):
     context: dict
-    metric_name: str
+    name: str
     slice: Tuple[int, int, int]
 
 
@@ -163,9 +160,7 @@ class ImageInfo(BaseModel):
     index: int
 
 
-class ImageSequenceFullView(BaseModel):
-    context: dict
-    trace_name: str
+class ImageSequenceFullView(TraceBase):
     values: List[List[ImageInfo]]
     iters: List[int]
     epochs: List[int]

@@ -38,7 +38,7 @@
         width: 2.75rem;
         height: 2.75rem;
         border: 0.125rem solid $primary-color;
-        border-radius: 50%;
+        border-radius: $border-radius-circle;
         display: flex;
         align-items: center;
         justify-content: center;

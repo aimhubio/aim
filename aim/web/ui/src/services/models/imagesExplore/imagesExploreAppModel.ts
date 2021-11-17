@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import _, { isEmpty } from 'lodash-es';
 import moment from 'moment';
+import { saveAs } from 'file-saver';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
@@ -52,11 +53,14 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
+import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 
 import createModel from '../model';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
+  searchButtonDisabled: false,
+  applyButtonDisabled: true,
 });
 
 function getConfig(): IImagesExploreAppConfig {
@@ -71,7 +75,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
     },
     select: {
-      metrics: [],
+      images: [],
       query: '',
       advancedMode: false,
       advancedQuery: '',
@@ -117,6 +121,8 @@ function setDefaultAppConfigData() {
     getStateFromUrl('grouping') || getConfig().grouping;
   const select: IImagesExploreAppConfig['select'] =
     getStateFromUrl('select') || getConfig().select;
+  const images: IImagesExploreAppConfig['images'] =
+    getStateFromUrl('images') || getConfig().images;
   const tableConfigHash = getItem('imagesExploreTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
@@ -125,6 +131,7 @@ function setDefaultAppConfigData() {
     grouping,
     select,
     table,
+    images,
   });
 
   model.setState({
@@ -193,7 +200,7 @@ function exceptionHandler(detail: any) {
   // reset model
   resetModelOnError(detail);
 }
-// @TODO Have to implement getting data from api after backend will provide it.
+
 function getImagesData() {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -208,15 +215,19 @@ function getImagesData() {
     | undefined;
   const recordDensity = configData?.images?.recordDensity;
   const indexDensity = configData?.images?.indexDensity;
-  const calcRanges = configData?.images.calcRanges;
-  // const metric = configData?.chart.alignmentConfig.metric;
-  // let query = getQueryStringFromSelect(configData?.select);
-  let imageDataBody: any = { q: '', calc_ranges: calcRanges };
+  const calcRanges = !!configData?.images.calcRanges;
+  let query = getQueryStringFromSelect(configData?.select as any);
+  let imageDataBody: any = {
+    q: query !== '()' ? query : '',
+    calc_ranges: calcRanges,
+  };
   if (recordSlice) {
     imageDataBody = {
       ...imageDataBody,
-      record_range: recordSlice ? `${recordSlice[0]}:${recordSlice[1]}` : '',
-      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1]}` : '',
+      record_range: recordSlice
+        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+        : '',
+      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1] + 1}` : '',
       record_density: recordDensity ?? '',
       index_density: indexDensity ?? '',
     };
@@ -225,14 +236,19 @@ function getImagesData() {
 
   return {
     call: async () => {
-      model.setState({
-        requestIsPending: true,
-        queryIsEmpty: false,
-      });
-      const stream = await imagesRequestRef.call(exceptionHandler);
-      const runData = await getImagesMetricsData(stream);
-      if (configData) {
-        setModelData(runData, configData);
+      if (query !== '()') {
+        model.setState({
+          requestIsPending: true,
+          queryIsEmpty: false,
+          applyButtonDisabled: true,
+        });
+
+        const stream = await imagesRequestRef.call(exceptionHandler);
+        const runData = await getImagesMetricsData(stream);
+        if (configData) {
+          setModelData(runData, configData);
+          updateURL(configData);
+        }
       }
     },
     abort: imagesRequestRef.abort,
@@ -242,27 +258,43 @@ function getImagesData() {
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
+  highLevelParams: string[];
+  contexts: string[];
 } {
   const configData = model.getState()?.config;
   let metrics: any[] = [];
   let params: string[] = [];
-  data.forEach((run: IImageRunData) => {
+  let highLevelParams: string[] = [];
+  let contexts: string[] = [];
+  data?.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
-    run.traces.forEach((imageData: any) => {
-      imageData.values.forEach((stepData: IImageData[], stepIndex: number) => {
+    highLevelParams = highLevelParams.concat(
+      getObjectPaths(run.params, run.params, '', false, true),
+    );
+    run.traces.forEach((trace: any) => {
+      contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
+      trace.values.forEach((stepData: IImageData[], stepIndex: number) => {
         stepData.forEach((image: IImageData) => {
           const metricKey = encode({
+            name: trace.trace_name,
             runHash: run.hash,
-            traceContext: imageData.context,
+            traceContext: trace.context,
             index: image.index,
-            step: imageData.iters[stepIndex],
+            step: trace.iters[stepIndex],
+          });
+          const seqKey = encode({
+            name: trace.trace_name,
+            runHash: run.hash,
+            traceContext: trace.context,
           });
           metrics.push({
             ...image,
-            step: imageData.iters[stepIndex],
-            context: imageData.context,
+            images_name: trace.name,
+            step: trace.iters[stepIndex],
+            context: trace.context,
             run: _.omit(run, 'traces'),
             key: metricKey,
+            seqKey: seqKey,
           });
         });
       });
@@ -281,18 +313,26 @@ function processData(data: any[]): {
     ),
   );
   const uniqParams = _.uniq(params);
-  // setTooltipData(processedData, uniqParams);
+  const uniqHighLevelParams = _.uniq(highLevelParams);
+  const uniqContexts = _.uniq(contexts);
 
   return {
     data: processedData,
     params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
+    contexts: uniqContexts,
   };
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params } = processData(rawData);
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const { data, params, contexts, highLevelParams } = processData(rawData);
+  const groupingSelectOptions = [
+    ...getGroupingSelectOptions({
+      params: params.concat(highLevelParams).sort(),
+      contexts,
+    }),
+  ];
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -304,14 +344,20 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   config.images = {
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
-      : (rawData[0].ranges.record_range as number[]),
+      : !isEmpty(rawData)
+      ? (rawData[0].ranges.record_range as number[])
+      : [],
     indexRange: !config.images.calcRanges
       ? config.images.indexRange
-      : (rawData[0].ranges.index_range as number[]),
-    recordSlice: config.images.recordSlice || rawData[0].ranges.record_range,
-    indexSlice: config.images.indexSlice || rawData[0].ranges.index_range,
-    recordDensity: config.images.recordDensity || 50,
-    indexDensity: config.images.indexDensity || 5,
+      : !isEmpty(rawData)
+      ? (rawData[0].ranges.index_range as number[])
+      : [],
+    recordSlice:
+      config.images.recordSlice || rawData?.[0]?.ranges.record_range || [],
+    indexSlice:
+      config.images.indexSlice || rawData?.[0]?.ranges.index_range || [],
+    recordDensity: config.images.recordDensity || '50',
+    indexDensity: config.images.indexDensity || '5',
     calcRanges: false,
   };
   model.setState({
@@ -320,8 +366,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config: config,
     params,
     data,
-    imagesData: getDataAsImageSet(data),
-    // chartTitleData: getChartTitleData(data),
+    imagesData: getDataAsImageSet(data, groupingSelectOptions),
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
       params,
@@ -329,7 +374,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
       sortFields,
-      // onSortChange,
+      onSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -340,8 +385,15 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params } = processData(model.getState()?.rawData as any[]);
-  const groupingSelectOptions = [...getGroupingSelectOptions(params)];
+  const { data, params, contexts, highLevelParams } = processData(
+    model.getState()?.rawData as any[],
+  );
+  const groupingSelectOptions = [
+    ...getGroupingSelectOptions({
+      params: params.concat(highLevelParams).sort(),
+      contexts,
+    }),
+  ];
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -355,7 +407,7 @@ function updateModelData(
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
     configData.table.sortFields,
-    // onSortChange,
+    onSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -371,7 +423,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: getDataAsImageSet(data),
+    imagesData: getDataAsImageSet(data, groupingSelectOptions),
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
@@ -401,32 +453,53 @@ function getFilteredGroupingOptions(
   }
 }
 
-function getGroupingSelectOptions(
-  params: string[] = [],
-): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params?.map((param) => ({
+function getGroupingSelectOptions({
+  params,
+  contexts = [],
+}: {
+  params: string[];
+  contexts?: string[];
+}): IGroupingSelectOption[] {
+  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+    group: 'run',
+    label: `run.${param}`,
     value: `run.params.${param}`,
-    group: 'params',
-    label: param,
+  }));
+
+  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
+    group: 'images',
+    label: `images.context.${context}`,
+    value: `context.${context}`,
   }));
 
   return [
-    ...paramsOptions,
     {
-      group: 'Other',
+      group: 'run',
+      label: 'run.experiment',
+      value: 'run.props.experiment.name',
+    },
+    {
+      group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
+    ...paramsOptions,
     {
-      group: 'Other',
+      group: 'record',
       label: 'step',
       value: 'step',
     },
     {
-      group: 'Other',
+      group: 'record',
       label: 'index',
       value: 'index',
     },
+    {
+      group: 'images',
+      label: 'images.name',
+      value: 'images_name',
+    },
+    ...contextOptions,
   ];
 }
 
@@ -435,7 +508,6 @@ function groupData(data: any[]): any {
     model.getState()!.config;
   const grouping = configData!.grouping;
   const groupingFields = getFilteredGroupingOptions(grouping);
-
   if (groupingFields.length === 0) {
     return [
       {
@@ -487,8 +559,6 @@ function onGroupingSelectChange({
     model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
-    // resetChartZoom(configData);
-    // setAggregationEnabled(configData);
     updateModelData(configData, true);
   }
   analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
@@ -550,11 +620,14 @@ function onGroupingApplyChange(): void {
  *    2. Stores updated URL in localStorage if App is not in the bookmark state
  * @param {IImagesExploreAppConfig} configData - the current state of the app config
  */
-function updateURL(configData = model.getState()!.config!) {
-  const { grouping, select } = configData;
+function updateURL(
+  configData: IImagesExploreAppConfig = model.getState()!.config!,
+) {
+  const { grouping, select, images } = configData;
   const url: string = getUrlWithParam({
     grouping: encode(grouping),
     select: encode(select),
+    images: encode(images),
   });
 
   if (url === `${window.location.pathname}${window.location.search}`) {
@@ -610,20 +683,34 @@ async function getImagesBlobsData(uris: string[]) {
   for await (let [keys, val] of objects) {
     imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
   }
-  model.setState({ imagesBlobs });
+  model.setState({ imagesBlobs: { ...imagesBlobs } });
 }
 
-function getDataAsImageSet(data: any[]) {
+function getDataAsImageSet(
+  data: any[],
+  groupingSelectOptions: IGroupingSelectOption[],
+) {
   if (!isEmpty(data)) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const groupFields = configData?.grouping?.groupBy;
+    const groupBy: string[] = [...(configData?.grouping?.groupBy || [])];
+    const groupFields = configData?.grouping?.reverseMode?.groupBy
+      ? groupingSelectOptions
+          .filter(
+            (option: IGroupingSelectOption) => !groupBy.includes(option.label),
+          )
+          .map((option) => option.value)
+      : groupBy;
     data.forEach((group: any) => {
-      const path = groupFields?.reduce((acc: any, field: any) => {
-        acc.push(`${field}=${_.get(group.data[0], field)}`);
+      const path = groupFields?.reduce((acc: string[], field: string) => {
+        acc.push(
+          `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
+            _.get(group.data[0], field),
+          )}`,
+        );
         return acc;
-      }, [] as any);
+      }, []);
       _.set(imageSetData, path, group.data);
     });
     return isEmpty(imageSetData) ? data[0].data : imageSetData;
@@ -668,7 +755,9 @@ function getDataAsTableRows(
           config: groupConfigData,
         },
         key: groupKey!,
-        groupRowsKeys: metricsCollection.data.map((metric) => metric.key),
+        groupRowsKeys: metricsCollection.data.map(
+          (metric) => (metric as any).seqKey,
+        ),
         experiment: '',
         run: '',
         metric: '',
@@ -682,87 +771,94 @@ function getDataAsTableRows(
       };
     }
 
-    metricsCollection.data.forEach((metric: any) => {
-      const rowValues: any = {
-        rowMeta: {
+    Object.values(_.groupBy(metricsCollection.data, 'seqKey'))
+      .map((v) => v[0])
+      .forEach((metric: any) => {
+        const rowValues: any = {
+          rowMeta: {
+            color: metricsCollection.color ?? metric.color,
+          },
+          key: metric.key,
+          runHash: metric.run.hash,
+          // isHidden: metric.isHidden,
+          isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
+          index: rowIndex,
           color: metricsCollection.color ?? metric.color,
-        },
-        key: metric.key,
-        runHash: metric.run.hash,
-        isHidden: metric.isHidden,
-        index: rowIndex,
-        color: metricsCollection.color ?? metric.color,
-        dasharray: metricsCollection.dasharray ?? metric.dasharray,
-        experiment: metric.run.props.name ?? 'default',
-        run: metric.run.props.name,
-        context: Object.entries(metric.context).map((entry) => entry.join(':')),
-        parentId: groupKey,
-      };
-      rowIndex++;
+          dasharray: metricsCollection.dasharray ?? metric.dasharray,
+          experiment: metric.run.experiment?.name ?? 'default',
+          run: moment(metric.run.props.creation_time * 1000).format(
+            'HH:mm:ss · D MMM, YY',
+          ),
+          context: Object.entries(metric.context).map((entry) =>
+            entry.join(':'),
+          ),
+          parentId: groupKey,
+        };
+        rowIndex++;
 
-      [
-        'experiment',
-        'run',
-        'metric',
-        'context',
-        'step',
-        'epoch',
-        'time',
-      ].forEach((key) => {
-        if (columnsValues.hasOwnProperty(key)) {
-          if (
-            _.findIndex(columnsValues[key], (value) =>
-              _.isEqual(rowValues[key], value),
-            ) === -1
-          ) {
-            columnsValues[key].push(rowValues[key]);
-          }
-        } else {
-          columnsValues[key] = [rowValues[key]];
-        }
-      });
-
-      if (!dynamicUpdate) {
-        paramKeys.forEach((paramKey) => {
-          const value = _.get(metric.run.params, paramKey, '-');
-          rowValues[paramKey] = formatValue(value);
-          if (columnsValues.hasOwnProperty(paramKey)) {
+        [
+          'experiment',
+          'run',
+          'metric',
+          'context',
+          'step',
+          'epoch',
+          'time',
+        ].forEach((key) => {
+          if (columnsValues.hasOwnProperty(key)) {
             if (
-              _.findIndex(columnsValues[paramKey], (paramValue) =>
-                _.isEqual(value, paramValue),
+              _.findIndex(columnsValues[key], (value) =>
+                _.isEqual(rowValues[key], value),
               ) === -1
             ) {
-              columnsValues[paramKey].push(value);
+              columnsValues[key].push(rowValues[key]);
             }
           } else {
-            columnsValues[paramKey] = [value];
+            columnsValues[key] = [rowValues[key]];
           }
         });
-      }
-      if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(
-          isRawData
-            ? rowValues
-            : imagesExploreTableRowRenderer(rowValues, {
-                toggleVisibility: (e) => {
-                  e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
-                },
-              }),
-        );
-      } else {
-        rows.push(
-          isRawData
-            ? rowValues
-            : imagesExploreTableRowRenderer(rowValues, {
-                toggleVisibility: (e) => {
-                  e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
-                },
-              }),
-        );
-      }
-    });
+
+        if (!dynamicUpdate) {
+          paramKeys.forEach((paramKey) => {
+            const value = _.get(metric.run.params, paramKey, '-');
+            rowValues[paramKey] = formatValue(value);
+            if (columnsValues.hasOwnProperty(paramKey)) {
+              if (
+                _.findIndex(columnsValues[paramKey], (paramValue) =>
+                  _.isEqual(value, paramValue),
+                ) === -1
+              ) {
+                columnsValues[paramKey].push(value);
+              }
+            } else {
+              columnsValues[paramKey] = [value];
+            }
+          });
+        }
+        if (metricsCollection.config !== null) {
+          rows[groupKey!].items.push(
+            isRawData
+              ? rowValues
+              : imagesExploreTableRowRenderer(rowValues, {
+                  toggleVisibility: (e) => {
+                    e.stopPropagation();
+                    onRowVisibilityChange(rowValues.key);
+                  },
+                }),
+          );
+        } else {
+          rows.push(
+            isRawData
+              ? rowValues
+              : imagesExploreTableRowRenderer(rowValues, {
+                  toggleVisibility: (e) => {
+                    e.stopPropagation();
+                    onRowVisibilityChange(rowValues.key);
+                  },
+                }),
+          );
+        }
+      });
 
     for (let columnKey in columnsValues) {
       if (columnsValues[columnKey].length === 1) {
@@ -808,7 +904,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
     model.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService
-      .createApp({ state: configData, type: 'images-explore' })
+      .createApp({ state: configData, type: 'images' })
       .call();
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
@@ -837,7 +933,7 @@ function onBookmarkUpdate(id: string) {
     model.getState()?.config;
   if (configData) {
     appsService
-      .updateApp(id, { state: configData, type: 'images-explore' })
+      .updateApp(id, { state: configData, type: 'images' })
       .call()
       .then((res: IDashboardData | any) => {
         if (res.id) {
@@ -973,6 +1069,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     data[0]?.config,
     config?.table.columnsOrder!,
     config?.table.hiddenColumns!,
+    config?.table.sortFields,
+    onSortChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1092,7 +1190,7 @@ function onSelectRunQueryChange(query: string) {
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, query },
+      select: { ...configData.select, advancedQuery: query, query },
       images: { ...configData.images, calcRanges: true },
     };
 
@@ -1147,14 +1245,22 @@ function getQueryStringFromSelect(
     } else {
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
-      }(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(metric.name == "${metric.value.metric_name}" and metric.context.${item} == "${metric.value.context[item]}")`,
-              )}`,
+      }(${selectData.images
+        .map(
+          (image) =>
+            `(images.name == "${image.value.metric_name}"${
+              image.value.context === null
+                ? ''
+                : ' and ' +
+                  Object.keys(image.value.context)
+                    .map(
+                      (item) =>
+                        `images.context.${item} == ${formatValue(
+                          (image.value.context as any)[item],
+                        )}`,
+                    )
+                    .join(' and ')
+            })`,
         )
         .join(' or ')})`.trim();
     }
@@ -1187,7 +1293,7 @@ function onImagesExploreSelectChange(data: any[]) {
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, metrics: data },
+      select: { ...configData.select, images: data },
       images: { ...configData.images, calcRanges: true },
     };
     updateURL(newConfig);
@@ -1201,20 +1307,25 @@ function onImagesExploreSelectChange(data: any[]) {
 function toggleSelectAdvancedMode() {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+
   if (configData?.select) {
+    let query =
+      configData.select.advancedQuery ||
+      getQueryStringFromSelect(configData?.select);
+    if (query === '()') {
+      query = '';
+    }
     const newConfig = {
       ...configData,
       select: {
         ...configData.select,
+        advancedQuery: query,
         advancedMode: !configData.select.advancedMode,
       },
     };
-
     updateURL(newConfig);
 
-    model.setState({
-      config: newConfig,
-    });
+    model.setState({ config: newConfig });
   }
   analytics.trackEvent(
     `[ImagesExplorer] Turn ${
@@ -1347,62 +1458,49 @@ function onImageVisibilityChange(metricsKeys: string[]) {
   );
 }
 
-function onRecordSliceChange(
-  event: ChangeEvent<{}>,
-  newValue: number[] | number,
-) {
+function onSliceRangeChange(key: string, newValue: number[] | number) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      recordSlice: newValue,
+      [key]: newValue,
     };
     const config = {
       ...configData,
       images,
     };
+
+    const searchButtonDisabled: boolean =
+      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
+      searchButtonDisabled,
+      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
 
-function onIndexSliceChange(
-  event: ChangeEvent<{}>,
-  newValue: number[] | number,
-) {
+function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
+  let { value } = e.target;
+  let key: string = e.target.getAttribute('data-key') || '';
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      indexSlice: newValue,
+      [key]: formatToPositiveNumber(+value),
     };
     const config = {
       ...configData,
       images,
     };
+    const searchButtonDisabled =
+      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-    });
-  }
-}
-
-function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.images && +event.target.value > 0) {
-    const images = {
-      ...configData.images,
-      indexDensity: +event.target.value,
-    };
-    const config = {
-      ...configData,
-      images,
-    };
-    model.setState({
-      config,
+      searchButtonDisabled,
+      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
@@ -1410,17 +1508,21 @@ function onIndexDensityChange(event: ChangeEvent<{ value: number }>) {
 function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
-  if (configData?.images && +event.target.value > 0) {
+  if (configData?.images) {
     const images = {
       ...configData.images,
-      recordDensity: +event.target.value,
+      recordDensity: formatToPositiveNumber(+event.target.value),
     };
     const config = {
       ...configData,
       images,
     };
+    const searchButtonDisabled =
+      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
+      searchButtonDisabled,
+      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
@@ -1461,9 +1563,8 @@ const imagesExploreAppModel = {
   onTableDiffShow,
   onRowHeightChange,
   onImageVisibilityChange,
-  onRecordSliceChange,
-  onIndexSliceChange,
-  onIndexDensityChange,
+  onSliceRangeChange,
+  onDensityChange,
   onRecordDensityChange,
   getImagesBlobsData,
 };

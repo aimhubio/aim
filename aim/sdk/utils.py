@@ -6,6 +6,8 @@ from aim.sdk.configs import get_aim_repo_name
 
 from aim.storage.object import CustomObject
 
+from aim.storage.object import CustomObject
+
 
 def search_aim_repo(path):
     found = False

@@ -9,5 +9,5 @@ export interface IAlignmentPopoverProps {
   onDensityTypeChange: (type: DensityOptions) => void;
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
-  projectsDataMetrics: IProjectParamsMetrics['metrics'];
+  projectsDataMetrics: IProjectParamsMetrics['metric'];
 }

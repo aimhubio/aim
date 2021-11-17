@@ -40,13 +40,13 @@
       }
 
       &::before {
-        content: "";
+        content: '';
         display: inline-block;
         flex-shrink: 0;
         width: 6px;
         height: 6px;
         background-color: #2bc784;
-        border-radius: 50%;
+        border-radius: $border-radius-circle;
         margin: 4px 5px 4px 0;
       }
 

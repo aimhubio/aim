@@ -14,7 +14,7 @@ class CustomObject(CustomObjectBase):
     def alias(name: str, exist_ok: bool = True):
         def decorator(cls):
             if name in CustomObject.registry and not exist_ok:
-                raise ValueError('hey-hoy-hoparr, arden ka')
+                raise ValueError(f'CustomObject `{name}` is already registered')
             CustomObject.registry[name] = cls
             return cls
         return decorator
@@ -36,6 +36,14 @@ class CustomObject(CustomObjectBase):
         else:
             obj.storage = _storage
         return obj
+
+    def __deepcopy__(self, memodict={}):
+        cls = self.__class__
+        # TODO Implement `__deepcopy__` in `TreeView`
+        storage = InMemoryTreeView(container=self.storage[...])
+        result = cls.__new__(cls, _storage=storage)
+        memodict[id(self)] = result
+        return result
 
     def _aim_encode(self):
         # TODO more effective

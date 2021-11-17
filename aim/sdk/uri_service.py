@@ -3,6 +3,7 @@ from typing import Iterator, List, Optional, Dict
 from typing import TYPE_CHECKING
 
 from aim.storage.encoding import encode_path, decode_path
+from aim.storage.types import BLOB
 from aim.sdk.repo import ContainerConfig
 
 if TYPE_CHECKING:
@@ -40,7 +41,7 @@ class URIService:
         result = decrypted_uri.split(URIService.SEPARATOR, maxsplit=2)
         assert len(result) <= 3
         # extend result length to 3, fill with [None]s
-        result.extend([None]*(3-len(result)))
+        result.extend([None] * (3 - len(result)))
 
         return result
 
@@ -52,7 +53,10 @@ class URIService:
 
             # TODO: [MV] change to some other implementation of view when available
             #  which won't collect in case of custom objects
-            yield {uri: container.tree().view(resource_path).collect()}
+            data = container.tree().subtree(resource_path).collect()
+            if isinstance(data, BLOB):
+                data = data.load()
+            yield {uri: data}
 
         # clear container pool
         self.container_persistent_pool.clear()

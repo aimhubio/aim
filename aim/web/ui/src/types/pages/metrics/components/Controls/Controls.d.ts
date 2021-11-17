@@ -31,7 +31,7 @@ export interface IControlProps {
   curveInterpolation: CurveEnum;
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
-  projectsDataMetrics: IProjectParamsMetrics['metrics'];
+  projectsDataMetrics: IProjectParamsMetrics['metric'];
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;

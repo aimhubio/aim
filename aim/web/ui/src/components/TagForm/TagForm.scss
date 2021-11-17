@@ -22,7 +22,7 @@
         flex-wrap: wrap;
         justify-content: space-between;
         &__colorButton {
-          border-radius: 50%;
+          border-radius: $border-radius-circle;
           margin: 5px;
           width: 50px;
           height: 50px;
@@ -34,7 +34,7 @@
           .MuiButton-label {
             width: 34px;
             height: 34px;
-            border-radius: 50%;
+            border-radius: $border-radius-circle;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -43,7 +43,7 @@
           &__content {
             width: 34px;
             height: 34px;
-            border-radius: 50%;
+            border-radius: $border-radius-circle;
             opacity: 0.2;
           }
           &__circle {
@@ -52,7 +52,7 @@
             left: 50%;
             width: 16px;
             height: 16px;
-            border-radius: 50%;
+            border-radius: $border-radius-circle;
             transform: translate(-50%, -50%);
           }
         }

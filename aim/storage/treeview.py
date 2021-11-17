@@ -1,8 +1,12 @@
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.container import Container
-from aim.storage.arrayview import TreeArrayView
+from abc import abstractmethod
 
-from typing import Any, Dict, Iterator, Tuple, Union
+from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
+
+from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
+
+if TYPE_CHECKING:
+    from aim.storage.arrayview import ArrayView
+    from aim.storage.container import Container
 
 
 class TreeView:
@@ -19,18 +23,26 @@ class TreeView:
     ):
         ...
 
+    def subtree(self, path: Union[AimObjectKey, AimObjectPath]) -> 'TreeView':
+        # Default to:
+        return self.view(path, resolve=False)
+
+    @abstractmethod
     def view(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
-    ) -> 'TreeView':
+        path: Union[AimObjectKey, AimObjectPath],
+        resolve: bool = False
+    ):
         ...
 
+    @abstractmethod
     def make_array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ):
         ...
 
+    @abstractmethod
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -42,21 +54,26 @@ class TreeView:
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ) -> AimObject:
-        ...
+        return self.collect(path)
 
     def get(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         default: Any = None
     ) -> AimObject:
-        ...
+        try:
+            return self[path]
+        except KeyError:
+            return default
 
+    @abstractmethod
     def __delitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ):
         ...
 
+    @abstractmethod
     def __setitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath],
@@ -64,6 +81,7 @@ class TreeView:
     ):
         ...
 
+    @abstractmethod
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -71,6 +89,7 @@ class TreeView:
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         ...
 
+    @abstractmethod
     def items(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
@@ -80,6 +99,7 @@ class TreeView:
     ]]:
         ...
 
+    @abstractmethod
     def iterlevel(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -90,18 +110,21 @@ class TreeView:
     ]]:
         ...
 
+    @abstractmethod
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> TreeArrayView:
+    ) -> 'ArrayView':
         ...
 
+    @abstractmethod
     def first(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
         ...
 
+    @abstractmethod
     def last(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()

@@ -1,29 +1,25 @@
+@use 'src/styles/abstracts' as *;
+
 .ImagesPanel {
   width: calc(100vw - 4.6875rem);
-  &__slidersContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  &__resizing {
     display: flex;
-    padding: 2.5rem 1.25rem 0.625rem;
-    justify-content: space-around;
-    &__sliderContainer {
-      display: flex;
-      align-items: center;
-      &__intervalField {
-        width: 5rem;
-        height: auto;
-      }
-      &__title {
-        margin-right: 1.25rem;
-        font-size: 0.825rem;
-        font-weight: bold;
-        padding-bottom: 0.3125;
-      }
-      &__sliderBox {
-        width: 16rem;
-        margin-right: 1.25rem;
-      }
-    }
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $primary-color-5;
+    user-select: none;
   }
   &__imagesContainer {
     overflow-x: auto;
+    height: calc(100% - 2.25rem);
+    padding-left: 1.25rem;
+    padding-top: 0.25rem;
   }
 }

@@ -51,23 +51,27 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       call: () => Promise<void>;
       abort: () => void;
     };
+    let imagesRequestRef: {
+      call: () => Promise<void>;
+      abort: () => void;
+    };
     if (route.params.appId) {
       appRequestRef = imagesExploreAppModel.getAppConfigData(
         route.params.appId,
       );
       appRequestRef.call().then(() => {
-        imagesExploreAppModel.getImagesData().call();
-        imagesExploreAppModel.setDefaultAppConfigData();
+        imagesRequestRef = imagesExploreAppModel.getImagesData();
+        imagesRequestRef.call();
       });
     } else {
       imagesExploreAppModel.setDefaultAppConfigData();
+      imagesRequestRef = imagesExploreAppModel.getImagesData();
+      imagesRequestRef.call();
     }
 
-    const metricsRequestRef = imagesExploreAppModel.getImagesData();
-    metricsRequestRef.call();
     analytics.pageView('[ImagesExplorer]');
     return () => {
-      metricsRequestRef.abort();
+      imagesRequestRef?.abort();
       if (appRequestRef) {
         appRequestRef.abort();
       }
@@ -114,6 +118,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreAppModel.toggleSelectAdvancedMode
               }
               onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
+              searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
             />
             <Grouping
               groupingData={imagesExploreData?.config?.grouping}
@@ -148,16 +153,15 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               indexDensity={imagesExploreData?.config?.images?.indexDensity}
               recordDensity={imagesExploreData?.config?.images?.recordDensity}
               stepRange={imagesExploreData?.config?.images?.stepRange}
-              onRecordSliceChange={imagesExploreAppModel.onRecordSliceChange}
-              onIndexSliceChange={imagesExploreAppModel.onIndexSliceChange}
-              onIndexDensityChange={imagesExploreAppModel.onIndexDensityChange}
-              onRecordDensityChange={
-                imagesExploreAppModel.onRecordDensityChange
-              }
+              onSliceRangeChange={imagesExploreAppModel.onSliceRangeChange}
+              onDensityChange={imagesExploreAppModel.onDensityChange}
               getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
               imagesBlobs={imagesExploreData?.imagesBlobs}
               isLoading={imagesExploreData?.requestIsPending}
+              applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
+              imagesWrapperRef={imagesWrapperRef}
+              panelResizing={panelResizing}
             />
           </div>
           <ResizePanel
