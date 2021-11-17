@@ -49,7 +49,7 @@ def get_object_typename(obj) -> str:
     if isinstance(obj, float):
         return 'float'
     if isinstance(obj, (int, bool)):
-        return 'bool'
+        return 'int'
     if isinstance(obj, str):
         return 'str'
     if isinstance(obj, bytes):
