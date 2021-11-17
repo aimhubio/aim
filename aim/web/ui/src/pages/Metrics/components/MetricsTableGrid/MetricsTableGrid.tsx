@@ -6,7 +6,7 @@ import { merge } from 'lodash-es';
 import { Link } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { Button, Icon, Badge } from 'components/kit';
+import { Badge, Button, Icon } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -261,13 +261,16 @@ function getMetricsTableColumns(
       topHeader: 'Grouping',
       pin: 'left',
     });
-    Object.keys(groupFields).forEach((field) => {
-      const key = field.replace('run.params.', '');
-      const column = columns.find((col) => col.key === key);
-      if (!!column) {
-        column.pin = 'left';
-        column.topHeader = 'Grouping';
-      }
+    columns.push({
+      key: 'groups',
+      content: (
+        <div className='Metrics__table__groupsColumn__cell'>
+          {Object.keys(groupFields).map((field) => (
+            <span key={field}>{field.replace('run.params.', '')}</span>
+          ))}
+        </div>
+      ),
+      topHeader: 'Groups',
     });
   }
 
@@ -278,7 +281,7 @@ function getMetricsTableColumns(
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === '#') {
+    if (a.key === '#' || a.key === 'groups') {
       return -1;
     } else if (
       groupFields?.hasOwnProperty(a.key) ||
@@ -345,6 +348,16 @@ function metricsTableRowRenderer(
             ),
         };
       } else if (col === 'value') {
+        row.value = {
+          content: (
+            <div className='Metrics__table__aggregationColumn__cell'>
+              <span key='min'>{rowData.aggregation.area.min}</span>
+              <span key='line'>{rowData.aggregation.line}</span>
+              <span key='max'>{rowData.aggregation.area.max}</span>
+            </div>
+          ),
+        };
+      } else if (col === 'groups') {
         row.value = {
           content: (
             <div className='Metrics__table__aggregationColumn__cell'>

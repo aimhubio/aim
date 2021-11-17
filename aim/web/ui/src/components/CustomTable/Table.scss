@@ -83,6 +83,10 @@ $border-radius: 0.2rem;
   max-width: 500px;
   contain: content;
 
+  &--groups {
+    max-width: unset;
+  }
+
   &:last-of-type {
     .Table__cell,
     .Table__group__config__cell {

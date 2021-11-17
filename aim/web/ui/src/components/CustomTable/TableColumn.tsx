@@ -118,6 +118,7 @@ function Column({
       className={classNames({
         Table__column: true,
         'Table__column--actions': col.key === 'actions',
+        'Table__column--groups': col.key === 'groups',
       })}
       style={{
         minWidth: maxWidth,
