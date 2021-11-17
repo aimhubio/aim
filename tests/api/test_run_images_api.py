@@ -6,6 +6,7 @@ from tests.utils import decode_encoded_tree_stream, generate_image_set
 
 from aim.storage.treeutils import decode_tree
 from aim.storage.context import Context
+from aim.storage.types import BLOB
 from aim.sdk.run import Run
 
 
@@ -162,7 +163,7 @@ class RunImagesURIBulkLoadApi(RunImagesTestBase):
                 img_view = run.series_run_tree.subtree(
                     (empty_context.idx, 'random_images', 'val', step, idx)
                 )
-                cls.image_blobs[img_view['caption']] = img_view['data']
+                cls.image_blobs[img_view['caption']] = img_view['data'].load()
 
     @classmethod
     def tearDownClass(cls) -> None:

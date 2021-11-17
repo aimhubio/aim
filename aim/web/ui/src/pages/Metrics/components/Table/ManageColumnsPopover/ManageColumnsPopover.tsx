@@ -133,7 +133,7 @@ function ManageColumnsPopover({
     if (!!midPane) {
       if (searchKey && searchKey.trim() !== '') {
         const firstHighlightedCol: any = midPane.querySelector(
-          '.ColumnItem__container.highlighted',
+          '.ColumnItem.highlighted',
         );
         if (!!firstHighlightedCol) {
           midPane.scrollTop =

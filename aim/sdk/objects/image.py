@@ -2,6 +2,7 @@ from PIL.Image import Image as PILImage, open as pil_open
 from io import BytesIO
 
 from aim.storage.object import CustomObject
+from aim.storage.types import BLOB
 
 
 @CustomObject.alias('aim.image')
@@ -15,7 +16,7 @@ class Image(CustomObject):
         assert isinstance(image, PILImage)
         image_bytes_p = BytesIO()
         image.save(image_bytes_p, format='png')
-        self.storage['data'] = image_bytes_p.getvalue()
+        self.storage['data'] = BLOB(data=image_bytes_p.getvalue())
 
         self.storage['format'] = 'png'
         self.storage['width'], self.storage['height'] = image.size
@@ -45,7 +46,7 @@ class Image(CustomObject):
         return self.storage['width'], self.storage['height']
 
     def to_pil_image(self):
-        pil_img = pil_open(BytesIO(self.storage['data']))
+        pil_img = pil_open(BytesIO(bytes(self.storage['data'])))
         assert pil_img.size == self.size
         return pil_img
 
