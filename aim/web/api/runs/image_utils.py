@@ -65,7 +65,7 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
         values.append(img_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
 
     return {
-        'trace_name': trace.name,
+        'name': trace.name,
         'context': trace.context.to_dict(),
         'values': values,
         'iters': steps,

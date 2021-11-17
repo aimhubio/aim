@@ -49,7 +49,7 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         self.assertEqual(16, run_data['params']['images_per_step'])
 
         trace_data = run_data['traces'][0]
-        self.assertEqual('random_images', trace_data['trace_name'])
+        self.assertEqual('random_images', trace_data['name'])
         self.assertEqual(50, len(trace_data['iters']))
         self.assertEqual(4, trace_data['iters'][2])
         self.assertEqual(50, len(trace_data['values']))
