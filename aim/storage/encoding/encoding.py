@@ -22,6 +22,8 @@ from aim.storage.encoding.encoding_native import (
 from aim.storage.encoding.encoding_native import decode_path  # noqa F401
 from aim.storage.utils import ArrayFlag, ArrayFlagType, ObjectFlag, ObjectFlagType, CustomObjectFlagType
 from aim.storage.types import AimObjectKey, AimObjectPath
+from aim.storage.container import ContainerValue
+from aim.storage.types import BLOB
 
 from typing import Union, Any
 
@@ -46,7 +48,7 @@ _OBJECT = 7
 _CUSTOM_OBJECT = 8 | 7
 
 
-def encode(value: Any) -> bytes:
+def encode(value: Any) -> ContainerValue:
     """Automatically detect and encode the value into a buffer.
     This function is to encode only primitive objects.
 
@@ -55,6 +57,8 @@ def encode(value: Any) -> bytes:
     The first byte of the buffer encodes type of the encoded value and the rest
     are for encoded content.
     """
+    if isinstance(value, BLOB):
+        return value.transform(encode)
 
     if value is None:
         # No need to encode a content for None-values
@@ -103,8 +107,11 @@ def encode(value: Any) -> bytes:
     return type_byte + encoding
 
 
-def decode(buffer: bytes):
+def decode(buffer: ContainerValue):
     """Automatically detect and decode the value from a buffer."""
+
+    if isinstance(buffer, BLOB):
+        return buffer.transform(decode)
 
     # First, we extract type_id and the content buffer
     type_id = buffer[0]

@@ -24,7 +24,7 @@ def collect_runs_data(query):
         run = run_trace_collection.run
         runs_dict[run.hash] = {
             'params': run[...],
-            'traces': run.collect_sequence_info(),
+            'traces': run.collect_sequence_info(sequence_types='metric'),
             'props': get_run_props(run)
         }
 

@@ -1,10 +1,14 @@
 from abc import abstractmethod
-from typing import Iterator, Tuple
+from typing import Iterator, Tuple, Union
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.storage.treeview import TreeView
+    from aim.storage.types import BLOB
+
+ContainerKey = bytes
+ContainerValue = Union[bytes, 'BLOB[bytes]']
 
 
 class Container:
@@ -55,7 +59,7 @@ class Container:
         return prefix + b''.join(args)
 
     @abstractmethod
-    def get(self, key: bytes, default=None) -> bytes:
+    def get(self, key: ContainerKey, default=None) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.
 
         The `default` is :obj:`None` by default.
@@ -63,12 +67,12 @@ class Container:
         ...
 
     @abstractmethod
-    def __getitem__(self, key: bytes) -> bytes:
+    def __getitem__(self, key: ContainerKey) -> ContainerValue:
         """Returns the value by the given `key`."""
         ...
 
     @abstractmethod
-    def set(self, key: bytes, value: bytes, *, store_batch=None):
+    def set(self, key: ContainerKey, value: ContainerValue, *, store_batch=None):
         """Set a value for given key, optionally store in a batch.
 
         If `store_batch` is provided, instead of the `(key, value)` being added
@@ -80,12 +84,12 @@ class Container:
         ...
 
     @abstractmethod
-    def __setitem__(self, key: bytes, value: bytes):
+    def __setitem__(self, key: ContainerKey, value: ContainerValue):
         """Set a value for given key."""
         ...
 
     @abstractmethod
-    def delete(self, key: bytes, *, store_batch=None):
+    def delete(self, key: ContainerKey, *, store_batch=None):
         """Delete a key-value record by the given key,
         optionally store in a batch.
 
@@ -98,12 +102,12 @@ class Container:
         ...
 
     @abstractmethod
-    def __delitem__(self, key: bytes):
+    def __delitem__(self, key: ContainerKey):
         """Delete a key-value record by the given key."""
         ...
 
     @abstractmethod
-    def delete_range(self, begin: bytes, end: bytes, *, store_batch=None):
+    def delete_range(self, begin: ContainerKey, end: ContainerKey, *, store_batch=None):
         """Delete all the records in the given `[begin, end)` key range."""
         ...
 
@@ -129,7 +133,7 @@ class Container:
         ...
 
     @abstractmethod
-    def items(self, prefix: bytes = b'') -> Iterator[Tuple[bytes, bytes]]:
+    def items(self, prefix: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -150,7 +154,7 @@ class Container:
         ...
 
     @abstractmethod
-    def keys(self, prefix: bytes = b'') -> Iterator[bytes]:
+    def keys(self, prefix: ContainerKey = b'') -> Iterator[ContainerKey]:
         """Iterate over all the keys in the prefix range.
 
         The iteration is always performed in lexiographic order.
@@ -171,7 +175,7 @@ class Container:
         ...
 
     @abstractmethod
-    def values(self, prefix: bytes = b'') -> Iterator[bytes]:
+    def values(self, prefix: ContainerKey = b'') -> Iterator[ContainerValue]:
         """Iterate over all the values in the given prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -192,7 +196,7 @@ class Container:
         ...
 
     @abstractmethod
-    def view(self, prefix: bytes = b'') -> 'Container':
+    def view(self, prefix: ContainerKey = b'') -> 'Container':
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
 
@@ -238,7 +242,7 @@ class Container:
         ...
 
     @abstractmethod
-    def walk(self, prefix: bytes = b''):
+    def walk(self, prefix: ContainerKey = b''):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
         a `walker`) seeks for lower-bound key in the collection.
@@ -255,42 +259,42 @@ class Container:
         ...
 
     @abstractmethod
-    def next_key(self, key: bytes = b'') -> bytes:
+    def next_key(self, key: ContainerKey = b'') -> ContainerKey:
         """Returns the key that comes (lexicographically) right after the
         provided `key`.
         """
         ...
 
     @abstractmethod
-    def next_value(self, key: bytes = b'') -> bytes:
+    def next_value(self, key: ContainerKey = b'') -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         after the provided `key`.
         """
         ...
 
     @abstractmethod
-    def next_key_value(self, key: bytes = b'') -> Tuple[bytes, bytes]:
+    def next_key_value(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
         ...
 
     @abstractmethod
-    def prev_key(self, key: bytes = b'') -> bytes:
+    def prev_key(self, key: ContainerKey = b'') -> ContainerKey:
         """Returns the key that comes (lexicographically) right before the
         provided `key`.
         """
         ...
 
     @abstractmethod
-    def prev_value(self, key: bytes = b'') -> bytes:
+    def prev_value(self, key: ContainerKey = b'') -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         before the provided `key`.
         """
         ...
 
     @abstractmethod
-    def prev_key_value(self, key: bytes = b'') -> Tuple[bytes, bytes]:
+    def prev_key_value(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """

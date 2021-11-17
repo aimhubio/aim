@@ -160,9 +160,7 @@ class ImageInfo(BaseModel):
     index: int
 
 
-class ImageSequenceFullView(BaseModel):
-    context: dict
-    trace_name: str
+class ImageSequenceFullView(TraceBase):
     values: List[List[ImageInfo]]
     iters: List[int]
     epochs: List[int]
