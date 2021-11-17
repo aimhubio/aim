@@ -19,6 +19,7 @@ const icons = {
 function GroupingItem({
   title,
   groupName,
+  groupDisplayName,
   groupingData,
   advancedTitle,
   advancedComponent,
@@ -40,7 +41,7 @@ function GroupingItem({
           >
             <Icon name={icons[groupName] as IconName} />
           </div>
-          <Text>{groupName}</Text>
+          <Text>{groupDisplayName}</Text>
         </div>
       )}
       component={

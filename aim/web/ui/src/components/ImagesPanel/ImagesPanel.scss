@@ -5,6 +5,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   &__resizing {
     display: flex;
     width: 100%;
@@ -17,7 +18,7 @@
   }
   &__imagesContainer {
     overflow-x: auto;
-    height: 100%;
+    height: calc(100% - 2.25rem);
     padding-left: 1.25rem;
     padding-top: 0.25rem;
   }

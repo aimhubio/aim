@@ -17,6 +17,7 @@ const groupingPopovers = (singleGrouping: boolean) =>
           title: 'Select Fields For Grouping',
           advancedTitle: 'Color Advanced Options',
           groupName: 'groupBy',
+          groupDisplayName: 'group',
           AdvancedComponent: null,
         },
       ]
@@ -25,17 +26,20 @@ const groupingPopovers = (singleGrouping: boolean) =>
           title: 'Run Color Settings',
           advancedTitle: 'Color Advanced Options',
           groupName: 'color',
+          groupDisplayName: 'color',
           AdvancedComponent: ColorPopoverAdvanced,
         },
         {
           title: 'Select Fields For Grouping by stroke style',
           advancedTitle: 'stroke style advanced options',
           groupName: 'stroke',
+          groupDisplayName: 'stroke',
           AdvancedComponent: StrokePopoverAdvanced,
         },
         {
           title: 'Select fields to divide into charts',
           groupName: 'chart',
+          groupDisplayName: 'chart',
           AdvancedComponent: null,
         },
       ];
@@ -55,13 +59,20 @@ function Grouping({
   return (
     <div className='Grouping'>
       {groupingPopovers(singleGrouping).map(
-        ({ title, advancedTitle, groupName, AdvancedComponent }) => {
+        ({
+          title,
+          advancedTitle,
+          groupName,
+          groupDisplayName,
+          AdvancedComponent,
+        }) => {
           return (
             <GroupingItem
               key={groupName}
               title={title}
               advancedTitle={advancedTitle}
               groupName={groupName as GroupNameType}
+              groupDisplayName={groupDisplayName}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onSelect={onGroupingSelectChange}

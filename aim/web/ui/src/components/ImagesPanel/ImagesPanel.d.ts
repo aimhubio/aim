@@ -14,6 +14,6 @@ export interface IImagesPanelProps {
   onDensityChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
-  searchButtonDisabled: boolean;
+  applyButtonDisabled: boolean;
   panelResizing: boolean;
 }

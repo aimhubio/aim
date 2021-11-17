@@ -27,7 +27,7 @@ function ImagesPanel({
   onDensityChange,
   getImagesBlobsData,
   isLoading,
-  searchButtonDisabled,
+  applyButtonDisabled,
   imagesWrapperRef,
   panelResizing,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
@@ -103,8 +103,8 @@ function ImagesPanel({
         </div>
       ) : (
         <>
-          {!isEmpty(imagesData) ? (
-            <div className='ImagesPanel'>
+          <div className='ImagesPanel'>
+            {!isEmpty(imagesData) ? (
               <div className='ImagesPanel__imagesContainer'>
                 <ImagesSet
                   data={imagesData}
@@ -119,6 +119,13 @@ function ImagesPanel({
                   imageSetWrapperWidth={offsetWidth}
                 />
               </div>
+            ) : (
+              <EmptyComponent
+                size='big'
+                content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+              />
+            )}
+            {stepRange && indexRange && (
               <ImagesExploreRangePanel
                 recordSlice={recordSlice}
                 indexSlice={indexSlice}
@@ -128,15 +135,10 @@ function ImagesPanel({
                 recordDensity={recordDensity}
                 onSliceRangeChange={onSliceRangeChange}
                 onDensityChange={onDensityChange}
-                searchButtonDisabled={searchButtonDisabled}
+                applyButtonDisabled={applyButtonDisabled}
               />
-            </div>
-          ) : (
-            <EmptyComponent
-              size='big'
-              content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-            />
-          )}
+            )}
+          </div>
         </>
       )}
     </BusyLoaderWrapper>

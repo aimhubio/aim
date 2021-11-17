@@ -20,7 +20,7 @@ export interface IImagesExploreAppConfig {
     calcRanges: boolean;
   };
   select: {
-    metrics: ISelectMetricsOption[];
+    images: ISelectMetricsOption[];
     query: string;
     advancedMode: boolean;
     advancedQuery: string;
@@ -59,6 +59,7 @@ export interface IImagesExploreAppModelState {
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
   searchButtonDisabled: boolean;
+  applyButtonDisabled: boolean;
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

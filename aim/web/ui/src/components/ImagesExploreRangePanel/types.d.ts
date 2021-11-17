@@ -7,7 +7,7 @@ export interface IImagesExploreRangePanelProps {
   stepRange: number[];
   indexDensity: number;
   recordDensity: number;
-  searchButtonDisabled: boolean;
+  applyButtonDisabled: boolean;
   onSliceRangeChange: IImagesPanelProps['onSliceRangeChange'];
   onDensityChange: IImagesPanelProps['onDensityChange'];
 }

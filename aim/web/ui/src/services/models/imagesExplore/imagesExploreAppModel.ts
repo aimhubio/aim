@@ -59,7 +59,8 @@ import createModel from '../model';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
-  searchButtonDisabled: true,
+  searchButtonDisabled: false,
+  applyButtonDisabled: true,
 });
 
 function getConfig(): IImagesExploreAppConfig {
@@ -74,7 +75,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
     },
     select: {
-      metrics: [],
+      images: [],
       query: '',
       advancedMode: false,
       advancedQuery: '',
@@ -199,7 +200,7 @@ function exceptionHandler(detail: any) {
   // reset model
   resetModelOnError(detail);
 }
-// @TODO Have to implement getting data from api after backend will provide it.
+
 function getImagesData() {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -214,7 +215,7 @@ function getImagesData() {
     | undefined;
   const recordDensity = configData?.images?.recordDensity;
   const indexDensity = configData?.images?.indexDensity;
-  const calcRanges = configData?.images.calcRanges;
+  const calcRanges = !!configData?.images.calcRanges;
   let query = getQueryStringFromSelect(configData?.select as any);
   let imageDataBody: any = {
     q: query !== '()' ? query : '',
@@ -223,8 +224,10 @@ function getImagesData() {
   if (recordSlice) {
     imageDataBody = {
       ...imageDataBody,
-      record_range: recordSlice ? `${recordSlice[0]}:${recordSlice[1]}` : '',
-      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1]}` : '',
+      record_range: recordSlice
+        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+        : '',
+      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1] + 1}` : '',
       record_density: recordDensity ?? '',
       index_density: indexDensity ?? '',
     };
@@ -237,7 +240,7 @@ function getImagesData() {
         model.setState({
           requestIsPending: true,
           queryIsEmpty: false,
-          searchButtonDisabled: true,
+          applyButtonDisabled: true,
         });
 
         const stream = await imagesRequestRef.call(exceptionHandler);
@@ -297,6 +300,7 @@ function processData(data: any[]): {
       });
     });
   });
+
   const processedData = groupData(
     _.orderBy(
       metrics,
@@ -312,7 +316,6 @@ function processData(data: any[]): {
   const uniqParams = _.uniq(params);
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
-  // setTooltipData(processedData, uniqParams);
 
   return {
     data: processedData,
@@ -339,12 +342,18 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   config.images = {
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
-      : (rawData[0].ranges.record_range as number[]),
+      : !isEmpty(rawData)
+      ? (rawData[0].ranges.record_range as number[])
+      : [],
     indexRange: !config.images.calcRanges
       ? config.images.indexRange
-      : (rawData[0].ranges.index_range as number[]),
-    recordSlice: config.images.recordSlice || rawData[0].ranges.record_range,
-    indexSlice: config.images.indexSlice || rawData[0].ranges.index_range,
+      : !isEmpty(rawData)
+      ? (rawData[0].ranges.index_range as number[])
+      : [],
+    recordSlice:
+      config.images.recordSlice || rawData?.[0]?.ranges.record_range || [],
+    indexSlice:
+      config.images.indexSlice || rawData?.[0]?.ranges.index_range || [],
     recordDensity: config.images.recordDensity || '50',
     indexDensity: config.images.indexDensity || '5',
     calcRanges: false,
@@ -355,8 +364,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config: config,
     params,
     data,
-    imagesData: getDataAsImageSet(data),
-    // chartTitleData: getChartTitleData(data),
+    imagesData: getDataAsImageSet(data, groupingSelectOptions),
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
       params,
@@ -410,7 +418,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: getDataAsImageSet(data),
+    imagesData: getDataAsImageSet(data, groupingSelectOptions),
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
@@ -495,7 +503,6 @@ function groupData(data: any[]): any {
     model.getState()!.config;
   const grouping = configData!.grouping;
   const groupingFields = getFilteredGroupingOptions(grouping);
-
   if (groupingFields.length === 0) {
     return [
       {
@@ -674,20 +681,31 @@ async function getImagesBlobsData(uris: string[]) {
   model.setState({ imagesBlobs: { ...imagesBlobs } });
 }
 
-function getDataAsImageSet(data: any[]) {
+function getDataAsImageSet(
+  data: any[],
+  groupingSelectOptions: IGroupingSelectOption[],
+) {
   if (!isEmpty(data)) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const groupBy = [...(configData?.grouping?.groupBy || [])];
+    const groupBy: string[] = [...(configData?.grouping?.groupBy || [])];
     const groupFields = configData?.grouping?.reverseMode?.groupBy
-      ? groupBy.reverse()
+      ? groupingSelectOptions
+          .filter(
+            (option: IGroupingSelectOption) => !groupBy.includes(option.label),
+          )
+          .map((option) => option.value)
       : groupBy;
     data.forEach((group: any) => {
-      const path = groupFields?.reduce((acc: any, field: any) => {
-        acc.push(`${field} = ${formatValue(_.get(group.data[0], field))}`);
+      const path = groupFields?.reduce((acc: string[], field: string) => {
+        acc.push(
+          `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
+            _.get(group.data[0], field),
+          )}`,
+        );
         return acc;
-      }, [] as any);
+      }, []);
       _.set(imageSetData, path, group.data);
     });
     return isEmpty(imageSetData) ? data[0].data : imageSetData;
@@ -881,7 +899,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
     model.getState()?.config;
   if (configData) {
     const app: IAppData | any = await appsService
-      .createApp({ state: configData, type: 'images-explore' })
+      .createApp({ state: configData, type: 'images' })
       .call();
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
@@ -910,7 +928,7 @@ function onBookmarkUpdate(id: string) {
     model.getState()?.config;
   if (configData) {
     appsService
-      .updateApp(id, { state: configData, type: 'images-explore' })
+      .updateApp(id, { state: configData, type: 'images' })
       .call()
       .then((res: IDashboardData | any) => {
         if (res.id) {
@@ -1222,18 +1240,18 @@ function getQueryStringFromSelect(
     } else {
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
-      }(${selectData.metrics
+      }(${selectData.images
         .map(
-          (metric) =>
-            `(images.name == "${metric.value.metric_name}"${
-              metric.value.context === null
+          (image) =>
+            `(images.name == "${image.value.metric_name}"${
+              image.value.context === null
                 ? ''
                 : ' and ' +
-                  Object.keys(metric.value.context)
+                  Object.keys(image.value.context)
                     .map(
                       (item) =>
                         `images.context.${item} == ${formatValue(
-                          (metric.value.context as any)[item],
+                          (image.value.context as any)[item],
                         )}`,
                     )
                     .join(' and ')
@@ -1270,7 +1288,7 @@ function onImagesExploreSelectChange(data: any[]) {
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, metrics: data },
+      select: { ...configData.select, images: data },
       images: { ...configData.images, calcRanges: true },
     };
     updateURL(newConfig);
@@ -1453,6 +1471,7 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
     model.setState({
       config,
       searchButtonDisabled,
+      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
@@ -1476,6 +1495,7 @@ function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
     model.setState({
       config,
       searchButtonDisabled,
+      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
@@ -1497,6 +1517,7 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
     model.setState({
       config,
       searchButtonDisabled,
+      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }

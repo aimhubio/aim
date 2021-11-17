@@ -9,6 +9,7 @@
   justify-content: space-between;
   background: $white;
   border-top: $border-main;
+  border-bottom: $border-main;
   &__searchButtonContainer {
     padding-left: 1.5rem;
     border-left: $border-main;
@@ -48,6 +49,7 @@
       align-items: center;
       margin-right: 1.25rem;
       height: 100%;
+      max-width: 27rem;
       .MuiSlider-root {
         padding: 0;
         height: 0.25rem;

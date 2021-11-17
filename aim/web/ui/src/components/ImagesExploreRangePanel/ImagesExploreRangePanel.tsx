@@ -19,10 +19,9 @@ function ImagesExploreRangePanel({
   recordDensity,
   onSliceRangeChange,
   onDensityChange,
-  searchButtonDisabled,
+  applyButtonDisabled,
 }: IImagesExploreRangePanelProps): React.FunctionComponentElement<React.ReactNode> {
   const searchMetricsRef = React.useRef<any>(null);
-
   function handleSearch() {
     searchMetricsRef.current = imagesExploreAppModel.getImagesData();
     searchMetricsRef.current.call();
@@ -142,7 +141,7 @@ function ImagesExploreRangePanel({
           type='submit'
           onClick={handleSearch}
           className='ImagesExploreRangePanel__searchButtonContainer__searchButton'
-          disabled={searchButtonDisabled}
+          disabled={applyButtonDisabled}
         >
           Apply
         </Button>
