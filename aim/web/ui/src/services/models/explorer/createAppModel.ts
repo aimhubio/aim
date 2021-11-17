@@ -1494,7 +1494,7 @@ function createAppModel({
         type: 'text/csv;charset=utf-8;',
       });
       saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-      analytics.trackEvent(`[${appName}] Export runs data to CSV`);
+      analytics.trackEvent(`[${appName}Explore] Export runs data to CSV`);
     }
 
     const onActivePointChange = _.debounce(
@@ -1656,6 +1656,11 @@ function createAppModel({
         },
       });
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+      analytics.trackEvent(
+        `[${appName}Explorer] Switch live-update ${
+          config.enabled ? 'on' : 'off'
+        }`,
+      );
     }
 
     function destroy(): void {
@@ -2554,7 +2559,9 @@ function createAppModel({
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
+        analytics.trackEvent(
+          `[${appName}Explore][Table] Export runs data to CSV`,
+        );
       }
 
       function onModelNotificationDelete(id: number): void {
@@ -2639,6 +2646,11 @@ function createAppModel({
         });
 
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
+        analytics.trackEvent(
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
+          }`,
+        );
       }
 
       const methods = {
@@ -3750,6 +3762,11 @@ function createAppModel({
         });
 
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+        analytics.trackEvent(
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
+          }`,
+        );
       }
 
       function destroy(): void {

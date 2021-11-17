@@ -7,6 +7,8 @@ import ImagesList from 'components/ImagesList';
 
 import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
 
+import contextToString from 'utils/contextToString';
+
 import { IImageSetProps } from './ImagesSet.d';
 
 import './ImageSet.scss';
@@ -66,7 +68,10 @@ const ImagesSet = ({
           </div>
         </div>
       ) : (
-        <div className='ImagesSet__container'>
+        <div
+          className='ImagesSet__container'
+          key={contextToString(data)?.length}
+        >
           {index !== 0 && (
             <p className='ImagesSet__container__title'>{title}</p>
           )}

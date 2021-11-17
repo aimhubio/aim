@@ -13,6 +13,7 @@
   &__searchButtonContainer {
     padding-left: 1.5rem;
     border-left: $border-main;
+    margin-left: 1.5625rem;
     &__searchButton {
       height: 1.5rem !important;
       width: 5.125rem;
@@ -22,8 +23,10 @@
     display: flex;
     align-items: center;
     height: 100%;
-    margin-right: 1.75rem;
     width: 100%;
+    &:first-child {
+      margin-right: 3rem;
+    }
     &__densityField {
       width: 4rem;
       height: 1.25rem;
@@ -102,11 +105,12 @@
       }
     }
     &__sliderValuesLabel {
-      width: 4.875rem;
+      min-width: 4.4rem;
       margin-right: 0.5rem;
     }
     &__densityFieldLabel {
       margin-right: 0.5rem;
+      min-width: 4.4rem;
     }
   }
 }

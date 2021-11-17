@@ -289,7 +289,7 @@ function processData(data: any[]): {
           });
           metrics.push({
             ...image,
-            image_name: image.caption,
+            images_name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
@@ -300,7 +300,6 @@ function processData(data: any[]): {
       });
     });
   });
-
   const processedData = groupData(
     _.orderBy(
       metrics,
@@ -491,8 +490,8 @@ function getGroupingSelectOptions({
     },
     {
       group: 'images',
-      label: 'image_name',
-      value: 'image_name',
+      label: 'images.name',
+      value: 'images_name',
     },
     ...contextOptions,
   ];
