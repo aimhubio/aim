@@ -326,9 +326,12 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts } = processData(rawData);
+  const { data, params, contexts, highLevelParams } = processData(rawData);
   const groupingSelectOptions = [
-    ...getGroupingSelectOptions({ params, contexts }),
+    ...getGroupingSelectOptions({
+      params: params.concat(highLevelParams).sort(),
+      contexts,
+    }),
   ];
   const tableData = getDataAsTableRows(
     data,
@@ -382,11 +385,14 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts } = processData(
+  const { data, params, contexts, highLevelParams } = processData(
     model.getState()?.rawData as any[],
   );
   const groupingSelectOptions = [
-    ...getGroupingSelectOptions({ params, contexts }),
+    ...getGroupingSelectOptions({
+      params: params.concat(highLevelParams).sort(),
+      contexts,
+    }),
   ];
   const tableData = getDataAsTableRows(
     data,
