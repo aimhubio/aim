@@ -84,6 +84,7 @@ $border-radius: 0.2rem;
   contain: content;
 
   &:last-of-type {
+    flex: 1;
     .Table__cell,
     .Table__group__config__cell {
       border-right: none;
