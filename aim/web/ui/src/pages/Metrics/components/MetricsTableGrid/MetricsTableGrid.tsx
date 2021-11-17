@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 
-import { Link } from '@material-ui/core';
+import { Link, Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, Button, Icon } from 'components/kit';
@@ -265,9 +265,14 @@ function getMetricsTableColumns(
       key: 'groups',
       content: (
         <div className='Metrics__table__groupsColumn__cell'>
-          {Object.keys(groupFields).map((field) => (
-            <span key={field}>{field.replace('run.params.', '')}</span>
-          ))}
+          {Object.keys(groupFields).map((field) => {
+            let name: string = field.replace('run.params.', '');
+            return (
+              <Tooltip key={field} title={name}>
+                <span>{name}</span>
+              </Tooltip>
+            );
+          })}
         </div>
       ),
       topHeader: 'Groups',
