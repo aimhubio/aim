@@ -1925,21 +1925,8 @@ function createAppModel({
         // }
         model.setState({ ...state });
         if (!appId) {
-          const searchParam = new URLSearchParams(window.location.search);
-          const searchFromUrl = searchParam.get('search');
-          const urlFromStorage = getItem(`${appName}Url`);
-          if (searchFromUrl) {
-            setItem(
-              `${appName}Url`,
-              getUrlWithParam({ search: searchFromUrl }),
-            );
-          } else {
-            if (urlFromStorage) {
-              window.history.pushState(null, '', urlFromStorage);
-            }
-          }
+          setDefaultAppConfigData();
         }
-        setDefaultAppConfigData();
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
 

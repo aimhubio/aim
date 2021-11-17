@@ -462,7 +462,7 @@ function getGroupingSelectOptions({
 
   const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
     group: 'images',
-    label: `image.context.${context}`,
+    label: `images.context.${context}`,
     value: `context.${context}`,
   }));
 
