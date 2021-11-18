@@ -21,4 +21,4 @@ class Images(Sequence):
         return self._meta_tree['last_step']
 
     def record_length(self):
-        return self._meta_tree['record_max_length']
+        return self._meta_tree.get('record_max_length', None)
