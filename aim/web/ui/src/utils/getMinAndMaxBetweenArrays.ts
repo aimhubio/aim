@@ -4,8 +4,6 @@ function getMinAndMaxBetweenArrays(compArr: number[], arr?: number[]) {
   }
 
   let resultArr = [];
-  console.log(compArr);
-  console.log(arr);
   if (!compArr) {
     return arr;
   }

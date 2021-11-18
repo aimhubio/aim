@@ -16,4 +16,5 @@ export interface IImagesPanelProps {
   isLoading: boolean;
   applyButtonDisabled: boolean;
   panelResizing: boolean;
+  imageWrapperOffsetHeight: number;
 }

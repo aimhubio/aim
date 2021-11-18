@@ -30,6 +30,7 @@ function ImagesPanel({
   applyButtonDisabled,
   imagesWrapperRef,
   panelResizing,
+  imageWrapperOffsetHeight,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   let timeoutID = useRef(0);
   let blobUriArray: string[] = [];
@@ -63,6 +64,7 @@ function ImagesPanel({
       imagesBlobs,
       imagesWrapperRef?.current?.offsetHeight,
       imagesWrapperRef?.current?.offsetWidth,
+      imageWrapperOffsetHeight,
     ],
   );
 
@@ -113,9 +115,7 @@ function ImagesPanel({
                   onScroll={onScroll}
                   addUriToList={addUriToList}
                   imagesSetKey={imagesSetKey}
-                  imageSetWrapperHeight={
-                    imagesWrapperRef?.current?.offsetHeight - 36
-                  }
+                  imageSetWrapperHeight={imageWrapperOffsetHeight - 36}
                   imageSetWrapperWidth={offsetWidth}
                 />
               </div>

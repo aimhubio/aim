@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 import { isEmpty } from 'lodash-es';
 
@@ -35,6 +35,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
+  const [offsetHeight, setOffsetHeight] = useState(
+    imagesWrapperRef?.current?.offsetHeight,
+  );
 
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -45,6 +48,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesExploreAppModel.onTableResizeEnd,
   );
 
+  React.useEffect(() => {
+    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    imagesWrapperRef?.current?.offsetHeight,
+    imagesExploreData?.config?.table.resizeMode,
+  ]);
   React.useEffect(() => {
     imagesExploreAppModel.initialize(route.params.appId);
     let appRequestRef: {
@@ -162,6 +172,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               imagesWrapperRef={imagesWrapperRef}
               panelResizing={panelResizing}
+              imageWrapperOffsetHeight={offsetHeight || 0}
             />
           </div>
           <ResizePanel
