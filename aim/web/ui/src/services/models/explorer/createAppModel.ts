@@ -500,6 +500,7 @@ function createAppModel({
                 // Abort Error
               } else {
                 console.log('Unhandled error: ', ex);
+                throw ex;
               }
             }
 
@@ -2041,6 +2042,7 @@ function createAppModel({
                 // Abort Error
               } else {
                 console.log('Unhandled error: ', ex);
+                throw ex;
               }
             }
           },
@@ -2873,7 +2875,7 @@ function createAppModel({
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
-                  console.log('Unhandled error: ', ex);
+                  throw ex;
                 }
               }
             }

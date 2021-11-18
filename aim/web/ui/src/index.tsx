@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import reportWebVitals from './reportWebVitals';
+import './services/sentry';
 
 ReactDOM.render(
   <React.StrictMode>

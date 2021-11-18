@@ -1,5 +1,7 @@
 import React from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import {
   IErrorBoundaryProps,
   IErrorBoundaryState,
@@ -25,7 +27,15 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // Log error to reporting servie
+    Sentry.withScope(function (scope) {
+      // group errors together based on their request and response
+      scope.setFingerprint(['FRONTEND', 'Global Boundary']);
+      Sentry.captureException(error, {
+        tags: {
+          section: 'Boundary Global',
+        },
+      });
+    });
   }
 
   render(): React.ReactNode {

@@ -1,6 +1,10 @@
 @use 'src/styles/abstracts' as *;
 @import './utils';
-
+.sentry-error-embed-wrapper {
+  .button {
+    border-radius: 6px !important;
+  }
+}
 .ScrollBar__hidden {
   --ms-overflow-style: none;
   --scrollbar-width: none;
