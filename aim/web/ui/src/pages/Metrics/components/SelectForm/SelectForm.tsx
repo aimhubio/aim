@@ -39,6 +39,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import './SelectForm.scss';
 
 function SelectForm({
+  requestIsPending,
   selectedMetricsData,
   onMetricsSelectChange,
   onSelectRunQueryChange,
@@ -324,11 +325,16 @@ function SelectForm({
           fullWidth
           color='primary'
           variant='contained'
-          startIcon={<SearchOutlined />}
+          startIcon={
+            <Icon
+              name={requestIsPending ? 'close' : 'search'}
+              fontSize={requestIsPending ? 10 : 14}
+            />
+          }
           className='SelectForm__search__button'
           onClick={handleMetricSearch}
         >
-          Search
+          {requestIsPending ? 'Cancel' : 'Search'}
         </Button>
         <div className='SelectForm__search__actions'>
           <Tooltip title='Reset query'>
