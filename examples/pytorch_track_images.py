@@ -84,7 +84,7 @@ for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
         images = images.to(device)
         labels = labels.to(device)
-        aim_images = [AimImage(str(lbl.item()), tensor_to_pil(img)) for lbl, img in zip(labels, images)]
+        aim_images = [AimImage(tensor_to_pil(img), str(lbl.item())) for lbl, img in zip(labels, images)]
 
 
         # Forward pass
