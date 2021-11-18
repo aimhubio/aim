@@ -23,7 +23,6 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             onSearchInputChange={props.onSelectRunQueryChange}
             searchValue={props.query}
             isRunsDataLoading={props.isRunsDataLoading}
-            updateSelectStateUrl={props.updateSelectStateUrl}
           />
           <div className='Runs__table__container'>
             <RunsTable
