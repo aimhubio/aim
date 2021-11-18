@@ -47,8 +47,14 @@ def clean_repo_path(repo_path: Union[str, pathlib.Path]) -> str:
 
 
 def get_object_typename(obj) -> str:
-    if isinstance(obj, (bool, int, float, str, bytes)):
-        return type(obj).__name__
+    if isinstance(obj, float):
+        return 'float'
+    if isinstance(obj, (int, bool)):
+        return 'int'
+    if isinstance(obj, str):
+        return 'str'
+    if isinstance(obj, bytes):
+        return 'bytes'
     if isinstance(obj, dict):
         return 'object'
     if isinstance(obj, (tuple, list)):
