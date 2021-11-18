@@ -5,14 +5,15 @@ const { version } = require('./package.json');
 module.exports = function override(config, env) {
   config.plugins.push(
     new SentryCliPlugin({
-      include: '.',
+      include: 'build',
+      urlPrefix: '~/static-files/',
       ignore: ['node_modules', 'config-override.js', 'tasks'],
       dryRun: process.env.NODE_ENV !== 'production',
-      project: 'test-vn0',
+      project: 'aimtest',
       org: 'test-vn0',
       authToken: process.env.SENTRY_AUTH_TOKEN,
       release: version,
-      validate: true,
+      rewrite: true,
     }),
   );
   return config;

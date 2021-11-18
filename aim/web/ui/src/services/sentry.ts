@@ -12,14 +12,16 @@ function removeUrlSensitiveDataPart(url: string) {
 }
 
 Sentry.init({
-  dsn: 'https://f4e31f7d06374ddbbd26c5d8c48ad6e8@o1069909.ingest.sentry.io/6065277',
+  dsn: 'https://815c55268c174d12949a09954999ee42@o1069909.ingest.sentry.io/6071123',
   integrations: [new Integrations.BrowserTracing()],
   environment: 'production',
   release: version,
   // @ts-ignore
   beforeSend(event: any): PromiseLike<Event | null> | Event | null {
     event.request.url = removeUrlSensitiveDataPart(event.request.url);
-
+    // @TODO remove sensitive data parts from 'breadcrumb log and network request'
+    // /runs?search=hash
+    // /runs
     if (event.exception) {
       Sentry.showReportDialog({
         eventId: event.event_id,

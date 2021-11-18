@@ -12,6 +12,8 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import routes, { IRoute } from 'routes/routes';
 
+import { version } from '../../.././package.json';
+
 import './Sidebar.scss';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
@@ -85,6 +87,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             );
           })}
         </ul>
+        {version}
       </Drawer>
     </div>
   );
