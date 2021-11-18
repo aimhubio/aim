@@ -12,6 +12,8 @@ import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 
 import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
 
+import useResizeObserver from 'hooks/window/useResizeObserver';
+
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
@@ -59,7 +61,6 @@ const Table = React.forwardRef(function Table(
     updateColumnsWidths,
     sortFields,
     hiddenRows,
-    groups,
     isLoading,
     showRowClickBehaviour = true,
     showResizeContainerActionBar = true,
@@ -80,11 +81,17 @@ const Table = React.forwardRef(function Table(
   const dataRef = React.useRef(data);
   const columnsRef = React.useRef(columns ?? []);
   const hiddenColumnsRef = React.useRef(hiddenColumns);
+  const scrollTopMutableRef = React.useRef({ top: 0 });
 
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns ?? []);
   const [expanded, setExpanded] = React.useState({});
-  const scrollTopMutableRef = React.useRef({ top: 0 });
+  const [listWindow, setListWindow] = React.useState({
+    left: 0,
+    width: 0,
+  });
+
+  let groups = !Array.isArray(rowData);
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -401,6 +408,13 @@ const Table = React.forwardRef(function Table(
     }
   }
 
+  function setListWindowMeasurements() {
+    setListWindow({
+      left: tableContainerRef.current?.scrollLeft,
+      width: tableContainerRef.current?.offsetWidth,
+    });
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -445,6 +459,7 @@ const Table = React.forwardRef(function Table(
             props.infiniteLoadHandler();
           }
         }
+        setListWindowMeasurements();
       }, 100);
     }
 
@@ -454,6 +469,30 @@ const Table = React.forwardRef(function Table(
       }
     };
   }, [custom, rowData]);
+
+  React.useEffect(() => {
+    if (custom) {
+      setListWindowMeasurements();
+    }
+  }, [custom]);
+
+  React.useEffect(() => {
+    if (custom) {
+      requestAnimationFrame(() => {
+        updateHoveredRow(
+          `rowKey-${
+            activeRowKey.current ? activeRowKey.current : hoveredRowKey.current
+          }`,
+        );
+      });
+    }
+  }, [custom, listWindow]);
+
+  const observerReturnCallback = React.useCallback(() => {
+    setListWindowMeasurements();
+  }, []);
+
+  useResizeObserver(observerReturnCallback, tableContainerRef);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
@@ -651,10 +690,10 @@ const Table = React.forwardRef(function Table(
                       hiddenRows={hiddenRows}
                       data={rowData}
                       columns={columnsData.filter((col) => !col.isHidden)}
-                      groups={groups}
                       onGroupExpandToggle={onGroupExpandToggle}
                       onRowHover={rowHoverHandler}
                       onRowClick={rowClickHandler}
+                      listWindow={listWindow}
                       {...props}
                     />
                   </div>
@@ -709,12 +748,9 @@ function propsComparator(
   prevProps: ITableProps,
   nextProps: ITableProps,
 ): boolean {
-  // add custom here checks here
-  if (prevProps.isLoading !== nextProps.isLoading) {
-    return false;
-  }
+  // Add custom here checks here
 
-  if (prevProps.data !== nextProps.data) {
+  if (prevProps.isLoading !== nextProps.isLoading) {
     return false;
   }
 
@@ -727,6 +763,10 @@ function propsComparator(
   }
 
   if (prevProps.resizeMode !== nextProps.resizeMode) {
+    return false;
+  }
+
+  if (prevProps.columnsWidths !== nextProps.columnsWidths) {
     return false;
   }
 

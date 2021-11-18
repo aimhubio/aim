@@ -1,4 +1,4 @@
-from typing import Generic, Union, Tuple, List, TypeVar
+from typing import Generic, Union, Tuple, List, TypeVar, Dict
 
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
@@ -15,7 +15,6 @@ T = TypeVar('T')
 
 
 class Sequence(Generic[T]):
-    # TODO move the core logic of Run.track here
     """Class representing single series of tracked value.
 
     Objects series can be retrieved as Sequence regardless the object's type,
@@ -23,6 +22,14 @@ class Sequence(Generic[T]):
     Provides interface to access tracked values, steps, timestamps and epochs.
     Values, epochs and timestamps are accessed via :obj:`aim.storage.arrayview.ArrayView` interface.
     """
+
+    registry: Dict[str, type] = dict()
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        subclass_typename = cls.sequence_name()
+        cls.registry[subclass_typename] = cls
+
     def __init__(
         self,
         name: str,
@@ -33,7 +40,8 @@ class Sequence(Generic[T]):
         self.context = context
         self.run = run
 
-        self.tree = run.metric_tree(name, context)
+        self._sequence_meta_tree = None
+        self._series_tree = run.series_run_tree.subtree((context.idx, name))
 
         self._hash: int = None
 
@@ -48,6 +56,10 @@ class Sequence(Generic[T]):
         The base Sequence allows any value, and to indicate that, `allowed_dtypes` returns '*'.
         """
         return '*'
+
+    @classmethod
+    def sequence_name(cls) -> str:
+        ...
 
     def _calc_hash(self):
         return hash_auto(
@@ -67,8 +79,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns values ArrayView.
         """
-        array_view = self.tree.array('val')
-        return array_view
+        return self._series_tree.array('val')
 
     @property
     def indices(self) -> List[int]:
@@ -85,8 +96,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns epochs ArrayView.
         """
-        array_view = self.tree.array('epoch')
-        return array_view
+        return self._series_tree.array('epoch')
 
     @property
     def timestamps(self) -> ArrayView[float]:
@@ -94,8 +104,13 @@ class Sequence(Generic[T]):
 
             :getter: Returns timestamps ArrayView.
         """
-        array_view = self.tree.array('time')
-        return array_view
+        return self._series_tree.array('time')
+
+    @property
+    def _meta_tree(self):
+        if self._sequence_meta_tree is None:
+            self._sequence_meta_tree = self.run.meta_run_tree.subtree(('traces', self.context.idx, self.name))
+        return self._sequence_meta_tree
 
     def __bool__(self) -> bool:
         try:
@@ -107,4 +122,4 @@ class Sequence(Generic[T]):
         return len(self.values)
 
     def preload(self):
-        self.tree.preload()
+        self._series_tree.preload()

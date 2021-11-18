@@ -62,6 +62,7 @@ import {
   IRun,
   IMetricTrace,
   IParamTrace,
+  ISequence,
 } from 'types/services/models/metrics/runModel';
 import { IModel } from 'types/services/models/model';
 import {
@@ -171,6 +172,7 @@ import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -438,7 +440,7 @@ function createAppModel({
       }
     }
 
-    function updateData(newData: IRun<IMetricTrace>[]): void {
+    function updateData(newData: ISequence<IMetricTrace>[]): void {
       const configData = model.getState()?.config;
       if (configData) {
         setModelData(newData, configData);
@@ -631,7 +633,7 @@ function createAppModel({
               run: moment(metric.run.props.creation_time * 1000).format(
                 'HH:mm:ss · D MMM, YY',
               ),
-              metric: metric.metric_name,
+              metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
               value:
                 closestIndex === null
@@ -803,7 +805,7 @@ function createAppModel({
       model.setState({ config: configData });
     }
 
-    function processData(data: IRun<IMetricTrace>[]): {
+    function processData(data: ISequence<IMetricTrace>[]): {
       data: IMetricsCollection<IMetric>[];
       params: string[];
       highLevelParams: string[];
@@ -817,7 +819,7 @@ function createAppModel({
       let contexts: string[] = [];
       const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
-      data?.forEach((run: IRun<IMetricTrace>) => {
+      data?.forEach((run: ISequence<IMetricTrace>) => {
         params = params.concat(getObjectPaths(run.params, run.params));
         highLevelParams = highLevelParams.concat(
           getObjectPaths(run.params, run.params, '', false, true),
@@ -850,7 +852,7 @@ function createAppModel({
             }
             const metricKey = encode({
               runHash: run.hash,
-              metricName: trace.metric_name,
+              metricName: trace.name,
               traceContext: trace.context,
             });
             return createMetricModel({
@@ -904,7 +906,7 @@ function createAppModel({
       shouldURLUpdate?: boolean,
     ): void {
       const { data, params, highLevelParams, contexts } = processData(
-        model.getState()?.rawData as IRun<IMetricTrace>[],
+        model.getState()?.rawData as ISequence<IMetricTrace>[],
       );
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
@@ -973,7 +975,7 @@ function createAppModel({
     }
 
     function setModelData(
-      rawData: IRun<IMetricTrace>[],
+      rawData: ISequence<IMetricTrace>[],
       configData: IMetricAppConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
@@ -1492,7 +1494,7 @@ function createAppModel({
         type: 'text/csv;charset=utf-8;',
       });
       saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-      analytics.trackEvent(`[${appName}] Export runs data to CSV`);
+      analytics.trackEvent(`[${appName}Explore] Export runs data to CSV`);
     }
 
     const onActivePointChange = _.debounce(
@@ -1654,6 +1656,11 @@ function createAppModel({
         },
       });
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+      analytics.trackEvent(
+        `[${appName}Explorer] Switch live-update ${
+          config.enabled ? 'on' : 'off'
+        }`,
+      );
     }
 
     function destroy(): void {
@@ -1747,7 +1754,7 @@ function createAppModel({
           onMetricsSelectChange({ data, model, appName });
         },
         onSelectRunQueryChange(query: string): void {
-          onSelectRunQueryChange({ query, model, appName });
+          onSelectRunQueryChange({ query, model });
         },
         onSelectAdvancedQueryChange(query: string): void {
           onSelectAdvancedQueryChange({ query, model, appName });
@@ -1918,21 +1925,8 @@ function createAppModel({
         // }
         model.setState({ ...state });
         if (!appId) {
-          const searchParam = new URLSearchParams(window.location.search);
-          const searchFromUrl = searchParam.get('search');
-          const urlFromStorage = getItem(`${appName}Url`);
-          if (searchFromUrl) {
-            setItem(
-              `${appName}Url`,
-              getUrlWithParam({ search: searchFromUrl }),
-            );
-          } else {
-            if (urlFromStorage) {
-              window.history.pushState(null, '', urlFromStorage);
-            }
-          }
+          setDefaultAppConfigData();
         }
-        setDefaultAppConfigData();
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
 
@@ -2028,14 +2022,13 @@ function createAppModel({
                   },
                 },
               });
-              setTimeout(() => {
-                const tableRef: any = model.getState()?.refs?.tableRef;
-                tableRef.current?.updateData({
-                  newData: tableData.rows,
-                  newColumns: tableColumns,
-                  hiddenColumns: configData.table.hiddenColumns!,
-                });
-              }, 0);
+
+              const tableRef: any = model.getState()?.refs?.tableRef;
+              tableRef.current?.updateData({
+                newData: tableData.rows,
+                newColumns: tableColumns,
+                hiddenColumns: configData.table.hiddenColumns!,
+              });
             } catch (ex) {
               if (ex.name === 'AbortError') {
                 // Abort Error
@@ -2154,9 +2147,9 @@ function createAppModel({
 
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
-          run.traces.forEach((trace) => {
-            metricsColumns[trace.metric_name] = {
-              ...metricsColumns[trace.metric_name],
+          run.traces.metric.forEach((trace) => {
+            metricsColumns[trace.name] = {
+              ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
           });
@@ -2343,7 +2336,9 @@ function createAppModel({
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
-                groupByMetricName[`${key}_${metricContext}`] = '-';
+                groupByMetricName[
+                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                ] = '-';
               },
             );
             acc = { ...acc, ...groupByMetricName };
@@ -2379,9 +2374,13 @@ function createAppModel({
           }
           metricsCollection.data.forEach((metric: any) => {
             const metricsRowValues = { ...initialMetricsRowData };
-            metric.run.traces.forEach((trace: any) => {
+            metric.run.traces.metric.forEach((trace: any) => {
               metricsRowValues[
-                `${trace.metric_name}_${contextToString(trace.context)}`
+                `${
+                  isSystemMetric(trace.name)
+                    ? trace.name
+                    : `${trace.name}_${contextToString(trace.context)}`
+                }`
               ] = formatValue(trace.last_value.last);
             });
             const rowValues: any = {
@@ -2391,8 +2390,10 @@ function createAppModel({
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment.name ?? 'default',
-              run: metric.run.props.name ?? '-',
-              metric: metric.metric_name,
+              run: moment(metric.run.props.creation_time * 1000).format(
+                'HH:mm:ss · D MMM, YY',
+              ),
+              metric: metric.name,
               ...metricsRowValues,
             };
             rowIndex++;
@@ -2545,7 +2546,9 @@ function createAppModel({
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
+        analytics.trackEvent(
+          `[${appName}Explore][Table] Export runs data to CSV`,
+        );
       }
 
       function onModelNotificationDelete(id: number): void {
@@ -2579,14 +2582,13 @@ function createAppModel({
             },
           },
         });
-        setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-            hiddenColumns: modelState?.config.table.hiddenColumns!,
-          });
-        }, 0);
+
+        const tableRef: any = model.getState()?.refs?.tableRef;
+        tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+          hiddenColumns: modelState?.config.table.hiddenColumns!,
+        });
       }
 
       function destroy(): void {
@@ -2631,6 +2633,11 @@ function createAppModel({
         });
 
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
+        analytics.trackEvent(
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
+          }`,
+        );
       }
 
       const methods = {
@@ -2650,7 +2657,7 @@ function createAppModel({
       if (selectForm) {
         Object.assign(methods, {
           onSelectRunQueryChange(query: string): void {
-            onSelectRunQueryChange({ query, model, appName });
+            onSelectRunQueryChange({ query, model });
           },
           updateSelectStateUrl(): void {
             const selectData = model.getState()?.config?.select;
@@ -2896,7 +2903,9 @@ function createAppModel({
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
-                groupByMetricName[`${key}_${metricContext}`] = '-';
+                groupByMetricName[
+                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                ] = '-';
               },
             );
             acc = { ...acc, ...groupByMetricName };
@@ -2954,9 +2963,13 @@ function createAppModel({
 
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
-              metric.run.traces.forEach((trace: any) => {
+              metric.run.traces.metric.forEach((trace: any) => {
                 metricsRowValues[
-                  `${trace.metric_name}_${contextToString(trace.context)}`
+                  `${
+                    isSystemMetric(trace.name)
+                      ? trace.name
+                      : `${trace.name}_${contextToString(trace.context)}`
+                  }`
                 ] = formatValue(trace.last_value.last);
               });
               const rowValues: any = {
@@ -2973,7 +2986,7 @@ function createAppModel({
                 run: moment(metric.run.props.creation_time * 1000).format(
                   'HH:mm:ss · D MMM, YY',
                 ),
-                metric: metric.metric_name,
+                metric: metric.name,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -3072,7 +3085,6 @@ function createAppModel({
             }
           },
         );
-
         return { rows, sameValueColumns };
       }
 
@@ -3111,12 +3123,12 @@ function createAppModel({
                       };
                     }
                     if (type === 'metrics') {
-                      run.run.traces.forEach((trace: IParamTrace) => {
+                      run.run.traces.metric.forEach((trace: IParamTrace) => {
                         const formattedContext = `${
                           value?.param_name
                         }-${contextToString(trace.context)}`;
                         if (
-                          trace.metric_name === value?.param_name &&
+                          trace.name === value?.param_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
                           values[formattedContext] = trace.last_value.last;
@@ -3434,9 +3446,9 @@ function createAppModel({
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
-          run.traces.forEach((trace) => {
-            metricsColumns[trace.metric_name] = {
-              ...metricsColumns[trace.metric_name],
+          run.traces.metric.forEach((trace) => {
+            metricsColumns[trace.name] = {
+              ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
           });
@@ -3737,6 +3749,11 @@ function createAppModel({
         });
 
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+        analytics.trackEvent(
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
+          }`,
+        );
       }
 
       function destroy(): void {
@@ -3819,7 +3836,7 @@ function createAppModel({
             }
           },
           onSelectRunQueryChange(query: string): void {
-            onSelectRunQueryChange({ query, model, appName });
+            onSelectRunQueryChange({ query, model });
           },
         });
       }

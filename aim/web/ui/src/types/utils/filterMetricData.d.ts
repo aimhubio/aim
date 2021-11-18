@@ -1,7 +1,7 @@
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 export interface IFilterMetricDataParams {
-  values: number[];
+  values?: number[];
   steps: number[];
   epochs: number[];
   timestamps: number[];

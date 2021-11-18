@@ -1,7 +1,7 @@
-from tests.base import ApiTestBase
+from tests.base import PrefilledDataApiTestBase
 
 
-class TestDashboardAppsApi(ApiTestBase):
+class TestDashboardAppsApi(PrefilledDataApiTestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
@@ -53,7 +53,7 @@ class TestDashboardAppsApi(ApiTestBase):
         self.assertEqual(app_data['type'], data['type'])
 
 
-class TestDashboardsApi(ApiTestBase):
+class TestDashboardsApi(PrefilledDataApiTestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()

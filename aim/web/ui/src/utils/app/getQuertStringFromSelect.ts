@@ -13,17 +13,21 @@ export default function getQueryStringFromSelect(
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
       }(${selectData.metrics
-        .map((metric) =>
-          metric.value.context === null
-            ? `(metric.name == "${metric.value.metric_name}")`
-            : `${Object.keys(metric.value.context).map(
-                (item) =>
-                  `(metric.name == "${
-                    metric.value.metric_name
-                  }" and metric.context.${item} == ${formatValue(
-                    (metric.value.context as any)[item],
-                  )})`,
-              )}`,
+        .map(
+          (metric) =>
+            `(metric.name == "${metric.value.metric_name}"${
+              metric.value.context === null
+                ? ''
+                : ' and ' +
+                  Object.keys(metric.value.context)
+                    .map(
+                      (item) =>
+                        `metric.context.${item} == ${formatValue(
+                          (metric.value.context as any)[item],
+                        )}`,
+                    )
+                    .join(' and ')
+            })`,
         )
         .join(' or ')})`.trim();
     }

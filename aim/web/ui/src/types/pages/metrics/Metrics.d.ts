@@ -69,7 +69,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   hiddenMetrics: string[];
   hiddenColumns: string[];
   groupingSelectOptions: IGroupingSelectOption[];
-  projectsDataMetrics: IProjectParamsMetrics['metrics'];
+  projectsDataMetrics: IProjectParamsMetrics['metric'];
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;

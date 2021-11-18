@@ -9,6 +9,7 @@ import {
   MenuItem,
 } from '@material-ui/core';
 
+import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
@@ -17,8 +18,6 @@ import { Button, Icon, Text } from 'components/kit';
 import { trackEvent } from 'services/analytics';
 
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
-
-import BookmarkForm from '../BookmarkForm/BookmarkForm';
 
 import './MetricsBar.scss';
 

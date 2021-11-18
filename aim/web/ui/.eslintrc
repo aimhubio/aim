@@ -1,0 +1,130 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "extends": [
+    "react-app",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
+    "plugin:prettier/recommended",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "no-console": "warn",
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/react-in-jsx-scope": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "unknown"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "*.+(css|sass|less|scss|pcss|styl)",
+            "group": "unknown",
+            "patternOptions": {
+              "matchBase": true
+            },
+            "position": "after"
+          },
+          {
+            "pattern": "*",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@+/**",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "assets/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "components/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "config/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "fonts/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "hooks/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "pages/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "routes/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "services/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "styles/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "types/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "utils/**",
+            "group": "parent",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": [],
+        "warnOnUnassignedImports": true,
+        "newlines-between": "always"
+      }
+    ]
+  },
+  "plugins": [
+    "react",
+    "prettier",
+    "react-hooks",
+    "@typescript-eslint"
+  ]
+}

@@ -20,9 +20,9 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 const icons: { [key: string]: string } = {
-  color: 'coloring-bold',
-  stroke: 'line-style-bold',
-  chart: 'chart-group-bold',
+  color: 'coloring',
+  stroke: 'line-style',
+  chart: 'chart-group',
 };
 
 function getParamsTableColumns(
@@ -128,7 +128,7 @@ function getParamsTableColumns(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
       const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === `run.params.${paramKey}`,
+        (value) => value[0] === paramKey,
       );
 
       return {

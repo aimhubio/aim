@@ -21,7 +21,7 @@ export interface IRunDetailSettingsTabProps {
 export interface IRunBatch {
   context: { [key: string]: string };
   iters: number[];
-  metric_name: string;
+  name: string;
   values: number[];
 }
 export interface IRunInfo {

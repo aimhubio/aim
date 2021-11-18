@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import { Button, Icon, Badge, Text } from 'components/kit';
+import { IconName } from 'components/kit/Icon';
 
 import COLORS from 'config/colors/colors';
 
@@ -12,6 +13,12 @@ import * as analytics from 'services/analytics';
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
 import './BookmarkCard.scss';
+
+const BookmarkIconType: { [key: string]: IconName } = {
+  images: 'images',
+  params: 'params',
+  metrics: 'metrics',
+};
 
 function BookmarkCard({
   name,
@@ -43,9 +50,12 @@ function BookmarkCard({
     <div className='BookmarkCard__container'>
       <div className='BookmarkCard__top'>
         <div className='BookmarkCard__title__section'>
-          <Text size={18} weight={600} component='h3' tint={100}>
-            {name}
-          </Text>
+          <div className='BookmarkCard__title__section__container'>
+            <Icon name={BookmarkIconType[type]} fontSize={16} />
+            <Text size={18} weight={600} component='h3' tint={100}>
+              {name}
+            </Text>
+          </div>
           <div className='flex fac fjc'>
             <NavLink to={`/${type}/${app_id}`}>
               <Button
