@@ -8,13 +8,7 @@
 <br />
 
 **Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.**
-
-[![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
-[![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
-[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
-[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
-
+  
 <h3 align="center">
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/quick_start/getting_started.html"><b>Aim in 3 steps</b></a> &bull;
@@ -24,8 +18,15 @@
   <a href="https://slack.aimstack.io/"><b>Slack Community</b></a> &bull;
   <a href="https://twitter.com/aimstackio"><b>Twitter</b></a>
 </h3>
-  
+
 ---
+  
+[![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
+[![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
+[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
+[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
+
 <kbd>
   <img src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
 </kbd>
@@ -59,10 +60,8 @@ Follow the steps below to get started with Aim.
 
 **1. Install Aim on your training environment**
 
-_Prerequisite: You need to have python3 and pip3 installed in your environment before installing Aim_
-
 ```shell
-$ pip3 install aim
+pip3 install aim
 ```
 
 **2. Integrate Aim with your code**
@@ -180,7 +179,7 @@ _See documentation [here](#xgboost)._
 **3. Run the training as usual and start Aim UI**
 
 ```shell
-$ aim up
+aim up
 ```
 
 # How to use Aim UI?
@@ -195,8 +194,10 @@ Runs explorer will help you to hollistically view all your [runs](https://aimsta
 - Search runs by date, experiment, hash, tag or parameters
 - Search by run/experiment
 
-<img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/runs.png" />
-
+<kbd>
+  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/runs.png" />
+</kbd>
+  
 ## Metrics explorer
 Metrics explorer helps you to compare 100s of metrics within a few clicks.
 It helps to save lots of time compared to other open-source experiment tracking tools.
@@ -210,8 +211,10 @@ It helps to save lots of time compared to other open-source experiment tracking 
 - Change scale of the axes (linear or log)
 - Align metrics by time, epoch or another metric
 
-<img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/metrics.png" />
-
+<kbd>
+  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/metrics.png" />
+</kbd>
+  
 ## Params explorer
 Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
 
@@ -220,8 +223,10 @@ Params explorer enables a parallel coordinates view for metrics and params. Very
 - Group runs or divide into subplots
 - Apply chart indicator to see correlations
 
-<img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/params.png" />
-
+<kbd>
+  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/params.png" />
+</kbd>
+  
 ## Single run page
 Explore all the metadata associated with a run on the single run page.
 It's accessible from all the tables and tooltips.
@@ -230,13 +235,17 @@ It's accessible from all the tables and tooltips.
 - See all the logged params of a run
 - See all the tracked metrics(including system metrics)
 
-<img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/single_run.png" />
-
+<kbd>
+  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/single_run.png" />
+</kbd>
+  
 ## Images explorer (coming soon...)
 Track intermediate images and search, compare them on the Images Explorer.
 
-<img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/images.png" />
-
+<kbd>
+  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/images.png" />
+</kbd>
+  
 # How to query logs programmatically
 
 Use `Repo` object to query and access saved `Run`s.
