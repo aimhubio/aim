@@ -71,7 +71,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         response = client.get('/api/runs/search/images/', params={'record_density': 200, 'index_density': 10})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024),
+                                                                  concat_chunks=True))
         self.assertEqual(1, len(decoded_response))
         run_data = decoded_response[self.run_hash]
         trace_data = run_data['traces'][0]
@@ -234,6 +235,95 @@ class TestRunImagesBatchApi(RunImagesTestBase):
         self.assertEqual(16, img['height'])
         self.assertEqual('png', img['format'])
         self.assertIn('blob_uri', img)
+
+
+class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+
+        run = Run(system_tracking_interval=None)
+        cls.run_hash = run.hash
+
+        for step in range(5):
+            images = generate_image_set(img_count=5, caption_prefix=f'Image {step}')
+            run.track(images, name='image_lists', context={})
+            run.track(images[0], name='single_images', context={})
+
+    def test_search_simgle_image_only_default_index_range(self):
+        client = self.client
+
+        response = client.get('/api/runs/search/images/', params={'q': 'images.name == "single_images"'})
+        self.assertEqual(200, response.status_code)
+
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
+        self.assertEqual(1, len(decoded_response))
+        run_data = decoded_response[self.run_hash]
+        self.assertEqual([0, 5], run_data['ranges']['record_range'])
+        self.assertEqual([0, 5, 1], run_data['ranges']['record_slice'])
+        self.assertEqual([0, 1], run_data['ranges']['index_range'])
+        self.assertEqual([0, 1, 1], run_data['ranges']['index_slice'])
+
+        self.assertEqual(1, len(run_data['traces']))
+        trace_data = run_data['traces'][0]
+        self.assertEqual('single_images', trace_data['name'])
+        self.assertEqual(5, len(trace_data['values']))
+        img_list = trace_data['values'][0]
+        self.assertEqual(1, len(img_list))
+
+    def test_mixed_search_default_index_range(self):
+        client = self.client
+
+        response = client.get('/api/runs/search/images/', params={'q': ''})
+        self.assertEqual(200, response.status_code)
+
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
+        self.assertEqual(1, len(decoded_response))
+        run_data = decoded_response[self.run_hash]
+        self.assertEqual([0, 5], run_data['ranges']['record_range'])
+        self.assertEqual([0, 5, 1], run_data['ranges']['record_slice'])
+        self.assertEqual([0, 5], run_data['ranges']['index_range'])
+        self.assertEqual([0, 5, 1], run_data['ranges']['index_slice'])
+
+        self.assertEqual(2, len(run_data['traces']))
+        trace_data = run_data['traces'][0]
+        self.assertEqual('image_lists', trace_data['name'])
+        self.assertEqual(5, len(trace_data['values']))
+        img_list = trace_data['values'][0]
+        self.assertEqual(5, len(img_list))
+
+        trace_data = run_data['traces'][1]
+        self.assertEqual('single_images', trace_data['name'])
+        self.assertEqual(5, len(trace_data['values']))
+        img_list = trace_data['values'][0]
+        self.assertEqual(1, len(img_list))
+
+    def test_mixed_search_custom_index_range(self):
+        client = self.client
+
+        response = client.get('/api/runs/search/images/', params={'q': '', 'index_range': '3:5'})
+        self.assertEqual(200, response.status_code)
+
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
+        self.assertEqual(1, len(decoded_response))
+        run_data = decoded_response[self.run_hash]
+        self.assertEqual([0, 5], run_data['ranges']['record_range'])
+        self.assertEqual([0, 5, 1], run_data['ranges']['record_slice'])
+        self.assertEqual([3, 5], run_data['ranges']['index_range'])
+        self.assertEqual([3, 5, 1], run_data['ranges']['index_slice'])
+
+        self.assertEqual(2, len(run_data['traces']))
+        trace_data = run_data['traces'][0]
+        self.assertEqual('image_lists', trace_data['name'])
+        self.assertEqual(5, len(trace_data['values']))
+        img_list = trace_data['values'][0]
+        self.assertEqual(2, len(img_list))
+
+        trace_data = run_data['traces'][1]
+        self.assertEqual('single_images', trace_data['name'])
+        self.assertEqual(5, len(trace_data['values']))
+        img_list = trace_data['values'][0]
+        self.assertListEqual([], img_list)
 
 
 class TestRunInfoApi(ApiTestBase):
