@@ -18,29 +18,42 @@ from aim.web.api.db import get_contexted_session
 from aim.web.api.db import Base as ApiBase
 
 
-def decode_encoded_tree_stream(stream: Iterator[bytes]) -> bytes:
+def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> bytes:
     # TODO: handle case when chunk ends at the middle of key/value
     # TODO: if remaining part of chunk cannot be unpacked, prepend to next one and try with new chunk
     prev_chunk_tail = b''
-    for chunk in stream:
-        data = prev_chunk_tail + chunk
-        prev_chunk_tail = b''
-        print("processing chunk: ", len(chunk))
+    if concat_chunks:
+        data = b''
+        for chunk in stream:
+            data += chunk
         while data:
-            try:
-                (key_size,), data_tail = struct.unpack('I', data[:4]), data[4:]
-                key, data_tail = data_tail[:key_size], data_tail[key_size:]
+            (key_size,), data_tail = struct.unpack('I', data[:4]), data[4:]
+            key, data_tail = data_tail[:key_size], data_tail[key_size:]
 
-                (value_size,), data_tail = struct.unpack('I', data_tail[:4]), data_tail[4:]
-                value, data_tail = data_tail[:value_size], data_tail[value_size:]
-                data = data_tail
-            except Exception:
-                prev_chunk_tail = data
-                break
-
+            (value_size,), data_tail = struct.unpack('I', data_tail[:4]), data_tail[4:]
+            value, data_tail = data_tail[:value_size], data_tail[value_size:]
+            data = data_tail
             yield key, value
+    else:
+        for chunk in stream:
+            data = prev_chunk_tail + chunk
+            prev_chunk_tail = b''
+            print("processing chunk: ", len(chunk))
+            while data:
+                try:
+                    (key_size,), data_tail = struct.unpack('I', data[:4]), data[4:]
+                    key, data_tail = data_tail[:key_size], data_tail[key_size:]
 
-    assert prev_chunk_tail == b''
+                    (value_size,), data_tail = struct.unpack('I', data_tail[:4]), data_tail[4:]
+                    value, data_tail = data_tail[:value_size], data_tail[value_size:]
+                    data = data_tail
+                except Exception:
+                    prev_chunk_tail = data
+                    break
+
+                yield key, value
+
+        assert prev_chunk_tail == b''
 
 
 def generate_image_set(img_count, caption_prefix='Image', img_size=(16, 16)):

@@ -71,7 +71,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         response = client.get('/api/runs/search/images/', params={'record_density': 200, 'index_density': 10})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024),
+                                                                  concat_chunks=True))
         self.assertEqual(1, len(decoded_response))
         run_data = decoded_response[self.run_hash]
         trace_data = run_data['traces'][0]
