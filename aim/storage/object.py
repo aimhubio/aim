@@ -25,6 +25,7 @@ class CustomObject(CustomObjectBase):
 
     @classmethod
     def get_typename(cls):
+        # TODO [AT, MV] check AIM_NAME to have python type name format (f.e. "aim.sdk.Image" but not "abc//}?")
         return cls.AIM_NAME
 
     def __new__(cls, *args, _storage=None, **kwargs):

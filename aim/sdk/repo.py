@@ -292,9 +292,7 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
         self._prepare_runs_cache()
-        # TODO [AT]: check other Sequence types once Run explorer is ready.
-        from aim.sdk.metric import Metric
-        return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
+        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset)
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.

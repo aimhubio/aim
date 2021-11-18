@@ -71,7 +71,7 @@ def get_object_typename(obj) -> str:
     return 'unknown'
 
 
-any_list_regex = re.compile(r'list\([A-Za-z]{1}[A-Za-z0-9]*\)')
+any_list_regex = re.compile(r'list\([A-Za-z]{1}[A-Za-z0-9.]*\)')
 
 
 def check_types_compatibility(dtype: str, base_dtype: str, update_base_dtype_fn=None) -> bool:
