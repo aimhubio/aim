@@ -75,21 +75,19 @@
           .MuiSlider-valueLabel {
             left: calc(-50% - 0.625rem);
             top: -1.0625rem;
-            &.PrivateValueLabel-offset-15 {
-              .PrivateValueLabel-circle-16 {
-                width: 2.3125rem;
-                height: 1.1875rem;
-                border: 0.0625rem solid $primary-color;
-                background: $white;
-                border-radius: 0.4375rem;
-                transform: unset;
-                .PrivateValueLabel-label-17 {
-                  font-size: 0.625rem;
-                  font-weight: 600;
-                  color: $primary-color;
-                  transform: unset;
-                }
-              }
+          }
+          .MuiSlider-valueLabel > span {
+            width: 2.3125rem;
+            height: 1.1875rem;
+            border: 0.0625rem solid $primary-color;
+            background: $white;
+            border-radius: 0.4375rem;
+            transform: unset;
+            span {
+              font-size: 0.625rem;
+              font-weight: 600;
+              color: $primary-color;
+              transform: unset;
             }
           }
           &.Mui-focusVisible {

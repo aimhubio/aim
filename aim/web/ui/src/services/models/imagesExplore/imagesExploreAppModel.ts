@@ -54,6 +54,7 @@ import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
+import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 
 import createModel from '../model';
 
@@ -333,6 +334,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
+
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -352,10 +354,14 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       : !isEmpty(rawData)
       ? (rawData[0].ranges.index_range as number[])
       : [],
-    recordSlice:
-      config.images.recordSlice || rawData?.[0]?.ranges.record_range || [],
-    indexSlice:
-      config.images.indexSlice || rawData?.[0]?.ranges.index_range || [],
+    recordSlice: getMinAndMaxBetweenArrays(
+      rawData?.[0]?.ranges.record_range as number[],
+      config.images.recordSlice as number[],
+    ),
+    indexSlice: getMinAndMaxBetweenArrays(
+      rawData?.[0]?.ranges.index_range as number[],
+      config.images.indexSlice as number[],
+    ),
     recordDensity: config.images.recordDensity || '50',
     indexDensity: config.images.indexDensity || '5',
     calcRanges: false,
