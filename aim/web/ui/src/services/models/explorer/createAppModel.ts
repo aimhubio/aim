@@ -1941,7 +1941,10 @@ function createAppModel({
         return getRunsData();
       }
 
-      function getRunsData(isInitial = true): {
+      function getRunsData(
+        shouldUrlUpdate?: boolean,
+        isInitial = true,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -1962,6 +1965,10 @@ function createAppModel({
           pagination?.limit,
           pagination?.offset,
         );
+
+        if (shouldUrlUpdate) {
+          updateURL({ configData, appName });
+        }
 
         return {
           call: async () => {
@@ -2480,7 +2487,7 @@ function createAppModel({
               },
             },
           });
-          return getRunsData(false);
+          return getRunsData(false, false);
         }
       }
 
@@ -2658,12 +2665,6 @@ function createAppModel({
         Object.assign(methods, {
           onSelectRunQueryChange(query: string): void {
             onSelectRunQueryChange({ query, model });
-          },
-          updateSelectStateUrl(): void {
-            const selectData = model.getState()?.config?.select;
-            if (selectData) {
-              updateUrlParam({ data: { search: selectData }, appName });
-            }
           },
         });
       }

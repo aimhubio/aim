@@ -15,7 +15,6 @@ function SearchBar({
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
-  updateSelectStateUrl,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
 
@@ -27,9 +26,8 @@ function SearchBar({
 
   function handleRunSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
-    searchRunsRef.current = runAppModel.getRunsData();
+    searchRunsRef.current = runAppModel.getRunsData(true);
     searchRunsRef.current.call().catch();
-    updateSelectStateUrl();
   }
 
   return (
