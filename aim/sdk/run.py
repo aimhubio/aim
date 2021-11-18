@@ -5,13 +5,12 @@ import os
 
 from collections import defaultdict
 from time import time
-from collections import Counter
 from copy import deepcopy
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash, get_object_typename
+from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
 from aim.sdk.num_utils import convert_to_py_number
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
@@ -159,6 +158,13 @@ class StructuredRunMixin:
         return self.props.remove_tag(tag_id)
 
 
+class SequenceInfo:
+    def __init__(self):
+        self.initialized = False
+        self.count = None
+        self.sequence_dtype = None
+
+
 class Run(StructuredRunMixin):
     """Run object used for tracking metrics.
 
@@ -206,7 +212,7 @@ class Run(StructuredRunMixin):
         self._props = None
 
         self.contexts: Dict[Context, int] = dict()
-        self.series_counters: Dict[MetricDescriptor.Selector, int] = Counter()
+        self.sequence_info: Dict[MetricDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', self.hash, read_only=read_only, from_union=True
@@ -371,17 +377,27 @@ class Run(StructuredRunMixin):
         epoch_view = self.series_run_tree.subtree(metric.selector).array('epoch').allocate()
         time_view = self.series_run_tree.subtree(metric.selector).array('time').allocate()
 
-        max_idx = self.series_counters.get(metric.selector, None)
-        if max_idx is None:
-            max_idx = len(val_view)
-        step = step or max_idx
+        seq_info = self.sequence_info[metric.selector]
+        if not seq_info.initialized:
+            seq_info.count = len(val_view)
+            seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
+            if seq_info.count != 0 and seq_info.sequence_dtype is None:  # continue tracking on old sequence
+                seq_info.sequence_dtype = 'float'
+            seq_info.initialized = True
 
-        self.series_counters[metric.selector] = max_idx + 1
+        if seq_info.sequence_dtype is not None:
+            def update_trace_dtype(new_dtype):
+                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
+                seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
+            if not compatible:
+                raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
 
-        if max_idx == 0:
-            # TODO [AT] check sequence is homogeneous & handle empty list case
+        step = step or seq_info.count
+
+        if seq_info.count == 0:
             self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
+            seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
             self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
 
         self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
@@ -394,6 +410,7 @@ class Run(StructuredRunMixin):
         val_view[step] = val
         epoch_view[step] = epoch
         time_view[step] = track_time
+        seq_info.count = seq_info.count + 1
 
     @property
     def props(self):

@@ -292,9 +292,7 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
         self._prepare_runs_cache()
-        # TODO [AT]: check other Sequence types once Run explorer is ready.
-        from aim.sdk.metric import Metric
-        return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
+        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset)
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
@@ -384,13 +382,13 @@ class Repo:
                 raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
             assert issubclass(seq_cls, Sequence)
             dtypes = seq_cls.allowed_dtypes()
-            dtype_traces = []
+            dtype_traces = set()
             for dtype in dtypes:
                 try:
                     dtype_trace_tree = meta_tree.collect(('traces_types', dtype))
                     for ctx_id, seqs in dtype_trace_tree.items():
                         for seq_name in seqs.keys():
-                            dtype_traces.append((ctx_id, seq_name))
+                            dtype_traces.add((ctx_id, seq_name))
                 except KeyError:
                     pass
             if 'float' in dtypes:  # old sequences without dtype set are considered float sequences
@@ -398,7 +396,7 @@ class Repo:
                     dtype_trace_tree = meta_tree.collect('traces')
                     for ctx_id, seqs in dtype_trace_tree.items():
                         for seq_name in seqs.keys():
-                            dtype_traces.append((ctx_id, seq_name))
+                            dtype_traces.add((ctx_id, seq_name))
                 except KeyError:
                     pass
             traces_info = defaultdict(list)

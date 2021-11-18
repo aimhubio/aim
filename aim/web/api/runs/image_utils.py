@@ -24,7 +24,15 @@ def sliced_img_record(values: Iterable[Image], _slice: slice) -> Iterable[Image]
     yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
 
 
-def img_record_to_encodable(image_record, trace, step):
+def img_record_to_encodable(image_record: Image, trace, step):
+    img_dump = image_record.json()
+    image_resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
+    img_dump['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', image_resource_path)
+    img_dump['index'] = 0
+    return [img_dump]
+
+
+def img_collection_record_to_encodable(image_record: Iterable[Image], trace, step):
     img_list = []
     for idx, img in image_record:
         img_dump = img.json()
@@ -47,7 +55,7 @@ def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) ->
             run_traces.append(trace)
             rec_start = min(trace.first_step(), rec_start) if rec_start else trace.first_step()
             rec_stop = max(trace.last_step(), rec_stop)
-            idx_stop = max(trace.record_length(), idx_stop)
+            idx_stop = max(trace.record_length() or 1, idx_stop)
         if run_traces:
             trace_cache[run.hash] = {
                 'run': run,
@@ -62,7 +70,12 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
     steps_vals = trace.values.items_slice(_slice=rec_slice)
     for step, val in steps_vals:
         steps.append(step)
-        values.append(img_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+        if isinstance(val, list):
+            values.append(img_collection_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+        elif idx_slice.start == 0:
+            values.append(img_record_to_encodable(val, trace, step))
+        else:
+            values.append([])
 
     return {
         'name': trace.name,
@@ -152,16 +165,22 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
             continue
 
         rec_step = (trace.last_step() + 1 - trace.first_step()) // rec_num or 1
-        idx_step = trace.record_length() // index_num or 1
+        rec_length = trace.record_length() or 1
+        idx_step = rec_length // index_num or 1
         rec_slice = slice(trace.first_step(), trace.last_step() + 1, rec_step)
-        idx_slice = slice(0, trace.record_length(), idx_step)
+        idx_slice = slice(0, rec_length, idx_step)
 
         steps_vals = trace.values.items_slice(_slice=rec_slice)
         steps = []
         values = []
         for step, val in steps_vals:
             steps.append(step)
-            values.append(img_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+            if isinstance(val, list):
+                values.append(img_collection_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+            elif idx_slice.start == 0:
+                values.append(img_record_to_encodable(val, trace, step))
+            else:
+                values.append([])
 
         processed_traces_list.append({
             'name': trace.name,

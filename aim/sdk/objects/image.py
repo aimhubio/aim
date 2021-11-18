@@ -9,7 +9,7 @@ from aim.storage.types import BLOB
 class Image(CustomObject):
     AIM_NAME = 'aim.image'
 
-    def __init__(self, caption: str, image):
+    def __init__(self, image: PILImage, caption: str = ''):
         super().__init__()
 
         self.caption = caption
@@ -50,6 +50,11 @@ class Image(CustomObject):
         assert pil_img.size == self.size
         return pil_img
 
+    @classmethod
+    def from_pil_image(cls, pil_image):
+        assert isinstance(pil_image, PILImage)
+        return Image(image=pil_image)
+
     def json(self):
         return {
             'caption': self.caption,
@@ -57,3 +62,10 @@ class Image(CustomObject):
             'width': self.width,
             'height': self.height,
         }
+
+
+def convert_to_aim_image(obj):
+    if isinstance(obj, PILImage):
+        return Image.from_pil_image(obj)
+    # TODO support other sources as well
+    raise ValueError
