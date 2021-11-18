@@ -1757,7 +1757,7 @@ function createAppModel({
           onSelectRunQueryChange({ query, model });
         },
         onSelectAdvancedQueryChange(query: string): void {
-          onSelectAdvancedQueryChange({ query, model, appName });
+          onSelectAdvancedQueryChange({ query, model });
         },
         toggleSelectAdvancedMode(): void {
           toggleSelectAdvancedMode({ model, appName });
