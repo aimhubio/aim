@@ -1754,7 +1754,7 @@ function createAppModel({
           onMetricsSelectChange({ data, model, appName });
         },
         onSelectRunQueryChange(query: string): void {
-          onSelectRunQueryChange({ query, model, appName });
+          onSelectRunQueryChange({ query, model });
         },
         onSelectAdvancedQueryChange(query: string): void {
           onSelectAdvancedQueryChange({ query, model, appName });
@@ -2657,7 +2657,7 @@ function createAppModel({
       if (selectForm) {
         Object.assign(methods, {
           onSelectRunQueryChange(query: string): void {
-            onSelectRunQueryChange({ query, model, appName });
+            onSelectRunQueryChange({ query, model });
           },
           updateSelectStateUrl(): void {
             const selectData = model.getState()?.config?.select;
@@ -3836,7 +3836,7 @@ function createAppModel({
             }
           },
           onSelectRunQueryChange(query: string): void {
-            onSelectRunQueryChange({ query, model, appName });
+            onSelectRunQueryChange({ query, model });
           },
         });
       }
