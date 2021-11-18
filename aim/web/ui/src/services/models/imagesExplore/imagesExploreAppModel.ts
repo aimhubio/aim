@@ -568,7 +568,7 @@ function onGroupingSelectChange({
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
   }
-  analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
+  analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
 }
 
 function onGroupingModeChange({
@@ -584,7 +584,7 @@ function onGroupingModeChange({
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[MetricsExplorer] ${
+    `[ImagesExplorer] ${
       value ? 'Disable' : 'Enable'
     } grouping by groupBy reverse mode`,
   );
@@ -603,7 +603,7 @@ function onGroupingReset(groupName: GroupNameType) {
     };
     updateModelData(configData, true);
   }
-  analytics.trackEvent('[MetricsExplorer] Reset grouping');
+  analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
 
 function onGroupingApplyChange(): void {
@@ -943,7 +943,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent('[ImagesExplore] Create bookmark');
+  analytics.trackEvent('[ImagesExplorer] Create bookmark');
 }
 
 function onBookmarkUpdate(id: string) {
@@ -963,7 +963,7 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[ImagesExplore] Update bookmark');
+  analytics.trackEvent('[ImagesExplorer] Update bookmark');
 }
 
 function updateColumnsWidths(key: string, width: number, isReset: boolean) {
@@ -1129,8 +1129,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
-  saveAs(blob, `metrics-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[MetricsExplorer] Export runs data to CSV');
+  saveAs(blob, `images-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  analytics.trackEvent('[ImagesExplorer] Export runs data to CSV');
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1211,8 +1211,6 @@ function onSelectRunQueryChange(query: string) {
       select: { ...configData.select, advancedQuery: query, query },
       images: { ...configData.images, calcRanges: true },
     };
-
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
