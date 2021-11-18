@@ -26,6 +26,7 @@ const init = () => {
     window.analytics._writeKey = SEGMENT_WRITE_KEY;
     window.analytics.load(SEGMENT_WRITE_KEY);
   }
+  window.analytics.identify();
   initialized = true;
 };
 
