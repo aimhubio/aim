@@ -1,8 +1,8 @@
-from tests.base import ApiTestBase
+from tests.base import PrefilledDataApiTestBase
 from tests.utils import fill_up_test_data, remove_test_data
 
 
-class StructuredApiTestBase(ApiTestBase):
+class StructuredApiTestBase(PrefilledDataApiTestBase):
     def setUp(self) -> None:
         super().setUp()
         fill_up_test_data()

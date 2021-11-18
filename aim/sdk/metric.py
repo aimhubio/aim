@@ -20,6 +20,10 @@ class Metric(Sequence):
         # TODO remove 'float64': temporary fix for repos generated with aim < 3.0.7
         return 'float', 'float64', 'int'
 
+    @classmethod
+    def sequence_name(cls) -> str:
+        return 'metric'
+
     def dataframe(
         self,
         include_name: bool = False,
