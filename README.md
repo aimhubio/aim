@@ -307,6 +307,8 @@ The high-level features we are going to work on the next few months
   - [ ] Kubeflow integration
   - [ ] Streamlit integration
   - [ ] Raytune integration
+  - [ ] Scikit-learn integration
+  - [ ] Google MLMD
 
 ## Community
 
