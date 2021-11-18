@@ -116,16 +116,6 @@ function MetricsBar({
               <MenuItem onClick={onResetConfigData}>
                 Reset Controls to System Defaults
               </MenuItem>
-              <a
-                href='https://github.com/aimhubio/aim#searching-experiments'
-                target='_blank'
-                rel='noreferrer'
-                onClick={() =>
-                  trackEvent('[Homepage] go to github searching experiments')
-                }
-              >
-                <MenuItem>Searching Experiments (docs)</MenuItem>
-              </a>
             </div>
           }
         />
