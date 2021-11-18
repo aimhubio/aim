@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.7 Nov 17 2021
+
+- Fix for missing metrics when numpy.float64 values tracked (alberttorosyan)
+
 ## 3.0.6 Nov 9 2021
 
 - Fix for blocking container optimization for in progress runs (alberttorosyan)
