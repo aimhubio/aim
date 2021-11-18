@@ -13,6 +13,11 @@ import { IImageSetProps } from './ImagesSet.d';
 
 import './ImageSet.scss';
 
+const imageWrapperHeight = 33;
+const imageSetTitleHeight = 17;
+const imageSetWrapperPaddingHeight = 6;
+const gapBetweenItems = 20;
+
 const ImagesSet = ({
   data,
   title,
@@ -30,16 +35,24 @@ const ImagesSet = ({
         ? [Object.values(data)[index]]
         : Object.values(data)[index],
     );
-    return imagesHeights + (_.isArray(Object.values(data)[index]) ? 20 : 40);
+    return (
+      imagesHeights +
+      (_.isArray(Object.values(data)[index])
+        ? gapBetweenItems
+        : gapBetweenItems + imageSetTitleHeight)
+    );
   };
 
   function getNestedDataHeight(data: any): number {
     let objectData = !_.isArray(data[0]) ? Object.values(data) : data;
     const calculatedHeight = objectData.reduce((acc: number, item: any) => {
       if (!_.isArray(item)) {
-        acc += 23 + getNestedDataHeight(item);
+        acc +=
+          imageSetTitleHeight +
+          imageSetWrapperPaddingHeight +
+          getNestedDataHeight(item);
       } else {
-        acc += 27 + imageFixedHeight;
+        acc += imageWrapperHeight + imageFixedHeight;
       }
       return acc;
     }, 0);

@@ -26,7 +26,7 @@ function getImagesExploreTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Images',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -38,63 +38,33 @@ function getImagesExploreTableColumns(
     {
       key: 'run',
       content: <span>Run</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Images',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.right?.includes('run')
         ? 'right'
         : null,
     },
-    // {
-    //   key: 'metric',
-    //   content: <span>Metric</span>,
-    //   topHeader: 'Metrics',
-    //   pin: order?.left?.includes('metric')
-    //     ? 'left'
-    //     : order?.right?.includes('metric')
-    //     ? 'right'
-    //     : null,
-    // },
+    {
+      key: 'name',
+      content: <span>Name</span>,
+      topHeader: 'Images',
+      pin: order?.left?.includes('name')
+        ? 'left'
+        : order?.right?.includes('name')
+        ? 'right'
+        : null,
+    },
     {
       key: 'context',
       content: <span>Context</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Images',
       pin: order?.left?.includes('context')
         ? 'left'
         : order?.right?.includes('context')
         ? 'right'
         : null,
     },
-    // {
-    //   key: 'step',
-    //   content: <span>Step</span>,
-    //   topHeader: 'Metrics',
-    //   pin: order?.left?.includes('step')
-    //     ? 'left'
-    //     : order?.right?.includes('step')
-    //     ? 'right'
-    //     : null,
-    // },
-    // {
-    //   key: 'epoch',
-    //   content: <span>Epoch</span>,
-    //   topHeader: 'Metrics',
-    //   pin: order?.left?.includes('epoch')
-    //     ? 'left'
-    //     : order?.right?.includes('epoch')
-    //     ? 'right'
-    //     : null,
-    // },
-    // {
-    //   key: 'time',
-    //   content: <span>Time</span>,
-    //   topHeader: 'Metrics',
-    //   pin: order?.left?.includes('time')
-    //     ? 'left'
-    //     : order?.right?.includes('time')
-    //     ? 'right'
-    //     : null,
-    // },
     {
       key: 'actions',
       content: '',
@@ -228,6 +198,8 @@ function imagesExploreTableRowRenderer(
             />
           ),
         };
+      } else if (col === 'name') {
+        console.log('rowData', rowData);
       }
     }
 
@@ -259,19 +231,21 @@ function imagesExploreTableRowRenderer(
           ? '-'
           : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
       actions: {
+        //@TODO add hide sequence functionality
         content: (
-          <Button
-            withOnlyIcon={true}
-            size='small'
-            onClick={actions?.toggleVisibility}
-            className='Table__action__icon'
-            role='button'
-            aria-pressed='false'
-          >
-            <Icon
-              name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
-            />
-          </Button>
+          // <Button
+          //   withOnlyIcon={true}
+          //   size='small'
+          //   onClick={actions?.toggleVisibility}
+          //   className='Table__action__icon'
+          //   role='button'
+          //   aria-pressed='false'
+          // >
+          //   <Icon
+          //     name={rowData.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
+          //   />
+          // </Button>
+          <></>
         ),
       },
     };

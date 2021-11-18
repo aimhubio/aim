@@ -229,7 +229,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   }
                   onTableDiffShow={imagesExploreAppModel.onTableDiffShow}
                   onRowHeightChange={imagesExploreAppModel.onRowHeightChange}
-                  onRowsChange={imagesExploreAppModel.onImageVisibilityChange}
+                  //@TODO add hide sequence functionality
+                  // onRowsChange={imagesExploreAppModel.onImageVisibilityChange}
                   // onRowHover={imagesExploreAppModel.onTableRowHover}
                   // onRowClick={imagesExploreAppModel.onTableRowClick}
                   onTableResizeModeChange={

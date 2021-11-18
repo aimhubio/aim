@@ -490,22 +490,23 @@ function getGroupingSelectOptions({
       value: 'run.hash',
     },
     ...paramsOptions,
-    {
-      group: 'record',
-      label: 'step',
-      value: 'step',
-    },
-    {
-      group: 'record',
-      label: 'index',
-      value: 'index',
-    },
+
     {
       group: 'images',
       label: 'images.name',
       value: 'images_name',
     },
     ...contextOptions,
+    {
+      group: 'record',
+      label: 'record.step',
+      value: 'step',
+    },
+    {
+      group: 'record',
+      label: 'record.index',
+      value: 'index',
+    },
   ];
 }
 
@@ -786,7 +787,6 @@ function getDataAsTableRows(
           },
           key: metric.key,
           runHash: metric.run.hash,
-          // isHidden: metric.isHidden,
           isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
@@ -795,6 +795,7 @@ function getDataAsTableRows(
           run: moment(metric.run.props.creation_time * 1000).format(
             'HH:mm:ss · D MMM, YY',
           ),
+          name: metric.images_name,
           context: Object.entries(metric.context).map((entry) =>
             entry.join(':'),
           ),
@@ -810,6 +811,7 @@ function getDataAsTableRows(
           'step',
           'epoch',
           'time',
+          'name',
         ].forEach((key) => {
           if (columnsValues.hasOwnProperty(key)) {
             if (
@@ -883,7 +885,7 @@ function getDataAsTableRows(
         rows[groupKey!].data,
         {},
         true,
-        ['value'].concat(Object.keys(columnsValues)),
+        ['value', 'name'].concat(Object.keys(columnsValues)),
       );
     }
   });
