@@ -86,16 +86,21 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       call: () => Promise<IAppData | void>;
       abort: () => void;
     };
+    let metricsRequestRef: {
+      call: () => Promise<IAppData | void>;
+      abort: () => void;
+    };
     if (route.params.appId) {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
-        metricAppModel.getMetricsData().call();
+        metricsRequestRef = metricAppModel.getMetricsData();
+        metricsRequestRef.call();
       });
     } else {
       metricAppModel.setDefaultAppConfigData();
+      metricsRequestRef = metricAppModel.getMetricsData();
+      metricsRequestRef.call();
     }
-    const metricsRequestRef = metricAppModel.getMetricsData();
-    metricsRequestRef.call();
     analytics.pageView('[MetricsExplorer]');
 
     const unListenHistory = history.listen(() => {
@@ -112,7 +117,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     });
     return () => {
       metricAppModel.destroy();
-      metricsRequestRef.abort();
+      metricsRequestRef?.abort();
       unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();
@@ -174,7 +179,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
       projectsDataMetrics={
-        projectsData?.metrics as IProjectParamsMetrics['metrics']
+        projectsData?.metrics as IProjectParamsMetrics['metric']
       }
       requestIsPending={metricsData?.requestIsPending}
       resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}

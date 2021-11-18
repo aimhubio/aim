@@ -106,11 +106,11 @@ function getRunsOfExperiment(
   };
 }
 
-function getRunBatch(body: any, runHash: string) {
+function getRunMetricsBatch(body: any, runHash: string) {
   if (getRunsBatchRequestRef) {
     getRunsBatchRequestRef.abort();
   }
-  getRunsBatchRequestRef = runsService.getRunBatch(body, runHash);
+  getRunsBatchRequestRef = runsService.getRunMetricsBatch(body, runHash);
   return {
     call: async () => {
       model.setState({ isRunBatchLoading: true });
@@ -119,7 +119,7 @@ function getRunBatch(body: any, runHash: string) {
       const runMetricsBatch: IRunBatch[] = [];
       const runSystemBatch: IRunBatch[] = [];
       data.forEach((run: IRunBatch) => {
-        if (run.metric_name.startsWith('__system__')) {
+        if (run.name.startsWith('__system__')) {
           runSystemBatch.push(run);
         } else {
           runMetricsBatch.push(run);
@@ -189,7 +189,7 @@ const runDetailAppModel = {
   ...model,
   initialize,
   getRunInfo,
-  getRunBatch,
+  getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,
   archiveRun,

@@ -18,8 +18,8 @@ function RunDetailMetricsAndSystemTab({
 }: IRunDetailMetricsAndSystemTabProps): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     if (!runBatch) {
-      const runsBatchRequestRef = runDetailAppModel.getRunBatch(
-        runTraces,
+      const runsBatchRequestRef = runDetailAppModel.getRunMetricsBatch(
+        runTraces.metric,
         runHash,
       );
       runsBatchRequestRef.call();

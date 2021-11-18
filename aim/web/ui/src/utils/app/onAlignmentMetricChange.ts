@@ -43,13 +43,11 @@ export default async function onAlignmentMetricChange<M extends State>({
     model.setState({ requestIsPending: true });
     const runs: Array<{ run_id: string; traces: any }> =
       modelState.rawData?.map((item) => {
-        const traces = item.traces.map(
-          ({ context, metric_name, slice }: any) => ({
-            context,
-            metric_name,
-            slice,
-          }),
-        );
+        const traces = item.traces.map(({ context, name, slice }: any) => ({
+          context,
+          name,
+          slice,
+        }));
         return {
           run_id: item.hash,
           traces,
