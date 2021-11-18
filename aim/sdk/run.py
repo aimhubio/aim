@@ -380,25 +380,24 @@ class Run(StructuredRunMixin):
         seq_info = self.sequence_info[metric.selector]
         if not seq_info.initialized:
             seq_info.count = len(val_view)
-            seq_info.trace_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
-            if seq_info.count != 0 and seq_info.trace_dtype is None:  # continue tracking on old sequence
-                seq_info.trace_dtype = 'float'
+            seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
+            if seq_info.count != 0 and seq_info.sequence_dtype is None:  # continue tracking on old sequence
+                seq_info.sequence_dtype = 'float'
             seq_info.initialized = True
 
-        if seq_info.trace_dtype is not None:
+        if seq_info.sequence_dtype is not None:
             def update_trace_dtype(new_dtype):
                 self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
-                seq_info.trace_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
-            compatible = check_types_compatibility(dtype, seq_info.trace_dtype, update_trace_dtype)
+                seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
             if not compatible:
                 raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
 
         step = step or seq_info.count
 
         if seq_info.count == 0:
-            # TODO [AT] check sequence is homogeneous & handle empty list case
             self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            seq_info.trace_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
+            seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
             self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
 
         self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
