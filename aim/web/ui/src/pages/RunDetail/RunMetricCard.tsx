@@ -40,7 +40,7 @@ function RunMetricCard({
             xAxis: ScaleEnum.Linear,
             yAxis: ScaleEnum.Linear,
           }}
-          displayOutliers
+          ignoreOutliers={false}
           highlightMode={0}
           curveInterpolation={CurveEnum.Linear}
         />

@@ -277,14 +277,14 @@ function processData(data: any[]): {
       trace.values.forEach((stepData: IImageData[], stepIndex: number) => {
         stepData.forEach((image: IImageData) => {
           const metricKey = encode({
-            name: trace.trace_name,
+            name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
             index: image.index,
             step: trace.iters[stepIndex],
           });
           const seqKey = encode({
-            name: trace.trace_name,
+            name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
           });
@@ -745,7 +745,17 @@ function getDataAsTableRows(
 
   let rowIndex = 0;
   const sameValueColumns: string[] = [];
-  processedData.forEach((metricsCollection: IMetricsCollection<IImageData>) => {
+  const tableData = groupData(
+    Object.values(
+      _.groupBy(
+        Object.values(processedData)
+          .map((v) => v.data)
+          .flat(),
+        'seqKey',
+      ),
+    ).map((v) => v[0]),
+  );
+  tableData.forEach((metricsCollection: IMetricsCollection<IImageData>) => {
     const groupKey = metricsCollection.key;
     const columnsValues: { [key: string]: string[] } = {};
 
