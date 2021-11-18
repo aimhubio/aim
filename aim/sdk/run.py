@@ -168,9 +168,9 @@ class SequenceInfo:
 class Run(StructuredRunMixin):
     """Run object used for tracking metrics.
 
-    Provides method :obj:`track` to track value series [metrics] for multiple metrics and contexts.
+    Provides method :obj:`track` to track value and object series for multiple names and contexts.
     Provides dictionary-like interface for Run object meta-parameters.
-    Provides API for iterating tracked metrics.
+    Provides API for iterating through tracked sequences.
 
     Args:
          run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
@@ -179,7 +179,7 @@ class Run(StructuredRunMixin):
          read_only (:obj:`bool`, optional): Run creation mode.
             Default is False, meaning Run object can be used to track metrics.
          experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
-            Can be used later to query runs/metrics.
+            Can be used later to query runs/sequences.
          system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
     """
@@ -320,16 +320,17 @@ class Run(StructuredRunMixin):
         *,
         context: AimObject = None,
     ):
-        """Main method for tracking numeric value series.
+        """Main method for tracking numeric value series and object series.
 
         Args:
              value: The tracked value.
-             name (str): Tracked metric name.
-             step (:obj:`int`, optional): Metric tracking iteration. Auto-incremented if not specified.
+             name (str): Tracked sequence name.
+             step (:obj:`int`, optional): Sequence tracking iteration. Auto-incremented if not specified.
              epoch (:obj:`int`, optional): The training epoch.
-             context (:obj:`dict`, optional): Metric racking context.
+             context (:obj:`dict`, optional): Sequence tracking context.
 
-        Appends the tracked value to metric series specified by `name` and `context`.
+        Appends the tracked value to sequence specified by `name` and `context`.
+        Appended values should be of the same type, in other words, sequence is a homogeneous collection.
         """
 
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
@@ -437,11 +438,21 @@ class Run(StructuredRunMixin):
         """Iterator for all run metrics info.
 
         Yields:
-            tuples of (name, context, run) where run is the Run object itself.
+            tuples of (name, context, run) where run is the Run object itself and
+            name, context defines Metric type sequence (with values of `float` and `int`).
         """
         yield from self.iter_sequence_info_by_type(('float', 'int'))
 
     def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, 'Run']]:
+        """Iterator for run sequence infos for the given object data types
+
+        Args:
+             dtypes: The objects data types list.
+
+        Yields:
+            tuples of (name, context, run) where run is the Run object itself and name, context defines sequence for
+            one of `dtypes` types.
+        """
         if isinstance(dtypes, str):
             dtypes = (dtypes,)
         for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('traces').items():
@@ -500,7 +511,7 @@ class Run(StructuredRunMixin):
              context (:obj:`Context`): Tracking context.
 
         Returns:
-            :obj:`Metric` object if exists, `None` otherwise.
+            :obj:`Images` object if exists, `None` otherwise.
         """
         return self._get_sequence('images', name, context)
 
@@ -520,8 +531,13 @@ class Run(StructuredRunMixin):
     def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.
 
+        Args:
+             sequence_types: Type names of sequences for which to collect name/context pairs.
+             skip_last_value (:obj:`bool`, optional): Boolean flag to include tracked sequence last value in
+             sequence info. False by default.
+
         Returns:
-             :obj:`list`: list of sequnece's `context`, `name` and last tracked value triplets.
+             :obj:`list`: list of sequence's `context`, `name` and optionally last tracked value triplets.
         """
         traces = self.meta_run_tree.subtree('traces')
         traces_overview = {}
