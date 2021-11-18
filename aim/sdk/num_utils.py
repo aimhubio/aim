@@ -93,8 +93,11 @@ def convert_to_py_number(value) -> object:
     """
     Converts numpy objects or tensors to python number types
     """
-    if isinstance(value, (int, float)):
-        return value
+    if isinstance(value, float):
+        return float(value)
+
+    if isinstance(value, int):
+        return int(value)
 
     if is_numpy_number(value):
         return value.item()
