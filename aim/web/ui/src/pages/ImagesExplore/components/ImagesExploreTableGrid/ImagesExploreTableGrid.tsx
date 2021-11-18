@@ -198,8 +198,6 @@ function imagesExploreTableRowRenderer(
             />
           ),
         };
-      } else if (col === 'name') {
-        console.log('rowData', rowData);
       }
     }
 

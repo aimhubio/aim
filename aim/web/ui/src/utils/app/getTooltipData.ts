@@ -32,7 +32,7 @@ export default function getTooltipData<D, M extends State>({
     for (let metric of metricsCollection.data as any) {
       data[metric.key] = {
         runHash: metric.run.hash,
-        metricName: metric.metric_name,
+        metricName: metric.name,
         metricContext: metric.context,
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
