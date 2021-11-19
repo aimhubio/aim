@@ -25,7 +25,7 @@ class Image(CustomObject):
         image.save(image_bytes_p, format='png')
         self.storage['data'] = BLOB(data=image_bytes_p.getvalue())
 
-        self.storage['type'] = 'PIL.Image'
+        self.storage['source'] = 'PIL.Image'
         self.storage['mode'] = image.mode
         self.storage['format'] = 'png'
         self.storage['width'], self.storage['height'] = image.size
