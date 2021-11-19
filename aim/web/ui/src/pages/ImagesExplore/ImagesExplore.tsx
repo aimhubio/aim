@@ -114,7 +114,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
-              selectedMetricsData={imagesExploreData?.config?.select}
+              selectedImagesData={imagesExploreData?.config?.select}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
               }
@@ -173,6 +173,12 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               imagesWrapperRef={imagesWrapperRef}
               panelResizing={panelResizing}
               imageWrapperOffsetHeight={offsetHeight || 0}
+              isRangePanelShow={
+                !!getStateFromUrl('select')?.query ||
+                !isEmpty(getStateFromUrl('select')?.images) ||
+                (!!getStateFromUrl('select')?.advancedQuery &&
+                  !!getStateFromUrl('select')?.advancedMode)
+              }
             />
           </div>
           <ResizePanel

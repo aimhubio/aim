@@ -1310,7 +1310,6 @@ function onImagesExploreSelectChange(data: any[]) {
       select: { ...configData.select, images: data },
       images: { ...configData.images, calcRanges: true },
     };
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,

@@ -26,6 +26,8 @@ function RunSelectPopoverContent({
   runsOfExperiment,
   runInfo,
   isRunsOfExperimentLoading,
+  isRunInfoLoading,
+  isLoadMoreButtonShown,
   onRunsSelectToggle,
   dateNow,
 }: IRunSelectPopoverContentProps): React.FunctionComponentElement<React.ReactNode> {
@@ -67,83 +69,96 @@ function RunSelectPopoverContent({
       <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer'>
         <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer'>
           <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList'>
-            {experimentsData?.map((experiment: IRunSelectExperiment) => (
-              <div
-                className={classNames(
-                  'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
-                  { selected: experimentId === experiment.id },
-                )}
-                onClick={() => onExperimentClick(experiment.id)}
-                key={experiment.id}
-              >
-                <Text
-                  size={14}
-                  tint={experimentId === experiment.id ? 100 : 80}
-                  weight={experimentId === experiment.id ? 600 : 500}
-                  className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
+            {!isRunInfoLoading ? (
+              experimentsData?.map((experiment: IRunSelectExperiment) => (
+                <div
+                  className={classNames(
+                    'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                    { selected: experimentId === experiment.id },
+                  )}
+                  onClick={() => onExperimentClick(experiment.id)}
+                  key={experiment.id}
                 >
-                  {experiment.name}
-                </Text>
+                  <Text
+                    size={14}
+                    tint={experimentId === experiment.id ? 100 : 80}
+                    weight={experimentId === experiment.id ? 600 : 500}
+                    className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
+                  >
+                    {experiment.name}
+                  </Text>
+                </div>
+              ))
+            ) : (
+              <div className='RunSelectPopoverWrapper__loaderContainer'>
+                <CircularProgress size={34} />
               </div>
-            ))}
+            )}
           </div>
         </div>
 
         <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer'>
-          <div
-            className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'
-            ref={popoverContentWrapperRef}
-          >
-            {!isEmpty(runsOfExperiment) ? (
-              runsOfExperiment?.map((run: IRunSelectRun) => (
-                <NavLink
-                  className={classNames(
-                    'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
-                    {
-                      selected: runInfo?.name === run.name,
-                      'in-progress': !run?.end_time,
-                    },
-                  )}
-                  key={run.run_id}
-                  to={`${run.run_id}`}
-                  onClick={onRunsSelectToggle}
-                >
-                  <Text
-                    size={14}
-                    tint={runInfo?.name === run.name ? 100 : 80}
-                    weight={runInfo?.name === run.name ? 600 : 500}
+          {isRunInfoLoading ||
+          (isEmpty(runsOfExperiment) && isRunsOfExperimentLoading) ? (
+            <div className='RunSelectPopoverWrapper__loaderContainer'>
+              <CircularProgress size={34} />
+            </div>
+          ) : (
+            <div
+              className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'
+              ref={popoverContentWrapperRef}
+            >
+              {!isEmpty(runsOfExperiment) ? (
+                runsOfExperiment?.map((run: IRunSelectRun) => (
+                  <NavLink
+                    className={classNames(
+                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
+                      {
+                        selected: runInfo?.name === run.name,
+                        'in-progress': !run?.end_time,
+                      },
+                    )}
+                    key={run.run_id}
+                    to={`${run.run_id}`}
+                    onClick={onRunsSelectToggle}
                   >
-                    {`${moment(run.creation_time * 1000).format(
-                      'DD MMM YYYY, HH:mm A',
-                    )} | ${processDurationTime(
-                      run?.creation_time * 1000,
-                      run?.end_time ? run?.end_time * 1000 : dateNow,
-                    )}`}
-                  </Text>
-                </NavLink>
-              ))
-            ) : (
-              <EmptyComponent size='big' content={'No Runs'} />
-            )}
-            {!isEmpty(runsOfExperiment) && (
-              <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>
-                <Button
-                  size='small'
-                  variant='contained'
-                  className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper__button'
-                  onClick={onLoadMore}
-                >
-                  {!isRunsOfExperimentLoading ? (
-                    <Text weight={500} size={12} color='primary' tint={100}>
-                      Load More
+                    <Text
+                      size={14}
+                      tint={runInfo?.name === run.name ? 100 : 80}
+                      weight={runInfo?.name === run.name ? 600 : 500}
+                    >
+                      {`${moment(run.creation_time * 1000).format(
+                        'DD MMM YYYY, HH:mm A',
+                      )} | ${processDurationTime(
+                        run?.creation_time * 1000,
+                        run?.end_time ? run?.end_time * 1000 : dateNow,
+                      )}`}
                     </Text>
-                  ) : (
-                    <CircularProgress size={14} />
-                  )}
-                </Button>
-              </div>
-            )}
-          </div>
+                  </NavLink>
+                ))
+              ) : (
+                <EmptyComponent size='big' content={'No Runs'} />
+              )}
+              {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
+                <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>
+                  <Button
+                    size='small'
+                    variant='contained'
+                    className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper__button'
+                    onClick={onLoadMore}
+                  >
+                    {!isRunsOfExperimentLoading ? (
+                      <Text weight={500} size={12} color='primary' tint={100}>
+                        Load More
+                      </Text>
+                    ) : (
+                      <CircularProgress size={14} />
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

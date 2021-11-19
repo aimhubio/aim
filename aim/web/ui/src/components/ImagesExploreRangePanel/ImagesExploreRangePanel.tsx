@@ -82,6 +82,7 @@ function ImagesExploreRangePanel({
             }`}
           />
         </div>
+        <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
         <div className='ImagesExploreRangePanel__container__sliderContainer'>
           <Text
             className='ImagesExploreRangePanel__container__sliderContainer__title'

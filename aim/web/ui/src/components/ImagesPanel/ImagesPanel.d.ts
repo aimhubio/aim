@@ -15,6 +15,7 @@ export interface IImagesPanelProps {
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   applyButtonDisabled: boolean;
+  isRangePanelShow: boolean;
   panelResizing: boolean;
   imageWrapperOffsetHeight: number;
 }

@@ -31,6 +31,7 @@ function ImagesPanel({
   imagesWrapperRef,
   panelResizing,
   imageWrapperOffsetHeight,
+  isRangePanelShow,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   let timeoutID = useRef(0);
   let blobUriArray: string[] = [];
@@ -125,7 +126,7 @@ function ImagesPanel({
                 content="It's super easy to search Aim experiments. Lookup search docs to learn more."
               />
             )}
-            {stepRange && indexRange && (
+            {stepRange && indexRange && isRangePanelShow && (
               <ImagesExploreRangePanel
                 recordSlice={recordSlice}
                 indexSlice={indexSlice}
