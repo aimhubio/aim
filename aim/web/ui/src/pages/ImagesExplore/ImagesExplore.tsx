@@ -46,6 +46,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     resizeElemRef,
     imagesExploreData?.config?.table || {},
     imagesExploreAppModel.onTableResizeEnd,
+    !isEmpty(imagesExploreData?.imagesData),
   );
 
   React.useEffect(() => {

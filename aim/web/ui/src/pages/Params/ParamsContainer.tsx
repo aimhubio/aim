@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
+import { isEmpty } from 'lodash-es';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 
@@ -41,6 +42,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     resizeElemRef,
     paramsData?.config?.table || {},
     paramsAppModel.onTableResizeEnd,
+    !isEmpty(paramsData?.highPlotData),
   );
 
   React.useEffect(() => {

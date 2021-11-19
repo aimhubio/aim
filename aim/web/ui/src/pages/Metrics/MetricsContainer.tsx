@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
+import { isEmpty } from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -66,6 +67,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     resizeElemRef,
     metricsData?.config?.table || {},
     metricAppModel.onTableResizeEnd,
+    !isEmpty(metricsData?.lineChartData),
   );
 
   React.useEffect(() => {
