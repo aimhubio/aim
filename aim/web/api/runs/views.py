@@ -74,7 +74,7 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     x_axis_metric_name = request_data.align_by
     requested_runs = request_data.runs
 
-    streamer = custom_aligned_metrics_streamer(requested_runs, x_axis_metric_name)
+    streamer = custom_aligned_metrics_streamer(requested_runs, x_axis_metric_name, project.repo)
     return StreamingResponse(streamer)
 
 
