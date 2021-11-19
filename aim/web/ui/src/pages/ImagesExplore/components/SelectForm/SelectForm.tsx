@@ -57,7 +57,9 @@ function SelectForm({
     };
   }, []);
 
-  function handleSearch() {
+  function handleSearch(e: React.ChangeEvent<any>): void {
+    e.preventDefault();
+
     searchMetricsRef.current = imagesExploreAppModel.getImagesData();
     searchMetricsRef.current.call();
   }
@@ -283,16 +285,18 @@ function SelectForm({
         </Box>
         {selectedImagesData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              spellCheck={false}
-              inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              value={selectedImagesData?.query ?? ''}
-              onChange={({ target }) => onSelectRunQueryChange(target.value)}
-            />
+            <form onSubmit={handleSearch}>
+              <TextField
+                fullWidth
+                size='small'
+                variant='outlined'
+                spellCheck={false}
+                inputProps={{ style: { height: '0.687rem' } }}
+                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                value={selectedImagesData?.query ?? ''}
+                onChange={({ target }) => onSelectRunQueryChange(target.value)}
+              />
+            </form>
           </div>
         )}
       </div>
