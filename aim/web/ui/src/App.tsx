@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
+import * as Sentry from '@sentry/react';
+
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';

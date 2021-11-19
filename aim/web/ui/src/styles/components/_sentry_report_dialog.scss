@@ -1,0 +1,79 @@
+@use 'src/styles/abstracts' as *;
+
+.sentry-error-embed-wrapper {
+  .sentry-error-embed {
+    border-radius: 10px !important;
+    header {
+      h2{
+        font-family: 'Inter', sans-serif;
+        color: #1c2852;
+        font-weight: 600;
+      }
+      p {
+        font-family: 'Inter Medium', sans-serif;
+        font-weight: 500;
+      }
+    }
+    .error-wrapper {
+      p {
+        font-family: 'Inter', sans-serif;
+        color: red;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+    }
+    .form-content {
+      .form-field {
+        input, textarea {
+          background-color: white !important;
+          padding: 18.5px 14px;
+          border-radius: 0.375rem;
+          border: 1px solid #BDCEE8;
+          font-family: 'Inter Medium', sans-serif;
+        }
+        input {
+          height: 1.5rem;
+        }
+        label {
+          text-transform: initial !important;
+          font-size: $text-md;
+          font-family: 'Inter Medium', sans-serif;
+        }
+      }
+    }
+    .form-submit {
+      display: flex;
+      justify-content: center;
+      button {
+        font-size: 0.8125rem;
+        padding: 4px 10px 4px 13px;
+        text-transform: none;
+        height: 32px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 4px;
+        min-width: 64px;
+        font-weight: 500;
+        line-height: 1.75;
+      }
+
+      button[type="submit"] {
+        background-color: $primary-color;
+        color: #fff;
+        &:hover {
+          background-color: rgb(14, 80, 161);
+        }
+      }
+
+      button[class="close"] {
+        color: $primary-color;
+        &:hover {
+          background-color: rgba(20, 115, 230, 0.04)
+        }
+      }
+
+      p {
+        display: none !important;
+      }
+    }
+  }
+}
