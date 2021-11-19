@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add ability to explore tracked images (VkoHov)
 - Improve rendering performance by virtualizing table columns (roubkar)
 - Add ability to apply grouping by higher level param key (roubkar)
 - Add ability to specify repository path during `aim init` via `--repo` argument (rubenaprikyan)

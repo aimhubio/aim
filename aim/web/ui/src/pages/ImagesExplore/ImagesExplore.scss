@@ -1,0 +1,50 @@
+@use 'src/styles/abstracts' as *;
+.ImagesExplore {
+  &__container {
+    background-color: #ffffff;
+    min-width: 50rem;
+    height: 100%;
+    .ImagesExplore__section {
+      height: 100vh;
+    }
+    .ImagesExplore__loader {
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ImagesExplore__fullHeight {
+      height: 100%;
+    }
+
+    .ImagesExplore__section__div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .ImagesExplore__table__container {
+      flex: 0.5 1 0;
+      min-height: 11rem;
+      &__hide {
+        display: none;
+      }
+    }
+    .ImagesExplore__ResizePanel {
+      &__hide {
+        display: none;
+      }
+    }
+    .ImagesExplore__imagesWrapper__container {
+      min-height: 11.25rem;
+      flex: 0.5 1 0;
+      overflow: auto;
+      &__hide {
+        display: none;
+      }
+    }
+  }
+  &__SelectForm__Grouping__container {
+    display: flex;
+    border-bottom: 0.0625rem solid #e8f1fc;
+    min-height: 6rem;
+    max-height: 6rem;
+  }
+}

@@ -40,7 +40,7 @@ class RunView:
             except Exception:
                 return SafeNone()
 
-        return AimObjectProxy(safe_collect, view=self.meta_run_attrs_tree.view(key))
+        return AimObjectProxy(safe_collect, view=self.meta_run_attrs_tree.subtree(key))
 
     def get(
         self,

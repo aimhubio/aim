@@ -4,7 +4,7 @@ from enum import Enum
 
 from packaging import version
 from collections import defaultdict
-from typing import Dict, Iterator, NamedTuple, Optional
+from typing import Dict, Tuple, Iterator, NamedTuple, Optional
 from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
@@ -14,7 +14,7 @@ from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
-from aim.sdk.metric import Metric
+from aim.sdk.sequence import Sequence
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -87,12 +87,13 @@ class Repo:
 
         self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
+        self._encryption_key = None
         if init:
             self.structured_db.run_upgrades()
 
     @property
     def meta_tree(self):
-        return self.request('meta', read_only=True, from_union=True).tree().view('meta')
+        return self.request('meta', read_only=True, from_union=True).tree().subtree('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -248,7 +249,7 @@ class Repo:
             next :obj:`Run` in readonly mode .
         """
         self.meta_tree.preload()
-        for run_name in self.meta_tree.view('chunks').keys():
+        for run_name in self.meta_tree.subtree('chunks').keys():
             yield Run(run_name, repo=self, read_only=True)
 
     def iter_runs_from_cache(self, offset: str = None) -> Iterator['Run']:
@@ -274,7 +275,7 @@ class Repo:
             :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
         # TODO: [MV] optimize existence check for run
-        if run_hash is None or run_hash not in self.meta_tree.view('chunks').keys():
+        if run_hash is None or run_hash not in self.meta_tree.subtree('chunks').keys():
             return None
         else:
             return Run(run_hash, repo=self, read_only=True)
@@ -288,22 +289,10 @@ class Repo:
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
              offset (:obj:`str`, optional): `hash` of Run to skip to.
         Returns:
-            :obj:`MetricCollection`: Iterable for runs/metrics matching query expression.
+            :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
-        db = self.structured_db
-        cache_name = 'runs_cache'
-        db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hash)
-        self.run_props_cache_hint = cache_name
-        return QueryRunSequenceCollection(self, Metric, query, paginated, offset)
-
-    @property
-    def run_props_cache_hint(self):
-        return self._run_props_cache_hint
-
-    @run_props_cache_hint.setter
-    def run_props_cache_hint(self, cache: str):
-        self._run_props_cache_hint = cache
+        self._prepare_runs_cache()
+        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset)
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
@@ -313,36 +302,108 @@ class Repo:
         Returns:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
-        db = self.structured_db
-        cache_name = 'runs_cache'
-        db.invalidate_cache(cache_name)
-        db.init_cache(cache_name, db.runs, lambda run: run.hash)
-        self.run_props_cache_hint = cache_name
-
+        self._prepare_runs_cache()
+        from aim.sdk.metric import Metric
         return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
+
+    def query_images(self, query: str = '') -> QuerySequenceCollection:
+        """Get image collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for image sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.image_sequence import Images
+        return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
+
+    @property
+    def run_props_cache_hint(self):
+        return self._run_props_cache_hint
+
+    @run_props_cache_hint.setter
+    def run_props_cache_hint(self, cache: str):
+        self._run_props_cache_hint = cache
+
+    @property
+    def encryption_key(self):
+        from cryptography.fernet import Fernet
+
+        if self._encryption_key:
+            return self._encryption_key
+
+        encryption_key_path = os.path.join(self.path, 'ENCRYPTION_KEY')
+        if not os.path.exists(encryption_key_path):
+            with open(encryption_key_path, 'w') as key_fp:
+                encryption_key = Fernet.generate_key().decode()
+                key_fp.write(encryption_key + '\n')
+        else:
+            with open(encryption_key_path, 'r') as key_fp:
+                encryption_key = key_fp.readline()
+
+        self._encryption_key = encryption_key
+
+        return encryption_key
 
     def _get_meta_tree(self):
         return self.request(
             'meta', read_only=True, from_union=True
-        ).tree().view('meta')
+        ).tree().subtree('meta')
 
-    def collect_metrics_info(self) -> Dict[str, list]:
-        """Utility function for getting metric names and contexts for all runs.
+    @staticmethod
+    def available_sequence_types():
+        return Sequence.registry.keys()
+
+    @staticmethod
+    def validate_sequence_types(sequence_types: Tuple[str, ...]):
+        for seq_name in sequence_types:
+            seq_cls = Sequence.registry.get(seq_name, None)
+            if seq_cls is None or not issubclass(seq_cls, Sequence):
+                raise ValueError(f'\'{seq_name}\' is not a valid Sequence')
+
+    def collect_sequence_info(self, sequence_types: Tuple[str, ...]) -> Dict[str, Dict[str, list]]:
+        """Utility function for getting sequence names and contexts for all runs by given sequence types.
+
+        Args:
+            sequence_types (:obj:`tuple[str]`, optional): Sequence types to get tracked sequence names/contexts for.
+            Defaults to 'metric'.
 
         Returns:
-            :obj:`dict`: Tree of metrics and their contexts.
+            :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
         """
         meta_tree = self._get_meta_tree()
-        try:
-            traces = meta_tree.collect('traces')
-        except KeyError:
-            traces = {}
-        metrics = defaultdict(list)
-        for ctx_id, trace_metrics in traces.items():
-            for metric in trace_metrics.keys():
-                metrics[metric].append(meta_tree['contexts', ctx_id])
-
-        return metrics
+        sequence_traces = {}
+        if isinstance(sequence_types, str):
+            sequence_types = (sequence_types,)
+        for seq_type in sequence_types:
+            seq_cls = Sequence.registry.get(seq_type, None)
+            if seq_cls is None:
+                raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
+            assert issubclass(seq_cls, Sequence)
+            dtypes = seq_cls.allowed_dtypes()
+            dtype_traces = set()
+            for dtype in dtypes:
+                try:
+                    dtype_trace_tree = meta_tree.collect(('traces_types', dtype))
+                    for ctx_id, seqs in dtype_trace_tree.items():
+                        for seq_name in seqs.keys():
+                            dtype_traces.add((ctx_id, seq_name))
+                except KeyError:
+                    pass
+            if 'float' in dtypes:  # old sequences without dtype set are considered float sequences
+                try:
+                    dtype_trace_tree = meta_tree.collect('traces')
+                    for ctx_id, seqs in dtype_trace_tree.items():
+                        for seq_name in seqs.keys():
+                            dtype_traces.add((ctx_id, seq_name))
+                except KeyError:
+                    pass
+            traces_info = defaultdict(list)
+            for ctx_id, seq_name in dtype_traces:
+                traces_info[seq_name].append(meta_tree['contexts', ctx_id])
+            sequence_traces[seq_type] = traces_info
+        return sequence_traces
 
     def collect_params_info(self) -> dict:
         """Utility function for getting run meta-parameters.
@@ -355,6 +416,13 @@ class Repo:
             return meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
+
+    def _prepare_runs_cache(self):
+        db = self.structured_db
+        cache_name = 'runs_cache'
+        db.invalidate_cache(cache_name)
+        db.init_cache(cache_name, db.runs, lambda run: run.hash)
+        self.run_props_cache_hint = cache_name
 
     def __del__(self):
         if self._mount_root:
