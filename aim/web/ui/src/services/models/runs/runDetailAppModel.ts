@@ -8,10 +8,11 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({
-  isRunInfoLoading: false,
+  isRunInfoLoading: true,
   isExperimentsLoading: false,
   isRunBatchLoading: false,
   isRunsOfExperimentLoading: false,
+  isLoadMoreButtonShown: true,
 });
 
 let getRunsInfoRequestRef: {
@@ -93,14 +94,15 @@ function getRunsOfExperiment(
     call: async () => {
       model.setState({ isRunsOfExperimentLoading: true });
       const data = await getRunsOfExperimentRequestRef.call();
+      const runsOfExperiment = isLoadingMore
+        ? [...(model.getState().runsOfExperiment || []), ...data.runs]
+        : [...data.runs];
       model.setState({
-        runsOfExperiment: isLoadingMore
-          ? [...(model.getState().runsOfExperiment || []), ...data.runs]
-          : [...data.runs],
+        runsOfExperiment,
         isRunsOfExperimentLoading: false,
         experimentId: data.id,
+        isLoadMoreButtonShown: data.runs.length === 10,
       });
-      // return data;
     },
     abort: getRunsOfExperimentRequestRef.abort,
   };

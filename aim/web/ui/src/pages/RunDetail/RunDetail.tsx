@@ -1,9 +1,10 @@
 import React, { memo, useRef, useState } from 'react';
 import moment from 'moment';
-import { Link, NavLink, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { Paper, Popover, Tab, Tabs } from '@material-ui/core';
+import { Paper, Tab, Tabs } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import TabPanel from 'components/TabPanel/TabPanel';
 import { Badge, Button, Icon, Text } from 'components/kit';
@@ -87,24 +88,34 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           <ControlPopover
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right',
+              horizontal: 'left',
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'center',
+              horizontal: 'left',
             }}
             anchor={({ onAnchorClick, opened }) => (
-              <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'>
-                <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                  <Text tint={100} size={16} weight={600}>
-                    {`Experiment Name / ${
-                      runData?.runInfo?.experiment?.name || ''
-                    }`}
-                  </Text>
-                </div>
+              <div
+                className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
+                onClick={onAnchorClick}
+              >
+                {!runData?.isRunInfoLoading ? (
+                  <>
+                    <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                      <Text tint={100} size={16} weight={600}>
+                        {`${runData?.runInfo?.experiment?.name || ''} / ${
+                          runHash || ''
+                        }`}
+                      </Text>
+                    </div>
+                  </>
+                ) : (
+                  <Skeleton variant='rect' height={24} width={340} />
+                )}
                 <Button
-                  onClick={onAnchorClick}
-                  disabled={runData?.isExperimentsLoading}
+                  disabled={
+                    runData?.isExperimentsLoading || runData?.isRunInfoLoading
+                  }
                   color={opened ? 'primary' : 'default'}
                   size='small'
                   className={classNames(
@@ -125,34 +136,45 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 runsOfExperiment={runData?.runsOfExperiment}
                 runInfo={runData?.runInfo}
                 isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
+                isRunInfoLoading={runData?.isRunInfoLoading}
+                isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
                 onRunsSelectToggle={onRunsSelectToggle}
                 dateNow={dateNow}
               />
             }
           />
         </div>
+
         <div className='RunDetail__runDetailContainer__headerContainer'>
           <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
-            <Text
-              component='p'
-              tint={100}
-              size={14}
-              weight={600}
-              className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
-            >
-              {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                'DD MMM YYYY, HH:mm A',
-              )} | ${processDurationTime(
-                runData?.runInfo?.creation_time * 1000,
-                runData?.runInfo?.end_time
-                  ? runData?.runInfo?.end_time * 1000
-                  : dateNow,
-              )}`}
-            </Text>
-            <StatusLabel
-              status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-              title={runData?.runInfo?.end_time ? 'Finished' : 'In Progress'}
-            />
+            {!runData?.isRunInfoLoading ? (
+              <>
+                <Text
+                  component='p'
+                  tint={100}
+                  size={14}
+                  weight={600}
+                  className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
+                >
+                  {`${moment(runData?.runInfo?.creation_time * 1000).format(
+                    'DD MMM YYYY, HH:mm A',
+                  )} | ${processDurationTime(
+                    runData?.runInfo?.creation_time * 1000,
+                    runData?.runInfo?.end_time
+                      ? runData?.runInfo?.end_time * 1000
+                      : dateNow,
+                  )}`}
+                </Text>
+                <StatusLabel
+                  status={runData?.runInfo?.end_time ? 'alert' : 'success'}
+                  title={
+                    runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                  }
+                />
+              </>
+            ) : (
+              <Skeleton variant='rect' height={24} width={300} />
+            )}
           </div>
           <div className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
             {runData?.runInfo?.tags.map((tag: any, i: number) => (

@@ -66,7 +66,7 @@ function Column({
     } else {
       newWidth = evt.pageX - startingPoint.current;
     }
-    if (newWidth > 85 && newWidth < 500) {
+    if (newWidth > 85) {
       widthClone.current = newWidth;
       setMaxWidth(newWidth);
     }
@@ -122,7 +122,7 @@ function Column({
       })}
       style={{
         minWidth: maxWidth,
-        maxWidth,
+        maxWidth: '100vh',
         width: isInViewPort
           ? 'initial'
           : columnRef.current?.offsetWidth ?? 'initial',

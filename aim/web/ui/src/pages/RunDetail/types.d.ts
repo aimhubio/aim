@@ -47,6 +47,8 @@ export interface IRunSelectPopoverContentProps {
   runsOfExperiment: IRunSelectRun[];
   runInfo: any;
   isRunsOfExperimentLoading: boolean;
+  isRunInfoLoading: boolean;
+  isLoadMoreButtonShown: boolean;
   onRunsSelectToggle: () => void;
   dateNow: number;
 }
