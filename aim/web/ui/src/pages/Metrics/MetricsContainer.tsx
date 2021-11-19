@@ -67,7 +67,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     resizeElemRef,
     metricsData?.config?.table || {},
     metricAppModel.onTableResizeEnd,
-    !isEmpty(metricsData?.lineChartData),
   );
 
   React.useEffect(() => {

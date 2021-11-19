@@ -258,6 +258,13 @@ function getImagesData() {
           imagesData: {},
           tableData: [],
           images: { calcRanges: true },
+          config: {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+          },
         });
       }
     },
@@ -806,7 +813,7 @@ function getDataAsTableRows(
           },
           key: metric.key,
           runHash: metric.run.hash,
-          isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
+          isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,

@@ -42,7 +42,6 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     resizeElemRef,
     paramsData?.config?.table || {},
     paramsAppModel.onTableResizeEnd,
-    !isEmpty(paramsData?.highPlotData),
   );
 
   React.useEffect(() => {

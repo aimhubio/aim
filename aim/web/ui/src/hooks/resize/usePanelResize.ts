@@ -11,7 +11,6 @@ function usePanelResize(
   resizeElemRef: React.MutableRefObject<HTMLElement | any>,
   tableConfig: IMetricAppConfig['table'],
   onResizeEnd: (height: string) => void,
-  hasData: boolean,
 ) {
   const [panelResizing, setPanelResizing] = React.useState<boolean>(false);
   const frameRef = React.useRef<number>();
@@ -70,26 +69,21 @@ function usePanelResize(
     (mode: ResizeModeEnum) => {
       const tableHeight: number = tableConfig ? +tableConfig.height : 0.5;
       if (topPanelRef.current && bottomPanelRef.current) {
-        if (!hasData) {
-          topPanelRef.current.style.flex = '1 1 100%';
-          bottomPanelRef.current.style.flex = 'unset';
-        } else {
-          switch (mode) {
-            case ResizeModeEnum.Hide:
-              topPanelRef.current.style.flex = '1 1 100%';
-              bottomPanelRef.current.style.flex = 'unset';
-              break;
-            case ResizeModeEnum.Resizable:
-              topPanelRef.current.style.flex = `${tableHeight} 1 0`;
-              bottomPanelRef.current.style.flex = `${1 - tableHeight} 1 0`;
-              break;
-            case ResizeModeEnum.MaxHeight:
-              topPanelRef.current.style.flex = 'unset';
-              bottomPanelRef.current.style.flex = '1 1 100%';
-              break;
-            default:
-              break;
-          }
+        switch (mode) {
+          case ResizeModeEnum.Hide:
+            topPanelRef.current.style.flex = '1 1 100%';
+            bottomPanelRef.current.style.flex = 'unset';
+            break;
+          case ResizeModeEnum.Resizable:
+            topPanelRef.current.style.flex = `${tableHeight} 1 0`;
+            bottomPanelRef.current.style.flex = `${1 - tableHeight} 1 0`;
+            break;
+          case ResizeModeEnum.MaxHeight:
+            topPanelRef.current.style.flex = 'unset';
+            bottomPanelRef.current.style.flex = '1 1 100%';
+            break;
+          default:
+            break;
         }
       }
     },

@@ -475,11 +475,19 @@ function createAppModel({
             }
             if (components.table) {
               state.tableData = [];
+              state.config = {
+                ...configData,
+                table: {
+                  ...configData?.table,
+                  resizeMode: ResizeModeEnum.Resizable,
+                },
+              };
             }
 
             model.setState({
               requestIsPending: false,
               queryIsEmpty: true,
+
               ...state,
             });
           } else {
@@ -2847,6 +2855,13 @@ function createAppModel({
               }
               if (components.table) {
                 state.tableData = [];
+                state.config = {
+                  ...configData,
+                  table: {
+                    ...configData?.table,
+                    resizeMode: ResizeModeEnum.Resizable,
+                  },
+                };
               }
 
               model.setState({

@@ -3,7 +3,6 @@ import React from 'react';
 export interface IImagesPanelProps {
   imagesData: any;
   imagesBlobs: { [key: string]: value };
-  imagesWrapperRef: React.MutableRefObject<any>;
   recordSlice: number[];
   indexSlice: number[];
   indexRange: number[];
@@ -18,4 +17,5 @@ export interface IImagesPanelProps {
   isRangePanelShow: boolean;
   panelResizing: boolean;
   imageWrapperOffsetHeight: number;
+  imageWrapperOffsetWidth: number;
 }
