@@ -7,6 +7,13 @@ from aim.storage.types import BLOB
 
 @CustomObject.alias('aim.image')
 class Image(CustomObject):
+    """Image object used to store image objects in Aim repository..
+
+    Args:
+         image (:obj:`PIL.Image`): pillow `Image` object used to construct `aim.Image`.
+         caption (:obj:`str`, optional): Optional image caption. '' by default.
+    """
+
     AIM_NAME = 'aim.image'
 
     def __init__(self, image: PILImage, caption: str = ''):
@@ -22,7 +29,13 @@ class Image(CustomObject):
         self.storage['width'], self.storage['height'] = image.size
 
     @property
-    def caption(self):
+    def caption(self) -> str:
+        """Image caption, set by user.
+
+            :getter: Returns image caption.
+            :setter: Sets image caption.
+            :type: string
+        """
         return self.storage['caption']
 
     @caption.setter
@@ -30,32 +43,56 @@ class Image(CustomObject):
         self.storage['caption'] = value
 
     @property
-    def format(self):
+    def format(self) -> str:
+        """Stored image format.
+
+            :getter: Returns image format.
+            :type: string
+        """
         return self.storage['format']
 
     @property
     def width(self):
+        """Stored image width.
+
+            :getter: Returns image width.
+            :type: string
+        """
         return self.storage['width']
 
     @property
     def height(self):
+        """Stored image height.
+
+            :getter: Returns image height.
+            :type: string
+        """
         return self.storage['height']
 
     @property
     def size(self):
+        """Stored image size.
+
+            :getter: Returns image (width, height) pair.
+            :type: string
+        """
         return self.storage['width'], self.storage['height']
 
-    def to_pil_image(self):
+    def to_pil_image(self) -> PILImage:
+        """Method to convert aim.Image to pillow Image"""
+
         pil_img = pil_open(BytesIO(bytes(self.storage['data'])))
         assert pil_img.size == self.size
         return pil_img
 
     @classmethod
-    def from_pil_image(cls, pil_image):
+    def from_pil_image(cls, pil_image: PILImage):
+        """Named constructor for aim Image"""
         assert isinstance(pil_image, PILImage)
         return Image(image=pil_image)
 
     def json(self):
+        """Dump image metadata to a dict"""
         return {
             'caption': self.caption,
             'format': self.format,

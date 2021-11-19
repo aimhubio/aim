@@ -59,6 +59,7 @@ class Sequence(Generic[T]):
 
     @classmethod
     def sequence_name(cls) -> str:
+        """classmethod to get retrieve sequence's registered name"""
         ...
 
     def _calc_hash(self):
