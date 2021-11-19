@@ -3,7 +3,6 @@ import React from 'react';
 export interface IImagesPanelProps {
   imagesData: any;
   imagesBlobs: { [key: string]: value };
-  imagesWrapperRef: React.MutableRefObject<any>;
   recordSlice: number[];
   indexSlice: number[];
   indexRange: number[];
@@ -15,6 +14,8 @@ export interface IImagesPanelProps {
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   applyButtonDisabled: boolean;
+  isRangePanelShow: boolean;
   panelResizing: boolean;
   imageWrapperOffsetHeight: number;
+  imageWrapperOffsetWidth: number;
 }

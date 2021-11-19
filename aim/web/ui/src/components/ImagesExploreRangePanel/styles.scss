@@ -16,24 +16,32 @@
     height: 2.25rem;
     width: 100%;
     max-width: 82rem;
+    padding: 0 1.5rem;
 
     &__searchButtonContainer {
       padding-left: 1.5rem;
       border-left: $border-main;
-      margin-left: 1.5625rem;
+      margin-left: 1.5rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
       &__searchButton {
         height: 1.5rem !important;
         width: 5.125rem;
       }
+    }
+    &__sliderContainerSeparator {
+      width: 0.0625rem;
+      height: 1.5rem;
+      background: $primary-color-10;
+      margin-right: 1.75rem;
+      margin-left: 1.75rem;
     }
     &__sliderContainer {
       display: flex;
       align-items: center;
       height: 100%;
       width: 100%;
-      &:first-child {
-        margin-right: 3.5rem;
-      }
       &__densityField {
         width: 4rem;
         height: 1.25rem;
@@ -43,6 +51,17 @@
         font-weight: 600;
         color: $pico-80;
         padding-left: 0.375rem;
+        /* Chrome, Safari, Edge, Opera */
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        /* Firefox */
+        &[type='number'] {
+          -moz-appearance: textfield;
+        }
         &:focus-visible {
           outline: unset;
         }
@@ -110,7 +129,7 @@
         }
       }
       &__sliderValuesLabel {
-        width: 3.5rem;
+        width: 4.875rem;
         margin-right: 0.5rem;
       }
       &__densityFieldLabel {

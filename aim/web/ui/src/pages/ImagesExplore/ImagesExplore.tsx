@@ -14,6 +14,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
@@ -39,6 +40,15 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetHeight,
   );
 
+  const [offsetWidth, setOffsetWidth] = useState(
+    imagesWrapperRef?.current?.offsetWidth,
+  );
+
+  useResizeObserver(
+    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
+    imagesWrapperRef,
+  );
+
   const panelResizing = usePanelResize(
     wrapperElemRef,
     imagesWrapperRef,
@@ -47,6 +57,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesExploreData?.config?.table || {},
     imagesExploreAppModel.onTableResizeEnd,
   );
+
+  React.useEffect(() => {
+    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesWrapperRef?.current?.offsetWidth]);
 
   React.useEffect(() => {
     setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
@@ -114,7 +129,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
-              selectedMetricsData={imagesExploreData?.config?.select}
+              selectedImagesData={imagesExploreData?.config?.select}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
               }
@@ -170,9 +185,15 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               imagesBlobs={imagesExploreData?.imagesBlobs}
               isLoading={imagesExploreData?.requestIsPending}
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
-              imagesWrapperRef={imagesWrapperRef}
               panelResizing={panelResizing}
               imageWrapperOffsetHeight={offsetHeight || 0}
+              imageWrapperOffsetWidth={offsetWidth || 0}
+              isRangePanelShow={
+                !!getStateFromUrl('select')?.query ||
+                !isEmpty(getStateFromUrl('select')?.images) ||
+                (!!getStateFromUrl('select')?.advancedQuery &&
+                  !!getStateFromUrl('select')?.advancedMode)
+              }
             />
           </div>
           <ResizePanel

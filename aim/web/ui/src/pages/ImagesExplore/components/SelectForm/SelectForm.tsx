@@ -36,7 +36,7 @@ import contextToString from 'utils/contextToString';
 import './SelectForm.scss';
 
 function SelectForm({
-  selectedMetricsData,
+  selectedImagesData,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
@@ -57,7 +57,9 @@ function SelectForm({
     };
   }, []);
 
-  function handleSearch() {
+  function handleSearch(e: React.ChangeEvent<any>): void {
+    e.preventDefault();
+
     searchMetricsRef.current = imagesExploreAppModel.getImagesData();
     searchMetricsRef.current.call();
   }
@@ -76,7 +78,7 @@ function SelectForm({
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedMetricsData?.images].filter(
+    let fieldData = [...selectedImagesData?.images].filter(
       (opt: ISelectMetricsOption) => opt.label !== field,
     );
     onImagesExploreSelectChange(fieldData);
@@ -153,7 +155,7 @@ function SelectForm({
             justifyContent='space-between'
             alignItems='center'
           >
-            {selectedMetricsData?.advancedMode ? (
+            {selectedImagesData?.advancedMode ? (
               <div className='SelectForm__textarea'>
                 <TextField
                   fullWidth
@@ -165,7 +167,7 @@ function SelectForm({
                   placeholder={
                     'images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
                   }
-                  value={selectedMetricsData?.advancedQuery ?? ''}
+                  value={selectedImagesData?.advancedQuery ?? ''}
                   onChange={({ target }) =>
                     onSelectAdvancedQueryChange(target.value)
                   }
@@ -199,7 +201,7 @@ function SelectForm({
                       disablePortal={true}
                       disableCloseOnSelect
                       options={metricsOptions}
-                      value={selectedMetricsData?.images ?? ''}
+                      value={selectedImagesData?.images ?? ''}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
                       getOptionLabel={(option) => option.label}
@@ -222,7 +224,7 @@ function SelectForm({
                       )}
                       renderOption={(option) => {
                         let selected: boolean =
-                          !!selectedMetricsData?.images.find(
+                          !!selectedImagesData?.images.find(
                             (item: ISelectMetricsOption) =>
                               item.label === option.label,
                           )?.label;
@@ -248,13 +250,13 @@ function SelectForm({
                     orientation='vertical'
                     flexItem
                   />
-                  {selectedMetricsData?.images.length === 0 && (
+                  {selectedImagesData?.images.length === 0 && (
                     <span className='SelectForm__tags__empty'>
                       No images are selected
                     </span>
                   )}
                   <Box className='SelectForm__tags ScrollBar__hidden'>
-                    {selectedMetricsData?.images?.map(
+                    {selectedImagesData?.images?.map(
                       (tag: ISelectMetricsOption) => {
                         return (
                           <Badge
@@ -269,7 +271,7 @@ function SelectForm({
                     )}
                   </Box>
                 </Box>
-                {selectedMetricsData?.images.length > 1 && (
+                {selectedImagesData?.images.length > 1 && (
                   <span
                     onClick={() => onImagesExploreSelectChange([])}
                     className='SelectForm__clearAll'
@@ -281,18 +283,20 @@ function SelectForm({
             )}
           </Box>
         </Box>
-        {selectedMetricsData?.advancedMode ? null : (
+        {selectedImagesData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              spellCheck={false}
-              inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              value={selectedMetricsData?.query ?? ''}
-              onChange={({ target }) => onSelectRunQueryChange(target.value)}
-            />
+            <form onSubmit={handleSearch}>
+              <TextField
+                fullWidth
+                size='small'
+                variant='outlined'
+                spellCheck={false}
+                inputProps={{ style: { height: '0.687rem' } }}
+                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                value={selectedImagesData?.query ?? ''}
+                onChange={({ target }) => onSelectRunQueryChange(target.value)}
+              />
+            </form>
           </div>
         )}
       </div>
@@ -314,7 +318,7 @@ function SelectForm({
             <Icon name='reset' />
           </Button>
           <Button
-            className={selectedMetricsData?.advancedMode ? 'active' : ''}
+            className={selectedImagesData?.advancedMode ? 'active' : ''}
             withOnlyIcon={true}
             onClick={toggleEditMode}
           >

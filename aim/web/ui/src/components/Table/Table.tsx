@@ -474,7 +474,7 @@ const Table = React.forwardRef(function Table(
     if (custom) {
       setListWindowMeasurements();
     }
-  }, [custom]);
+  }, [custom, columnsWidths, rowData]);
 
   React.useEffect(() => {
     if (custom) {
