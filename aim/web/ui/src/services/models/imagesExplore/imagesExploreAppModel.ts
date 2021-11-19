@@ -1295,8 +1295,6 @@ function onSelectAdvancedQueryChange(query: string) {
       images: { ...configData.images, calcRanges: true },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });

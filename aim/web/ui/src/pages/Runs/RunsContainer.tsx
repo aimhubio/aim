@@ -60,7 +60,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
       query={runsData?.config?.select?.query}
       columnsWidths={runsData?.config?.table.columnsWidths}
-      updateSelectStateUrl={runsAppModel.updateSelectStateUrl}
       onExportTableData={runsAppModel.onExportTableData}
       updateColumnsWidths={runsAppModel.updateColumnsWidths}
       getLastRunsData={runsAppModel.getLastRunsData}
