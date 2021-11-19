@@ -134,7 +134,6 @@ import setAggregationEnabled from 'utils/app/setAggregationEnabled';
 import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
-import updateUrlParam from 'utils/app/updateUrlParam';
 import contextToString from 'utils/contextToString';
 import {
   ChartTypeEnum,
@@ -156,7 +155,6 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import getStateFromUrl from 'utils/getStateFromUrl';
-import getUrlWithParam from 'utils/getUrlWithParam';
 import JsonToCSV from 'utils/JsonToCSV';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { getItem, setItem } from 'utils/storage';
@@ -1751,7 +1749,7 @@ function createAppModel({
         onMetricsSelectChange<D>(
           data: D & Partial<ISelectMetricsOption[]>,
         ): void {
-          onMetricsSelectChange({ data, model, appName });
+          onMetricsSelectChange({ data, model });
         },
         onSelectRunQueryChange(query: string): void {
           onSelectRunQueryChange({ query, model });
@@ -3832,7 +3830,6 @@ function createAppModel({
                 select: { ...configData.select, params: data },
               };
 
-              updateURL({ configData: newConfig, appName });
               model.setState({ config: newConfig });
             }
           },
