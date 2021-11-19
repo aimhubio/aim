@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.1.0 Nov 20 2021
 
 - Add ability to explore tracked images (VkoHov)
 - Improve rendering performance by virtualizing table columns (roubkar)
