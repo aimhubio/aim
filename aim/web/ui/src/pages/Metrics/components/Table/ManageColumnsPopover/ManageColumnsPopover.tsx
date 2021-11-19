@@ -167,9 +167,9 @@ function ManageColumnsPopover({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {state.columns.left.list.map((data: any, index: number) => (
+                {state.columns.left.list.map((data: string, index: number) => (
                   <ColumnItem
-                    key={index}
+                    key={`${data}-${index}`}
                     data={data}
                     index={index}
                     isHidden={!!hiddenColumns?.includes(data)}
@@ -212,10 +212,10 @@ function ManageColumnsPopover({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {state.columns.middle.list.map((data: any, index: number) => {
-                  return (
+                {state.columns.middle.list.map(
+                  (data: string, index: number) => (
                     <ColumnItem
-                      key={index}
+                      key={`${data}-${index}`}
                       data={data}
                       index={index}
                       hasSearchableItems
@@ -231,8 +231,8 @@ function ManageColumnsPopover({
                         )
                       }
                     />
-                  );
-                })}
+                  ),
+                )}
                 {provided.placeholder}
               </div>
             )}
@@ -251,25 +251,21 @@ function ManageColumnsPopover({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {state.columns.right.list.map((data: any, index: number) => {
-                  return (
-                    <ColumnItem
-                      key={index}
-                      data={data}
-                      index={index}
-                      isHidden={!!hiddenColumns?.includes(data)}
-                      onClick={() =>
-                        onColumnsVisibilityChange(
-                          hiddenColumns.includes(data)
-                            ? hiddenColumns.filter(
-                                (col: string) => col !== data,
-                              )
-                            : hiddenColumns.concat([data]),
-                        )
-                      }
-                    />
-                  );
-                })}
+                {state.columns.right.list.map((data: string, index: number) => (
+                  <ColumnItem
+                    key={`${data}-${index}`}
+                    data={data}
+                    index={index}
+                    isHidden={!!hiddenColumns?.includes(data)}
+                    onClick={() =>
+                      onColumnsVisibilityChange(
+                        hiddenColumns.includes(data)
+                          ? hiddenColumns.filter((col: string) => col !== data)
+                          : hiddenColumns.concat([data]),
+                      )
+                    }
+                  />
+                ))}
                 {provided.placeholder}
               </div>
             )}
