@@ -274,6 +274,53 @@ for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
 ```
 See more advanced usage examples [here](https://colab.research.google.com/drive/14rIAjpEyklf5fSMiRbyZs6iYG7IVibcI).
 
+# Comparisons to familiar tools
+
+## Tensorboard
+Two main differencces with Tensorboard: run comparison speed and scalability
+
+**Training run comparison**
+
+Aim enables an order of magnitude training run comparison. Here is why:
+- Aim considers the tracked hyperparams and additional params as first class citizens. You can search, group, aggregate and deeply explore all tracked data (metrics, params, images) via the tracked params. All of them available on the UI.
+  - Easily diff the hyperparameters between the runs.
+
+- With tensorboard the users are forced to save those parameters as part of the training run name to be able to search and compare. This causes major usability issues on the UI with many experiments and params.
+  - TensorBoard doesn't have features to group, aggregate the metrics
+
+**Scalability**
+
+- Aim is built to handle 1000s of training runs with dozens of experiments each - both on the backend and on the UI.
+- TensorBoard becomes really slow and hard to use when a few hundred training runs are queried / compared.
+
+**Beloved TB visualizations to be added on Aim**
+
+- Distributions / gradients visualizations
+- Word projector
+- Neural network visualization
+
+## MLFlow
+MLFlow is an end-to-end ML Lifecycle tool. 
+Aim is focused on training tracking.
+The main differences of Aim and MLflow are around the UI scalability and run comparison features.
+
+**Run comparison**
+
+- Aim treats tracked parameters as first-class citizens. Users can query runs, metrics, images and filter using the params.
+- MLFlow does have a search by tracked config, but there are no grouping, aggregation, subplotting by hyparparams and other comparison features available.
+
+**UI Scalability**
+
+- Aim UI can handle several thousands of metrics at the same time smoothly with lots of steps.
+- MLflow UI becomes slow to use when there are a few hundreds of runs.
+
+## Weights and Biases
+
+Hosted vs self-hosted
+- Weights and Biases is a hosted closed-source experiment tracker.
+- Aim is self-hosted free and open-source.
+  - Remote self-hosted Aim is coming soon...
+
 
 # Roadmap
 
