@@ -250,6 +250,15 @@ function getImagesData() {
           setModelData(runData, configData);
           updateURL(configData);
         }
+      } else {
+        updateURL(configData);
+        model.setState({
+          requestIsPending: false,
+          queryIsEmpty: true,
+          imagesData: {},
+          tableData: [],
+          images: { calcRanges: true },
+        });
       }
     },
     abort: imagesRequestRef.abort,
