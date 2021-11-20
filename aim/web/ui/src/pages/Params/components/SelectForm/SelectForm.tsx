@@ -25,10 +25,8 @@ import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import {
-  ISelectFormProps,
-  ISelectParamsOption,
-} from 'types/pages/params/components/SelectForm/SelectForm';
+import { ISelectFormProps } from 'types/pages/params/components/SelectForm/SelectForm';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import getObjectPaths from 'utils/getObjectPaths';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
@@ -60,22 +58,22 @@ function SelectForm({
     searchRef.current.call();
   }
 
-  function onSelect(event: object, value: ISelectParamsOption[]): void {
+  function onSelect(event: object, value: ISelectOption[]): void {
     const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectParamsOption) => {
+      (acc: { [key: string]: number }, curr: ISelectOption) => {
         acc[curr.label] = ++acc[curr.label] || 0;
         return acc;
       },
       {},
     );
     onParamsSelectChange(
-      value.filter((option: ISelectParamsOption) => lookup[option.label] === 0),
+      value.filter((option: ISelectOption) => lookup[option.label] === 0),
     );
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedParamsData?.params].filter(
-      (opt: ISelectParamsOption) => opt.label !== field,
+    let fieldData = [...(selectedParamsData?.options || [])].filter(
+      (opt: ISelectOption) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);
   }
@@ -94,9 +92,9 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const paramsOptions: ISelectParamsOption[] = React.useMemo(() => {
-    let data: ISelectParamsOption[] = [];
-    const systemOptions: ISelectParamsOption[] = [];
+  const paramsOptions: ISelectOption[] = React.useMemo(() => {
+    let data: ISelectOption[] = [];
+    const systemOptions: ISelectOption[] = [];
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
         let system: boolean = isSystemMetric(key);
@@ -105,13 +103,13 @@ function SelectForm({
             .map((item) => `${item}="${val[item]}"`)
             .join(', ');
           let index: number = data.length;
-          let option: ISelectParamsOption = {
+          let option: ISelectOption = {
             label: `${system ? formatSystemMetricName(key) : key} ${label}`,
             group: system ? formatSystemMetricName(key) : key,
             type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
             value: {
-              param_name: key,
+              option_name: key,
               context: val,
             },
           };
@@ -177,7 +175,7 @@ function SelectForm({
                     disablePortal
                     disableCloseOnSelect
                     options={paramsOptions}
-                    value={selectedParamsData?.params}
+                    value={selectedParamsData?.options}
                     onChange={onSelect}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.label}
@@ -198,10 +196,10 @@ function SelectForm({
                       />
                     )}
                     renderOption={(option) => {
-                      let selected: boolean = !!selectedParamsData?.params.find(
-                        (item: ISelectParamsOption) =>
-                          item.label === option.label,
-                      )?.label;
+                      let selected: boolean =
+                        !!selectedParamsData?.options.find(
+                          (item: ISelectOption) => item.label === option.label,
+                        )?.label;
                       return (
                         <React.Fragment>
                           <Checkbox
@@ -223,37 +221,36 @@ function SelectForm({
                   orientation='vertical'
                   flexItem
                 />
-                {selectedParamsData?.params.length === 0 && (
+                {selectedParamsData?.options.length === 0 && (
                   <Text tint={50} size={14} weight={400}>
                     No params are selected
                   </Text>
                 )}
-                {selectedParamsData?.params.length > 0 && (
+                {selectedParamsData?.options.length > 0 && (
                   <Box className='SelectForm__tags ScrollBar__hidden'>
-                    {selectedParamsData?.params?.map(
-                      (tag: ISelectParamsOption) => {
-                        return (
-                          <Badge
-                            size='large'
-                            key={tag.label}
-                            color={tag.color}
-                            label={tag.label}
-                            onDelete={handleDelete}
-                          />
-                        );
-                      },
-                    )}
+                    {selectedParamsData?.options?.map((tag: ISelectOption) => {
+                      return (
+                        <Badge
+                          size='large'
+                          key={tag.label}
+                          color={tag.color}
+                          label={tag.label}
+                          onDelete={handleDelete}
+                        />
+                      );
+                    })}
                   </Box>
                 )}
               </Box>
-              {selectedParamsData?.params.length > 1 && (
-                <span
-                  onClick={() => onParamsSelectChange([])}
-                  className='SelectForm__clearAll'
-                >
-                  <Icon name='close' />
-                </span>
-              )}
+              {selectedParamsData?.options &&
+                selectedParamsData.options.length > 1 && (
+                  <span
+                    onClick={() => onParamsSelectChange([])}
+                    className='SelectForm__clearAll'
+                  >
+                    <Icon name='close' />
+                  </span>
+                )}
             </>
           </Box>
           <Button

@@ -23,7 +23,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     height,
     margin,
     alignmentConfig,
-    xValues,
+    xValues = [],
     attributesRef,
     humanizerConfigRef,
     drawBgTickLines = {
@@ -44,6 +44,15 @@ function drawAxes(args: IDrawAxesArgs): void {
     const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
 
     switch (alignmentConfig?.type) {
+      case AlignmentOptionsEnum.STEP:
+        {
+          xAlignmentText = alignmentKey ? alignmentKey + 's' : 'Steps';
+
+          let ticksCount = Math.floor(plotBoxRef.current.width / 90);
+          ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
+          xAxis.ticks(ticksCount);
+        }
+        break;
       case AlignmentOptionsEnum.EPOCH:
         {
           xAlignmentText = alignmentKey ? alignmentKey + 's' : '';
@@ -157,8 +166,6 @@ function drawAxes(args: IDrawAxesArgs): void {
         }
         break;
       default: {
-        xAlignmentText = alignmentKey ? alignmentKey + 's' : 'Steps';
-
         let ticksCount = Math.floor(plotBoxRef.current.width / 90);
         ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
         xAxis.ticks(ticksCount);

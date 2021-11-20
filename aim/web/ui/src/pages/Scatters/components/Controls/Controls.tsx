@@ -10,7 +10,7 @@ import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
-import { IControlProps } from 'types/pages/correlations/components/Controls/Controls';
+import { IControlProps } from 'types/pages/scatters/components/Controls/Controls';
 
 import './Controls.scss';
 

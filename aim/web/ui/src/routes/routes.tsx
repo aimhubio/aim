@@ -11,9 +11,7 @@ const Bookmarks = React.lazy(
 );
 const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
-const Correlations = React.lazy(
-  () => import('pages/Correlations/CorrelationsContainer'),
-);
+const Scatters = React.lazy(() => import('pages/Scatters/ScattersContainer'));
 
 export interface IRoute {
   path: PathEnum;
@@ -87,12 +85,12 @@ const routes = {
     showInSidebar: false,
     displayName: 'Run Detail',
   },
-  CORRELATIONS: {
-    path: PathEnum.Correlations,
-    component: Correlations,
+  Scatters: {
+    path: PathEnum.Scatters,
+    component: Scatters,
     showInSidebar: true,
-    displayName: 'Correlations',
-    icon: 'correlations',
+    displayName: 'Scatters',
+    icon: 'scatters',
   },
 };
 

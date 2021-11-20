@@ -2,21 +2,22 @@ import React from 'react';
 
 import { IGroupingPopoverAdvancedProps } from 'components/GroupingPopover/GroupingPopover';
 
+import { IGroupingConfig } from 'services/models/explorer/createAppModel';
+
 import {
   GroupNameType,
   IGroupingSelectOption,
-  IMetricAppConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 export interface IGroupingProps {
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
   onGroupingSelectChange: IMetricProps['onGroupingSelectChange'];
   onGroupingModeChange: IMetricProps['onGroupingModeChange'];
   onGroupingPaletteChange: IMetricProps['onGroupingPaletteChange'];
   onGroupingReset: IMetricProps['onGroupingReset'];
-  onGroupingApplyChange: IMetricAppConfig['onGroupingApplyChange'];
+  onGroupingApplyChange: IMetricProps['onGroupingApplyChange'];
   onGroupingPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
   onShuffleChange: IMetricProps['onShuffleChange'];
   groupingPopovers?: IGroupingPopovers[];

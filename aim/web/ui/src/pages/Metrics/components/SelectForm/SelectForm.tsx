@@ -27,10 +27,8 @@ import projectsModel from 'services/models/projects/projectsModel';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import {
-  ISelectFormProps,
-  ISelectMetricsOption,
-} from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { ISelectFormProps } from 'types/pages/metrics/components/SelectForm/SelectForm';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
@@ -48,26 +46,26 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const searchMetricsRef = React.useRef<any>(null);
+  const searchRef = React.useRef<any>(null);
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef?.abort();
-      searchMetricsRef.current?.abort();
+      searchRef.current?.abort();
     };
   }, []);
 
   function handleMetricSearch(e: React.ChangeEvent<any>): void {
     e.preventDefault();
-    searchMetricsRef.current = metricAppModel.getMetricsData(true);
-    searchMetricsRef.current.call();
+    searchRef.current = metricAppModel.getMetricsData(true);
+    searchRef.current.call();
   }
 
-  function onSelect(event: object, value: ISelectMetricsOption[]): void {
+  function onSelect(event: object, value: ISelectOption[]): void {
     const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectMetricsOption) => {
+      (acc: { [key: string]: number }, curr: ISelectOption) => {
         acc[curr.label] = ++acc[curr.label] || 0;
         return acc;
       },
@@ -77,8 +75,8 @@ function SelectForm({
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...(selectedMetricsData?.metrics || [])].filter(
-      (opt: ISelectMetricsOption) => opt.label !== field,
+    let fieldData = [...(selectedMetricsData?.options || [])].filter(
+      (opt: ISelectOption) => opt.label !== field,
     );
     onMetricsSelectChange(fieldData);
   }
@@ -101,9 +99,9 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
-    let data: ISelectMetricsOption[] = [];
-    const systemOptions: ISelectMetricsOption[] = [];
+  const metricsOptions: ISelectOption[] = React.useMemo(() => {
+    let data: ISelectOption[] = [];
+    const systemOptions: ISelectOption[] = [];
     let index: number = 0;
     if (projectsData?.metrics) {
       for (let key in projectsData?.metrics) {
@@ -138,13 +136,13 @@ function SelectForm({
     key: string,
     index: number,
     val: object | null = null,
-  ): ISelectMetricsOption {
+  ): ISelectOption {
     return {
       label: `${system ? formatSystemMetricName(key) : key}`,
       group: system ? formatSystemMetricName(key) : key,
       color: COLORS[0][index % COLORS[0].length],
       value: {
-        metric_name: key,
+        option_name: key,
         context: val,
       },
     };
@@ -219,7 +217,7 @@ function SelectForm({
                     disablePortal={true}
                     disableCloseOnSelect
                     options={metricsOptions}
-                    value={selectedMetricsData?.metrics}
+                    value={selectedMetricsData?.options}
                     onChange={onSelect}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.label}
@@ -242,9 +240,8 @@ function SelectForm({
                     )}
                     renderOption={(option) => {
                       let selected: boolean =
-                        !!selectedMetricsData?.metrics.find(
-                          (item: ISelectMetricsOption) =>
-                            item.label === option.label,
+                        !!selectedMetricsData?.options.find(
+                          (item: ISelectOption) => item.label === option.label,
                         )?.label;
                       return (
                         <React.Fragment>
@@ -268,29 +265,27 @@ function SelectForm({
                   orientation='vertical'
                   flexItem
                 />
-                {selectedMetricsData?.metrics.length === 0 && (
+                {selectedMetricsData?.options.length === 0 && (
                   <Text tint={50} size={14} weight={400}>
                     No metrics are selected
                   </Text>
                 )}
                 <div className='Metrics__SelectForm__tags ScrollBar__hidden'>
-                  {selectedMetricsData?.metrics?.map(
-                    (tag: ISelectMetricsOption) => {
-                      return (
-                        <Badge
-                          size='large'
-                          key={tag.label}
-                          color={tag.color}
-                          label={tag.label}
-                          onDelete={handleDelete}
-                        />
-                      );
-                    },
-                  )}
+                  {selectedMetricsData?.options?.map((tag: ISelectOption) => {
+                    return (
+                      <Badge
+                        size='large'
+                        key={tag.label}
+                        color={tag.color}
+                        label={tag.label}
+                        onDelete={handleDelete}
+                      />
+                    );
+                  })}
                 </div>
               </Box>
-              {selectedMetricsData?.metrics &&
-                selectedMetricsData.metrics.length > 1 && (
+              {selectedMetricsData?.options &&
+                selectedMetricsData.options.length > 1 && (
                   <span
                     onClick={() => onMetricsSelectChange([])}
                     className='SelectForm__clearAll'

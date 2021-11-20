@@ -8,7 +8,7 @@ enum PathEnum {
   Tags = '/tags',
   Bookmarks = '/bookmarks',
   Run_Detail = '/runs/:runHash',
-  Correlations = '/correlations',
+  Scatters = '/scatters',
 }
 
 export { PathEnum };

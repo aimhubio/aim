@@ -15,7 +15,7 @@ export interface IDrawAxesArgs {
   height: number;
   margin: { top: number; right: number; bottom: number; left: number };
   alignmentConfig?: IAlignmentConfig;
-  xValues: number[];
+  xValues?: number[];
   attributesRef: React.MutableRefObject<IAttributesRef>;
   humanizerConfigRef: React.MutableRefObject<{}>;
   drawBgTickLines?: { x?: boolean; y?: boolean };

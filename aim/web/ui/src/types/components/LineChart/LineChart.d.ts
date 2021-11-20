@@ -20,14 +20,14 @@ import { CurveEnum } from 'utils/d3';
 
 export interface ILine {
   key: string;
-  groupKey?: string;
   data: {
     xValues: number[];
     yValues: number[];
   };
   color: string;
-  dasharray: string;
   selectors: string[];
+  groupKey?: string;
+  dasharray?: string;
 }
 
 export interface ILineChartProps {

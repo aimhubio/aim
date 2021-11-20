@@ -189,7 +189,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               alignmentConfig={props.alignmentConfig}
             />
           </Grid>
-          <Grid className='Metrics__controls__container' item>
+          <Grid className='ChartPanel__controls__container' item>
             {props.controls}
           </Grid>
         </>

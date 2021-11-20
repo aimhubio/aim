@@ -36,4 +36,10 @@
       box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
     }
   }
+
+  .ChartPanel__controls__container {
+    width: 3.75rem;
+    max-height: 100%;
+    overflow-y: auto;
+  }
 }

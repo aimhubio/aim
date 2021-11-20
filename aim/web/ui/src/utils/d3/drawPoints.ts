@@ -25,6 +25,7 @@ function drawPoints(args: IDrawPointsArgs): void {
   };
 
   pointsRef.current.updatePoints = function (data: IProcessedData[]): void {
+    debugger;
     pointsNodeRef.current
       ?.selectAll('.Circle')
       .data(data)
@@ -38,8 +39,13 @@ function drawPoints(args: IDrawPointsArgs): void {
         (p: ILine) =>
           `Circle-Sel-${highlightMode}-${p.selectors?.[highlightMode]}`,
       )
-      .attr('cx', (p: ILine) => xScale(p.data.xValues[0]))
-      .attr('cy', (p: ILine) => yScale(p.data.yValues[0]))
+      .attr('cx', (p: any) => {
+        return xScale(p.values[1]);
+      })
+      .attr('cy', (p: any) => {
+        console.log(yScale(p.values[0]), p, p.values[0]);
+        return yScale(p.values[0]);
+      })
       .attr('r', CircleEnum.Radius)
       .style('fill', (p: ILine) => p.color);
   };

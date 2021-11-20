@@ -82,6 +82,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
 
+  console.log('mttt');
   function draw() {
     const { processedData, min, max, xValues } = processData(
       data,
@@ -104,16 +105,18 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     });
 
     const { width, height, margin } = visBoxRef.current;
+    const [yDimension, xDimension] = Object.values(data.dimensions);
 
     const xScale = getAxisScale({
-      domainData: [min.x, max.x],
+      domainData: xDimension.domainData,
       rangeData: [0, width - margin.left - margin.right],
-      scaleType: axesScaleType.xAxis,
+      scaleType: xDimension.scaleType,
     });
+
     const yScale = getAxisScale({
-      domainData: [min.y, max.y],
+      domainData: yDimension.domainData,
       rangeData: [height - margin.top - margin.bottom, 0],
-      scaleType: axesScaleType.yAxis,
+      scaleType: yDimension.scaleType,
     });
 
     attributesRef.current.xScale = xScale;
@@ -129,15 +132,14 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       width,
       height,
       margin,
-      xValues,
       attributesRef,
       humanizerConfigRef,
-      drawBgTickLines: { x: true, y: true },
+      drawBgTickLines: { y: true },
     });
 
     drawPoints({
       index,
-      data: processedData,
+      data: data.data,
       xScale,
       yScale,
       highlightMode,
@@ -145,41 +147,41 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       pointsNodeRef: linesNodeRef,
     });
 
-    drawHoverAttributes({
-      index,
-      data: processedData,
-      highlightMode,
-      syncHoverState,
-      visAreaRef,
-      attributesRef,
-      plotBoxRef,
-      visBoxRef,
-      svgNodeRef,
-      bgRectNodeRef,
-      attributesNodeRef,
-      linesNodeRef,
-      highlightedNodeRef,
-      humanizerConfigRef,
-      drawAxisLines: { x: false, y: false },
-      drawAxisLabels: { x: false, y: false },
-    });
+    // drawHoverAttributes({
+    //   index,
+    //   data: data.data,
+    //   highlightMode,
+    //   syncHoverState,
+    //   visAreaRef,
+    //   attributesRef,
+    //   plotBoxRef,
+    //   visBoxRef,
+    //   svgNodeRef,
+    //   bgRectNodeRef,
+    //   attributesNodeRef,
+    //   linesNodeRef,
+    //   highlightedNodeRef,
+    //   humanizerConfigRef,
+    //   drawAxisLines: { x: false, y: false },
+    //   drawAxisLabels: { x: false, y: false },
+    // });
 
-    drawBrush({
-      index,
-      brushRef,
-      plotBoxRef,
-      plotNodeRef,
-      visBoxRef,
-      axesRef,
-      attributesRef,
-      linesRef,
-      svgNodeRef,
-      axesScaleType,
-      min,
-      max,
-      zoom,
-      onZoomChange,
-    });
+    // drawBrush({
+    //   index,
+    //   brushRef,
+    //   plotBoxRef,
+    //   plotNodeRef,
+    //   visBoxRef,
+    //   axesRef,
+    //   attributesRef,
+    //   linesRef,
+    //   svgNodeRef,
+    //   axesScaleType,
+    //   min,
+    //   max,
+    //   zoom,
+    //   onZoomChange,
+    // });
   }
 
   function renderChart() {

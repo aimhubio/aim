@@ -1,29 +1,27 @@
-import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
+import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
 
 import { formatValue } from '../formatValue';
 
-export default function getQueryStringFromSelect(
-  selectData: IMetricAppConfig['select'],
-) {
+export default function getQueryStringFromSelect(selectData: ISelectConfig) {
   let query = '';
   if (selectData !== undefined) {
     if (selectData.advancedMode) {
-      query = selectData.advancedQuery;
+      query = selectData.advancedQuery || '';
     } else {
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
-      }(${selectData.metrics
+      }(${selectData.options
         .map(
-          (metric) =>
-            `(metric.name == "${metric.value.metric_name}"${
-              metric.value.context === null
+          (option) =>
+            `(metric.name == "${option.value?.option_name}"${
+              option.value?.context === null
                 ? ''
                 : ' and ' +
-                  Object.keys(metric.value.context)
+                  Object.keys(option.value?.context)
                     .map(
                       (item) =>
                         `metric.context.${item} == ${formatValue(
-                          (metric.value.context as any)[item],
+                          (option.value?.context as any)[item],
                         )}`,
                     )
                     .join(' and ')

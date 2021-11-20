@@ -24,20 +24,20 @@ import {
   ITooltipData,
   SortField,
 } from '../metrics/metricsAppModel';
+import { IAppModelConfig } from '../explorer/createAppModel';
 
 export interface IParamsAppModelState {
   refs: {
     tableRef?: { current: ITableRef | null };
     chartPanelRef?: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean | null;
+  requestIsPending: boolean;
   queryIsEmpty: boolean;
   rawData: IRun<IParamTrace>[];
-  config: IParamsAppConfig;
+  config: IAppModelConfig;
   data: IMetricsCollection<IParam>[];
   highPlotData: { dimensions: IDimensionsType; data: any }[];
   chartTitleData: IChartTitleData;
-  tooltipData: ITooltipData;
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
@@ -53,58 +53,4 @@ export interface IParam {
   color: string;
   key: string;
   dasharray: string;
-}
-export interface IParamsAppConfig {
-  grouping?: {
-    color: string[];
-    stroke: string[];
-    chart: string[];
-    reverseMode: {
-      color: boolean;
-      stroke: boolean;
-      chart: boolean;
-    };
-    isApplied: {
-      color: boolean;
-      stroke: boolean;
-      chart: boolean;
-    };
-    persistence: {
-      color: boolean;
-      stroke: boolean;
-    };
-    seed: {
-      color: number;
-      stroke: number;
-    };
-    paletteIndex: number;
-  };
-  chart?: {
-    curveInterpolation: CurveEnum;
-    isVisibleColorIndicator: boolean;
-    focusedState: IFocusedState;
-    tooltip: IChartTooltip;
-  };
-  select?: {
-    params: any; // ISelectMetricsOption[];
-    query: string;
-  };
-  table?: {
-    resizeMode: ResizeModeEnum;
-    rowHeight: RowHeightSize;
-    sortFields?: SortField[];
-    hiddenMetrics?: string[];
-    hiddenColumns?: string[];
-    columnsWidths?: { [key: string]: number };
-    columnsOrder?: {
-      left: string[];
-      middle: string[];
-      right: string[];
-    };
-    height: string;
-  };
-  liveUpdate?: {
-    delay: number;
-    enabled: boolean;
-  };
 }

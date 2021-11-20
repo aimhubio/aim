@@ -14,7 +14,6 @@ const GroupingPopovers: IGroupingPopovers[] = [
     groupName: 'stroke',
     title: 'Select Fields For Grouping by stroke style',
     advancedTitle: 'stroke style advanced options',
-
     AdvancedComponent: StrokePopoverAdvanced,
   },
   {

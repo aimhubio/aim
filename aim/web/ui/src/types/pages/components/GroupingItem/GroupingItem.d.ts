@@ -4,14 +4,15 @@ import { IGroupingPopoverProps } from 'types/components/GroupingPopover/Grouping
 import {
   GroupNameType,
   IGroupingSelectOption,
-  IMetricAppConfig,
 } from 'types/services/models/metrics/metricsAppModel';
+
+import { IGroupingConfig } from '../../../services/models/explorer/createAppModel';
 
 export interface IGroupingItemProps extends IGroupingPopoverProps {
   title: string;
   advancedTitle?: string;
   groupName: GroupNameType;
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: IGroupingConfig;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode>;
   groupingSelectOptions: IGroupingSelectOption[];
   onReset: () => void;

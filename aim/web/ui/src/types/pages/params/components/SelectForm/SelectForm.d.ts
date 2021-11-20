@@ -1,17 +1,19 @@
-import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
+import { IAppModelConfig } from 'services/models/explorer/createAppModel';
+import { ISelectOption } from 'services/models/explorer/createAppModel';
 
 export interface ISelectFormProps {
-  onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
-  selectedParamsData: IParamsAppConfig['select'];
+  onParamsSelectChange: (options: ISelectOption[]) => void;
+  selectedParamsData: IAppModelConfig['select'];
   onSelectRunQueryChange: (query: string) => void;
 }
-export interface ISelectParamsOption {
-  label: string;
-  group: string;
-  color: string;
-  type: string;
-  value?: {
-    param_name: string;
-    context: object | null | any;
-  };
-}
+
+// export interface ISelectParamsOption {
+//   label: string;
+//   group: string;
+//   color: string;
+//   type: string;
+//   value?: {
+//     option_name: string;
+//     context: object | null | any;
+//   };
+// }

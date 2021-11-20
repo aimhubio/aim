@@ -6,20 +6,20 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
+import { IScatterAppModelState } from 'services/models/scatter/scatterAppModel';
 import {
-  ICorrelationAppConfig,
-  ICorrelationAppModelState,
-} from 'services/models/correlations/correlationsAppModel';
+  ISelectConfig,
+  ISelectOption,
+} from 'services/models/explorer/createAppModel';
+import { IGroupingConfig } from 'services/models/explorer/createAppModel';
 
 import { ITableRef } from 'types/components/Table/Table';
 import {
   GroupNameType,
-  IMetricAppConfig,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   IFocusedState,
-  IAggregationConfig,
   IChartTooltip,
   IChartTitleData,
   IGroupingSelectOption,
@@ -34,14 +34,14 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
-export interface ICorrelationsProps extends Partial<RouteChildrenProps> {
+export interface IScattersProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
   chartPanelRef: React.RefObject<IChartPanelRef>;
   tableElemRef: React.RefObject<HTMLDivElement>;
   chartElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
-  scatterPlotData: ILine[][];
+  scatterPlotData: any[];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;
   tableData: IMetricTableRowData[];
@@ -51,10 +51,10 @@ export interface ICorrelationsProps extends Partial<RouteChildrenProps> {
   axesScaleType: IAxesScaleState;
   focusedState: IFocusedState;
   highlightMode: HighlightEnum;
-  groupingData: ICorrelationAppConfig['grouping'];
-  notifyData: ICorrelationAppModelState['notifyData'];
+  groupingData: IGroupingConfig;
+  notifyData: IScatterAppModelState['notifyData'];
   tooltip: IChartTooltip;
-  selectedMetricsData: IMetricAppConfig['select'];
+  selectedOptionsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];
   hiddenMetrics: string[];
@@ -85,7 +85,7 @@ export interface ICorrelationsProps extends Partial<RouteChildrenProps> {
   onNotificationAdd: (notification: INotification) => void;
   onNotificationDelete: (id: number) => void;
   onResetConfigData: () => void;
-  onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
+  onSelectOptionsChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;

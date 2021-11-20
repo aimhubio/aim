@@ -2,7 +2,7 @@ import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 
-import getQueryStringFromSelect from './getQuertStringFromSelect';
+import getQueryStringFromSelect from './getQueryStringFromSelect';
 
 export default function toggleSelectAdvancedMode<M extends State>({
   model,

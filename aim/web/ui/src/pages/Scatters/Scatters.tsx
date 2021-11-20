@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -12,23 +12,26 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import Grouping from 'pages/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Controls from 'pages/Correlations/components/Controls/Controls';
-import SelectForm from 'pages/Correlations/components/SelectForm/SelectForm';
+import Controls from 'pages/Scatters/components/Controls/Controls';
+import SelectForm from 'pages/Scatters/components/SelectForm/SelectForm';
 
 import { ILine } from 'types/components/LineChart/LineChart';
-import { ICorrelationsProps } from 'types/pages/correlations/Correlations';
+import { IScattersProps } from 'types/pages/scatters/Scatters';
 
 import { ChartTypeEnum } from 'utils/d3';
 
-function Correlations(
-  props: ICorrelationsProps,
+import './Scatters.scss';
+
+function Scatters(
+  props: IScattersProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const chartProps: any[] = React.useMemo(() => {
     return (props.scatterPlotData || []).map(
-      (chartData: ILine[], index: number) => ({
+      (chartData: any, index: number) => ({
         axesScaleType: props.axesScaleType,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
@@ -48,27 +51,30 @@ function Correlations(
   ]);
 
   return (
-    <div ref={props.wrapperElemRef} className='Correlations__container'>
-      <section className='Correlations__section'>
-        <div className='Correlations__section__div Metrics__fullHeight'>
+    <div ref={props.wrapperElemRef} className='Scatters__container'>
+      <section className='Scatters__section'>
+        <div className='Scatters__section__div Scatters__fullHeight'>
           <AppBar
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
             liveUpdateConfig={props.liveUpdateConfig}
             onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
-            title={'Correlations explorer'}
+            title='Scatters explorer'
           />
-          <div className='Correlations__SelectForm__Grouping__container'>
+          <div className='Scatters__SelectForm__Grouping__container'>
             <SelectForm
-              selectedMetricsData={props.selectedMetricsData}
-              onMetricsSelectChange={props.onMetricsSelectChange}
+              selectedOptionsData={props.selectedOptionsData}
+              onSelectOptionsChange={props.onSelectOptionsChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
               onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
               toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
               onSearchQueryCopy={props.onSearchQueryCopy}
             />
             <Grouping
+              groupingPopovers={GroupingPopovers.filter(
+                (p) => p.groupName !== 'stroke',
+              )}
               groupingData={props.groupingData}
               groupingSelectOptions={props.groupingSelectOptions}
               onGroupingSelectChange={props.onGroupingSelectChange}
@@ -82,19 +88,19 @@ function Correlations(
           </div>
           <div
             ref={props.chartElemRef}
-            className={`Metrics__chart__container${
+            className={`Scatters__chart__container${
               props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
             }`}
           >
             <BusyLoaderWrapper
               isLoading={props.requestIsPending}
-              className='Metrics__loader'
+              className='Scatters__loader'
               height='100%'
               loaderComponent={<ChartLoader controlsCount={9} />}
             >
-              {!!props.scatterPlotData?.[0]?.length ? (
+              {!!props.scatterPlotData?.[0]?.data?.length ? (
                 <ChartPanel
-                  key={props.scatterPlotData?.length}
+                  key={props.scatterPlotData?.[0]?.data?.length}
                   ref={props.chartPanelRef}
                   panelResizing={props.panelResizing}
                   chartType={ChartTypeEnum.ScatterPlot}
@@ -133,8 +139,8 @@ function Correlations(
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
-            className={`Metrics__ResizePanel${
-              props.requestIsPending || props.scatterPlotData?.[0]?.length
+            className={`Scatters__ResizePanel${
+              props.requestIsPending || props.scatterPlotData?.[0]?.data?.length
                 ? ''
                 : '__hide'
             }`}
@@ -145,13 +151,13 @@ function Correlations(
           />
           <div
             ref={props.tableElemRef}
-            className={`Metrics__table__container${
+            className={`Scatters__table__container${
               props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
             }`}
           >
             <BusyLoaderWrapper
               isLoading={props.requestIsPending}
-              className='Metrics__loader'
+              className='Scatters__loader'
               height='100%'
               loaderComponent={<TableLoader />}
             >
@@ -208,4 +214,4 @@ function Correlations(
   );
 }
 
-export default React.memo(Correlations);
+export default React.memo(Scatters);
