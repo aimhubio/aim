@@ -307,7 +307,7 @@ The main differences of Aim and MLflow are around the UI scalability and run com
 
 **UI Scalability**
 
-- Aim UI can handle several thousands of metrics at the same time smoothly with 1000s of steps. (it may get shaky when you explore 1000s of metrics and 10000s of steps. but we keep optimizing)
+- Aim UI can handle several thousands of metrics at the same time smoothly with 1000s of steps. It may get shaky when you explore 1000s of metrics with 10000s of steps each. But we are constantly optimizing!
 - MLflow UI becomes slow to use when there are a few hundreds of runs.
 
 ## Weights and Biases
