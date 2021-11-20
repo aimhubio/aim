@@ -332,16 +332,19 @@ Hosted vs self-hosted
 The high-level features we are going to work on the next few months
 
 **Done**
-- [x] Live updates (End: _Oct 18 2021_)
+- [x] Live updates (Shipped: _Oct 18 2021_)
+- [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
 
 **In progress:**
-- [ ] Images tracking and visualization (Start: _Oct 18 2021_)
 - [ ] Centralized tracking server (Start: _Oct 18 2021_)
+- [ ] Colab integration (Start: _Nov 18 2021_)
+- [ ] Jupyter integration (Start: _Nov 18 2021_)
+- [ ] Scikit-learn integration (Start: _Nov 18 2021_)
+- [ ] Distributions tracking and visualization (Start: _Nov 10 2021_)
 
 ### TODO: Nov 1 - Feb 1
 
 **Track and Explore:**
-  - [ ] Distributions tracking and visualization
   - [ ] Transcripts tracking and visualization
   - [ ] Runs side-by-side comparison
 
@@ -353,13 +356,10 @@ The high-level features we are going to work on the next few months
   - [ ] Collect stdout, stderr logs
 
 **Integrations:**
-  - [ ] Colab integration
-  - [ ] Jupyter integration
   - [ ] plotly integration
   - [ ] Kubeflow integration
   - [ ] Streamlit integration
   - [ ] Raytune integration
-  - [ ] Scikit-learn integration
   - [ ] Google MLMD
 
 ## Community
