@@ -9,7 +9,7 @@ import API from '../api';
 const endpoints = {
   GET_PROJECTS: 'projects',
   GET_ACTIVITIES: 'projects/activity',
-  GET_PARAMS_METRICS: 'projects/params',
+  GET_PROJECTS_PARAMS: 'projects/params',
 };
 
 function getProjectsData(): IApiRequest<IProject> {
@@ -20,15 +20,24 @@ function fetchActivityData(): IApiRequest<any> {
   return API.get(endpoints.GET_ACTIVITIES);
 }
 
-function getParamsAndMetrics(): IApiRequest<IProjectParamsMetrics> {
-  return API.get<IProjectParamsMetrics>(endpoints.GET_PARAMS_METRICS);
+function getProjectParams(
+  sequences: string[] = ['metric'],
+): IApiRequest<IProjectParamsMetrics> {
+  const query = sequences.reduce(
+    (acc: string, sequence: string, index: number) => {
+      acc += `${index === 0 ? '?' : '&'}sequence=${sequence}`;
+      return acc;
+    },
+    '',
+  );
+  return API.get<IProjectParamsMetrics>(endpoints.GET_PROJECTS_PARAMS + query);
 }
 
 const projectsService = {
   endpoints,
   getProjectsData,
   fetchActivityData,
-  getParamsAndMetrics,
+  getProjectParams,
 };
 
 export default projectsService;

@@ -12,6 +12,7 @@ import './GroupingItem.scss';
 const icons = {
   stroke: 'line-style',
   chart: 'chart-group',
+  group: 'image-group',
   color: 'coloring',
 };
 

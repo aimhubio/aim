@@ -47,7 +47,7 @@ function processData(
   } else {
     const diff = yMax - yMin;
     yMax += diff * 0.1;
-    yMin -= diff * 0.05;
+    yMin -= (diff * 0.05 >= yMin ? yMin : diff) * 0.05;
   }
   let [xMin, xMax] = minMaxOfArray(xValues);
   return {

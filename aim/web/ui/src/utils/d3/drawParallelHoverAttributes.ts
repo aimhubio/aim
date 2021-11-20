@@ -187,7 +187,7 @@ const drawParallelHoverAttributes = ({
 
       mousePosition = [
         xScale(activePoint.xValue),
-        yScale[dimensionLabel](activePoint.yValue) + margin.top,
+        yScale[dimensionLabel]?.(activePoint.yValue) + margin.top,
       ];
     }
 

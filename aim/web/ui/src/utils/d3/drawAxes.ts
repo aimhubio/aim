@@ -75,7 +75,7 @@ function drawAxes(args: IDrawAxesArgs): void {
           const day = 24 * hour;
           const week = 7 * day;
 
-          const diff = Math.ceil(last - first);
+          const diff = Math.ceil((last - first) / 1000);
           let unit: number | null = null;
           let formatUnit: Unit;
           if (diff / week > 4) {
@@ -124,10 +124,7 @@ function drawAxes(args: IDrawAxesArgs): void {
             .ticks(ticksCount)
             .tickValues(tickValues!)
             .tickFormat((d, i) =>
-              shortEnglishHumanizer(
-                Math.round(+d * 1000),
-                humanizerConfigRef.current,
-              ),
+              shortEnglishHumanizer(Math.round(+d), humanizerConfigRef.current),
             );
         }
         break;

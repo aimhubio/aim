@@ -20,6 +20,11 @@ const GroupingPopovers: IGroupingPopovers[] = [
     groupName: 'chart',
     title: 'Select fields to divide into charts',
   },
+  {
+    groupName: 'group',
+    title: 'Select Fields For Grouping',
+    advancedTitle: 'Select Fields For Grouping',
+  },
 ];
 
 export default GroupingPopovers;

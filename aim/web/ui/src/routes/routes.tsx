@@ -12,6 +12,9 @@ const Bookmarks = React.lazy(
 const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
 const Scatters = React.lazy(() => import('pages/Scatters/ScattersContainer'));
+const ImagesExplore = React.lazy(
+  () => import('pages/ImagesExplore/ImagesExplore'),
+);
 
 export interface IRoute {
   path: PathEnum;
@@ -63,7 +66,20 @@ const routes = {
     path: PathEnum.Params_Id,
     component: Params,
     showInSidebar: false,
-    displayName: 'MetricsId',
+    displayName: 'ParamsId',
+  },
+  IMAGE_EXPLORE: {
+    path: PathEnum.Images_Explore,
+    component: ImagesExplore,
+    showInSidebar: true,
+    displayName: 'Images',
+    icon: 'images',
+  },
+  IMAGE_EXPLORE_ID: {
+    path: PathEnum.Images_Explore_Id,
+    component: ImagesExplore,
+    showInSidebar: false,
+    displayName: 'ImagesId',
   },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,

@@ -9,14 +9,15 @@ import {
   MenuItem,
 } from '@material-ui/core';
 
+import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 import { Button, Icon, Text } from 'components/kit';
 
-import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
+import { trackEvent } from 'services/analytics';
 
-import BookmarkForm from '../BookmarkForm/BookmarkForm';
+import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
 import './MetricsBar.scss';
 
@@ -114,13 +115,6 @@ function MetricsBar({
               <MenuItem onClick={onResetConfigData}>
                 Reset Controls to System Defaults
               </MenuItem>
-              <a
-                href='https://github.com/aimhubio/aim#searching-experiments'
-                target='_blank'
-                rel='noreferrer'
-              >
-                <MenuItem>Searching Experiments (docs)</MenuItem>
-              </a>
             </div>
           }
         />

@@ -14,11 +14,11 @@ on:
     types:
       - opened
       - synchronize
-      - unlabeled
+      - ready_for_review
       - reopened
 jobs:
   run-checks:
-    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     name: Run Unit-tests & Code-style checks
     steps:

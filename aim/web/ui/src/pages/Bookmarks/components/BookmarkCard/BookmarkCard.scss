@@ -27,7 +27,13 @@
 .BookmarkCard__title__section {
   display: flex;
   justify-content: space-between;
-
+  &__container {
+    display: flex;
+    i {
+      margin-right: 0.5rem;
+      margin-top: 0.125rem;
+    }
+  }
   a {
     text-decoration: none;
   }

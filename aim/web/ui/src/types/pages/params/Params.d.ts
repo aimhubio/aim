@@ -17,7 +17,7 @@ import {
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
 import { CurveEnum } from 'utils/d3';
 

@@ -7,19 +7,6 @@ import { IBadgeProps } from './Badge.d';
 
 import './Badge.scss';
 
-/**
- * @property {string} id - id of Badge
- * @property {string} label - label of Badge
- * @property {string} color - Badge color
- * @property {string} size - size of Badge
- * @property {maxWidth} string - maximum width of Badge
- * @property {React.CSSProperties} style - applies inline styles
- * @property {string} className - component className
- * @property {boolean} selectBadge - defines if Badge renders in Select component
- * @property {function} onDelete - delete callBack function
- * @property {function}  onClick - handling on Badge click function
- */
-
 const BadgeContainer = styled.div`
   ${(props) =>
     props.color &&
@@ -36,6 +23,18 @@ const BadgeIcon = styled.span`
   }`}
 `;
 
+/**
+ * @property {string} id - id of Badge
+ * @property {string} label - label of Badge
+ * @property {string} color - Badge color
+ * @property {string} size - size of Badge
+ * @property {maxWidth} string - maximum width of Badge
+ * @property {React.CSSProperties} style - applies inline styles
+ * @property {string} className - component className
+ * @property {boolean} selectBadge - defines if Badge renders in Select component
+ * @property {function} onDelete - delete callBack function
+ * @property {function}  onClick - handling on Badge click function
+ */
 function Badge({
   id,
   label,

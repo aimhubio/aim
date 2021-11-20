@@ -15,7 +15,7 @@ const { Provider } = ThemeContext;
 
 const light: ThemeOptions = {
   typography: {
-    fontFamily: 'Inter Regular, sans-serif',
+    fontFamily: 'Inter, sans-serif',
   },
   overrides: {
     MuiDivider: {

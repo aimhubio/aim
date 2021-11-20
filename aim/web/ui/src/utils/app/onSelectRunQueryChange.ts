@@ -11,7 +11,7 @@ export default function onSelectRunQueryChange<M extends State>({
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, query },
+      select: { ...configData.select, advancedQuery: query, query },
     };
 
     model.setState({ config: newConfig });

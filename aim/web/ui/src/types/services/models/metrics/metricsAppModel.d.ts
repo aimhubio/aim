@@ -182,7 +182,7 @@ export interface IGetGroupingPersistIndex {
   groupName: 'color' | 'stroke';
 }
 
-export type GroupNameType = 'color' | 'stroke' | 'chart';
+export type GroupNameType = 'color' | 'stroke' | 'chart' | 'group';
 export interface IGroupingSelectOption {
   label: string;
   group: string;

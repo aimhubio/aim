@@ -51,28 +51,29 @@ export interface IChart
     IScatterPlotConfig {}
 
 export interface IGroupingConfig {
-  color: string[];
-  stroke: string[];
-  chart: string[];
-  reverseMode: {
+  color?: string[];
+  stroke?: string[];
+  chart?: string[];
+  group?: [];
+  reverseMode?: {
     color: boolean;
     stroke: boolean;
     chart: boolean;
   };
-  isApplied: {
+  isApplied?: {
     color: boolean;
     stroke: boolean;
     chart: boolean;
   };
-  persistence: {
+  persistence?: {
     color: boolean;
     stroke: boolean;
   };
-  seed: {
+  seed?: {
     color: number;
     stroke: number;
   };
-  paletteIndex: number;
+  paletteIndex?: number;
 }
 
 export interface ISelectOption {

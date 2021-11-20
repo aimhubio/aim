@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
+import { isEmpty } from 'lodash-es';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -70,16 +71,22 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       call: () => Promise<any>;
       abort: () => void;
     };
+    let paramsRequestRef: {
+      call: () => Promise<any>;
+      abort: () => void;
+    };
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
-        paramsAppModel.getParamsData().call();
+        paramsRequestRef = paramsAppModel.getParamsData();
+        paramsRequestRef.call();
       });
     } else {
       paramsAppModel.setDefaultAppConfigData();
+      paramsRequestRef = paramsAppModel.getParamsData();
+      paramsRequestRef.call();
     }
-    const paramsRequestRef = paramsAppModel.getParamsData();
-    paramsRequestRef.call();
+
     analytics.pageView('[ParamsExplorer]');
 
     const unListenHistory = history.listen(() => {
@@ -96,7 +103,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     });
     return () => {
       paramsAppModel.destroy();
-      paramsRequestRef.abort();
+      paramsRequestRef?.abort();
       unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();

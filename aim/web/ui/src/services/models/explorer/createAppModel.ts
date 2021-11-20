@@ -59,6 +59,7 @@ import {
   IRun,
   IMetricTrace,
   IParamTrace,
+  ISequence,
 } from 'types/services/models/metrics/runModel';
 import { IModel } from 'types/services/models/model';
 import {
@@ -129,7 +130,6 @@ import setAggregationEnabled from 'utils/app/setAggregationEnabled';
 import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
-import updateUrlParam from 'utils/app/updateUrlParam';
 import contextToString from 'utils/contextToString';
 import {
   ChartTypeEnum,
@@ -151,7 +151,6 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import getStateFromUrl from 'utils/getStateFromUrl';
-import getUrlWithParam from 'utils/getUrlWithParam';
 import JsonToCSV from 'utils/JsonToCSV';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { getItem, setItem } from 'utils/storage';
@@ -478,7 +477,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
     }
 
-    function updateData(newData: IRun<IMetricTrace>[]): void {
+    function updateData(newData: ISequence<IMetricTrace>[]): void {
       const configData = model.getState()?.config;
       if (configData) {
         setModelData(newData, configData);
@@ -515,11 +514,19 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             if (components.table) {
               state.tableData = [];
+              state.config = {
+                ...configData,
+                table: {
+                  ...configData?.table,
+                  resizeMode: ResizeModeEnum.Resizable,
+                },
+              };
             }
 
             model.setState({
               requestIsPending: false,
               queryIsEmpty: true,
+
               ...state,
             });
           } else {
@@ -591,8 +598,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupHeaderRow = {
               meta: {
                 chartIndex:
-                  config?.grouping?.chart.length ||
-                  config?.grouping?.reverseMode.chart
+                  config?.grouping?.chart?.length ||
+                  config?.grouping?.reverseMode?.chart
                     ? metricsCollection.chartIndex + 1
                     : null,
                 color: metricsCollection.color,
@@ -650,7 +657,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               run: moment(metric.run.props.creation_time * 1000).format(
                 'HH:mm:ss · D MMM, YY',
               ),
-              metric: metric.metric_name,
+              metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
               value:
                 closestIndex === null
@@ -790,7 +797,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return { rows, sameValueColumns };
     }
 
-    function processData(data: IRun<IMetricTrace>[]): {
+    function processData(data: ISequence<IMetricTrace>[]): {
       data: IMetricsCollection<IMetric>[];
       params: string[];
       highLevelParams: string[];
@@ -804,7 +811,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let contexts: string[] = [];
       const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
-      data?.forEach((run: IRun<IMetricTrace>) => {
+      data?.forEach((run: ISequence<IMetricTrace>) => {
         params = params.concat(getObjectPaths(run.params, run.params));
         highLevelParams = highLevelParams.concat(
           getObjectPaths(run.params, run.params, '', false, true),
@@ -837,7 +844,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             const metricKey = encode({
               runHash: run.hash,
-              metricName: trace.metric_name,
+              metricName: trace.name,
               traceContext: trace.context,
             });
             return createMetricModel({
@@ -891,7 +898,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       shouldURLUpdate?: boolean,
     ): void {
       const { data, params, highLevelParams, contexts } = processData(
-        model.getState()?.rawData as IRun<IMetricTrace>[],
+        model.getState()?.rawData as ISequence<IMetricTrace>[],
       );
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
@@ -960,7 +967,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     }
 
     function setModelData(
-      rawData: IRun<IMetricTrace>[],
+      rawData: ISequence<IMetricTrace>[],
       configData: IAppModelConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
@@ -1479,7 +1486,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         type: 'text/csv;charset=utf-8;',
       });
       saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-      analytics.trackEvent(`[${appName}] Export runs data to CSV`);
+      analytics.trackEvent(`[${appName}Explore] Export runs data to CSV`);
     }
 
     const onActivePointChange = _.debounce(
@@ -1641,6 +1648,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
       });
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
+      analytics.trackEvent(
+        `[${appName}Explorer] Switch live-update ${
+          config.enabled ? 'on' : 'off'
+        }`,
+      );
     }
 
     function destroy(): void {
@@ -1729,13 +1741,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
     if (selectForm) {
       Object.assign(methods, {
         onMetricsSelectChange<D>(data: D & Partial<ISelectOption[]>): void {
-          onSelectOptionsChange({ data, model, appName });
+          onSelectOptionsChange({ data, model });
         },
         onSelectRunQueryChange(query: string): void {
           onSelectRunQueryChange({ query, model });
         },
         onSelectAdvancedQueryChange(query: string): void {
-          onSelectAdvancedQueryChange({ query, model, appName });
+          onSelectAdvancedQueryChange({ query, model });
         },
         toggleSelectAdvancedMode(): void {
           toggleSelectAdvancedMode({ model, appName });
@@ -1905,21 +1917,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         model.setState({ ...state });
         if (!appId) {
-          const searchParam = new URLSearchParams(window.location.search);
-          const searchFromUrl = searchParam.get('search');
-          const urlFromStorage = getItem(`${appName}Url`);
-          if (searchFromUrl) {
-            setItem(
-              `${appName}Url`,
-              getUrlWithParam({ search: searchFromUrl }),
-            );
-          } else {
-            if (urlFromStorage) {
-              window.history.pushState(null, '', urlFromStorage);
-            }
-          }
+          setModelDefaultAppConfigData();
         }
-        setModelDefaultAppConfigData();
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
 
@@ -1934,7 +1933,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return getRunsData();
       }
 
-      function getRunsData(isInitial = true): {
+      function getRunsData(
+        shouldUrlUpdate?: boolean,
+        isInitial = true,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -1955,6 +1957,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           pagination?.limit,
           pagination?.offset,
         );
+
+        if (shouldUrlUpdate) {
+          updateURL({ configData, appName });
+        }
 
         return {
           call: async () => {
@@ -2105,9 +2111,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
-          run.traces.forEach((trace) => {
-            metricsColumns[trace.metric_name] = {
-              ...metricsColumns[trace.metric_name],
+          run.traces.metric.forEach((trace) => {
+            metricsColumns[trace.name] = {
+              ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
           });
@@ -2332,12 +2338,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
           metricsCollection.data.forEach((metric: any) => {
             const metricsRowValues = { ...initialMetricsRowData };
-            metric.run.traces.forEach((trace: any) => {
+            metric.run.traces.metric.forEach((trace: any) => {
               metricsRowValues[
                 `${
-                  isSystemMetric(trace.metric_name)
-                    ? trace.metric_name
-                    : `${trace.metric_name}_${contextToString(trace.context)}`
+                  isSystemMetric(trace.name)
+                    ? trace.name
+                    : `${trace.name}_${contextToString(trace.context)}`
                 }`
               ] = formatValue(trace.last_value.last);
             });
@@ -2348,8 +2354,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment.name ?? 'default',
-              run: metric.run.props.name ?? '-',
-              metric: metric.metric_name,
+              run: moment(metric.run.props.creation_time * 1000).format(
+                'HH:mm:ss · D MMM, YY',
+              ),
+              metric: metric.name,
               ...metricsRowValues,
             };
             rowIndex++;
@@ -2436,7 +2444,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
-          return getRunsData(false);
+          return getRunsData(false, false);
         }
       }
 
@@ -2502,7 +2510,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent('[RunsExplorer][Table] Export runs data to CSV');
+        analytics.trackEvent(
+          `[${appName}Explore][Table] Export runs data to CSV`,
+        );
       }
 
       function onModelNotificationDelete(id: number): void {
@@ -2587,6 +2597,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
 
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
+        analytics.trackEvent(
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
+          }`,
+        );
       }
 
       const methods = {
@@ -2607,12 +2622,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         Object.assign(methods, {
           onSelectRunQueryChange(query: string): void {
             onSelectRunQueryChange({ query, model });
-          },
-          updateSelectStateUrl(): void {
-            const selectData = model.getState()?.config?.select;
-            if (selectData) {
-              updateUrlParam({ data: { search: selectData }, appName });
-            }
           },
         });
       }
@@ -2743,6 +2752,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               if (components.table) {
                 state.tableData = [];
+                state.config = {
+                  ...configData,
+                  table: {
+                    ...configData?.table,
+                    resizeMode: ResizeModeEnum.Resizable,
+                  },
+                };
               }
 
               model.setState({
@@ -2828,8 +2844,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const groupHeaderRow = {
                 meta: {
                   chartIndex:
-                    config.grouping?.chart.length! > 0 ||
-                    config.grouping?.reverseMode.chart
+                    config.grouping?.chart?.length! > 0 ||
+                    config.grouping?.reverseMode?.chart
                       ? metricsCollection.chartIndex + 1
                       : null,
                   color: metricsCollection.color,
@@ -2858,12 +2874,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
-              metric.run.traces.forEach((trace: any) => {
+              metric.run.traces.metric.forEach((trace: any) => {
                 metricsRowValues[
                   `${
-                    isSystemMetric(trace.metric_name)
-                      ? trace.metric_name
-                      : `${trace.metric_name}_${contextToString(trace.context)}`
+                    isSystemMetric(trace.name)
+                      ? trace.name
+                      : `${trace.name}_${contextToString(trace.context)}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -2881,7 +2897,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 run: moment(metric.run.props.creation_time * 1000).format(
                   'HH:mm:ss · D MMM, YY',
                 ),
-                metric: metric.metric_name,
+                metric: metric.name,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -3018,12 +3034,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       };
                     }
                     if (type === 'metrics') {
-                      run.run.traces.forEach((trace: IParamTrace) => {
+                      run.run.traces.metric.forEach((trace: IParamTrace) => {
                         const formattedContext = `${
                           value?.option_name
                         }-${contextToString(trace.context)}`;
                         if (
-                          trace.metric_name === value?.option_name &&
+                          trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
                           values[formattedContext] = trace.last_value.last;
@@ -3343,9 +3359,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
-          run.traces.forEach((trace) => {
-            metricsColumns[trace.metric_name] = {
-              ...metricsColumns[trace.metric_name],
+          run.traces.metric.forEach((trace) => {
+            metricsColumns[trace.name] = {
+              ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
           });
@@ -3646,6 +3662,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
 
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
+        analytics.trackEvent(
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
+          }`,
+        );
       }
 
       function destroy(): void {
@@ -3716,7 +3737,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (selectForm) {
         Object.assign(methods, {
           onParamsSelectChange<D>(data: D & Partial<ISelectOption[]>): void {
-            onSelectOptionsChange({ data, model, appName });
+            onSelectOptionsChange({ data, model });
           },
           onSelectRunQueryChange(query: string): void {
             onSelectRunQueryChange({ query, model });
@@ -3963,12 +3984,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       };
                     }
                     if (type === 'metrics') {
-                      run.run.traces.forEach((trace: IParamTrace) => {
+                      run.run.traces.metric.forEach((trace: IParamTrace) => {
                         const formattedContext = `${
                           value?.option_name
                         }-${contextToString(trace.context)}`;
                         if (
-                          trace.metric_name === value?.option_name &&
+                          trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
                           values[formattedContext] = trace.last_value.last;
@@ -4112,8 +4133,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const groupHeaderRow = {
                 meta: {
                   chartIndex:
-                    config.grouping?.chart.length! > 0 ||
-                    config.grouping?.reverseMode.chart
+                    config.grouping?.chart?.length! > 0 ||
+                    config.grouping?.reverseMode?.chart
                       ? metricsCollection.chartIndex + 1
                       : null,
                   color: metricsCollection.color,
@@ -4286,9 +4307,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
-          run.traces.forEach((trace) => {
-            metricsColumns[trace.metric_name] = {
-              ...metricsColumns[trace.metric_name],
+          run.traces.metric.forEach((trace) => {
+            metricsColumns[trace.name] = {
+              ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
           });
@@ -4718,13 +4739,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (selectForm) {
         Object.assign(methods, {
           onSelectOptionsChange<D>(data: D & Partial<ISelectOption[]>): void {
-            onSelectOptionsChange({ data, model, appName });
+            onSelectOptionsChange({ data, model });
           },
           onSelectRunQueryChange(query: string): void {
             onSelectRunQueryChange({ query, model });
           },
           onSelectAdvancedQueryChange(query: string): void {
-            onSelectAdvancedQueryChange({ query, model, appName });
+            onSelectAdvancedQueryChange({ query, model });
           },
           toggleSelectAdvancedMode(): void {
             toggleSelectAdvancedMode({ model, appName });

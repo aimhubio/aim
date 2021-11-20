@@ -87,8 +87,10 @@ function usePanelResize(
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [bottomPanelRef, tableConfig?.height, topPanelRef],
   );
+
   React.useEffect(() => {
     resizeElemRef.current.addEventListener('mousedown', handleResize);
     tableConfig && handleResizeModeChange(tableConfig?.resizeMode);
@@ -97,6 +99,7 @@ function usePanelResize(
       resizeElemRef.current?.removeEventListener('mousedown', handleResize);
       document.removeEventListener('mouseup', endResize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     endResize,
     handleResize,
@@ -107,6 +110,7 @@ function usePanelResize(
 
   React.useEffect(() => {
     tableConfig && handleResizeModeChange(tableConfig?.resizeMode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableConfig?.resizeMode, handleResizeModeChange]);
 
   return panelResizing;
