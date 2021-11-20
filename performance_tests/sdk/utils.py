@@ -3,7 +3,7 @@ from aim.web.api.runs.utils import get_run_props
 from performance_tests.utils import timing
 
 
-@timing
+@timing()
 def collect_runs_data(query):
     repo = Repo.default_repo()
     runs = repo.query_runs(query)
@@ -17,7 +17,7 @@ def collect_runs_data(query):
         }
 
 
-@timing
+@timing()
 def collect_metrics_data(query):
     repo = Repo.default_repo()
     runs_dict = {}
@@ -45,13 +45,13 @@ def collect_metrics_data(query):
             }
 
 
-@timing
+@timing()
 def query_runs(query):
     repo = Repo.default_repo()
     runs = list(repo.query_runs(query=query).iter_runs())
 
 
-@timing
+@timing()
 def query_metrics(query):
     repo = Repo.default_repo()
     metrics = list(repo.query_metrics(query=query).iter())

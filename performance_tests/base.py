@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from performance_tests.conftest import TEST_REPO_PATH_1, TEST_REPO_PATH_2
+from performance_tests.conftest import TEST_REPO_PATHS
 
 
 class TestBase(unittest.TestCase):
@@ -17,7 +17,7 @@ class SDKTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATH_2
+        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATHS['real_life_repo']
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -29,7 +29,7 @@ class StorageTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATH_1
+        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATHS['generated_repo']
 
     @classmethod
     def tearDownClass(cls) -> None:

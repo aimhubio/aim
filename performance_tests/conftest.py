@@ -9,16 +9,18 @@ from aim.web.utils import exec_cmd
 from aim.cli.up.utils import build_db_upgrade_command
 from aim.web.configs import AIM_ENV_MODE_KEY
 
-TEST_REPO_PATH_1 = '.aim-performance-repo-1'
-TEST_REPO_PATH_2 = '.aim-performance-repo-2'
-
+TEST_REPO_PATHS = {
+    'real_life_repo': '.aim_performance_repo_1',
+    'generated_repo': '.aim_performance_repo_2'
+}
 AIM_PERFORMANCE_BUCKET_NAME = 'aim-demo-logs'
 AIM_PERFORMANCE_LOG_FILE_NAME = 'performance-logs.tar.gz'
 
 
-def _init_test_repo(repo_path):
-    if os.path.exists(repo_path):
-        _cleanup_test_repo(repo_path)
+def _init_test_repos():
+    for repo_path in TEST_REPO_PATHS.values():
+        if os.path.exists(repo_path):
+            _cleanup_test_repo(repo_path)
 
     tarfile_name = f'data/{AIM_PERFORMANCE_LOG_FILE_NAME}'
     # download the archive
@@ -40,12 +42,12 @@ def _cleanup_test_repo(path):
 
 
 def pytest_sessionstart(session):
-    _init_test_repo(TEST_REPO_PATH_1)
-    _init_test_repo(TEST_REPO_PATH_2)
+    _init_test_repos()
     time.sleep(5)
 
 
 def pytest_sessionfinish(session, exitstatus):
-    _cleanup_test_repo(TEST_REPO_PATH_1)
-    _cleanup_test_repo(TEST_REPO_PATH_2)
-    del os.environ['__AIM_REPO_NAME__']
+    for path in TEST_REPO_PATHS.values():
+        _cleanup_test_repo(path)
+    if os.environ.get('__AIM_REPO_NAME__'):
+        del os.environ['__AIM_REPO_NAME__']

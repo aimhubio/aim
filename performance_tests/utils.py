@@ -2,14 +2,16 @@ import os
 import time
 
 
-def timing(f, iter_count=5):
-    def wrap(*args, **kw):
-        ts = time.time()
-        for _ in range(iter_count):
-            f(*args, **kw)
-        te = time.time()
-        return (te-ts)/iter_count
-    return wrap
+def timing(iter_count=5):
+    def inner(f):
+        def wrapper(*args, **kwargs):
+            ts = time.time()
+            for _ in range(iter_count):
+                f(*args, **kwargs)
+            te = time.time()
+            return (te-ts)/iter_count
+        return wrapper
+    return inner
 
 
 def get_baseline_filename():

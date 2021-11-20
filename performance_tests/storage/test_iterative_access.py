@@ -5,9 +5,9 @@ from performance_tests.utils import get_baseline, write_baseline
 from performance_tests.storage.utils import iterative_access_metric_values
 
 
-class TestDBOpen(StorageTestBase):
-    def test_db_open(self):
-        test_name = 'test_random_access'
+class TestIterativeAccessExecutionTime(StorageTestBase):
+    def test_iterative_access(self):
+        test_name = 'test_iterative_access'
         repo = Repo.default_repo()
         query = 'metric.name == "metric 0"'
         execution_time = iterative_access_metric_values(repo, query)
