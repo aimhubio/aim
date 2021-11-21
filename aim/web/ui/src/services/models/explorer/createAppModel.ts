@@ -134,7 +134,6 @@ import setAggregationEnabled from 'utils/app/setAggregationEnabled';
 import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
-import updateUrlParam from 'utils/app/updateUrlParam';
 import contextToString from 'utils/contextToString';
 import {
   ChartTypeEnum,
@@ -156,7 +155,6 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import getStateFromUrl from 'utils/getStateFromUrl';
-import getUrlWithParam from 'utils/getUrlWithParam';
 import JsonToCSV from 'utils/JsonToCSV';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { getItem, setItem } from 'utils/storage';
@@ -477,11 +475,19 @@ function createAppModel({
             }
             if (components.table) {
               state.tableData = [];
+              state.config = {
+                ...configData,
+                table: {
+                  ...configData?.table,
+                  resizeMode: ResizeModeEnum.Resizable,
+                },
+              };
             }
 
             model.setState({
               requestIsPending: false,
               queryIsEmpty: true,
+
               ...state,
             });
           } else {
@@ -1751,13 +1757,13 @@ function createAppModel({
         onMetricsSelectChange<D>(
           data: D & Partial<ISelectMetricsOption[]>,
         ): void {
-          onMetricsSelectChange({ data, model, appName });
+          onMetricsSelectChange({ data, model });
         },
         onSelectRunQueryChange(query: string): void {
           onSelectRunQueryChange({ query, model });
         },
         onSelectAdvancedQueryChange(query: string): void {
-          onSelectAdvancedQueryChange({ query, model, appName });
+          onSelectAdvancedQueryChange({ query, model });
         },
         toggleSelectAdvancedMode(): void {
           toggleSelectAdvancedMode({ model, appName });
@@ -1941,7 +1947,10 @@ function createAppModel({
         return getRunsData();
       }
 
-      function getRunsData(isInitial = true): {
+      function getRunsData(
+        shouldUrlUpdate?: boolean,
+        isInitial = true,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -1962,6 +1971,10 @@ function createAppModel({
           pagination?.limit,
           pagination?.offset,
         );
+
+        if (shouldUrlUpdate) {
+          updateURL({ configData, appName });
+        }
 
         return {
           call: async () => {
@@ -2480,7 +2493,7 @@ function createAppModel({
               },
             },
           });
-          return getRunsData(false);
+          return getRunsData(false, false);
         }
       }
 
@@ -2658,12 +2671,6 @@ function createAppModel({
         Object.assign(methods, {
           onSelectRunQueryChange(query: string): void {
             onSelectRunQueryChange({ query, model });
-          },
-          updateSelectStateUrl(): void {
-            const selectData = model.getState()?.config?.select;
-            if (selectData) {
-              updateUrlParam({ data: { search: selectData }, appName });
-            }
           },
         });
       }
@@ -2848,6 +2855,13 @@ function createAppModel({
               }
               if (components.table) {
                 state.tableData = [];
+                state.config = {
+                  ...configData,
+                  table: {
+                    ...configData?.table,
+                    resizeMode: ResizeModeEnum.Resizable,
+                  },
+                };
               }
 
               model.setState({
@@ -3831,7 +3845,6 @@ function createAppModel({
                 select: { ...configData.select, params: data },
               };
 
-              updateURL({ configData: newConfig, appName });
               model.setState({ config: newConfig });
             }
           },

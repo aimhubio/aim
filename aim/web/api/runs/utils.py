@@ -4,7 +4,7 @@ import struct
 from typing import Iterator, Tuple, Optional, List
 
 from aim.storage.context import Context
-from aim.sdk.run import Run
+from aim.sdk import Run, Repo
 from aim.sdk.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
@@ -91,11 +91,11 @@ def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> 
     return result
 
 
-def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str) -> bytes:
+def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: Repo) -> bytes:
     for run_data in requested_runs:
         run_hash = run_data.run_id
         requested_traces = run_data.traces
-        run = Run(run_hash, read_only=True)
+        run = Run(run_hash, repo=repo, read_only=True)
 
         traces_list = []
         for trace_data in requested_traces:

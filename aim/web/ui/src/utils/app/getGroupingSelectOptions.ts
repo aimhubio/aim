@@ -34,7 +34,7 @@ export default function getGroupingSelectOptions({
     {
       group: 'metric',
       label: 'metric.name',
-      value: 'metric_name',
+      value: 'name',
     },
     ...contextOptions,
   ];

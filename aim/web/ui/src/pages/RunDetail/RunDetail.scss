@@ -6,6 +6,7 @@
     &__appBarContainer {
       height: 2.5rem;
       padding: 0 1.5rem;
+      padding: 0 1.5rem 0 0.9rem;
       background: #ffffff;
       border-right: $border-main;
       border-left: $border-main;
@@ -17,6 +18,8 @@
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
+        padding-left: 0.6rem;
+
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
@@ -350,7 +353,13 @@
       }
     }
   }
-
+  &__loaderContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .MuiPaper-root {
     width: 37.5rem;
     background: $white;

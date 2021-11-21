@@ -68,16 +68,14 @@ const ImagesSet = ({
             <span className='ImagesSet__container__title'>{title}</span>
           )}
           <div className='ImagesSet__container__imagesBox'>
-            {imageSetWrapperWidth && (
-              <ImagesList
-                data={data}
-                imagesBlobs={imagesBlobs}
-                onScroll={onScroll}
-                addUriToList={addUriToList}
-                imageSetWrapperWidth={imageSetWrapperWidth}
-                index={index + 1}
-              />
-            )}
+            <ImagesList
+              data={data}
+              imagesBlobs={imagesBlobs}
+              onScroll={onScroll}
+              addUriToList={addUriToList}
+              imageSetWrapperWidth={imageSetWrapperWidth}
+              index={index + 1}
+            />
           </div>
         </div>
       ) : (

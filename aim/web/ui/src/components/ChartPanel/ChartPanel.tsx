@@ -181,7 +181,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 props.data.length > 0 &&
                 !props.panelResizing &&
                 !props.zoom?.active &&
-                !(props.tooltip.display || props.focusedState.active)
+                (props.tooltip.display || props.focusedState.active)
               }
               chartType={props.chartType}
               tooltipContent={props?.tooltip?.content}

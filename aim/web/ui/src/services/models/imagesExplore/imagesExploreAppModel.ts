@@ -250,6 +250,22 @@ function getImagesData() {
           setModelData(runData, configData);
           updateURL(configData);
         }
+      } else {
+        updateURL(configData);
+        model.setState({
+          requestIsPending: false,
+          queryIsEmpty: true,
+          imagesData: {},
+          tableData: [],
+          images: { calcRanges: true },
+          config: {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+          },
+        });
       }
     },
     abort: imagesRequestRef.abort,
@@ -797,7 +813,7 @@ function getDataAsTableRows(
           },
           key: metric.key,
           runHash: metric.run.hash,
-          isHidden: config?.table?.hiddenMetrics!.includes(metric.key),
+          isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
@@ -1295,8 +1311,6 @@ function onSelectAdvancedQueryChange(query: string) {
       images: { ...configData.images, calcRanges: true },
     };
 
-    updateURL(newConfig);
-
     model.setState({
       config: newConfig,
     });
@@ -1312,7 +1326,6 @@ function onImagesExploreSelectChange(data: any[]) {
       select: { ...configData.select, images: data },
       images: { ...configData.images, calcRanges: true },
     };
-    updateURL(newConfig);
 
     model.setState({
       config: newConfig,
