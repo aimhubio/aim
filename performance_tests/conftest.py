@@ -43,7 +43,7 @@ def _cleanup_test_repo(path):
 
 def pytest_sessionstart(session):
     _init_test_repos()
-    time.sleep(5)
+    time.sleep(10)
 
 
 def pytest_sessionfinish(session, exitstatus):
