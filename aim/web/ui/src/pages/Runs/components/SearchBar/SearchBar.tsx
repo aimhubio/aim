@@ -1,11 +1,10 @@
 import React from 'react';
 
-import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import { Divider, TextField } from '@material-ui/core';
 
 import searchImg from 'assets/icons/search.svg';
 
-import { Button } from 'components/kit';
+import { Button, Icon } from 'components/kit';
 
 import runAppModel from 'services/models/runs/runsAppModel';
 
@@ -26,8 +25,20 @@ function SearchBar({
 
   function handleRunSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    if (isRunsDataLoading) {
+      return;
+    }
     searchRunsRef.current = runAppModel.getRunsData(true);
     searchRunsRef.current.call().catch();
+  }
+
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!isRunsDataLoading) {
+      return;
+    }
+    searchRunsRef.current?.abort();
+    runAppModel.abortRequest();
   }
 
   return (
@@ -43,7 +54,6 @@ function SearchBar({
             startAdornment: (
               <img src={searchImg} alt='visible' style={{ marginRight: 10 }} />
             ),
-            disabled: isRunsDataLoading,
             style: { height: '1.845rem' },
           }}
           onChange={({ target }) => onSearchInputChange(target.value)}
@@ -54,12 +64,16 @@ function SearchBar({
       <Button
         className='Runs_Search_Bar__Button'
         color='primary'
-        onClick={handleRunSearch}
+        onClick={isRunsDataLoading ? handleRequestAbort : handleRunSearch}
         variant='contained'
-        startIcon={<SearchOutlined color='inherit' />}
-        disabled={isRunsDataLoading}
+        startIcon={
+          <Icon
+            name={isRunsDataLoading ? 'close' : 'search'}
+            fontSize={isRunsDataLoading ? 10 : 14}
+          />
+        }
       >
-        Search
+        {isRunsDataLoading ? 'Cancel' : 'Search'}
       </Button>
     </div>
   );

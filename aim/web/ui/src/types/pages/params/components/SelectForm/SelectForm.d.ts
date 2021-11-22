@@ -1,6 +1,7 @@
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 
 export interface ISelectFormProps {
+  requestIsPending: boolean;
   onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
   selectedParamsData: IParamsAppConfig['select'];
   onSelectRunQueryChange: (query: string) => void;

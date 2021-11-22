@@ -12,7 +12,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
-  SearchOutlined,
 } from '@material-ui/icons';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
@@ -38,6 +37,7 @@ import contextToString from 'utils/contextToString';
 import './SelectForm.scss';
 
 function SelectForm({
+  requestIsPending,
   onParamsSelectChange,
   selectedParamsData,
   onSelectRunQueryChange,
@@ -57,8 +57,20 @@ function SelectForm({
 
   function handleParamsSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    if (requestIsPending) {
+      return;
+    }
     searchRef.current = paramsAppModel.getParamsData(true);
     searchRef.current.call();
+  }
+
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!requestIsPending) {
+      return;
+    }
+    searchRef.current?.abort();
+    paramsAppModel.abortRequest();
   }
 
   function onSelect(event: object, value: ISelectParamsOption[]): void {
@@ -258,11 +270,16 @@ function SelectForm({
           <Button
             color='primary'
             variant='contained'
-            startIcon={<SearchOutlined />}
+            startIcon={
+              <Icon
+                name={requestIsPending ? 'close' : 'search'}
+                fontSize={requestIsPending ? 10 : 14}
+              />
+            }
             className='Params__SelectForm__search__button'
-            onClick={handleParamsSearch}
+            onClick={requestIsPending ? handleRequestAbort : handleParamsSearch}
           >
-            Search
+            {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
         </Box>
 
