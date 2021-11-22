@@ -112,7 +112,7 @@ async def get_experiment_runs_api(exp_id: str,
         run_hashes = run_hashes[offset_idx: offset_idx + limit]
 
     for run_hash in run_hashes:
-        run = Run(run_hash, read_only=True)
+        run = Run(run_hash, repo=project.repo, read_only=True)
         exp_runs.append({
             'run_id': run.hash,
             'name': run.name,

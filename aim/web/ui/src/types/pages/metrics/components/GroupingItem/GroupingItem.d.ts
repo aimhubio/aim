@@ -11,6 +11,7 @@ export interface IGroupingItemProps extends IGroupingPopoverProps {
   title: string;
   advancedTitle?: string;
   groupName: GroupNameType;
+  groupDisplayName: string;
   groupingData: IMetricAppConfig['grouping'];
   advancedComponent: React.FunctionComponentElement<React.ReactNode> | null;
   groupingSelectOptions: IGroupingSelectOption[];

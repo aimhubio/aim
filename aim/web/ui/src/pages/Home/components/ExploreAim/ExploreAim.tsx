@@ -5,6 +5,8 @@ import slackIcon from 'assets/icons/slack.svg';
 
 import { Icon, Text } from 'components/kit';
 
+import { trackEvent } from 'services/analytics';
+
 import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
 
 import './ExploreAim.scss';
@@ -57,6 +59,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
             href='https://aimstack.slack.com'
             rel='noreferrer'
             className='ExploreAim__social__item'
+            onClick={() => trackEvent('[Homepage] go to slack')}
           >
             <img src={slackIcon} alt='slack' />
             <Text component='span' tint={100} size={16} weight={400}>
@@ -69,6 +72,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
             href='https://github.com/aimhubio/aim'
             rel='noreferrer'
             className='ExploreAim__social__item'
+            onClick={() => trackEvent('[Homepage] go to github')}
           >
             <img src={githubIcon} alt='github' />
             <Text component='span' tint={100} size={16} weight={400}>

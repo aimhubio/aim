@@ -20,7 +20,7 @@ function formatValueByAlignment({
       case AlignmentOptionsEnum.EPOCH:
         return Math.floor(xAxisTickValue);
       case AlignmentOptionsEnum.RELATIVE_TIME:
-        return shortEnglishHumanizer(Math.round(xAxisTickValue * 1000), {
+        return shortEnglishHumanizer(Math.round(xAxisTickValue), {
           ...humanizerConfig,
           maxDecimalPoints: 2,
         });
@@ -44,7 +44,7 @@ function getKeyByAlignment(alignmentConfig?: IAlignmentConfig): string {
     case AlignmentOptionsEnum.RELATIVE_TIME:
       return AlignmentKeysEnum.RELATIVE_TIME.replace('_', ' ');
     case AlignmentOptionsEnum.CUSTOM_METRIC:
-      return alignmentConfig.metric;
+      return alignmentConfig?.metric || '';
     default:
       return '';
   }

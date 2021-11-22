@@ -50,7 +50,7 @@ function SelectForm({
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
+    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef?.abort();

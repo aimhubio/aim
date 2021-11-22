@@ -4,7 +4,7 @@ import struct
 from typing import Iterator, Tuple, Optional, List
 
 from aim.storage.context import Context
-from aim.sdk.run import Run
+from aim.sdk import Run, Repo
 from aim.sdk.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
@@ -91,18 +91,18 @@ def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> 
     return result
 
 
-def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str) -> bytes:
+def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: Repo) -> bytes:
     for run_data in requested_runs:
         run_hash = run_data.run_id
         requested_traces = run_data.traces
-        run = Run(run_hash, read_only=True)
+        run = Run(run_hash, repo=repo, read_only=True)
 
         traces_list = []
         for trace_data in requested_traces:
             context = Context(trace_data.context)
-            trace = run.get_metric(metric_name=trace_data.metric_name,
+            trace = run.get_metric(name=trace_data.name,
                                    context=context)
-            x_axis_trace = run.get_metric(metric_name=x_axis,
+            x_axis_trace = run.get_metric(name=x_axis,
                                           context=context)
             if not (trace and x_axis_trace):
                 continue
@@ -112,7 +112,7 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
             sliced_iters = sliced_np_array(iters, _slice)
             x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
             traces_list.append({
-                'metric_name': trace.name,
+                'name': trace.name,
                 'context': trace.context.to_dict(),
                 'x_axis_values': x_axis_values,
                 'x_axis_iters': x_axis_iters,
@@ -140,7 +140,7 @@ def metric_search_result_streamer(traces: SequenceCollection, steps_num: int, x_
             x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
 
             traces_list.append({
-                'metric_name': trace.name,
+                'name': trace.name,
                 'context': trace.context.to_dict(),
                 'slice': [0, num_records, step],
                 'values': numpy_to_encodable(sliced_np_array(values, _slice)),
@@ -171,7 +171,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
         run_dict = {
             run.hash: {
                 'params': run.get(...),
-                'traces': run.collect_metrics_info(),
+                'traces': run.collect_sequence_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }
         }
@@ -184,12 +184,12 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
             break
 
 
-def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
+def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
     processed_traces_list = []
     for requested_trace in requested_traces:
-        metric_name = requested_trace.metric_name
+        metric_name = requested_trace.name
         context = Context(requested_trace.context)
-        trace = run.get_metric(metric_name=metric_name, context=context)
+        trace = run.get_metric(name=metric_name, context=context)
         if not trace:
             continue
 
@@ -200,7 +200,7 @@ def collect_requested_traces(run: Run, requested_traces: List[TraceBase], steps_
         _slice = slice(0, num_records, step)
 
         processed_traces_list.append({
-            'metric_name': trace.name,
+            'name': trace.name,
             'context': trace.context.to_dict(),
             'values': sliced_array(values, _slice),
             'iters': sliced_array(iters, _slice),

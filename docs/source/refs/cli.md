@@ -11,7 +11,7 @@ Here are the set of commands supported:
 | `version`     | Displays the version of aim cli currently installed.                 |
 | `up`          | Runs Aim web UI for the given repo.                                  |
 | `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`.                  |
-| `reindex`     | Process runs left in 'in progress' state.                            |
+| `reindex`     | Process runs left in 'in progress' state and optimized finished runs.|
 
 ### init
 __**This step is optional.**__
@@ -81,3 +81,4 @@ $ aim reindex [ARGS]
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+| `--finalize-only`                 | Only finalize runs left in 'in progress' state. Do not attempt runs optimization. |

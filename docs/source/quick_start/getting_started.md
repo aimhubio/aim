@@ -52,7 +52,7 @@ Start up the Aim UI to observe the run:
 aim up
 ```
 
-See more details in UI basics.
+See more details in [UI basics](./UI_basics.html).
 
 ### Query metadata via SDK
 

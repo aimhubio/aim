@@ -18,6 +18,24 @@ aim.sdk.run module
    :members:
    :special-members: __setitem__, __getitem__, __delitem__
 
+aim.sdk.objects.image
+---------------------
+
+.. automodule:: aim.sdk.objects.image
+.. currentmodule:: aim.sdk.objects.image
+
+.. autoclass:: Image
+   :members:
+
+aim.sdk.sequence module
+-----------------------
+
+.. automodule:: aim.sdk.sequence
+.. currentmodule:: aim.sdk.sequence
+
+.. autoclass:: Sequence
+   :members:
+
 aim.sdk.metric module
 ---------------------
 
@@ -25,16 +43,36 @@ aim.sdk.metric module
 .. currentmodule:: aim.sdk.metric
 
 .. autoclass:: Metric
+   :exclude-members: allowed_dtypes
    :members:
 
-.. autoclass:: MetricCollection
+aim.sdk.image_sequence module
+-----------------------------
+
+.. automodule:: aim.sdk.image_sequence
+.. currentmodule:: aim.sdk.image_sequence
+
+.. autoclass:: Images
+   :exclude-members: allowed_dtypes
    :members:
 
-.. autoclass:: SingleRunMetricCollection
+aim.sdk.sequence_collection module
+----------------------------------
+
+.. automodule:: aim.sdk.sequence_collection
+.. currentmodule:: aim.sdk.sequence_collection
+
+.. autoclass:: SequenceCollection
+   :members:
+
+.. autoclass:: SingleRunSequenceCollection
+   :show-inheritance:
    :members: None
 
-.. autoclass:: QueryMetricCollection
+.. autoclass:: QuerySequenceCollection
+   :show-inheritance:
    :members: None
 
-.. autoclass:: QueryRunMetricCollection
+.. autoclass:: QueryRunSequenceCollection
+   :show-inheritance:
    :members: None

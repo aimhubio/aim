@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
+import { isNil } from 'lodash-es';
 
 import { MenuItem, Tooltip, Divider } from '@material-ui/core';
 
@@ -65,7 +66,7 @@ function Column({
     } else {
       newWidth = evt.pageX - startingPoint.current;
     }
-    if (newWidth > 85 && newWidth < 500) {
+    if (newWidth > 85) {
       widthClone.current = newWidth;
       setMaxWidth(newWidth);
     }
@@ -121,7 +122,7 @@ function Column({
       })}
       style={{
         minWidth: maxWidth,
-        maxWidth,
+        maxWidth: '100vh',
         width: isInViewPort
           ? 'initial'
           : columnRef.current?.offsetWidth ?? 'initial',
@@ -491,7 +492,7 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           component={<GroupConfigPopover configData={configData} />}
         />
       )}
-      {config.chartIndex !== null && config.chartIndex !== 0 && (
+      {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
         <Tooltip title='Group chart index'>
           <span className='Table__group__config__chart'>
             {config.chartIndex}

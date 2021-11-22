@@ -10,25 +10,39 @@ import GroupingItem from '../GroupingItem/GroupingItem';
 
 import './Grouping.scss';
 
-const groupingPopovers = [
-  {
-    title: 'Run Color Settings',
-    advancedTitle: 'Color Advanced Options',
-    groupName: 'color',
-    AdvancedComponent: ColorPopoverAdvanced,
-  },
-  {
-    title: 'Select Fields For Grouping by stroke style',
-    advancedTitle: 'stroke style advanced options',
-    groupName: 'stroke',
-    AdvancedComponent: StrokePopoverAdvanced,
-  },
-  {
-    title: 'Select fields to divide into charts',
-    groupName: 'chart',
-    AdvancedComponent: null,
-  },
-];
+const groupingPopovers = (singleGrouping: boolean) =>
+  singleGrouping
+    ? [
+        {
+          title: 'Select Fields For Grouping',
+          advancedTitle: 'Color Advanced Options',
+          groupName: 'groupBy',
+          groupDisplayName: 'group',
+          AdvancedComponent: null,
+        },
+      ]
+    : [
+        {
+          title: 'Run Color Settings',
+          advancedTitle: 'Color Advanced Options',
+          groupName: 'color',
+          groupDisplayName: 'color',
+          AdvancedComponent: ColorPopoverAdvanced,
+        },
+        {
+          title: 'Select Fields For Grouping by stroke style',
+          advancedTitle: 'stroke style advanced options',
+          groupName: 'stroke',
+          groupDisplayName: 'stroke',
+          AdvancedComponent: StrokePopoverAdvanced,
+        },
+        {
+          title: 'Select fields to divide into charts',
+          groupName: 'chart',
+          groupDisplayName: 'chart',
+          AdvancedComponent: null,
+        },
+      ];
 
 function Grouping({
   groupingData,
@@ -39,18 +53,26 @@ function Grouping({
   onGroupingReset,
   onGroupingPersistenceChange,
   onGroupingApplyChange,
+  singleGrouping = false,
   onShuffleChange,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Grouping'>
-      {groupingPopovers.map(
-        ({ title, advancedTitle, groupName, AdvancedComponent }) => {
+      {groupingPopovers(singleGrouping).map(
+        ({
+          title,
+          advancedTitle,
+          groupName,
+          groupDisplayName,
+          AdvancedComponent,
+        }) => {
           return (
             <GroupingItem
               key={groupName}
               title={title}
               advancedTitle={advancedTitle}
               groupName={groupName as GroupNameType}
+              groupDisplayName={groupDisplayName}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onSelect={onGroupingSelectChange}
