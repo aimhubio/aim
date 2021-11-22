@@ -11,6 +11,21 @@ import { getKeyByAlignment } from '../formatByAlignment';
 
 import { AlignmentOptionsEnum } from './index';
 
+function wrap(o: any) {
+  debugger;
+  let width = 60;
+  let padding = 10;
+
+  // let self = d3.select(this);
+  // let textLength = self.node().getComputedTextLength();
+  // let text = self.text();
+  // while (textLength > width - 2 * padding && text.length > 0) {
+  //   text = text.slice(0, -1);
+  //   self.text(text + '...');
+  //   textLength = self.node().getComputedTextLength();
+  // }
+}
+
 function drawAxes(args: IDrawAxesArgs): void {
   const {
     svgNodeRef,
@@ -23,7 +38,6 @@ function drawAxes(args: IDrawAxesArgs): void {
     height,
     margin,
     alignmentConfig,
-    xValues = [],
     attributesRef,
     humanizerConfigRef,
     drawBgTickLines = {
@@ -41,8 +55,11 @@ function drawAxes(args: IDrawAxesArgs): void {
     let xAlignmentText = '';
     const [first, last] = attributesRef.current.xScale.domain();
 
-    const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
+    let ticksCount = Math.floor(plotBoxRef.current.width / 120);
+    ticksCount = ticksCount > 3 ? (ticksCount < 10 ? ticksCount : 10) : 3;
+    xAxis.ticks(ticksCount);
 
+    const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
     switch (alignmentConfig?.type) {
       case AlignmentOptionsEnum.STEP:
         {
@@ -59,7 +76,12 @@ function drawAxes(args: IDrawAxesArgs): void {
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-          const ticks = xValues.filter((x) => Math.round(x) - x === 0);
+
+          const ticks = xScale.domain().filter((x) => {
+            if (typeof x === 'number') {
+              return Math.round(x) - x === 0;
+            }
+          });
 
           xAxis.ticks(ticksCount).tickValues(ticks);
         }
@@ -162,11 +184,6 @@ function drawAxes(args: IDrawAxesArgs): void {
           xAxis.ticks(ticksCount);
         }
         break;
-      default: {
-        let ticksCount = Math.floor(plotBoxRef.current.width / 90);
-        ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-        xAxis.ticks(ticksCount);
-      }
     }
 
     if (drawBgTickLines.x) {

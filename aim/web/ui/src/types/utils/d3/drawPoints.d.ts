@@ -1,16 +1,16 @@
 import React from 'react';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { IPoint } from 'components/ScatterPlot';
 
-import { IDrawAxesArgs } from './drawAxes';
-import { IProcessedData } from './processData';
+import { IAxisScale } from './getAxisScale';
 
 export interface IDrawPointsArgs {
   index: number;
   pointsRef: React.MutableRefObject<>;
   pointsNodeRef: React.MutableRefObject<>;
-  data: IProcessedData[];
-  xScale: IDrawAxesArgs['xScale'];
-  yScale: IDrawAxesArgs['yScale'];
+  data: IPoint[];
+  xScale: IAxisScale;
+  yScale: IAxisScale;
   highlightMode: HighlightEnum;
 }

@@ -11,7 +11,7 @@ import {
   IActivePoint,
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
@@ -679,7 +679,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     }
   }
 
-  function updateScales(xScale: IGetAxisScale, yScale: IGetAxisScale) {
+  function updateScales(xScale: IAxisScale, yScale: IAxisScale) {
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
   }

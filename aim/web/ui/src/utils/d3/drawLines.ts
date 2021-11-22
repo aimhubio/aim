@@ -2,7 +2,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
 import { IProcessedData } from 'types/utils/d3/processData';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 
@@ -31,8 +31,8 @@ function drawLines(args: IDrawLinesArgs): void {
   }
 
   linesRef.current.updateScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
     curve?: CurveEnum,
   ): void {
     linesNodeRef.current
@@ -66,8 +66,8 @@ function drawLines(args: IDrawLinesArgs): void {
   };
 
   linesRef.current.updateAggregatedAreasScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
   ): void {
     linesNodeRef.current
       .selectAll('.AggrArea')
@@ -100,8 +100,8 @@ function drawLines(args: IDrawLinesArgs): void {
   };
 
   linesRef.current.updateAggregatedLinesScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
     curve?: CurveEnum,
   ): void {
     linesNodeRef.current

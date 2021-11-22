@@ -12,6 +12,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
@@ -82,6 +83,12 @@ function Metrics(
               onSearchQueryCopy={props.onSearchQueryCopy}
             />
             <Grouping
+              groupingPopovers={GroupingPopovers.filter(
+                (p) =>
+                  p.groupName === 'color' ||
+                  p.groupName === 'stroke' ||
+                  p.groupName === 'chart',
+              )}
               groupingData={props.groupingData}
               groupingSelectOptions={props.groupingSelectOptions}
               onGroupingSelectChange={props.onGroupingSelectChange}

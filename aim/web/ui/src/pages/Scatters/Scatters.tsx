@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty, omit } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -19,7 +19,6 @@ import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Controls from 'pages/Scatters/components/Controls/Controls';
 import SelectForm from 'pages/Scatters/components/SelectForm/SelectForm';
 
-import { ILine } from 'types/components/LineChart/LineChart';
 import { IScattersProps } from 'types/pages/scatters/Scatters';
 
 import { ChartTypeEnum } from 'utils/d3';
@@ -73,7 +72,7 @@ function Scatters(
             />
             <Grouping
               groupingPopovers={GroupingPopovers.filter(
-                (p) => p.groupName !== 'stroke',
+                (p) => p.groupName === 'color' || p.groupName === 'chart',
               )}
               groupingData={props.groupingData}
               groupingSelectOptions={props.groupingSelectOptions}

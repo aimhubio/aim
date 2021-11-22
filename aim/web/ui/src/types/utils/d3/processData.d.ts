@@ -12,9 +12,3 @@ export interface IProcessData {
   xValues: number[];
   yValues: number[];
 }
-
-export interface IGetFilteredValuesArgs {
-  data: number[];
-  invalidXIndices: number[];
-  invalidYIndices: number[];
-}

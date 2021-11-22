@@ -4,13 +4,24 @@ import {
   IChartTitle,
   IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
+import { IDimensionType } from 'types/utils/d3/drawParallelAxes';
+
+export interface IPoint {
+  key: string;
+  data: {
+    xValues: number[] | string[];
+    yValues: number[] | string[];
+  };
+  color: string;
+  selectors: string[];
+  groupKey: string;
+  chartIndex: number;
+}
 
 export interface IScatterPlotProps {
   index: number;
-  data: any;
-  axesScaleType?: IAxesScaleState;
+  data: { dimensions: IDimensionType[]; data: IPoint[] };
   chartTitle?: IChartTitle;
   displayOutliers?: boolean;
   highlightMode?: HighlightEnum;

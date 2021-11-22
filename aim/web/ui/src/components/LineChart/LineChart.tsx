@@ -80,10 +80,7 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max, xValues } = processData(
-      data,
-      ignoreOutliers,
-    );
+    const { processedData, min, max } = processData(data, ignoreOutliers);
 
     drawArea({
       index,
@@ -127,7 +124,6 @@ const LineChart = React.forwardRef(function LineChart(
       height,
       margin,
       alignmentConfig,
-      xValues,
       attributesRef,
       humanizerConfigRef,
       drawBgTickLines: { y: true },

@@ -116,7 +116,6 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  console.log('scattersData?.chartData', scattersData?.chartData);
   return (
     <Scatters
       // refs
@@ -156,7 +155,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         scattersData?.groupingSelectOptions as IGroupingSelectOption[]
       }
       projectsDataMetrics={
-        projectsData?.metrics as IProjectParamsMetrics['metrics']
+        projectsData?.metrics as IProjectParamsMetrics['metric']
       }
       requestIsPending={scattersData?.requestIsPending as boolean}
       resizeMode={scattersData?.config?.table?.resizeMode as ResizeModeEnum}

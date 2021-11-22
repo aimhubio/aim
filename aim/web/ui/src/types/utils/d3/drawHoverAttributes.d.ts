@@ -8,7 +8,7 @@ import {
   IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 
-import { IGetAxisScale } from './getAxisScale';
+import { IAxisScale } from './getAxisScale';
 import { IProcessedData } from './processData';
 
 export interface IDrawHoverAttributesArgs {
@@ -50,8 +50,8 @@ export interface IGetCoordinates {
 export interface IGetCoordinatesArgs {
   mouse: [number, number];
   margin: { left: number; top: number };
-  xScale: IGetAxisScale;
-  yScale: IGetAxisScale;
+  xScale: IAxisScale;
+  yScale: IAxisScale;
 }
 
 export interface INearestCircle {

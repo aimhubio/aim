@@ -1,17 +1,19 @@
 import React from 'react';
+import * as d3 from 'd3';
 
-import { ScaleType } from 'types/components/LineChart/LineChart';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
+
+import { ScaleEnum } from 'utils/d3';
 
 export interface IDimensionType {
-  scaleType: ScaleType;
+  scaleType: ScaleEnum;
   domainData: number[] | string[];
   displayName: string;
   dimensionType: string;
 }
 
 export interface YScaleType {
-  [key: string]: IGetAxisScale;
+  [key: string]: IAxisScale;
 }
 
 export interface IDimensionsType {

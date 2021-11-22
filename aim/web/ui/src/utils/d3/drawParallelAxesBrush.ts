@@ -7,7 +7,7 @@ import {
   IFilterDataByBrushedScaleProps,
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawParallelAxesBrush({
   brushRef,
@@ -102,10 +102,7 @@ function drawParallelAxesBrush({
     .attr('width', 20);
 }
 
-function scalePointDomainData(
-  yScale: IGetAxisScale,
-  extent: number[],
-): string[] {
+function scalePointDomainData(yScale: IAxisScale, extent: number[]): string[] {
   const domain: string[] = yScale.domain();
   const resultDomainData: string[] = [];
   domain.forEach((item: string) => {

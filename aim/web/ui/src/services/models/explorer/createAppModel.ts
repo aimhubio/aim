@@ -13,12 +13,12 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 
 import {
-  metricsTableRowRenderer,
   getMetricsTableColumns,
+  metricsTableRowRenderer,
 } from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import {
-  paramsTableRowRenderer,
   getParamsTableColumns,
+  paramsTableRowRenderer,
 } from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
 import {
   getRunsTableColumns,
@@ -41,47 +41,49 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
-  IMetricAppModelState,
+  GroupNameType,
+  IAggregationConfig,
   IAppData,
+  IChartTooltip,
+  IChartZoom,
+  IGroupingSelectOption,
+  IMetricAppModelState,
   IMetricsCollection,
   IMetricTableRowData,
-  SortField,
-  IOnGroupingSelectChangeParams,
   IOnGroupingModeChangeParams,
-  GroupNameType,
-  IChartZoom,
-  IAggregationConfig,
-  IChartTooltip,
+  IOnGroupingSelectChangeParams,
   ITooltipData,
-  IGroupingSelectOption,
+  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
-  IRun,
   IMetricTrace,
   IParamTrace,
+  IRun,
   ISequence,
 } from 'types/services/models/metrics/runModel';
 import { IModel } from 'types/services/models/model';
 import {
-  IParamsAppModelState,
   IParam,
+  IParamsAppModelState,
 } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
+import {
+  IDimensionsType,
+  IDimensionType,
+} from 'types/utils/d3/drawParallelAxes';
 import {
   IAppInitialConfig,
   IAppModelConfig,
   IAppModelState,
-  IGroupingConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 
 import {
+  aggregateGroupData,
   AggregationAreaMethods,
   AggregationLineMethods,
-  aggregateGroupData,
 } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAggregatedData from 'utils/app/getAggregatedData';
@@ -132,10 +134,10 @@ import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
 import {
-  ChartTypeEnum,
-  ScaleEnum,
-  CurveEnum,
   AlignmentOptionsEnum,
+  ChartTypeEnum,
+  CurveEnum,
+  ScaleEnum,
 } from 'utils/d3';
 import {
   adjustable_reader,
@@ -150,11 +152,10 @@ import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
-import getStateFromUrl from 'utils/getStateFromUrl';
 import JsonToCSV from 'utils/JsonToCSV';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { getItem, setItem } from 'utils/storage';
-import { decode, encode } from 'utils/encoder/encoder';
+import { setItem } from 'utils/storage';
+import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
@@ -168,6 +169,8 @@ import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
+
+import { IPoint } from '../../../components/ScatterPlot';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -370,10 +373,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 active: false,
                 mode: ZoomEnum.SINGLE,
                 history: [],
-              },
-              axesScaleType: {
-                xAxis: ScaleEnum.Linear,
-                yAxis: ScaleEnum.Linear,
               },
               curveInterpolation: CurveEnum.Linear,
               focusedState: {
@@ -3028,7 +3027,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     if (!dimension[label] && type === 'params') {
                       dimension[label] = {
                         values: new Set(),
-                        scaleType: 'linear',
+                        scaleType: ScaleEnum.Linear,
                         displayName: label,
                         dimensionType: 'param',
                       };
@@ -3048,12 +3047,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                               trace.last_value.last,
                             );
                             if (typeof trace.last_value.last === 'string') {
-                              dimension[formattedContext].scaleType = 'point';
+                              dimension[formattedContext].scaleType =
+                                ScaleEnum.Point;
                             }
                           } else {
                             dimension[formattedContext] = {
                               values: new Set().add(trace.last_value.last),
-                              scaleType: 'linear',
+                              scaleType: ScaleEnum.Linear,
                               displayName: `${
                                 value.option_name
                               } ${contextToString(trace.context)}`,
@@ -3067,7 +3067,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       values[label] = formatValue(paramValue, null);
                       if (values[label] !== null) {
                         if (typeof values[label] === 'string') {
-                          dimension[label].scaleType = 'point';
+                          dimension[label].scaleType = ScaleEnum.Point;
                         }
                         dimension[label].values.add(values[label]);
                       }
@@ -3091,7 +3091,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           _.groupBy(flattedLines, 'chartIndex'),
         );
 
-        console.log('dimensionsObject', dimensionsObject);
         return Object.keys(dimensionsObject)
           .map((keyOfDimension, i) => {
             const dimensions: IDimensionsType = {};
@@ -3932,8 +3931,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         }
 
-        console.log('chartData -----', getChartData(data));
-
         model.setState({
           requestIsPending: false,
           data,
@@ -3957,53 +3954,55 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getChartData(
         processedData: IMetricsCollection<IParam>[],
         configData = model.getState()?.config,
-      ): any[] {
+      ): {
+        dimensions: IDimensionType[];
+        data: IPoint[];
+      }[] {
         if (!processedData || _.isEmpty(configData.select.options)) {
           return [];
         }
-        const dimensionsObject: any = {};
+        const dimensionsByChartIndex: {
+          values: number[] | string[];
+          scaleType: ScaleEnum;
+          displayName: string;
+          dimensionType: string;
+        }[][] = [];
         const chartData = processedData.map(
           ({ chartIndex, color, data }: IMetricsCollection<IParam>) => {
-            if (!dimensionsObject[chartIndex]) {
-              dimensionsObject[chartIndex] = {};
+            if (!dimensionsByChartIndex[chartIndex]) {
+              dimensionsByChartIndex[chartIndex] = [];
             }
-
             return data
               .filter((run) => !run.isHidden)
               .map((run: IParam) => {
-                const values: { [key: string]: string | number | null } = {};
+                const values: any = [];
                 configData.select.options.forEach(
-                  ({ type, label, value }: ISelectOption) => {
-                    const dimension = dimensionsObject[chartIndex];
-                    if (!dimension[label] && type === 'params') {
-                      dimension[label] = {
-                        values: new Set(),
-                        scaleType: 'linear',
+                  ({ type, label, value }: ISelectOption, i: number) => {
+                    const dimension: any = dimensionsByChartIndex[chartIndex];
+                    if (!dimension[i] && type === 'params') {
+                      dimension[i] = {
+                        values: [],
+                        scaleType: ScaleEnum.Linear,
                         displayName: label,
                         dimensionType: 'param',
                       };
                     }
                     if (type === 'metrics') {
                       run.run.traces.metric.forEach((trace: IParamTrace) => {
-                        const formattedContext = `${
-                          value?.option_name
-                        }-${contextToString(trace.context)}`;
                         if (
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
-                          values[formattedContext] = trace.last_value.last;
-                          if (dimension[formattedContext]) {
-                            dimension[formattedContext].values.add(
-                              trace.last_value.last,
-                            );
+                          values[i] = trace.last_value.last;
+                          if (dimension[i]) {
+                            dimension[i].values.push(trace.last_value.last);
                             if (typeof trace.last_value.last === 'string') {
-                              dimension[formattedContext].scaleType = 'point';
+                              dimension[i].scaleType = ScaleEnum.Point;
                             }
                           } else {
-                            dimension[formattedContext] = {
-                              values: new Set().add(trace.last_value.last),
-                              scaleType: 'linear',
+                            dimension[i] = {
+                              values: [trace.last_value.last],
+                              scaleType: ScaleEnum.Linear,
                               displayName: `${
                                 value.option_name
                               } ${contextToString(trace.context)}`,
@@ -4014,66 +4013,58 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       });
                     } else {
                       const paramValue = _.get(run.run.params, label);
-                      values[label] = formatValue(paramValue, null);
-                      if (values[label] !== null) {
-                        if (typeof values[label] === 'string') {
-                          dimension[label].scaleType = 'point';
+                      values[i] = formatValue(paramValue, null);
+                      if (values[i] !== null) {
+                        if (typeof values[i] === 'string') {
+                          dimension[i].scaleType = ScaleEnum.Point;
                         }
-                        dimension[label].values.add(values[label]);
+                        dimension[i].values.push(values[i]);
                       }
                     }
                   },
                 );
-
                 return {
-                  values,
-                  color: color ?? run.color,
-                  chartIndex: chartIndex,
+                  chartIndex,
                   key: run.key,
+                  groupKey: run.key,
+                  color: color ?? run.color,
+                  selectors: [run.key, run.key, run.run.hash],
+                  data: {
+                    yValues: [values[0]],
+                    xValues: [values[1]],
+                  },
                 };
               });
           },
         );
-
         const flattedData = chartData.flat();
         const groupedByChartIndex = Object.values(
           _.groupBy(flattedData, 'chartIndex'),
         );
 
-        console.log('dimensionsObject', dimensionsObject);
-        return Object.keys(dimensionsObject)
-          .map((keyOfDimension, i) => {
-            const dimensions: IDimensionsType = {};
-            Object.keys(dimensionsObject[keyOfDimension]).forEach(
-              (key: string) => {
-                if (
-                  dimensionsObject[keyOfDimension][key].scaleType === 'linear'
-                ) {
-                  dimensions[key] = {
-                    scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      Math.min(...dimensionsObject[keyOfDimension][key].values),
-                      Math.max(...dimensionsObject[keyOfDimension][key].values),
-                    ],
-                    displayName:
-                      dimensionsObject[keyOfDimension][key].displayName,
-                    dimensionType:
-                      dimensionsObject[keyOfDimension][key].dimensionType,
-                  };
-                } else {
-                  dimensions[key] = {
-                    scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      ...dimensionsObject[keyOfDimension][key].values,
-                    ],
-                    displayName:
-                      dimensionsObject[keyOfDimension][key].displayName,
-                    dimensionType:
-                      dimensionsObject[keyOfDimension][key].dimensionType,
-                  };
-                }
-              },
-            );
+        return dimensionsByChartIndex
+          .map((chartDimensions, i: number) => {
+            const dimensions: IDimensionType[] = [];
+            chartDimensions.map((dimension) => {
+              if (dimension.scaleType === ScaleEnum.Linear) {
+                dimensions.push({
+                  scaleType: dimension.scaleType,
+                  domainData: [
+                    Math.min(...(dimension.values as number[])),
+                    Math.max(...(dimension.values as number[])),
+                  ],
+                  displayName: dimension.displayName,
+                  dimensionType: dimension.dimensionType,
+                });
+              } else {
+                dimensions.push({
+                  scaleType: dimension.scaleType,
+                  domainData: dimension.values,
+                  displayName: dimension.displayName,
+                  dimensionType: dimension.dimensionType,
+                });
+              }
+            });
             return {
               dimensions,
               data: groupedByChartIndex[i],
@@ -4163,12 +4154,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
-              metric.run.traces.forEach((trace: any) => {
+              metric.run.traces.metric.forEach((trace: any) => {
                 metricsRowValues[
                   `${
-                    isSystemMetric(trace.metric_name)
-                      ? trace.metric_name
-                      : `${trace.metric_name}_${contextToString(trace.context)}`
+                    isSystemMetric(trace.name)
+                      ? trace.name
+                      : `${trace.name}_${contextToString(trace.context)}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -4186,7 +4177,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 run: moment(metric.run.props.creation_time * 1000).format(
                   'HH:mm:ss · D MMM, YY',
                 ),
-                metric: metric.metric_name,
+                metric: metric.name,
                 ...metricsRowValues,
               };
               rowIndex++;

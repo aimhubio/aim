@@ -14,11 +14,7 @@ import {
   clearArea,
   drawArea,
   drawAxes,
-  drawBrush,
-  drawHoverAttributes,
   getAxisScale,
-  processData,
-  ScaleEnum,
   drawPoints,
 } from 'utils/d3';
 
@@ -31,15 +27,11 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
-    data,
+    data: { dimensions, data },
     zoom,
     onZoomChange,
     syncHoverState,
     index = 0,
-    axesScaleType = {
-      xAxis: ScaleEnum.Linear,
-      yAxis: ScaleEnum.Linear,
-    },
     chartTitle,
     displayOutliers = false,
     highlightMode = HighlightEnum.Off,
@@ -50,7 +42,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     margin: {
       top: 30,
       right: 20,
-      bottom: 30,
+      bottom: 50,
       left: 60,
     },
     height: 0,
@@ -82,12 +74,11 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
 
-  console.log('mttt');
   function draw() {
-    const { processedData, min, max, xValues } = processData(
-      data,
-      displayOutliers,
-    );
+    // const { processedData, min, max, xValues } = processData(
+    //   data,
+    //   displayOutliers,
+    // );
 
     drawArea({
       index,
@@ -105,7 +96,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     });
 
     const { width, height, margin } = visBoxRef.current;
-    const [yDimension, xDimension] = Object.values(data.dimensions);
+    const [yDimension, xDimension] = Object.values(dimensions);
 
     const xScale = getAxisScale({
       domainData: xDimension.domainData,
@@ -139,7 +130,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
     drawPoints({
       index,
-      data: data.data,
+      data,
       xScale,
       yScale,
       highlightMode,
@@ -195,7 +186,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
-    [data, zoom, displayOutliers, highlightMode, axesScaleType],
+    [data, dimensions, zoom, displayOutliers, highlightMode],
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -213,7 +204,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         window.cancelAnimationFrame(rafIDRef.current);
       }
     };
-  }, [data, zoom, displayOutliers, highlightMode, axesScaleType]);
+  }, [data, dimensions, zoom, displayOutliers, highlightMode]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (

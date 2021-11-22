@@ -6,7 +6,7 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import {
   IAggregatedData,
   IAggregationConfig,
@@ -53,9 +53,9 @@ export interface IUpdateFocusedChartArgs {
 }
 
 export interface IBrushRef {
-  updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
-  xScale?: IGetAxisScale;
-  yScale?: IGetAxisScale;
+  updateScales?: (xScale: IAxisScale, yScale: IAxisScale) => void;
+  xScale?: IAxisScale;
+  yScale?: IAxisScale;
   handleZoomIn?: (xValues: [number, number], yValues: [number, number]) => void;
 }
 
@@ -66,9 +66,9 @@ export interface IAttributesRef {
   xStep?: number;
   lineKey?: string;
   dataSelector?: string;
-  xScale?: IGetAxisScale;
-  yScale?: IGetAxisScale;
-  updateScales?: (xScale: IGetAxisScale, yScale: IGetAxisScale) => void;
+  xScale?: IAxisScale;
+  yScale?: IAxisScale;
+  updateScales?: (xScale: IAxisScale, yScale: IAxisScale) => void;
   setActiveLineAndCircle?: (
     lineKey: string,
     focusedStateActive: boolean = false,
