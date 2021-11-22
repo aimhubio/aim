@@ -1,7 +1,9 @@
 import os
 
+from aim import Repo
 from aim.sdk.configs import get_aim_repo_name
 from aim.storage.rockscontainer import RocksContainer
+
 from performance_tests.utils import timing
 
 
@@ -35,5 +37,5 @@ def iterative_access_metric_values(repo, query):
 
 
 def collect_sequence_containers():
-    sequences_subdir = f'{get_aim_repo_name()}/seqs/chunks/'
-    return os.listdir(sequences_subdir)
+    repo = Repo.default_repo()
+    return list(repo.iter_runs())
