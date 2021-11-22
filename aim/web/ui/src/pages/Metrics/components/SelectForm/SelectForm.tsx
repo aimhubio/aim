@@ -174,7 +174,8 @@ function SelectForm({
       });
     }
     return list;
-  }, []);
+  }, [projectsData?.params]);
+
   return (
     <div className='SelectForm'>
       <div className='SelectForm__container__metrics'>
@@ -188,14 +189,14 @@ function SelectForm({
             <div className='SelectForm__textarea'>
               <ExpressionAutoComplete
                 isTextArea={true}
-                onExpressionChange={onSelectRunQueryChange}
+                onExpressionChange={onSelectAdvancedQueryChange}
                 onSubmit={handleMetricSearch}
-                value={selectedMetricsData?.query}
+                value={selectedMetricsData?.advancedQuery}
                 placeholder='metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
                 options={[
-                  ...paramsSuggestions,
                   'metric.name',
                   'metric.context',
+                  ...paramsSuggestions,
                 ]}
               />
             </div>

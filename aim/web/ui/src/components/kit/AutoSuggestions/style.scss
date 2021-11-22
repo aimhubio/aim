@@ -7,12 +7,14 @@
   border-radius: $radius-main;
   background-color: #fff;
   z-index: 9999;
+  overflow: hidden;
   &__SuggestionItem {
     padding: 0 $space-xxs;
     display: block;
     color: $pico-60;
     min-height: 1.5rem;
     cursor: pointer;
+    &:hover,
     &:focus-visible {
       background-color: #dceafb;
       outline: unset;
