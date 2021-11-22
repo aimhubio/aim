@@ -1,5 +1,3 @@
-import os
-
 from aim import Repo
 from aim.sdk.configs import get_aim_repo_name
 from aim.storage.rockscontainer import RocksContainer
@@ -38,4 +36,4 @@ def iterative_access_metric_values(repo, query):
 
 def collect_sequence_containers():
     repo = Repo.default_repo()
-    return list(repo.iter_runs())
+    return [run.hash for run in repo.iter_runs()]
