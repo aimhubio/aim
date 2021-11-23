@@ -65,6 +65,7 @@ const ImagesSet = ({
 
   return (
     <List
+      key={content.length}
       height={imageSetWrapperHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}
