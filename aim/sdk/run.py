@@ -9,9 +9,10 @@ from copy import deepcopy
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
+from aim.sdk.objects.image import Image
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
-from aim.sdk.num_utils import convert_to_py_number, is_AimObject, is_number
+from aim.sdk.num_utils import convert_to_py_number, is_number
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
@@ -23,6 +24,8 @@ from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
+
+from aim.storage.types import NoneType
 
 if TYPE_CHECKING:
     from aim.sdk.metric import Metric
@@ -358,7 +361,9 @@ class Run(StructuredRunMixin):
         if context is None:
             context = {}
 
-        if not is_number(value) and not is_AimObject(value):
+        if not is_number(value) and not isinstance(
+            value, (NoneType, bool, int, float, str, bytes, list, tuple, dict, Image)
+        ):
             raise ValueError(f"Input metric of type {type(value)} is neither python number nor AimObject")
 
         try:

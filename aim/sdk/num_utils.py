@@ -104,10 +104,6 @@ def is_number(value):
     return False
 
 
-def is_AimObject(value):
-    return isinstance(value, (type(None), bool, int, float, str, bytes, list, tuple, dict))
-
-
 def convert_to_py_number(value) -> object:
     """
     Converts numpy objects or tensors to python number types
