@@ -195,6 +195,8 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
 
         iters, values = trace.values.sparse_list()
 
+        values = list(map(lambda x: x if float('-inf') < x < float('inf') and x == x else None, values))
+
         num_records = len(values)
         step = (num_records // steps_num) or 1
         _slice = slice(0, num_records, step)
