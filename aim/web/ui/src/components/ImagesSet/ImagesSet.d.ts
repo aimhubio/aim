@@ -7,4 +7,5 @@ export interface IImageSetProps {
   imagesSetKey: number;
   imageSetWrapperHeight?: number;
   imageSetWrapperWidth?: number;
+  imageHeight: number;
 }

@@ -8,6 +8,8 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 
+import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
+
 import { IImagesPanelProps } from './ImagesPanel.d';
 
 import './ImagesPanel.scss';
@@ -101,6 +103,7 @@ function ImagesPanel({
                   imagesSetKey={imagesSetKey}
                   imageSetWrapperHeight={imageWrapperOffsetHeight - 40}
                   imageSetWrapperWidth={imageWrapperOffsetWidth}
+                  imageHeight={imageFixedHeight}
                 />
               </div>
             ) : (

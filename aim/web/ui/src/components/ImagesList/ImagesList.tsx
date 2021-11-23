@@ -1,8 +1,6 @@
 import React from 'react';
 import { VariableSizeList as List } from 'react-window';
 
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
-
 import ImageBox from './ImageBox';
 
 function ImagesList({
@@ -11,13 +9,14 @@ function ImagesList({
   onScroll,
   imageSetWrapperWidth,
   addUriToList,
+  imageHeight,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
-      height={imageFixedHeight}
+      height={imageHeight}
       itemCount={data.length}
       itemSize={(index: number) =>
-        (imageFixedHeight / data[index].height) * data[index].width
+        (imageHeight / data[index].height) * data[index].width
       }
       layout='horizontal'
       width={imageSetWrapperWidth || 0}
@@ -31,6 +30,7 @@ function ImagesList({
           data={data[index]}
           imagesBlobs={imagesBlobs}
           addUriToList={addUriToList}
+          imageHeight={imageHeight}
         />
       )}
     </List>
