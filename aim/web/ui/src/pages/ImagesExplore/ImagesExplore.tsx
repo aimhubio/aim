@@ -18,9 +18,15 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+
+import {
+  IGroupingSelectOption,
+  IPanelTooltip,
+} from 'types/services/models/metrics/metricsAppModel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 
@@ -193,6 +199,17 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 !isEmpty(getStateFromUrl('select')?.images) ||
                 (!!getStateFromUrl('select')?.advancedQuery &&
                   !!getStateFromUrl('select')?.advancedMode)
+              }
+              controls={
+                <Controls
+                  selectOptions={
+                    imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
+                  }
+                  tooltip={
+                    imagesExploreData?.config?.images?.tooltip as IPanelTooltip
+                  }
+                  onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
+                />
               }
             />
           </div>

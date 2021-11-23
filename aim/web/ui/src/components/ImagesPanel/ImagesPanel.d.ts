@@ -18,4 +18,5 @@ export interface IImagesPanelProps {
   panelResizing: boolean;
   imageWrapperOffsetHeight: number;
   imageWrapperOffsetWidth: number;
+  controls: React.ReactNode;
 }

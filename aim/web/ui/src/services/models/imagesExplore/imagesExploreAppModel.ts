@@ -25,6 +25,8 @@ import {
   IMetricsCollection,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
+  IPanelTooltip,
+  ITooltipData,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
@@ -57,6 +59,8 @@ import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 
 import createModel from '../model';
+import getTooltipData from '../../../utils/app/getTooltipData';
+import filterTooltipContent from '../../../utils/filterTooltipContent';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
@@ -64,15 +68,17 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
   applyButtonDisabled: true,
 });
 
+let tooltipData: ITooltipData = {};
+
 function getConfig(): IImagesExploreAppConfig {
   return {
     grouping: {
-      groupBy: [],
+      group: [],
       reverseMode: {
-        groupBy: false,
+        group: false,
       },
       isApplied: {
-        groupBy: true,
+        group: true,
       },
     },
     select: {
@@ -81,7 +87,18 @@ function getConfig(): IImagesExploreAppConfig {
       advancedMode: false,
       advancedQuery: '',
     },
-    images: { calcRanges: true },
+    images: {
+      calcRanges: true,
+      tooltip: {
+        content: {},
+        display: true,
+        selectedParams: [],
+      },
+      focusedState: {
+        active: false,
+        key: null,
+      },
+    },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
       rowHeight: RowHeightSize.md,
@@ -202,12 +219,16 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
-function getImagesData() {
+function getImagesData(shouldUrlUpdate?: boolean) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+  if (shouldUrlUpdate) {
+    updateURL(configData);
+  }
+
   const recordSlice: number[] | undefined = configData?.images?.recordSlice as
     | number[]
     | undefined;
@@ -248,10 +269,8 @@ function getImagesData() {
         const runData = await getImagesMetricsData(stream);
         if (configData) {
           setModelData(runData, configData);
-          updateURL(configData);
         }
       } else {
-        updateURL(configData);
         model.setState({
           requestIsPending: false,
           queryIsEmpty: true,
@@ -350,7 +369,13 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
-
+  tooltipData = getTooltipData({
+    processedData: data,
+    paramKeys: params,
+    groupingSelectOptions,
+    groupingItems: ['group'],
+    model,
+  });
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -381,11 +406,20 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     recordDensity: config.images.recordDensity || '50',
     indexDensity: config.images.indexDensity || '5',
     calcRanges: false,
+    tooltip: config.images.tooltip || {
+      content: {},
+      display: true,
+      selectedParams: [],
+    },
+    focusedState: config.images.focusedState || {
+      active: false,
+      key: null,
+    },
   };
   model.setState({
     requestIsPending: false,
     rawData,
-    config: config,
+    config,
     params,
     data,
     imagesData: getDataAsImageSet(data, groupingSelectOptions),
@@ -416,6 +450,13 @@ function updateModelData(
       contexts,
     }),
   ];
+  tooltipData = getTooltipData({
+    processedData: data,
+    paramKeys: params,
+    groupingSelectOptions,
+    groupingItems: ['group'],
+    model,
+  });
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -463,12 +504,12 @@ function getFilteredGroupingOptions(
     | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
     const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping['groupBy'].indexOf(opt.value as never) === -1)
+      .filter((opt) => grouping['group'].indexOf(opt.value as never) === -1)
       .map((item) => item.value);
-    return isApplied['groupBy']
-      ? reverseMode['groupBy']
+    return isApplied['group']
+      ? reverseMode['group']
         ? filteredOptions
-        : grouping['groupBy']
+        : grouping['group']
       : [];
   } else {
     return [];
@@ -541,9 +582,7 @@ function groupData(data: any[]): any {
     ];
   }
 
-  const groupValues: {
-    [key: string]: any;
-  } = {};
+  const groupValues: { [key: string]: any } = {};
 
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
@@ -587,15 +626,12 @@ function onGroupingSelectChange({
   analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
 }
 
-function onGroupingModeChange({
-  groupName,
-  value,
-}: IOnGroupingModeChangeParams): void {
+function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   const configData = model.getState()?.config;
   if (configData?.grouping) {
     configData.grouping.reverseMode = {
       ...configData.grouping.reverseMode,
-      groupBy: value,
+      group: value,
     };
     updateModelData(configData, true);
   }
@@ -630,7 +666,7 @@ function onGroupingApplyChange(): void {
       ...configData.grouping,
       isApplied: {
         ...configData.grouping.isApplied,
-        groupBy: !configData.grouping.isApplied['groupBy'],
+        group: !configData.grouping.isApplied['group'],
       },
     };
     updateModelData(configData, true);
@@ -717,14 +753,14 @@ function getDataAsImageSet(
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const groupBy: string[] = [...(configData?.grouping?.groupBy || [])];
-    const groupFields = configData?.grouping?.reverseMode?.groupBy
+    const group: string[] = [...(configData?.grouping?.group || [])];
+    const groupFields = configData?.grouping?.reverseMode?.group
       ? groupingSelectOptions
           .filter(
-            (option: IGroupingSelectOption) => !groupBy.includes(option.label),
+            (option: IGroupingSelectOption) => !group.includes(option.label),
           )
           .map((option) => option.value)
-      : groupBy;
+      : group;
     data.forEach((group: any) => {
       const path = groupFields?.reduce((acc: string[], field: string) => {
         acc.push(
@@ -740,6 +776,34 @@ function getDataAsImageSet(
   } else {
     return {};
   }
+}
+
+function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
+  let configData = model.getState()?.config;
+  if (configData?.images) {
+    let content = configData.images.tooltip.content;
+    if (tooltip.selectedParams && configData?.images.focusedState.key) {
+      content = filterTooltipContent(
+        tooltipData[configData.images.focusedState.key],
+        tooltip.selectedParams,
+      );
+    }
+    configData = {
+      ...configData,
+      images: {
+        ...configData.images,
+        tooltip: {
+          ...configData.images.tooltip,
+          ...tooltip,
+          content,
+        },
+      },
+    };
+
+    model.setState({ config: configData });
+    updateURL(configData);
+  }
+  analytics.trackEvent('[ImagesExplorer] Change tooltip content');
 }
 
 function getDataAsTableRows(
@@ -1596,6 +1660,7 @@ const imagesExploreAppModel = {
   onDensityChange,
   onRecordDensityChange,
   getImagesBlobsData,
+  onChangeTooltip,
 };
 
 export default imagesExploreAppModel;

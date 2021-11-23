@@ -30,6 +30,7 @@ function ImagesPanel({
   imageWrapperOffsetHeight,
   imageWrapperOffsetWidth,
   isRangePanelShow,
+  controls,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   let timeoutID = useRef(0);
   let blobUriArray: string[] = [];
@@ -83,26 +84,29 @@ function ImagesPanel({
       loaderComponent={<ChartLoader controlsCount={0} />}
     >
       {panelResizing ? (
-        <div className='ImagesPanel__resizing'>
+        <div className='ImagesPanel__Container__resizing'>
           <Text size={14} color='info'>
             Release to resize
           </Text>
         </div>
       ) : (
         <>
-          <div className='ImagesPanel'>
+          <div className='ImagesPanel__Container'>
             {!isEmpty(imagesData) ? (
-              <div className='ImagesPanel__imagesContainer'>
-                <ImagesSet
-                  data={imagesData}
-                  title={'root'}
-                  imagesBlobs={imagesBlobs}
-                  onScroll={onScroll}
-                  addUriToList={addUriToList}
-                  imagesSetKey={imagesSetKey}
-                  imageSetWrapperHeight={imageWrapperOffsetHeight - 36}
-                  imageSetWrapperWidth={imageWrapperOffsetWidth}
-                />
+              <div className='ImagesPanel'>
+                <div className='ImagesPanel__imagesSetContainer'>
+                  <ImagesSet
+                    data={imagesData}
+                    title={'root'}
+                    imagesBlobs={imagesBlobs}
+                    onScroll={onScroll}
+                    addUriToList={addUriToList}
+                    imagesSetKey={imagesSetKey}
+                    imageSetWrapperHeight={imageWrapperOffsetHeight - 36}
+                    imageSetWrapperWidth={imageWrapperOffsetWidth}
+                  />
+                </div>
+                <div className='ImagesPanel__controls'>{controls}</div>
               </div>
             ) : (
               <EmptyComponent

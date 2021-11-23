@@ -16,7 +16,7 @@ const groupingPopovers = (singleGrouping: boolean) =>
         {
           title: 'Select Fields For Grouping',
           advancedTitle: 'Color Advanced Options',
-          groupName: 'groupBy',
+          groupName: 'group',
           groupDisplayName: 'group',
           AdvancedComponent: null,
         },

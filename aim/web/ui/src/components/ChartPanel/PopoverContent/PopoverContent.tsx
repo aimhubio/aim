@@ -44,12 +44,12 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <Text>Y: </Text>
               <span className='PopoverContent__headerValue'>
                 <Text weight={400}>
-                  {isSystemMetric(tooltipContent.metricName)
-                    ? formatSystemMetricName(tooltipContent.metricName)
-                    : tooltipContent.metricName}
+                  {isSystemMetric(tooltipContent.name)
+                    ? formatSystemMetricName(tooltipContent.name)
+                    : tooltipContent.name}
                 </Text>
                 <Text className='PopoverContent__contextValue'>
-                  {contextToString(tooltipContent.metricContext)}
+                  {contextToString(tooltipContent.context)}
                 </Text>
                 <Text component='p' className='PopoverContent__axisValue'>
                   {focusedState?.yValue ?? '--'}
@@ -63,7 +63,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {alignmentConfig?.type ===
                   AlignmentOptionsEnum.CUSTOM_METRIC && (
                   <Text className='PopoverContent__contextValue'>
-                    {contextToString(tooltipContent.metricContext)}
+                    {contextToString(tooltipContent.context)}
                   </Text>
                 )}
                 <Text component='p' className='PopoverContent__axisValue'>
