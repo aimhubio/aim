@@ -14,11 +14,9 @@ import './ImageSet.scss';
 const imageWrapperHeight = 33;
 const imageSetTitleHeight = 17;
 const imageSetWrapperPaddingHeight = 6;
-const gapBetweenItems = 20;
 
 const ImagesSet = ({
   data,
-  title,
   imagesBlobs,
   onScroll,
   addUriToList,
@@ -27,8 +25,8 @@ const ImagesSet = ({
   imageSetWrapperHeight,
   imageSetWrapperWidth,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
-  let content: [string[], []][] = [];
-  let keysMap: { [key: string]: number } = {};
+  let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
+  let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
   function fillContent(list: [] | { [key: string]: [] | {} }, path = ['']) {
     if (Array.isArray(list)) {
@@ -50,10 +48,6 @@ const ImagesSet = ({
     let [path, items] = content[index];
     if (path.length === 1) {
       return 0;
-    }
-
-    if (path.length === 2) {
-      return imageSetTitleHeight + imageSetWrapperPaddingHeight;
     }
 
     if (items.length > 0) {
