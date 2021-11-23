@@ -725,16 +725,47 @@ function getDataAsImageSet(
           )
           .map((option) => option.value)
       : groupBy;
+    console.log(data);
     data.forEach((group: any) => {
-      const path = groupFields?.reduce((acc: string[], field: string) => {
-        acc.push(
-          `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
-            _.get(group.data[0], field),
-          )}`,
-        );
-        return acc;
-      }, []);
-      _.set(imageSetData, path, group.data);
+      const array: any = [];
+
+      const path = groupFields?.reduce(
+        (acc: string[], field: string, index: number) => {
+          console.log(field);
+          const value = _.get(group.data[0], field);
+          array[index] = [...(array[index] || []), value];
+          acc.push(
+            `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
+              value,
+            )}`,
+          );
+          return acc;
+        },
+        [],
+      );
+      console.log(array);
+      console.log(path);
+      // console.log(group.data);
+      // console.log(
+      //   group.data.sort(function (a: any, b: any) {
+      //     return (
+      //       a.caption.localeCompare(b.caption) ||
+      //       b.step - a.step ||
+      //       b.index - a.index
+      //     );
+      //   }),
+      // );
+      _.set(
+        imageSetData,
+        path,
+        group.data.sort(function (a: any, b: any) {
+          return (
+            a.caption.localeCompare(b.caption) ||
+            b.step - a.step ||
+            b.index - a.index
+          );
+        }),
+      );
     });
     return isEmpty(imageSetData) ? data[0].data : imageSetData;
   } else {
