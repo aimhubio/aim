@@ -1,5 +1,4 @@
 from PIL import Image as PILImage
-from PIL.Image import open as pil_open
 
 from io import BytesIO
 from itertools import chain, repeat
@@ -87,9 +86,9 @@ class Image(CustomObject):
         """
         return self.storage['width'], self.storage['height']
 
-    def to_pil_image(self) -> 'PILImage':
+    def to_pil_image(self) -> PILImage.Image:
         """Method to convert aim.Image to pillow Image"""
-        pil_img = pil_open(BytesIO(bytes(self.storage['data'])))
+        pil_img = PILImage.open(BytesIO(bytes(self.storage['data'])))
         assert pil_img.size == self.size
         return pil_img
 
