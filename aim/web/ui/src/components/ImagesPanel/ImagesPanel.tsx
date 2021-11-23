@@ -8,7 +8,10 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
+import {
+  batchSendDelay,
+  imageFixedHeight,
+} from 'config/imagesConfigs/imagesConfig';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
 
@@ -46,7 +49,7 @@ function ImagesPanel({
           blobUriArray = [];
         });
       }
-    }, 1000);
+    }, batchSendDelay);
   }
 
   const imagesSetKey = useMemo(

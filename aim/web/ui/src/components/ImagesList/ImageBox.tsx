@@ -2,6 +2,8 @@ import React, { memo, useEffect } from 'react';
 
 import { Skeleton } from '@material-ui/lab';
 
+import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+
 const ImageBox = ({
   index,
   style,
@@ -13,7 +15,7 @@ const ImageBox = ({
   const { format, blob_uri } = data;
 
   useEffect(() => {
-    let timeoutID = setTimeout(() => addUriToList(blob_uri), 900);
+    let timeoutID = setTimeout(() => addUriToList(blob_uri), batchCollectDelay);
 
     return () => {
       clearTimeout(timeoutID);
