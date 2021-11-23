@@ -705,8 +705,8 @@ async function getImagesBlobsData(uris: string[]) {
 
   for await (let [keys, val] of objects) {
     imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
+    model.setState({ imagesBlobs: { ...imagesBlobs } });
   }
-  model.setState({ imagesBlobs: { ...imagesBlobs } });
 }
 
 function getDataAsImageSet(

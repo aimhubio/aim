@@ -95,12 +95,11 @@ function ImagesPanel({
               <div className='ImagesPanel__imagesContainer'>
                 <ImagesSet
                   data={imagesData}
-                  title={'root'}
                   imagesBlobs={imagesBlobs}
                   onScroll={onScroll}
                   addUriToList={addUriToList}
                   imagesSetKey={imagesSetKey}
-                  imageSetWrapperHeight={imageWrapperOffsetHeight - 36}
+                  imageSetWrapperHeight={imageWrapperOffsetHeight - 40}
                   imageSetWrapperWidth={imageWrapperOffsetWidth}
                 />
               </div>
