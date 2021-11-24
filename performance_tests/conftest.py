@@ -5,9 +5,6 @@ import tarfile
 import time
 from pathlib import Path
 
-from aim.web.utils import exec_cmd
-from aim.cli.up.utils import build_db_upgrade_command
-from aim.web.configs import AIM_ENV_MODE_KEY
 
 TEST_REPO_PATHS = {
     'real_life_repo': '.aim_performance_repo_1',
@@ -42,12 +39,18 @@ def _cleanup_test_repo(path):
 
 
 def pytest_sessionstart(session):
-    _init_test_repos()
+    if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
+        _init_test_repos()
+    else:
+        # github actions performance tests on self hosted runner
+        os.chdir('/home/ubuntu/performance_logs/')
     time.sleep(10)
 
 
 def pytest_sessionfinish(session, exitstatus):
-    for path in TEST_REPO_PATHS.values():
-        _cleanup_test_repo(path)
+    if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
+        for path in TEST_REPO_PATHS.values():
+            _cleanup_test_repo(path)
+        del os.environ['AIM_LOCAL_PERFORMANCE_TEST']
     if os.environ.get('__AIM_REPO_NAME__'):
         del os.environ['__AIM_REPO_NAME__']
