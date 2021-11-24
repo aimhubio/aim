@@ -351,7 +351,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
-  const { imageSetData, orderingData } = getDataAsImageSet(
+  const { imageSetData, orderedMap } = getDataAsImageSet(
     data,
     groupingSelectOptions,
   );
@@ -394,7 +394,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     params,
     data,
     imagesData: imageSetData,
-    orderingData,
+    orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
       params,
@@ -422,7 +422,7 @@ function updateModelData(
       contexts,
     }),
   ];
-  const { imageSetData, orderingData } = getDataAsImageSet(
+  const { imageSetData, orderedMap } = getDataAsImageSet(
     data,
     groupingSelectOptions,
   );
@@ -456,7 +456,7 @@ function updateModelData(
     config: configData,
     data: model.getState()?.data,
     imagesData: imageSetData,
-    orderingData,
+    orderedMap,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
@@ -821,7 +821,7 @@ function getDataAsImageSet(
 
     return {
       imageSetData: isEmpty(imageSetData) ? data[0].data : imageSetData,
-      orderingData: imagesDataForOrdering,
+      orderedMap: imagesDataForOrdering,
     };
   } else {
     return {};

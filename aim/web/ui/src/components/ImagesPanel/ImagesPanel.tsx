@@ -35,7 +35,7 @@ function ImagesPanel({
   imageWrapperOffsetHeight,
   imageWrapperOffsetWidth,
   isRangePanelShow,
-  orderingData,
+  orderedMap,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   let timeoutID = useRef(0);
   let blobUriArray: string[] = [];
@@ -107,7 +107,7 @@ function ImagesPanel({
                   imagesSetKey={imagesSetKey}
                   imageSetWrapperHeight={imageWrapperOffsetHeight - 40}
                   imageSetWrapperWidth={imageWrapperOffsetWidth}
-                  orderingData={orderingData}
+                  orderedMap={orderedMap}
                   imageHeight={imageFixedHeight}
                 />
               </div>

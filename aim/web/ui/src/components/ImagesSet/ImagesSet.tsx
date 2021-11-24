@@ -24,7 +24,7 @@ const ImagesSet = ({
   imagesSetKey,
   imageSetWrapperHeight,
   imageSetWrapperWidth,
-  orderingData,
+  orderedMap,
   imageHeight,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
@@ -33,14 +33,14 @@ const ImagesSet = ({
   function fillContent(
     list: [] | { [key: string]: [] | {} },
     path = [''],
-    orderingData: { [key: string]: any },
+    orderedMap: { [key: string]: any },
   ) {
     if (Array.isArray(list)) {
       content.push([path, list]);
     } else {
-      const fieldSortedValues = [...orderingData.ordering].sort();
+      const fieldSortedValues = [...orderedMap.ordering].sort();
       fieldSortedValues.forEach((val: any) => {
-        const fieldName = `${orderingData.key} = ${formatValue(val)}`;
+        const fieldName = `${orderedMap.key} = ${formatValue(val)}`;
         if (!keysMap.hasOwnProperty(path.join(''))) {
           content.push([path, []]);
           keysMap[path.join('')] = 1;
@@ -48,13 +48,13 @@ const ImagesSet = ({
         fillContent(
           list[fieldName],
           path.concat([fieldName]),
-          orderingData[fieldName],
+          orderedMap[fieldName],
         );
       });
     }
   }
 
-  fillContent(data, [''], orderingData);
+  fillContent(data, [''], orderedMap);
 
   function getItemSize(index: number) {
     let [path, items] = content[index];

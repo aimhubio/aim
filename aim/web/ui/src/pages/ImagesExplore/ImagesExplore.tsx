@@ -183,7 +183,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
               imagesBlobs={imagesExploreData?.imagesBlobs}
-              orderingData={imagesExploreData?.orderingData}
+              orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               panelResizing={panelResizing}

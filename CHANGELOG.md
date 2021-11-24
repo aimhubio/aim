@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Apply default ordering on images set (VkoHov)
 - Improve Images Explorer rendering performance through better images list virtualization (roubkar)
 
 ## 3.1.0 Nov 20 2021
