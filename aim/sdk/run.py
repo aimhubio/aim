@@ -26,7 +26,10 @@ from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
+    from pandas import DataFrame
+
     from aim.sdk.metric import Metric
     from aim.sdk.image_sequence import Images
     from aim.sdk.sequence_collection import SequenceCollection
