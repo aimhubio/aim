@@ -40,7 +40,15 @@ const ImagesSet = ({
     if (Array.isArray(list)) {
       content.push([path, list]);
     } else {
-      const fieldSortedValues = [...orderedMap.ordering].sort();
+      const fieldSortedValues = [...orderedMap.ordering].sort(
+        (a: any, b: any) => {
+          if (typeof a === 'string' || typeof b === 'string') {
+            return a.localeCompare(b);
+          } else {
+            return a - b;
+          }
+        },
+      );
       fieldSortedValues.forEach((val: any) => {
         const fieldName = `${orderedMap.key} = ${formatValue(val)}`;
         if (!keysMap.hasOwnProperty(path.join(''))) {
