@@ -3,7 +3,7 @@
 .ChartPopover {
   pointer-events: none;
 
-  .ChartPopover__content {
+  &__content {
     margin: 1em;
     width: 230px;
     max-height: 250px;

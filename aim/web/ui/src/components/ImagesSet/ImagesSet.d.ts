@@ -1,3 +1,5 @@
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
+
 export interface IImageSetProps {
   data: any;
   orderedMap: { [key: string]: any };
@@ -9,4 +11,6 @@ export interface IImageSetProps {
   imageSetWrapperHeight?: number;
   imageSetWrapperWidth?: number;
   imageHeight: number;
+  syncHoverState?: (args: any) => void;
+  focusedState: IFocusedState;
 }

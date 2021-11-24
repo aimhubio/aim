@@ -1,6 +1,6 @@
 import {
   IGroupingSelectOption,
-  IChartTooltip,
+  IPanelTooltip,
   IFocusedState,
 } from 'metrics/metricsAppModel';
 
@@ -83,7 +83,7 @@ export interface IParamsAppConfig {
     curveInterpolation: CurveEnum;
     isVisibleColorIndicator: boolean;
     focusedState: IFocusedState;
-    tooltip: IChartTooltip;
+    tooltip: IPanelTooltip;
   };
   select?: {
     params: any; // ISelectMetricsOption[];

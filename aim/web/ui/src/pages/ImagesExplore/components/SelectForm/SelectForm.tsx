@@ -60,7 +60,7 @@ function SelectForm({
   function handleSearch(e: React.ChangeEvent<any>): void {
     e.preventDefault();
 
-    searchMetricsRef.current = imagesExploreAppModel.getImagesData();
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
     searchMetricsRef.current.call();
   }
 

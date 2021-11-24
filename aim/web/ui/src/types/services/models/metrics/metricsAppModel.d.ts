@@ -144,7 +144,7 @@ export interface IMetricAppConfig {
     aggregationConfig: IAggregationConfig;
     densityType: DensityOptions;
     alignmentConfig: IAlignmentConfig;
-    tooltip: IChartTooltip;
+    tooltip: IPanelTooltip;
   };
   select?: {
     metrics: ISelectMetricsOption[];
@@ -182,7 +182,7 @@ export interface IChartZoom {
   }[];
 }
 
-export interface IChartTooltip {
+export interface IPanelTooltip {
   content: ITooltipContent;
   display: boolean;
   selectedParams: string[];
@@ -205,9 +205,9 @@ export interface IAggregationConfig {
 export interface IFocusedState {
   active: boolean;
   key: string | null;
-  xValue: number | string | null;
-  yValue: number | null;
-  chartIndex: number | null;
+  xValue?: number | string | null;
+  yValue?: number | null;
+  chartIndex?: number | null;
 }
 
 export interface IMetricTableRowData {
@@ -248,7 +248,7 @@ export interface IGetGroupingPersistIndex {
   groupName: 'color' | 'stroke';
 }
 
-export type GroupNameType = 'color' | 'stroke' | 'chart';
+export type GroupNameType = 'color' | 'stroke' | 'chart' | 'group';
 export interface IGroupingSelectOption {
   label: string;
   group: string;
