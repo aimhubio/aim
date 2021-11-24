@@ -58,6 +58,12 @@ class ArrayView(Generic[T]):
     def items_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[Tuple[int, T]]:
         ...
 
+    def values_in_range(self, start, stop, count=None) -> Iterator[T]:
+        ...
+
+    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, T]]:
+        ...
+
     def __len__(self) -> int:
         ...
 
@@ -214,6 +220,25 @@ class TreeArrayView(ArrayView[T]):
                         break
                     if (idx - start) % step == 0:
                         yield idx, val
+
+    def values_in_range(self, start, stop, count=None) -> Iterator[T]:
+        for k, v in self.items_in_range(start, stop, count):
+            yield v
+
+    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, T]]:
+        if stop <= start or start < 0 or stop < 0:
+            return
+
+        items_ = self.items()
+        items_in_range = []
+        for idx, val in items_:
+            if start <= idx < stop:
+                items_in_range.append((idx, val))
+            if idx >= stop:
+                break
+        print(f'found {len(items_in_range)} items in range [{start}, {stop}]')
+        step = (len(items_in_range) // count or 1) if count else 1
+        yield from islice(items_in_range, 0, len(items_in_range), step)
 
     def __len__(self) -> int:
         # TODO lazier

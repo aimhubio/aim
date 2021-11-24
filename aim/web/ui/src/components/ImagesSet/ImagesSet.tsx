@@ -5,8 +5,6 @@ import classNames from 'classnames';
 
 import ImagesList from 'components/ImagesList';
 
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
-
 import { formatValue } from 'utils/formatValue';
 
 import { IImageSetProps } from './ImagesSet.d';
@@ -27,6 +25,7 @@ const ImagesSet = ({
   imageSetWrapperHeight,
   imageSetWrapperWidth,
   orderingData,
+  imageHeight,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -64,7 +63,7 @@ const ImagesSet = ({
     }
 
     if (items.length > 0) {
-      return imageFixedHeight + imageWrapperHeight;
+      return imageHeight + imageWrapperHeight;
     }
 
     return imageSetTitleHeight + imageSetWrapperPaddingHeight;
@@ -144,6 +143,7 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
               onScroll={data.onScroll}
               addUriToList={data.addUriToList}
               imageSetWrapperWidth={data.imageSetWrapperWidth}
+              imageHeight={data.imageHeight}
             />
           </div>
         )}

@@ -2,7 +2,7 @@ import React, { memo, useEffect } from 'react';
 
 import { Skeleton } from '@material-ui/lab';
 
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
+import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
 const ImageBox = ({
   index,
@@ -10,11 +10,12 @@ const ImageBox = ({
   data,
   imagesBlobs,
   addUriToList,
+  imageHeight,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
 
   useEffect(() => {
-    let timeoutID = setTimeout(() => addUriToList(blob_uri), 900);
+    let timeoutID = setTimeout(() => addUriToList(blob_uri), batchCollectDelay);
 
     return () => {
       clearTimeout(timeoutID);
@@ -33,7 +34,7 @@ const ImageBox = ({
         ) : (
           <Skeleton
             variant='rect'
-            height={imageFixedHeight - 10}
+            height={imageHeight - 10}
             width={style.width - 10}
           />
         )}
