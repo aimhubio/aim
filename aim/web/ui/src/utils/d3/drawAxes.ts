@@ -82,12 +82,18 @@ function drawAxes(props: IDrawAxesProps): void {
             formatUnit = 's';
           }
 
-          let tickValues =
-            unit === null
-              ? null
-              : _.range(Math.ceil(first), Math.ceil(last) + 1).filter(
-                  (t) => t % unit! === 0,
-                );
+          let tickValues: null | number[] = unit === null ? null : [];
+
+          if (tickValues !== null) {
+            const d = Math.floor((last - first) / (ticksCount - 1));
+            for (let i = 0; i < ticksCount; i++) {
+              if (i === ticksCount - 1) {
+                tickValues.push(Math.ceil(last + 1));
+              } else {
+                tickValues.push(Math.floor(first + i * d));
+              }
+            }
+          }
 
           if (unit !== null && tickValues && ticksCount < tickValues.length) {
             tickValues = tickValues.filter((v, i) => {
@@ -121,7 +127,15 @@ function drawAxes(props: IDrawAxesProps): void {
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-          let tickValues = _.range(first, last);
+          let tickValues: number[] = [];
+          const d = (last - first) / (ticksCount - 1);
+          for (let i = 0; i < ticksCount; i++) {
+            if (i === ticksCount - 1) {
+              tickValues.push(Math.ceil(last));
+            } else {
+              tickValues.push(Math.floor(first + i * d));
+            }
+          }
 
           xAxis
             .ticks(ticksCount)
