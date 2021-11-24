@@ -102,7 +102,7 @@ def display_colab(port, display):
             iframe.setAttribute('frameborder', 0);
             document.body.appendChild(iframe);
         })();
-    """.replace(port)
+    """.format(port)
     script = IPython.display.Javascript(shell)
 
     if display:
@@ -119,13 +119,8 @@ def display_notebook(host, port, display):
           <iframe id="aim" width="100%" height="800" frameborder="0" src={}:{}>
           </iframe>
         """.format(host, port)
-    proxy_url = None
-    if proxy_url is not None:
-        # proxyurl
-        pass
-    else:
-        # /
-        pass
+
+    # @TODO write passing proxy logic
 
     iframe = IPython.display.HTML(shell)
     display.update(iframe)
