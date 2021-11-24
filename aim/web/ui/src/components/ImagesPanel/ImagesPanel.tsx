@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import _, { isEmpty, isEqual } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 
 import { PopoverPosition } from '@material-ui/core';
 
@@ -149,6 +149,11 @@ function ImagesPanel({
                 //     focusedStateActive: false,
                 //   });
                 // }}
+                onMouseLeave={() => {
+                  if (!focusedState?.active) {
+                    setPopoverPosition(null);
+                  }
+                }}
               >
                 <div className='ImagesPanel__imagesSetContainer'>
                   <ImagesSet

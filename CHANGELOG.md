@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Ability to show image data in a tooltip on hover (KaroMourad)
 - Ability to export run props as pandas dataframe (gorarakelyan)
 - Improve Images Explorer rendering performance through better images list virtualization (roubkar)
 

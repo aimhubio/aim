@@ -1,4 +1,4 @@
-import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IImageSetProps {
   data: any;
