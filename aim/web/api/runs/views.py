@@ -80,7 +80,7 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
+async def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:
@@ -110,7 +110,7 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
 
 @runs_router.get('/search/images/', response_model=RunImagesSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_images_search_api(q: Optional[str] = '',
+async def run_images_search_api(q: Optional[str] = '',
                           record_range: Optional[str] = '', record_density: Optional[int] = 50,
                           index_range: Optional[str] = '', index_density: Optional[int] = 5,
                           calc_ranges: Optional[bool] = False):
