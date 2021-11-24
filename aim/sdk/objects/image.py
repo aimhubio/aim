@@ -113,10 +113,14 @@ class Image(CustomObject):
         self.storage['width'], self.storage['height'] = pil_image.size
 
     def _from_numpy_array(self, array: np.ndarray):
-        shape = array.shape
-        if len(shape) not in {2, 3}:
-            raise ValueError('Cannot convert to aim.Image. array must have 2-D or 3-D shape.')
-        pil_image = PILImage.fromarray(array)
+        if array.ndim not in {2, 3}:
+            raise ValueError('Cannot convert to aim.Image. array must have 2/3-D shape.')
+
+        if array.ndim == 3 and array.shape[2] == 1:  # greyscale
+            pil_image = PILImage.fromarray(array[:, :, 0])
+        else:
+            pil_image = PILImage.fromarray(array)
+
         self._from_pil_image(pil_image)
 
     def _from_torch_tensor(self, tensor):
@@ -130,9 +134,9 @@ class Image(CustomObject):
             raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
         if tensor.is_floating_point():
             tensor = tensor.mul(255).byte()
-        array: np.ndarray = np.transpose(tensor.numpy(), (1, 2, 0))
+        array: np.ndarray = np.transpose(tensor.cpu().numpy(), (1, 2, 0))
 
-        if len(array.shape) == 3 and array.shape[2] == 1:  # greyscale
+        if array.ndim == 3 and array.shape[2] == 1:  # greyscale
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
@@ -148,10 +152,12 @@ class Image(CustomObject):
         if tensor.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
         # TODO check the logic below
+
+        if tensor.dtype.is_floating:
+            tensor = tf.cast(tf.math.scalar_mul(255.0, tensor), tf.dtypes.int8)
         array: np.ndarray = tensor.numpy()
-        array *= 255.0 / array.max()
-        array = array.astype(np.uint8)
-        if len(array.shape) == 3 and array.shape[2] == 1:  # greyscale
+
+        if array.ndim == 3 and array.shape[2] == 1:  # greyscale
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
@@ -165,6 +171,6 @@ def convert_to_aim_image_list(images, labels=None) -> List[Image]:
     else:
         labels_it = repeat('')
     for img, lbl in zip(images, labels_it):
-        aim_img = Image(img, str(lbl.item()))
+        aim_img = Image(img, lbl if isinstance(lbl, str) else str(lbl.item()))
         aim_images.append(aim_img)
     return aim_images
