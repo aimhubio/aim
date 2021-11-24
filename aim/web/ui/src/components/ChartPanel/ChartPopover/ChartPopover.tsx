@@ -59,8 +59,6 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
     open,
   ]);
 
-  console.log('ChartPopover -------', props);
-
   return (
     <Popover
       id={id}

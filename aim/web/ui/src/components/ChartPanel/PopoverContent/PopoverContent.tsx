@@ -35,8 +35,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   } = props;
   const { params = {}, groupConfig = {}, run } = tooltipContent;
 
-  console.log(tooltipContent);
-
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
       case ChartTypeEnum.LineChart:
@@ -101,19 +99,19 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         return (
           <div className='PopoverContent__box'>
             <div className='PopoverContent__value'>
-              Step: <strong>{tooltipContent.step}</strong>
-            </div>
-            <div className='PopoverContent__value'>
-              Index: <strong>{tooltipContent.index}</strong>
-            </div>
-            <div className='PopoverContent__value'>
-              Name: <strong>{tooltipContent.images_name}</strong>{' '}
+              <strong>{tooltipContent.images_name}</strong>
               <Text className='PopoverContent__contextValue'>
                 {contextToString(tooltipContent.context)}
               </Text>
             </div>
             <div className='PopoverContent__value'>
               Caption: <strong>{tooltipContent.caption}</strong>
+            </div>
+            <div className='PopoverContent__value'>
+              Step: <strong>{tooltipContent.step}</strong>
+              <Text className='PopoverContent__contextValue'>
+                Index: <strong>{tooltipContent.index}</strong>
+              </Text>
             </div>
           </div>
         );

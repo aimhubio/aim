@@ -16,7 +16,6 @@ const ImageBox = ({
   syncHoverState,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
-  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let timeoutID = setTimeout(() => addUriToList(blob_uri), batchCollectDelay);
@@ -34,14 +33,15 @@ const ImageBox = ({
   }
 
   function onClick(e: MouseEvent<HTMLDivElement>): void {
-    if (e?.currentTarget) {
-      e.stopPropagation();
-      const clientRect = e.currentTarget.getBoundingClientRect();
-      safeSyncHoverState({
-        activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-        focusedStateActive: true,
-      });
-    }
+    // TODO need to add focused image logic
+    // if (e?.currentTarget) {
+    //   e.stopPropagation();
+    //   const clientRect = e.currentTarget.getBoundingClientRect();
+    //   safeSyncHoverState({
+    //     activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
+    //     focusedStateActive: true,
+    //   });
+    // }
   }
 
   function onMouseEnter(e: MouseEvent<HTMLDivElement>): void {
@@ -62,7 +62,6 @@ const ImageBox = ({
   return (
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
-        ref={boxRef}
         style={style}
         className={
           focusedState?.active && focusedState.key === data.key ? 'active' : ''

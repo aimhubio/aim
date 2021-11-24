@@ -387,6 +387,21 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingItems: ['group'],
     model,
   });
+  if (configData.images.focusedState.key) {
+    configData = {
+      ...configData,
+      images: {
+        ...configData.images,
+        tooltip: {
+          ...configData.images.tooltip,
+          content: filterTooltipContent(
+            tooltipData[configData.images.focusedState.key],
+            configData?.images.tooltip.selectedParams,
+          ),
+        },
+      },
+    };
+  }
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -468,6 +483,23 @@ function updateModelData(
     groupingItems: ['group'],
     model,
   });
+
+  if (configData.images.focusedState.key) {
+    configData = {
+      ...configData,
+      images: {
+        ...configData.images,
+        tooltip: {
+          ...configData.images.tooltip,
+          content: filterTooltipContent(
+            tooltipData[configData.images.focusedState.key],
+            configData?.images.tooltip.selectedParams,
+          ),
+        },
+      },
+    };
+  }
+
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -492,22 +524,6 @@ function updateModelData(
 
   if (shouldURLUpdate) {
     updateURL(configData);
-  }
-
-  if (configData.images.focusedState.key) {
-    configData = {
-      ...configData,
-      images: {
-        ...configData.images,
-        tooltip: {
-          ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
-          ),
-        },
-      },
-    };
   }
 
   model.setState({
@@ -647,7 +663,6 @@ function onGroupingSelectChange({
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.grouping) {
-    debugger;
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
   }
@@ -824,14 +839,6 @@ function onActivePointChange(
     }
   }
   let configData = config;
-  console.log(
-    'content',
-    filterTooltipContent(
-      tooltipData[activePoint.key],
-      configData?.images.tooltip.selectedParams,
-    ),
-  );
-  debugger;
   if (configData?.images) {
     configData = {
       ...configData,

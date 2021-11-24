@@ -76,54 +76,28 @@ function ImagesPanel({
   const syncHoverState = React.useCallback(
     (args: any): void => {
       const { activePoint, focusedStateActive = false } = args;
-      // if (!activePointRef.current) {
-      setTimeout(() => {
-        activePointRef.current = activePoint;
-        debugger;
-        console.log('syncHoverState', focusedStateActive);
-        // on MouseEnter
-        if (activePoint !== null) {
-          if (onActivePointChange) {
-            onActivePointChange(activePoint, focusedStateActive);
-          }
-          if (activePoint.clientRect) {
-            setPopoverPosition({
-              top: activePoint.clientRect.top,
-              left: activePoint.clientRect.left + activePoint.clientRect.width,
-            });
-          } else {
-            setPopoverPosition(null);
-          }
+      activePointRef.current = activePoint;
+      // on MouseEnter
+      if (activePoint !== null) {
+        if (onActivePointChange) {
+          onActivePointChange(activePoint, focusedStateActive);
         }
-        // on MouseLeave
-        else {
+        if (activePoint.clientRect) {
+          setPopoverPosition({
+            top: activePoint.clientRect.top,
+            left: activePoint.clientRect.left + activePoint.clientRect.width,
+          });
+        } else {
           setPopoverPosition(null);
         }
-      }, 50);
-      // }
+      }
+      // on MouseLeave
+      else {
+        setPopoverPosition(null);
+      }
     },
     [onActivePointChange, setPopoverPosition],
   );
-
-  function onContainerScroll() {
-    debugger;
-    if (popoverPosition) {
-      if (activePointRef.current && containerRef.current) {
-        debugger;
-        setPopoverPosition({
-          top:
-            activePointRef.current.clientRect.top -
-            containerRef.current.scrollTop,
-          left:
-            activePointRef.current.clientRect.left +
-            activePointRef.current.clientRect.width -
-            containerRef.current.scrollLeft,
-        });
-      } else {
-        setPopoverPosition(null);
-      }
-    }
-  }
 
   const imagesSetKey = useMemo(
     () => Date.now(),
@@ -147,16 +121,6 @@ function ImagesPanel({
     };
   }, []);
 
-  useEffect(() => {
-    const debouncedScroll = _.debounce(onContainerScroll, 100);
-    const containerNode = containerRef.current;
-    containerNode?.addEventListener('scroll', debouncedScroll);
-    return () => {
-      containerNode?.removeEventListener('scroll', debouncedScroll);
-    };
-  }, [containerRef?.current]);
-
-  console.log('======----===', tooltip);
   return (
     <BusyLoaderWrapper
       isLoading={isLoading}
@@ -177,13 +141,14 @@ function ImagesPanel({
               <div
                 className='ImagesPanel'
                 ref={containerRef}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  syncHoverState({
-                    activePoint: activePointRef.current,
-                    focusedStateActive: false,
-                  });
-                }}
+                // TODO
+                // onClick={(e) => {
+                //   e.stopPropagation();
+                //   syncHoverState({
+                //     activePoint: activePointRef.current,
+                //     focusedStateActive: false,
+                //   });
+                // }}
               >
                 <div className='ImagesPanel__imagesSetContainer'>
                   <ImagesSet
