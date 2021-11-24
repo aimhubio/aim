@@ -812,17 +812,20 @@ function sortWithAllGroupFields(
       const firstObjectValue = _.get(a, field);
       const secondObjectValue = _.get(b, field);
       isEqualValue = firstObjectValue === secondObjectValue;
-      if (field === 'caption') {
+      //TODO  with Karen to avoid string type captions
+      if (secondObjectValue[0] === '#' && firstObjectValue[0] === '#') {
         return (
           +secondObjectValue.substring(1) - +firstObjectValue.substring(1) < 0
         );
       } else if (
         typeof firstObjectValue === 'string' ||
-        typeof secondObjectValue === 'string'
+        (typeof secondObjectValue === 'string' &&
+          _.isNaN(+firstObjectValue) &&
+          _.isNaN(+secondObjectValue))
       ) {
         return firstObjectValue.localeCompare(secondObjectValue);
       } else {
-        return secondObjectValue - firstObjectValue < 0;
+        return +secondObjectValue - +firstObjectValue < 0;
       }
     });
     return { isEqualValue, foundedItem };
@@ -1743,6 +1746,7 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
 
     const searchButtonDisabled: boolean =
       images.recordDensity === '0' || images.indexDensity === '0';
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled,
@@ -1767,6 +1771,7 @@ function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
     };
     const searchButtonDisabled =
       images.recordDensity === '0' || images.indexDensity === '0';
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled,
@@ -1789,6 +1794,7 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
     };
     const searchButtonDisabled =
       images.recordDensity === '0' || images.indexDensity === '0';
+    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled,
