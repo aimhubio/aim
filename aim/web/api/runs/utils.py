@@ -124,7 +124,9 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
         yield collect_run_streamable_data(encoded_tree)
 
 
-async def metric_search_result_streamer(traces: SequenceCollection, steps_num: int, x_axis: Optional[str]) -> bytes:
+async def metric_search_result_streamer(traces: SequenceCollection,
+                                        steps_num: int,
+                                        x_axis: Optional[str]) -> bytes:
     for run_trace_collection in traces.iter_runs():
         run = None
         traces_list = []
