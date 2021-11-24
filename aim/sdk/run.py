@@ -1,7 +1,8 @@
 import logging
 
-import datetime
 import os
+import datetime
+import json
 
 from collections import defaultdict
 from time import time
@@ -18,6 +19,7 @@ from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, MetricDescriptor
 from aim.storage.treeview import TreeView
+from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 
@@ -634,3 +636,53 @@ class Run(StructuredRunMixin):
                                          read_only=False,
                                          from_union=False).view(b'')
         self.meta_run_tree.finalize(index=index)
+
+    def dataframe(
+            self,
+            include_props: bool = True,
+            include_params: bool = True,
+    ) -> 'DataFrame':
+        """Get run properties and params as pandas DataFrame
+
+        Args:
+             include_props: (:obj:`int`, optional): If true, include run structured props
+             include_params: (:obj:`int`, optional): If true, include run parameters
+        """
+        data = {
+            'hash': self.hash,
+        }
+
+        if include_props:
+            # TODO [GA]: Auto collect props based on StructuredRunMixin:
+            #  - Exclude created_at, updated_at, finalized_at auto-populated fields
+            #  - Collect list of representations in case of ModelMappedCollection's
+            data['name'] = self.props.name
+            data['description'] = self.props.description
+            data['archived'] = self.props.archived
+            data['creation_time'] = self.props.creation_time
+            data['end_time'] = self.props.end_time
+            data['experiment'] = self.props.experiment.name
+            data['tags'] = json.dumps([t.name for t in self.props.tags])
+
+        if include_params:
+            # TODO [GA]:
+            #  - Move run params collection to utility function
+            #  - Remove code duplication from Metric.dataframe
+            for path, val in treeutils.unfold_tree(self[...],
+                                                   unfold_array=False,
+                                                   depth=3):
+                s = ''
+                for key in path:
+                    if isinstance(key, str):
+                        s += f'.{key}' if len(s) else f'{key}'
+                    else:
+                        s += f'[{key}]'
+
+                if isinstance(val, (tuple, list, dict)):
+                    val = json.dumps(val)
+                if s not in data.keys():
+                    data[s] = val
+
+        import pandas as pd
+        df = pd.DataFrame(data, index=[0])
+        return df
