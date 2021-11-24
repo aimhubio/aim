@@ -33,9 +33,7 @@ export default function getTooltipData<D, M extends State>({
       model,
     });
 
-    console.log('----', groupConfig, paramKeys);
     for (let itemData of collection.data as any) {
-      console.log(itemData);
       data[itemData.key] = {
         ...itemData,
         groupConfig,

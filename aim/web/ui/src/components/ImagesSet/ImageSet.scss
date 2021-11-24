@@ -47,6 +47,23 @@
         img {
           height: calc(100% - 0.625rem);
           width: calc(100% - 0.625rem);
+          margin-top: toRem(5px);
+          margin-left: toRem(5px);
+        }
+
+        span {
+          margin-top: toRem(5px);
+          margin-left: toRem(5px);
+        }
+
+        img:hover, span:hover {
+          box-shadow: 0px 0px 3px 3px rgb(0 0 0 / 15%);
+        }
+
+        .active {
+          img, span {
+            box-shadow: 0px 0px 0px 3px rgb(0 0 0 / 24%);
+          }
         }
       }
     }

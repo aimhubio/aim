@@ -57,10 +57,10 @@ import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
+import getTooltipData from 'utils/app/getTooltipData';
+import filterTooltipContent from 'utils/filterTooltipContent';
 
 import createModel from '../model';
-import getTooltipData from '../../../utils/app/getTooltipData';
-import filterTooltipContent from '../../../utils/filterTooltipContent';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
@@ -276,7 +276,18 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           queryIsEmpty: true,
           imagesData: {},
           tableData: [],
-          images: { calcRanges: true },
+          images: {
+            calcRanges: true,
+            tooltip: {
+              content: {},
+              display: true,
+              selectedParams: [],
+            },
+            focusedState: {
+              active: false,
+              key: null,
+            },
+          },
           config: {
             ...configData,
             table: {
@@ -483,6 +494,22 @@ function updateModelData(
     updateURL(configData);
   }
 
+  if (configData.images.focusedState.key) {
+    configData = {
+      ...configData,
+      images: {
+        ...configData.images,
+        tooltip: {
+          ...configData.images.tooltip,
+          content: filterTooltipContent(
+            tooltipData[configData.images.focusedState.key],
+            configData?.images.tooltip.selectedParams,
+          ),
+        },
+      },
+    };
+  }
+
   model.setState({
     config: configData,
     data: model.getState()?.data,
@@ -620,6 +647,7 @@ function onGroupingSelectChange({
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.grouping) {
+    debugger;
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
   }
@@ -778,6 +806,63 @@ function getDataAsImageSet(
   }
 }
 
+function onActivePointChange(
+  activePoint: any,
+  focusedStateActive: boolean = false,
+): void {
+  const { refs, config } = model.getState() as any;
+  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+    const tableRef: any = refs?.tableRef;
+    if (tableRef) {
+      tableRef.current?.setHoveredRow?.(activePoint.seqKey);
+      tableRef.current?.setActiveRow?.(
+        focusedStateActive ? activePoint.seqKey : null,
+      );
+      if (focusedStateActive) {
+        tableRef.current?.scrollToRow?.(activePoint.seqKey);
+      }
+    }
+  }
+  let configData = config;
+  console.log(
+    'content',
+    filterTooltipContent(
+      tooltipData[activePoint.key],
+      configData?.images.tooltip.selectedParams,
+    ),
+  );
+  debugger;
+  if (configData?.images) {
+    configData = {
+      ...configData,
+      images: {
+        ...configData.images,
+        focusedState: {
+          active: focusedStateActive,
+          key: activePoint.key,
+        },
+        tooltip: {
+          ...configData.images.tooltip,
+          content: filterTooltipContent(
+            tooltipData[activePoint.key],
+            configData?.images.tooltip.selectedParams,
+          ),
+        },
+      },
+    };
+
+    if (
+      config.images.focusedState.active !== focusedStateActive ||
+      (config.images.focusedState.active &&
+        activePoint.key !== config.images.focusedState.key)
+    ) {
+      updateURL(configData);
+    }
+  }
+
+  model.setState({ config: configData });
+}
+
 function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
   let configData = model.getState()?.config;
   if (configData?.images) {
@@ -875,7 +960,7 @@ function getDataAsTableRows(
           rowMeta: {
             color: metricsCollection.color ?? metric.color,
           },
-          key: metric.key,
+          key: metric.seqKey,
           runHash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
@@ -1233,9 +1318,7 @@ function onRowVisibilityChange(metricKey: string) {
       ...configData,
       table,
     };
-    model.setState({
-      config,
-    });
+    model.setState({ config });
     setItem('imagesExploreTable', encode(table));
     updateModelData(config);
   }
@@ -1661,6 +1744,7 @@ const imagesExploreAppModel = {
   onRecordDensityChange,
   getImagesBlobsData,
   onChangeTooltip,
+  onActivePointChange,
 };
 
 export default imagesExploreAppModel;

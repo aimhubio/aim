@@ -1,5 +1,12 @@
 import React from 'react';
 
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import {
+  IFocusedState,
+  ITooltipContent,
+} from 'types/services/models/metrics/metricsAppModel';
+
 export interface IImagesPanelProps {
   imagesData: any;
   imagesBlobs: { [key: string]: value };
@@ -18,5 +25,9 @@ export interface IImagesPanelProps {
   panelResizing: boolean;
   imageWrapperOffsetHeight: number;
   imageWrapperOffsetWidth: number;
-  controls: React.ReactNode;
+  controls?: React.ReactNode;
+  resizeMode: ResizeModeEnum;
+  tooltip: ITooltipContent;
+  focusedState: IFocusedState;
+  onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
 }

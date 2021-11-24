@@ -50,7 +50,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               dataSelector,
             );
           });
-        } else if (props.chartType === ChartTypeEnum.HighPlot) {
+        } else {
           chartRefs.forEach((chartRef, index) => {
             if (index === activePoint.chartIndex) {
               return;

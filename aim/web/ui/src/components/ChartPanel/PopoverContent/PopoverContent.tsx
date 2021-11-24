@@ -33,7 +33,9 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     chartType,
     alignmentConfig,
   } = props;
-  const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
+  const { params = {}, groupConfig = {}, run } = tooltipContent;
+
+  console.log(tooltipContent);
 
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -95,6 +97,27 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             </div>
           </div>
         );
+      case ChartTypeEnum.ImageSet:
+        return (
+          <div className='PopoverContent__box'>
+            <div className='PopoverContent__value'>
+              Step: <strong>{tooltipContent.step}</strong>
+            </div>
+            <div className='PopoverContent__value'>
+              Index: <strong>{tooltipContent.index}</strong>
+            </div>
+            <div className='PopoverContent__value'>
+              Name: <strong>{tooltipContent.images_name}</strong>{' '}
+              <Text className='PopoverContent__contextValue'>
+                {contextToString(tooltipContent.context)}
+              </Text>
+            </div>
+            <div className='PopoverContent__value'>
+              Caption: <strong>{tooltipContent.caption}</strong>
+            </div>
+          </div>
+        );
+        break;
       default:
         return null;
     }
@@ -152,13 +175,13 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             </div>
           </div>
         )}
-        {focusedState?.active && runHash ? (
+        {focusedState?.active && run.hash ? (
           <>
             <div>
               <Divider />
               <div className='PopoverContent__box'>
                 <Link
-                  to={PathEnum.Run_Detail.replace(':runHash', runHash)}
+                  to={PathEnum.Run_Detail.replace(':runHash', run.hash)}
                   component={RouteLink}
                   className='PopoverContent__runDetails'
                   underline='none'
@@ -171,7 +194,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             <div>
               <Divider />
               <div className='PopoverContent__box'>
-                <AttachedTagsList runHash={runHash} />
+                <AttachedTagsList runHash={run.hash} />
               </div>
             </div>
           </>

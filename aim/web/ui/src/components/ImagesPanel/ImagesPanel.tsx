@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { isEmpty } from 'lodash-es';
+import _, { isEmpty, isEqual } from 'lodash-es';
+
+import { PopoverPosition } from '@material-ui/core';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -7,8 +9,12 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
+import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 
 import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import { ChartTypeEnum } from 'utils/d3';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
 
@@ -33,9 +39,23 @@ function ImagesPanel({
   imageWrapperOffsetWidth,
   isRangePanelShow,
   controls,
+  resizeMode,
+  tooltip,
+  focusedState,
+  onActivePointChange,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  let timeoutID = useRef(0);
+  const [popoverPosition, setPopoverPosition] =
+    React.useState<PopoverPosition | null>(null);
   let blobUriArray: string[] = [];
+  let timeoutID = useRef(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const activePointRef = React.useRef<any>(null);
+
+  function addUriToList(blobUrl: string) {
+    if (!imagesBlobs?.[blobUrl]) {
+      blobUriArray.push(blobUrl);
+    }
+  }
 
   function onScroll(e?: any) {
     if (timeoutID.current) {
@@ -48,6 +68,58 @@ function ImagesPanel({
         });
       }
     }, 1000);
+  }
+
+  const syncHoverState = React.useCallback(
+    (args: any): void => {
+      const { activePoint, focusedStateActive = false } = args;
+      // if (!activePointRef.current) {
+      setTimeout(() => {
+        activePointRef.current = activePoint;
+        debugger;
+        console.log('syncHoverState', focusedStateActive);
+        // on MouseEnter
+        if (activePoint !== null) {
+          if (onActivePointChange) {
+            onActivePointChange(activePoint, focusedStateActive);
+          }
+          if (activePoint.clientRect) {
+            setPopoverPosition({
+              top: activePoint.clientRect.top,
+              left: activePoint.clientRect.left + activePoint.clientRect.width,
+            });
+          } else {
+            setPopoverPosition(null);
+          }
+        }
+        // on MouseLeave
+        else {
+          setPopoverPosition(null);
+        }
+      }, 50);
+      // }
+    },
+    [onActivePointChange, setPopoverPosition],
+  );
+
+  function onContainerScroll() {
+    debugger;
+    if (popoverPosition) {
+      if (activePointRef.current && containerRef.current) {
+        debugger;
+        setPopoverPosition({
+          top:
+            activePointRef.current.clientRect.top -
+            containerRef.current.scrollTop,
+          left:
+            activePointRef.current.clientRect.left +
+            activePointRef.current.clientRect.width -
+            containerRef.current.scrollLeft,
+        });
+      } else {
+        setPopoverPosition(null);
+      }
+    }
   }
 
   const imagesSetKey = useMemo(
@@ -72,12 +144,16 @@ function ImagesPanel({
     };
   }, []);
 
-  function addUriToList(blobUrl: string) {
-    if (!imagesBlobs?.[blobUrl]) {
-      blobUriArray.push(blobUrl);
-    }
-  }
+  useEffect(() => {
+    const debouncedScroll = _.debounce(onContainerScroll, 100);
+    const containerNode = containerRef.current;
+    containerNode?.addEventListener('scroll', debouncedScroll);
+    return () => {
+      containerNode?.removeEventListener('scroll', debouncedScroll);
+    };
+  }, [containerRef?.current]);
 
+  console.log('======----===', tooltip);
   return (
     <BusyLoaderWrapper
       isLoading={isLoading}
@@ -95,7 +171,17 @@ function ImagesPanel({
         <>
           <div className='ImagesPanel__Container'>
             {!isEmpty(imagesData) ? (
-              <div className='ImagesPanel'>
+              <div
+                className='ImagesPanel'
+                ref={containerRef}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  syncHoverState({
+                    activePoint: activePointRef.current,
+                    focusedStateActive: false,
+                  });
+                }}
+              >
                 <div className='ImagesPanel__imagesSetContainer'>
                   <ImagesSet
                     data={imagesData}
@@ -106,8 +192,22 @@ function ImagesPanel({
                     imageSetWrapperHeight={imageWrapperOffsetHeight - 40}
                     imageSetWrapperWidth={imageWrapperOffsetWidth}
                     imageHeight={imageFixedHeight}
+                    focusedState={focusedState}
+                    syncHoverState={syncHoverState}
                   />
                 </div>
+                <ChartPopover
+                  containerRef={containerRef}
+                  popoverPosition={popoverPosition}
+                  open={
+                    resizeMode !== ResizeModeEnum.MaxHeight &&
+                    !panelResizing &&
+                    (tooltip?.display || focusedState?.active)
+                  }
+                  chartType={ChartTypeEnum.ImageSet}
+                  tooltipContent={tooltip?.content}
+                  focusedState={focusedState}
+                />
                 <div className='ImagesPanel__controls'>{controls}</div>
               </div>
             ) : (
@@ -136,4 +236,4 @@ function ImagesPanel({
   );
 }
 
-export default ImagesPanel;
+export default React.memo(ImagesPanel);

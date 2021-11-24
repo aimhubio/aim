@@ -54,10 +54,12 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
     props.popoverPosition,
     props.containerRef?.current,
     props.tooltipContent,
-    props.focusedState.key,
+    props.focusedState?.key,
     popoverContentRef?.current,
     open,
   ]);
+
+  console.log('ChartPopover -------', props);
 
   return (
     <Popover

@@ -10,6 +10,8 @@ function ImagesList({
   imageSetWrapperWidth,
   addUriToList,
   imageHeight,
+  focusedState,
+  syncHoverState,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
@@ -31,6 +33,8 @@ function ImagesList({
           imagesBlobs={imagesBlobs}
           addUriToList={addUriToList}
           imageHeight={imageHeight}
+          focusedState={focusedState}
+          syncHoverState={syncHoverState}
         />
       )}
     </List>

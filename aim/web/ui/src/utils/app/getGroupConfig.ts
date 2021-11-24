@@ -20,10 +20,7 @@ export default function getGroupConfig<D, M extends State>({
   groupingItems: GroupNameType[];
   model: IModel<M>;
 }) {
-  console.log('groupingSelectOptions', groupingSelectOptions);
   const configData = model.getState()?.config;
-  debugger;
-  console.log('configData', configData);
   let groupConfig: { [key: string]: {} } = {};
 
   for (let groupItemKey of groupingItems) {

@@ -205,9 +205,9 @@ export interface IAggregationConfig {
 export interface IFocusedState {
   active: boolean;
   key: string | null;
-  xValue: number | string | null;
-  yValue: number | null;
-  chartIndex: number | null;
+  xValue?: number | string | null;
+  yValue?: number | null;
+  chartIndex?: number | null;
 }
 
 export interface IMetricTableRowData {

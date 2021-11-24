@@ -24,6 +24,7 @@ import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 import {
+  IFocusedState,
   IGroupingSelectOption,
   IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -192,6 +193,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               isLoading={imagesExploreData?.requestIsPending}
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               panelResizing={panelResizing}
+              resizeMode={imagesExploreData?.config?.table.resizeMode}
               imageWrapperOffsetHeight={offsetHeight || 0}
               imageWrapperOffsetWidth={offsetWidth || 0}
               isRangePanelShow={
@@ -200,6 +202,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 (!!getStateFromUrl('select')?.advancedQuery &&
                   !!getStateFromUrl('select')?.advancedMode)
               }
+              focusedState={
+                imagesExploreData?.config?.images?.focusedState as IFocusedState
+              }
+              tooltip={
+                imagesExploreData?.config?.images?.tooltip as IPanelTooltip
+              }
+              onActivePointChange={imagesExploreAppModel.onActivePointChange}
               controls={
                 <Controls
                   selectOptions={
