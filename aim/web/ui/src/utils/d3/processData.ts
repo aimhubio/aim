@@ -9,10 +9,26 @@ import { removeOutliers } from 'utils/removeOutliers';
 function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
   let xValues: number[] = [];
   let yValues: number[] = [];
+  let yMinData: number[][] = [];
+  let yMaxData: number[][] = [];
 
   const processedData = data.map((line) => {
     xValues = xValues.concat(line.data.xValues);
     yValues = yValues.concat(line.data.yValues);
+    if (ignoreOutliers) {
+      line.data.yValues.forEach((val, idx) => {
+        if (yMinData.length > idx) {
+          yMinData[idx].push(val);
+        } else {
+          yMinData.push([val]);
+        }
+        if (yMaxData.length > idx) {
+          yMaxData[idx].push(val);
+        } else {
+          yMaxData.push([val]);
+        }
+      });
+    }
 
     return Object.assign(
       {
@@ -32,11 +48,26 @@ function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
   xValues = _.uniq(xValues);
   yValues = _.uniq(yValues);
 
+  let yMin;
+  let yMax;
+
   if (ignoreOutliers) {
-    yValues = removeOutliers(yValues, 4);
+    let normalMinData = removeOutliers(
+      yMinData.map((e) => Math.min(...e)),
+      4,
+    );
+    let normalMaxData = removeOutliers(
+      yMaxData.map((e) => Math.max(...e)),
+      4,
+    );
+    yMin = Math.min(...normalMinData);
+    yMax = Math.max(...normalMaxData);
+  } else {
+    let minMax = minMaxOfArray(yValues);
+    yMin = minMax[0];
+    yMax = minMax[1];
   }
 
-  let [yMin, yMax] = minMaxOfArray(yValues);
   // ADD margins for [yMin, yMax]
   if (yMax === yMin) {
     yMax += 1;
