@@ -28,15 +28,26 @@ class SequenceCollection:
         only_last: bool = False,
         include_run=True,
         include_name=True,
-        include_context=True
+        include_context=True,
+        include_props=True,
+        include_params=True,
     ) -> 'DataFrame':
-        dfs = [
-            metric.dataframe(include_run=include_run,
-                             include_name=include_name,
-                             include_context=include_context,
-                             only_last=only_last)
-            for metric in self
-        ]
+        # TODO [GA]: Separate runs and sequences dataframes collection
+        dfs = []
+        if self._item == 'run':
+            dfs = [
+                run.run.dataframe(include_props=include_props,
+                                  include_params=include_params)
+                for run in self.iter_runs()
+            ]
+        elif self._item == 'sequence':
+            dfs = [
+                metric.dataframe(include_run=include_run,
+                                 include_name=include_name,
+                                 include_context=include_context,
+                                 only_last=only_last)
+                for metric in self
+            ]
         if not dfs:
             return None
         import pandas as pd
@@ -85,6 +96,7 @@ class SingleRunSequenceCollection(SequenceCollection):
     ):
         self.run: 'Run' = run
         self.seq_cls = seq_cls
+        self._item = 'sequence'
         self.query = RestrictedPythonQuery(query)
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
@@ -131,6 +143,7 @@ class QuerySequenceCollection(SequenceCollection):
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
+        self._item = 'sequence'
         self.query = query
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
@@ -169,6 +182,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
         self.query = query
+        self._item = 'run'
         self.paginated = paginated
         self.offset = offset
         self.query = RestrictedPythonQuery(query)
