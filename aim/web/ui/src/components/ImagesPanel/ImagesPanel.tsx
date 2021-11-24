@@ -50,14 +50,18 @@ function ImagesPanel({
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [popoverPosition, setPopoverPosition] =
     React.useState<PopoverPosition | null>(null);
-  let blobUriArray: string[] = [];
+  let blobUriArray = useRef<string[]>([]);
   let timeoutID = useRef(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<any>(null);
+  const collectedURIs = React.useRef<{ [key: string]: boolean }>({});
 
   function addUriToList(blobUrl: string) {
     if (!imagesBlobs?.[blobUrl]) {
-      blobUriArray.push(blobUrl);
+      if (!collectedURIs.current[blobUrl]) {
+        collectedURIs.current[blobUrl] = true;
+        blobUriArray.current.push(blobUrl);
+      }
     }
   }
 
@@ -66,9 +70,9 @@ function ImagesPanel({
       window.clearTimeout(timeoutID.current);
     }
     timeoutID.current = window.setTimeout(() => {
-      if (!isEmpty(blobUriArray)) {
-        getImagesBlobsData(blobUriArray).then(() => {
-          blobUriArray = [];
+      if (!isEmpty(blobUriArray.current)) {
+        getImagesBlobsData(blobUriArray.current).then(() => {
+          blobUriArray.current = [];
         });
       }
     }, batchSendDelay);
@@ -114,7 +118,7 @@ function ImagesPanel({
   useEffect(() => {
     onScroll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blobUriArray]);
+  }, [blobUriArray.current]);
 
   useEffect(() => {
     return () => {

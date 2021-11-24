@@ -6,6 +6,7 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import { blobsUpdateThrottleDelay } from 'config/imagesConfigs/imagesConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -786,18 +787,27 @@ async function getImagesMetricsData(
 }
 
 async function getImagesBlobsData(uris: string[]) {
-  const imagesBlobs: { [key: string]: string } =
-    model.getState()?.imagesBlobs || {};
   const stream = await imagesExploreService.getImagesByURIs(uris).call();
   let gen = adjustable_reader(stream);
   let buffer_pairs = decode_buffer_pairs(gen);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
+  const throttledBlobsUpdate = _.throttle(function () {
+    model.setState({
+      imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) },
+    });
+  }, blobsUpdateThrottleDelay);
+
   for await (let [keys, val] of objects) {
+    const imagesBlobs: { [key: string]: string } =
+      model.getState()?.imagesBlobs || {};
     imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
-    model.setState({ imagesBlobs: { ...imagesBlobs } });
+
+    throttledBlobsUpdate();
   }
+
+  model.setState({ imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) } });
 }
 
 function sortWithAllGroupFields(

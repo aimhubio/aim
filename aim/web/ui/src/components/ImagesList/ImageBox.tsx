@@ -18,7 +18,9 @@ const ImageBox = ({
   const { format, blob_uri } = data;
 
   useEffect(() => {
-    let timeoutID = setTimeout(() => addUriToList(blob_uri), batchCollectDelay);
+    let timeoutID = setTimeout(() => {
+      addUriToList(blob_uri);
+    }, batchCollectDelay);
 
     return () => {
       clearTimeout(timeoutID);
