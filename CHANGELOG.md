@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Apply default ordering on images set (VkoHov)
+- Ability to export run props as pandas dataframe (gorarakelyan)
 - Improve Images Explorer rendering performance through better images list virtualization (roubkar)
 
 ## 3.1.0 Nov 20 2021
