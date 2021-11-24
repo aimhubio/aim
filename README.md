@@ -223,7 +223,7 @@ Track intermediate images and search, compare them on the Images Explorer.
 
 **Features:**
 - Easily query any image
-- Group by images by run parameters
+- Group images by run parameters
 - Group images by step
 
 <kbd>
