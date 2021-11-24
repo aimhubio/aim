@@ -20,7 +20,8 @@ from aim.web.utils import ShellCommandException
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
-def up(dev, host, port, repo, tf_logs):
+@click.option('--force_init', is_flag=True, default=False)
+def up(dev, host, port, repo, tf_logs, force_init):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
@@ -29,7 +30,11 @@ def up(dev, host, port, repo, tf_logs):
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status == RepoStatus.MISSING:
-        init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
+        init_repo = None
+        if not force_init:
+            init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
+        else:
+            init_repo = repo_path
         if not init_repo:
             click.echo('To initialize repo please run the following command:')
             click.secho('aim init', fg='yellow')
@@ -86,7 +91,7 @@ def up(dev, host, port, repo, tf_logs):
         click.style('Running Aim UI on repo `{}`'.format(repo_inst),
                     fg='yellow'))
 
-    click.echo('Open http://{}:{}'.format(host, port))
+    click.echo('Open http://{}:{}'.format(host, port), err=True)
     click.echo('Press Ctrl+C to exit')
 
     try:
