@@ -21,6 +21,7 @@
   .ImagesPanel {
     display: flex;
     flex: 1;
+    height: calc(100% - 2.75rem);
     &__imagesSetContainer {
       overflow-x: auto;
       padding-left: 1.25rem;

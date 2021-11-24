@@ -9,6 +9,7 @@ import {
 
 export interface IImagesPanelProps {
   imagesData: any;
+  orderedMap: { [key: string]: any };
   imagesBlobs: { [key: string]: value };
   recordSlice: number[];
   indexSlice: number[];

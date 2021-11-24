@@ -41,6 +41,7 @@ function ImagesPanel({
   imageWrapperOffsetHeight,
   imageWrapperOffsetWidth,
   isRangePanelShow,
+  orderedMap,
   controls,
   resizeMode,
   tooltip,
@@ -167,6 +168,7 @@ function ImagesPanel({
                     imageHeight={imageFixedHeight}
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
+                    orderedMap={orderedMap}
                   />
                 </div>
                 <ChartPopover

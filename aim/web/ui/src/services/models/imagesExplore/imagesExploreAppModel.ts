@@ -322,12 +322,13 @@ function processData(data: any[]): {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: IImageData[], stepIndex: number) => {
         stepData.forEach((image: IImageData) => {
-          const metricKey = encode({
+          const imageKey = encode({
             name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
             index: image.index,
             step: trace.iters[stepIndex],
+            caption: image.caption,
           });
           const seqKey = encode({
             name: trace.name,
@@ -340,7 +341,7 @@ function processData(data: any[]): {
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
-            key: metricKey,
+            key: imageKey,
             seqKey: seqKey,
           });
         });
@@ -380,6 +381,11 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
+  const { imageSetData, orderedMap } = getDataAsImageSet(
+    data,
+    groupingSelectOptions,
+  );
+
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: params,
@@ -448,7 +454,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
-    imagesData: getDataAsImageSet(data, groupingSelectOptions),
+    imagesData: imageSetData,
+    orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
       params,
@@ -476,6 +483,10 @@ function updateModelData(
       contexts,
     }),
   ];
+  const { imageSetData, orderedMap } = getDataAsImageSet(
+    data,
+    groupingSelectOptions,
+  );
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: params,
@@ -529,7 +540,8 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: getDataAsImageSet(data, groupingSelectOptions),
+    imagesData: imageSetData,
+    orderedMap,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
@@ -788,6 +800,53 @@ async function getImagesBlobsData(uris: string[]) {
   }
 }
 
+function sortWithAllGroupFields(
+  a: IImageData,
+  b: IImageData,
+  groupFields: string[],
+  groupingSelectOptions: IGroupingSelectOption[],
+) {
+  const appropriationChecker = (list: any[]) => {
+    let isEqualValue = true;
+    const foundedItem = list.find((field) => {
+      const firstObjectValue = _.get(a, field);
+      const secondObjectValue = _.get(b, field);
+      isEqualValue = firstObjectValue === secondObjectValue;
+      if (field === 'caption') {
+        return (
+          +secondObjectValue.substring(1) - +firstObjectValue.substring(1) < 0
+        );
+      } else if (
+        typeof firstObjectValue === 'string' ||
+        typeof secondObjectValue === 'string'
+      ) {
+        return firstObjectValue.localeCompare(secondObjectValue);
+      } else {
+        return secondObjectValue - firstObjectValue < 0;
+      }
+    });
+    return { isEqualValue, foundedItem };
+  };
+  const hasToSwitchPlace = appropriationChecker(groupFields.concat('caption'));
+  const sortWithTheOtherGroupFields = () =>
+    appropriationChecker(
+      groupingSelectOptions
+        .map((option: IGroupingSelectOption) => option.value)
+        .filter((field) => !groupFields.includes(field)),
+    );
+  if (hasToSwitchPlace.foundedItem) {
+    return 1;
+  } else if (!hasToSwitchPlace.foundedItem && !hasToSwitchPlace.isEqualValue) {
+    return -1;
+  } else {
+    if (sortWithTheOtherGroupFields().foundedItem) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+}
+
 function getDataAsImageSet(
   data: any[],
   groupingSelectOptions: IGroupingSelectOption[],
@@ -804,18 +863,46 @@ function getDataAsImageSet(
           )
           .map((option) => option.value)
       : group;
+    const imagesDataForOrdering = {};
     data.forEach((group: any) => {
-      const path = groupFields?.reduce((acc: string[], field: string) => {
-        acc.push(
-          `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
-            _.get(group.data[0], field),
-          )}`,
-        );
-        return acc;
-      }, []);
-      _.set(imageSetData, path, group.data);
+      const path = groupFields?.reduce(
+        (acc: string[], field: string, index: number) => {
+          const value = _.get(group.data[0], field);
+          _.set(
+            imagesDataForOrdering,
+            acc.concat(['ordering']),
+            new Set([
+              ...(_.get(imagesDataForOrdering, acc.concat(['ordering'])) || []),
+              value,
+            ]),
+          );
+          _.set(
+            imagesDataForOrdering,
+            acc.concat(['key']),
+            getValueByField(groupingSelectOptions, field),
+          );
+          acc.push(
+            `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
+              value,
+            )}`,
+          );
+          return acc;
+        },
+        [],
+      );
+      _.set(
+        imageSetData,
+        path,
+        group.data.sort((a: IImageData, b: IImageData) =>
+          sortWithAllGroupFields(a, b, groupFields, groupingSelectOptions),
+        ),
+      );
     });
-    return isEmpty(imageSetData) ? data[0].data : imageSetData;
+
+    return {
+      imageSetData: isEmpty(imageSetData) ? data[0].data : imageSetData,
+      orderedMap: imagesDataForOrdering,
+    };
   } else {
     return {};
   }

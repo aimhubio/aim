@@ -2,7 +2,11 @@
 
 ## Unreleased
 
+<<<<<<< HEAD
+- Apply default ordering on images set (VkoHov)
+=======
 - Ability to show image data in a tooltip on hover (KaroMourad)
+>>>>>>> 35c7929f17fceb0d9a18cd26c0ac42f0bc28c89b
 - Ability to export run props as pandas dataframe (gorarakelyan)
 - Improve Images Explorer rendering performance through better images list virtualization (roubkar)
 
