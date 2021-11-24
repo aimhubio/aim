@@ -51,6 +51,5 @@ def pytest_sessionfinish(session, exitstatus):
     if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
         for path in TEST_REPO_PATHS.values():
             _cleanup_test_repo(path)
-        del os.environ['AIM_LOCAL_PERFORMANCE_TEST']
     if os.environ.get('__AIM_REPO_NAME__'):
         del os.environ['__AIM_REPO_NAME__']
