@@ -2,6 +2,7 @@ import React from 'react';
 
 export interface IImagesPanelProps {
   imagesData: any;
+  orderingData: { [key: string]: any };
   imagesBlobs: { [key: string]: value };
   recordSlice: number[];
   indexSlice: number[];
