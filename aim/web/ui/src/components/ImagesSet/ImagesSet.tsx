@@ -85,6 +85,7 @@ const ImagesSet = ({
         imageSetWrapperWidth,
         index,
         imagesSetKey,
+        imageHeight,
       }}
     >
       {ImagesGroupedList}
