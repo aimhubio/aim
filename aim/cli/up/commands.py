@@ -66,7 +66,7 @@ def up(dev, host, port, workers, repo, tf_logs):
     if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
         os.environ[AIM_UI_TELEMETRY_KEY] = '0'
     else:
-        # os.environ[AIM_UI_TELEMETRY_KEY] = '1'
+        os.environ[AIM_UI_TELEMETRY_KEY] = '1'
         alert_msg = 'Aim UI collects anonymous usage analytics.'
         opt_out_msg = 'Read how to opt-out here: '
         opt_out_url = 'https://github.com/aimhubio/aim#anonymized-telemetry'
