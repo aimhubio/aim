@@ -3,6 +3,8 @@ import { isEqual } from 'lodash-es';
 
 import { Skeleton } from '@material-ui/lab';
 
+import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+
 const ImageBox = ({
   index,
   style,
@@ -17,7 +19,7 @@ const ImageBox = ({
   const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let timeoutID = setTimeout(() => addUriToList(blob_uri), 900);
+    let timeoutID = setTimeout(() => addUriToList(blob_uri), batchCollectDelay);
 
     return () => {
       clearTimeout(timeoutID);

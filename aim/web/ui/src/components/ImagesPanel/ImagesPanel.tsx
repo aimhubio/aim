@@ -11,8 +11,11 @@ import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import {
+  batchSendDelay,
+  imageFixedHeight,
+} from 'config/imagesConfigs/imagesConfig';
 
 import { ChartTypeEnum } from 'utils/d3';
 
@@ -67,7 +70,7 @@ function ImagesPanel({
           blobUriArray = [];
         });
       }
-    }, 1000);
+    }, batchSendDelay);
   }
 
   const syncHoverState = React.useCallback(
