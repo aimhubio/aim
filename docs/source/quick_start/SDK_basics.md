@@ -56,6 +56,26 @@ my_run['hparams'] = {
 ```
 Supported types of [dictionaries](https://github.com/aimhubio/aim/blob/main/aim/storage/types.py#L19).
 
+**Metrics**
+
+Use `track` method to log ML metrics like 'loss', 'accuracy' or 'bleu'.
+```python
+# Track metrics
+for step in range(1000):
+    value = step * 10
+    my_run.track(
+        value,       # Current value to track
+        name='loss', # The metric name
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Metric context (optional)
+            'subset': 'train',
+        },
+    )
+
+```
+`Run.track` method full [spec](../refs/sdk.html#aim.sdk.run.Run.track).
+
 ### Track images with Run
 
 Track images to explore model inputs, outputs, confusion matrices, weights, etc:
