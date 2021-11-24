@@ -64,10 +64,10 @@ def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) ->
     return IndexRange(rec_start, rec_stop + 1), IndexRange(idx_start, idx_stop)
 
 
-def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
+def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slice: slice) -> dict:
     steps = []
     values = []
-    steps_vals = trace.values.items_slice(_slice=rec_slice)
+    steps_vals = trace.values.items_in_range(rec_slice.start, rec_slice.stop, rec_density)
     for step, val in steps_vals:
         steps.append(step)
         if isinstance(val, list):
@@ -82,8 +82,8 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
         'context': trace.context.to_dict(),
         'values': values,
         'iters': steps,
-        'epochs': list(trace.epochs.values_slice(_slice=rec_slice)),
-        'timestamps': list(trace.timestamps.values_slice(_slice=rec_slice)),
+        'epochs': list(trace.epochs.values_in_range(rec_slice.start, rec_slice.stop, rec_density)),
+        'timestamps': list(trace.timestamps.values_in_range(rec_slice.start, rec_slice.stop, rec_density)),
     }
 
 
@@ -136,13 +136,13 @@ async def image_search_result_streamer(traces: SequenceCollection,
         for run_info in run_traces.values():
             traces_list = []
             for trace in run_info['traces']:
-                traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
+                traces_list.append(get_trace_info(trace, rec_slice, rec_density, idx_slice))
             yield _pack_run_data(run_info['run'], traces_list)
     else:
         for run_trace_collection in traces.iter_runs():
             traces_list = []
             for trace in run_trace_collection.iter():
-                traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
+                traces_list.append(get_trace_info(trace, rec_slice, rec_density, idx_slice))
             if traces_list:
                 yield _pack_run_data(run_trace_collection.run, traces_list)
 
@@ -170,7 +170,7 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
         rec_slice = slice(trace.first_step(), trace.last_step() + 1, rec_step)
         idx_slice = slice(0, rec_length, idx_step)
 
-        steps_vals = trace.values.items_slice(_slice=rec_slice)
+        steps_vals = trace.values.items_in_range(rec_slice.start, rec_slice.stop, rec_num)
         steps = []
         values = []
         for step, val in steps_vals:
