@@ -7,7 +7,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IProcessedData } from 'types/utils/d3/processData';
 import {
   IAggregationConfig,
-  IChartTooltip,
+  IPanelTooltip,
   IFocusedState,
   IAlignmentConfig,
   IChartZoom,
@@ -22,7 +22,7 @@ export interface IChartPanelProps {
   data: ILine[][] | any;
   panelResizing?: boolean;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;

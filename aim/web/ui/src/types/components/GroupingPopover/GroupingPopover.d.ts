@@ -9,7 +9,7 @@ import {
 
 export interface IGroupingPopoverProps {
   groupName: GroupNameType;
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: any;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode> | null;
   groupingSelectOptions: IGroupingSelectOption[];
   onSelect: IMetricProps['onGroupingSelectChange'];

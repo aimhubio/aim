@@ -1,7 +1,7 @@
 import { CurveEnum } from 'utils/d3';
 
 import {
-  IChartTooltip,
+  IPanelTooltip,
   IGroupingSelectOption,
 } from '/types/services/models/metrics/metricsAppModel';
 
@@ -9,8 +9,8 @@ export interface IControlProps {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   selectOptions: IGroupingSelectOption[];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   onColorIndicatorChange: () => void;
   onCurveInterpolationChange: () => void;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
 }
