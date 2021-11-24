@@ -13,7 +13,7 @@ aim_run = Run()
 device = torch.device('cpu')
 
 # Hyper parameters
-num_epochs = 1
+num_epochs = 5
 num_classes = 10
 batch_size = 50
 learning_rate = 0.01
