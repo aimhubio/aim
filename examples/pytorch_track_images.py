@@ -1,5 +1,5 @@
 from aim import Run
-from aim.sdk.objects.image import Image as AimImage
+from aim.sdk.objects.image import convert_to_aim_image_list
 
 import torch
 import torch.nn as nn
@@ -84,8 +84,7 @@ for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
         images = images.to(device)
         labels = labels.to(device)
-        aim_images = [AimImage(tensor_to_pil(img), str(lbl.item())) for lbl, img in zip(labels, images)]
-
+        aim_images = convert_to_aim_image_list(images, labels)
 
         # Forward pass
         outputs = model(images)
