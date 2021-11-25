@@ -69,6 +69,7 @@ class Distribution(CustomObject):
             :getter: Returns distribution ranges as `np.array`.
             :type: np.ndarray
         """
+        assert (len(self.range) == 2)
         return np.linspace(self.range[0], self.range[1], num=self.bin_count)
 
     def json(self):

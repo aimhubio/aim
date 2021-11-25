@@ -251,8 +251,7 @@ def requested_distribution_traces_streamer(run: Run,
 
         record_range_missing = rec_range.start is None or rec_range.stop is None
         if record_range_missing:
-            rec_range.start = trace.first_step()
-            rec_range.stop = trace.last_step()
+            rec_range = IndexRange(trace.first_step(), trace.last_step())
         steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
 
         steps = []
