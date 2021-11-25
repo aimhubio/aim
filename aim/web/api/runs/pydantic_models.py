@@ -21,7 +21,7 @@ class TraceOverview(TraceBase):
 
 
 class TraceBaseView(TraceBase):
-    iters = List[int]
+    iters: List[int]
 
 
 class MetricsBaseView(TraceBaseView):

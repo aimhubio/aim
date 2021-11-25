@@ -381,9 +381,10 @@ class TestRunInfoApi(ApiTestBase):
         response = client.get(f'api/runs/{self.run1_hash}/info', params=qparams)
         self.assertEqual(200, response.status_code)
         response_data = response.json()
-        self.assertEqual(2, len(response_data['traces']))
+        self.assertEqual(3, len(response_data['traces']))
         self.assertIn('images', response_data['traces'])
         self.assertIn('metric', response_data['traces'])
+        self.assertIn('distributions', response_data['traces'])
         self.assertDictEqual({'subset': 'train'}, response_data['traces']['images'][0]['context'])
         self.assertEqual('image_lists', response_data['traces']['images'][0]['name'])
         metrics_data = response_data['traces']['metric']
