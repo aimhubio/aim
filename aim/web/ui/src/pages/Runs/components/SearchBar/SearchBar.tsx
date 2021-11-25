@@ -1,13 +1,17 @@
 import React from 'react';
 
 import SearchOutlined from '@material-ui/icons/SearchOutlined';
-import { Divider, TextField } from '@material-ui/core';
-
-import searchImg from 'assets/icons/search.svg';
+import { Divider } from '@material-ui/core';
 
 import { Button } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
+
+import useModel from 'hooks/model/useModel';
 
 import runAppModel from 'services/models/runs/runsAppModel';
+import projectsModel from 'services/models/projects/projectsModel';
+
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 
 import './SearchBar.scss';
 
@@ -17,6 +21,7 @@ function SearchBar({
   onSearchInputChange,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
+  const projectsData = useModel<IProjectsModelState>(projectsModel);
 
   React.useEffect(() => {
     return () => {
@@ -30,24 +35,34 @@ function SearchBar({
     searchRunsRef.current.call().catch();
   }
 
+  const paramsSuggestions = React.useMemo(() => {
+    let list: string[] = [];
+    if (projectsData?.params) {
+      Object.keys(projectsData?.params).forEach((option: any) => {
+        if (option) {
+          list.push(`run.${option}`);
+          if (projectsData.params) {
+            if (projectsData?.params[option]) {
+              Object.keys(projectsData?.params[option]).forEach((subOption) => {
+                list.push(`run.${option}.${subOption}`);
+              });
+            }
+          }
+        }
+      });
+    }
+    return list;
+  }, [projectsData?.params]);
+
   return (
     <div className='Runs_Search_Bar'>
       <form onSubmit={handleRunSearch}>
-        <TextField
-          fullWidth
-          size='small'
-          placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.creation_time >= 1632081600'
-          variant='outlined'
-          spellCheck={false}
-          InputProps={{
-            startAdornment: (
-              <img src={searchImg} alt='visible' style={{ marginRight: 10 }} />
-            ),
-            disabled: isRunsDataLoading,
-            style: { height: '1.845rem' },
-          }}
-          onChange={({ target }) => onSearchInputChange(target.value)}
-          value={searchValue || ''}
+        <ExpressionAutoComplete
+          onExpressionChange={onSearchInputChange}
+          onSubmit={handleRunSearch}
+          value={searchValue}
+          options={paramsSuggestions}
+          placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
         />
       </form>
       <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />

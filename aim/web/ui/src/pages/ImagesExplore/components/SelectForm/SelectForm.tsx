@@ -1,14 +1,7 @@
 import React from 'react';
 import { isEmpty } from 'lodash-es';
 
-import {
-  Box,
-  TextField,
-  Checkbox,
-  Divider,
-  InputBase,
-  Popper,
-} from '@material-ui/core';
+import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
@@ -17,6 +10,7 @@ import {
 } from '@material-ui/icons';
 
 import { Icon, Badge, Button } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import COLORS from 'config/colors/colors';
 
@@ -145,6 +139,25 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
+
+  const paramsSuggestions = React.useMemo(() => {
+    let list: string[] = [];
+    if (projectsData?.params) {
+      Object.keys(projectsData?.params).forEach((option: any) => {
+        if (option) {
+          list.push(`run.${option}`);
+          if (projectsData.params) {
+            if (projectsData?.params[option]) {
+              Object.keys(projectsData?.params[option]).forEach((subOption) => {
+                list.push(`run.${option}.${subOption}`);
+              });
+            }
+          }
+        }
+      });
+    }
+    return list;
+  }, [projectsData?.params]);
   return (
     <div className='SelectForm__container'>
       <div className='SelectForm__metrics__container'>
@@ -157,20 +170,17 @@ function SelectForm({
           >
             {selectedImagesData?.advancedMode ? (
               <div className='SelectForm__textarea'>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  spellCheck={false}
-                  rows={3}
-                  variant='outlined'
-                  placeholder={
-                    'images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  }
-                  value={selectedImagesData?.advancedQuery ?? ''}
-                  onChange={({ target }) =>
-                    onSelectAdvancedQueryChange(target.value)
-                  }
+                <ExpressionAutoComplete
+                  isTextArea={true}
+                  onExpressionChange={onSelectAdvancedQueryChange}
+                  onSubmit={handleSearch}
+                  value={selectedImagesData?.advancedQuery}
+                  placeholder='images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                  options={[
+                    'images.name',
+                    'images.context',
+                    ...paramsSuggestions,
+                  ]}
                 />
               </div>
             ) : (
@@ -285,18 +295,13 @@ function SelectForm({
         </Box>
         {selectedImagesData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <form onSubmit={handleSearch}>
-              <TextField
-                fullWidth
-                size='small'
-                variant='outlined'
-                spellCheck={false}
-                inputProps={{ style: { height: '0.687rem' } }}
-                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-                value={selectedImagesData?.query ?? ''}
-                onChange={({ target }) => onSelectRunQueryChange(target.value)}
-              />
-            </form>
+            <ExpressionAutoComplete
+              onExpressionChange={onSelectRunQueryChange}
+              onSubmit={handleSearch}
+              value={selectedImagesData?.query}
+              options={paramsSuggestions}
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+            />
           </div>
         )}
       </div>
