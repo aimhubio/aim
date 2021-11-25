@@ -799,14 +799,23 @@ async function getImagesBlobsData(uris: string[]) {
     });
   }, blobsUpdateThrottleDelay);
 
+  let firsItem = true;
   for await (let [keys, val] of objects) {
     const imagesBlobs: { [key: string]: string } =
       model.getState()?.imagesBlobs || {};
     imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
 
-    throttledBlobsUpdate();
+    if (firsItem) {
+      model.setState({
+        imagesBlobs: { ...imagesBlobs },
+      });
+      firsItem = false;
+    } else {
+      throttledBlobsUpdate();
+    }
   }
 
+  throttledBlobsUpdate.cancel();
   model.setState({ imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) } });
 }
 
