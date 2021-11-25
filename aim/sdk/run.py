@@ -362,7 +362,7 @@ class Run(StructuredRunMixin):
 
         if is_number(value):
             val = convert_to_py_number(value)
-        elif isinstance(value, CustomObject):
+        elif isinstance(value, (CustomObject, list, tuple)):
             val = value
         else:
             raise ValueError(f"Input metric of type {type(value)} is neither python number nor AimObject")
