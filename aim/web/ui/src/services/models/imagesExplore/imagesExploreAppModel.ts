@@ -1746,7 +1746,6 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
 
     const searchButtonDisabled: boolean =
       images.recordDensity === '0' || images.indexDensity === '0';
-    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled,
@@ -1771,7 +1770,6 @@ function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
     };
     const searchButtonDisabled =
       images.recordDensity === '0' || images.indexDensity === '0';
-    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled,
@@ -1794,7 +1792,6 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
     };
     const searchButtonDisabled =
       images.recordDensity === '0' || images.indexDensity === '0';
-    updateURL(config);
     model.setState({
       config,
       searchButtonDisabled,
