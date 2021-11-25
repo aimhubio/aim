@@ -1,4 +1,4 @@
 import ExpressionAutoComplete from './ExpressionAutoComplete';
-export * from './type';
+export * from './ExpressionAutoComplete';
 
 export default ExpressionAutoComplete;

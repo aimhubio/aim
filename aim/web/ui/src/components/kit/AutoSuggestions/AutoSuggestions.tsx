@@ -4,9 +4,9 @@ import useDropdownMenu from 'react-accessible-dropdown-menu-hook';
 
 import { Text } from 'components/kit';
 
-import { IAutoSuggestionsProps } from './type';
+import { IAutoSuggestionsProps } from './AutoSuggestions.d';
 
-import './style.scss';
+import './AutoSuggestions.scss';
 
 const SuggestionsContainer: any = styled.div`
   left: ${(props: any) => props.suggestionsPosition.left}px;

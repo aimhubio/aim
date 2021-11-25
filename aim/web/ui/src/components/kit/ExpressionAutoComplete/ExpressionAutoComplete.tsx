@@ -6,9 +6,9 @@ import { CodeCompletion } from 'components/kit';
 
 import getCaretCoordinates from 'utils/getCaretPosition';
 
-import { IExpressionAutoCompleteProps } from './type';
+import { IExpressionAutoCompleteProps } from './ExpressionAutoComplete.d';
 
-import './styles.scss';
+import './ExpressionAutoComplete.scss';
 
 function ExpressionAutoComplete({
   onExpressionChange,
