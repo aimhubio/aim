@@ -31,7 +31,6 @@ const ImagesSet = ({
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
-
   function fillContent(
     list: [] | { [key: string]: [] | {} },
     path = [''],
@@ -40,7 +39,7 @@ const ImagesSet = ({
     if (Array.isArray(list)) {
       content.push([path, list]);
     } else {
-      const fieldSortedValues = [...orderedMap.ordering].sort();
+      const fieldSortedValues = _.sortBy([...orderedMap.ordering]);
       fieldSortedValues.forEach((val: any) => {
         const fieldName = `${orderedMap.key} = ${formatValue(val)}`;
         if (!keysMap.hasOwnProperty(path.join(''))) {

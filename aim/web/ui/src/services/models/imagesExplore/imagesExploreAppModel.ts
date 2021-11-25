@@ -812,17 +812,24 @@ function sortWithAllGroupFields(
       const firstObjectValue = _.get(a, field);
       const secondObjectValue = _.get(b, field);
       isEqualValue = firstObjectValue === secondObjectValue;
-      if (field === 'caption') {
+      //TODO  with Karen to avoid string type captions
+      if (
+        field === 'caption' &&
+        secondObjectValue[0] === '#' &&
+        firstObjectValue[0] === '#'
+      ) {
         return (
           +secondObjectValue.substring(1) - +firstObjectValue.substring(1) < 0
         );
       } else if (
         typeof firstObjectValue === 'string' ||
-        typeof secondObjectValue === 'string'
+        (typeof secondObjectValue === 'string' &&
+          _.isNaN(+firstObjectValue) &&
+          _.isNaN(+secondObjectValue))
       ) {
         return firstObjectValue.localeCompare(secondObjectValue);
       } else {
-        return secondObjectValue - firstObjectValue < 0;
+        return +secondObjectValue - +firstObjectValue < 0;
       }
     });
     return { isEqualValue, foundedItem };

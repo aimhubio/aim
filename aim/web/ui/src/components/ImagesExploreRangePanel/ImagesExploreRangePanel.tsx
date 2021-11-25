@@ -23,7 +23,7 @@ function ImagesExploreRangePanel({
 }: IImagesExploreRangePanelProps): React.FunctionComponentElement<React.ReactNode> {
   const searchMetricsRef = React.useRef<any>(null);
   function handleSearch() {
-    searchMetricsRef.current = imagesExploreAppModel.getImagesData();
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
     searchMetricsRef.current.call();
   }
 
