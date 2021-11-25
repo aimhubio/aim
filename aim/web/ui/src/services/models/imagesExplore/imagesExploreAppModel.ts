@@ -813,7 +813,11 @@ function sortWithAllGroupFields(
       const secondObjectValue = _.get(b, field);
       isEqualValue = firstObjectValue === secondObjectValue;
       //TODO  with Karen to avoid string type captions
-      if (secondObjectValue[0] === '#' && firstObjectValue[0] === '#') {
+      if (
+        field === 'caption' &&
+        secondObjectValue[0] === '#' &&
+        firstObjectValue[0] === '#'
+      ) {
         return (
           +secondObjectValue.substring(1) - +firstObjectValue.substring(1) < 0
         );
