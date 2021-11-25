@@ -82,7 +82,7 @@ def is_numpy_number(inst):
 
 
 def is_py_number(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, (int, float))
 
 
 def is_number(value):
@@ -108,12 +108,13 @@ def convert_to_py_number(value) -> object:
     """
     Converts numpy objects or tensors to python number types
     """
-    if is_py_number(value):
-        return value
+    if isinstance(value, int):
+        return int(value)
+
+    if isinstance(value, float):
+        return float(value)
 
     if is_numpy_array(value):
-        if value.shape != (1,):
-            raise ValueError('Not a scalar numpy array')
         return value.item()
 
     if is_numpy_number(value):
@@ -123,6 +124,6 @@ def convert_to_py_number(value) -> object:
         return value.item()
 
     if is_tensorflow_tensor(value):
-        return value.eval()
+        return value.eval().item()
 
     raise ValueError('not a number')
