@@ -1,13 +1,12 @@
 # Changelog
 
-## Unreleased
+## 3.1.1 Nov 25 2021
 
-<<<<<<< HEAD
 - Apply default ordering on images set (VkoHov)
-=======
 - Ability to show image data in a tooltip on hover (KaroMourad)
->>>>>>> 35c7929f17fceb0d9a18cd26c0ac42f0bc28c89b
+- Support of Image input additional data sources (alberttorosyan)
 - Ability to export run props as pandas dataframe (gorarakelyan)
+- Slice image sequence by index for the given steps range (alberttorosyan)
 - Improve Images Explorer rendering performance through better images list virtualization (roubkar)
 
 ## 3.1.0 Nov 20 2021
