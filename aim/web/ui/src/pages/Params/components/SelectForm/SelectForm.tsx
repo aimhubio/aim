@@ -14,6 +14,7 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
@@ -39,6 +40,7 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
+  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
@@ -135,25 +137,6 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
-
-  const paramsSuggestions = React.useMemo(() => {
-    let list: string[] = [];
-    if (projectsData?.params) {
-      Object.keys(projectsData?.params).forEach((option: any) => {
-        if (option) {
-          list.push(`run.${option}`);
-          if (projectsData.params) {
-            if (projectsData?.params[option]) {
-              Object.keys(projectsData?.params[option]).forEach((subOption) => {
-                list.push(`run.${option}.${subOption}`);
-              });
-            }
-          }
-        }
-      });
-    }
-    return list;
-  }, [projectsData?.params]);
 
   return (
     <div className='SelectForm__container'>

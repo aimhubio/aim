@@ -6,12 +6,9 @@ import { Divider } from '@material-ui/core';
 import { Button } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
-import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import runAppModel from 'services/models/runs/runsAppModel';
-import projectsModel from 'services/models/projects/projectsModel';
-
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 
 import './SearchBar.scss';
 
@@ -21,7 +18,7 @@ function SearchBar({
   onSearchInputChange,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
+  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     return () => {
@@ -34,25 +31,6 @@ function SearchBar({
     searchRunsRef.current = runAppModel.getRunsData(true);
     searchRunsRef.current.call().catch();
   }
-
-  const paramsSuggestions = React.useMemo(() => {
-    let list: string[] = [];
-    if (projectsData?.params) {
-      Object.keys(projectsData?.params).forEach((option: any) => {
-        if (option) {
-          list.push(`run.${option}`);
-          if (projectsData.params) {
-            if (projectsData?.params[option]) {
-              Object.keys(projectsData?.params[option]).forEach((subOption) => {
-                list.push(`run.${option}.${subOption}`);
-              });
-            }
-          }
-        }
-      });
-    }
-    return list;
-  }, [projectsData?.params]);
 
   return (
     <div className='Runs_Search_Bar'>

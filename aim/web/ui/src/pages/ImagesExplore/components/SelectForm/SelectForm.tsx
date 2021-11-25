@@ -15,6 +15,7 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
@@ -140,24 +141,8 @@ function SelectForm({
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
 
-  const paramsSuggestions = React.useMemo(() => {
-    let list: string[] = [];
-    if (projectsData?.params) {
-      Object.keys(projectsData?.params).forEach((option: any) => {
-        if (option) {
-          list.push(`run.${option}`);
-          if (projectsData.params) {
-            if (projectsData?.params[option]) {
-              Object.keys(projectsData?.params[option]).forEach((subOption) => {
-                list.push(`run.${option}.${subOption}`);
-              });
-            }
-          }
-        }
-      });
-    }
-    return list;
-  }, [projectsData?.params]);
+  const paramsSuggestions = useParamsSuggestions();
+
   return (
     <div className='SelectForm__container'>
       <div className='SelectForm__metrics__container'>
