@@ -5,6 +5,8 @@ import classNames from 'classnames';
 
 import ImagesList from 'components/ImagesList';
 
+import { formatValue } from 'utils/formatValue';
+
 import { IImageSetProps } from './ImagesSet.d';
 
 import './ImageSet.scss';
@@ -22,26 +24,38 @@ const ImagesSet = ({
   imagesSetKey,
   imageSetWrapperHeight,
   imageSetWrapperWidth,
+  orderedMap,
   imageHeight,
+  focusedState,
+  syncHoverState,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
-
-  function fillContent(list: [] | { [key: string]: [] | {} }, path = ['']) {
+  function fillContent(
+    list: [] | { [key: string]: [] | {} },
+    path = [''],
+    orderedMap: { [key: string]: any },
+  ) {
     if (Array.isArray(list)) {
       content.push([path, list]);
     } else {
-      for (let key in list) {
+      const fieldSortedValues = _.sortBy([...orderedMap.ordering]);
+      fieldSortedValues.forEach((val: any) => {
+        const fieldName = `${orderedMap.key} = ${formatValue(val)}`;
         if (!keysMap.hasOwnProperty(path.join(''))) {
           content.push([path, []]);
           keysMap[path.join('')] = 1;
         }
-        fillContent(list[key], path.concat([key]));
-      }
+        fillContent(
+          list[fieldName],
+          path.concat([fieldName]),
+          orderedMap[fieldName],
+        );
+      });
     }
   }
 
-  fillContent(data);
+  fillContent(data, [''], orderedMap);
 
   function getItemSize(index: number) {
     let [path, items] = content[index];
@@ -73,6 +87,8 @@ const ImagesSet = ({
         index,
         imagesSetKey,
         imageHeight,
+        focusedState,
+        syncHoverState,
       }}
     >
       {ImagesGroupedList}
@@ -84,7 +100,10 @@ function propsComparator(
   prevProps: IImageSetProps,
   nextProps: IImageSetProps,
 ): boolean {
-  if (prevProps.imagesSetKey !== nextProps.imagesSetKey) {
+  if (
+    prevProps.imagesSetKey !== nextProps.imagesSetKey ||
+    prevProps.focusedState !== nextProps.focusedState
+  ) {
     return false;
   }
 
@@ -96,7 +115,6 @@ export default React.memo(ImagesSet, propsComparator);
 const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
   const { index, style, data } = props;
   const [path, items] = data.data[index];
-
   return (
     <div
       className='ImagesSet'
@@ -133,6 +151,8 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
               addUriToList={data.addUriToList}
               imageSetWrapperWidth={data.imageSetWrapperWidth}
               imageHeight={data.imageHeight}
+              focusedState={data.focusedState}
+              syncHoverState={data.syncHoverState}
             />
           </div>
         )}

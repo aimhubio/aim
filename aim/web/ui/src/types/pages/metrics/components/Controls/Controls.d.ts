@@ -8,7 +8,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import {
   IAggregationConfig,
   IAlignmentConfig,
-  IChartTooltip,
+  IPanelTooltip,
   IChartZoom,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -20,7 +20,7 @@ import { CurveEnum } from 'utils/d3';
 
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   ignoreOutliers: boolean;
   zoom?: IChartZoom;
   highlightMode: HighlightEnum;
@@ -32,7 +32,7 @@ export interface IControlProps {
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
   projectsDataMetrics: IProjectParamsMetrics['metric'];
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;
   onDensityTypeChange: (type: DensityOptions) => void;

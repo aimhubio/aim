@@ -56,9 +56,9 @@ function RunMetricCard({
           weight={600}
           className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'
         >
-          {isSystemMetric(batch?.metric_name)
-            ? formatSystemMetricName(batch?.metric_name)
-            : batch?.metric_name}
+          {isSystemMetric(batch?.name)
+            ? formatSystemMetricName(batch?.name)
+            : batch?.name}
         </Text>
         {contextToString(batch?.context)
           ?.split(',')
