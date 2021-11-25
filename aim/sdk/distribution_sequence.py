@@ -1,4 +1,4 @@
-from typing import Union, Tuple
+from typing import Tuple
 
 from aim.sdk.sequence import Sequence
 from aim.sdk.objects.distribution import Distribution
