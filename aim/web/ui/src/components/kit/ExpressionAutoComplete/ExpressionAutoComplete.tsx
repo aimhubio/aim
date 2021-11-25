@@ -115,7 +115,7 @@ function ExpressionAutoComplete({
   function getSuggestionsList(): string[] | [] {
     const suggestions: string[] = [];
     let result = /\S+$/.exec(value.slice(0, caretPosition))?.[0];
-    if (result?.includes('.')) {
+    if (result !== '.' && result?.includes('.')) {
       list.forEach((option) => {
         let suggest = option.split(`${result}`)[1];
         let splitSuggest = suggest?.split('.');
@@ -128,7 +128,7 @@ function ExpressionAutoComplete({
           if (
             suggestions.indexOf(splitSuggest?.[0]) === -1 &&
             suggestionsList.indexOf(
-              result?.split('.')?.[result?.split('.')?.length - 1] +
+              result?.split('p')?.[result?.split('.')?.length - 1] +
                 splitSuggest?.[0] || '',
             ) === -1
           ) {
