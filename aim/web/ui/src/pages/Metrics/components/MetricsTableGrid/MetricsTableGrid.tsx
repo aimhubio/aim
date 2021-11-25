@@ -112,15 +112,15 @@ function getMetricsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('metric_name') ? 'un' : ''
+          grouping?.[groupName]?.includes('name') ? 'un' : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('metric_name')
-                ? grouping?.[groupName].filter((item) => item !== 'metric_name')
-                : grouping?.[groupName].concat(['metric_name']),
+              list: grouping?.[groupName]?.includes('name')
+                ? grouping?.[groupName].filter((item) => item !== 'name')
+                : grouping?.[groupName].concat(['name']),
             } as IOnGroupingSelectChangeParams);
           }
         },

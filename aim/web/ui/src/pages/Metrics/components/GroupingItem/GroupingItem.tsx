@@ -12,12 +12,14 @@ import './GroupingItem.scss';
 const icons = {
   stroke: 'line-style',
   chart: 'chart-group',
+  group: 'image-group',
   color: 'coloring',
 };
 
 function GroupingItem({
   title,
   groupName,
+  groupDisplayName,
   groupingData,
   advancedTitle,
   advancedComponent,
@@ -39,7 +41,7 @@ function GroupingItem({
           >
             <Icon name={icons[groupName] as IconName} />
           </div>
-          <Text>{groupName}</Text>
+          <Text>{groupDisplayName}</Text>
         </div>
       )}
       component={

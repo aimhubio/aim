@@ -1,7 +1,7 @@
 import unittest
-from fastapi.testclient import TestClient
+import os
 
-from aim.web.run import app
+from performance_tests.conftest import TEST_REPO_PATHS
 
 
 class TestBase(unittest.TestCase):
@@ -13,12 +13,25 @@ class TestBase(unittest.TestCase):
         assert lower_limit <= new <= upper_limit, failure_message
 
 
-class ApiTestBase(TestBase):
+class SDKTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.client = TestClient(app)
+        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATHS['real_life_repo']
 
     @classmethod
     def tearDownClass(cls) -> None:
+        del os.environ['__AIM_REPO_NAME__']
+        super().tearDownClass()
+
+
+class StorageTestBase(TestBase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATHS['generated_repo']
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        del os.environ['__AIM_REPO_NAME__']
         super().tearDownClass()

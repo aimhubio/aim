@@ -21,7 +21,7 @@ export interface IRunDetailSettingsTabProps {
 export interface IRunBatch {
   context: { [key: string]: string };
   iters: number[];
-  metric_name: string;
+  name: string;
   values: number[];
 }
 export interface IRunInfo {
@@ -47,6 +47,8 @@ export interface IRunSelectPopoverContentProps {
   runsOfExperiment: IRunSelectRun[];
   runInfo: any;
   isRunsOfExperimentLoading: boolean;
+  isRunInfoLoading: boolean;
+  isLoadMoreButtonShown: boolean;
   onRunsSelectToggle: () => void;
   dateNow: number;
 }

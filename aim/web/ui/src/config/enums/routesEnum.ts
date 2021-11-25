@@ -8,6 +8,8 @@ enum PathEnum {
   Tags = '/tags',
   Bookmarks = '/bookmarks',
   Run_Detail = '/runs/:runHash',
+  Images_Explore = '/images',
+  Images_Explore_Id = '/images/:appId',
 }
 
 export { PathEnum };

@@ -19,7 +19,7 @@ import {
   IAggregationConfig,
   IAggregatedData,
   IAlignmentConfig,
-  IChartTooltip,
+  IPanelTooltip,
   IChartTitleData,
   IGroupingSelectOption,
   IChartZoom,
@@ -60,7 +60,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   highlightMode: HighlightEnum;
   groupingData: IMetricAppConfig['grouping'];
   notifyData: IMetricAppModelState['notifyData'];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: IMetricAppConfig['select'];
@@ -69,10 +69,10 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   hiddenMetrics: string[];
   hiddenColumns: string[];
   groupingSelectOptions: IGroupingSelectOption[];
-  projectsDataMetrics: IProjectParamsMetrics['metrics'];
+  projectsDataMetrics: IProjectParamsMetrics['metric'];
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (

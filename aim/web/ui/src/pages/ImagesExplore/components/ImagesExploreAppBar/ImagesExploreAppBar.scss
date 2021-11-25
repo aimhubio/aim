@@ -1,0 +1,36 @@
+@use 'styles/abstracts/index' as *;
+
+.ImagesExploreAppBar {
+  &__item {
+    &__bookmark {
+      margin-right: 0.25rem;
+      padding: 0 0.5rem !important;
+      &__span {
+        font-weight: 500;
+        font-size: $text-md;
+        line-height: 1.0625em;
+        margin-right: 0.625em;
+      }
+    }
+  }
+  &__menu {
+    border-left: 0.0625rem solid #e8f1fc;
+    padding: 0 0.25rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    span {
+      cursor: pointer;
+    }
+  }
+  &__popover {
+    width: 15.625rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+}

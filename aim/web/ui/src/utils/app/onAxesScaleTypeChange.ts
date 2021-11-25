@@ -18,9 +18,16 @@ export default function onAxesScaleTypeChange<M extends State>({
     shouldURLUpdate?: boolean,
   ) => void;
 }): void {
-  const configData = model?.getState()?.config;
+  let configData = model?.getState()?.config;
   if (configData?.chart) {
-    configData.chart.axesScaleType = args;
+    configData = {
+      ...configData,
+      chart: {
+        ...configData.chart,
+        axesScaleType: args,
+      },
+    };
+    model.setState({ config: configData });
     updateModelData(configData, true);
   }
   analytics.trackEvent(

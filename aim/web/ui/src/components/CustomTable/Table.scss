@@ -88,6 +88,7 @@ $border-radius: 0.2rem;
   }
 
   &:last-of-type {
+    flex: 1;
     .Table__cell,
     .Table__group__config__cell {
       border-right: none;
@@ -109,7 +110,7 @@ $border-radius: 0.2rem;
   width: 23px;
   height: 23px;
   margin: 5px 0 5px 5px;
-  border-radius: 50%;
+  border-radius: $border-radius-circle;
   transition: background-color ease 110ms;
   user-select: none;
 

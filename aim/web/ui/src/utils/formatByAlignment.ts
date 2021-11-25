@@ -20,7 +20,7 @@ function formatValueByAlignment({
       case AlignmentOptionsEnum.EPOCH:
         return Math.floor(xAxisTickValue);
       case AlignmentOptionsEnum.RELATIVE_TIME:
-        return shortEnglishHumanizer(Math.round(xAxisTickValue * 1000), {
+        return shortEnglishHumanizer(Math.round(xAxisTickValue), {
           ...humanizerConfig,
           maxDecimalPoints: 2,
         });

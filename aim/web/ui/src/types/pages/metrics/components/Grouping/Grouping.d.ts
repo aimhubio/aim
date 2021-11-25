@@ -13,5 +13,6 @@ export interface IGroupingProps {
   onGroupingReset: IMetricProps['onGroupingReset'];
   onGroupingApplyChange: IMetricAppConfig['onGroupingApplyChange'];
   onGroupingPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
+  singleGrouping?: boolean;
   onShuffleChange: IMetricProps['onShuffleChange'];
 }
