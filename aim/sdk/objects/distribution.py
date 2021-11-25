@@ -35,7 +35,7 @@ class Distribution(CustomObject):
 
     @property
     def bin_count(self):
-        """Stored distribution
+        """Stored distribution bin count
 
             :getter: Returns distribution bin_count.
             :type: string
@@ -44,7 +44,8 @@ class Distribution(CustomObject):
 
     @property
     def range(self):
-        """
+        """Stored distribution range
+
             :getter: Returns distribution range.
             :type: List
         """
@@ -52,12 +53,22 @@ class Distribution(CustomObject):
 
     @property
     def weights(self):
+        """Stored distribution weights
+
+            :getter: Returns distribution weights as `np.array`.
+            :type: np.ndarray
+        """
         return np.frombuffer(self.storage['data'].load(),
-                             dtype=self.storage['type'],
+                             dtype=self.storage['dtype'],
                              count=self.storage['bin_count'])
 
     @property
     def ranges(self):
+        """Stored distribution ranges
+
+            :getter: Returns distribution ranges as `np.array`.
+            :type: np.ndarray
+        """
         return np.linspace(self.range[0], self.range[1], num=self.bin_count)
 
     def json(self):
@@ -72,8 +83,9 @@ class Distribution(CustomObject):
         assert isinstance(np_histogram[1], np.ndarray)
 
         self.storage['data'] = BLOB(data=np_histogram[0].tobytes())
-        self.storage['dtype'] = np_histogram[0].dtype
+        self.storage['dtype'] = str(np_histogram[0].dtype)
         self.storage['range'] = [np_histogram[1][0].item(), np_histogram[1][-1].item()]
 
     def to_np_histogram(self):
+        """Return `np.histogram` compatible format of the distribution"""
         return self.weights, self.ranges
