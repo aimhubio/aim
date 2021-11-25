@@ -128,7 +128,7 @@ function ExpressionAutoComplete({
           if (
             suggestions.indexOf(splitSuggest?.[0]) === -1 &&
             suggestionsList.indexOf(
-              result?.split('p')?.[result?.split('.')?.length - 1] +
+              result?.split('.')?.[result?.split('.')?.length - 1] +
                 splitSuggest?.[0] || '',
             ) === -1
           ) {
