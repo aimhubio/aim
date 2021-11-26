@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEqual } from 'lodash-es';
 
 import { Popover, PopoverPosition } from '@material-ui/core';
 
@@ -11,70 +12,76 @@ import getPositionBasedOnOverflow from 'utils/getPositionBasedOnOverflow';
 import './ChartPopover.scss';
 
 function ChartPopover(props: IChartPopover): JSX.Element | null {
-  const { id = 'popover', open = false, className = '' } = props;
+  const {
+    id = 'popover',
+    open = false,
+    className = '',
+    containerNode = document.body,
+  } = props;
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
   );
-  const popoverContentRef = React.useRef<HTMLDivElement>(null);
-  const frameIDRef = React.useRef<number>(0);
+  const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
 
-  function onPopoverPositionChange(popoverPos: PopoverPosition | null): void {
-    if (popoverPos === null) {
+  function onPopoverPositionChange(
+    hoveredElemRect: IChartPopover['hoveredElemRect'],
+  ): void {
+    if (hoveredElemRect === null) {
       setPopoverPos(null);
-    } else if (popoverContentRef.current && props.containerRef?.current) {
+    } else if (popoverNode && containerNode) {
       // Popover viewport need to be overflowed by chart container
       const pos = getPositionBasedOnOverflow(
-        popoverPos,
-        props.containerRef.current.getBoundingClientRect(),
-        popoverContentRef.current.getBoundingClientRect(),
+        hoveredElemRect,
+        popoverNode.getBoundingClientRect(),
+        containerNode.getBoundingClientRect(),
       );
 
-      setPopoverPos(pos);
+      if (!isEqual(popoverPos, pos)) {
+        setPopoverPos(pos);
+      }
     }
   }
 
-  // on mount stage
   React.useEffect(() => {
-    frameIDRef.current = window.requestAnimationFrame(() => {
-      onPopoverPositionChange(props.popoverPosition);
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frameIDRef.current);
-    };
-  }, []);
-
-  React.useLayoutEffect(() => {
-    if (open && props.popoverPosition) {
-      frameIDRef.current = window.requestAnimationFrame(() => {
-        onPopoverPositionChange(props.popoverPosition);
-      });
+    if (open && props.hoveredElemRect) {
+      onPopoverPositionChange(props.hoveredElemRect);
     }
   }, [
-    props.popoverPosition,
-    props.containerRef?.current,
-    props.tooltipContent,
-    props.focusedState?.key,
-    popoverContentRef?.current,
     open,
+    containerNode,
+    popoverNode,
+    props.hoveredElemRect,
+    props.tooltipContent,
+    props.focusedState.key,
+    props.focusedState.active,
   ]);
 
   return (
     <Popover
+      key={`popover-${props.reCreatePopover}`}
       id={id}
-      open={!!props.popoverPosition && open}
+      open={!!props.hoveredElemRect && open}
       disableEnforceFocus={true}
       anchorReference='anchorPosition'
-      anchorPosition={popoverPos || props.popoverPosition || undefined}
+      anchorPosition={popoverPos || props.hoveredElemRect || undefined}
       className={`ChartPopover ${className}`}
+      transitionDuration={{
+        appear: 0,
+        enter: 200,
+        exit: 200,
+      }}
+      TransitionProps={{
+        onEnter: (node) => {
+          setPopoverNode(node);
+        },
+      }}
       classes={{
-        paper: `ChartPopover__content${popoverPos ? '' : '__hide'} ${
+        paper: `ChartPopover__content ${
           props.focusedState?.active ? 'ChartPopover__content__active' : ''
         }`,
       }}
     >
       <PopoverContent
-        ref={popoverContentRef}
         chartType={props.chartType}
         tooltipContent={props.tooltipContent}
         focusedState={props.focusedState}

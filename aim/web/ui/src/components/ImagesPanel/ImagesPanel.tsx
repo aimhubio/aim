@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { MouseEvent, useEffect, useMemo, useRef } from 'react';
 import { isEmpty } from 'lodash-es';
-
-import { PopoverPosition } from '@material-ui/core';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -48,8 +46,9 @@ function ImagesPanel({
   focusedState,
   onActivePointChange,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  const [popoverPosition, setPopoverPosition] =
-    React.useState<PopoverPosition | null>(null);
+  const [hoveredElemRect, setHoveredElemRect] = React.useState<DOMRect | null>(
+    null,
+  );
   let blobUriArray = useRef<string[]>([]);
   let timeoutID = useRef(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -65,7 +64,7 @@ function ImagesPanel({
     }
   }
 
-  function onScroll(e?: any) {
+  function onScroll() {
     if (timeoutID.current) {
       window.clearTimeout(timeoutID.current);
     }
@@ -78,6 +77,13 @@ function ImagesPanel({
     }, batchSendDelay);
   }
 
+  function closePopover(e: MouseEvent<HTMLDivElement>): void {
+    e?.stopPropagation();
+    if (!focusedState?.active) {
+      setHoveredElemRect(null);
+    }
+  }
+
   const syncHoverState = React.useCallback(
     (args: any): void => {
       const { activePoint, focusedStateActive = false } = args;
@@ -88,20 +94,17 @@ function ImagesPanel({
           onActivePointChange(activePoint, focusedStateActive);
         }
         if (activePoint.clientRect) {
-          setPopoverPosition({
-            top: activePoint.clientRect.top,
-            left: activePoint.clientRect.left + activePoint.clientRect.width,
-          });
+          setHoveredElemRect(activePoint.clientRect);
         } else {
-          setPopoverPosition(null);
+          setHoveredElemRect(null);
         }
       }
       // on MouseLeave
       else {
-        setPopoverPosition(null);
+        setHoveredElemRect(null);
       }
     },
-    [onActivePointChange, setPopoverPosition],
+    [onActivePointChange, setHoveredElemRect],
   );
 
   const imagesSetKey = useMemo(
@@ -141,33 +144,28 @@ function ImagesPanel({
         </div>
       ) : (
         <>
-          <div className='ImagesPanel__Container'>
+          <div className='ImagesPanel__Container' onMouseMove={closePopover}>
             {!isEmpty(imagesData) ? (
-              <div
-                className='ImagesPanel'
-                ref={containerRef}
-                // TODO
-                // onClick={(e) => {
-                //   e.stopPropagation();
-                //   syncHoverState({
-                //     activePoint: activePointRef.current,
-                //     focusedStateActive: false,
-                //   });
-                // }}
-                onMouseLeave={() => {
-                  if (!focusedState?.active) {
-                    setPopoverPosition(null);
-                  }
-                }}
-              >
-                <div className='ImagesPanel__imagesSetContainer'>
+              <div className='ImagesPanel'>
+                <div
+                  ref={containerRef}
+                  className='ImagesPanel__imagesSetContainer'
+                  // TODO
+                  // onClick={(e) => {
+                  //   e.stopPropagation();
+                  //   syncHoverState({
+                  //     activePoint: activePointRef.current,
+                  //     focusedStateActive: false,
+                  //   });
+                  // }}
+                >
                   <ImagesSet
                     data={imagesData}
                     imagesBlobs={imagesBlobs}
                     onScroll={onScroll}
                     addUriToList={addUriToList}
                     imagesSetKey={imagesSetKey}
-                    imageSetWrapperHeight={imageWrapperOffsetHeight - 40}
+                    imageSetWrapperHeight={imageWrapperOffsetHeight - 48}
                     imageSetWrapperWidth={imageWrapperOffsetWidth}
                     imageHeight={imageFixedHeight}
                     focusedState={focusedState}
@@ -176,8 +174,8 @@ function ImagesPanel({
                   />
                 </div>
                 <ChartPopover
-                  containerRef={containerRef}
-                  popoverPosition={popoverPosition}
+                  containerNode={containerRef.current}
+                  hoveredElemRect={hoveredElemRect}
                   open={
                     resizeMode !== ResizeModeEnum.MaxHeight &&
                     !panelResizing &&

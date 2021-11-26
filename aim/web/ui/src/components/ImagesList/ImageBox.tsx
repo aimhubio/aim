@@ -46,8 +46,9 @@ const ImageBox = ({
     // }
   }
 
-  function onMouseEnter(e: MouseEvent<HTMLDivElement>): void {
+  function onMouseMove(e: MouseEvent<HTMLDivElement>): void {
     if (e?.currentTarget && !focusedState?.active) {
+      e.stopPropagation();
       const clientRect = e.currentTarget.getBoundingClientRect();
       safeSyncHoverState({
         activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
@@ -68,7 +69,7 @@ const ImageBox = ({
         className={
           focusedState?.active && focusedState.key === data.key ? 'active' : ''
         }
-        onMouseEnter={onMouseEnter}
+        onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         onClick={onClick}
       >

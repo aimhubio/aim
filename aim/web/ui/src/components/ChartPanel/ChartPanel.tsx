@@ -58,11 +58,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             chartRef.current?.clearHoverAttributes?.();
           });
         }
-
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);
         }
-
         if (activePointRef.current && containerRef.current) {
           setPopoverPosition({
             top: activePointRef.current.topPos - containerRef.current.scrollTop,
@@ -174,8 +172,16 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               })}
             </Grid>
             <ChartPopover
-              containerRef={containerRef}
-              popoverPosition={popoverPosition}
+              containerNode={containerRef.current}
+              hoveredElemRect={
+                popoverPosition
+                  ? {
+                      top: popoverPosition.top,
+                      left: popoverPosition.left - 10,
+                      right: popoverPosition.left + 10,
+                    }
+                  : null
+              }
               open={
                 props.resizeMode !== ResizeModeEnum.MaxHeight &&
                 props.data.length > 0 &&
@@ -187,6 +193,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               tooltipContent={props?.tooltip?.content}
               focusedState={props.focusedState}
               alignmentConfig={props.alignmentConfig}
+              reCreatePopover={props.focusedState.active}
             />
           </Grid>
           <Grid className='ChartPanel__controls' item>
