@@ -5,7 +5,7 @@ import weakref
 import logging
 import threading
 
-from typing import Generic, Tuple, TypeVar
+from typing import Generic, Tuple, TypeVar, Dict
 
 T = TypeVar('T')
 
@@ -26,13 +26,13 @@ class RobustExec(threading.Thread):
                 # will continue to run.
                 return super().join()
             except KeyboardInterrupt:
-                logger.warning("Received Ctrl-C. Closing gracefully.")
+                logger.warning('Received Ctrl-C. Closing gracefully.')
 
 
 class AutoClean(Generic[T]):
     PRIORITY = 10
     _registered_with_atexit = False
-    _finalizers: weakref.WeakKeyDictionary[
+    _finalizers: Dict[
         T, Tuple[int, weakref.finalize]
     ] = weakref.WeakKeyDictionary()
 
@@ -69,9 +69,9 @@ class AutoClean(Generic[T]):
         priorities. This is called automatically by atexit.
         It is not meant tobe called manually.
         """
-        logger.debug("Cleaning up...  Found {len(finalizers)} finalizers")
-        logger.debug('Cleaning up...  Iterating over instances in order')
         finalizers = sorted(AutoClean._finalizers.items(), key=lambda x: x[1][0])
+        logger.debug(f'Cleaning up...  Found {len(finalizers)} finalizers')
+        logger.debug('Cleaning up...  Iterating over instances in order')
         for key, (priority, finalizer) in finalizers:
             logger.debug(f'Cleaning up...  with priority={priority} instance {key}')
             finalizer()

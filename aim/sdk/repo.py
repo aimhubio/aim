@@ -108,9 +108,9 @@ class Repo:
                 unmount_remote_repo(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
-        self.container_pool: WeakValueDictionary[ContainerConfig, Container] = WeakValueDictionary()
+        self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: WeakValueDictionary[ContainerConfig, Container] = WeakValueDictionary()
+        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
