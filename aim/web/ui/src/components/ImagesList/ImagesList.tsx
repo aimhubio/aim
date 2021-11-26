@@ -12,6 +12,10 @@ function ImagesList({
   imageHeight,
   focusedState,
   syncHoverState,
+  setHoveredImageKey,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
@@ -35,6 +39,10 @@ function ImagesList({
           imageHeight={imageHeight}
           focusedState={focusedState}
           syncHoverState={syncHoverState}
+          hoveredImageKey={hoveredImageKey}
+          setHoveredImageKey={setHoveredImageKey}
+          setImageFullMode={setImageFullMode}
+          setImageFullModeData={setImageFullModeData}
         />
       )}
     </List>

@@ -13,4 +13,8 @@ export interface IImageSetProps {
   imageHeight: number;
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
+  hoveredImageKey: string;
+  setHoveredImageKey: (v: string) => void;
+  setImageFullMode: (v: boolean) => void;
+  setImageFullModeData: (v: string) => void;
 }

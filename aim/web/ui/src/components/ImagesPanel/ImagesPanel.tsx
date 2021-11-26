@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { isEmpty } from 'lodash-es';
 
-import { PopoverPosition } from '@material-ui/core';
+import { Dialog, PopoverPosition } from '@material-ui/core';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -50,6 +50,9 @@ function ImagesPanel({
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [popoverPosition, setPopoverPosition] =
     React.useState<PopoverPosition | null>(null);
+  const [hoveredImageKey, setHoveredImageKey] = React.useState<string>('');
+  const [imageFullMode, setImageFullMode] = React.useState<boolean>(false);
+  const [imageFullModeData, setImageFullModeData] = React.useState<any>('');
   let blobUriArray = useRef<string[]>([]);
   let timeoutID = useRef(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -173,6 +176,10 @@ function ImagesPanel({
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
+                    hoveredImageKey={hoveredImageKey}
+                    setHoveredImageKey={setHoveredImageKey}
+                    setImageFullMode={setImageFullMode}
+                    setImageFullModeData={setImageFullModeData}
                   />
                 </div>
                 <ChartPopover
@@ -209,6 +216,20 @@ function ImagesPanel({
               />
             )}
           </div>
+          {//TODO has to finished it}
+          <Dialog
+            onClose={() => setImageFullMode(!imageFullMode)}
+            aria-labelledby='customized-dialog-title'
+            open={imageFullMode}
+          >
+            <img
+              src={`data:image/${imageFullModeData.format};base64, ${
+                imagesBlobs?.[imageFullModeData.blob_uri]
+              }`}
+              alt=''
+              style={{ width: '100px', height: '100%' }}
+            />
+          </Dialog>
         </>
       )}
     </BusyLoaderWrapper>
