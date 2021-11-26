@@ -324,6 +324,15 @@ Hosted vs self-hosted
 - Aim is self-hosted free and open-source.
   - Remote self-hosted Aim is coming soon...
 
+# Platform Support
+
+Aim package is available for Python 3.6+ on the following platforms
+
+
+| Linux | MacOS | Windows |
+| ------|-------|---------|
+|:heavy_check_mark:|:heavy_check_mark:|:heavy_minus_sign:|
+
 
 # Roadmap
 
