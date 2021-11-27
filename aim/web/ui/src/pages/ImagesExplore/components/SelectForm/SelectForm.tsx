@@ -62,7 +62,7 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchMetricsRef.current = imagesExploreAppModel.getImagesData();
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
     searchMetricsRef.current.call();
   }
 

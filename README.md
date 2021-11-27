@@ -73,8 +73,8 @@ pip3 install aim
 </summary>
 
 ```python
-from aim import Run
-
+from aim import Run, Image
+  
 # Initialize a new run
 run = Run()
 
@@ -84,12 +84,14 @@ run["hparams"] = {
     "batch_size": 32,
 }
 
-# Log metrics
-for step, sample in enumerate(train_loader):
-    # ...
-    run.track(loss_val, name='loss', step=step, epoch=epoch, context={ "subset": "train" })
-    run.track(acc_val, name='acc', step=step, epoch=epoch, context={ "subset": "train" })
-    # ...
+# Log artefacts
+for step in range(1000):
+    # Log metrics
+    run.track(loss_val, name='loss', step=step, context={ "subset": "train" })
+    run.track(accuracy_val, name='acc', step=step, context={ "subset": "train" })
+  
+    # Log images
+    run.track(Image(tensor_or_pil, caption), name='gen', step=step, context={ "subset": "train" })
 ```
 
 _See documentation [here](#sdk-specifications)._
@@ -216,6 +218,18 @@ It helps to save lots of time compared to other open-source experiment tracking 
   <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/metrics.png" />
 </kbd>
   
+## Images explorer
+Track intermediate images and search, compare them on the Images Explorer.
+
+**Features:**
+- Easily query any image
+- Group images by run parameters
+- Group images by step
+
+<kbd>
+  <img style="border: 1px solid #1d2253" src="https://user-images.githubusercontent.com/13848158/143069189-2768ef45-a8df-42fd-a044-ae1814ca8c6f.png" />
+</kbd>
+
 ## Params explorer
 Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
 
@@ -238,13 +252,6 @@ It's accessible from all the tables and tooltips.
 
 <kbd>
   <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/single_run.png" />
-</kbd>
-  
-## Images explorer (coming soon...)
-Track intermediate images and search, compare them on the Images Explorer.
-
-<kbd>
-  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/images.png" />
 </kbd>
   
 # How to query logs programmatically
@@ -316,6 +323,15 @@ Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source experiment tracker.
 - Aim is self-hosted free and open-source.
   - Remote self-hosted Aim is coming soon...
+
+# Platform Support
+
+Aim package is available for Python 3.6+ on the following platforms
+
+
+| Linux | MacOS | Windows |
+| ------|-------|---------|
+|:heavy_check_mark:|:heavy_check_mark:|:heavy_minus_sign:|
 
 
 # Roadmap

@@ -597,7 +597,7 @@ class RocksContainer(Container):
 
         return key, value
 
-    @exception_resistant
+    @exception_resistant(silent=True)
     def optimize_db_for_read(self):
         """
         This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying

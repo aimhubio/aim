@@ -50,7 +50,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               dataSelector,
             );
           });
-        } else if (props.chartType === ChartTypeEnum.HighPlot) {
+        } else {
           chartRefs.forEach((chartRef, index) => {
             if (index === activePoint.chartIndex) {
               return;
@@ -189,7 +189,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               alignmentConfig={props.alignmentConfig}
             />
           </Grid>
-          <Grid className='Metrics__controls__container' item>
+          <Grid className='ChartPanel__controls' item>
             {props.controls}
           </Grid>
         </>

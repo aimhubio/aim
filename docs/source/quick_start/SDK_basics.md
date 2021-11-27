@@ -40,8 +40,8 @@ run = Run(run_hash='run_hash')
 ### Track params and metrics with Run
 
 `Run` provides simple and intuitive interface for:
- - Tracking the metrics of your training run
- - Logging the parameters of your training run
+- Tracking the metrics of your training run
+- Logging the parameters of your training run
 
 **Parameters**
 
@@ -75,6 +75,46 @@ for step in range(1000):
 
 ```
 `Run.track` method full [spec](../refs/sdk.html#aim.sdk.run.Run.track).
+
+### Track images with Run
+
+Track images to explore model inputs, outputs, confusion matrices, weights, etc:
+
+```python
+from aim import Image
+
+for step in range(1000):
+    my_run.track(
+        Image(img_tensor_or_pil, img_caption), # Pass image data and/or caption
+        name='generated', # The name of image set
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Context (optional)
+            'subset': 'train',
+        },
+    )
+
+```
+`Image` class full [spec](../refs/sdk.html#module-aim.sdk.objects.image).
+
+Tracking batches of images:
+
+```python
+for step, (images, labels) in enumerate(train_loader):
+    aim_images = [Image(img, lbl) for img, lbl in zip(images, labels)]
+
+    my_run.track(
+        aim_images, # List of images
+        name='generated', # The name of image set
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Context (optional)
+            'subset': 'train',
+        },
+    )
+```
+
+Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_track_images.py).
 
 ### Query Runs and saved metadata
 

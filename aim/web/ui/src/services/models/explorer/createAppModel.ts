@@ -54,7 +54,7 @@ import {
   GroupNameType,
   IChartZoom,
   IAggregationConfig,
-  IChartTooltip,
+  IPanelTooltip,
   ITooltipData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -939,6 +939,7 @@ function createAppModel({
         processedData: data,
         paramKeys: params,
         groupingSelectOptions,
+        groupingItems: ['color', 'stroke', 'chart'],
         model,
       });
       const tableData = getDataAsTableRows(
@@ -1014,6 +1015,7 @@ function createAppModel({
         processedData: data,
         paramKeys: params,
         groupingSelectOptions,
+        groupingItems: ['color', 'stroke', 'chart'],
         model,
       });
       const tableData = getDataAsTableRows(
@@ -1829,7 +1831,7 @@ function createAppModel({
         onAlignmentTypeChange(type: AlignmentOptionsEnum): void {
           onAlignmentTypeChange({ type, model, appName, updateModelData });
         },
-        onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+        onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
           onChangeTooltip({ tooltip, tooltipData, model, appName });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
@@ -3308,6 +3310,7 @@ function createAppModel({
           processedData: data,
           paramKeys: params,
           groupingSelectOptions,
+          groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
 
@@ -3687,6 +3690,7 @@ function createAppModel({
           processedData: data,
           paramKeys: params,
           groupingSelectOptions,
+          groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
         const tableData = getDataAsTableRows(
@@ -3911,7 +3915,7 @@ function createAppModel({
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
-          onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+          onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
             onChangeTooltip({ tooltip, tooltipData, model, appName });
           },
           onColorIndicatorChange(): void {
