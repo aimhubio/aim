@@ -2,7 +2,6 @@
 
 .ExpressionAutoComplete {
   position: relative;
-  // max-width: calc(100vw - 28.5rem);
   min-width: 21.875rem;
   &__CodeEditor {
     height: 2rem;
@@ -15,6 +14,9 @@
     &__input {
       .w-tc-editor-preview {
         white-space: nowrap !important;
+        pre {
+          overflow: hidden;
+        }
       }
       textarea {
         display: none !important;
@@ -64,6 +66,9 @@
     height: 2rem;
     &__filled {
       -webkit-text-fill-color: transparent;
+    }
+    &::placeholder {
+      color: $text-color-50;
     }
   }
 

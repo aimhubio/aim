@@ -8,6 +8,7 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
+import projectsModel from 'services/models/projects/projectsModel';
 import runAppModel from 'services/models/runs/runsAppModel';
 
 import './SearchBar.scss';
@@ -21,8 +22,11 @@ function SearchBar({
   const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
+    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
+    paramsMetricsRequestRef.call();
     return () => {
       searchRunsRef.current?.abort();
+      paramsMetricsRequestRef?.abort();
     };
   }, []);
 

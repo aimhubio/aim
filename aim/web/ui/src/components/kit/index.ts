@@ -5,7 +5,7 @@ import ToggleButton from './ToggleButton';
 import Icon from './Icon';
 import Badge from './Badge';
 import Dropdown from './Dropdown';
-import CodeCompletion from './AutoSuggestions';
+import AutoSuggestions from './AutoSuggestions';
 
 export {
   Text,
@@ -15,5 +15,5 @@ export {
   Badge,
   Icon,
   Dropdown,
-  CodeCompletion,
+  AutoSuggestions,
 };

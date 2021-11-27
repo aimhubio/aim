@@ -2,7 +2,7 @@ import React from 'react';
 
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
-import { CodeCompletion } from 'components/kit';
+import { AutoSuggestions } from 'components/kit';
 
 import getCaretCoordinates from 'utils/getCaretPosition';
 
@@ -191,7 +191,7 @@ function ExpressionAutoComplete({
         padding={8}
       />
       {suggestionsList.length > 0 ? (
-        <CodeCompletion
+        <AutoSuggestions
           inputRef={inputRef}
           suggestionsRef={suggestionsRef}
           suggestionsList={suggestionsList}

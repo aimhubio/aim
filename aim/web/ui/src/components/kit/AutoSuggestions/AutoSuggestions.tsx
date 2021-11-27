@@ -50,7 +50,7 @@ function AutoSuggestions({
   return (
     <SuggestionsContainer
       {...buttonProps}
-      className='CodeCompletion'
+      className='AutoSuggestions'
       aria-expanded={true}
       suggestionsPosition={suggestionsPosition}
       isEmpty={!suggestionsList.length}
@@ -60,7 +60,7 @@ function AutoSuggestions({
       {suggestionsList?.map((suggestion: string, index: number) => (
         <a
           key={suggestion}
-          className='CodeCompletion__SuggestionItem'
+          className='AutoSuggestions__item'
           onClick={() => onSuggestionClick(suggestion)}
           {...itemProps[index]}
         >

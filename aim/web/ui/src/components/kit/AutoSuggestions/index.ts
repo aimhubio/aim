@@ -1,4 +1,4 @@
-import CodeCompletion from './AutoSuggestions';
+import AutoSuggestions from './AutoSuggestions';
 export * from './AutoSuggestions.d';
 
-export default CodeCompletion;
+export default AutoSuggestions;
