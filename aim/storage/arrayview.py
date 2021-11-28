@@ -236,7 +236,6 @@ class TreeArrayView(ArrayView[T]):
                 items_in_range.append((idx, val))
             if idx >= stop:
                 break
-        print(f'found {len(items_in_range)} items in range [{start}, {stop}]')
         step = (len(items_in_range) // count or 1) if count else 1
         yield from islice(items_in_range, 0, len(items_in_range), step)
 
