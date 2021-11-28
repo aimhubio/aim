@@ -10,6 +10,7 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
+import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
@@ -216,18 +217,14 @@ function ImagesPanel({
               />
             )}
           </div>
-          {//TODO has to finished it}
           <Dialog
             onClose={() => setImageFullMode(!imageFullMode)}
             aria-labelledby='customized-dialog-title'
             open={imageFullMode}
           >
-            <img
-              src={`data:image/${imageFullModeData.format};base64, ${
-                imagesBlobs?.[imageFullModeData.blob_uri]
-              }`}
-              alt=''
-              style={{ width: '100px', height: '100%' }}
+            <ImageFullViewPopover
+              imageData={imageFullModeData}
+              imagesBlobs={imagesBlobs}
             />
           </Dialog>
         </>
