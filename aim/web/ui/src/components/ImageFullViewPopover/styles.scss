@@ -2,7 +2,26 @@
 
 .ImageFullViewPopover {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
+  &__detailContainer {
+    .PopoverContent {
+      box-shadow: unset;
+      &__container {
+        box-shadow: unset;
+      }
+      &__imageSetBox {
+        padding-top: 0;
+      }
+    }
+    &__closeButtonContainer {
+      color: #414b6d;
+      padding: 0.25rem 0.3125rem 0.25rem 0;
+      display: flex;
+      justify-content: end;
+      .Icon__container {
+        font-size: 0.625rem;
+      }
+    }
+  }
 }
-  

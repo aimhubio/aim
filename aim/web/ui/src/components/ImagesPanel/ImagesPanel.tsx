@@ -220,11 +220,14 @@ function ImagesPanel({
           <Dialog
             onClose={() => setImageFullMode(!imageFullMode)}
             aria-labelledby='customized-dialog-title'
+            className='ImagesPanel__Container__imageFullViewPopup'
             open={imageFullMode}
           >
             <ImageFullViewPopover
               imageData={imageFullModeData}
               imagesBlobs={imagesBlobs}
+              tooltipContent={tooltip?.content}
+              handleClose={() => setImageFullMode(!imageFullMode)}
             />
           </Dialog>
         </>

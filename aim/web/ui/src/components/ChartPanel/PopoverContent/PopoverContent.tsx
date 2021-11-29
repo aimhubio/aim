@@ -97,7 +97,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         );
       case ChartTypeEnum.ImageSet:
         return (
-          <div className='PopoverContent__box'>
+          <div className='PopoverContent__box PopoverContent__imageSetBox'>
             <div className='PopoverContent__value'>
               <strong>{tooltipContent.images_name}</strong>
               <Text className='PopoverContent__contextValue'>

@@ -7,6 +7,11 @@
   flex-direction: column;
   overflow: hidden;
 
+  &__imageFullViewPopup {
+    .MuiDialog-paperWidthSm {
+      max-width: calc(100vw - 14.375rem);
+    }
+  }
   &__resizing {
     display: flex;
     width: 100%;
