@@ -64,8 +64,8 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
       className={`ChartPopover ${className}`}
       transitionDuration={{
         appear: 0,
-        enter: 200,
-        exit: 200,
+        enter: 50,
+        exit: 100,
       }}
       TransitionProps={{
         onEnter: (node) => {

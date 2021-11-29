@@ -80,8 +80,7 @@ function ImagesPanel({
     }, batchSendDelay);
   }
 
-  function closePopover(e: MouseEvent<HTMLDivElement>): void {
-    e.stopPropagation();
+  function closePopover(): void {
     if (!focusedState?.active) {
       setActivePointRect(null);
     }
@@ -137,7 +136,9 @@ function ImagesPanel({
   }, [blobUriArray.current]);
 
   useEffect(() => {
+    document.addEventListener('mousemove', closePopover);
     return () => {
+      document.removeEventListener('mousemove', closePopover);
       timeoutID.current && window.clearTimeout(timeoutID.current);
     };
   }, []);
@@ -157,7 +158,7 @@ function ImagesPanel({
         </div>
       ) : (
         <>
-          <div className='ImagesPanel__Container' onMouseMove={closePopover}>
+          <div className='ImagesPanel__Container'>
             {!isEmpty(imagesData) ? (
               <div className='ImagesPanel'>
                 <div
