@@ -1,0 +1,78 @@
+@use 'src/styles/abstracts' as *;
+
+.ExpressionAutoComplete {
+  position: relative;
+  min-width: 21.875rem;
+  &__CodeEditor {
+    height: 2rem;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas,
+      Liberation Mono, Menlo, monospace;
+    font-size: $text-md;
+    border-radius: $radius-main;
+    border: $border-main;
+
+    &__input {
+      .w-tc-editor-preview {
+        white-space: nowrap !important;
+        pre {
+          overflow: hidden;
+        }
+      }
+      textarea {
+        display: none !important;
+      }
+    }
+    &__textarea {
+      height: 4.5rem;
+    }
+  }
+  &__input,
+  &__textarea {
+    margin: 0;
+    border: 0.0625rem solid transparent;
+    background: none;
+    box-sizing: inherit;
+    display: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-variant-ligatures: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    tab-size: inherit;
+    text-indent: inherit;
+    text-rendering: inherit;
+    text-transform: inherit;
+    white-space: pre-wrap;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    outline: 0px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    resize: none;
+    color: inherit;
+    opacity: 0.8;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    padding: $space-xs;
+    z-index: 1;
+    width: 100%;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas,
+      Liberation Mono, Menlo, monospace;
+    font-size: $text-md;
+    border-radius: $radius-main;
+    height: 2rem;
+    &__filled {
+      -webkit-text-fill-color: transparent;
+    }
+    &::placeholder {
+      color: $text-color-50;
+    }
+  }
+
+  &__textarea {
+    height: 4rem;
+  }
+}

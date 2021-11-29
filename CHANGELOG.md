@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add ability to cancel pending request (roubkar)
+- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
 
 ## 3.1.1 Nov 25 2021
 

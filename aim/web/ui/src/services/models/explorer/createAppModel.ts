@@ -517,7 +517,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex) {
+            } catch (ex: any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -2069,18 +2069,19 @@ function createAppModel({
                   },
                 },
               });
-
-              const tableRef: any = model.getState()?.refs?.tableRef;
-              tableRef.current?.updateData({
-                newData: tableData.rows,
-                newColumns: tableColumns,
-                hiddenColumns: configData.table.hiddenColumns!,
-              });
-            } catch (ex) {
+              setTimeout(() => {
+                const tableRef: any = model.getState()?.refs?.tableRef;
+                tableRef.current?.updateData({
+                  newData: tableData.rows,
+                  newColumns: tableColumns,
+                  hiddenColumns: configData.table.hiddenColumns!,
+                });
+              }, 0);
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
-                console.log('Unhandled error: ', ex);
+                console.log('Unhandled error: ');
               }
             }
           },
@@ -2898,7 +2899,7 @@ function createAppModel({
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-        const configData = model.getState()?.config;
+        const configData = { ...model.getState()?.config };
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
@@ -2942,7 +2943,7 @@ function createAppModel({
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
-              } catch (ex) {
+              } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
