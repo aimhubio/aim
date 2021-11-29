@@ -7,6 +7,8 @@
 <br />
 <br />
 
+
+
 **Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.**
   
 <h3 align="center">
