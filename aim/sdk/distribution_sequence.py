@@ -5,7 +5,7 @@ from aim.sdk.objects.distribution import Distribution
 
 
 class Distributions(Sequence):
-    """Class representing series of Image objects or Image lists."""
+    """Class representing series of Distribution objects."""
 
     @classmethod
     def allowed_dtypes(cls) -> Tuple[str, ...]:
@@ -28,10 +28,3 @@ class Distributions(Sequence):
         Required to implement ranged and sliced data fetching.
         """
         return self._meta_tree['last_step']
-
-    def record_length(self):
-        """Get tracked records longest list length or `None` if Image objects are tracked.
-
-        Required to implement ranged and sliced data fetching.
-        """
-        return self._meta_tree.get('record_max_length', None)
