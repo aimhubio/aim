@@ -56,8 +56,8 @@ const createFiles = (path, name) => {
   console.warn('Creating files ...');
   const fullPath = path + '/' + name;
   try {
-    fs.writeFileSync(fullPath + '/types.d.ts', getTypesBaseCode(name));
-    fs.writeFileSync(fullPath + '/styles.scss', getStylesBaseCode(name));
+    fs.writeFileSync(fullPath + '/Menu.d.ts', getTypesBaseCode(name));
+    fs.writeFileSync(fullPath + '/Menu.scss', getStylesBaseCode(name));
     fs.writeFileSync(
       fullPath + '/' + name + '.tsx',
       getComponentBaseCode(name),

@@ -9,7 +9,7 @@ const getComponentBaseCode = (name) => `
     import { Text } from 'components/kit';
     import { I${name}Props } from './types.d';
     
-    import './styles.scss';
+    import './Menu.scss';
     
     function ${name}({
       title,
