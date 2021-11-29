@@ -13,7 +13,7 @@ export interface IProcessData {
   yValues: number[];
 }
 
-export interface IGetFilteredValuesParams {
+export interface IGetFilteredValuesArgs {
   data: number[];
   invalidXIndices: number[];
   invalidYIndices: number[];
