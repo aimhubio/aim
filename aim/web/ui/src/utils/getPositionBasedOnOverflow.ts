@@ -1,37 +1,38 @@
 import { PopoverPosition } from '@material-ui/core';
 
 function getPositionBasedOnOverflow(
-  hoveredElemRect: { top: number; left: number; right: number },
+  activePointRect: { top: number; bottom: number; left: number; right: number },
   popoverRect: DOMRect,
   containerRect: DOMRect,
 ): PopoverPosition {
   if (!containerRect || !popoverRect) {
     return {
-      top: hoveredElemRect.top,
-      left: hoveredElemRect.left,
+      top: activePointRect.top,
+      left: activePointRect.left,
     };
   }
   let left;
   let top;
 
-  if (hoveredElemRect.left < containerRect.left) {
+  const gap = 10;
+  if (activePointRect.left < containerRect.left) {
     // left bound case
-    left = hoveredElemRect.right;
-  } else if (hoveredElemRect.right + popoverRect.width > containerRect.right) {
+    left = activePointRect.right + gap;
+  } else if (activePointRect.right + popoverRect.width > containerRect.right) {
     // right bound case
-    left = hoveredElemRect.left - popoverRect.width;
+    left = activePointRect.left - popoverRect.width - gap;
   } else {
-    left = hoveredElemRect.right;
+    left = activePointRect.right + gap;
   }
 
-  if (hoveredElemRect.top < containerRect.top) {
+  if (activePointRect.top < containerRect.top) {
     // top bound case
-    top = containerRect.top;
-  } else if (hoveredElemRect.top + popoverRect.height > containerRect.bottom) {
+    top = containerRect.top + gap;
+  } else if (activePointRect.top + popoverRect.height > containerRect.bottom) {
     // bottom bound case
-    top = containerRect.bottom - popoverRect.height;
+    top = containerRect.bottom - popoverRect.height - gap;
   } else {
-    top = hoveredElemRect.top;
+    top = activePointRect.top + gap;
   }
 
   return {

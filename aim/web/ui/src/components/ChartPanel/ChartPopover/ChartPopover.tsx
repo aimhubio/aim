@@ -1,5 +1,4 @@
 import React from 'react';
-import { isEqual } from 'lodash-es';
 
 import { Popover, PopoverPosition } from '@material-ui/core';
 
@@ -24,33 +23,31 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
   const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
 
   function onPopoverPositionChange(
-    hoveredElemRect: IChartPopover['hoveredElemRect'],
+    activePointRect: IChartPopover['activePointRect'],
   ): void {
-    if (hoveredElemRect === null) {
+    if (activePointRect === null) {
       setPopoverPos(null);
     } else if (popoverNode && containerNode) {
       // Popover viewport need to be overflowed by chart container
       const pos = getPositionBasedOnOverflow(
-        hoveredElemRect,
+        activePointRect,
         popoverNode.getBoundingClientRect(),
         containerNode.getBoundingClientRect(),
       );
 
-      if (!isEqual(popoverPos, pos)) {
-        setPopoverPos(pos);
-      }
+      setPopoverPos(pos);
     }
   }
 
   React.useEffect(() => {
-    if (open && props.hoveredElemRect) {
-      onPopoverPositionChange(props.hoveredElemRect);
+    if (open && props.activePointRect) {
+      onPopoverPositionChange(props.activePointRect);
     }
   }, [
     open,
     containerNode,
     popoverNode,
-    props.hoveredElemRect,
+    props.activePointRect,
     props.tooltipContent,
     props.focusedState.key,
     props.focusedState.active,
@@ -60,10 +57,10 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
     <Popover
       key={`popover-${props.reCreatePopover}`}
       id={id}
-      open={!!props.hoveredElemRect && open}
+      open={!!props.activePointRect && open}
       disableEnforceFocus={true}
       anchorReference='anchorPosition'
-      anchorPosition={popoverPos || props.hoveredElemRect || undefined}
+      anchorPosition={popoverPos || props.activePointRect || undefined}
       className={`ChartPopover ${className}`}
       transitionDuration={{
         appear: 0,

@@ -392,22 +392,22 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     xPos: number,
     yPos: number,
   ): {
-    topPos: number;
-    leftPos: number;
+    boundedX: number;
+    boundedY: number;
   } {
     const [yMax, yMin] = attributesRef.current.yScale.range();
     const [xMin, xMax] = attributesRef.current.xScale.range();
 
     return {
-      topPos: yPos > yMax ? yMax : yPos < yMin ? yMin : yPos,
-      leftPos: xPos > xMax ? xMax : xPos < xMin ? xMin : xPos,
+      boundedY: yPos > yMax ? yMax : yPos < yMin ? yMin : yPos,
+      boundedX: xPos > xMax ? xMax : xPos < xMin ? xMin : xPos,
     };
   }
 
   function getActivePoint(circle: INearestCircle): IActivePoint {
     const xPos = circle.x;
     const yPos = circle.y;
-    const { topPos, leftPos } = getBoundedPosition(xPos, yPos);
+    const { boundedX, boundedY } = getBoundedPosition(xPos, yPos);
 
     return {
       key: circle.key,
@@ -416,8 +416,13 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       xPos,
       yPos,
       chartIndex: index,
-      topPos: chartRect.top + topPos + margin.top,
-      leftPos: chartRect.left + leftPos + margin.left,
+      pointRect: {
+        top: chartRect.top + margin.top + boundedY - CircleEnum.ActiveRadius,
+        bottom: chartRect.top + margin.top + boundedY + CircleEnum.ActiveRadius,
+        left: chartRect.left + margin.left + boundedX - CircleEnum.ActiveRadius,
+        right:
+          chartRect.left + margin.left + boundedX + CircleEnum.ActiveRadius,
+      },
     };
   }
 

@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect, useMemo, useRef } from 'react';
+import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
@@ -46,14 +46,17 @@ function ImagesPanel({
   focusedState,
   onActivePointChange,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  const [hoveredElemRect, setHoveredElemRect] = React.useState<DOMRect | null>(
-    null,
-  );
+  const [activePointRect, setActivePointRect] = useState<{
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  } | null>(null);
   let blobUriArray = useRef<string[]>([]);
   let timeoutID = useRef(0);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const activePointRef = React.useRef<any>(null);
-  const collectedURIs = React.useRef<{ [key: string]: boolean }>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const activePointRef = useRef<any>(null);
+  const collectedURIs = useRef<{ [key: string]: boolean }>({});
 
   function addUriToList(blobUrl: string) {
     if (!imagesBlobs?.[blobUrl]) {
@@ -78,11 +81,25 @@ function ImagesPanel({
   }
 
   function closePopover(e: MouseEvent<HTMLDivElement>): void {
-    e?.stopPropagation();
+    e.stopPropagation();
     if (!focusedState?.active) {
-      setHoveredElemRect(null);
+      setActivePointRect(null);
     }
   }
+
+  const setActiveElemPos = React.useCallback(() => {
+    if (activePointRef.current && containerRef.current) {
+      const { pointRect } = activePointRef.current;
+      setActivePointRect({
+        bottom: pointRect.bottom,
+        right: pointRect.right,
+        top: pointRect.top,
+        left: pointRect.left,
+      });
+    } else {
+      setActivePointRect(null);
+    }
+  }, [setActivePointRect, activePointRef.current, containerRef.current]);
 
   const syncHoverState = React.useCallback(
     (args: any): void => {
@@ -93,18 +110,14 @@ function ImagesPanel({
         if (onActivePointChange) {
           onActivePointChange(activePoint, focusedStateActive);
         }
-        if (activePoint.clientRect) {
-          setHoveredElemRect(activePoint.clientRect);
-        } else {
-          setHoveredElemRect(null);
-        }
+        setActiveElemPos();
       }
       // on MouseLeave
       else {
-        setHoveredElemRect(null);
+        setActivePointRect(null);
       }
     },
-    [onActivePointChange, setHoveredElemRect],
+    [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
   const imagesSetKey = useMemo(
@@ -175,7 +188,7 @@ function ImagesPanel({
                 </div>
                 <ChartPopover
                   containerNode={containerRef.current}
-                  hoveredElemRect={hoveredElemRect}
+                  activePointRect={activePointRect}
                   open={
                     resizeMode !== ResizeModeEnum.MaxHeight &&
                     !panelResizing &&

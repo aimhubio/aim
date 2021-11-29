@@ -11,8 +11,9 @@ import { ChartTypeEnum } from 'utils/d3';
 export interface IChartPopover {
   id?: string;
   children?: React.ReactNode;
-  hoveredElemRect: {
+  activePointRect: {
     top: number;
+    bottom: number;
     left: number;
     right: number;
   } | null;

@@ -49,14 +49,15 @@ const ImageBox = ({
   function onMouseMove(e: MouseEvent<HTMLDivElement>): void {
     if (e?.currentTarget && !focusedState?.active) {
       e.stopPropagation();
-      const clientRect = e.currentTarget.getBoundingClientRect();
+      const pointRect = e.currentTarget.getBoundingClientRect();
       safeSyncHoverState({
-        activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
+        activePoint: { pointRect, key: data.key, seqKey: data.seqKey },
       });
     }
   }
 
   function onMouseLeave(e: MouseEvent<HTMLDivElement>): void {
+    e.stopPropagation();
     if (!focusedState?.active) {
       safeSyncHoverState({ activePoint: null });
     }
