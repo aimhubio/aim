@@ -19,22 +19,11 @@ function ImageFullViewPopover({
     <div
       className='ImageFullViewPopover'
       style={{
-        width:
-          (document.body.getBoundingClientRect().width < imageData.width
-            ? document.body.getBoundingClientRect().width
-            : imageData.width) +
-          230 +
-          'px',
-        height:
-          (document.body.getBoundingClientRect().height < imageData.height
-            ? document.body.getBoundingClientRect().width
-            : imageData.height) + 'px',
+        height: 'auto',
         maxHeight:
-          (document.body.getBoundingClientRect().height < imageData.height
-            ? document.body.getBoundingClientRect().width
-            : imageData.height) -
-          64 +
-          'px',
+          (document.body.getBoundingClientRect().height - 64 < imageData.height
+            ? document.body.getBoundingClientRect().height - 64
+            : imageData.height) + 'px',
       }}
     >
       <img
@@ -43,13 +32,12 @@ function ImageFullViewPopover({
         }`}
         alt=''
         style={{
-          width:
-            (document.body.getBoundingClientRect().width < imageData.width
-              ? document.body.getBoundingClientRect().width
-              : imageData.width) +
-            230 +
-            'px',
-          height: '100%',
+          maxHeight:
+            (document.body.getBoundingClientRect().height - 64 <
+            imageData.height
+              ? document.body.getBoundingClientRect().height - 64
+              : imageData.height) + 'px',
+          maxWidth: 'calc(100% - 230px)',
           objectFit: 'fill',
         }}
       />

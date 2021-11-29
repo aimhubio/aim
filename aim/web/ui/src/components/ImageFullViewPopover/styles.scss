@@ -5,6 +5,8 @@
   justify-content: start;
   align-items: start;
   &__detailContainer {
+    height: 100%;
+    min-width: 14.375rem;
     .PopoverContent {
       box-shadow: unset;
       &__container {

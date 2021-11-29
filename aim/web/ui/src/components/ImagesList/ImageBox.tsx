@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { Skeleton } from '@material-ui/lab';
 
-import { Icon } from 'components/kit';
+import { Button, Icon } from 'components/kit';
 
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
@@ -69,6 +69,12 @@ const ImageBox = ({
     setHoveredImageKey('');
   }
 
+  function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
+    e.stopPropagation();
+    setImageFullMode(true);
+    setImageFullModeData(data);
+  }
+
   return (
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
@@ -86,20 +92,20 @@ const ImageBox = ({
               src={`data:image/${format};base64, ${imagesBlobs?.[blob_uri]}`}
               alt=''
             />
-            <div
+            <Button
+              withOnlyIcon
+              size='small'
               className={classNames(
-                'ImagesSet__container__imagesBox__imageBox__imageWrapper__zoomIcon',
+                'ImagesSet__container__imagesBox__imageBox__imageWrapper__zoomIconWrapper',
                 {
                   isHidden: !(hoveredImageKey === data.key),
                 },
               )}
-              onClick={() => {
-                setImageFullMode(true);
-                setImageFullModeData(data);
-              }}
+              onClick={onImageFullSizeModeButtonClick}
+              color='inherit'
             >
-              <Icon name='cursor' fontSize={12} />
-            </div>
+              <Icon name='zoom-in' fontSize={14} />
+            </Button>
           </div>
         ) : (
           <Skeleton
