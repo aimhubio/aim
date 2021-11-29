@@ -130,6 +130,7 @@ const LineChart = React.forwardRef(function LineChart(
       xValues,
       attributesRef,
       humanizerConfigRef,
+      drawBgTickLines: { y: true },
     });
 
     drawLines({
@@ -257,7 +258,7 @@ const LineChart = React.forwardRef(function LineChart(
   return (
     <div
       ref={parentRef}
-      className={`LineChart__container ${zoom?.active ? 'zoomMode' : ''}`}
+      className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
     >
       <div ref={visAreaRef} />
     </div>
