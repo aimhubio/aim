@@ -48,16 +48,9 @@
   width: 100%;
 
   input {
-    font-family: monospace;
     padding: 0.5rem;
     font-size: $text-md;
     border-bottom: $border-main;
-  }
-}
-
-.SelectForm__TextField {
-  input {
-    font-family: monospace;
   }
 }
 
@@ -66,9 +59,6 @@
   .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
     padding-top: 7.5px;
     padding-bottom: 7.5px;
-  }
-  textarea {
-    font-family: monospace;
   }
 }
 

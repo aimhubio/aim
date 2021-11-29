@@ -13,6 +13,7 @@ import drawParallelHoverAttributes from './drawParallelHoverAttributes';
 import drawParallelAxesBrush from './drawParallelAxesBrush';
 import drawParallelColorIndicator from './drawParallelColorIndicator';
 import getCoordinates from './getCoordinates';
+import drawPoints from './drawPoints';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -65,6 +66,16 @@ enum ChartTypeEnum {
   ImageSet = 'ImageSet',
 }
 
+enum PointSymbolEnum {
+  CIRCLE = 'symbolCircle',
+  CROSS = 'symbolCross',
+  DIAMOND = 'symbolDiamond',
+  SQUARE = 'symbolSquare',
+  STAR = 'symbolStar',
+  TRIANGLE = 'symbolTriangle',
+  WYE = 'symbolWye',
+}
+
 export {
   CircleEnum,
   CurveEnum,
@@ -72,6 +83,7 @@ export {
   ChartTypeEnum,
   AlignmentKeysEnum,
   AlignmentOptionsEnum,
+  PointSymbolEnum,
   clearArea,
   drawArea,
   drawAxes,
@@ -87,6 +99,7 @@ export {
   drawParallelLines,
   drawParallelHoverAttributes,
   drawParallelAxesBrush,
+  drawPoints,
   gradientStartColor,
   gradientEndColor,
 };

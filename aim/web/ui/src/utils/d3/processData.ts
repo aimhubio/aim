@@ -6,7 +6,10 @@ import { ILine } from 'types/components/LineChart/LineChart';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { removeOutliers } from 'utils/removeOutliers';
 
-function processData(data: ILine[], ignoreOutliers: boolean): IProcessData {
+function processData(
+  data: ILine[],
+  ignoreOutliers: boolean = false,
+): IProcessData {
   let xValues: number[] = [];
   let yValues: number[] = [];
   let yMinData: number[][] = [];
