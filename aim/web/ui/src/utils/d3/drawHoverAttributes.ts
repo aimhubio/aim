@@ -5,14 +5,14 @@ import { isEqual } from 'lodash-es';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import {
-  IDrawHoverAttributesProps,
+  IDrawHoverAttributesArgs,
   IAxisLineData,
   INearestCircle,
   IActivePoint,
-  ISyncHoverStateParams,
+  ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import { IUpdateFocusedChartProps } from 'types/components/LineChart/LineChart';
+import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getFormattedValue from 'utils/formattedValue';
@@ -22,7 +22,7 @@ import { AlignmentOptionsEnum, CircleEnum } from './index';
 
 import 'components/LineChart/LineChart.scss';
 
-function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
+function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {
     data,
     index,
@@ -42,7 +42,15 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     syncHoverState,
     aggregationConfig,
     humanizerConfigRef,
-  } = props;
+    drawAxisLines = {
+      x: true,
+      y: true,
+    },
+    drawAxisLabels = {
+      x: true,
+      y: true,
+    },
+  } = args;
 
   if (!svgNodeRef?.current || !bgRectNodeRef?.current) {
     return;
@@ -113,106 +121,111 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function clearXAxisLabel(): void {
-    if (xAxisLabelNodeRef.current) {
+    if (xAxisLabelNodeRef?.current) {
       xAxisLabelNodeRef.current.remove();
       xAxisLabelNodeRef.current = null;
     }
   }
 
   function drawXAxisLabel(x: number): void {
-    const visArea = d3.select(visAreaRef.current);
-    const xAxisTickValue = getFormattedValue(
-      attributesRef.current.xScale.invert(x),
-    );
+    if (xAxisLabelNodeRef && drawAxisLabels.x) {
+      const visArea = d3.select(visAreaRef.current);
+      const xAxisTickValue = getFormattedValue(
+        attributesRef.current.xScale.invert(x),
+      );
 
-    let xAxisValueText;
+      let xAxisValueText;
 
-    switch (alignmentConfig?.type) {
-      case AlignmentOptionsEnum.EPOCH:
-        xAxisValueText = Math.floor(xAxisTickValue);
-        break;
-      case AlignmentOptionsEnum.RELATIVE_TIME:
-        xAxisValueText = shortEnglishHumanizer(Math.round(xAxisTickValue), {
-          ...humanizerConfigRef.current,
-          maxDecimalPoints: 2,
-        });
-        break;
-      case AlignmentOptionsEnum.ABSOLUTE_TIME:
-        xAxisValueText = moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');
-        break;
-      default:
-        xAxisValueText = xAxisTickValue;
-    }
-
-    if (xAxisTickValue || xAxisTickValue === 0) {
-      clearXAxisLabel();
-      // X Axis Label
-      xAxisLabelNodeRef.current = visArea
-        .append('div')
-        .attr('class', 'ChartMouseValue ChartMouseValueXAxis')
-        .style('top', `${height - margin.bottom + 1}px`)
-        .text(xAxisValueText);
-
-      const axisLeftEdge = margin.left - 1;
-      const axisRightEdge = width - margin.right + 1;
-      let xAxisValueWidth = xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
-      if (xAxisValueWidth > plotBoxRef.current.width) {
-        xAxisValueWidth = plotBoxRef.current.width;
+      switch (alignmentConfig?.type) {
+        case AlignmentOptionsEnum.EPOCH:
+          xAxisValueText = Math.floor(xAxisTickValue);
+          break;
+        case AlignmentOptionsEnum.RELATIVE_TIME:
+          xAxisValueText = shortEnglishHumanizer(Math.round(xAxisTickValue), {
+            ...humanizerConfigRef.current,
+            maxDecimalPoints: 2,
+          });
+          break;
+        case AlignmentOptionsEnum.ABSOLUTE_TIME:
+          xAxisValueText = moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');
+          break;
+        default:
+          xAxisValueText = xAxisTickValue;
       }
-      xAxisLabelNodeRef.current
-        .style('width', `${xAxisValueWidth}px`)
-        .style(
-          'left',
-          `${
-            x - xAxisValueWidth / 2 < 0
-              ? axisLeftEdge + xAxisValueWidth / 2
-              : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
-              ? axisRightEdge - xAxisValueWidth / 2
-              : x + axisLeftEdge
-          }px`,
-        );
+
+      if (xAxisTickValue || xAxisTickValue === 0) {
+        clearXAxisLabel();
+        // X Axis Label
+        xAxisLabelNodeRef.current = visArea
+          .append('div')
+          .attr('class', 'ChartMouseValue ChartMouseValueXAxis')
+          .style('top', `${height - margin.bottom + 1}px`)
+          .text(xAxisValueText);
+
+        const axisLeftEdge = margin.left - 1;
+        const axisRightEdge = width - margin.right + 1;
+        let xAxisValueWidth =
+          xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
+        if (xAxisValueWidth > plotBoxRef.current.width) {
+          xAxisValueWidth = plotBoxRef.current.width;
+        }
+        xAxisLabelNodeRef.current
+          .style('width', `${xAxisValueWidth}px`)
+          .style(
+            'left',
+            `${
+              x - xAxisValueWidth / 2 < 0
+                ? axisLeftEdge + xAxisValueWidth / 2
+                : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
+                ? axisRightEdge - xAxisValueWidth / 2
+                : x + axisLeftEdge
+            }px`,
+          );
+      }
     }
   }
 
   function clearYAxisLabel(): void {
-    if (yAxisLabelNodeRef.current) {
+    if (yAxisLabelNodeRef?.current) {
       yAxisLabelNodeRef.current.remove();
       yAxisLabelNodeRef.current = null;
     }
   }
 
   function drawYAxisLabel(y: number): void {
-    const visArea = d3.select(visAreaRef.current);
-    const yAxisTickValue = getFormattedValue(
-      attributesRef.current.yScale.invert(y),
-    );
-
-    if (yAxisTickValue || yAxisTickValue === 0) {
-      clearYAxisLabel();
-      // Y Axis Label
-      yAxisLabelNodeRef.current = visArea
-        .append('div')
-        .attr('class', 'ChartMouseValue ChartMouseValueYAxis')
-        .attr('title', yAxisTickValue)
-        .style('max-width', `${margin.left - 5}px`)
-        .style('right', `${width - margin.left}px`)
-        .text(yAxisTickValue);
-
-      const axisTopEdge = margin.top - 1;
-      const axisBottomEdge = height - margin.top;
-      const yAxisValueHeight =
-        yAxisLabelNodeRef.current?.node()?.offsetHeight ?? 0;
-
-      yAxisLabelNodeRef.current.style(
-        'top',
-        `${
-          y - yAxisValueHeight / 2 < 0
-            ? axisTopEdge + yAxisValueHeight / 2
-            : y + axisTopEdge + yAxisValueHeight / 2 > axisBottomEdge
-            ? axisBottomEdge - yAxisValueHeight / 2
-            : y + axisTopEdge
-        }px`,
+    if (yAxisLabelNodeRef && drawAxisLabels.y) {
+      const visArea = d3.select(visAreaRef.current);
+      const yAxisTickValue = getFormattedValue(
+        attributesRef.current.yScale.invert(y),
       );
+
+      if (yAxisTickValue || yAxisTickValue === 0) {
+        clearYAxisLabel();
+        // Y Axis Label
+        yAxisLabelNodeRef.current = visArea
+          .append('div')
+          .attr('class', 'ChartMouseValue ChartMouseValueYAxis')
+          .attr('title', yAxisTickValue)
+          .style('max-width', `${margin.left - 5}px`)
+          .style('right', `${width - margin.left}px`)
+          .text(yAxisTickValue);
+
+        const axisTopEdge = margin.top - 1;
+        const axisBottomEdge = height - margin.top;
+        const yAxisValueHeight =
+          yAxisLabelNodeRef.current?.node()?.offsetHeight ?? 0;
+
+        yAxisLabelNodeRef.current.style(
+          'top',
+          `${
+            y - yAxisValueHeight / 2 < 0
+              ? axisTopEdge + yAxisValueHeight / 2
+              : y + axisTopEdge + yAxisValueHeight / 2 > axisBottomEdge
+              ? axisBottomEdge - yAxisValueHeight / 2
+              : y + axisTopEdge
+          }px`,
+        );
+      }
     }
   }
 
@@ -275,32 +288,34 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function drawVerticalAxisLine(x: number): void {
-    const { height, width } = plotBoxRef.current;
-    const boundedHoverLineX = x < 0 ? 0 : x > width ? width : x;
+    if (drawAxisLines.y) {
+      const { height, width } = plotBoxRef.current;
+      const boundedHoverLineX = x < 0 ? 0 : x > width ? width : x;
 
-    const axisLineData: IAxisLineData = {
-      // hoverLine-y projection
-      x1: boundedHoverLineX,
-      y1: 0,
-      x2: boundedHoverLineX,
-      y2: height,
-    };
+      const axisLineData: IAxisLineData = {
+        // hoverLine-y projection
+        x1: boundedHoverLineX,
+        y1: 0,
+        x2: boundedHoverLineX,
+        y2: height,
+      };
 
-    clearVerticalAxisLine();
+      clearVerticalAxisLine();
 
-    // Draw vertical axis line
-    attributesNodeRef.current
-      .append('line')
-      .attr('id', 'HoverLine-y')
-      .attr('class', 'HoverLine')
-      .style('stroke-width', 1)
-      .style('stroke-dasharray', '4 2')
-      .style('fill', 'none')
-      .attr('x1', axisLineData.x1)
-      .attr('y1', axisLineData.y1)
-      .attr('x2', axisLineData.x2)
-      .attr('y2', axisLineData.y2)
-      .lower();
+      // Draw vertical axis line
+      attributesNodeRef.current
+        .append('line')
+        .attr('id', 'HoverLine-y')
+        .attr('class', 'HoverLine')
+        .style('stroke-width', 1)
+        .style('stroke-dasharray', '4 2')
+        .style('fill', 'none')
+        .attr('x1', axisLineData.x1)
+        .attr('y1', axisLineData.y1)
+        .attr('x2', axisLineData.x2)
+        .attr('y2', axisLineData.y2)
+        .lower();
+    }
   }
 
   function clearHorizontalAxisLine(): void {
@@ -308,32 +323,34 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   function drawHorizontalAxisLine(y: number): void {
-    const { height, width } = plotBoxRef.current;
-    const boundedHoverLineY = y < 0 ? 0 : y > height ? height : y;
+    if (drawAxisLines.x) {
+      const { height, width } = plotBoxRef.current;
+      const boundedHoverLineY = y < 0 ? 0 : y > height ? height : y;
 
-    const axisLineData: IAxisLineData = {
-      // hoverLine-x projection
-      x1: 0,
-      y1: boundedHoverLineY,
-      x2: width,
-      y2: boundedHoverLineY,
-    };
+      const axisLineData: IAxisLineData = {
+        // hoverLine-x projection
+        x1: 0,
+        y1: boundedHoverLineY,
+        x2: width,
+        y2: boundedHoverLineY,
+      };
 
-    clearHorizontalAxisLine();
+      clearHorizontalAxisLine();
 
-    // Draw horizontal axis line
-    attributesNodeRef.current
-      .append('line')
-      .attr('id', 'HoverLine-x')
-      .attr('class', 'HoverLine')
-      .style('stroke-width', 1)
-      .style('stroke-dasharray', '4 2')
-      .style('fill', 'none')
-      .attr('x1', axisLineData.x1)
-      .attr('y1', axisLineData.y1)
-      .attr('x2', axisLineData.x2)
-      .attr('y2', axisLineData.y2)
-      .lower();
+      // Draw horizontal axis line
+      attributesNodeRef.current
+        .append('line')
+        .attr('id', 'HoverLine-x')
+        .attr('class', 'HoverLine')
+        .style('stroke-width', 1)
+        .style('stroke-dasharray', '4 2')
+        .style('fill', 'none')
+        .attr('x1', axisLineData.x1)
+        .attr('y1', axisLineData.y1)
+        .attr('x2', axisLineData.x2)
+        .attr('y2', axisLineData.y2)
+        .lower();
+    }
   }
 
   function drawActiveCircle(key: string): void {
@@ -364,8 +381,8 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
       .selectAll('circle')
       .data(nearestCircles)
       .join('circle')
-      .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
       .attr('class', 'HoverCircle')
+      .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
       .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
       .attr('cx', (circle: INearestCircle) => circle.x)
       .attr('cy', (circle: INearestCircle) => circle.y)
@@ -500,12 +517,12 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
     return activePoint;
   }
 
-  function updateFocusedChart(params: IUpdateFocusedChartProps = {}): void {
+  function updateFocusedChart(args: IUpdateFocusedChartArgs = {}): void {
     const {
       mousePos,
       focusedStateActive = attributesRef.current.focusedState?.active || false,
       force = false,
-    } = params;
+    } = args;
     const { xScale, yScale, focusedState, activePoint } = attributesRef.current;
 
     let mousePosition: [number, number] | [] = [];
@@ -594,9 +611,9 @@ function drawHoverAttributes(props: IDrawHoverAttributesProps): void {
   }
 
   // Interactions
-  function safeSyncHoverState(params: ISyncHoverStateParams): void {
+  function safeSyncHoverState(args: ISyncHoverStateArgs): void {
     if (typeof syncHoverState === 'function') {
-      syncHoverState(params);
+      syncHoverState(args);
     }
   }
 

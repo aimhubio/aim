@@ -1,6 +1,6 @@
 import {
   IGetCoordinates,
-  IGetCoordinatesProps,
+  IGetCoordinatesArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
 export default function getCoordinates({
@@ -8,7 +8,7 @@ export default function getCoordinates({
   margin,
   xScale,
   yScale,
-}: IGetCoordinatesProps): IGetCoordinates {
+}: IGetCoordinatesArgs): IGetCoordinates {
   const xPixel = Math.floor(mouse[0]) - margin.left;
   const yPixel = Math.floor(mouse[1]) - margin.top;
   const [xMin, xMax] = xScale.range();

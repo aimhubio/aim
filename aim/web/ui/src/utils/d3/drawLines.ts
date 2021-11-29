@@ -1,6 +1,6 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
-import { IDrawLinesProps } from 'types/utils/d3/drawLines';
+import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
 import { IProcessedData } from 'types/utils/d3/processData';
 import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
@@ -14,7 +14,7 @@ import areaGenerator from './areaGenerator';
 
 import { CurveEnum } from './';
 
-function drawLines(props: IDrawLinesProps): void {
+function drawLines(args: IDrawLinesArgs): void {
   const {
     index,
     xScale,
@@ -24,13 +24,13 @@ function drawLines(props: IDrawLinesProps): void {
     curveInterpolation,
     highlightMode,
     aggregationConfig,
-  } = props;
+  } = args;
 
   if (!linesNodeRef?.current) {
     return;
   }
 
-  linesRef.current.updateLinesScales = function (
+  linesRef.current.updateScales = function (
     xScale: IGetAxisScale,
     yScale: IGetAxisScale,
     curve?: CurveEnum,
@@ -138,14 +138,14 @@ function drawLines(props: IDrawLinesProps): void {
 
   if (aggregationConfig?.isApplied) {
     if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
-      linesRef.current.updateAggregatedAreas(props.aggregatedData);
+      linesRef.current.updateAggregatedAreas(args.aggregatedData);
     }
-    linesRef.current.updateAggregatedLines(props.aggregatedData);
+    linesRef.current.updateAggregatedLines(args.aggregatedData);
     if (highlightMode !== HighlightEnum.Off) {
-      linesRef.current.updateLines(props.data);
+      linesRef.current.updateLines(args.data);
     }
   } else {
-    linesRef.current.updateLines(props.data);
+    linesRef.current.updateLines(args.data);
   }
 }
 

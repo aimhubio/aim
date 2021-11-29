@@ -3179,6 +3179,7 @@ function createAppModel({
                     }
                   },
                 );
+
                 return {
                   values,
                   color: color ?? run.color,
