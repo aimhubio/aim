@@ -1,8 +1,8 @@
 import React from 'react';
+
 import { Divider } from '@material-ui/core';
 
 import { Button, Icon } from 'components/kit';
-
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
