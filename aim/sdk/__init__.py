@@ -8,3 +8,8 @@ from aim.sdk.legacy.select import select_runs, select_metrics
 # SDK aliases
 from aim.sdk.run import Run
 from aim.sdk.repo import Repo
+
+# pre-defined sequences and custom objects
+from aim.sdk.objects import Image
+from aim.sdk.metric import Metric
+from aim.sdk.image_sequence import Images

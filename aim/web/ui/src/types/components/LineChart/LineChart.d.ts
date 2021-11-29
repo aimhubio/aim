@@ -35,7 +35,7 @@ export interface ILineChartProps {
   data: ILine[];
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;
-  displayOutliers: boolean;
+  ignoreOutliers: boolean;
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;

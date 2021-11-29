@@ -8,7 +8,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   GroupNameType,
   IChartTitleData,
-  IChartTooltip,
+  IPanelTooltip,
   IFocusedState,
   IGroupingSelectOption,
   IMetricAppConfig,
@@ -19,7 +19,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
 import { CurveEnum } from 'utils/d3';
 
@@ -40,7 +40,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   sortFields: [string, 'asc' | 'desc' | boolean][];
   focusedState: IFocusedState;
   isVisibleColorIndicator: boolean;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   chartTitleData: IChartTitleData;
   selectedParamsData: IParamsAppConfig['select'];
   onRowHeightChange: any;
@@ -74,7 +74,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onResetConfigData: () => void;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onColumnsVisibilityChange: (order: any) => void;
   onTableDiffShow: () => void;

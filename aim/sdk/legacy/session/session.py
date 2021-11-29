@@ -4,7 +4,7 @@ import signal
 import threading
 from typing import Optional
 
-from aim.sdk.legacy.session.utils import exception_resistant
+from aim.ext.exception_resistant import exception_resistant
 from aim.sdk.legacy.deprecation_warning import deprecated
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.resource.tracker import ResourceTracker
@@ -49,7 +49,7 @@ class Session:
     def repo_path(self):
         return self._repo_path
 
-    @exception_resistant
+    @exception_resistant(silent=False)
     def track(self, *args, **kwargs):
         val = args[0]
         name = kwargs.pop('name')
@@ -61,7 +61,7 @@ class Session:
 
         self._run.track(val, name=name, step=step, epoch=epoch, context=kwargs)
 
-    @exception_resistant
+    @exception_resistant(silent=False)
     def set_params(self, params: dict, name: Optional[str] = None):
         if name is None:
             self._run[...] = params
@@ -71,7 +71,7 @@ class Session:
     def flush(self):
         pass
 
-    @exception_resistant
+    @exception_resistant(silent=False)
     def close(self):
         if not self.active:
             raise Exception('session is closed')

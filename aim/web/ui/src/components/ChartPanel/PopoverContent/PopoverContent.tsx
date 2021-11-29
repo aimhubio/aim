@@ -33,7 +33,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     chartType,
     alignmentConfig,
   } = props;
-  const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
+  const { params = {}, groupConfig = {}, run } = tooltipContent;
 
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -44,12 +44,12 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <Text>Y: </Text>
               <span className='PopoverContent__headerValue'>
                 <Text weight={400}>
-                  {isSystemMetric(tooltipContent.metricName)
-                    ? formatSystemMetricName(tooltipContent.metricName)
-                    : tooltipContent.metricName}
+                  {isSystemMetric(tooltipContent.name)
+                    ? formatSystemMetricName(tooltipContent.name)
+                    : tooltipContent.name}
                 </Text>
                 <Text className='PopoverContent__contextValue'>
-                  {contextToString(tooltipContent.metricContext)}
+                  {contextToString(tooltipContent.context)}
                 </Text>
                 <Text component='p' className='PopoverContent__axisValue'>
                   {focusedState?.yValue ?? '--'}
@@ -63,7 +63,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {alignmentConfig?.type ===
                   AlignmentOptionsEnum.CUSTOM_METRIC && (
                   <Text className='PopoverContent__contextValue'>
-                    {contextToString(tooltipContent.metricContext)}
+                    {contextToString(tooltipContent.context)}
                   </Text>
                 )}
                 <Text component='p' className='PopoverContent__axisValue'>
@@ -87,7 +87,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {isSystemMetric(metric)
                   ? formatSystemMetricName(metric)
                   : metric ?? '--'}
-              </strong>
+              </strong>{' '}
               {context || null}
             </div>
             <div className='PopoverContent__value'>
@@ -95,6 +95,27 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             </div>
           </div>
         );
+      case ChartTypeEnum.ImageSet:
+        return (
+          <div className='PopoverContent__box'>
+            <div className='PopoverContent__value'>
+              <strong>{tooltipContent.images_name}</strong>
+              <Text className='PopoverContent__contextValue'>
+                {contextToString(tooltipContent.context)}
+              </Text>
+            </div>
+            <div className='PopoverContent__value'>
+              Caption: <strong>{tooltipContent.caption}</strong>
+            </div>
+            <div className='PopoverContent__value'>
+              Step: <strong>{tooltipContent.step}</strong>
+              <Text className='PopoverContent__contextValue'>
+                Index: <strong>{tooltipContent.index}</strong>
+              </Text>
+            </div>
+          </div>
+        );
+        break;
       default:
         return null;
     }
@@ -152,13 +173,13 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             </div>
           </div>
         )}
-        {focusedState?.active && runHash ? (
+        {focusedState?.active && run.hash ? (
           <>
             <div>
               <Divider />
               <div className='PopoverContent__box'>
                 <Link
-                  to={PathEnum.Run_Detail.replace(':runHash', runHash)}
+                  to={PathEnum.Run_Detail.replace(':runHash', run.hash)}
                   component={RouteLink}
                   className='PopoverContent__runDetails'
                   underline='none'
@@ -171,7 +192,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             <div>
               <Divider />
               <div className='PopoverContent__box'>
-                <AttachedTagsList runHash={runHash} />
+                <AttachedTagsList runHash={run.hash} />
               </div>
             </div>
           </>

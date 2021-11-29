@@ -2,7 +2,42 @@
 
 ## Unreleased
 
+- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+
+## 3.1.1 Nov 25 2021
+
+- Apply default ordering on images set (VkoHov)
+- Ability to show image data in a tooltip on hover (KaroMourad)
+- Support of Image input additional data sources (alberttorosyan)
+- Ability to export run props as pandas dataframe (gorarakelyan)
+- Slice image sequence by index for the given steps range (alberttorosyan)
+- Improve Images Explorer rendering performance through better images list virtualization (roubkar)
+
+## 3.1.0 Nov 20 2021
+
+- Add ability to explore tracked images (VkoHov)
+- Improve rendering performance by virtualizing table columns (roubkar)
 - Add ability to apply grouping by higher level param key (roubkar)
+- Add ability to specify repository path during `aim init` via `--repo` argument (rubenaprikyan)
+
+## 3.0.7 Nov 17 2021
+
+- Fix for missing metrics when numpy.float64 values tracked (alberttorosyan)
+
+## 3.0.6 Nov 9 2021
+
+- Fix for blocking container optimization for in progress runs (alberttorosyan)
+
+## 3.0.5 Nov 9 2021
+
+- Add tqdm package in setup.py required section (mihran113)
+
+## 3.0.4 Nov 8 2021
+
+- Switch to aimrocks 0.0.10 - exposes data flushing interface (mihran113)
+- Optimize stored data when runs finalized (mihran113)
+- Update `aim reindex` command to run storage optimizations (alberttorosyan)
+- Storage partial optimizations on metric/run queries (alberttorosyan)
 
 ## 3.0.3 Nov 4 2021
 

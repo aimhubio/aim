@@ -31,7 +31,7 @@ const LineChart = React.forwardRef(function LineChart(
     aggregationConfig,
     syncHoverState,
     axesScaleType,
-    displayOutliers,
+    ignoreOutliers,
     alignmentConfig,
     highlightMode,
     curveInterpolation,
@@ -82,7 +82,7 @@ const LineChart = React.forwardRef(function LineChart(
   function draw() {
     const { processedData, min, max, xValues } = processData(
       data,
-      displayOutliers,
+      ignoreOutliers,
     );
 
     drawArea({
@@ -199,7 +199,7 @@ const LineChart = React.forwardRef(function LineChart(
     [
       data,
       zoom,
-      displayOutliers,
+      ignoreOutliers,
       highlightMode,
       axesScaleType,
       curveInterpolation,
@@ -225,7 +225,7 @@ const LineChart = React.forwardRef(function LineChart(
   }, [
     data,
     zoom,
-    displayOutliers,
+    ignoreOutliers,
     highlightMode,
     axesScaleType,
     curveInterpolation,

@@ -1,13 +1,6 @@
 import React from 'react';
 
-import {
-  Box,
-  Checkbox,
-  Divider,
-  InputBase,
-  Popper,
-  TextField,
-} from '@material-ui/core';
+import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
@@ -16,10 +9,12 @@ import {
 } from '@material-ui/icons';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
@@ -33,6 +28,7 @@ import {
 import getObjectPaths from 'utils/getObjectPaths';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+import contextToString from 'utils/contextToString';
 
 import './SelectForm.scss';
 
@@ -44,9 +40,10 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
+  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getParamsAndMetrics();
+    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
     paramsMetricsRequestRef.call();
     return () => {
       paramsMetricsRequestRef?.abort();
@@ -101,9 +98,7 @@ function SelectForm({
       for (let key in projectsData.metrics) {
         let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
-          let label: string = Object.keys(val)
-            .map((item) => `${item}="${val[item]}"`)
-            .join(', ');
+          let label = contextToString(val);
           let index: number = data.length;
           let option: ISelectParamsOption = {
             label: `${system ? formatSystemMetricName(key) : key} ${label}`,
@@ -142,6 +137,7 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
+
   return (
     <div className='SelectForm__container'>
       <div className='SelectForm__params__container'>
@@ -267,19 +263,14 @@ function SelectForm({
           </Button>
         </Box>
 
-        <div className='Params__SelectForm__TextField'>
-          <form onSubmit={handleParamsSearch}>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              spellCheck={false}
-              inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              value={selectedParamsData?.query}
-              onChange={({ target }) => onSelectRunQueryChange(target.value)}
-            />
-          </form>
+        <div className='SelectForm__TextField'>
+          <ExpressionAutoComplete
+            onExpressionChange={onSelectRunQueryChange}
+            onSubmit={handleParamsSearch}
+            value={selectedParamsData?.query}
+            options={paramsSuggestions}
+            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+          />
         </div>
       </div>
     </div>

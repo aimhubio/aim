@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
+import { isEmpty } from 'lodash-es';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 
@@ -11,7 +12,7 @@ import * as analytics from 'services/analytics';
 
 import {
   IChartTitleData,
-  IChartTooltip,
+  IPanelTooltip,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -49,16 +50,22 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       call: () => Promise<any>;
       abort: () => void;
     };
+    let paramsRequestRef: {
+      call: () => Promise<any>;
+      abort: () => void;
+    };
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
-        paramsAppModel.getParamsData().call();
+        paramsRequestRef = paramsAppModel.getParamsData();
+        paramsRequestRef.call();
       });
     } else {
       paramsAppModel.setDefaultAppConfigData();
+      paramsRequestRef = paramsAppModel.getParamsData();
+      paramsRequestRef.call();
     }
-    const paramsRequestRef = paramsAppModel.getParamsData();
-    paramsRequestRef.call();
+
     analytics.pageView('[ParamsExplorer]');
 
     const unListenHistory = history.listen(() => {
@@ -75,7 +82,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     });
     return () => {
       paramsAppModel.destroy();
-      paramsRequestRef.abort();
+      paramsRequestRef?.abort();
       unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();
@@ -108,7 +115,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       sortFields={paramsData?.config?.table?.sortFields!}
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
-      tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
+      tooltip={paramsData?.config?.chart?.tooltip as IPanelTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]

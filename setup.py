@@ -47,9 +47,10 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.9',
+    'aimrocks==0.0.10',
     'cachetools>=4.0.0',
     'click>=7.0',
+    'cryptography>=3.0',
     'filelock>=3.0.0',
     'GitPython>=3.0.4',
     'numpy>=1.12.0',
@@ -58,6 +59,7 @@ REQUIRED = [
     'psutil>=5.6.7',
     'py3nvml>=0.2.5',
     'RestrictedPython>=5.1',
+    'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
     'async-exit-stack>=1.0.0',
@@ -66,6 +68,7 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
+    'Pillow>=8.1.0',
 ]
 
 
@@ -128,10 +131,11 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
     ext_modules=[

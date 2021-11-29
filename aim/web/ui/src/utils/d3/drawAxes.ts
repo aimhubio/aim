@@ -41,11 +41,12 @@ function drawAxes(args: IDrawAxesArgs): void {
     let xAlignmentText = '';
     const [first, last] = attributesRef.current.xScale.domain();
 
+    const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
+
     switch (alignmentConfig?.type) {
       case AlignmentOptionsEnum.EPOCH:
         {
-          xAlignmentText =
-            _.capitalize(getKeyByAlignment(alignmentConfig)) + 's';
+          xAlignmentText = alignmentKey ? alignmentKey + 's' : '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 50);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -56,7 +57,7 @@ function drawAxes(args: IDrawAxesArgs): void {
         break;
       case AlignmentOptionsEnum.RELATIVE_TIME:
         {
-          xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig));
+          xAlignmentText = alignmentKey || '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 85);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -65,7 +66,7 @@ function drawAxes(args: IDrawAxesArgs): void {
           const day = 24 * hour;
           const week = 7 * day;
 
-          const diff = Math.ceil(last - first);
+          const diff = Math.ceil((last - first) / 1000);
           let unit: number | null = null;
           let formatUnit: Unit;
           if (diff / week > 4) {
@@ -85,12 +86,18 @@ function drawAxes(args: IDrawAxesArgs): void {
             formatUnit = 's';
           }
 
-          let tickValues =
-            unit === null
-              ? null
-              : _.range(Math.ceil(first), Math.ceil(last) + 1).filter(
-                  (t) => t % unit! === 0,
-                );
+          let tickValues: null | number[] = unit === null ? null : [];
+
+          if (tickValues !== null) {
+            const d = Math.floor((last - first) / (ticksCount - 1));
+            for (let i = 0; i < ticksCount; i++) {
+              if (i === ticksCount - 1) {
+                tickValues.push(Math.ceil(last + 1));
+              } else {
+                tickValues.push(Math.floor(first + i * d));
+              }
+            }
+          }
 
           if (unit !== null && tickValues && ticksCount < tickValues.length) {
             tickValues = tickValues.filter((v, i) => {
@@ -114,20 +121,25 @@ function drawAxes(args: IDrawAxesArgs): void {
             .ticks(ticksCount)
             .tickValues(tickValues!)
             .tickFormat((d, i) =>
-              shortEnglishHumanizer(
-                Math.round(+d * 1000),
-                humanizerConfigRef.current,
-              ),
+              shortEnglishHumanizer(Math.round(+d), humanizerConfigRef.current),
             );
         }
         break;
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
         {
-          xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig));
+          xAlignmentText = alignmentKey || '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-          let tickValues = _.range(first, last);
+          let tickValues: number[] = [];
+          const d = (last - first) / (ticksCount - 1);
+          for (let i = 0; i < ticksCount; i++) {
+            if (i === ticksCount - 1) {
+              tickValues.push(Math.ceil(last));
+            } else {
+              tickValues.push(Math.floor(first + i * d));
+            }
+          }
 
           xAxis
             .ticks(ticksCount)
@@ -148,7 +160,7 @@ function drawAxes(args: IDrawAxesArgs): void {
         break;
       case AlignmentOptionsEnum.CUSTOM_METRIC:
         {
-          xAlignmentText = alignmentConfig?.metric;
+          xAlignmentText = alignmentConfig?.metric || '';
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
@@ -156,7 +168,7 @@ function drawAxes(args: IDrawAxesArgs): void {
         }
         break;
       default: {
-        xAlignmentText = _.capitalize(getKeyByAlignment(alignmentConfig)) + 's';
+        xAlignmentText = alignmentKey ? alignmentKey + 's' : 'Steps';
 
         let ticksCount = Math.floor(plotBoxRef.current.width / 90);
         ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;

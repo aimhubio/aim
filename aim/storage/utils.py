@@ -26,7 +26,16 @@ class ObjectFlagType:
 ObjectFlag = ObjectFlagType()
 
 
+class CustomObjectFlagType:
+    def __init__(self, aim_name: str):
+        self.aim_name = aim_name
+
+    def __repr__(self):
+        return f"<CustomObjectFlag type={self.aim_name}>"
+
+
 __all__ = [
     'ArrayFlag',
-    'ObjectFlag'
+    'ObjectFlag',
+    'CustomObjectFlagType',
 ]

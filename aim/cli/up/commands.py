@@ -14,13 +14,14 @@ from aim.web.utils import ShellCommandException
 @click.command()
 @click.option('-h', '--host', default=AIM_UI_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_UI_DEFAULT_PORT, type=int)
+@click.option('-w', '--workers', default=1, type=int)
 @click.option('--repo', required=False, type=click.Path(exists=True,
                                                         file_okay=False,
                                                         dir_okay=True,
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
-def up(dev, host, port, repo, tf_logs):
+def up(dev, host, port, workers, repo, tf_logs):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
@@ -90,7 +91,7 @@ def up(dev, host, port, repo, tf_logs):
     click.echo('Press Ctrl+C to exit')
 
     try:
-        server_cmd = build_uvicorn_command(host, port, 1)
+        server_cmd = build_uvicorn_command(host, port, workers)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. '
