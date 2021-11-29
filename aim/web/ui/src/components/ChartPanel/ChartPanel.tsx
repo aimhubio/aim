@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
+import { Grid, GridSize } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 
@@ -14,7 +14,7 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
-import { ChartTypeEnum, PointSymbolEnum, ScaleEnum } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 
 import { chartTypesConfig } from './config';
 import ChartPopover from './ChartPopover/ChartPopover';

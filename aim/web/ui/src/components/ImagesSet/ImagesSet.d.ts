@@ -5,6 +5,7 @@ export interface IImageSetProps {
   orderedMap: { [key: string]: any };
   imagesBlobs: object;
   onScroll: () => void;
+  onListScroll: () => void;
   addUriToList: (blobUrl: string) => void;
   index?: number;
   imagesSetKey: number;

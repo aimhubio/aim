@@ -80,9 +80,32 @@ function ImagesPanel({
     }, batchSendDelay);
   }
 
+  function onListScroll(): void {
+    closePopover();
+  }
+
   function closePopover(): void {
     if (!focusedState?.active) {
       setActivePointRect(null);
+    }
+  }
+
+  function onMouseOver(e: MouseEvent<HTMLDivElement>): void {
+    if (e?.target && !focusedState?.active) {
+      e.stopPropagation();
+      const closestImageNode = (e.target as Element).closest(
+        '.ImagesSet__container__imagesBox__imageBox__image',
+      );
+      if (closestImageNode) {
+        const imageKey = closestImageNode.getAttribute('data-key');
+        const imageSeqKey = closestImageNode.getAttribute('data-seqkey');
+        const pointRect = closestImageNode.getBoundingClientRect();
+        if (pointRect && focusedState.key !== imageKey) {
+          syncHoverState({
+            activePoint: { pointRect, key: imageKey, seqKey: imageSeqKey },
+          });
+        }
+      }
     }
   }
 
@@ -136,9 +159,9 @@ function ImagesPanel({
   }, [blobUriArray.current]);
 
   useEffect(() => {
-    document.addEventListener('mousemove', closePopover);
+    document.addEventListener('mouseover', closePopover);
     return () => {
-      document.removeEventListener('mousemove', closePopover);
+      document.removeEventListener('mouseover', closePopover);
       timeoutID.current && window.clearTimeout(timeoutID.current);
     };
   }, []);
@@ -164,6 +187,7 @@ function ImagesPanel({
                 <div
                   ref={containerRef}
                   className='ImagesPanel__imagesSetContainer'
+                  onMouseOver={onMouseOver}
                   // TODO
                   // onClick={(e) => {
                   //   e.stopPropagation();
@@ -177,6 +201,7 @@ function ImagesPanel({
                     data={imagesData}
                     imagesBlobs={imagesBlobs}
                     onScroll={onScroll}
+                    onListScroll={onListScroll}
                     addUriToList={addUriToList}
                     imagesSetKey={imagesSetKey}
                     imageSetWrapperHeight={imageWrapperOffsetHeight - 48}
