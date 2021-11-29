@@ -3,16 +3,19 @@ import moment from 'moment';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 
-import { Link } from '@material-ui/core';
+import { Link, Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { Icon, Button, Badge } from 'components/kit';
+import { Icon, Button, Badge, JsonViewPopover } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
+
+import contextToString from 'utils/contextToString';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -107,13 +110,22 @@ function getImagesExploreTableColumns(
       topHeader: 'Grouping',
       pin: 'left',
     });
-    Object.keys(groupFields).forEach((field) => {
-      const key = field.replace('run.params.', '');
-      const column = columns.find((col) => col.key === key);
-      if (!!column) {
-        column.pin = 'left';
-        column.topHeader = 'Grouping';
-      }
+    columns.push({
+      key: 'groups',
+      content: (
+        <div className='Table__groupsColumn__cell'>
+          {Object.keys(groupFields).map((field) => {
+            let name: string = field.replace('run.params.', '');
+            name = name.replace('run.props', 'run');
+            return (
+              <Tooltip key={field} title={name}>
+                <span>{name}</span>
+              </Tooltip>
+            );
+          })}
+        </div>
+      ),
+      topHeader: 'Groups',
     });
   }
 
@@ -124,7 +136,7 @@ function getImagesExploreTableColumns(
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === '#') {
+    if (a.key === '#' || a.key === 'groups') {
       return -1;
     } else if (
       groupFields?.hasOwnProperty(a.key) ||
@@ -188,6 +200,43 @@ function imagesExploreTableRowRenderer(
             : Array.isArray(rowData.time)
             ? ''
             : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
+      } else if (col === 'groups') {
+        row.groups = {
+          content: (
+            <div className='Table__groupsColumn__cell'>
+              {Object.keys(rowData[col]).map((item) => {
+                const value: string | { [key: string]: unknown } =
+                  rowData[col][item];
+                return typeof value === 'object' ? (
+                  <ControlPopover
+                    key={contextToString(value)}
+                    title={item}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick }) => (
+                      <Tooltip title={contextToString(value) as string}>
+                        <span onClick={onAnchorClick}>
+                          {contextToString(value)}
+                        </span>
+                      </Tooltip>
+                    )}
+                    component={<JsonViewPopover json={value} />}
+                  />
+                ) : (
+                  <Tooltip key={item} title={value}>
+                    <span>{value}</span>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          ),
+        };
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
