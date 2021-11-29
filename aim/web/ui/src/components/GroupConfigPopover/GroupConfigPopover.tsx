@@ -24,7 +24,6 @@ function GroupConfigPopover({
         let value = isSystemMetric(item.value)
           ? formatValue(formatSystemMetricName(item.value))
           : formatValue(item.value);
-        value = isSystemMetric(value) ? formatSystemMetricName(value) : value;
 
         return (
           <div key={item.name} className='GroupConfigPopover__item'>

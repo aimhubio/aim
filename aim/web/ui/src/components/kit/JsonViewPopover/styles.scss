@@ -1,0 +1,9 @@
+@use 'src/styles/abstracts' as *;
+
+.JsonViewPopover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $space-unit;
+  width: calc(100% + 100px);
+}

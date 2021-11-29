@@ -87,26 +87,3 @@
     }
   }
 }
-
-.Metrics__table__groupsColumn__cell {
-  display: flex;
-  flex: 1;
-
-  span {
-    display: inline-block;
-    width: 120px;
-    min-width: 120px;
-    justify-content: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-right: 0.5rem;
-    padding-right: 0.5rem;
-    border-right: 0.0625rem solid #ccc;
-    &:last-child {
-      margin-right: 0;
-      padding-right: 0;
-      border-right: unset;
-    }
-  }
-}

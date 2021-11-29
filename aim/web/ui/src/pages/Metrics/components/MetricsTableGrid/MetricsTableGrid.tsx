@@ -7,6 +7,8 @@ import { Link, Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, Button, Icon } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
+import JsonViewPopover from 'components/kit/JsonViewPopover';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -23,6 +25,7 @@ import {
 } from 'utils/aggregateGroupData';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import contextToString from 'utils/contextToString';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -264,9 +267,10 @@ function getMetricsTableColumns(
     columns.push({
       key: 'groups',
       content: (
-        <div className='Metrics__table__groupsColumn__cell'>
+        <div className='Table__groupsColumn__cell'>
           {Object.keys(groupFields).map((field) => {
             let name: string = field.replace('run.params.', '');
+            name = name.replace('run.props', 'run');
             return (
               <Tooltip key={field} title={name}>
                 <span>{name}</span>
@@ -363,12 +367,39 @@ function metricsTableRowRenderer(
           ),
         };
       } else if (col === 'groups') {
-        row.value = {
+        row.groups = {
           content: (
-            <div className='Metrics__table__aggregationColumn__cell'>
-              <span key='min'>{rowData.aggregation.area.min}</span>
-              <span key='line'>{rowData.aggregation.line}</span>
-              <span key='max'>{rowData.aggregation.area.max}</span>
+            <div className='Table__groupsColumn__cell'>
+              {Object.keys(rowData[col]).map((item) => {
+                const value: string | { [key: string]: unknown } =
+                  rowData[col][item];
+                return typeof value === 'object' ? (
+                  <ControlPopover
+                    key={contextToString(value)}
+                    title={item}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick }) => (
+                      <Tooltip title={contextToString(value) as string}>
+                        <span onClick={onAnchorClick}>
+                          {contextToString(value)}
+                        </span>
+                      </Tooltip>
+                    )}
+                    component={<JsonViewPopover json={value} />}
+                  />
+                ) : (
+                  <Tooltip key={item} title={value}>
+                    <span>{value}</span>
+                  </Tooltip>
+                );
+              })}
             </div>
           ),
         };
