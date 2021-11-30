@@ -1,14 +1,31 @@
 import numpy as np
 import struct
 
+from collections import namedtuple
+from itertools import chain
 from typing import Iterator, Tuple, Optional, List
+from typing import TYPE_CHECKING
 
 from aim.storage.context import Context
-from aim.sdk import Run, Repo
+from aim.sdk import Run
 from aim.sdk.metric import Metric
+from aim.sdk.objects.distribution import Distribution
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
+
+if TYPE_CHECKING:
+    from aim.sdk import Repo
+
+IndexRange = namedtuple('IndexRange', ['start', 'stop'])
+
+
+def str_to_range(range_str: str):
+    defaults = [None, None]
+    slice_values = chain(range_str.strip().split(':'), defaults)
+
+    start, stop, step, *_ = map(lambda x: int(x) if x else None, slice_values)
+    return IndexRange(start, stop)
 
 
 def get_run_props(run: Run):
@@ -91,7 +108,7 @@ def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> 
     return result
 
 
-def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: Repo) -> bytes:
+def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: 'Repo') -> bytes:
     for run_data in requested_runs:
         run_hash = run_data.run_id
         requested_traces = run_data.traces
@@ -211,3 +228,43 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
         })
 
     return processed_traces_list
+
+
+def dist_record_to_encodable(val):
+    assert isinstance(val, Distribution)
+    dist_dump = val.json()
+    dist_dump['data'] = numpy_to_encodable(val.weights)
+
+    return dist_dump
+
+
+def requested_distribution_traces_streamer(run: Run,
+                                           requested_traces: List[TraceBase],
+                                           rec_range,
+                                           rec_num: int = 50) -> List[dict]:
+    for requested_trace in requested_traces:
+        trace_name = requested_trace.name
+        context = Context(requested_trace.context)
+        trace = run.get_distribution_sequence(name=trace_name, context=context)
+        if not trace:
+            continue
+
+        record_range_missing = rec_range.start is None or rec_range.stop is None
+        if record_range_missing:
+            rec_range = IndexRange(trace.first_step(), trace.last_step())
+        steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
+
+        steps = []
+        values = []
+        for step, val in steps_vals:
+            steps.append(step)
+            values.append(dist_record_to_encodable(val))
+        trace_dict = {
+            'record_range': (trace.first_step(), trace.last_step()),
+            'name': trace.name,
+            'context': trace.context.to_dict(),
+            'values': values,
+            'iters': steps,
+        }
+        encoded_tree = encode_tree(trace_dict)
+        yield collect_run_streamable_data(encoded_tree)

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Union
 from uuid import UUID
 
 
@@ -21,11 +21,24 @@ class TraceOverview(TraceBase):
 
 
 class TraceBaseView(TraceBase):
-    values: List[float]
     iters: List[int]
 
 
-RunTracesBatchApiOut = List[TraceBaseView]
+class MetricsBaseView(TraceBaseView):
+    values: List[float]
+
+
+class DistributionsBaseView(TraceBaseView):
+    class Distribution(BaseModel):
+        data: EncodedNumpyArray
+        bin_count: int
+        range: Tuple[Union[int, float], Union[int, float]]
+    trace_range: Tuple[int, int]
+    values: List[Distribution]
+
+
+RunMetricsBatchApiOut = List[MetricsBaseView]
+RunDistributionsBatchApiOut = List[DistributionsBaseView]
 
 
 class TraceAlignedView(TraceBase):
@@ -156,8 +169,15 @@ class ImageInfo(BaseModel):
     caption: str
     width: int
     height: int
-    blob_uri: bytes
+    blob_uri: str
     index: int
+
+
+class ImagesBaseView(TraceBaseView):
+    values: List[List[ImageInfo]]
+
+
+RunImagesBatchApiOut = List[ImagesBaseView]
 
 
 class ImageSequenceFullView(TraceBase):

@@ -1,6 +1,5 @@
 from typing import Iterable, Tuple, List
 from typing import TYPE_CHECKING
-from collections import namedtuple
 
 from aim.storage.treeutils import encode_tree
 
@@ -11,13 +10,11 @@ from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
 from aim.sdk.uri_service import URIService, generate_resource_path
 
-from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data
+from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data, IndexRange
 from aim.web.api.runs.pydantic_models import TraceBase
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
-
-IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 
 def sliced_img_record(values: Iterable[Image], _slice: slice) -> Iterable[Image]:
