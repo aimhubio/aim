@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+
+## 3.1.1 Nov 25 2021
+
+- Apply default ordering on images set (VkoHov)
+- Ability to show image data in a tooltip on hover (KaroMourad)
+- Support of Image input additional data sources (alberttorosyan)
+- Ability to export run props as pandas dataframe (gorarakelyan)
+- Slice image sequence by index for the given steps range (alberttorosyan)
+- Improve Images Explorer rendering performance through better images list virtualization (roubkar)
+
 ## 3.1.0 Nov 20 2021
 
 - Add ability to explore tracked images (VkoHov)

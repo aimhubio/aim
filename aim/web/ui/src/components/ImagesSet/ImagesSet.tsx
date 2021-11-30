@@ -5,9 +5,7 @@ import classNames from 'classnames';
 
 import ImagesList from 'components/ImagesList';
 
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
-
-import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
 
 import { IImageSetProps } from './ImagesSet.d';
 
@@ -16,114 +14,88 @@ import './ImageSet.scss';
 const imageWrapperHeight = 33;
 const imageSetTitleHeight = 17;
 const imageSetWrapperPaddingHeight = 6;
-const gapBetweenItems = 20;
 
 const ImagesSet = ({
   data,
-  title,
   imagesBlobs,
   onScroll,
+  onListScroll,
   addUriToList,
   index = 0,
   imagesSetKey,
   imageSetWrapperHeight,
   imageSetWrapperWidth,
+  orderedMap,
+  imageHeight,
+  focusedState,
+  syncHoverState,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
-  const getItemSize = (index: number) => {
-    const imagesHeights: any = getNestedDataHeight(
-      _.isArray(Object.values(data)[index])
-        ? [Object.values(data)[index]]
-        : Object.values(data)[index],
-    );
-    return (
-      imagesHeights +
-      (_.isArray(Object.values(data)[index])
-        ? gapBetweenItems
-        : gapBetweenItems + imageSetTitleHeight)
-    );
-  };
+  let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
+  let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
-  function getNestedDataHeight(data: any): number {
-    let objectData = !_.isArray(data[0]) ? Object.values(data) : data;
-    const calculatedHeight = objectData.reduce((acc: number, item: any) => {
-      if (!_.isArray(item)) {
-        acc +=
-          imageSetTitleHeight +
-          imageSetWrapperPaddingHeight +
-          getNestedDataHeight(item);
-      } else {
-        acc += imageWrapperHeight + imageFixedHeight;
-      }
-      return acc;
-    }, 0);
+  function fillContent(
+    list: [] | { [key: string]: [] | {} },
+    path = [''],
+    orderedMap: { [key: string]: any },
+  ) {
+    if (Array.isArray(list)) {
+      content.push([path, list]);
+    } else {
+      const fieldSortedValues = _.sortBy([...orderedMap.ordering]);
+      fieldSortedValues.forEach((val: any) => {
+        const fieldName = `${orderedMap.key} = ${formatValue(val)}`;
+        if (!keysMap.hasOwnProperty(path.join(''))) {
+          content.push([path, []]);
+          keysMap[path.join('')] = 1;
+        }
+        fillContent(
+          list[fieldName],
+          path.concat([fieldName]),
+          orderedMap[fieldName],
+        );
+      });
+    }
+  }
 
-    return calculatedHeight;
+  fillContent(data, [''], orderedMap);
+
+  function getItemSize(index: number) {
+    let [path, items] = content[index];
+    if (path.length === 1) {
+      return 0;
+    }
+
+    if (items.length > 0) {
+      return imageHeight + imageWrapperHeight;
+    }
+
+    return imageSetTitleHeight + imageSetWrapperPaddingHeight;
   }
 
   return (
-    <div className={classNames('ImagesSet', { withLeftBorder: index > 1 })}>
-      {Array.isArray(data) ? (
-        <div className='ImagesSet__container'>
-          {index !== 0 && (
-            <span className='ImagesSet__container__title'>{title}</span>
-          )}
-          <div className='ImagesSet__container__imagesBox'>
-            <ImagesList
-              data={data}
-              imagesBlobs={imagesBlobs}
-              onScroll={onScroll}
-              addUriToList={addUriToList}
-              imageSetWrapperWidth={imageSetWrapperWidth}
-              index={index + 1}
-            />
-          </div>
-        </div>
-      ) : (
-        <div
-          className='ImagesSet__container'
-          key={contextToString(data)?.length}
-        >
-          {index !== 0 && (
-            <p className='ImagesSet__container__title'>{title}</p>
-          )}
-          {index === 0 ? (
-            <List
-              height={imageSetWrapperHeight || 0}
-              itemCount={Object.keys(data).length}
-              itemSize={getItemSize}
-              width={'100%'}
-              itemData={{
-                data,
-                imagesBlobs,
-                onScroll,
-                addUriToList,
-                imageSetWrapperHeight,
-                imageSetWrapperWidth,
-                index,
-                imagesSetKey,
-              }}
-            >
-              {ImagesGroupedList}
-            </List>
-          ) : (
-            Object.keys(data).map((keyName, key) => (
-              <ImagesSet
-                key={key}
-                data={data[keyName]}
-                title={keyName}
-                imagesBlobs={imagesBlobs}
-                onScroll={onScroll}
-                addUriToList={addUriToList}
-                imageSetWrapperHeight={imageSetWrapperHeight}
-                imageSetWrapperWidth={imageSetWrapperWidth}
-                index={index + 1}
-                imagesSetKey={imagesSetKey}
-              />
-            ))
-          )}
-        </div>
-      )}
-    </div>
+    <List
+      key={content.length}
+      height={imageSetWrapperHeight || 0}
+      itemCount={content.length}
+      itemSize={getItemSize}
+      width={'100%'}
+      onScroll={onListScroll}
+      itemData={{
+        data: content,
+        imagesBlobs,
+        onScroll,
+        addUriToList,
+        imageSetWrapperHeight,
+        imageSetWrapperWidth,
+        index,
+        imagesSetKey,
+        imageHeight,
+        focusedState,
+        syncHoverState,
+      }}
+    >
+      {ImagesGroupedList}
+    </List>
   );
 };
 
@@ -131,7 +103,10 @@ function propsComparator(
   prevProps: IImageSetProps,
   nextProps: IImageSetProps,
 ): boolean {
-  if (prevProps.imagesSetKey !== nextProps.imagesSetKey) {
+  if (
+    prevProps.imagesSetKey !== nextProps.imagesSetKey ||
+    prevProps.focusedState !== nextProps.focusedState
+  ) {
     return false;
   }
 
@@ -142,21 +117,49 @@ export default React.memo(ImagesSet, propsComparator);
 
 const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
   const { index, style, data } = props;
-  const keyName = Object.keys(data.data)[index];
-
+  const [path, items] = data.data[index];
   return (
-    <div style={style}>
-      <ImagesSet
-        data={data.data[keyName]}
-        title={keyName}
-        imagesBlobs={data.imagesBlobs}
-        onScroll={data.onScroll}
-        addUriToList={data.addUriToList}
-        imageSetWrapperHeight={data.imageSetWrapperHeight}
-        imageSetWrapperWidth={data.imageSetWrapperWidth}
-        index={data.index + 1}
-        imagesSetKey={data.imagesSetKey}
-      />
+    <div
+      className='ImagesSet'
+      style={{
+        paddingLeft: `calc(0.625rem * ${path.length - 2})`,
+        ...style,
+      }}
+    >
+      {path.slice(2).map((key: string, i: number) => (
+        <div
+          key={key}
+          className='ImagesSet__connectorLine'
+          style={{
+            left: `calc(0.625rem * ${i})`,
+          }}
+        />
+      ))}
+      <div className='ImagesSet__container'>
+        {path.length > 1 && (
+          <span
+            className={classNames('ImagesSet__container__title', {
+              withDash: path.length > 2,
+            })}
+          >
+            {path[path.length - 1]}
+          </span>
+        )}
+        {items.length > 0 && (
+          <div className='ImagesSet__container__imagesBox'>
+            <ImagesList
+              data={items}
+              imagesBlobs={data.imagesBlobs}
+              onScroll={data.onScroll}
+              addUriToList={data.addUriToList}
+              imageSetWrapperWidth={data.imageSetWrapperWidth}
+              imageHeight={data.imageHeight}
+              focusedState={data.focusedState}
+              syncHoverState={data.syncHoverState}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }, areEqual);

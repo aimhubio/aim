@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
@@ -7,6 +7,15 @@ import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
+import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
+
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import {
+  batchSendDelay,
+  imageFixedHeight,
+} from 'config/imagesConfigs/imagesConfig';
+
+import { ChartTypeEnum } from 'utils/d3';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
 
@@ -30,22 +39,108 @@ function ImagesPanel({
   imageWrapperOffsetHeight,
   imageWrapperOffsetWidth,
   isRangePanelShow,
+  orderedMap,
+  controls,
+  resizeMode,
+  tooltip,
+  focusedState,
+  onActivePointChange,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
+  const [activePointRect, setActivePointRect] = useState<{
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  } | null>(null);
+  let blobUriArray = useRef<string[]>([]);
   let timeoutID = useRef(0);
-  let blobUriArray: string[] = [];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const activePointRef = useRef<any>(null);
+  const collectedURIs = useRef<{ [key: string]: boolean }>({});
 
-  function onScroll(e?: any) {
+  function addUriToList(blobUrl: string) {
+    if (!imagesBlobs?.[blobUrl]) {
+      if (!collectedURIs.current[blobUrl]) {
+        collectedURIs.current[blobUrl] = true;
+        blobUriArray.current.push(blobUrl);
+      }
+    }
+  }
+
+  function onScroll() {
     if (timeoutID.current) {
       window.clearTimeout(timeoutID.current);
     }
     timeoutID.current = window.setTimeout(() => {
-      if (!isEmpty(blobUriArray)) {
-        getImagesBlobsData(blobUriArray).then(() => {
-          blobUriArray = [];
+      if (!isEmpty(blobUriArray.current)) {
+        getImagesBlobsData(blobUriArray.current).then(() => {
+          blobUriArray.current = [];
         });
       }
-    }, 1000);
+    }, batchSendDelay);
   }
+
+  function onListScroll(): void {
+    closePopover();
+  }
+
+  function closePopover(): void {
+    if (!focusedState?.active) {
+      setActivePointRect(null);
+    }
+  }
+
+  function onMouseOver(e: MouseEvent<HTMLDivElement>): void {
+    if (e?.target && !focusedState?.active) {
+      e.stopPropagation();
+      const closestImageNode = (e.target as Element).closest(
+        '.ImagesSet__container__imagesBox__imageBox__image',
+      );
+      if (closestImageNode) {
+        const imageKey = closestImageNode.getAttribute('data-key');
+        const imageSeqKey = closestImageNode.getAttribute('data-seqkey');
+        const pointRect = closestImageNode.getBoundingClientRect();
+        if (pointRect && focusedState.key !== imageKey) {
+          syncHoverState({
+            activePoint: { pointRect, key: imageKey, seqKey: imageSeqKey },
+          });
+        }
+      }
+    }
+  }
+
+  const setActiveElemPos = React.useCallback(() => {
+    if (activePointRef.current && containerRef.current) {
+      const { pointRect } = activePointRef.current;
+      setActivePointRect({
+        bottom: pointRect.bottom,
+        right: pointRect.right,
+        top: pointRect.top,
+        left: pointRect.left,
+      });
+    } else {
+      setActivePointRect(null);
+    }
+  }, [setActivePointRect, activePointRef.current, containerRef.current]);
+
+  const syncHoverState = React.useCallback(
+    (args: any): void => {
+      const { activePoint, focusedStateActive = false } = args;
+      activePointRef.current = activePoint;
+      // on MouseEnter
+      if (activePoint !== null) {
+        if (onActivePointChange) {
+          onActivePointChange(activePoint, focusedStateActive);
+        }
+        setActiveElemPos();
+      }
+      // on MouseLeave
+      else {
+        setActivePointRect(null);
+      }
+    },
+    [onActivePointChange, setActivePointRect, setActiveElemPos],
+  );
 
   const imagesSetKey = useMemo(
     () => Date.now(),
@@ -61,19 +156,15 @@ function ImagesPanel({
   useEffect(() => {
     onScroll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blobUriArray]);
+  }, [blobUriArray.current]);
 
   useEffect(() => {
+    document.addEventListener('mouseover', closePopover);
     return () => {
+      document.removeEventListener('mouseover', closePopover);
       timeoutID.current && window.clearTimeout(timeoutID.current);
     };
   }, []);
-
-  function addUriToList(blobUrl: string) {
-    if (!imagesBlobs?.[blobUrl]) {
-      blobUriArray.push(blobUrl);
-    }
-  }
 
   return (
     <BusyLoaderWrapper
@@ -83,26 +174,57 @@ function ImagesPanel({
       loaderComponent={<ChartLoader controlsCount={0} />}
     >
       {panelResizing ? (
-        <div className='ImagesPanel__resizing'>
+        <div className='ImagesPanel__Container__resizing'>
           <Text size={14} color='info'>
             Release to resize
           </Text>
         </div>
       ) : (
         <>
-          <div className='ImagesPanel'>
+          <div className='ImagesPanel__Container'>
             {!isEmpty(imagesData) ? (
-              <div className='ImagesPanel__imagesContainer'>
-                <ImagesSet
-                  data={imagesData}
-                  title={'root'}
-                  imagesBlobs={imagesBlobs}
-                  onScroll={onScroll}
-                  addUriToList={addUriToList}
-                  imagesSetKey={imagesSetKey}
-                  imageSetWrapperHeight={imageWrapperOffsetHeight - 36}
-                  imageSetWrapperWidth={imageWrapperOffsetWidth}
+              <div className='ImagesPanel'>
+                <div
+                  ref={containerRef}
+                  className='ImagesPanel__imagesSetContainer'
+                  onMouseOver={onMouseOver}
+                  // TODO
+                  // onClick={(e) => {
+                  //   e.stopPropagation();
+                  //   syncHoverState({
+                  //     activePoint: activePointRef.current,
+                  //     focusedStateActive: false,
+                  //   });
+                  // }}
+                >
+                  <ImagesSet
+                    data={imagesData}
+                    imagesBlobs={imagesBlobs}
+                    onScroll={onScroll}
+                    onListScroll={onListScroll}
+                    addUriToList={addUriToList}
+                    imagesSetKey={imagesSetKey}
+                    imageSetWrapperHeight={imageWrapperOffsetHeight - 48}
+                    imageSetWrapperWidth={imageWrapperOffsetWidth}
+                    imageHeight={imageFixedHeight}
+                    focusedState={focusedState}
+                    syncHoverState={syncHoverState}
+                    orderedMap={orderedMap}
+                  />
+                </div>
+                <ChartPopover
+                  containerNode={containerRef.current}
+                  activePointRect={activePointRect}
+                  open={
+                    resizeMode !== ResizeModeEnum.MaxHeight &&
+                    !panelResizing &&
+                    (tooltip?.display || focusedState?.active)
+                  }
+                  chartType={ChartTypeEnum.ImageSet}
+                  tooltipContent={tooltip?.content}
+                  focusedState={focusedState}
                 />
+                <div className='ImagesPanel__controls'>{controls}</div>
               </div>
             ) : (
               <EmptyComponent
@@ -130,4 +252,4 @@ function ImagesPanel({
   );
 }
 
-export default ImagesPanel;
+export default React.memo(ImagesPanel);

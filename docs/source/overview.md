@@ -44,17 +44,18 @@ It helps to save lots of time compared to other open-source experiment tracking 
 
 <img style="border: 1px solid #1d2253" src="./_static/images/overview/metrics.png" />
 
+### Images explorer
+Track intermediate images and search, compare them on the Images Explorer.
+
+<img style="border: 1px solid #1d2253" src="./_static/images/overview/images.png" />
+
 ### Params explorer
 Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
 
 <img style="border: 1px solid #1d2253" src="./_static/images/overview/params.png" />
 
-### Images explorer (coming soon...)
-Track intermediate images and search, compare them on the Images Explorer.
-
 ### Query metadata programmatically
 Use the same pythonic if statement to query the data through the Aim SDK programmatically.
-
 
 ## How Aim works?
 

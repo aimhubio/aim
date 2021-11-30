@@ -1,5 +1,8 @@
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+
+import { IPanelTooltip } from '../metrics/metricsAppModel';
+
 export interface IImagesExploreAppConfig {
   grouping: {
     group: [];
@@ -18,6 +21,11 @@ export interface IImagesExploreAppConfig {
     recordDensity?: string;
     indexDensity?: string;
     calcRanges: boolean;
+    tooltip: IPanelTooltip;
+    focusedState: {
+      key: string | null;
+      active: boolean;
+    };
   };
   select: {
     images: ISelectMetricsOption[];

@@ -1,6 +1,6 @@
 import {
   IGroupingSelectOption,
-  IChartTooltip,
+  IPanelTooltip,
   IFocusedState,
 } from 'metrics/metricsAppModel';
 

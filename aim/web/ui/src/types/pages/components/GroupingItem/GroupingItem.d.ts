@@ -6,7 +6,7 @@ import {
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 
-import { IGroupingConfig } from '../../../services/models/explorer/createAppModel';
+import { IGroupingConfig } from 'types/services/models/explorer/createAppModel';
 
 export interface IGroupingItemProps extends IGroupingPopoverProps {
   title: string;

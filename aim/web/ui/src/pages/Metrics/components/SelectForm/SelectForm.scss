@@ -40,7 +40,6 @@
     width: 100%;
 
     input {
-      font-family: monospace;
       padding: 0.5rem;
       font-size: $text-md;
       border-bottom: $border-main;
@@ -48,18 +47,13 @@
   }
 
   &__TextField {
-    input {
-      font-family: monospace;
-    }
+    position: relative;
   }
   &__textarea {
     flex: 1;
     .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
       padding-top: 7.5px;
       padding-bottom: 7.5px;
-    }
-    textarea {
-      font-family: monospace;
     }
   }
 

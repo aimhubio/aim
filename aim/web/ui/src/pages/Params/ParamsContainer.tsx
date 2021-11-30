@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
-import { isEmpty } from 'lodash-es';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -13,9 +12,9 @@ import * as analytics from 'services/analytics';
 
 import {
   IChartTitleData,
-  IChartTooltip,
-  IFocusedState,
+  IPanelTooltip,
   IGroupingSelectOption,
+  IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import {
@@ -131,10 +130,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingData={paramsData?.config?.grouping as IGroupingConfig}
       selectedParamsData={paramsData?.config?.select as ISelectConfig}
       sortFields={paramsData?.config?.table?.sortFields!}
-      curveInterpolation={
-        paramsData?.config?.chart?.curveInterpolation as CurveEnum
-      }
-      tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
+      curveInterpolation={paramsData?.config?.chart?.curveInterpolation as CurveEnum}
+      tooltip={paramsData?.config?.chart?.tooltip as IPanelTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]

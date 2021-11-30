@@ -68,6 +68,5 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
-  topPos: number;
-  leftPos: number;
+  pointRect: { top: number; bottom: number; left: number; right: number };
 }

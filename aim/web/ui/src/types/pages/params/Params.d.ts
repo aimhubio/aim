@@ -8,7 +8,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   GroupNameType,
   IChartTitleData,
-  IChartTooltip,
+  IPanelTooltip,
   IFocusedState,
   IGroupingSelectOption,
   IOnGroupingModeChangeParams,
@@ -44,7 +44,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   sortFields: [string, 'asc' | 'desc' | boolean][];
   focusedState: IFocusedState;
   isVisibleColorIndicator: boolean;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   chartTitleData: IChartTitleData;
   selectedParamsData: ISelectConfig;
   onRowHeightChange: any;
@@ -78,7 +78,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onResetConfigData: () => void;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onColumnsVisibilityChange: (order: any) => void;
   onTableDiffShow: () => void;

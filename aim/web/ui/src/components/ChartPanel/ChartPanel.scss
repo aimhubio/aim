@@ -2,44 +2,39 @@
 
 .ChartPanel__container {
   height: 100%;
-
-  .ChartPanel__resizing {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: $primary-color-5;
-    user-select: none;
-  }
-
   .ChartPanel {
     overflow: hidden;
     height: 100%;
     border-right: $border-separator;
-  }
-
-  .ChartPanel__paper {
-    padding: 1em;
-    height: 100%;
-    user-select: none;
-  }
-
-  .ChartPanel__paper__grid {
-    height: 100%;
-    overflow: auto;
-    margin: 0;
-    &__chartBox {
-      min-height: 50%;
-      padding: 4px;
-      box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
+    &__resizing {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: $primary-color-5;
+      user-select: none;
     }
-  }
-
-  .ChartPanel__controls__container {
-    width: 3.75rem;
-    max-height: 100%;
-    overflow-y: auto;
+    &__paper {
+      padding: 1em;
+      height: 100%;
+      user-select: none;
+    }
+    &__paper__grid {
+      height: 100%;
+      overflow: auto;
+      margin: 0;
+      &__chartBox {
+        min-height: 50%;
+        padding: 4px;
+        box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
+      }
+    }
+    &__controls {
+      width: 3.75rem;
+      max-height: 100%;
+      overflow-y: auto;
+    }
   }
 }
