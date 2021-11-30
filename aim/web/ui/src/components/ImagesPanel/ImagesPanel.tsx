@@ -23,7 +23,6 @@ import './ImagesPanel.scss';
 
 function ImagesPanel({
   imagesData,
-  imagesBlobs,
   recordSlice,
   indexSlice,
   indexRange,
@@ -59,11 +58,9 @@ function ImagesPanel({
   const collectedURIs = useRef<{ [key: string]: boolean }>({});
 
   function addUriToList(blobUrl: string) {
-    if (!imagesBlobs?.[blobUrl]) {
-      if (!collectedURIs.current[blobUrl]) {
-        collectedURIs.current[blobUrl] = true;
-        blobUriArray.current.push(blobUrl);
-      }
+    if (!collectedURIs.current[blobUrl]) {
+      collectedURIs.current[blobUrl] = true;
+      blobUriArray.current.push(blobUrl);
     }
   }
 
@@ -145,12 +142,7 @@ function ImagesPanel({
   const imagesSetKey = useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      imagesData,
-      imagesBlobs,
-      imageWrapperOffsetHeight,
-      imageWrapperOffsetWidth,
-    ],
+    [imagesData, imageWrapperOffsetHeight, imageWrapperOffsetWidth],
   );
 
   useEffect(() => {
@@ -199,7 +191,6 @@ function ImagesPanel({
                 >
                   <ImagesSet
                     data={imagesData}
-                    imagesBlobs={imagesBlobs}
                     onScroll={onScroll}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}

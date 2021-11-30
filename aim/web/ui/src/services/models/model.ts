@@ -6,6 +6,12 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
     INIT: [],
     UPDATE: [],
   };
+
+  function emit(evt: string, stateUpdate: StateType) {
+    state = Object.assign(state, stateUpdate);
+    (subscriptions[evt] || []).forEach((fn) => fn(stateUpdate));
+  }
+
   return {
     // @TODO think to change model structure and remove init step from model lifecycle
     init: () => {
@@ -19,11 +25,15 @@ function createModel<StateType>(initialState: StateType): IModel<StateType> {
     },
     getState: () => Object.assign({}, state),
     setState: (stateUpdate: StateType) => {
-      state = Object.assign(state, stateUpdate);
-      (subscriptions.UPDATE || []).forEach((fn) => fn(stateUpdate));
+      emit('UPDATE', stateUpdate);
     },
-    subscribe: (evt: 'INIT' | 'UPDATE', fn: (data: StateType) => void) => {
-      subscriptions[evt].push(fn);
+    emit,
+    subscribe: (evt: string, fn: (data: StateType) => void) => {
+      if (subscriptions.hasOwnProperty(evt)) {
+        subscriptions[evt].push(fn);
+      } else {
+        subscriptions[evt] = [fn];
+      }
 
       return {
         unsubscribe: () => {

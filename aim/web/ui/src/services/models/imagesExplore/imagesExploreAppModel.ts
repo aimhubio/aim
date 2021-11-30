@@ -63,6 +63,8 @@ import filterTooltipContent from 'utils/filterTooltipContent';
 
 import createModel from '../model';
 
+import imagesURIModel from './imagesURIModel';
+
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
@@ -793,30 +795,12 @@ async function getImagesBlobsData(uris: string[]) {
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
-  const throttledBlobsUpdate = _.throttle(function () {
-    model.setState({
-      imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) },
-    });
-  }, blobsUpdateThrottleDelay);
-
-  let firsItem = true;
   for await (let [keys, val] of objects) {
-    const imagesBlobs: { [key: string]: string } =
-      model.getState()?.imagesBlobs || {};
-    imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
-
-    if (firsItem) {
-      model.setState({
-        imagesBlobs: { ...imagesBlobs },
-      });
-      firsItem = false;
-    } else {
-      throttledBlobsUpdate();
-    }
+    const URI = keys[0];
+    imagesURIModel.emit(URI as string, {
+      [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+    });
   }
-
-  throttledBlobsUpdate.cancel();
-  model.setState({ imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) } });
 }
 
 function sortWithAllGroupFields(
