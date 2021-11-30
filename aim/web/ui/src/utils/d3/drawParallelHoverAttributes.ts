@@ -149,8 +149,6 @@ const drawParallelHoverAttributes = ({
       );
     }
 
-    // TODO changed pageX and pageY to
-    //  topPos(bounded circle.y) and leftPos(bounded circle.x)
     return {
       key: circle.key,
       xValue: dimensionLabel,
@@ -158,8 +156,13 @@ const drawParallelHoverAttributes = ({
       xPos: circle.x,
       yPos: circle.y,
       chartIndex: index,
-      topPos: chartRect.top + circle.y + margin.top,
-      leftPos: chartRect.left + circle.x + margin.left,
+      pointRect: {
+        top: chartRect.top + margin.top + circle.y - CircleEnum.ActiveRadius,
+        bottom: chartRect.top + margin.top + circle.y + CircleEnum.ActiveRadius,
+        left: chartRect.left + margin.left + circle.x - CircleEnum.ActiveRadius,
+        right:
+          chartRect.left + margin.left + circle.x + CircleEnum.ActiveRadius,
+      },
     };
   }
 

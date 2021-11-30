@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Grid, PopoverPosition, GridSize } from '@material-ui/core';
+import { Grid, GridSize } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 
@@ -14,7 +14,7 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
-import { ChartTypeEnum, PointSymbolEnum, ScaleEnum } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 
 import { chartTypesConfig } from './config';
 import ChartPopover from './ChartPopover/ChartPopover';
@@ -28,11 +28,28 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const [chartRefs] = React.useState<React.RefObject<any>[]>(
     new Array(props.data.length).fill('*').map(() => React.createRef()),
   );
-  const [popoverPosition, setPopoverPosition] =
-    React.useState<PopoverPosition | null>(null);
+  const [activePointRect, setActivePointRect] = React.useState<{
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  } | null>(null);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
+
+  const setActiveElemPos = React.useCallback(() => {
+    if (activePointRef.current && containerRef.current) {
+      const { pointRect } = activePointRef.current;
+      setActivePointRect({
+        ...pointRect,
+        top: pointRect.top - containerRef.current.scrollTop,
+        left: pointRect.left - containerRef.current.scrollLeft,
+      });
+    } else {
+      setActivePointRect(null);
+    }
+  }, [setActivePointRect, activePointRef.current, containerRef.current]);
 
   const syncHoverState = React.useCallback(
     (args: ISyncHoverStateArgs): void => {
@@ -40,7 +57,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {
-        if (props.chartType !== ChartTypeEnum.HighPlot) {
+        if (props.chartType === ChartTypeEnum.LineChart) {
           chartRefs.forEach((chartRef, index) => {
             if (index === activePoint.chartIndex) {
               return;
@@ -50,7 +67,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               dataSelector,
             );
           });
-        } else {
+        } else if (props.chartType === ChartTypeEnum.HighPlot) {
           chartRefs.forEach((chartRef, index) => {
             if (index === activePoint.chartIndex) {
               return;
@@ -58,45 +75,27 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             chartRef.current?.clearHoverAttributes?.();
           });
         }
-
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);
         }
-
-        if (activePointRef.current && containerRef.current) {
-          setPopoverPosition({
-            top: activePointRef.current.topPos - containerRef.current.scrollTop,
-            left:
-              activePointRef.current.leftPos - containerRef.current.scrollLeft,
-          });
-        } else {
-          setPopoverPosition(null);
-        }
+        setActiveElemPos();
       }
       // on MouseLeave
       else {
         chartRefs.forEach((chartRef) => {
           chartRef.current?.clearHoverAttributes?.();
         });
-        setPopoverPosition(null);
+        setActivePointRect(null);
       }
     },
-    [chartRefs, props.chartType, props.onActivePointChange, setPopoverPosition],
+    [chartRefs, setActiveElemPos, props.chartType, props.onActivePointChange],
   );
 
   const onScroll = React.useCallback((): void => {
-    if (popoverPosition) {
-      if (activePointRef.current && containerRef.current) {
-        setPopoverPosition({
-          top: activePointRef.current.topPos - containerRef.current.scrollTop,
-          left:
-            activePointRef.current.leftPos - containerRef.current.scrollLeft,
-        });
-      } else {
-        setPopoverPosition(null);
-      }
+    if (activePointRect) {
+      setActiveElemPos();
     }
-  }, [popoverPosition]);
+  }, [activePointRect, setActiveElemPos]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -174,8 +173,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               })}
             </Grid>
             <ChartPopover
-              containerRef={containerRef}
-              popoverPosition={popoverPosition}
+              containerNode={containerRef.current}
+              activePointRect={activePointRect}
               open={
                 props.resizeMode !== ResizeModeEnum.MaxHeight &&
                 props.data.length > 0 &&
@@ -187,6 +186,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               tooltipContent={props?.tooltip?.content}
               focusedState={props.focusedState}
               alignmentConfig={props.alignmentConfig}
+              reCreatePopover={props.focusedState.active}
             />
           </Grid>
           <Grid className='ChartPanel__controls' item>
