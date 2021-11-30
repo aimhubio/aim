@@ -40,8 +40,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RunResources(AutoClean['Run']):
-    PRIORITY = 30
+class RunAutoClean(AutoClean['Run']):
+    PRIORITY = 90
 
     def __init__(self, instance: 'Run') -> None:
         """
@@ -248,7 +248,7 @@ class Run(StructuredRunMixin):
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
-        self._resources: RunResources = None
+        self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
 
@@ -293,7 +293,7 @@ class Run(StructuredRunMixin):
         if experiment:
             self.experiment = experiment
 
-        self._resources = RunResources(self)
+        self._resources = RunAutoClean(self)
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'

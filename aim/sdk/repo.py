@@ -48,7 +48,7 @@ def _get_tracking_queue():
 
 
 class RepoAutoClean(AutoClean):
-    PRIORITY = 90
+    PRIORITY = 30
 
     def __init__(self, instance: 'Repo') -> None:
         """

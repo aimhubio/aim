@@ -46,9 +46,9 @@ class AutoClean(Generic[T]):
         self.finalizer.atexit = False
         self._finalizers[instance] = (self.PRIORITY, self.finalizer)
 
-        if not self._registered_with_atexit:
-            atexit.register(self.cleanup)
-            self._registered_with_atexit = True
+        if not AutoClean._registered_with_atexit:
+            atexit.register(AutoClean.cleanup)
+            AutoClean._registered_with_atexit = True
 
     def close(self) -> None:
         """Manually close the object."""
@@ -65,19 +65,22 @@ class AutoClean(Generic[T]):
     @staticmethod
     def _cleanup():
         """
-        Actually cleanup all the remaining objects in order of specified
-        priorities. This is called automatically by atexit.
-        It is not meant tobe called manually.
+        Actually cleanup all the remaining resources in order of specified
+        priorities. Resources with bigger priority numbers are cleaned up first (have higher priority)
+        while the resources with equal priorities are cleaned up in reverse order
+        of their registration (hence why reversed is used).
+        This is called automatically by atexit. It is not meant tobe called manually.
         """
+
         finalizers = sorted(AutoClean._finalizers.items(), key=lambda x: x[1][0])
         logger.debug(f'Cleaning up...  Found {len(finalizers)} finalizers')
         logger.debug('Cleaning up...  Iterating over instances in order')
-        for key, (priority, finalizer) in finalizers:
+        for key, (priority, finalizer) in reversed(finalizers):
             logger.debug(f'Cleaning up...  with priority={priority} instance {key}')
             finalizer()
 
-    @classmethod
-    def cleanup(cls):
+    @staticmethod
+    def cleanup():
         """
         Cleanup all the remaining objects. This is called automatically
         when the program exits.
@@ -85,7 +88,7 @@ class AutoClean(Generic[T]):
         data consistency.
         """
         logger.debug('Cleaning up...  Blocking KeyboardInterrupts')
-        example = RobustExec(target=cls._cleanup)
+        example = RobustExec(target=AutoClean._cleanup)
         example.start()
         example.join()
         logger.debug('Cleaning up...  Done')
