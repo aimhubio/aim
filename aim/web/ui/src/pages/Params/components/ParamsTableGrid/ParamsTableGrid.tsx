@@ -176,35 +176,47 @@ function getParamsTableColumns(
   );
 
   if (groupFields) {
-    columns.push({
-      key: '#',
-      content: (
-        <span
-          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
-        >
-          #
-        </span>
-      ),
-      topHeader: 'Grouping',
-      pin: 'left',
-    });
-    columns.push({
-      key: 'groups',
-      content: (
-        <div className='Table__groupsColumn__cell'>
-          {Object.keys(groupFields).map((field) => {
-            let name: string = field.replace('run.params.', '');
-            name = name.replace('run.props', 'run');
-            return (
-              <Tooltip key={field} title={name}>
-                <span>{name}</span>
-              </Tooltip>
-            );
-          })}
-        </div>
-      ),
-      topHeader: 'Groups',
-    });
+    columns = [
+      {
+        key: '#',
+        content: (
+          <span
+            style={{
+              textAlign: 'right',
+              display: 'inline-block',
+              width: '100%',
+            }}
+          >
+            #
+          </span>
+        ),
+        topHeader: 'Grouping',
+        pin: 'left',
+      },
+      {
+        key: 'groups',
+        content: (
+          <div className='Table__groupsColumn__cell'>
+            {Object.keys(groupFields).map((field) => {
+              let name: string = field.replace('run.params.', '');
+              name = name.replace('run.props', 'run');
+              return (
+                <Tooltip key={field} title={name}>
+                  <span>{name}</span>
+                </Tooltip>
+              );
+            })}
+          </div>
+        ),
+        pin: order?.left?.includes('groups')
+          ? 'left'
+          : order?.right?.includes('groups')
+          ? 'right'
+          : null,
+        topHeader: 'Groups',
+      },
+      ...columns,
+    ];
   }
 
   columns = columns.map((col) => ({
@@ -214,7 +226,7 @@ function getParamsTableColumns(
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === '#' || a.key === 'groups') {
+    if (a.key === '#') {
       return -1;
     } else if (
       groupFields?.hasOwnProperty(a.key) ||
