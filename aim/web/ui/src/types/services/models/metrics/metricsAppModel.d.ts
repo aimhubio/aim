@@ -17,8 +17,6 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
-import { IModel, State } from '../model';
-
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
 

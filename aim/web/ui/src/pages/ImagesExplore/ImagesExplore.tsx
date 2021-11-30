@@ -163,22 +163,23 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreAppModel.onGroupingSelectChange
               }
               onGroupingModeChange={imagesExploreAppModel.onGroupingModeChange}
-              onGroupingPaletteChange={() => { }}
-              onGroupingReset={() => { }}
+              onGroupingPaletteChange={() => {}}
+              onGroupingReset={() => {}}
               onGroupingApplyChange={
                 imagesExploreAppModel.onGroupingApplyChange
               }
-              onGroupingPersistenceChange={() => { }}
-              onShuffleChange={() => { }}
+              onGroupingPersistenceChange={() => {}}
+              onShuffleChange={() => {}}
             />
           </div>
           <div
             ref={imagesWrapperRef}
-            className={`ImagesExplore__imagesWrapper__container${imagesExploreData?.config?.table.resizeMode ===
-                ResizeModeEnum.MaxHeight
+            className={`ImagesExplore__imagesWrapper__container${
+              imagesExploreData?.config?.table.resizeMode ===
+              ResizeModeEnum.MaxHeight
                 ? '__hide'
                 : ''
-              }`}
+            }`}
           >
             <ImagesPanel
               recordSlice={imagesExploreData?.config?.images?.recordSlice}
@@ -226,11 +227,12 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             />
           </div>
           <ResizePanel
-            className={`ImagesExplore__ResizePanel${imagesExploreData?.requestIsPending ||
-                !isEmpty(imagesExploreData?.imagesData)
+            className={`ImagesExplore__ResizePanel${
+              imagesExploreData?.requestIsPending ||
+              !isEmpty(imagesExploreData?.imagesData)
                 ? ''
                 : '__hide'
-              }`}
+            }`}
             panelResizing={panelResizing}
             resizeElemRef={resizeElemRef}
             resizeMode={imagesExploreData?.config?.table.resizeMode}
@@ -240,11 +242,12 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div
             ref={tableElemRef}
-            className={`ImagesExplore__table__container${imagesExploreData?.config?.table.resizeMode ===
-                ResizeModeEnum.Hide
+            className={`ImagesExplore__table__container${
+              imagesExploreData?.config?.table.resizeMode ===
+              ResizeModeEnum.Hide
                 ? '__hide'
                 : ''
-              }`}
+            }`}
           >
             <BusyLoaderWrapper
               isLoading={imagesExploreData?.requestIsPending}
@@ -265,12 +268,12 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   rowHeight={imagesExploreData?.config?.table.rowHeight}
                   rowHeightMode={
                     imagesExploreData?.config?.table.rowHeight ===
-                      RowHeightSize.sm
+                    RowHeightSize.sm
                       ? 'small'
                       : imagesExploreData?.config?.table.rowHeight ===
                         RowHeightSize.md
-                        ? 'medium'
-                        : 'large'
+                      ? 'medium'
+                      : 'large'
                   }
                   sortOptions={imagesExploreData?.groupingSelectOptions}
                   sortFields={imagesExploreData?.config?.table.sortFields}

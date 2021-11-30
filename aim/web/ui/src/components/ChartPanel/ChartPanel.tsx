@@ -14,7 +14,7 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
-import { ChartTypeEnum, PointSymbolEnum, ScaleEnum } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 
 import { chartTypesConfig } from './config';
 import ChartPopover from './ChartPopover/ChartPopover';
@@ -49,7 +49,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     } else {
       setActivePointRect(null);
     }
-  }, [setActivePointRect, activePointRef.current, containerRef.current]);
+  }, [setActivePointRect]);
 
   const syncHoverState = React.useCallback(
     (args: ISyncHoverStateArgs): void => {
@@ -157,8 +157,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       props.data.length > 9
                         ? 4
                         : (chartGridPattern[props.data.length][
-                          index
-                        ] as GridSize)
+                            index
+                          ] as GridSize)
                     }
                   >
                     <Component

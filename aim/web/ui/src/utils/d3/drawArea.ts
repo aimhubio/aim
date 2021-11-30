@@ -113,14 +113,15 @@ function drawArea(args: IDrawAreaArgs): void {
   const keys = Object.keys(chartTitle);
   const titleText = keys
     ? `${keys
-      .map(
-        (key) =>
-          `${key}=${isSystemMetric(chartTitle[key])
-            ? formatSystemMetricName(chartTitle[key])
-            : chartTitle[key]
-          }`,
-      )
-      .join(', ')}`
+        .map(
+          (key) =>
+            `${key}=${
+              isSystemMetric(chartTitle[key])
+                ? formatSystemMetricName(chartTitle[key])
+                : chartTitle[key]
+            }`,
+        )
+        .join(', ')}`
     : '';
 
   if (titleText) {

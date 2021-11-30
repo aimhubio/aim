@@ -6,7 +6,7 @@ import { merge } from 'lodash-es';
 import { Link } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { Icon, Button, Badge } from 'components/kit';
+import { Badge } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';

@@ -1,5 +1,4 @@
 import React from 'react';
-import * as d3 from 'd3';
 
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 

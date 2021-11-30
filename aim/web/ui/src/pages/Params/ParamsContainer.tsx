@@ -130,7 +130,9 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingData={paramsData?.config?.grouping as IGroupingConfig}
       selectedParamsData={paramsData?.config?.select as ISelectConfig}
       sortFields={paramsData?.config?.table?.sortFields!}
-      curveInterpolation={paramsData?.config?.chart?.curveInterpolation as CurveEnum}
+      curveInterpolation={
+        paramsData?.config?.chart?.curveInterpolation as CurveEnum
+      }
       tooltip={paramsData?.config?.chart?.tooltip as IPanelTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={

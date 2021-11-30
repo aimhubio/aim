@@ -19,13 +19,12 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import {
   IAppData,
   IChartTitleData,
-  IChartTooltip,
   IChartZoom,
   IFocusedState,
   IGroupingSelectOption,
   IMetricTableRowData,
+  IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
-import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IProjectParamsMetrics,
@@ -145,7 +144,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       notifyData={
         scattersData?.notifyData as IScatterAppModelState['notifyData']
       }
-      tooltip={scattersData?.config?.chart?.tooltip as IChartTooltip}
+      tooltip={scattersData?.config?.chart?.tooltip as IPanelTooltip}
       selectedOptionsData={scattersData?.config?.select as ISelectConfig}
       tableRowHeight={scattersData?.config?.table?.rowHeight as RowHeightSize}
       sortFields={scattersData?.config?.table?.sortFields!}

@@ -104,7 +104,7 @@ function usePanelResize(
     endResize,
     handleResize,
     handleResizeModeChange,
-    resizeElemRef,
+    resizeElemRef.current,
     tableConfig?.resizeMode,
   ]);
 

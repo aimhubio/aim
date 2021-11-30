@@ -66,6 +66,7 @@ function drawAxes(args: IDrawAxesArgs): void {
             if (typeof x === 'number') {
               return Math.round(x) - x === 0;
             }
+            return true;
           });
 
           xAxis.ticks(ticksCount).tickValues(ticks);

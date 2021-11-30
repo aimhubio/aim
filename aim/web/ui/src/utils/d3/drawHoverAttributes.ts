@@ -173,9 +173,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
           .style('width', `${xAxisValueWidth}px`)
           .style(
             'left',
-            `${x - xAxisValueWidth / 2 < 0
-              ? axisLeftEdge + xAxisValueWidth / 2
-              : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
+            `${
+              x - xAxisValueWidth / 2 < 0
+                ? axisLeftEdge + xAxisValueWidth / 2
+                : x + axisLeftEdge + xAxisValueWidth / 2 > axisRightEdge
                 ? axisRightEdge - xAxisValueWidth / 2
                 : x + axisLeftEdge
             }px`,
@@ -216,9 +217,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
         yAxisLabelNodeRef.current.style(
           'top',
-          `${y - yAxisValueHeight / 2 < 0
-            ? axisTopEdge + yAxisValueHeight / 2
-            : y + axisTopEdge + yAxisValueHeight / 2 > axisBottomEdge
+          `${
+            y - yAxisValueHeight / 2 < 0
+              ? axisTopEdge + yAxisValueHeight / 2
+              : y + axisTopEdge + yAxisValueHeight / 2 > axisBottomEdge
               ? axisBottomEdge - yAxisValueHeight / 2
               : y + axisTopEdge
           }px`,

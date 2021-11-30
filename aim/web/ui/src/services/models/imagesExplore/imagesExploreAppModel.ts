@@ -421,13 +421,13 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
       : !isEmpty(rawData)
-        ? (rawData[0].ranges.record_range as number[])
-        : [],
+      ? (rawData[0].ranges.record_range as number[])
+      : [],
     indexRange: !config.images.calcRanges
       ? config.images.indexRange
       : !isEmpty(rawData)
-        ? (rawData[0].ranges.index_range as number[])
-        : [],
+      ? (rawData[0].ranges.index_range as number[])
+      : [],
     recordSlice: getMinAndMaxBetweenArrays(
       rawData?.[0]?.ranges.record_range as number[],
       config.images.recordSlice as number[],
@@ -692,7 +692,8 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[ImagesExplorer] ${value ? 'Disable' : 'Enable'
+    `[ImagesExplorer] ${
+      value ? 'Disable' : 'Enable'
     } grouping by groupBy reverse mode`,
   );
 }
@@ -883,10 +884,10 @@ function getDataAsImageSet(
     const group: string[] = [...(configData?.grouping?.group || [])];
     const groupFields = configData?.grouping?.reverseMode?.group
       ? groupingSelectOptions
-        .filter(
-          (option: IGroupingSelectOption) => !group.includes(option.label),
-        )
-        .map((option) => option.value)
+          .filter(
+            (option: IGroupingSelectOption) => !group.includes(option.label),
+          )
+          .map((option) => option.value)
       : group;
     const imagesDataForOrdering = {};
     data.forEach((group: any) => {
@@ -1142,22 +1143,22 @@ function getDataAsTableRows(
             isRawData
               ? rowValues
               : imagesExploreTableRowRenderer(rowValues, {
-                toggleVisibility: (e) => {
-                  e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
-                },
-              }),
+                  toggleVisibility: (e) => {
+                    e.stopPropagation();
+                    onRowVisibilityChange(rowValues.key);
+                  },
+                }),
           );
         } else {
           rows.push(
             isRawData
               ? rowValues
               : imagesExploreTableRowRenderer(rowValues, {
-                toggleVisibility: (e) => {
-                  e.stopPropagation();
-                  onRowVisibilityChange(rowValues.key);
-                },
-              }),
+                  toggleVisibility: (e) => {
+                    e.stopPropagation();
+                    onRowVisibilityChange(rowValues.key);
+                  },
+                }),
           );
         }
       });
@@ -1297,7 +1298,8 @@ function updateSortFields(sortFields: SortField[]) {
     updateModelData(configUpdate);
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] ${isEmpty(sortFields) ? 'Reset' : 'Apply'
+    `[ImagesExplorer][Table] ${
+      isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1393,8 +1395,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const groupedRows: any[][] =
     data.length > 1
       ? Object.keys(tableData.rows).map(
-        (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-      )
+          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+        )
       : [tableData.rows];
 
   const dataToExport: { [key: string]: string }[] = [];
@@ -1540,24 +1542,26 @@ function getQueryStringFromSelect(
     if (selectData.advancedMode) {
       query = selectData.advancedQuery;
     } else {
-      query = `${selectData.query ? `${selectData.query} and ` : ''
-        }(${selectData.images
-          .map(
-            (image) =>
-              `(images.name == "${image.value.metric_name}"${image.value.context === null
+      query = `${
+        selectData.query ? `${selectData.query} and ` : ''
+      }(${selectData.images
+        .map(
+          (image) =>
+            `(images.name == "${image.value.metric_name}"${
+              image.value.context === null
                 ? ''
                 : ' and ' +
-                Object.keys(image.value.context)
-                  .map(
-                    (item) =>
-                      `images.context.${item} == ${formatValue(
-                        (image.value.context as any)[item],
-                      )}`,
-                  )
-                  .join(' and ')
-              })`,
-          )
-          .join(' or ')})`.trim();
+                  Object.keys(image.value.context)
+                    .map(
+                      (item) =>
+                        `images.context.${item} == ${formatValue(
+                          (image.value.context as any)[item],
+                        )}`,
+                    )
+                    .join(' and ')
+            })`,
+        )
+        .join(' or ')})`.trim();
     }
   }
 
@@ -1620,7 +1624,8 @@ function toggleSelectAdvancedMode() {
     model.setState({ config: newConfig });
   }
   analytics.trackEvent(
-    `[ImagesExplorer] Turn ${!configData?.select.advancedMode ? 'on' : 'off'
+    `[ImagesExplorer] Turn ${
+      !configData?.select.advancedMode ? 'on' : 'off'
     } the advanced mode of select form`,
   );
 }
@@ -1724,10 +1729,10 @@ function onImageVisibilityChange(metricsKeys: string[]) {
       hiddenMetrics:
         metricsKeys[0] === 'all'
           ? Object.values(processedData)
-            .map((metricCollection: any) =>
-              metricCollection.data.map((metric: any) => metric.key),
-            )
-            .flat()
+              .map((metricCollection: any) =>
+                metricCollection.data.map((metric: any) => metric.key),
+              )
+              .flat()
           : metricsKeys,
     };
     const config = {
@@ -1741,9 +1746,10 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     updateModelData(config);
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] ${metricsKeys[0] === 'all'
-      ? 'Visualize all hidden metrics from table'
-      : 'Hide all metrics from table'
+    `[ImagesExplorer][Table] ${
+      metricsKeys[0] === 'all'
+        ? 'Visualize all hidden metrics from table'
+        : 'Hide all metrics from table'
     }`,
   );
 }
