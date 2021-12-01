@@ -81,6 +81,20 @@ const routes = {
     showInSidebar: false,
     displayName: 'ImagesId',
   },
+  SCATTERS: {
+    path: PathEnum.Scatters,
+    component: Scatters,
+    showInSidebar: true,
+    displayName: 'Scatters',
+    icon: 'scatterplot',
+  },
+  // TODO Add SCATTERS_EXPLORE_ID later
+  // SCATTERS_EXPLORE_ID: {
+  //   path: PathEnum.Scatters_Id,
+  //   component: ImagesExplore,
+  //   showInSidebar: false,
+  //   displayName: 'ScatterId',
+  // },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
     component: Bookmarks,
@@ -100,13 +114,6 @@ const routes = {
     component: RunDetail,
     showInSidebar: false,
     displayName: 'Run Detail',
-  },
-  Scatters: {
-    path: PathEnum.Scatters,
-    component: Scatters,
-    showInSidebar: true,
-    displayName: 'Scatters',
-    icon: 'scatters',
   },
 };
 

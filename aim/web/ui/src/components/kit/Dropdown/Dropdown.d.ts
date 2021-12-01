@@ -1,3 +1,5 @@
+import { IconName, IIconProps } from 'components/kit/Icon';
+
 export interface IDropdownProps {
   placeholder?: string;
   value?: string | null;
@@ -15,4 +17,5 @@ export interface IDropdownProps {
   onMenuOpen: () => void;
   onMenuClose: () => void;
   onChange: (value: { value: string; label: string } | null) => void;
+  icon?: IIconProps;
 }
