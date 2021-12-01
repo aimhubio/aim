@@ -14,6 +14,7 @@ import {
   batchSendDelay,
   imageFixedHeight,
 } from 'config/imagesConfigs/imagesConfig';
+import { ImageAlignmentEnum } from 'config/enums/imageEnums';
 
 import { ChartTypeEnum } from 'utils/d3';
 
@@ -207,7 +208,12 @@ function ImagesPanel({
                     imagesSetKey={imagesSetKey}
                     imageSetWrapperHeight={imageWrapperOffsetHeight - 48}
                     imageSetWrapperWidth={imageWrapperOffsetWidth}
-                    imageHeight={imageFixedHeight}
+                    imageHeight={
+                      manipulations.alignmentType === ImageAlignmentEnum.Height
+                        ? (imageWrapperOffsetHeight * manipulations.imageSize) /
+                          100
+                        : imageFixedHeight
+                    }
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}

@@ -101,7 +101,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       manipulations: {
         alignmentType: ImageAlignmentEnum.Original,
-        imageSize: 5,
+        imageSize: 10,
         imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
@@ -426,6 +426,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
   );
   const config = configData;
+  console.log(config);
+
   config.images = {
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
@@ -1837,8 +1839,6 @@ function onImageSizeChange(
   event: React.ChangeEvent<{}>,
   value: number | number[],
 ) {
-  console.log(value, event);
-
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
@@ -1853,8 +1853,7 @@ function onImageSizeChange(
       ...configData,
       images,
     };
-    console.log(images);
-
+    updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
     });
@@ -1877,6 +1876,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData,
       images,
     };
+    updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
     });
@@ -1900,6 +1900,7 @@ function onImageAlignmentChange(
       ...configData,
       images,
     };
+    updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
     });
