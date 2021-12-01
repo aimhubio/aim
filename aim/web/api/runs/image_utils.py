@@ -166,7 +166,7 @@ def collect_requested_image_traces(run: Run,
 
         record_range_missing = rec_range.start is None or rec_range.stop is None
         if record_range_missing:
-            rec_range = IndexRange(trace.first_step(), trace.last_step())
+            rec_range = IndexRange(trace.first_step(), trace.last_step() + 1)
         index_range_missing = idx_range.start is None or idx_range.stop is None
         if index_range_missing:
             idx_range = IndexRange(0, trace.record_length() or 1)
@@ -182,13 +182,13 @@ def collect_requested_image_traces(run: Run,
             steps.append(step)
             if isinstance(val, list):
                 values.append(img_collection_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
-            elif idx_range.start == 0:
+            elif idx_slice.start == 0:
                 values.append(img_record_to_encodable(val, trace, step))
             else:
                 values.append([])
 
         processed_traces_list.append({
-            'record_range': (trace.first_step(), trace.last_step()),
+            'record_range': (trace.first_step(), trace.last_step() + 1),
             'index_range': (0, rec_length),
             'name': trace.name,
             'context': trace.context.to_dict(),

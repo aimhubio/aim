@@ -541,7 +541,11 @@ class Run(StructuredRunMixin):
             sequence_name: str,
             context: Context
     ) -> str:
-        return self.meta_run_tree.subtree(('traces', hash(context), sequence_name, 'dtype')).collect()
+        try:
+            return self.meta_run_tree.subtree(('traces', hash(context), sequence_name, 'dtype')).collect()
+        except KeyError:
+            # fallback to `float`, cause in older versions there was no `dtype`
+            return 'float'
 
     def _get_sequence(
             self,
