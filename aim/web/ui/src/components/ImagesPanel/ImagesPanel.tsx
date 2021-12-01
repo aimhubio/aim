@@ -212,6 +212,10 @@ function ImagesPanel({
                       manipulations.alignmentType === ImageAlignmentEnum.Height
                         ? (imageWrapperOffsetHeight * manipulations.imageSize) /
                           100
+                        : manipulations.alignmentType ===
+                          ImageAlignmentEnum.Width
+                        ? (imageWrapperOffsetWidth * manipulations.imageSize) /
+                          100
                         : imageFixedHeight
                     }
                     focusedState={focusedState}

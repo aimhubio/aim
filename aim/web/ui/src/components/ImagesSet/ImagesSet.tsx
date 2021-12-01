@@ -75,7 +75,9 @@ const ImagesSet = ({
 
   return (
     <List
-      key={content.length}
+      key={
+        content.length + manipulations.imageSize + manipulations.alignmentType
+      }
       height={imageSetWrapperHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}

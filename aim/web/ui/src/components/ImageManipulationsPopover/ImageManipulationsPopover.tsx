@@ -57,7 +57,7 @@ function ImageManipulationsPopover({
           component='h4'
           className='ImageManipulationsPopover__subtitle'
         >
-          Image Size
+          Image Size:
         </Text>
         <div>
           <Dropdown
@@ -80,7 +80,9 @@ function ImageManipulationsPopover({
           >
             RELATIVE TO WINDOW SIZE:
           </Text>
-          <Text>{manipulations.imageSize}%</Text>
+          <Text className='ImageManipulationsPopover__sizePercent'>
+            {manipulations.imageSize}%
+          </Text>
         </div>
         <div className='ImageManipulationsPopover__Slider'>
           <Slider

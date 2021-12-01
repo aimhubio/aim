@@ -426,8 +426,6 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
   );
   const config = configData;
-  console.log(config);
-
   config.images = {
     stepRange: !config.images.calcRanges
       ? config.images.stepRange

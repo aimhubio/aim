@@ -46,8 +46,6 @@ function Dropdown({
   label,
   ...rest
 }: IDropdownProps): React.FunctionComponentElement<React.ReactNode> {
-  console.log(options);
-
   const [labelSwapped, setLabelSwapped] = useState(!!value);
   const customStyles = {
     control: (base: any) => ({

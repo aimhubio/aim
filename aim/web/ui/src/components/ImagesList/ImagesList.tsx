@@ -21,12 +21,6 @@ function ImagesList({
       height={imageHeight}
       itemCount={data.length}
       itemSize={(index: number) => {
-        console.log(
-          manipulations.alignmentType === ImageAlignmentEnum.Width
-            ? (imageSetWrapperWidth * manipulations.imageSize) / 100
-            : (imageHeight / data[index].height) * data[index].width,
-        );
-
         return manipulations.alignmentType === ImageAlignmentEnum.Width
           ? (imageSetWrapperWidth * manipulations.imageSize) / 100
           : (imageHeight / data[index].height) * data[index].width;
@@ -37,8 +31,6 @@ function ImagesList({
       style={{ overflowY: 'hidden' }}
     >
       {({ style, index }) => {
-        console.log('ImageBox', style, manipulations);
-
         return (
           <ImageBox
             index={index}
