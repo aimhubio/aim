@@ -151,9 +151,12 @@ def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
         yield collect_run_streamable_data(encode_tree(it))
 
 
-def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
-                                   rec_num: int = 50, index_num: int = 5) -> List[dict]:
+def collect_requested_image_traces(run: Run,
+                                   requested_traces: List[TraceBase],
+                                   rec_range, idx_range,
+                                   rec_num: int = 50, idx_num: int = 5) -> List[dict]:
     processed_traces_list = []
+
     for requested_trace in requested_traces:
         trace_name = requested_trace.name
         context = Context(requested_trace.context)
@@ -161,25 +164,32 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
         if not trace:
             continue
 
-        rec_step = (trace.last_step() + 1 - trace.first_step()) // rec_num or 1
-        rec_length = trace.record_length() or 1
-        idx_step = rec_length // index_num or 1
-        rec_slice = slice(trace.first_step(), trace.last_step() + 1, rec_step)
-        idx_slice = slice(0, rec_length, idx_step)
+        record_range_missing = rec_range.start is None or rec_range.stop is None
+        if record_range_missing:
+            rec_range = IndexRange(trace.first_step(), trace.last_step())
+        index_range_missing = idx_range.start is None or idx_range.stop is None
+        if index_range_missing:
+            idx_range = IndexRange(0, trace.record_length() or 1)
 
-        steps_vals = trace.values.items_in_range(rec_slice.start, rec_slice.stop, rec_num)
+        rec_length = trace.record_length() or 1
+        idx_step = rec_length // idx_num or 1
+        idx_slice = slice(idx_range.start, idx_range.stop, idx_step)
+
+        steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
         steps = []
         values = []
         for step, val in steps_vals:
             steps.append(step)
             if isinstance(val, list):
                 values.append(img_collection_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
-            elif idx_slice.start == 0:
+            elif idx_range.start == 0:
                 values.append(img_record_to_encodable(val, trace, step))
             else:
                 values.append([])
 
         processed_traces_list.append({
+            'record_range': (trace.first_step(), trace.last_step()),
+            'index_range': (0, rec_length),
             'name': trace.name,
             'context': trace.context.to_dict(),
             'values': values,

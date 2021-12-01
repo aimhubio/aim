@@ -199,7 +199,10 @@ async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
 
 
 @runs_router.post('/{run_id}/images/get-batch/', response_model=RunImagesBatchApiOut)
-async def run_images_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
+async def run_images_batch_api(run_id: str,
+                               requested_traces: RunTracesBatchApiIn,
+                               record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                               index_range: Optional[str] = '', index_density: Optional[int] = 5):
     # Get project
     project = Project()
     if not project.exists():
@@ -208,7 +211,14 @@ async def run_images_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
     if not run:
         raise HTTPException(status_code=404)
 
-    traces_data = collect_requested_image_traces(run, requested_traces)
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    traces_data = collect_requested_image_traces(run, requested_traces, record_range, index_range,
+                                                 record_density, index_density)
 
     return JSONResponse(traces_data)
 
