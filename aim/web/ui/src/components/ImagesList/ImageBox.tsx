@@ -14,6 +14,7 @@ const ImageBox = ({
   imageHeight,
   focusedState,
   syncHoverState,
+  manipulations,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
 
@@ -50,7 +51,9 @@ const ImageBox = ({
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
         style={style}
-        className={`ImagesSet__container__imagesBox__imageBox__image ${
+        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image__${
+          manipulations.imageRendering
+        } ${
           focusedState.key === data.key
             ? focusedState?.active
               ? ' focus'

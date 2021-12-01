@@ -29,6 +29,7 @@ const ImagesSet = ({
   imageHeight,
   focusedState,
   syncHoverState,
+  manipulations,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -92,6 +93,7 @@ const ImagesSet = ({
         imageHeight,
         focusedState,
         syncHoverState,
+        manipulations,
       }}
     >
       {ImagesGroupedList}
@@ -109,7 +111,9 @@ function propsComparator(
   ) {
     return false;
   }
-
+  if (prevProps.manipulations !== nextProps.manipulations) {
+    return false;
+  }
   return true;
 }
 
@@ -156,6 +160,7 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
               imageHeight={data.imageHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
+              manipulations={data.manipulations}
             />
           </div>
         )}

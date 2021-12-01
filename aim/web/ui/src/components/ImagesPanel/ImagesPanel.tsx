@@ -44,6 +44,7 @@ function ImagesPanel({
   resizeMode,
   tooltip,
   focusedState,
+  manipulations,
   onActivePointChange,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = useState<{
@@ -210,6 +211,7 @@ function ImagesPanel({
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
+                    manipulations={manipulations}
                   />
                 </div>
                 <ChartPopover

@@ -12,6 +12,7 @@ function ImagesList({
   imageHeight,
   focusedState,
   syncHoverState,
+  manipulations,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
@@ -35,6 +36,7 @@ function ImagesList({
           imageHeight={imageHeight}
           focusedState={focusedState}
           syncHoverState={syncHoverState}
+          manipulations={manipulations}
         />
       )}
     </List>

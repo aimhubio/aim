@@ -56,12 +56,22 @@
           margin-left: toRem(5px);
         }
 
-        .focus > img, .focus > span {
+        .focus > img,
+        .focus > span {
           box-shadow: 0px 0px 0px 3px rgb(0 0 0 / 24%);
         }
 
-        .active > img, .active > span {
+        .active > img,
+        .active > span {
           box-shadow: 0px 0px 2px 3px rgb(0 0 0 / 15%);
+        }
+        &__image {
+          &__Pixelated {
+            image-rendering: pixelated;
+          }
+          &__Smoothened {
+            image-rendering: optimizeQuality;
+          }
         }
       }
     }
