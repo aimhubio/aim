@@ -14,15 +14,27 @@
     flex-direction: column;
     padding: 0 $space-xs;
   }
+  &__sizeSlider {
+    margin-top: $space-unit;
+  }
   &__subtitle {
     text-transform: uppercase;
-    margin: $space-xs 0;
+    &__imageSize {
+      margin: $space-xs 0 $space-xxxs;
+    }
+    &__imageRendering {
+      margin: $space-xs 0;
+    }
   }
   &__Radio {
     padding-left: 0;
   }
   &__Slider {
-    margin: 0 $space-xxs;
+    margin: $space-xs 0;
+    display: flex;
+    .Slider {
+      margin: 0 $space-xxs;
+    }
   }
   &__Divider {
     width: 100%;

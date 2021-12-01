@@ -6,6 +6,7 @@ import Icon from './Icon';
 import Badge from './Badge';
 import Dropdown from './Dropdown';
 import AutoSuggestions from './AutoSuggestions';
+import Slider from './Slider';
 
 export {
   Text,
@@ -16,4 +17,5 @@ export {
   Icon,
   Dropdown,
   AutoSuggestions,
+  Slider,
 };

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Divider, Slider } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 
-import { Dropdown, Text, ToggleButton } from 'components/kit';
+import { Dropdown, Slider, Text, ToggleButton } from 'components/kit';
 
 import {
   ImageAlignmentEnum,
@@ -14,14 +14,7 @@ import { IImageManipulationsPopoverProps } from '.';
 import './ImageManipulationsPopover.scss';
 
 const sizeProps = {
-  marks: [
-    { value: 5, label: '5' },
-    { value: 25, label: '25' },
-    { value: 51, label: '51' },
-    { value: 75, label: '75' },
-    { value: 95, label: '95' },
-  ],
-  step: 2,
+  step: 1,
   min: 5,
   max: 95,
 };
@@ -46,7 +39,7 @@ function ImageManipulationsPopover({
   function onSizeValueChange(
     event: React.ChangeEvent<{}>,
     newValue: number | number[],
-  ) {
+  ): void & React.FormEventHandler<HTMLSpanElement> {
     setSizeValue(newValue as number);
   }
   return (
@@ -55,7 +48,7 @@ function ImageManipulationsPopover({
         <Text
           tint={50}
           component='h4'
-          className='ImageManipulationsPopover__subtitle'
+          className='ImageManipulationsPopover__subtitle ImageManipulationsPopover__subtitle__imageSize'
         >
           Image Size:
         </Text>
@@ -72,34 +65,34 @@ function ImageManipulationsPopover({
             withPortal
           />
         </div>
-        <div className='flex fac'>
+        <div className='flex fac ImageManipulationsPopover__sizeSlider'>
           <Text
             tint={50}
             component='h4'
-            className='ImageManipulationsPopover__subtitle'
+            className='ImageManipulationsPopover__subtitle ImageManipulationsPopover__subtitle__windowSize'
           >
-            RELATIVE TO WINDOW SIZE:
+            Relative to window size:
           </Text>
           <Text className='ImageManipulationsPopover__sizePercent'>
             {manipulations.imageSize}%
           </Text>
         </div>
         <div className='ImageManipulationsPopover__Slider'>
+          <Text>5%</Text>
           <Slider
-            defaultValue={0}
             valueLabelDisplay='auto'
-            getAriaValueText={(val) => `${val}s`}
+            getAriaValueText={(val) => `${val}`}
             value={sizeValue}
-            onChange={onSizeValueChange}
+            onChange={onSizeValueChange as any}
             disabled={
               manipulations.alignmentType === ImageAlignmentEnum.Original
             }
             onChangeCommitted={onImageSizeChange}
-            marks={sizeProps.marks}
             step={sizeProps.step}
             max={sizeProps.max}
             min={sizeProps.min}
           />
+          <Text>95%</Text>
         </div>
       </div>
       <Divider className='ImageManipulationsPopover__Divider' />
@@ -107,7 +100,7 @@ function ImageManipulationsPopover({
         <Text
           component='h4'
           tint={50}
-          className='ImageManipulationsPopover__subtitle'
+          className='ImageManipulationsPopover__subtitle ImageManipulationsPopover__subtitle__imageRendering'
         >
           Image Rendering
         </Text>
