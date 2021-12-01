@@ -17,7 +17,6 @@ const ImageBox = ({
   focusedState,
   syncHoverState,
   hoveredImageKey,
-  setHoveredImageKey,
   setImageFullMode,
   setImageFullModeData,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
@@ -34,57 +33,43 @@ const ImageBox = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function safeSyncHoverState(args: any): void {
-    if (typeof syncHoverState === 'function') {
-      syncHoverState(args);
-    }
-  }
-
-  function onClick(e: MouseEvent<HTMLDivElement>): void {
-    // TODO need to add focused image logic
-    // if (e?.currentTarget) {
-    //   e.stopPropagation();
-    //   const clientRect = e.currentTarget.getBoundingClientRect();
-    //   safeSyncHoverState({
-    //     activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-    //     focusedStateActive: true,
-    //   });
-    // }
-  }
-
-  function onMouseMove(e: MouseEvent<HTMLDivElement>): void {
-    if (e?.currentTarget && !focusedState?.active) {
-      const clientRect = e.currentTarget.getBoundingClientRect();
-      safeSyncHoverState({
-        activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-      });
-    }
-    setHoveredImageKey(data.key);
-  }
-
-  function onMouseLeave(e: MouseEvent<HTMLDivElement>): void {
-    if (!focusedState?.active) {
-      safeSyncHoverState({ activePoint: null });
-    }
-    setHoveredImageKey('');
-  }
-
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();
     setImageFullMode(true);
     setImageFullModeData(data);
   }
+  // TODO need to add focused image logic
+  // function safeSyncHoverState(args: any): void {
+  //   if (typeof syncHoverState === 'function') {
+  //     syncHoverState(args);
+  //   }
+  // }
+  //
+  // function onClick(e: MouseEvent<HTMLDivElement>): void {
+  //   if (e?.currentTarget) {
+  //     e.stopPropagation();
+  //     const clientRect = e.currentTarget.getBoundingClientRect();
+  //     safeSyncHoverState({
+  //       activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
+  //       focusedStateActive: true,
+  //     });
+  //   }
+  // }
 
   return (
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
         style={style}
-        className={
-          focusedState?.active && focusedState.key === data.key ? 'active' : ''
-        }
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        onClick={onClick}
+        className={`ImagesSet__container__imagesBox__imageBox__image ${
+          focusedState.key === data.key
+            ? focusedState?.active
+              ? ' focus'
+              : ' active'
+            : ''
+        }`}
+        data-key={`${data.key}`}
+        data-seqkey={`${data.seqKey}`}
+        // onClick={onClick}
       >
         {imagesBlobs?.[blob_uri] ? (
           <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>

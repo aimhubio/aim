@@ -80,14 +80,17 @@
 
         .MuiSkeleton-root {
           margin-top: toRem(5px);
-          margin-right: toRem(5px);
+          margin-left: toRem(5px);
         }
 
-        .active {
-          img {
-            border: toRem(2px) solid $primary-color;
-            padding: toRem(1px);
-          }
+        .focus > img {
+          border: toRem(2px) solid $primary-color;
+          padding: toRem(1px);
+        }
+
+        .active > img {
+          border: toRem(2px) solid #b9d5f8;
+          padding: toRem(1px);
         }
       }
     }

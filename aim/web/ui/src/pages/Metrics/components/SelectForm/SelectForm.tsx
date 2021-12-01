@@ -7,7 +7,6 @@ import {
   Divider,
   InputBase,
   Popper,
-  TextField,
   Tooltip,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -18,10 +17,12 @@ import {
 } from '@material-ui/icons';
 
 import { Button, Icon, Badge, Text } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/ExpressionAutoComplete';
 
 import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
@@ -49,6 +50,7 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
+  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
@@ -157,6 +159,7 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
+
   return (
     <div className='SelectForm'>
       <div className='SelectForm__container__metrics'>
@@ -168,28 +171,18 @@ function SelectForm({
         >
           {selectedMetricsData?.advancedMode ? (
             <div className='SelectForm__textarea'>
-              <form onSubmit={handleMetricSearch}>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  spellCheck={false}
-                  rows={3}
-                  variant='outlined'
-                  placeholder={
-                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  }
-                  value={selectedMetricsData?.advancedQuery ?? ''}
-                  onChange={({ target }) =>
-                    onSelectAdvancedQueryChange(target.value)
-                  }
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      handleMetricSearch(e);
-                    }
-                  }}
-                />
-              </form>
+              <ExpressionAutoComplete
+                isTextArea={true}
+                onExpressionChange={onSelectAdvancedQueryChange}
+                onSubmit={handleMetricSearch}
+                value={selectedMetricsData?.advancedQuery}
+                placeholder='metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                options={[
+                  'metric.name',
+                  'metric.context',
+                  ...paramsSuggestions,
+                ]}
+              />
             </div>
           ) : (
             <>
@@ -303,18 +296,13 @@ function SelectForm({
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
           <div className='SelectForm__TextField'>
-            <form onSubmit={handleMetricSearch}>
-              <TextField
-                fullWidth
-                size='small'
-                variant='outlined'
-                spellCheck={false}
-                inputProps={{ style: { height: '0.687rem' } }}
-                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-                value={selectedMetricsData?.query ?? ''}
-                onChange={({ target }) => onSelectRunQueryChange(target.value)}
-              />
-            </form>
+            <ExpressionAutoComplete
+              onExpressionChange={onSelectRunQueryChange}
+              onSubmit={handleMetricSearch}
+              value={selectedMetricsData?.query}
+              options={paramsSuggestions}
+              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+            />
           </div>
         )}
       </div>

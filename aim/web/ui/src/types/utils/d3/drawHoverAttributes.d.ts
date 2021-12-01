@@ -11,7 +11,7 @@ import {
 import { IGetAxisScale } from './getAxisScale';
 import { IProcessedData } from './processData';
 
-export interface IDrawHoverAttributesProps {
+export interface IDrawHoverAttributesArgs {
   index: number;
   data: IProcessedData[];
   visAreaRef: React.MutableRefObject<>;
@@ -21,8 +21,8 @@ export interface IDrawHoverAttributesProps {
   visBoxRef: React.MutableRefObject<>;
   svgNodeRef: React.MutableRefObject<>;
   bgRectNodeRef: React.MutableRefObject<>;
-  xAxisLabelNodeRef: React.MutableRefObject<>;
-  yAxisLabelNodeRef: React.MutableRefObject<>;
+  xAxisLabelNodeRef?: React.MutableRefObject<>;
+  yAxisLabelNodeRef?: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
@@ -30,9 +30,11 @@ export interface IDrawHoverAttributesProps {
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   humanizerConfigRef: React.MutableRefObject<{}>;
+  drawAxisLines?: { x: Boolean; y: Boolean };
+  drawAxisLabels?: { x: Boolean; y: Boolean };
 }
 
-export interface ISyncHoverStateParams {
+export interface ISyncHoverStateArgs {
   activePoint: IActivePoint | null;
   dataSelector?: string;
   focusedStateActive?: boolean;
@@ -45,7 +47,7 @@ export interface IGetCoordinates {
   mouseY: number;
 }
 
-export interface IGetCoordinatesProps {
+export interface IGetCoordinatesArgs {
   mouse: [number, number];
   margin: { left: number; top: number };
   xScale: IGetAxisScale;
@@ -66,6 +68,5 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
-  topPos: number;
-  leftPos: number;
+  pointRect: { top: number; bottom: number; left: number; right: number };
 }

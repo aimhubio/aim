@@ -40,7 +40,6 @@ function ImagesList({
           focusedState={focusedState}
           syncHoverState={syncHoverState}
           hoveredImageKey={hoveredImageKey}
-          setHoveredImageKey={setHoveredImageKey}
           setImageFullMode={setImageFullMode}
           setImageFullModeData={setImageFullModeData}
         />

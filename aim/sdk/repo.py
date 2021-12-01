@@ -318,6 +318,18 @@ class Repo:
         from aim.sdk.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
 
+    def query_distributions(self, query: str = '') -> QuerySequenceCollection:
+        """Get distribution collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for distribution sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.distribution_sequence import Distributions
+        return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query)
+
     @property
     def run_props_cache_hint(self):
         return self._run_props_cache_hint

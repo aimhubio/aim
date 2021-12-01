@@ -14,7 +14,7 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    max-width: 82rem;
+    max-width: 85rem;
     padding: 0 2.125rem;
 
     &__searchButtonContainer {
@@ -114,6 +114,17 @@
           display: flex;
           align-items: center;
           height: 100%;
+          &__selectedValue {
+            min-width: toRem(40px);
+            display: flex;
+            &.maxValue {
+              margin-left: toRem(15px);
+            }
+            &.minValue {
+              margin-right: toRem(5px);
+              justify-content: end;
+            }
+          }
           .MuiSlider-root {
             padding: 0;
             height: 0.25rem;

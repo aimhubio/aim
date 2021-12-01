@@ -5,6 +5,7 @@ export interface IImageSetProps {
   orderedMap: { [key: string]: any };
   imagesBlobs: object;
   onScroll: () => void;
+  onListScroll: () => void;
   addUriToList: (blobUrl: string) => void;
   index?: number;
   imagesSetKey: number;
@@ -14,7 +15,6 @@ export interface IImageSetProps {
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
   hoveredImageKey: string;
-  setHoveredImageKey: (v: string) => void;
   setImageFullMode: (v: boolean) => void;
   setImageFullModeData: (v: string) => void;
 }

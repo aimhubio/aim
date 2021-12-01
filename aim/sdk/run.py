@@ -17,7 +17,7 @@ from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
 from aim.storage.hashing import hash_auto
-from aim.storage.context import Context, MetricDescriptor
+from aim.storage.context import Context, SequenceDescriptor
 from aim.storage.treeview import TreeView
 from aim.storage import treeutils
 
@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
     from aim.sdk.metric import Metric
     from aim.sdk.image_sequence import Images
+    from aim.sdk.distribution_sequence import Distributions
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
@@ -217,7 +218,7 @@ class Run(StructuredRunMixin):
         self._props = None
 
         self.contexts: Dict[Context, int] = dict()
-        self.sequence_info: Dict[MetricDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
+        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', self.hash, read_only=read_only, from_union=True
@@ -362,7 +363,6 @@ class Run(StructuredRunMixin):
     ):
         if context is None:
             context = {}
-
         try:
             val = convert_to_py_number(value)
         except ValueError:
@@ -371,7 +371,7 @@ class Run(StructuredRunMixin):
         dtype = get_object_typename(value)
 
         ctx = Context(context)
-        metric = MetricDescriptor(name, ctx)
+        sequence = SequenceDescriptor(name, ctx)
 
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = context
@@ -379,11 +379,11 @@ class Run(StructuredRunMixin):
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        val_view = self.series_run_tree.subtree(metric.selector).array('val').allocate()
-        epoch_view = self.series_run_tree.subtree(metric.selector).array('epoch').allocate()
-        time_view = self.series_run_tree.subtree(metric.selector).array('time').allocate()
+        val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
+        epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
+        time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
 
-        seq_info = self.sequence_info[metric.selector]
+        seq_info = self.sequence_info[sequence.selector]
         if not seq_info.initialized:
             seq_info.count = len(val_view)
             seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
@@ -519,6 +519,22 @@ class Run(StructuredRunMixin):
             :obj:`Images` object if exists, `None` otherwise.
         """
         return self._get_sequence('images', name, context)
+
+    def get_distribution_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Distributions']:
+        """Retrieve distributions sequence by it's name and context.
+
+        Args:
+             name (str): Tracked distribution sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Distributions` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('distributions', name, context)
 
     def _get_sequence(
             self,

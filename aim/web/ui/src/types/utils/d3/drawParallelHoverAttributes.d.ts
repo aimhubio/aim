@@ -11,7 +11,7 @@ import {
   IActivePoint,
 } from './drawHoverAttributes';
 
-export interface IDrawParallelHoverAttributesProps {
+export interface IDrawParallelHoverAttributesArgs {
   index: number;
   dimensions: IDimensionsType;
   visAreaRef: React.MutableRefObject<>;

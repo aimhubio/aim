@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
 import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent';
 import { Button, Icon } from 'components/kit';
+
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { ChartTypeEnum } from 'utils/d3';
 
@@ -15,32 +17,32 @@ function ImageFullViewPopover({
   tooltipContent,
   handleClose,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  const imageContainerRef = useRef<any>({});
+  const [containerHeight, setContainerHeight] = useState(
+    imageContainerRef?.current?.offsetHeight || 0,
+  );
+
+  useResizeObserver(
+    () => setContainerHeight(imageContainerRef.current.offsetHeight),
+    imageContainerRef,
+  );
   return (
-    <div
-      className='ImageFullViewPopover'
-      style={{
-        height: 'auto',
-        maxHeight:
-          (document.body.getBoundingClientRect().height - 64 < imageData.height
-            ? document.body.getBoundingClientRect().height - 64
-            : imageData.height) + 'px',
-      }}
-    >
-      <img
-        src={`data:image/${imageData.format};base64, ${
-          imagesBlobs?.[imageData.blob_uri]
-        }`}
-        alt=''
-        style={{
-          maxHeight:
-            (document.body.getBoundingClientRect().height - 64 <
-            imageData.height
-              ? document.body.getBoundingClientRect().height - 64
-              : imageData.height) + 'px',
-          maxWidth: 'calc(100% - 230px)',
-          objectFit: 'fill',
-        }}
-      />
+    <div className='ImageFullViewPopover'>
+      <div
+        ref={imageContainerRef}
+        className='ImageFullViewPopover__imageContainer'
+      >
+        <img
+          src={`data:image/${imageData.format};base64, ${
+            imagesBlobs?.[imageData.blob_uri]
+          }`}
+          alt=''
+          style={{
+            maxHeight: containerHeight,
+          }}
+        />
+      </div>
+
       <div className='ImageFullViewPopover__detailContainer'>
         <div className='ImageFullViewPopover__detailContainer__closeButtonContainer'>
           <Button
@@ -52,12 +54,13 @@ function ImageFullViewPopover({
             <Icon name='close' />
           </Button>
         </div>
-
-        <PopoverContent
-          chartType={ChartTypeEnum.ImageSet}
-          tooltipContent={tooltipContent}
-          focusedState={{ active: true, key: null }}
-        />
+        <div className='ImageFullViewPopover__detailContainer__content'>
+          <PopoverContent
+            chartType={ChartTypeEnum.ImageSet}
+            tooltipContent={tooltipContent}
+            focusedState={{ active: true, key: null }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -88,6 +88,7 @@ export interface IImageData {
   height: number;
   index: number;
   key: string;
+  images_name: string;
   run: IImageRunData;
   step: number;
   width: number;

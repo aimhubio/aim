@@ -19,6 +19,7 @@ const ImagesSet = ({
   data,
   imagesBlobs,
   onScroll,
+  onListScroll,
   addUriToList,
   index = 0,
   imagesSetKey,
@@ -29,12 +30,12 @@ const ImagesSet = ({
   focusedState,
   syncHoverState,
   hoveredImageKey,
-  setHoveredImageKey,
   setImageFullMode,
   setImageFullModeData,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
+
   function fillContent(
     list: [] | { [key: string]: [] | {} },
     path = [''],
@@ -81,6 +82,7 @@ const ImagesSet = ({
       itemCount={content.length}
       itemSize={getItemSize}
       width={'100%'}
+      onScroll={onListScroll}
       itemData={{
         data: content,
         imagesBlobs,
@@ -94,7 +96,6 @@ const ImagesSet = ({
         focusedState,
         syncHoverState,
         hoveredImageKey,
-        setHoveredImageKey,
         setImageFullMode,
         setImageFullModeData,
       }}
@@ -163,7 +164,6 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
               hoveredImageKey={data.hoveredImageKey}
-              setHoveredImageKey={data.setHoveredImageKey}
               setImageFullMode={data.setImageFullMode}
               setImageFullModeData={data.setImageFullModeData}
             />
