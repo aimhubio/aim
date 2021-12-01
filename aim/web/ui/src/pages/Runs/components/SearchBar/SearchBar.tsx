@@ -63,11 +63,11 @@ function SearchBar({
         className='Runs_Search_Bar__Button'
         color='primary'
         onClick={isRunsDataLoading ? handleRequestAbort : handleRunSearch}
-        variant='contained'
+        variant={isRunsDataLoading ? 'outlined' : 'contained'}
         startIcon={
           <Icon
             name={isRunsDataLoading ? 'close' : 'search'}
-            fontSize={isRunsDataLoading ? 10 : 14}
+            fontSize={isRunsDataLoading ? 12 : 14}
           />
         }
       >

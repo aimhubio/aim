@@ -266,11 +266,11 @@ function SelectForm({
           </Box>
           <Button
             color='primary'
-            variant='contained'
+            variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={
               <Icon
                 name={requestIsPending ? 'close' : 'search'}
-                fontSize={requestIsPending ? 10 : 14}
+                fontSize={requestIsPending ? 12 : 14}
               />
             }
             className='Params__SelectForm__search__button'
