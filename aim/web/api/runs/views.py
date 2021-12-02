@@ -14,7 +14,7 @@ from aim.web.api.runs.utils import (
     str_to_range,
 )
 from aim.web.api.runs.image_utils import (
-    collect_requested_image_traces,
+    requested_image_traces_streamer,
     image_search_result_streamer,
     images_batch_result_streamer,
 )
