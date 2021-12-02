@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+- Implement image full size view (VkoHov)
 
 ## 3.1.1 Nov 25 2021
 
