@@ -1,3 +1,5 @@
+import { TraceRawDataItem } from 'services/models/runs/types';
+
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
   isRunInfoLoading: boolean;
@@ -64,4 +66,22 @@ export interface IRunSelectRun {
   end_time: number;
   name: string;
   run_id: string;
+}
+
+export interface IRunDistributionsTabProps {
+  runHash: string;
+  runInfo: Record<'images' | 'distributions', InfoRawDataItem[]>;
+  isRunBatchLoading: boolean;
+}
+
+export interface IDistributionVisualizerProps {
+  isLoading?: boolean;
+  activeTraceContext?: string;
+  data: any;
+}
+
+export interface ITraceVisualizationContainerProps {
+  traceInfo: Record<'images' | 'distributions', TraceRawDataItem[]>;
+  traceType: 'images' | 'distributions';
+  runHash: string;
 }

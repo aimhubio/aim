@@ -23,6 +23,7 @@ import RunDetailSettingsTab from './RunDetailSettingsTab';
 import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailParamsTab from './RunDetailParamsTab';
 import RunSelectPopoverContent from './RunSelectPopoverContent';
+import TraceVisualizationContainer from './TraceVisualizationContainer';
 
 import './RunDetail.scss';
 
@@ -193,6 +194,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             <Tab label='Parameters' />
             <Tab label='Metrics' />
             <Tab label='System' />
+            <Tab label='Distributions' />
             <Tab label='Settings' />
           </Tabs>
         </Paper>
@@ -234,6 +236,17 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         <TabPanel
           value={value}
           index={3}
+          className='RunDetail__runDetailContainer__tabPanel'
+        >
+          <TraceVisualizationContainer
+            runHash={runHash}
+            traceType='distributions'
+            traceInfo={runData?.runTraces}
+          />
+        </TabPanel>
+        <TabPanel
+          value={value}
+          index={4}
           className='RunDetail__runDetailContainer__tabPanel'
         >
           <RunDetailSettingsTab

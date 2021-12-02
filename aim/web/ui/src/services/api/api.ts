@@ -66,7 +66,7 @@ function getStream<ResponseDataType>(
       method: 'GET',
       ...options,
       ...(options?.method === 'POST' && {
-        body: JSON.stringify(params),
+        body: JSON.stringify(options.body),
         headers: { 'Content-Type': 'application/json' },
       }),
     },

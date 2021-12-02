@@ -1,4 +1,5 @@
 import API from '../api';
+import { TraceRawDataItem, TraceType } from '../../models/runs/types';
 
 const endpoints = {
   GET_RUNS: 'runs/search/run',
@@ -10,6 +11,7 @@ const endpoints = {
   ARCHIVE_RUN: (id: string) => `runs/${id}`,
   CREATE_RUNS_TAG: (id: string) => `runs/${id}/tags/new`,
   DELETE_RUNS_TAG: (id: string, tag_id: string) => `runs/${id}/tags/${tag_id}`,
+  GET_BATCH: (id: string, trace: string) => `runs/${id}/${trace}/get-batch`,
 };
 
 function getRunsData(query?: string, limit?: number, offset?: string) {
@@ -71,8 +73,23 @@ function deleteRunsTag(run_id: string, tag_id: string) {
   });
 }
 
+function getBatch(run_id: string, trace: TraceType, params: any, body: any) {
+  return API.getStream<ReadableStream>(
+    endpoints.GET_BATCH(run_id, trace),
+    params,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+    },
+  );
+}
+
 const runsService = {
   endpoints,
+  getBatch,
   getRunsData,
   getRunInfo,
   getRunMetricsBatch,
