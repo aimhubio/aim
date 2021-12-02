@@ -17,4 +17,5 @@ export interface IImageSetProps {
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
   imageProperties: IImagesPanelProps['imageProperties'];
+  tableHeight: IImagesPanelProps['tableHeight'];
 }

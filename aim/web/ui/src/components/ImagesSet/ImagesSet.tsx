@@ -35,6 +35,7 @@ const ImagesSet = ({
   focusedState,
   syncHoverState,
   imageProperties,
+  tableHeight,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -80,11 +81,7 @@ const ImagesSet = ({
 
   return (
     <List
-      key={
-        content.length +
-        imageProperties?.imageSize +
-        imageProperties?.alignmentType
-      }
+      key={content.length + tableHeight + imageProperties?.imageSize}
       height={imageSetWrapperHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}

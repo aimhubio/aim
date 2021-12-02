@@ -195,6 +195,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
+              tableHeight={imagesExploreData?.config?.table?.height}
               imageWrapperOffsetHeight={offsetHeight || 0}
               imageWrapperOffsetWidth={offsetWidth || 0}
               isRangePanelShow={

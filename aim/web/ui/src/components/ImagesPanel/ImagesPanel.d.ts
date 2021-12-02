@@ -33,4 +33,5 @@ export interface IImagesPanelProps {
   focusedState: IFocusedState;
   imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
+  tableHeight: string;
 }

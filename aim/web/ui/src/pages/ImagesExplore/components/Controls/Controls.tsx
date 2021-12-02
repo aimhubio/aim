@@ -53,7 +53,7 @@ function Controls(
               >
                 <Icon
                   className={`Controls__icon ${opened ? 'active' : ''}`}
-                  name='images'
+                  name='image-properties'
                 />
               </div>
             </Tooltip>

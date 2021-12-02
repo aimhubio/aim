@@ -47,6 +47,7 @@ function ImagesPanel({
   focusedState,
   imageProperties,
   onActivePointChange,
+  tableHeight,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = useState<{
     top: number;
@@ -225,6 +226,7 @@ function ImagesPanel({
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
                     imageProperties={imageProperties}
+                    tableHeight={tableHeight}
                   />
                 </div>
                 <ChartPopover

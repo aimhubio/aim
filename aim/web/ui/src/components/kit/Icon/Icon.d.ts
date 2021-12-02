@@ -97,4 +97,6 @@ export type IconName =
   | 'sort-arrow-down'
   | 'live-demo'
   | 'co'
-  | 'full-docs';
+  | 'full-docs'
+  | 'image-explorer'
+  | 'image-properties';
