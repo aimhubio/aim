@@ -266,10 +266,6 @@ class RocksUnionSubContainer(RocksContainer):
         self._parent = container
         self.domain = domain
 
-        self._db = None
-        self._lock = None
-        self._lock_path: Optional[Path] = None
-        self._progress_path: Optional[Path] = None
 
     @property
     def writable_db(self) -> aimrocks.DB:
