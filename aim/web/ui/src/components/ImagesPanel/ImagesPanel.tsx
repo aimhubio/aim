@@ -86,7 +86,7 @@ function ImagesPanel({
 
   function closePopover(): void {
     if (!focusedState?.active) {
-      setActivePointRect(null);
+      syncHoverState({ activePoint: null });
     }
   }
 
@@ -144,6 +144,10 @@ function ImagesPanel({
       // on MouseLeave
       else {
         setActivePointRect(null);
+        // TODO remove after implementing active focusedState logic
+        if (onActivePointChange) {
+          onActivePointChange({ key: null }, focusedStateActive);
+        }
       }
     },
     [onActivePointChange, setActivePointRect, setActiveElemPos],
