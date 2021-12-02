@@ -48,7 +48,7 @@ function MenuItem({
       isActive: active,
       isOpen: open,
     };
-  }, [activeItemKey, id, parentId]);
+  }, [activeItemKey, id, parentId, name]);
 
   const onClickItem = React.useCallback(
     (event) => {

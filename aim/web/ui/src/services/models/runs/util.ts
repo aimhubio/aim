@@ -1,3 +1,5 @@
+import bs58check from 'bs58check';
+
 import { IMenuItem } from 'components/kit/Menu';
 
 import contextToString from 'utils/contextToString';
@@ -36,7 +38,7 @@ export function getMenuItemFromRawInfo(
 
   // doesn't destructuring item, because we are not sure it has context
   info.forEach((item: TraceRawDataItem) => {
-    const id: string = `${item.name}`;
+    const id: string = bs58check.encode(Buffer.from(`${item.name}`));
     let menuItem: IMenuItem = {
       name: item.name,
       id,
@@ -47,9 +49,9 @@ export function getMenuItemFromRawInfo(
       const keys: string[] = Object.keys(item.context);
       if (keys.length) {
         const children: IMenuItem[] = [];
-        const child = {
+        const child: IMenuItem = {
           name: `${contextToString(item.context)}`,
-          id: JSON.stringify(item.context),
+          id: bs58check.encode(Buffer.from(JSON.stringify(item.context))),
         };
         children.push(child);
         /*keys.forEach((key: string) => {
@@ -123,10 +125,11 @@ export function getContextObjFromMenuActiveKey(
     }
   }
 
+  name = bs58check.decode(name).toString();
   if (contextKey) {
     // remove contextKey[0] because it is '.'
     context = JSON.parse(
-      contextKey.substring(contextKey.lastIndexOf('.') + 1, contextKey.length),
+      bs58check.decode(contextKey.substring(1, contextKey.length)).toString(),
     );
     // const keyValue: string[] = contextKey.split(separator);
     // assumed there are separated string width "->"

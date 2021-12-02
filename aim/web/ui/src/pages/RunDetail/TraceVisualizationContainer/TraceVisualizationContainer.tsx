@@ -31,12 +31,16 @@ function TraceVisualizationContainer({
   return (
     <div className='TraceVisualizationWrapper'>
       <div className='MenuArea'>
-        <Menu
-          defaultActiveItemKey={runTracesModelData?.menu?.defaultActiveItemKey}
-          onChangeActiveItem={runTracesModel.changeActiveItemKey}
-          title={runTracesModelData?.menu?.title}
-          data={runTracesModelData?.menu?.items || []}
-        />
+        {runTracesModelData?.menu?.defaultActiveItemKey && (
+          <Menu
+            defaultActiveItemKey={
+              runTracesModelData?.menu?.defaultActiveItemKey
+            }
+            onChangeActiveItem={runTracesModel.changeActiveItemKey}
+            title={runTracesModelData?.menu?.title}
+            data={runTracesModelData?.menu?.items || []}
+          />
+        )}
       </div>
       <div className='VisualizerArea'>
         <BusyLoaderWrapper
