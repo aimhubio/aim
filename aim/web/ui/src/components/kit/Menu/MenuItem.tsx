@@ -94,7 +94,7 @@ function MenuItem({
           <Text
             size={14}
             tint={isActive ? 100 : 80}
-            weight={isOpen || isActive ? 600 : 500}
+            weight={600}
             color={isActive ? 'info' : 'primary'}
           >
             {name}
