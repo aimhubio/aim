@@ -58,6 +58,8 @@ function initialize(
       query: null,
     },
   });
+
+  getRunTraceBatch().then().catch();
 }
 
 function changeActiveItemKey(key: string, name: string) {
