@@ -22,13 +22,10 @@ const ImageBox = ({
   );
 
   React.useEffect(() => {
-    let timeoutID: any;
+    let timeoutID: number;
     let subscription: any;
 
     if (blobData === null) {
-      if (timeoutID) {
-        clearTimeout(timeoutID);
-      }
       if (subscription) {
         subscription.unsubscribe();
       }
@@ -39,7 +36,7 @@ const ImageBox = ({
           setBlobData(data[blob_uri]);
           subscription.unsubscribe();
         });
-        timeoutID = setTimeout(() => {
+        timeoutID = window.setTimeout(() => {
           if (imagesURIModel.getState()[blob_uri]) {
             setBlobData(imagesURIModel.getState()[blob_uri]);
             subscription.unsubscribe();
