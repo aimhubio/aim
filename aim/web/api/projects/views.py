@@ -3,7 +3,6 @@ import pytz
 from typing import Optional, Tuple
 
 from collections import Counter
-from datetime import datetime
 from fastapi import Depends, HTTPException, Request, Query
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from urllib import parse
