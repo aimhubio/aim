@@ -2,7 +2,7 @@ import { IImageData } from 'types/services/models/imagesExplore/imagesExploreApp
 
 export interface IImageFullViewPopoverProps {
   imageData: IImageData;
-  imagesBlobs: any;
+  imagesBlobs: { [key: string]: string };
   tooltipContent: ITooltipContent;
   handleClose: () => void;
 }

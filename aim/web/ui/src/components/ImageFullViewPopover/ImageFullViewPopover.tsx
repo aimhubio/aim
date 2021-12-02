@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent';
 import { Button, Icon } from 'components/kit';
@@ -22,10 +22,13 @@ function ImageFullViewPopover({
     imageContainerRef?.current?.offsetHeight || 0,
   );
 
-  useResizeObserver(
-    () => setContainerHeight(imageContainerRef.current.offsetHeight),
-    imageContainerRef,
+  const setContainerHeightMemo = useCallback(
+    () => setContainerHeight(imageContainerRef?.current?.offsetHeight || 0),
+    [setContainerHeight],
   );
+
+  useResizeObserver(setContainerHeightMemo, imageContainerRef);
+
   return (
     <div className='ImageFullViewPopover'>
       <div
