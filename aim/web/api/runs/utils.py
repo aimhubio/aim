@@ -251,7 +251,7 @@ def requested_distribution_traces_streamer(run: Run,
 
         record_range_missing = rec_range.start is None or rec_range.stop is None
         if record_range_missing:
-            rec_range = IndexRange(trace.first_step(), trace.last_step())
+            rec_range = IndexRange(trace.first_step(), trace.last_step() + 1)
         steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
 
         steps = []
@@ -260,7 +260,7 @@ def requested_distribution_traces_streamer(run: Run,
             steps.append(step)
             values.append(dist_record_to_encodable(val))
         trace_dict = {
-            'record_range': (trace.first_step(), trace.last_step()),
+            'record_range': (trace.first_step(), trace.last_step() + 1),
             'name': trace.name,
             'context': trace.context.to_dict(),
             'values': values,

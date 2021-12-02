@@ -217,9 +217,7 @@ class TestRunImagesBatchApi(RunImagesTestBase):
         response = client.post(f'/api/runs/{self.run_hash}/images/get-batch/', json=requested_traces)
         self.assertEqual(200, response.status_code)
 
-        response_data = response.json()
-        self.assertEqual(1, len(response_data))
-        trace_data = response_data[0]
+        trace_data = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
         self.assertEqual('random_images', trace_data['name'])
         self.assertDictEqual({}, trace_data['context'])
         self.assertEqual(50, len(trace_data['values']))

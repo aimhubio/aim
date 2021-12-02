@@ -18,9 +18,15 @@
 
     &__title {
       padding-bottom: 0.125rem;
+      max-width: 100vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: $text-sm;
       position: relative;
-
+      &__pointer {
+        cursor: pointer;
+      }
       &.withDash {
         &::after {
           content: '';
