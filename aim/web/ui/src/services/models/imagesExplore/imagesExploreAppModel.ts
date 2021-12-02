@@ -63,6 +63,8 @@ import filterTooltipContent from 'utils/filterTooltipContent';
 
 import createModel from '../model';
 
+import imagesURIModel from './imagesURIModel';
+
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
@@ -266,10 +268,20 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           applyButtonDisabled: true,
         });
 
-        const stream = await imagesRequestRef.call(exceptionHandler);
-        const runData = await getImagesMetricsData(stream);
-        if (configData) {
-          setModelData(runData, configData);
+        imagesURIModel.init();
+
+        try {
+          const stream = await imagesRequestRef.call(exceptionHandler);
+          const runData = await getImagesMetricsData(stream);
+          if (configData) {
+            setModelData(runData, configData);
+          }
+        } catch (ex: Error | any) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ');
+          }
         }
       } else {
         model.setState({
@@ -786,37 +798,35 @@ async function getImagesMetricsData(
   return runData;
 }
 
-async function getImagesBlobsData(uris: string[]) {
-  const stream = await imagesExploreService.getImagesByURIs(uris).call();
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
-  let decodedPairs = decodePathsVals(buffer_pairs);
-  let objects = iterFoldTree(decodedPairs, 1);
+function getImagesBlobsData(uris: string[]) {
+  const request = imagesExploreService.getImagesByURIs(uris);
+  return {
+    abort: request.abort,
+    call: () => {
+      return request
+        .call()
+        .then(async (stream) => {
+          let gen = adjustable_reader(stream);
+          let buffer_pairs = decode_buffer_pairs(gen);
+          let decodedPairs = decodePathsVals(buffer_pairs);
+          let objects = iterFoldTree(decodedPairs, 1);
 
-  const throttledBlobsUpdate = _.throttle(function () {
-    model.setState({
-      imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) },
-    });
-  }, blobsUpdateThrottleDelay);
-
-  let firsItem = true;
-  for await (let [keys, val] of objects) {
-    const imagesBlobs: { [key: string]: string } =
-      model.getState()?.imagesBlobs || {};
-    imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
-
-    if (firsItem) {
-      model.setState({
-        imagesBlobs: { ...imagesBlobs },
-      });
-      firsItem = false;
-    } else {
-      throttledBlobsUpdate();
-    }
-  }
-
-  throttledBlobsUpdate.cancel();
-  model.setState({ imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) } });
+          for await (let [keys, val] of objects) {
+            const URI = keys[0];
+            imagesURIModel.emit(URI as string, {
+              [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+            });
+          }
+        })
+        .catch((ex) => {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ');
+          }
+        });
+    },
+  };
 }
 
 function sortWithAllGroupFields(
