@@ -47,14 +47,6 @@ function ImagesExploreRangePanel({
             </div>
 
             <div className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox'>
-              <Text
-                size={10}
-                weight={500}
-                tint={70}
-                className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox__selectedValue minValue'
-              >
-                {recordSlice[0]}
-              </Text>
               <Slider
                 value={recordSlice}
                 onChange={(e, value) =>
@@ -70,14 +62,6 @@ function ImagesExploreRangePanel({
                   }
                 }}
               />
-              <Text
-                size={10}
-                weight={500}
-                tint={70}
-                className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox__selectedValue maxValue'
-              >
-                {recordSlice[1]}
-              </Text>
             </div>
           </div>
           <div className='ImagesExploreRangePanel__container__sliderContainer__densityWrapper'>
@@ -124,18 +108,10 @@ function ImagesExploreRangePanel({
                 weight={600}
                 tint={80}
                 className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderValuesLabel'
-              >{`${indexRange[0]} - ${indexRange[1]}`}</Text>
+              >{`${indexSlice[0]} - ${indexSlice[1]}`}</Text>
             </div>
 
             <div className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox'>
-              <Text
-                size={10}
-                weight={500}
-                tint={70}
-                className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox__selectedValue minValue'
-              >
-                {indexSlice[0]}
-              </Text>
               <Slider
                 value={indexSlice}
                 onChange={(e, value) => onSliceRangeChange('indexSlice', value)}
@@ -149,14 +125,6 @@ function ImagesExploreRangePanel({
                   }
                 }}
               />
-              <Text
-                size={10}
-                weight={500}
-                tint={70}
-                className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox__selectedValue maxValue'
-              >
-                {indexSlice[1]}
-              </Text>
             </div>
           </div>
           <div className='ImagesExploreRangePanel__container__sliderContainer__densityWrapper'>
