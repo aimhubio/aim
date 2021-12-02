@@ -1,5 +1,4 @@
-import React, { memo, MouseEvent, useEffect, useRef } from 'react';
-import { isEqual } from 'lodash-es';
+import React, { memo, useEffect } from 'react';
 
 import { Skeleton } from '@material-ui/lab';
 
