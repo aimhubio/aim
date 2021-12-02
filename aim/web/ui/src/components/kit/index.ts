@@ -6,6 +6,7 @@ import Icon from './Icon';
 import Badge from './Badge';
 import Dropdown from './Dropdown';
 import AutoSuggestions from './AutoSuggestions';
+import Menu, { MenuItem } from './Menu';
 
 export {
   Text,
@@ -16,4 +17,6 @@ export {
   Icon,
   Dropdown,
   AutoSuggestions,
+  Menu,
+  MenuItem,
 };
