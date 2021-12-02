@@ -84,3 +84,9 @@ def check_types_compatibility(dtype: str, base_dtype: str, update_base_dtype_fn=
     if dtype == 'list' and any_list_regex.match(base_dtype):
         return True
     return False
+
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__

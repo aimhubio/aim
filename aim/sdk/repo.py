@@ -359,6 +359,18 @@ class Repo:
         from aim.sdk.distribution_sequence import Distributions
         return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query)
 
+    def query_dictionaries(self, query: str = '') -> QuerySequenceCollection:
+        """Get dictionary collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for distribution sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.dictionary_sequence import Dictionaries
+        return QuerySequenceCollection(repo=self, seq_cls=Dictionaries, query=query)
+        
     @property
     def run_props_cache_hint(self):
         return self._run_props_cache_hint

@@ -145,7 +145,7 @@ def query_add_default_expr(query: str) -> str:
 
 
 class RestrictedPythonQuery(Query):
-    allowed_params = {'run', 'metric', 'images', 'distributions'}
+    allowed_params = {'run', 'metric', 'images', 'distributions','dictionaries'}
 
     def __init__(
         self,
