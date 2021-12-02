@@ -11,8 +11,10 @@ from typing import Iterator, Tuple, Union
 class InMemoryTreeView(TreeView):
     def __init__(
         self,
-        container: AimObject
+        container: AimObject,
+        constructed: bool = True
     ) -> None:
+        self._constructed = constructed
         self.container = container
 
     def view(
@@ -97,7 +99,7 @@ class InMemoryTreeView(TreeView):
         for key in path:
             container = container[key]
 
-        container[last_key] = deepcopy(value)
+        container[last_key] = deepcopy(value) if self._constructed else value
 
     def keys(
         self,

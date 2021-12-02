@@ -6,14 +6,11 @@ import { Icon, Text } from 'components/kit';
 import { IMenuItemProps, IMenuItem } from './types';
 
 /**
- * Generate key width id and parentId
+ * Generate key with id and parentId
  * @param parentId
  * @param id
  */
-function generateKeyWidthParent(
-  parentId: string | number,
-  id: string | number,
-) {
+function generateKeyWithParent(parentId: string | number, id: string | number) {
   return (parentId ? parentId + '.' : '') + id;
 }
 
@@ -37,13 +34,13 @@ function MenuItem({
 }: IMenuItemProps) {
   const { isActive, isOpen } = React.useMemo(() => {
     /*
-     * the fastest algorithm to have tree view is to identify the item width it's parent's ids
+     * the fastest algorithm to have tree view is to identify the item with it's parent's ids
      *  if we have this type of tree
      *   layer1 -> layer2 -> layer3
      *   if the layer3 is active, the active key will be layer1.layer2.layer3
      *   if the layer2 is active, the active key will be layer1.layer2
      */
-    const key = generateKeyWidthParent(parentId, id);
+    const key = generateKeyWithParent(parentId, id);
     const active = key === activeItemKey || id === activeItemKey;
     const open = activeItemKey.toString().includes(`${key}.`);
 
@@ -56,7 +53,8 @@ function MenuItem({
   const onClickItem = React.useCallback(
     (event) => {
       event.stopPropagation();
-      let key = generateKeyWidthParent(parentId, id);
+      event.stopPropagation();
+      let key = generateKeyWithParent(parentId, id);
       let callbackName = name;
       // if the item has children, activate first child
       if (children?.length) {
@@ -123,7 +121,7 @@ function MenuItem({
                 key={item.id}
                 {...item}
                 onClickOpen={onClickOpen}
-                parentId={generateKeyWidthParent(parentId, id)}
+                parentId={generateKeyWithParent(parentId, id)}
                 activeItemKey={activeItemKey}
               />
             ))}
