@@ -209,7 +209,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               tooltip={
                 imagesExploreData?.config?.images?.tooltip as IPanelTooltip
               }
-              manipulations={imagesExploreData?.config?.images?.manipulations}
+              imageProperties={
+                imagesExploreData?.config?.images?.imageProperties
+              }
               onActivePointChange={imagesExploreAppModel.onActivePointChange}
               controls={
                 <Controls
@@ -219,8 +221,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
-                  manipulations={
-                    imagesExploreData?.config?.images?.manipulations
+                  imageProperties={
+                    imagesExploreData?.config?.images?.imageProperties
                   }
                   onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
                   onImageSizeChange={imagesExploreAppModel.onImageSizeChange}

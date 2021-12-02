@@ -1,5 +1,5 @@
 import React from 'react';
-import { shouldComponentUpdate, VariableSizeList as List } from 'react-window';
+import { VariableSizeList as List } from 'react-window';
 
 import { ImageAlignmentEnum } from 'config/enums/imageEnums';
 
@@ -14,15 +14,15 @@ function ImagesList({
   imageHeight,
   focusedState,
   syncHoverState,
-  manipulations,
+  imageProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
       height={imageHeight}
       itemCount={data.length}
       itemSize={(index: number) => {
-        return manipulations.alignmentType === ImageAlignmentEnum.Width
-          ? (imageSetWrapperWidth * manipulations.imageSize) / 100
+        return imageProperties?.alignmentType === ImageAlignmentEnum.Width
+          ? (imageSetWrapperWidth * imageProperties?.imageSize) / 100
           : (imageHeight / data[index].height) * data[index].width;
       }}
       layout='horizontal'
@@ -41,7 +41,7 @@ function ImagesList({
             imageHeight={imageHeight}
             focusedState={focusedState}
             syncHoverState={syncHoverState}
-            manipulations={manipulations}
+            imageProperties={imageProperties}
           />
         );
       }}

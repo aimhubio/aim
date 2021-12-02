@@ -26,7 +26,7 @@ export interface IImagesExploreAppConfig {
       key: string | null;
       active: boolean;
     };
-    manipulations: {
+    imageProperties: {
       alignmentType: string;
       imageSize: number;
       imageRendering: string;

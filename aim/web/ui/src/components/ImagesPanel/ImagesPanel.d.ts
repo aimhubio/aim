@@ -31,6 +31,6 @@ export interface IImagesPanelProps {
   resizeMode: ResizeModeEnum;
   tooltip: ITooltipContent;
   focusedState: IFocusedState;
-  manipulations: IImagesExploreAppConfig['images']['manipulations'];
+  imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
 }

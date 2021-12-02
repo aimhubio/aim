@@ -99,9 +99,9 @@ function getConfig(): IImagesExploreAppConfig {
         display: true,
         selectedParams: [],
       },
-      manipulations: {
-        alignmentType: ImageAlignmentEnum.Original,
-        imageSize: 10,
+      imageProperties: {
+        alignmentType: ImageAlignmentEnum.Height,
+        imageSize: 15,
         imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
@@ -457,7 +457,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       active: false,
       key: null,
     },
-    manipulations: config.images.manipulations,
+    imageProperties: config.images.imageProperties,
   };
   model.setState({
     requestIsPending: false,
@@ -1842,8 +1842,8 @@ function onImageSizeChange(
   if (configData?.images) {
     const images = {
       ...configData.images,
-      manipulations: {
-        ...configData.images.manipulations,
+      imageProperties: {
+        ...configData.images.imageProperties,
         imageSize: value,
       },
     };
@@ -1864,8 +1864,8 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
   if (configData?.images) {
     const images = {
       ...configData.images,
-      manipulations: {
-        ...configData.images.manipulations,
+      imageProperties: {
+        ...configData.images.imageProperties,
 
         imageRendering: type,
       },
@@ -1889,8 +1889,8 @@ function onImageAlignmentChange(
   if (configData?.images) {
     const images = {
       ...configData.images,
-      manipulations: {
-        ...configData.images.manipulations,
+      imageProperties: {
+        ...configData.images.imageProperties,
         alignmentType: option?.value,
       },
     };

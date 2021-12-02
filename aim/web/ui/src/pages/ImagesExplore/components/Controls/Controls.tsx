@@ -5,7 +5,7 @@ import { Tooltip } from '@material-ui/core';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
-import ImageManipulationsPopover from 'components/ImageManipulationsPopover';
+import ImagePropertiesPopover from 'components/ImagePropertiesPopover';
 
 import { IControlProps } from 'types/pages/imagesExplore/components/Controls/Controls';
 
@@ -41,8 +41,10 @@ function Controls(
             />
           }
         />
+      </div>
+      <div>
         <ControlPopover
-          title='Image Manipulations'
+          title='Image Properties'
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Tooltip Params'>
               <div
@@ -57,8 +59,8 @@ function Controls(
             </Tooltip>
           )}
           component={
-            <ImageManipulationsPopover
-              manipulations={props.manipulations}
+            <ImagePropertiesPopover
+              imageProperties={props.imageProperties}
               onImageSizeChange={props.onImageSizeChange}
               onImageRenderingChange={props.onImageRenderingChange}
               onImageAlignmentChange={props.onImageAlignmentChange}

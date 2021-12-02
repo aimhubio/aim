@@ -14,7 +14,7 @@ export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IPanelTooltip;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
-  manipulations: IImagesExploreAppConfig['images']['manipulations'];
+  imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
   onImageSizeChange: (
     event: React.ChangeEvent<{}>,
     newValue: number | number[],

@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.ImageManipulationsPopover {
+.ImagePropertiesPopover {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,15 +13,16 @@
     display: flex;
     flex-direction: column;
     padding: 0 $space-xs;
+    &__imageSize {
+      margin-top: $space-xs;
+      margin-bottom: $space-xxxs;
+    }
   }
   &__sizeSlider {
     margin-top: $space-unit;
   }
   &__subtitle {
     text-transform: uppercase;
-    &__imageSize {
-      margin: $space-xs 0 $space-xxxs;
-    }
     &__imageRendering {
       margin: $space-xs 0;
     }
@@ -33,7 +34,7 @@
     margin: $space-xs 0;
     display: flex;
     .Slider {
-      margin: 0 $space-xxs;
+      margin: 0 $space-md;
     }
   }
   &__Divider {
