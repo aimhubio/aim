@@ -15,10 +15,7 @@ export interface IControlProps {
   tooltip: IPanelTooltip;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
-  onImageSizeChange: (
-    event: React.ChangeEvent<{}>,
-    newValue: number | number[],
-  ) => void;
+  onImageSizeChange: (newValue: number) => void;
   onImageRenderingChange: (type: ImageRenderingEnum) => void;
   onImageAlignmentChange: (
     value: { value: string; label: string } | null,

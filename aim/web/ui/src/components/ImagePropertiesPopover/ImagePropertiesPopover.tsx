@@ -19,6 +19,8 @@ const sizeProps = {
   max: 70,
 };
 
+//TODO Implement images alignment options
+
 // const alignmentOptions = [
 //   { label: 'Original', value: ImageAlignmentEnum.Original },
 //   { label: 'Align By Width', value: ImageAlignmentEnum.Width },
@@ -40,6 +42,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
     event: React.ChangeEvent<{}>,
     newValue: number | number[],
   ): void & React.FormEventHandler<HTMLSpanElement> {
+    onImageSizeChange(newValue as number);
     setSizeValue(newValue as number);
   }
   return (
@@ -89,7 +92,6 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
             getAriaValueText={(val) => `${val}`}
             value={sizeValue}
             onChange={onSizeValueChange as any}
-            onChangeCommitted={onImageSizeChange}
             step={sizeProps.step}
             max={sizeProps.max}
             min={sizeProps.min}

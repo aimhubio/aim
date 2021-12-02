@@ -1834,10 +1834,7 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   }
 }
 
-function onImageSizeChange(
-  event: React.ChangeEvent<{}>,
-  value: number | number[],
-) {
+const onImageSizeChange = _.throttle((value: number) => {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
@@ -1857,7 +1854,7 @@ function onImageSizeChange(
       config,
     });
   }
-}
+}, 200);
 
 function onImageRenderingChange(type: ImageRenderingEnum) {
   const configData: IImagesExploreAppConfig | undefined =
