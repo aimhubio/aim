@@ -26,6 +26,12 @@ const ImageBox = ({
     let subscription: any;
 
     if (blobData === null) {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
       subscription = imagesURIModel.subscribe(blob_uri, (data) => {
         setBlobData(data[blob_uri]);
         subscription.unsubscribe();
@@ -44,7 +50,7 @@ const ImageBox = ({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   // TODO need to add focused image logic
   // function safeSyncHoverState(args: any): void {
