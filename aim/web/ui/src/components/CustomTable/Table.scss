@@ -102,7 +102,7 @@ $border-radius: 0.2rem;
   contain: content;
 
   &--groups {
-    max-width: unset;
+    max-width: unset !important;
   }
 
   &:last-of-type {

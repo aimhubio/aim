@@ -107,6 +107,7 @@ function Column({
   }, [data, expanded, width]);
 
   const isInViewPort =
+    columnRef.current?.classList?.[1] === 'Table__column--groups' ||
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
