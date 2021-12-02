@@ -536,6 +536,17 @@ class Run(StructuredRunMixin):
         """
         return self._get_sequence('distributions', name, context)
 
+    def _get_sequence_dtype(
+            self,
+            sequence_name: str,
+            context: Context
+    ) -> str:
+        try:
+            return self.meta_run_tree.subtree(('traces', hash(context), sequence_name, 'dtype')).collect()
+        except KeyError:
+            # fallback to `float`, cause in older versions there was no `dtype`
+            return 'float'
+
     def _get_sequence(
             self,
             seq_type: str,
@@ -546,6 +557,9 @@ class Run(StructuredRunMixin):
         if seq_cls is None:
             raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
         assert issubclass(seq_cls, Sequence)
+        tracked_dtype = self._get_sequence_dtype(sequence_name, context)
+        if tracked_dtype not in seq_cls.allowed_dtypes():
+            return None
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
 
