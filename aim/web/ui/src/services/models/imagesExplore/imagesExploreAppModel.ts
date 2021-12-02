@@ -268,10 +268,20 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           applyButtonDisabled: true,
         });
 
-        const stream = await imagesRequestRef.call(exceptionHandler);
-        const runData = await getImagesMetricsData(stream);
-        if (configData) {
-          setModelData(runData, configData);
+        imagesURIModel.init();
+
+        try {
+          const stream = await imagesRequestRef.call(exceptionHandler);
+          const runData = await getImagesMetricsData(stream);
+          if (configData) {
+            setModelData(runData, configData);
+          }
+        } catch (ex: Error | any) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ');
+          }
         }
       } else {
         model.setState({
@@ -788,19 +798,35 @@ async function getImagesMetricsData(
   return runData;
 }
 
-async function getImagesBlobsData(uris: string[]) {
-  const stream = await imagesExploreService.getImagesByURIs(uris).call();
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
-  let decodedPairs = decodePathsVals(buffer_pairs);
-  let objects = iterFoldTree(decodedPairs, 1);
+function getImagesBlobsData(uris: string[]) {
+  const request = imagesExploreService.getImagesByURIs(uris);
+  return {
+    abort: request.abort,
+    call: () => {
+      return request
+        .call()
+        .then(async (stream) => {
+          let gen = adjustable_reader(stream);
+          let buffer_pairs = decode_buffer_pairs(gen);
+          let decodedPairs = decodePathsVals(buffer_pairs);
+          let objects = iterFoldTree(decodedPairs, 1);
 
-  for await (let [keys, val] of objects) {
-    const URI = keys[0];
-    imagesURIModel.emit(URI as string, {
-      [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
-    });
-  }
+          for await (let [keys, val] of objects) {
+            const URI = keys[0];
+            imagesURIModel.emit(URI as string, {
+              [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+            });
+          }
+        })
+        .catch((ex) => {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ');
+          }
+        });
+    },
+  };
 }
 
 function sortWithAllGroupFields(
