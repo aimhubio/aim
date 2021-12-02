@@ -1,4 +1,4 @@
-import React, { memo, MouseEvent, useEffect, useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import { Skeleton } from '@material-ui/lab';
@@ -7,11 +7,12 @@ import { Button, Icon } from 'components/kit';
 
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
+import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
+
 const ImageBox = ({
   index,
   style,
   data,
-  imagesBlobs,
   addUriToList,
   imageHeight,
   focusedState,
@@ -22,16 +23,40 @@ const ImageBox = ({
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
 
-  useEffect(() => {
-    let timeoutID = setTimeout(() => {
-      addUriToList(blob_uri);
-    }, batchCollectDelay);
+  let [blobData, setBlobData] = React.useState<string>(
+    imagesURIModel.getState()[blob_uri] ?? null,
+  );
+
+  React.useEffect(() => {
+    let timeoutID: any;
+    let subscription: any;
+
+    if (blobData === null) {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+      subscription = imagesURIModel.subscribe(blob_uri, (data) => {
+        setBlobData(data[blob_uri]);
+        subscription.unsubscribe();
+      });
+      timeoutID = setTimeout(() => {
+        addUriToList(blob_uri);
+      }, batchCollectDelay);
+    }
 
     return () => {
-      clearTimeout(timeoutID);
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();
@@ -71,12 +96,9 @@ const ImageBox = ({
         data-seqkey={`${data.seqKey}`}
         // onClick={onClick}
       >
-        {imagesBlobs?.[blob_uri] ? (
+        {blobData ? (
           <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>
-            <img
-              src={`data:image/${format};base64, ${imagesBlobs?.[blob_uri]}`}
-              alt=''
-            />
+            <img src={`data:image/${format};base64, ${blobData}`} alt='' />
             <Button
               withOnlyIcon
               size='small'
@@ -104,4 +126,4 @@ const ImageBox = ({
   );
 };
 
-export default memo(ImageBox);
+export default ImageBox;

@@ -5,6 +5,8 @@ import { Button, Icon } from 'components/kit';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
+import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
+
 import { ChartTypeEnum } from 'utils/d3';
 
 import { IImageFullViewPopoverProps } from './types.d';
@@ -13,10 +15,10 @@ import './styles.scss';
 
 function ImageFullViewPopover({
   imageData,
-  imagesBlobs,
   tooltipContent,
   handleClose,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  const blobData = imagesURIModel.getState()[imageData.blob_uri];
   const imageContainerRef = useRef<any>({});
   const [containerHeight, setContainerHeight] = useState(
     imageContainerRef?.current?.offsetHeight || 0,
@@ -36,9 +38,7 @@ function ImageFullViewPopover({
         className='ImageFullViewPopover__imageContainer'
       >
         <img
-          src={`data:image/${imageData.format};base64, ${
-            imagesBlobs?.[imageData.blob_uri]
-          }`}
+          src={`data:image/${imageData.format};base64, ${blobData}`}
           alt=''
           style={{
             maxHeight: containerHeight,

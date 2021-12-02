@@ -61,7 +61,6 @@ export interface IImagesExploreAppModelState {
   imagesData: any;
   tableData: any[];
   tableColumns: ITableColumn[];
-  imagesBlobs: { [key: string]: string };
   sameValueColumns: string[];
   params: string[];
   notifyData: INotification[];
