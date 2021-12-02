@@ -32,13 +32,22 @@ const ImageBox = ({
       if (subscription) {
         subscription.unsubscribe();
       }
-      subscription = imagesURIModel.subscribe(blob_uri, (data) => {
-        setBlobData(data[blob_uri]);
-        subscription.unsubscribe();
-      });
-      timeoutID = setTimeout(() => {
-        addUriToList(blob_uri);
-      }, batchCollectDelay);
+      if (imagesURIModel.getState()[blob_uri]) {
+        setBlobData(imagesURIModel.getState()[blob_uri]);
+      } else {
+        subscription = imagesURIModel.subscribe(blob_uri, (data) => {
+          setBlobData(data[blob_uri]);
+          subscription.unsubscribe();
+        });
+        timeoutID = setTimeout(() => {
+          if (imagesURIModel.getState()[blob_uri]) {
+            setBlobData(imagesURIModel.getState()[blob_uri]);
+            subscription.unsubscribe();
+          } else {
+            addUriToList(blob_uri);
+          }
+        }, batchCollectDelay);
+      }
     }
 
     return () => {

@@ -173,6 +173,8 @@ function ImagesPanel({
       if (requestRef.current) {
         requestRef.current.abort();
       }
+
+      imagesURIModel.init();
     };
   }, []);
 
