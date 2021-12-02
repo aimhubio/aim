@@ -1,3 +1,5 @@
+import pytz
+
 from tests.base import PrefilledDataApiTestBase, ApiTestBase
 from tests.utils import generate_image_set
 
@@ -16,9 +18,9 @@ class TestProjectApi(PrefilledDataApiTestBase):
         response = client.get('/api/projects/activity')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        today = datetime.date.today().isoformat()
+        today_gmt = datetime.datetime.now().astimezone(pytz.timezone('gmt')).date().isoformat()
         self.assertEqual(10, data['num_runs'])
-        self.assertEqual(10, data['activity_map'][today])
+        self.assertEqual(10, data['activity_map'][today_gmt])
         self.assertEqual(2, data['num_experiments'])  # count 'default' experiment
 
     def test_project_params_api(self):
