@@ -1075,6 +1075,7 @@ function getDataAsTableRows(
         metric: '',
         context: [],
         children: [],
+        groups: groupConfigData,
       };
 
       rows[groupKey!] = {
@@ -1190,7 +1191,7 @@ function getDataAsTableRows(
         rows[groupKey!].data,
         {},
         true,
-        ['value', 'name'].concat(Object.keys(columnsValues)),
+        ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
       );
     }
   });

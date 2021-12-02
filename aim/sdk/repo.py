@@ -1,5 +1,6 @@
 import os
 import shutil
+import logging
 from enum import Enum
 
 from packaging import version
@@ -9,6 +10,7 @@ from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
+from aim.ext.cleanup import AutoClean
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
@@ -22,6 +24,8 @@ from aim.storage.rockscontainer import RocksContainer
 from aim.storage.union import RocksUnionContainer
 
 from aim.storage.structured.db import DB
+
+logger = logging.getLogger(__name__)
 
 
 class ContainerConfig(NamedTuple):
@@ -41,6 +45,27 @@ def _get_tracking_queue():
     if os.getenv(AIM_ENABLE_TRACKING_THREAD, False):
         return TaskQueue('metric_tracking', max_backlog=10_000_000)  # single thread task queue for Run.track
     return None
+
+
+class RepoAutoClean(AutoClean):
+    PRIORITY = 30
+
+    def __init__(self, instance: 'Repo') -> None:
+        """
+        Prepare the `Repo` for automatic cleanup.
+
+        Args:
+            instance: The `Repo` instance to be cleaned up.
+        """
+        super().__init__(instance)
+        self.root_path = instance.root_path
+        self._mount_root = instance._mount_root
+
+    def _close(self) -> None:
+        """Close the `Repo` and unmount the remote repository."""
+        if self._mount_root:
+            logger.debug(f'Unmounting remote repository at {self._mount_root}')
+            unmount_remote_repo(self.root_path, self._mount_root)
 
 
 # TODO make this api thread-safe
@@ -64,6 +89,8 @@ class Repo:
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
         if read_only is not None:
             raise NotImplementedError
+
+        self._resources = None
         self.read_only = read_only
         self._mount_root = None
         if path.startswith('ssh://'):
@@ -90,6 +117,8 @@ class Repo:
         self._encryption_key = None
         if init:
             self.structured_db.run_upgrades()
+
+        self._resources = RepoAutoClean(self)
 
     @property
     def meta_tree(self):
@@ -318,6 +347,18 @@ class Repo:
         from aim.sdk.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
 
+    def query_distributions(self, query: str = '') -> QuerySequenceCollection:
+        """Get distribution collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for distribution sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.distribution_sequence import Distributions
+        return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query)
+
     @property
     def run_props_cache_hint(self):
         return self._run_props_cache_hint
@@ -424,6 +465,7 @@ class Repo:
         db.init_cache(cache_name, db.runs, lambda run: run.hash)
         self.run_props_cache_hint = cache_name
 
-    def __del__(self):
-        if self._mount_root:
-            unmount_remote_repo(self.root_path, self._mount_root)
+    def close(self):
+        if self._resources is None:
+            return
+        self._resources.close()

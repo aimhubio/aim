@@ -9,7 +9,7 @@ const getComponentBaseCode = (name) => `
     import { Text } from 'components/kit';
     import { I${name}Props } from './types.d';
     
-    import './ExpressionAutoComplete.scss';
+    import './${name}.scss';
     
     function ${name}({
       title,

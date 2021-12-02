@@ -3,9 +3,14 @@ import _ from 'lodash';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
+import { Tooltip } from '@material-ui/core';
+
 import ImagesList from 'components/ImagesList';
+import { JsonViewPopover } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import { formatValue } from 'utils/formatValue';
+import { jsonParse } from 'utils/jsonParse';
 
 import { IImageSetProps } from './ImagesSet.d';
 
@@ -126,6 +131,11 @@ export default React.memo(ImagesSet, propsComparator);
 const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
   const { index, style, data } = props;
   const [path, items] = data.data[index];
+  const json: string | object = jsonParse(
+    path[path.length - 1]?.split('=')[1]?.trim(),
+  );
+  const isJson: boolean = typeof json === 'object';
+
   return (
     <div
       className='ImagesSet'
@@ -145,13 +155,37 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
       ))}
       <div className='ImagesSet__container'>
         {path.length > 1 && (
-          <span
-            className={classNames('ImagesSet__container__title', {
-              withDash: path.length > 2,
-            })}
-          >
-            {path[path.length - 1]}
-          </span>
+          <ControlPopover
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            anchor={({ onAnchorClick }) => (
+              <Tooltip
+                placement='top-start'
+                title={isJson ? path[path.length - 1] : ''}
+              >
+                <span
+                  onClick={isJson ? onAnchorClick : () => null}
+                  className={classNames(
+                    `ImagesSet__container__title ${
+                      isJson ? 'ImagesSet__container__title__pointer' : ''
+                    }`,
+                    {
+                      withDash: path.length > 2,
+                    },
+                  )}
+                >
+                  {path[path.length - 1]}
+                </span>
+              </Tooltip>
+            )}
+            component={<JsonViewPopover json={json as object} />}
+          />
         )}
         {items.length > 0 && (
           <div className='ImagesSet__container__imagesBox'>
