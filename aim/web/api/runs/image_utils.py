@@ -151,12 +151,10 @@ def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
         yield collect_run_streamable_data(encode_tree(it))
 
 
-def collect_requested_image_traces(run: Run,
-                                   requested_traces: List[TraceBase],
-                                   rec_range, idx_range,
-                                   rec_num: int = 50, idx_num: int = 5) -> List[dict]:
-    processed_traces_list = []
-
+def requested_image_traces_streamer(run: Run,
+                                    requested_traces: List[TraceBase],
+                                    rec_range, idx_range,
+                                    rec_num: int = 50, idx_num: int = 5) -> List[dict]:
     for requested_trace in requested_traces:
         trace_name = requested_trace.name
         context = Context(requested_trace.context)
@@ -187,13 +185,13 @@ def collect_requested_image_traces(run: Run,
             else:
                 values.append([])
 
-        processed_traces_list.append({
+        trace_dict = {
             'record_range': (trace.first_step(), trace.last_step() + 1),
             'index_range': (0, rec_length),
             'name': trace.name,
             'context': trace.context.to_dict(),
             'values': values,
             'iters': steps,
-        })
-
-    return processed_traces_list
+        }
+        encoded_tree = encode_tree(trace_dict)
+        yield collect_run_streamable_data(encoded_tree)

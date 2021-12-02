@@ -217,10 +217,11 @@ async def run_images_batch_api(run_id: str,
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    traces_data = collect_requested_image_traces(run, requested_traces, record_range, index_range,
-                                                 record_density, index_density)
+    traces_streamer = requested_image_traces_streamer(run, requested_traces,
+                                                      record_range, index_range,
+                                                      record_density, index_density)
 
-    return JSONResponse(traces_data)
+    return StreamingResponse(traces_streamer)
 
 
 @runs_router.post('/{run_id}/distributions/get-batch/', response_model=RunDistributionsBatchApiOut)
