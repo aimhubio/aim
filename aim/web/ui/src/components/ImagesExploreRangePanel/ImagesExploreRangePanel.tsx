@@ -43,7 +43,7 @@ function ImagesExploreRangePanel({
             onSliceRangeChange('recordSlice', value)
           }
           onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            onDensityChange(event, 'rangeDensity')
+            onDensityChange(event, 'recordDensity')
           }
         />
         <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
