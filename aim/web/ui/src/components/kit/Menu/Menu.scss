@@ -30,6 +30,9 @@ $padding_8: toRem(8px);
       flex-direction: column;
       margin-bottom: toRem(2px);
       border-radius: $border-radius;
+      &:focus-visible {
+        outline:unset;
+      }
       // layers1 layer2 is created due to design inconsistencies
       // @TODO improve this while working on creating tree view from this component
       .MenuItemHead {
@@ -37,6 +40,7 @@ $padding_8: toRem(8px);
         border-radius: toRem(6px);
         display: flex;
         word-break: break-word;
+
         div {
 
           width: 100%;
