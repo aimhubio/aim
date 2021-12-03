@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.2.0 Dec 3 2021
 
 - Add ability to cancel pending request (roubkar, arsengit)
 - Add support for secure protocol for API calls (mihran113, roubkar)
