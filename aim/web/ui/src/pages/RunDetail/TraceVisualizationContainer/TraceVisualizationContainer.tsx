@@ -8,11 +8,17 @@ import useModel from 'hooks/model/useModel';
 import runTracesModel from 'services/models/runs/runTracesModel';
 
 import DistributionsVisualizer from '../DistributionsVisualizer';
+import ImagesVisualizer from '../ImagesVisualizer/ImagesVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
 
 import widthEmptyTraceCheck from './widthEmptyTraceCheck';
 
-import './style.scss';
+import './TraceVisualizationContainer.scss';
+
+const traceTypeVisualization = {
+  images: ImagesVisualizer,
+  distributions: DistributionsVisualizer,
+};
 
 function TraceVisualizationContainer({
   traceInfo,
@@ -27,6 +33,8 @@ function TraceVisualizationContainer({
       runTracesModel.destroy();
     };
   }, [runHash, traceInfo, traceType]);
+
+  const Visualizer = traceTypeVisualization[traceType];
 
   return (
     <div className='TraceVisualizationWrapper'>
@@ -47,7 +55,7 @@ function TraceVisualizationContainer({
           height={'30rem'}
           isLoading={!!runTracesModelData?.isTraceBatchLoading}
         >
-          <DistributionsVisualizer
+          <Visualizer
             data={runTracesModelData?.data}
             isLoading={runTracesModelData?.isTraceBatchLoading}
             activeTraceContext={runTracesModelData?.menu?.activeItemName}

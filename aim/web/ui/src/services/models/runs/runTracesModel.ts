@@ -103,7 +103,7 @@ async function getRunTraceBatch() {
   getTraceBatchRequestRef = runsService.getBatch(
     state.runHash || '',
     state.traceType || 'distributions',
-    {},
+    { record_density: 1 },
     [requestOptions?.trace],
   );
 
@@ -130,12 +130,17 @@ async function getRunTraceBatch() {
       };
     }
     const parsed = dataProcessors[state.traceType || 'distributions'](data);
+
     model.setState({
       ...state,
       data: parsed,
       isTraceBatchLoading: false,
     });
   } catch (e) {
+    model.setState({
+      ...state,
+      isTraceBatchLoading: false,
+    });
     // @TODO handle exception
     throw e;
   }
