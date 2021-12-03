@@ -34,7 +34,7 @@ def run_up(args):
     success_msg = "Open http://{}:{}".format(args["--host"], args["--port"])
 
     child_process = subprocess.Popen(
-        ['aim', UP_NAME] + args_list + ['--force_init'],
+        ['aim', UP_NAME] + args_list + ['--force-init'],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
     )

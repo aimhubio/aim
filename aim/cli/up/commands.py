@@ -20,7 +20,7 @@ from aim.web.utils import ShellCommandException
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
-@click.option('--force_init', is_flag=True, default=False)
+@click.option('----force-init', is_flag=True, default=False)
 def up(dev, host, port, repo, tf_logs, force_init):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
@@ -34,7 +34,7 @@ def up(dev, host, port, repo, tf_logs, force_init):
         if not force_init:
             init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
         else:
-            init_repo = repo_path
+            init_repo = True
         if not init_repo:
             click.echo('To initialize repo please run the following command:')
             click.secho('aim init', fg='yellow')
