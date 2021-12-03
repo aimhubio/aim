@@ -86,8 +86,8 @@ def display_colab(port, display):
     import IPython.display
 
     shell = """
-        (async () => {
-            const url = new URL(await google.colab.kernel.proxyPort(%PORT%, {'cache': true}));
+        (async () => {{
+            const url = new URL(await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
             url.searchParams.set('aim', 'true');
             const iframe = document.createElement('iframe');
             iframe.src = url;
@@ -95,13 +95,8 @@ def display_colab(port, display):
             iframe.setAttribute('height', '800');
             iframe.setAttribute('frameborder', 0);
             document.body.appendChild(iframe);
-        })();
-    """
-    replacements = [
-        ("%PORT%", "%s" % port),
-    ]
-    for (k, v) in replacements:
-        shell = shell.replace(k, v)
+        }}s)();
+    """.format(port=port)
 
     script = IPython.display.Javascript(shell)
 
