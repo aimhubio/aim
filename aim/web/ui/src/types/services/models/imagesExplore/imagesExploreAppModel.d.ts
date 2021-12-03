@@ -1,13 +1,16 @@
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+
+import { IPanelTooltip } from '../metrics/metricsAppModel';
+
 export interface IImagesExploreAppConfig {
   grouping: {
-    groupBy: [];
+    group: [];
     reverseMode: {
-      groupBy: boolean;
+      group: boolean;
     };
     isApplied: {
-      groupBy: boolean;
+      group: boolean;
     };
   };
   images: {
@@ -18,6 +21,11 @@ export interface IImagesExploreAppConfig {
     recordDensity?: string;
     indexDensity?: string;
     calcRanges: boolean;
+    tooltip: IPanelTooltip;
+    focusedState: {
+      key: string | null;
+      active: boolean;
+    };
   };
   select: {
     images: ISelectMetricsOption[];
@@ -53,7 +61,6 @@ export interface IImagesExploreAppModelState {
   imagesData: any;
   tableData: any[];
   tableColumns: ITableColumn[];
-  imagesBlobs: { [key: string]: string };
   sameValueColumns: string[];
   params: string[];
   notifyData: INotification[];

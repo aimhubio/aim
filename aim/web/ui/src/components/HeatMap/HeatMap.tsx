@@ -147,7 +147,7 @@ function HeatMap({
           } and run.creation_time <= ${endDate / 1000}`,
         });
         analytics.trackEvent('[Home][HeatMap] Activity cell click');
-        history.push(`/runs?search=${search}`);
+        history.push(`/runs?select=${search}`);
       }
     }
 

@@ -1,36 +1,38 @@
 import { PopoverPosition } from '@material-ui/core';
 
 function getPositionBasedOnOverflow(
-  pos: PopoverPosition,
+  activePointRect: { top: number; bottom: number; left: number; right: number },
+  popoverRect: DOMRect,
   containerRect: DOMRect,
-  contentRect: DOMRect,
 ): PopoverPosition {
-  if (!containerRect || !contentRect) {
-    return pos;
+  if (!containerRect || !popoverRect) {
+    return {
+      top: activePointRect.top,
+      left: activePointRect.left,
+    };
   }
   let left;
   let top;
 
-  if (pos.left + contentRect.width < containerRect.left) {
-    left = containerRect.left;
-  } else if (
-    pos.left + contentRect.width >
-    containerRect.left + containerRect.width
-  ) {
-    left = pos.left - contentRect.width - 30;
+  const gap = 10;
+  if (activePointRect.left < containerRect.left) {
+    // left bound case
+    left = activePointRect.right + gap;
+  } else if (activePointRect.right + popoverRect.width > containerRect.right) {
+    // right bound case
+    left = activePointRect.left - popoverRect.width - gap;
   } else {
-    left = pos.left;
+    left = activePointRect.right + gap;
   }
 
-  if (pos.top + contentRect.height < containerRect.top) {
-    top = containerRect.top - contentRect.height;
-  } else if (
-    pos.top + contentRect.height >
-    containerRect.top + containerRect.height
-  ) {
-    top = containerRect.top + containerRect.height - contentRect.height;
+  if (activePointRect.top < containerRect.top) {
+    // top bound case
+    top = containerRect.top + gap;
+  } else if (activePointRect.top + popoverRect.height > containerRect.bottom) {
+    // bottom bound case
+    top = containerRect.bottom - popoverRect.height - gap;
   } else {
-    top = pos.top;
+    top = activePointRect.top + gap;
   }
 
   return {

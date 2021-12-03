@@ -1,6 +1,5 @@
 export interface ISelectFormProps {
-  //   selectedMetricsData: IMetricAppConfig['select'];
-  selectedMetricsData: any;
+  selectedImagesData: any;
   onImagesExploreSelectChange: (metrics: ISelectMetricsOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;

@@ -54,7 +54,7 @@ import {
   GroupNameType,
   IChartZoom,
   IAggregationConfig,
-  IChartTooltip,
+  IPanelTooltip,
   ITooltipData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -475,6 +475,13 @@ function createAppModel({
             }
             if (components.table) {
               state.tableData = [];
+              state.config = {
+                ...configData,
+                table: {
+                  ...configData?.table,
+                  resizeMode: ResizeModeEnum.Resizable,
+                },
+              };
             }
 
             model.setState({
@@ -494,7 +501,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex) {
+            } catch (ex: any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -601,6 +608,7 @@ function createAppModel({
               epoch: '',
               time: '',
               children: [],
+              groups: groupConfigData,
             };
 
             rows[groupKey!] = {
@@ -763,7 +771,7 @@ function createAppModel({
               rows[groupKey!].data,
               {},
               true,
-              ['value'].concat(Object.keys(columnsValues)),
+              ['value', 'groups'].concat(Object.keys(columnsValues)),
             );
           }
         },
@@ -916,6 +924,7 @@ function createAppModel({
         processedData: data,
         paramKeys: params,
         groupingSelectOptions,
+        groupingItems: ['color', 'stroke', 'chart'],
         model,
       });
       const tableData = getDataAsTableRows(
@@ -991,6 +1000,7 @@ function createAppModel({
         processedData: data,
         paramKeys: params,
         groupingSelectOptions,
+        groupingItems: ['color', 'stroke', 'chart'],
         model,
       });
       const tableData = getDataAsTableRows(
@@ -1805,7 +1815,7 @@ function createAppModel({
         onAlignmentTypeChange(type: AlignmentOptionsEnum): void {
           onAlignmentTypeChange({ type, model, appName, updateModelData });
         },
-        onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+        onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
           onChangeTooltip({ tooltip, tooltipData, model, appName });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
@@ -2027,18 +2037,19 @@ function createAppModel({
                   },
                 },
               });
-
-              const tableRef: any = model.getState()?.refs?.tableRef;
-              tableRef.current?.updateData({
-                newData: tableData.rows,
-                newColumns: tableColumns,
-                hiddenColumns: configData.table.hiddenColumns!,
-              });
-            } catch (ex) {
+              setTimeout(() => {
+                const tableRef: any = model.getState()?.refs?.tableRef;
+                tableRef.current?.updateData({
+                  newData: tableData.rows,
+                  newColumns: tableColumns,
+                  hiddenColumns: configData.table.hiddenColumns!,
+                });
+              }, 0);
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
-                console.log('Unhandled error: ', ex);
+                console.log('Unhandled error: ');
               }
             }
           },
@@ -2833,7 +2844,7 @@ function createAppModel({
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-        const configData = model.getState()?.config;
+        const configData = { ...model.getState()?.config };
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
@@ -2847,6 +2858,13 @@ function createAppModel({
               }
               if (components.table) {
                 state.tableData = [];
+                state.config = {
+                  ...configData,
+                  table: {
+                    ...configData?.table,
+                    resizeMode: ResizeModeEnum.Resizable,
+                  },
+                };
               }
 
               model.setState({
@@ -2870,7 +2888,7 @@ function createAppModel({
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
-              } catch (ex) {
+              } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
@@ -2952,6 +2970,7 @@ function createAppModel({
                 metric: '',
                 context: [],
                 children: [],
+                groups: groupConfigData,
               };
 
               rows[groupKey!] = {
@@ -3079,7 +3098,7 @@ function createAppModel({
                 rows[groupKey!].data,
                 {},
                 true,
-                Object.keys(columnsValues),
+                ['groups'].concat(Object.keys(columnsValues)),
               );
             }
           },
@@ -3162,6 +3181,7 @@ function createAppModel({
                     }
                   },
                 );
+
                 return {
                   values,
                   color: color ?? run.color,
@@ -3238,6 +3258,7 @@ function createAppModel({
           processedData: data,
           paramKeys: params,
           groupingSelectOptions,
+          groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
 
@@ -3617,6 +3638,7 @@ function createAppModel({
           processedData: data,
           paramKeys: params,
           groupingSelectOptions,
+          groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
         const tableData = getDataAsTableRows(
@@ -3840,7 +3862,7 @@ function createAppModel({
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
-          onChangeTooltip(tooltip: Partial<IChartTooltip>): void {
+          onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
             onChangeTooltip({ tooltip, tooltipData, model, appName });
           },
           onColorIndicatorChange(): void {

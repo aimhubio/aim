@@ -23,7 +23,7 @@ import {
   IAlignmentConfig,
   IAppData,
   IChartTitleData,
-  IChartTooltip,
+  IPanelTooltip,
   IChartZoom,
   IFocusedState,
   IGroupingSelectOption,
@@ -160,7 +160,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       smoothingFactor={metricsData?.config?.chart?.smoothingFactor as number}
       focusedState={metricsData?.config?.chart?.focusedState as IFocusedState}
       notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
-      tooltip={metricsData?.config?.chart?.tooltip as IChartTooltip}
+      tooltip={metricsData?.config?.chart?.tooltip as IPanelTooltip}
       aggregationConfig={
         metricsData?.config?.chart?.aggregationConfig as IAggregationConfig
       }

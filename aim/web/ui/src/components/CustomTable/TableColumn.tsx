@@ -66,7 +66,7 @@ function Column({
     } else {
       newWidth = evt.pageX - startingPoint.current;
     }
-    if (newWidth > 85 && newWidth < 500) {
+    if (newWidth > 85) {
       widthClone.current = newWidth;
       setMaxWidth(newWidth);
     }
@@ -107,6 +107,7 @@ function Column({
   }, [data, expanded, width]);
 
   const isInViewPort =
+    columnRef.current?.classList?.[1] === 'Table__column--groups' ||
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
@@ -119,10 +120,11 @@ function Column({
       className={classNames({
         Table__column: true,
         'Table__column--actions': col.key === 'actions',
+        'Table__column--groups': col.key === 'groups',
       })}
       style={{
         minWidth: maxWidth,
-        maxWidth,
+        maxWidth: '100vh',
         width: isInViewPort
           ? 'initial'
           : columnRef.current?.offsetWidth ?? 'initial',

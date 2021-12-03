@@ -14,12 +14,20 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+
+import {
+  IFocusedState,
+  IGroupingSelectOption,
+  IPanelTooltip,
+} from 'types/services/models/metrics/metricsAppModel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 
@@ -39,6 +47,15 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetHeight,
   );
 
+  const [offsetWidth, setOffsetWidth] = useState(
+    imagesWrapperRef?.current?.offsetWidth,
+  );
+
+  useResizeObserver(
+    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
+    imagesWrapperRef,
+  );
+
   const panelResizing = usePanelResize(
     wrapperElemRef,
     imagesWrapperRef,
@@ -47,6 +64,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesExploreData?.config?.table || {},
     imagesExploreAppModel.onTableResizeEnd,
   );
+
+  React.useEffect(() => {
+    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesWrapperRef?.current?.offsetWidth]);
 
   React.useEffect(() => {
     setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
@@ -114,7 +136,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
-              selectedMetricsData={imagesExploreData?.config?.select}
+              selectedImagesData={imagesExploreData?.config?.select}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
               }
@@ -167,12 +189,37 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onDensityChange={imagesExploreAppModel.onDensityChange}
               getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
-              imagesBlobs={imagesExploreData?.imagesBlobs}
+              orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
-              imagesWrapperRef={imagesWrapperRef}
               panelResizing={panelResizing}
+              resizeMode={imagesExploreData?.config?.table.resizeMode}
               imageWrapperOffsetHeight={offsetHeight || 0}
+              imageWrapperOffsetWidth={offsetWidth || 0}
+              isRangePanelShow={
+                !!getStateFromUrl('select')?.query ||
+                !isEmpty(getStateFromUrl('select')?.images) ||
+                (!!getStateFromUrl('select')?.advancedQuery &&
+                  !!getStateFromUrl('select')?.advancedMode)
+              }
+              focusedState={
+                imagesExploreData?.config?.images?.focusedState as IFocusedState
+              }
+              tooltip={
+                imagesExploreData?.config?.images?.tooltip as IPanelTooltip
+              }
+              onActivePointChange={imagesExploreAppModel.onActivePointChange}
+              controls={
+                <Controls
+                  selectOptions={
+                    imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
+                  }
+                  tooltip={
+                    imagesExploreData?.config?.images?.tooltip as IPanelTooltip
+                  }
+                  onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
+                />
+              }
             />
           </div>
           <ResizePanel

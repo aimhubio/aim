@@ -1,40 +1,54 @@
 import React from 'react';
-import { VariableSizeList as List } from 'react-window';
-
-import { imageFixedHeight } from 'config/imagesConfigs/imagesConfig';
+import { areEqual, VariableSizeList as List } from 'react-window';
 
 import ImageBox from './ImageBox';
 
 function ImagesList({
   data,
-  imagesBlobs,
   onScroll,
   imageSetWrapperWidth,
   addUriToList,
+  imageHeight,
+  focusedState,
+  syncHoverState,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
-      height={imageFixedHeight}
+      height={imageHeight}
       itemCount={data.length}
       itemSize={(index: number) =>
-        (imageFixedHeight / data[index].height) * data[index].width
+        (imageHeight / data[index].height) * data[index].width
       }
       layout='horizontal'
       width={imageSetWrapperWidth || 0}
       onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
+      itemData={{
+        data,
+        addUriToList,
+        imageHeight,
+        focusedState,
+        syncHoverState,
+      }}
     >
-      {({ style, index }) => (
-        <ImageBox
-          index={index}
-          style={style}
-          data={data[index]}
-          imagesBlobs={imagesBlobs}
-          addUriToList={addUriToList}
-        />
-      )}
+      {ImageBoxMemoized}
     </List>
   );
 }
 
-export default React.memo(ImagesList);
+export default ImagesList;
+
+const ImageBoxMemoized = React.memo(function ImageBoxMemoized(props: any) {
+  const { index, style, data } = props;
+  return (
+    <ImageBox
+      index={index}
+      style={style}
+      data={data.data[index]}
+      addUriToList={data.addUriToList}
+      imageHeight={data.imageHeight}
+      focusedState={data.focusedState}
+      syncHoverState={data.syncHoverState}
+    />
+  );
+}, areEqual);

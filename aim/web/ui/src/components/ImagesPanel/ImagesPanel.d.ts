@@ -1,9 +1,15 @@
 import React from 'react';
 
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
+import {
+  IFocusedState,
+  ITooltipContent,
+} from 'types/services/models/metrics/metricsAppModel';
+
 export interface IImagesPanelProps {
   imagesData: any;
-  imagesBlobs: { [key: string]: value };
-  imagesWrapperRef: React.MutableRefObject<any>;
+  orderedMap: { [key: string]: any };
   recordSlice: number[];
   indexSlice: number[];
   indexRange: number[];
@@ -15,6 +21,13 @@ export interface IImagesPanelProps {
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   applyButtonDisabled: boolean;
+  isRangePanelShow: boolean;
   panelResizing: boolean;
   imageWrapperOffsetHeight: number;
+  imageWrapperOffsetWidth: number;
+  controls?: React.ReactNode;
+  resizeMode: ResizeModeEnum;
+  tooltip: ITooltipContent;
+  focusedState: IFocusedState;
+  onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
 }

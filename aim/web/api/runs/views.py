@@ -2,21 +2,21 @@ from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
-from itertools import chain
 
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.utils import (
     collect_requested_metric_traces,
+    requested_distribution_traces_streamer,
     custom_aligned_metrics_streamer,
     get_run_props,
     metric_search_result_streamer,
-    run_search_result_streamer
+    run_search_result_streamer,
+    str_to_range,
 )
 from aim.web.api.runs.image_utils import (
-    collect_requested_image_traces,
+    requested_image_traces_streamer,
     image_search_result_streamer,
     images_batch_result_streamer,
-    IndexRange
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -27,7 +27,9 @@ from aim.web.api.runs.pydantic_models import (
     RunImagesSearchApiOut,
     RunInfoOut,
     RunSearchApiOut,
-    RunTracesBatchApiOut,
+    RunMetricsBatchApiOut,
+    RunImagesBatchApiOut,
+    RunDistributionsBatchApiOut,
     StructuredRunUpdateIn,
     StructuredRunUpdateOut,
     StructuredRunAddTagIn,
@@ -80,7 +82,9 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
 
 @runs_router.get('/search/metric/', response_model=RunMetricSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: Optional[str] = None):
+async def run_metric_search_api(q: Optional[str] = '',
+                                p: Optional[int] = 50,
+                                x_axis: Optional[str] = None):
     steps_num = p
 
     if x_axis:
@@ -110,10 +114,10 @@ def run_metric_search_api(q: Optional[str] = '', p: Optional[int] = 50, x_axis: 
 
 @runs_router.get('/search/images/', response_model=RunImagesSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_images_search_api(q: Optional[str] = '',
-                          record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                          index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                          calc_ranges: Optional[bool] = False):
+async def run_images_search_api(q: Optional[str] = '',
+                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                                index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                                calc_ranges: Optional[bool] = False):
     # Get project
     project = Project()
     if not project.exists():
@@ -132,16 +136,9 @@ def run_images_search_api(q: Optional[str] = '',
 
     traces = project.repo.query_images(query=query)
 
-    def _str_to_range(range_str: str):
-        defaults = [None, None]
-        slice_values = chain(range_str.strip().split(':'), defaults)
-
-        start, stop, step, *_ = map(lambda x: int(x) if x else None, slice_values)
-        return IndexRange(start, stop)
-
     try:
-        record_range = _str_to_range(record_range)
-        index_range = _str_to_range(index_range)
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
@@ -186,7 +183,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
     return JSONResponse(response)
 
 
-@runs_router.post('/{run_id}/metric/get-batch/', response_model=RunTracesBatchApiOut)
+@runs_router.post('/{run_id}/metric/get-batch/', response_model=RunMetricsBatchApiOut)
 async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
     # Get project
     project = Project()
@@ -201,8 +198,11 @@ async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
     return JSONResponse(traces_data)
 
 
-@runs_router.post('/{run_id}/images/get-batch/', response_model=RunTracesBatchApiOut)
-async def run_images_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
+@runs_router.post('/{run_id}/images/get-batch/', response_model=RunImagesBatchApiOut)
+async def run_images_batch_api(run_id: str,
+                               requested_traces: RunTracesBatchApiIn,
+                               record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                               index_range: Optional[str] = '', index_density: Optional[int] = 5):
     # Get project
     project = Project()
     if not project.exists():
@@ -211,9 +211,39 @@ async def run_images_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
     if not run:
         raise HTTPException(status_code=404)
 
-    traces_data = collect_requested_image_traces(run, requested_traces)
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
 
-    return JSONResponse(traces_data)
+    traces_streamer = requested_image_traces_streamer(run, requested_traces,
+                                                      record_range, index_range,
+                                                      record_density, index_density)
+
+    return StreamingResponse(traces_streamer)
+
+
+@runs_router.post('/{run_id}/distributions/get-batch/', response_model=RunDistributionsBatchApiOut)
+async def run_distributions_batch_api(run_id: str,
+                                      requested_traces: RunTracesBatchApiIn,
+                                      record_range: Optional[str] = '',
+                                      record_density: Optional[int] = 50):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+    try:
+        record_range = str_to_range(record_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    traces_streamer = requested_distribution_traces_streamer(run, requested_traces, record_range, record_density)
+
+    return StreamingResponse(traces_streamer)
 
 
 @runs_router.put('/{run_id}/', response_model=StructuredRunUpdateOut)

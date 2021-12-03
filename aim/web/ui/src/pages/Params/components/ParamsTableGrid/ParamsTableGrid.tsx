@@ -2,10 +2,11 @@ import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 
-import { Link } from '@material-ui/core';
+import { Link, Tooltip } from '@material-ui/core';
 
-import { Badge, Button, Icon } from 'components/kit';
+import { Badge, Button, Icon, JsonViewPopover } from 'components/kit';
 import TableSortIcons from 'components/Table/TableSortIcons';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -18,6 +19,7 @@ import {
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import contextToString from 'utils/contextToString';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -174,26 +176,47 @@ function getParamsTableColumns(
   );
 
   if (groupFields) {
-    columns.push({
-      key: '#',
-      content: (
-        <span
-          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
-        >
-          #
-        </span>
-      ),
-      topHeader: 'Grouping',
-      pin: 'left',
-    });
-    Object.keys(groupFields).forEach((field) => {
-      const key = field.replace('run.params.', '');
-      const column = columns.find((col) => col.key === key);
-      if (!!column) {
-        column.pin = 'left';
-        column.topHeader = 'Grouping';
-      }
-    });
+    columns = [
+      {
+        key: '#',
+        content: (
+          <span
+            style={{
+              textAlign: 'right',
+              display: 'inline-block',
+              width: '100%',
+            }}
+          >
+            #
+          </span>
+        ),
+        topHeader: 'Grouping',
+        pin: 'left',
+      },
+      {
+        key: 'groups',
+        content: (
+          <div className='Table__groupsColumn__cell'>
+            {Object.keys(groupFields).map((field) => {
+              let name: string = field.replace('run.params.', '');
+              name = name.replace('run.props', 'run');
+              return (
+                <Tooltip key={field} title={name}>
+                  <span>{name}</span>
+                </Tooltip>
+              );
+            })}
+          </div>
+        ),
+        pin: order?.left?.includes('groups')
+          ? 'left'
+          : order?.right?.includes('groups')
+          ? 'right'
+          : null,
+        topHeader: 'Groups',
+      },
+      ...columns,
+    ];
   }
 
   columns = columns.map((col) => ({
@@ -235,7 +258,44 @@ function paramsTableRowRenderer(
     const row: { [key: string]: any } = {};
     for (let i = 0; i < columns.length; i++) {
       const col = columns[i];
-      if (Array.isArray(rowData[col])) {
+      if (col === 'groups') {
+        row.groups = {
+          content: (
+            <div className='Table__groupsColumn__cell'>
+              {Object.keys(rowData[col]).map((item) => {
+                const value: string | { [key: string]: unknown } =
+                  rowData[col][item];
+                return typeof value === 'object' ? (
+                  <ControlPopover
+                    key={contextToString(value)}
+                    title={item}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick }) => (
+                      <Tooltip title={contextToString(value) as string}>
+                        <span onClick={onAnchorClick}>
+                          {contextToString(value)}
+                        </span>
+                      </Tooltip>
+                    )}
+                    component={<JsonViewPopover json={value} />}
+                  />
+                ) : (
+                  <Tooltip key={item} title={value}>
+                    <span>{value}</span>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          ),
+        };
+      } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
             <Badge

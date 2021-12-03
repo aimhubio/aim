@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
+import { isEmpty } from 'lodash-es';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 
@@ -11,7 +12,7 @@ import * as analytics from 'services/analytics';
 
 import {
   IChartTitleData,
-  IChartTooltip,
+  IPanelTooltip,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -114,7 +115,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
       sortFields={paramsData?.config?.table?.sortFields!}
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
-      tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
+      tooltip={paramsData?.config?.chart?.tooltip as IPanelTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]

@@ -10,15 +10,16 @@ import { IModel, State } from 'types/services/models/model';
 import getValueByField from '../getValueByField';
 
 export default function getGroupConfig<D, M extends State>({
-  metricsCollection,
+  collection,
   groupingSelectOptions,
+  groupingItems = [],
   model,
 }: {
-  metricsCollection: IMetricsCollection<D>;
+  collection: IMetricsCollection<D>;
   groupingSelectOptions: IGroupingSelectOption[];
+  groupingItems: GroupNameType[];
   model: IModel<M>;
 }) {
-  const groupingItems: GroupNameType[] = ['color', 'stroke', 'chart'];
   const configData = model.getState()?.config;
   let groupConfig: { [key: string]: {} } = {};
 
@@ -28,7 +29,7 @@ export default function getGroupConfig<D, M extends State>({
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
           [getValueByField(groupingSelectOptions || [], paramKey)]: _.get(
-            metricsCollection.config,
+            collection.config,
             paramKey,
           ),
         });

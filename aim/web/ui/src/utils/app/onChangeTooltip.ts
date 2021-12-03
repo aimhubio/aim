@@ -1,7 +1,7 @@
 import * as analytics from 'services/analytics';
 
 import {
-  IChartTooltip,
+  IPanelTooltip,
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
@@ -16,7 +16,7 @@ export default function onChangeTooltip<M extends State>({
   model,
   appName,
 }: {
-  tooltip: Partial<IChartTooltip>;
+  tooltip: Partial<IPanelTooltip>;
   tooltipData: ITooltipData;
   model: IModel<M>;
   appName: string;

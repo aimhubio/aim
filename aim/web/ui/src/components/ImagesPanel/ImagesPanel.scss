@@ -1,11 +1,12 @@
 @use 'src/styles/abstracts' as *;
 
-.ImagesPanel {
+.ImagesPanel__Container {
   width: calc(100vw - 4.6875rem);
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
   &__resizing {
     display: flex;
     width: 100%;
@@ -16,10 +17,22 @@
     background-color: $primary-color-5;
     user-select: none;
   }
-  &__imagesContainer {
-    overflow-x: auto;
-    height: calc(100% - 2.25rem);
-    padding-left: 1.25rem;
-    padding-top: 0.25rem;
+
+  .ImagesPanel {
+    display: flex;
+    flex: 1;
+    height: calc(100% - 2.75rem);
+    &__imagesSetContainer {
+      overflow-x: auto;
+      padding-left: 1.25rem;
+      padding-top: 0.25rem;
+      border-right: 0.0625rem solid #dceafb;
+      flex: 1;
+    }
+    &__controls {
+      width: 3.75rem;
+      max-height: 100%;
+      overflow-y: auto;
+    }
   }
 }

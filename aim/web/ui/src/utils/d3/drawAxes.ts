@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import { Unit } from 'humanize-duration';
 import moment from 'moment';
 
-import { IDrawAxesProps } from 'types/utils/d3/drawAxes';
+import { IDrawAxesArgs } from 'types/utils/d3/drawAxes';
 
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
@@ -11,7 +11,7 @@ import { getKeyByAlignment } from '../formatByAlignment';
 
 import { AlignmentOptionsEnum } from './index';
 
-function drawAxes(props: IDrawAxesProps): void {
+function drawAxes(args: IDrawAxesArgs): void {
   const {
     svgNodeRef,
     axesNodeRef,
@@ -26,7 +26,11 @@ function drawAxes(props: IDrawAxesProps): void {
     xValues,
     attributesRef,
     humanizerConfigRef,
-  } = props;
+    drawBgTickLines = {
+      x: false,
+      y: false,
+    },
+  } = args;
 
   if (!axesNodeRef?.current || !axesRef?.current || !svgNodeRef?.current) {
     return;
@@ -82,12 +86,18 @@ function drawAxes(props: IDrawAxesProps): void {
             formatUnit = 's';
           }
 
-          let tickValues =
-            unit === null
-              ? null
-              : _.range(Math.ceil(first), Math.ceil(last) + 1).filter(
-                  (t) => t % unit! === 0,
-                );
+          let tickValues: null | number[] = unit === null ? null : [];
+
+          if (tickValues !== null) {
+            const d = Math.floor((last - first) / (ticksCount - 1));
+            for (let i = 0; i < ticksCount; i++) {
+              if (i === ticksCount - 1) {
+                tickValues.push(Math.ceil(last + 1));
+              } else {
+                tickValues.push(Math.floor(first + i * d));
+              }
+            }
+          }
 
           if (unit !== null && tickValues && ticksCount < tickValues.length) {
             tickValues = tickValues.filter((v, i) => {
@@ -121,7 +131,15 @@ function drawAxes(props: IDrawAxesProps): void {
 
           let ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-          let tickValues = _.range(first, last);
+          let tickValues: number[] = [];
+          const d = (last - first) / (ticksCount - 1);
+          for (let i = 0; i < ticksCount; i++) {
+            if (i === ticksCount - 1) {
+              tickValues.push(Math.ceil(last));
+            } else {
+              tickValues.push(Math.floor(first + i * d));
+            }
+          }
 
           xAxis
             .ticks(ticksCount)
@@ -158,6 +176,9 @@ function drawAxes(props: IDrawAxesProps): void {
       }
     }
 
+    if (drawBgTickLines.x) {
+      xAxis.tickSize(-height + (margin.top + margin.bottom)).tickSizeOuter(0);
+    }
     return { xAlignmentText, xAxis };
   }
 
@@ -166,7 +187,10 @@ function drawAxes(props: IDrawAxesProps): void {
     let ticksCount = Math.floor(plotBoxRef.current.height / 20);
     ticksCount = ticksCount > 3 ? (ticksCount < 10 ? ticksCount : 10) : 3;
     yAxis.ticks(ticksCount);
-    yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
+
+    if (drawBgTickLines.y) {
+      yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
+    }
     return yAxis;
   }
 
@@ -177,7 +201,9 @@ function drawAxes(props: IDrawAxesProps): void {
   axesRef.current.xAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'xAxis')
-    .attr('stroke-width', 0.4)
+    .attr('stroke-width', 0.2)
+    .attr('color', '#8E9BAE')
+    .attr('fill', 'none')
     .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
     .call(xAxis);
 
@@ -195,7 +221,7 @@ function drawAxes(props: IDrawAxesProps): void {
     .attr('text-anchor', 'end')
     .attr('alignment-baseline', 'ideographic')
     .style('font-size', '0.7em')
-    .style('fill', '#586069') // var(--grey)
+    .style('fill', '#586069')
     .text(xAlignmentText)
     .lower();
 
