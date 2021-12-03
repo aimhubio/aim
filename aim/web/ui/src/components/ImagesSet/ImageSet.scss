@@ -44,39 +44,66 @@
       padding-bottom: 0.25rem;
       padding-top: 0.375rem;
       display: flex;
-
       &__imageBox {
         margin-right: toRem(10px);
         height: 100%;
         position: absolute;
-
+        &:hover {
+          img {
+            border: toRem(2px) solid #b9d5f8;
+            padding: toRem(1px);
+          }
+        }
+        &__imageWrapper {
+          height: 100%;
+          width: 100%;
+          position: relative;
+          &__zoomIconWrapper {
+            position: absolute;
+            top: toRem(9px);
+            right: toRem(10px);
+            color: $white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            &:hover {
+              background: rgba(232, 241, 252, 0.3);
+              color: $white;
+            }
+            &.isHidden {
+              display: none;
+            }
+          }
+        }
         img {
-          height: calc(100% - 0.625rem);
-          width: calc(100% - 0.625rem);
+          height: calc(100% - 0.375rem);
+          width: calc(100% - 0.375rem);
+          margin-top: toRem(5px);
+          margin-right: toRem(5px);
+          border: toRem(2px) solid transparent;
+          padding: toRem(1px);
+        }
+
+        .MuiSkeleton-root {
           margin-top: toRem(5px);
           margin-left: toRem(5px);
         }
 
-        span {
-          margin-top: toRem(5px);
-          margin-left: toRem(5px);
+        .focus > img {
+          border: toRem(2px) solid $primary-color;
+          padding: toRem(1px);
         }
 
-        .focus > img,
-        .focus > span {
-          box-shadow: 0px 0px 0px 3px rgb(0 0 0 / 24%);
-        }
-
-        .active > img,
-        .active > span {
-          box-shadow: 0px 0px 2px 3px rgb(0 0 0 / 15%);
+        .active > img {
+          border: toRem(2px) solid #b9d5f8;
+          padding: toRem(1px);
         }
         &__image {
           &--pixelated {
             image-rendering: pixelated;
           }
-          &--optimize_quality {
-            image-rendering: optimizeQuality;
+          &--smooth {
+            image-rendering: auto;
           }
         }
       }

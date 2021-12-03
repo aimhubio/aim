@@ -112,10 +112,10 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
           className='ImagePropertiesPopover__ToggleButton'
           title='Optimization'
           onChange={onImageRenderingChange}
-          rightLabel='Optimize Quality'
+          rightLabel='Smoother'
           leftLabel='Pixelated'
           leftValue={ImageRenderingEnum.Pixelated}
-          rightValue={ImageRenderingEnum.Optimize}
+          rightValue={ImageRenderingEnum.Smooth}
           value={imageProperties.imageRendering}
         />
       </div>

@@ -1,6 +1,9 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Skeleton } from '@material-ui/lab';
+
+import { Button, Icon } from 'components/kit';
 
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
@@ -14,6 +17,9 @@ const ImageBox = ({
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
   imageProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
@@ -27,9 +33,6 @@ const ImageBox = ({
     let subscription: any;
 
     if (blobData === null) {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
       if (imagesURIModel.getState()[blob_uri]) {
         setBlobData(imagesURIModel.getState()[blob_uri]);
       } else {
@@ -59,6 +62,11 @@ const ImageBox = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
+  function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
+    e.stopPropagation();
+    setImageFullMode(true);
+    setImageFullModeData(data);
+  }
   // TODO need to add focused image logic
   // function safeSyncHoverState(args: any): void {
   //   if (typeof syncHoverState === 'function') {
@@ -95,7 +103,23 @@ const ImageBox = ({
         // onClick={onClick}
       >
         {blobData ? (
-          <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+          <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>
+            <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+            <Button
+              withOnlyIcon
+              size='small'
+              className={classNames(
+                'ImagesSet__container__imagesBox__imageBox__imageWrapper__zoomIconWrapper',
+                {
+                  isHidden: !(hoveredImageKey === data.key),
+                },
+              )}
+              onClick={onImageFullSizeModeButtonClick}
+              color='inherit'
+            >
+              <Icon name='zoom-in' fontSize={14} />
+            </Button>
+          </div>
         ) : (
           <Skeleton
             variant='rect'

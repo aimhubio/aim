@@ -7,12 +7,14 @@ import ImageBox from './ImageBox';
 
 function ImagesList({
   data,
-  onScroll,
   imageSetWrapperWidth,
   addUriToList,
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
   imageProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -26,7 +28,6 @@ function ImagesList({
       }}
       layout='horizontal'
       width={imageSetWrapperWidth}
-      onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
       itemData={{
         data,
@@ -34,6 +35,9 @@ function ImagesList({
         imageHeight,
         focusedState,
         syncHoverState,
+        hoveredImageKey,
+        setImageFullMode,
+        setImageFullModeData,
         imageProperties,
       }}
     >
@@ -55,6 +59,9 @@ const ImageBoxMemoized = React.memo(function ImageBoxMemoized(props: any) {
       imageHeight={data.imageHeight}
       focusedState={data.focusedState}
       syncHoverState={data.syncHoverState}
+      hoveredImageKey={data.hoveredImageKey}
+      setImageFullMode={data.setImageFullMode}
+      setImageFullModeData={data.setImageFullModeData}
       imageProperties={data.imageProperties}
     />
   );
