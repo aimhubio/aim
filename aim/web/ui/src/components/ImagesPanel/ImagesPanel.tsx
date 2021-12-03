@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from 'react';
+import React from 'react';
 import { isEmpty } from 'lodash-es';
 
 import { Dialog } from '@material-ui/core';
@@ -53,7 +53,7 @@ function ImagesPanel({
   const [hoveredImageKey, setHoveredImageKey] = React.useState<string>('');
   const [imageFullMode, setImageFullMode] = React.useState<boolean>(false);
   const [imageFullModeData, setImageFullModeData] = React.useState<any>('');
-  const [activePointRect, setActivePointRect] = useState<{
+  const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
     bottom: number;
     left: number;
@@ -104,10 +104,11 @@ function ImagesPanel({
     setHoveredImageKey('');
   }
 
-  function onMouseOver(e: MouseEvent<HTMLDivElement>): void {
+  function onMouseOver(e: React.MouseEvent<HTMLDivElement>): void {
     if (e?.target) {
       e.stopPropagation();
-      const closestImageNode = (e.target as Element).closest(
+      const targetElem = e.target as Element;
+      const closestImageNode = targetElem.closest(
         '.ImagesSet__container__imagesBox__imageBox__image',
       );
       if (closestImageNode) {
@@ -116,7 +117,7 @@ function ImagesPanel({
         const pointRect = closestImageNode.getBoundingClientRect();
         if (
           pointRect &&
-          focusedState.key !== imageKey &&
+          (focusedState.key !== imageKey || activePointRect === null) &&
           !focusedState?.active
         ) {
           syncHoverState({
@@ -124,6 +125,8 @@ function ImagesPanel({
           });
         }
         setHoveredImageKey(imageKey as string);
+      } else {
+        closePopover();
       }
     }
   }
@@ -140,7 +143,7 @@ function ImagesPanel({
     } else {
       setActivePointRect(null);
     }
-  }, [setActivePointRect, activePointRef.current, containerRef.current]);
+  }, [setActivePointRect]);
 
   const syncHoverState = React.useCallback(
     (args: any): void => {
@@ -156,6 +159,10 @@ function ImagesPanel({
       // on MouseLeave
       else {
         setActivePointRect(null);
+        // TODO remove after implementing active focusedState logic
+        if (onActivePointChange) {
+          onActivePointChange({ key: null }, focusedStateActive);
+        }
       }
     },
     [onActivePointChange, setActivePointRect, setActiveElemPos],
@@ -185,6 +192,8 @@ function ImagesPanel({
       if (requestRef.current) {
         requestRef.current.abort();
       }
+
+      imagesURIModel.init();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

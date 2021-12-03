@@ -28,23 +28,26 @@ const ImageBox = ({
   );
 
   React.useEffect(() => {
-    let timeoutID: any;
+    let timeoutID: number;
     let subscription: any;
 
     if (blobData === null) {
-      if (timeoutID) {
-        clearTimeout(timeoutID);
+      if (imagesURIModel.getState()[blob_uri]) {
+        setBlobData(imagesURIModel.getState()[blob_uri]);
+      } else {
+        subscription = imagesURIModel.subscribe(blob_uri, (data) => {
+          setBlobData(data[blob_uri]);
+          subscription.unsubscribe();
+        });
+        timeoutID = window.setTimeout(() => {
+          if (imagesURIModel.getState()[blob_uri]) {
+            setBlobData(imagesURIModel.getState()[blob_uri]);
+            subscription.unsubscribe();
+          } else {
+            addUriToList(blob_uri);
+          }
+        }, batchCollectDelay);
       }
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-      subscription = imagesURIModel.subscribe(blob_uri, (data) => {
-        setBlobData(data[blob_uri]);
-        subscription.unsubscribe();
-      });
-      timeoutID = setTimeout(() => {
-        addUriToList(blob_uri);
-      }, batchCollectDelay);
     }
 
     return () => {

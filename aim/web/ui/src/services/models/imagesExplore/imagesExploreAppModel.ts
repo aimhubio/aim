@@ -6,7 +6,6 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { blobsUpdateThrottleDelay } from 'config/imagesConfigs/imagesConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -388,9 +387,11 @@ function processData(data: any[]): {
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, contexts, highLevelParams } = processData(rawData);
+  const sortedParams = params.concat(highLevelParams).sort();
+
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: params.concat(highLevelParams).sort(),
+      params: sortedParams,
       contexts,
     }),
   ];
@@ -401,7 +402,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
 
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -490,9 +491,10 @@ function updateModelData(
   const { data, params, contexts, highLevelParams } = processData(
     model.getState()?.rawData as any[],
   );
+  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: params.concat(highLevelParams).sort(),
+      params: sortedParams,
       contexts,
     }),
   ];
@@ -502,7 +504,7 @@ function updateModelData(
   );
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -901,7 +903,7 @@ function onActivePointChange(
   const { refs, config } = model.getState() as any;
   if (config.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
-    if (tableRef) {
+    if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
       tableRef.current?.setActiveRow?.(
         focusedStateActive ? activePoint.seqKey : null,
@@ -921,13 +923,15 @@ function onActivePointChange(
           active: focusedStateActive,
           key: activePoint.key,
         },
-        tooltip: {
-          ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[activePoint.key],
-            configData?.images.tooltip.selectedParams,
-          ),
-        },
+        tooltip: activePoint.key
+          ? {
+              ...configData.images.tooltip,
+              content: filterTooltipContent(
+                tooltipData[activePoint.key],
+                configData?.images.tooltip.selectedParams,
+              ),
+            }
+          : configData.images.tooltip,
       },
     };
 

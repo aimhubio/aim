@@ -173,7 +173,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             </div>
           </div>
         )}
-        {focusedState?.active && run.hash ? (
+        {focusedState?.active && run?.hash ? (
           <>
             <div>
               <Divider />
