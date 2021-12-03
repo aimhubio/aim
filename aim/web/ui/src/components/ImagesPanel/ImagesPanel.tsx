@@ -153,6 +153,7 @@ function ImagesPanel({
       imagesBlobs,
       imageWrapperOffsetHeight,
       imageWrapperOffsetWidth,
+      imageProperties,
     ],
   );
 
@@ -174,7 +175,7 @@ function ImagesPanel({
       isLoading={isLoading}
       className='ImagesExplore__loader'
       height='100%'
-      loaderComponent={<ChartLoader controlsCount={0} />}
+      loaderComponent={<ChartLoader controlsCount={2} />}
     >
       {panelResizing ? (
         <div className='ImagesPanel__Container__resizing'>

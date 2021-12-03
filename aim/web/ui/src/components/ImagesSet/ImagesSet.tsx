@@ -117,9 +117,6 @@ function propsComparator(
   ) {
     return false;
   }
-  if (prevProps.imageProperties !== nextProps.imageProperties) {
-    return false;
-  }
   return true;
 }
 
