@@ -48,24 +48,26 @@ function MenuItem({
       isActive: active,
       isOpen: open,
     };
-  }, [activeItemKey, id, parentId]);
+  }, [activeItemKey, id, parentId, name]);
 
   const onClickItem = React.useCallback(
     (event) => {
       event.stopPropagation();
+      event.stopPropagation();
       let key = generateKeyWithParent(parentId, id);
-
+      let callbackName = name;
       // if the item has children, activate first child
       if (children?.length) {
         key += `.${children[0].id}`;
+        callbackName = children[0].name;
       }
 
       // ensure that clicked item is not active yet
       if (key !== activeItemKey) {
-        onClickOpen(key);
+        onClickOpen(key, callbackName);
       }
     },
-    [onClickOpen, parentId, id, children, activeItemKey],
+    [onClickOpen, parentId, id, name, children, activeItemKey],
   );
 
   return (
@@ -90,9 +92,9 @@ function MenuItem({
       >
         <div>
           <Text
-            size={isOpen || isActive ? 14 : 12}
+            size={14}
             tint={isActive ? 100 : 80}
-            weight={isOpen || isActive ? 600 : 500}
+            weight={600}
             color={isActive ? 'info' : 'primary'}
           >
             {name}

@@ -4,10 +4,11 @@
 
 - Add ability to cancel pending request (roubkar, arsengit)
 - Add support for secure protocol for API calls (mihran113, roubkar)
-- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
 - Implement image full size view (VkoHov)
 - Add ability to manipulate with image size and rendering type (arsengit)
 - Enhance Table column for selected grouping config options (arsengit)
+- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+- Add ability to track and visualize distributions (mihran113, rubenaprikyan)
 
 ## 3.1.1 Nov 25 2021
 
