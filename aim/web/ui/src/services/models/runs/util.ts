@@ -67,7 +67,7 @@ export function getMenuItemFromRawInfo(
       } else {
         menuItem.children = [
           {
-            name: 'No context',
+            name: 'no context',
             id: bs58check.encode(Buffer.from(JSON.stringify({}))),
           },
         ];
