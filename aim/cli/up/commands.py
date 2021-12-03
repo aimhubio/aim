@@ -21,7 +21,7 @@ from aim.web.utils import ShellCommandException
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
-@click.option('----force-init', is_flag=True, default=False)
+@click.option('--force-init', is_flag=True, default=False)
 def up(dev, host, port, workers, repo, tf_logs, force_init):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
