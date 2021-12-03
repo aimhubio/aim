@@ -231,6 +231,22 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
+function abortRequest(): void {
+  if (imagesRequestRef) {
+    imagesRequestRef.abort();
+  }
+
+  model.setState({
+    requestIsPending: false,
+  });
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'info',
+    message: 'Request has been cancelled',
+  });
+}
+
 function getImagesData(shouldUrlUpdate?: boolean) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -1872,6 +1888,7 @@ const imagesExploreAppModel = {
   ...model,
   initialize,
   getImagesData,
+  abortRequest,
   setComponentRefs,
   onGroupingSelectChange,
   onGroupingModeChange,

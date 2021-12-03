@@ -1,9 +1,8 @@
 import React from 'react';
 
-import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import { Divider } from '@material-ui/core';
 
-import { Button } from 'components/kit';
+import { Button, Icon } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
@@ -32,8 +31,20 @@ function SearchBar({
 
   function handleRunSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    if (isRunsDataLoading) {
+      return;
+    }
     searchRunsRef.current = runAppModel.getRunsData(true);
     searchRunsRef.current.call().catch();
+  }
+
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!isRunsDataLoading) {
+      return;
+    }
+    searchRunsRef.current?.abort();
+    runAppModel.abortRequest();
   }
 
   return (
@@ -51,12 +62,16 @@ function SearchBar({
       <Button
         className='Runs_Search_Bar__Button'
         color='primary'
-        onClick={handleRunSearch}
-        variant='contained'
-        startIcon={<SearchOutlined color='inherit' />}
-        disabled={isRunsDataLoading}
+        onClick={isRunsDataLoading ? handleRequestAbort : handleRunSearch}
+        variant={isRunsDataLoading ? 'outlined' : 'contained'}
+        startIcon={
+          <Icon
+            name={isRunsDataLoading ? 'close' : 'search'}
+            fontSize={isRunsDataLoading ? 12 : 14}
+          />
+        }
       >
-        Search
+        {isRunsDataLoading ? 'Cancel' : 'Search'}
       </Button>
     </div>
   );

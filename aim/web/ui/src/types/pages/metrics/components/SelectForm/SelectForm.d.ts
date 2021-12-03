@@ -1,6 +1,7 @@
 import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
 
 export interface ISelectFormProps {
+  requestIsPending: boolean;
   selectedMetricsData: IMetricAppConfig['select'];
   onMetricsSelectChange: (metrics: ISelectMetricsOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;

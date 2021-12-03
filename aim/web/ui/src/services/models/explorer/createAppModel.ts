@@ -445,6 +445,22 @@ function createAppModel({
       }
     }
 
+    function abortRequest(): void {
+      if (metricsRequestRef) {
+        metricsRequestRef.abort();
+      }
+
+      model.setState({
+        requestIsPending: false,
+      });
+
+      onModelNotificationAdd({
+        id: Date.now(),
+        severity: 'info',
+        message: 'Request has been cancelled',
+      });
+    }
+
     function getMetricsData(shouldUrlUpdate?: boolean): {
       call: () => Promise<void>;
       abort: () => void;
@@ -1682,6 +1698,7 @@ function createAppModel({
       initialize,
       getAppConfigData,
       getMetricsData,
+      abortRequest,
       getDataAsTableRows,
       setDefaultAppConfigData,
       setComponentRefs: setModelComponentRefs,
@@ -1951,6 +1968,22 @@ function createAppModel({
         return getRunsData();
       }
 
+      function abortRequest(): void {
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
+
+        model.setState({
+          requestIsPending: false,
+        });
+
+        onModelNotificationAdd({
+          id: Date.now(),
+          severity: 'info',
+          message: 'Request has been cancelled',
+        });
+      }
+
       function getRunsData(
         shouldUrlUpdate?: boolean,
         isInitial = true,
@@ -1958,9 +1991,9 @@ function createAppModel({
         call: () => Promise<void>;
         abort: () => void;
       } {
-        // if (runsRequestRef) {
-        //   runsRequestRef.abort();
-        // }
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
         // isInitial: true --> when search button clicked or data is loading at the first time
         const modelState = prepareModelStateToCall(isInitial);
         const configData = modelState?.config;
@@ -1970,7 +2003,7 @@ function createAppModel({
 
         liveUpdateInstance?.stop().then();
 
-        const { call, abort } = runsService.getRunsData(
+        runsRequestRef = runsService.getRunsData(
           query,
           pagination?.limit,
           pagination?.offset,
@@ -1983,7 +2016,7 @@ function createAppModel({
         return {
           call: async () => {
             try {
-              const stream = await call((detail) =>
+              const stream = await runsRequestRef.call((detail) =>
                 exceptionHandler({ detail, model }),
               );
               let gen = adjustable_reader(stream as ReadableStream<any>);
@@ -2055,7 +2088,7 @@ function createAppModel({
               }
             }
           },
-          abort,
+          abort: runsRequestRef.abort,
         };
       }
 
@@ -2479,6 +2512,12 @@ function createAppModel({
         return { rows, sameValueColumns };
       }
 
+      function onModelNotificationAdd<N>(
+        notification: N & INotification,
+      ): void {
+        onNotificationAdd({ notification, model });
+      }
+
       function getLastRunsData(
         lastRow: any,
       ): { call: () => Promise<void>; abort: () => void } | undefined {
@@ -2662,6 +2701,7 @@ function createAppModel({
         destroy,
         initialize,
         getRunsData,
+        abortRequest,
         getLastRunsData,
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,
@@ -2837,6 +2877,22 @@ function createAppModel({
         if (configData) {
           setModelData(newData, configData);
         }
+      }
+
+      function abortRequest(): void {
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
+
+        model.setState({
+          requestIsPending: false,
+        });
+
+        onModelNotificationAdd({
+          id: Date.now(),
+          severity: 'info',
+          message: 'Request has been cancelled',
+        });
       }
 
       function getParamsData(shouldUrlUpdate?: boolean): {
@@ -3789,6 +3845,7 @@ function createAppModel({
         initialize,
         getAppConfigData,
         getParamsData,
+        abortRequest,
         setDefaultAppConfigData,
         updateModelData,
         onActivePointChange,
