@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add ability to cancel pending request (roubkar)
+- Add ability to cancel pending request (roubkar, arsengit)
 - Add support for secure protocol for API calls (mihran113, roubkar)
 - Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
 - Implement image full size view (VkoHov)
