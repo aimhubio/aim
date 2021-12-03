@@ -6,7 +6,14 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { blobsUpdateThrottleDelay } from 'config/imagesConfigs/imagesConfig';
+import {
+  blobsUpdateThrottleDelay,
+  IMAGE_SIZE_CHANGE_DELAY,
+} from 'config/imagesConfigs/imagesConfig';
+import {
+  ImageAlignmentEnum,
+  ImageRenderingEnum,
+} from 'config/enums/imageEnums';
 
 import {
   getImagesExploreTableColumns,
@@ -63,6 +70,8 @@ import filterTooltipContent from 'utils/filterTooltipContent';
 
 import createModel from '../model';
 
+import imagesURIModel from './imagesURIModel';
+
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
@@ -94,6 +103,11 @@ function getConfig(): IImagesExploreAppConfig {
         content: {},
         display: true,
         selectedParams: [],
+      },
+      imageProperties: {
+        alignmentType: ImageAlignmentEnum.Height,
+        imageSize: 15,
+        imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
         active: false,
@@ -266,10 +280,20 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           applyButtonDisabled: true,
         });
 
-        const stream = await imagesRequestRef.call(exceptionHandler);
-        const runData = await getImagesMetricsData(stream);
-        if (configData) {
-          setModelData(runData, configData);
+        imagesURIModel.init();
+
+        try {
+          const stream = await imagesRequestRef.call(exceptionHandler);
+          const runData = await getImagesMetricsData(stream);
+          if (configData) {
+            setModelData(runData, configData);
+          }
+        } catch (ex: Error | any) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ', ex);
+          }
         }
       } else {
         model.setState({
@@ -448,6 +472,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       active: false,
       key: null,
     },
+    imageProperties: config.images.imageProperties,
   };
   model.setState({
     requestIsPending: false,
@@ -786,37 +811,35 @@ async function getImagesMetricsData(
   return runData;
 }
 
-async function getImagesBlobsData(uris: string[]) {
-  const stream = await imagesExploreService.getImagesByURIs(uris).call();
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
-  let decodedPairs = decodePathsVals(buffer_pairs);
-  let objects = iterFoldTree(decodedPairs, 1);
+function getImagesBlobsData(uris: string[]) {
+  const request = imagesExploreService.getImagesByURIs(uris);
+  return {
+    abort: request.abort,
+    call: () => {
+      return request
+        .call()
+        .then(async (stream) => {
+          let gen = adjustable_reader(stream);
+          let buffer_pairs = decode_buffer_pairs(gen);
+          let decodedPairs = decodePathsVals(buffer_pairs);
+          let objects = iterFoldTree(decodedPairs, 1);
 
-  const throttledBlobsUpdate = _.throttle(function () {
-    model.setState({
-      imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) },
-    });
-  }, blobsUpdateThrottleDelay);
-
-  let firsItem = true;
-  for await (let [keys, val] of objects) {
-    const imagesBlobs: { [key: string]: string } =
-      model.getState()?.imagesBlobs || {};
-    imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
-
-    if (firsItem) {
-      model.setState({
-        imagesBlobs: { ...imagesBlobs },
-      });
-      firsItem = false;
-    } else {
-      throttledBlobsUpdate();
-    }
-  }
-
-  throttledBlobsUpdate.cancel();
-  model.setState({ imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) } });
+          for await (let [keys, val] of objects) {
+            const URI = keys[0];
+            imagesURIModel.emit(URI as string, {
+              [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+            });
+          }
+        })
+        .catch((ex) => {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ');
+          }
+        });
+    },
+  };
 }
 
 function sortWithAllGroupFields(
@@ -941,7 +964,7 @@ function onActivePointChange(
   const { refs, config } = model.getState() as any;
   if (config.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
-    if (tableRef) {
+    if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
       tableRef.current?.setActiveRow?.(
         focusedStateActive ? activePoint.seqKey : null,
@@ -953,6 +976,12 @@ function onActivePointChange(
   }
   let configData = config;
   if (configData?.images) {
+    const tooltipContent = activePoint.key
+      ? filterTooltipContent(
+          tooltipData[activePoint.key],
+          configData?.images.tooltip.selectedParams,
+        )
+      : {};
     configData = {
       ...configData,
       images: {
@@ -963,10 +992,7 @@ function onActivePointChange(
         },
         tooltip: {
           ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[activePoint.key],
-            configData?.images.tooltip.selectedParams,
-          ),
+          content: tooltipContent,
         },
       },
     };
@@ -1065,6 +1091,7 @@ function getDataAsTableRows(
         metric: '',
         context: [],
         children: [],
+        groups: groupConfigData,
       };
 
       rows[groupKey!] = {
@@ -1180,7 +1207,7 @@ function getDataAsTableRows(
         rows[groupKey!].data,
         {},
         true,
-        ['value', 'name'].concat(Object.keys(columnsValues)),
+        ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
       );
     }
   });
@@ -1823,6 +1850,75 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   }
 }
 
+const onImageSizeChange = _.throttle((value: number) => {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      imageProperties: {
+        ...configData.images.imageProperties,
+        imageSize: value,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}, IMAGE_SIZE_CHANGE_DELAY);
+
+function onImageRenderingChange(type: ImageRenderingEnum) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      imageProperties: {
+        ...configData.images.imageProperties,
+
+        imageRendering: type,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onImageAlignmentChange(
+  option: { value: string; label: string } | null,
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      imageProperties: {
+        ...configData.images.imageProperties,
+        alignmentType: option?.value,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}
+
 const imagesExploreAppModel = {
   ...model,
   initialize,
@@ -1865,6 +1961,9 @@ const imagesExploreAppModel = {
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,
+  onImageSizeChange,
+  onImageRenderingChange,
+  onImageAlignmentChange,
 };
 
 export default imagesExploreAppModel;

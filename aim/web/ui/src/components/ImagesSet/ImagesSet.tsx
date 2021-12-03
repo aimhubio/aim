@@ -3,9 +3,14 @@ import _ from 'lodash';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
+import { Tooltip } from '@material-ui/core';
+
 import ImagesList from 'components/ImagesList';
+import { JsonViewPopover } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import { formatValue } from 'utils/formatValue';
+import { jsonParse } from 'utils/jsonParse';
 
 import { IImageSetProps } from './ImagesSet.d';
 
@@ -17,7 +22,6 @@ const imageSetWrapperPaddingHeight = 6;
 
 const ImagesSet = ({
   data,
-  imagesBlobs,
   onScroll,
   onListScroll,
   addUriToList,
@@ -29,6 +33,8 @@ const ImagesSet = ({
   imageHeight,
   focusedState,
   syncHoverState,
+  imageProperties,
+  tableHeight,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -74,7 +80,7 @@ const ImagesSet = ({
 
   return (
     <List
-      key={content.length}
+      key={content.length + tableHeight + imageProperties?.imageSize}
       height={imageSetWrapperHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}
@@ -82,7 +88,6 @@ const ImagesSet = ({
       onScroll={onListScroll}
       itemData={{
         data: content,
-        imagesBlobs,
         onScroll,
         addUriToList,
         imageSetWrapperHeight,
@@ -92,6 +97,7 @@ const ImagesSet = ({
         imageHeight,
         focusedState,
         syncHoverState,
+        imageProperties,
       }}
     >
       {ImagesGroupedList}
@@ -109,7 +115,6 @@ function propsComparator(
   ) {
     return false;
   }
-
   return true;
 }
 
@@ -118,6 +123,11 @@ export default React.memo(ImagesSet, propsComparator);
 const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
   const { index, style, data } = props;
   const [path, items] = data.data[index];
+  const json: string | object = jsonParse(
+    path[path.length - 1]?.split('=')[1]?.trim(),
+  );
+  const isJson: boolean = typeof json === 'object';
+
   return (
     <div
       className='ImagesSet'
@@ -135,27 +145,50 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           }}
         />
       ))}
-      <div className='ImagesSet__container'>
+      <div
+        className={`ImagesSet__container ${path.length > 2 ? 'withDash' : ''}`}
+      >
         {path.length > 1 && (
-          <span
-            className={classNames('ImagesSet__container__title', {
-              withDash: path.length > 2,
-            })}
-          >
-            {path[path.length - 1]}
-          </span>
+          <ControlPopover
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            anchor={({ onAnchorClick }) => (
+              <Tooltip
+                placement='top-start'
+                title={isJson ? path[path.length - 1] : ''}
+              >
+                <span
+                  onClick={isJson ? onAnchorClick : () => null}
+                  className={classNames(
+                    `ImagesSet__container__title ${
+                      isJson ? 'ImagesSet__container__title__pointer' : ''
+                    }`,
+                  )}
+                >
+                  {path[path.length - 1]}
+                </span>
+              </Tooltip>
+            )}
+            component={<JsonViewPopover json={json as object} />}
+          />
         )}
         {items.length > 0 && (
           <div className='ImagesSet__container__imagesBox'>
             <ImagesList
               data={items}
-              imagesBlobs={data.imagesBlobs}
               onScroll={data.onScroll}
               addUriToList={data.addUriToList}
               imageSetWrapperWidth={data.imageSetWrapperWidth}
               imageHeight={data.imageHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
+              imageProperties={data.imageProperties}
             />
           </div>
         )}

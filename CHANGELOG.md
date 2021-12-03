@@ -2,7 +2,9 @@
 
 ## Unreleased
 
+- Add support for secure protocol for API calls (mihran113, roubkar)
 - Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+- Add ability to manipulate with image size and rendering type (arsengit)
 
 ## 3.1.1 Nov 25 2021
 

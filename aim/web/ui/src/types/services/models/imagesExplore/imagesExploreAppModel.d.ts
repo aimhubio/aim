@@ -26,6 +26,11 @@ export interface IImagesExploreAppConfig {
       key: string | null;
       active: boolean;
     };
+    imageProperties: {
+      alignmentType: string;
+      imageSize: number;
+      imageRendering: string;
+    };
   };
   select: {
     images: ISelectMetricsOption[];
@@ -61,7 +66,6 @@ export interface IImagesExploreAppModelState {
   imagesData: any;
   tableData: any[];
   tableColumns: ITableColumn[];
-  imagesBlobs: { [key: string]: string };
   sameValueColumns: string[];
   params: string[];
   notifyData: INotification[];

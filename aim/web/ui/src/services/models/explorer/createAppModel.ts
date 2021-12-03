@@ -501,7 +501,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex: any) {
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -608,6 +608,7 @@ function createAppModel({
               epoch: '',
               time: '',
               children: [],
+              groups: groupConfigData,
             };
 
             rows[groupKey!] = {
@@ -770,7 +771,7 @@ function createAppModel({
               rows[groupKey!].data,
               {},
               true,
-              ['value'].concat(Object.keys(columnsValues)),
+              ['value', 'groups'].concat(Object.keys(columnsValues)),
             );
           }
         },
@@ -2048,7 +2049,7 @@ function createAppModel({
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
-                console.log('Unhandled error: ');
+                console.log('Unhandled error: ', ex);
               }
             }
           },
@@ -2969,6 +2970,7 @@ function createAppModel({
                 metric: '',
                 context: [],
                 children: [],
+                groups: groupConfigData,
               };
 
               rows[groupKey!] = {
@@ -3096,7 +3098,7 @@ function createAppModel({
                 rows[groupKey!].data,
                 {},
                 true,
-                Object.keys(columnsValues),
+                ['groups'].concat(Object.keys(columnsValues)),
               );
             }
           },
