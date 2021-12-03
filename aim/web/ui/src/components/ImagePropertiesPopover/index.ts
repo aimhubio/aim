@@ -1,5 +1,5 @@
 import ImagePropertiesPopover from './ImagePropertiesPopover';
 
-export * from './types.d';
+export * from './ImagePropertiesPopover';
 
 export default ImagePropertiesPopover;

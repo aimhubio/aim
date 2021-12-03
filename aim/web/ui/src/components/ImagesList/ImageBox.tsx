@@ -51,7 +51,7 @@ const ImageBox = ({
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
         style={style}
-        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image__${
+        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image--${
           imageProperties.imageRendering
         } ${
           focusedState.key === data.key

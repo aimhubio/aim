@@ -30,21 +30,19 @@ function ImagesList({
       onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
     >
-      {({ style, index }) => {
-        return (
-          <ImageBox
-            index={index}
-            style={style}
-            data={data[index]}
-            imagesBlobs={imagesBlobs}
-            addUriToList={addUriToList}
-            imageHeight={imageHeight}
-            focusedState={focusedState}
-            syncHoverState={syncHoverState}
-            imageProperties={imageProperties}
-          />
-        );
-      }}
+      {({ style, index }) => (
+        <ImageBox
+          index={index}
+          style={style}
+          data={data[index]}
+          imagesBlobs={imagesBlobs}
+          addUriToList={addUriToList}
+          imageHeight={imageHeight}
+          focusedState={focusedState}
+          syncHoverState={syncHoverState}
+          imageProperties={imageProperties}
+        />
+      )}
     </List>
   );
 }

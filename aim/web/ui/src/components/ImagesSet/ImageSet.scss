@@ -72,10 +72,10 @@
           box-shadow: 0px 0px 2px 3px rgb(0 0 0 / 15%);
         }
         &__image {
-          &__Pixelated {
+          &--pixelated {
             image-rendering: pixelated;
           }
-          &__Smoothened {
+          &--optimize_quality {
             image-rendering: optimizeQuality;
           }
         }

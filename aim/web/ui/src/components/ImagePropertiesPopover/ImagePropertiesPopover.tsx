@@ -9,9 +9,9 @@ import {
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
 
-import { IImagePropertiesPopoverProps } from './types';
+import { IImagePropertiesPopoverProps } from './ImagePropertiesPopover.d';
 
-import './styles.scss';
+import './ImagePropertiesPopover.scss';
 
 const sizeProps = {
   step: 1,
@@ -48,7 +48,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className={'ImagePropertiesPopover'}>
       <div className='ImagePropertiesPopover__section'>
-        <div className='flex fac ImagePropertiesPopover__section__imageSize'>
+        <div className='ImagePropertiesPopover__section__imageSize'>
           <Text
             tint={50}
             component='h4'
@@ -112,8 +112,8 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
           className='ImagePropertiesPopover__ToggleButton'
           title='Optimization'
           onChange={onImageRenderingChange}
-          rightLabel={ImageRenderingEnum.Optimize}
-          leftLabel={ImageRenderingEnum.Pixelated}
+          rightLabel='Optimize Quality'
+          leftLabel='Pixelated'
           leftValue={ImageRenderingEnum.Pixelated}
           rightValue={ImageRenderingEnum.Optimize}
           value={imageProperties.imageRendering}

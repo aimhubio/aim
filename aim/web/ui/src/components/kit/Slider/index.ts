@@ -1,5 +1,5 @@
 import Slider from './Slider';
 
-export * from './types.d';
+export * from './Slider.d';
 
 export default Slider;

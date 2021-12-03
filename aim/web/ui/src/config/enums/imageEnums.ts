@@ -1,6 +1,6 @@
 enum ImageRenderingEnum {
-  Optimize = 'Optimize Quality',
-  Pixelated = 'Pixelated',
+  Optimize = 'optimize_quality',
+  Pixelated = 'pixelated',
 }
 
 enum ImageAlignmentEnum {

@@ -14,6 +14,8 @@
     flex-direction: column;
     padding: 0 $space-xs;
     &__imageSize {
+      display: flex;
+      align-items: center;
       margin-top: $space-xs;
       margin-bottom: $space-xxxs;
     }

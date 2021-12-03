@@ -2,9 +2,9 @@ import React from 'react';
 
 import { Slider as MaterialSlider } from '@material-ui/core';
 
-import { ISliderProps } from './types';
+import { ISliderProps } from './Slider.d';
 
-import './styles.scss';
+import './Slider.scss';
 
 function Slider(
   props: ISliderProps,
