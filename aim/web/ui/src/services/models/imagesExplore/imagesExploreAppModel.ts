@@ -279,7 +279,7 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
-            console.log('Unhandled error: ');
+            console.log('Unhandled error: ', ex);
           }
         }
       } else {

@@ -501,7 +501,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex: any) {
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -2051,7 +2051,7 @@ function createAppModel({
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
-                console.log('Unhandled error: ');
+                console.log('Unhandled error: ', ex);
               }
             }
           },
