@@ -18,6 +18,7 @@ import {
   batchSendDelay,
   imageFixedHeight,
 } from 'config/imagesConfigs/imagesConfig';
+import { ImageAlignmentEnum } from 'config/enums/imageEnums';
 
 import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
 
@@ -49,7 +50,9 @@ function ImagesPanel({
   resizeMode,
   tooltip,
   focusedState,
+  imageProperties,
   onActivePointChange,
+  tableHeight,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [hoveredImageKey, setHoveredImageKey] = React.useState<string>('');
   const [imageFullMode, setImageFullMode] = React.useState<boolean>(false);
@@ -173,7 +176,12 @@ function ImagesPanel({
   const imagesSetKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [imagesData, imageWrapperOffsetHeight, imageWrapperOffsetWidth],
+    [
+      imagesData,
+      imageWrapperOffsetHeight,
+      imageWrapperOffsetWidth,
+      imageProperties,
+    ],
   );
 
   React.useEffect(() => {
@@ -200,7 +208,7 @@ function ImagesPanel({
       isLoading={isLoading}
       className='ImagesExplore__loader'
       height='100%'
-      loaderComponent={<ChartLoader controlsCount={0} />}
+      loaderComponent={<ChartLoader controlsCount={2} />}
     >
       {panelResizing ? (
         <div className='ImagesPanel__Container__resizing'>
@@ -234,13 +242,27 @@ function ImagesPanel({
                     imagesSetKey={imagesSetKey}
                     imageSetWrapperHeight={imageWrapperOffsetHeight - 48}
                     imageSetWrapperWidth={imageWrapperOffsetWidth}
-                    imageHeight={imageFixedHeight}
+                    imageHeight={
+                      imageProperties?.alignmentType ===
+                      ImageAlignmentEnum.Height
+                        ? (imageWrapperOffsetHeight *
+                            imageProperties?.imageSize) /
+                          100
+                        : imageProperties?.alignmentType ===
+                          ImageAlignmentEnum.Width
+                        ? (imageWrapperOffsetWidth *
+                            imageProperties?.imageSize) /
+                          100
+                        : imageFixedHeight
+                    }
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
                     hoveredImageKey={hoveredImageKey}
                     setImageFullMode={setImageFullMode}
                     setImageFullModeData={setImageFullModeData}
+                    imageProperties={imageProperties}
+                    tableHeight={tableHeight}
                   />
                 </div>
                 <ChartPopover

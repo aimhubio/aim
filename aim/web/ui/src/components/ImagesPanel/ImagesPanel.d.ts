@@ -6,6 +6,7 @@ import {
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
+import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 export interface IImagesPanelProps {
   imagesData: any;
@@ -29,5 +30,7 @@ export interface IImagesPanelProps {
   resizeMode: ResizeModeEnum;
   tooltip: ITooltipContent;
   focusedState: IFocusedState;
+  imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
+  tableHeight: string;
 }

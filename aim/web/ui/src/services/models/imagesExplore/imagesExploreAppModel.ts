@@ -6,6 +6,11 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
+import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
+import {
+  ImageAlignmentEnum,
+  ImageRenderingEnum,
+} from 'config/enums/imageEnums';
 
 import {
   getImagesExploreTableColumns,
@@ -95,6 +100,11 @@ function getConfig(): IImagesExploreAppConfig {
         content: {},
         display: true,
         selectedParams: [],
+      },
+      imageProperties: {
+        alignmentType: ImageAlignmentEnum.Height,
+        imageSize: 15,
+        imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
         active: false,
@@ -461,6 +471,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       active: false,
       key: null,
     },
+    imageProperties: config.images.imageProperties,
   };
   model.setState({
     requestIsPending: false,
@@ -1788,6 +1799,75 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   }
 }
 
+const onImageSizeChange = _.throttle((value: number) => {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      imageProperties: {
+        ...configData.images.imageProperties,
+        imageSize: value,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}, IMAGE_SIZE_CHANGE_DELAY);
+
+function onImageRenderingChange(type: ImageRenderingEnum) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      imageProperties: {
+        ...configData.images.imageProperties,
+
+        imageRendering: type,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onImageAlignmentChange(
+  option: { value: string; label: string } | null,
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      imageProperties: {
+        ...configData.images.imageProperties,
+        alignmentType: option?.value,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}
+
 const imagesExploreAppModel = {
   ...model,
   initialize,
@@ -1830,6 +1910,9 @@ const imagesExploreAppModel = {
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,
+  onImageSizeChange,
+  onImageRenderingChange,
+  onImageAlignmentChange,
 };
 
 export default imagesExploreAppModel;
