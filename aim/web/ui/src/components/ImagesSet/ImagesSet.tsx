@@ -22,7 +22,6 @@ const imageSetWrapperPaddingHeight = 6;
 
 const ImagesSet = ({
   data,
-  onScroll,
   onListScroll,
   addUriToList,
   index = 0,
@@ -33,6 +32,9 @@ const ImagesSet = ({
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
   imageProperties,
   tableHeight,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
@@ -88,7 +90,6 @@ const ImagesSet = ({
       onScroll={onListScroll}
       itemData={{
         data: content,
-        onScroll,
         addUriToList,
         imageSetWrapperHeight,
         imageSetWrapperWidth,
@@ -97,6 +98,9 @@ const ImagesSet = ({
         imageHeight,
         focusedState,
         syncHoverState,
+        hoveredImageKey,
+        setImageFullMode,
+        setImageFullModeData,
         imageProperties,
       }}
     >
@@ -111,7 +115,8 @@ function propsComparator(
 ): boolean {
   if (
     prevProps.imagesSetKey !== nextProps.imagesSetKey ||
-    prevProps.focusedState !== nextProps.focusedState
+    prevProps.focusedState !== nextProps.focusedState ||
+    prevProps.hoveredImageKey !== nextProps.hoveredImageKey
   ) {
     return false;
   }
@@ -182,12 +187,14 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           <div className='ImagesSet__container__imagesBox'>
             <ImagesList
               data={items}
-              onScroll={data.onScroll}
               addUriToList={data.addUriToList}
               imageSetWrapperWidth={data.imageSetWrapperWidth}
               imageHeight={data.imageHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
+              hoveredImageKey={data.hoveredImageKey}
+              setImageFullMode={data.setImageFullMode}
+              setImageFullModeData={data.setImageFullModeData}
               imageProperties={data.imageProperties}
             />
           </div>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { isEmpty } from 'lodash-es';
 
+import { Dialog } from '@material-ui/core';
+
 import ImagesSet from 'components/ImagesSet/ImagesSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
@@ -8,6 +10,8 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
+import { throttle } from 'components/Table/utils';
+import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
@@ -50,6 +54,9 @@ function ImagesPanel({
   onActivePointChange,
   tableHeight,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
+  const [hoveredImageKey, setHoveredImageKey] = React.useState<string>('');
+  const [imageFullMode, setImageFullMode] = React.useState<boolean>(false);
+  const [imageFullModeData, setImageFullModeData] = React.useState<any>('');
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
     bottom: number;
@@ -66,10 +73,11 @@ function ImagesPanel({
   function addUriToList(blobUrl: string) {
     if (!imagesURIModel.getState()[blobUrl]) {
       blobUriArray.current.push(blobUrl);
+      getBatch();
     }
   }
 
-  function onScroll() {
+  const getBatch = throttle(() => {
     if (timeoutID.current) {
       window.clearTimeout(timeoutID.current);
     }
@@ -82,7 +90,7 @@ function ImagesPanel({
         });
       }
     }, batchSendDelay);
-  }
+  }, batchSendDelay);
 
   function onListScroll({ scrollOffset }: { scrollOffset: number }): void {
     if (Math.abs(scrollOffset - scrollTopOffset.current) > window.innerHeight) {
@@ -98,6 +106,7 @@ function ImagesPanel({
     if (!focusedState?.active) {
       syncHoverState({ activePoint: null });
     }
+    setHoveredImageKey('');
   }
 
   function onMouseOver(e: React.MouseEvent<HTMLDivElement>): void {
@@ -120,6 +129,7 @@ function ImagesPanel({
             activePoint: { pointRect, key: imageKey, seqKey: imageSeqKey },
           });
         }
+        setHoveredImageKey(imageKey as string);
       } else {
         closePopover();
       }
@@ -138,7 +148,7 @@ function ImagesPanel({
     } else {
       setActivePointRect(null);
     }
-  }, [setActivePointRect, activePointRef.current, containerRef.current]);
+  }, [setActivePointRect]);
 
   const syncHoverState = React.useCallback(
     (args: any): void => {
@@ -175,11 +185,6 @@ function ImagesPanel({
   );
 
   React.useEffect(() => {
-    onScroll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blobUriArray.current]);
-
-  React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
 
     return () => {
@@ -195,6 +200,7 @@ function ImagesPanel({
 
       imagesURIModel.init();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -230,7 +236,7 @@ function ImagesPanel({
                 >
                   <ImagesSet
                     data={imagesData}
-                    onScroll={onScroll}
+                    onScroll={() => null}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
                     imagesSetKey={imagesSetKey}
@@ -252,6 +258,9 @@ function ImagesPanel({
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
+                    hoveredImageKey={hoveredImageKey}
+                    setImageFullMode={setImageFullMode}
+                    setImageFullModeData={setImageFullModeData}
                     imageProperties={imageProperties}
                     tableHeight={tableHeight}
                   />
@@ -290,6 +299,19 @@ function ImagesPanel({
               />
             )}
           </div>
+          <Dialog
+            onClose={() => setImageFullMode(!imageFullMode)}
+            aria-labelledby='customized-dialog-title'
+            className='ImagesPanel__Container__imageFullViewPopup'
+            open={imageFullMode}
+          >
+            <ImageFullViewPopover
+              imageRendering={imageProperties?.imageRendering}
+              imageData={imageFullModeData}
+              tooltipContent={tooltip?.content}
+              handleClose={() => setImageFullMode(!imageFullMode)}
+            />
+          </Dialog>{' '}
         </>
       )}
     </BusyLoaderWrapper>

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, isNil } from 'lodash-es';
 
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -17,7 +17,7 @@ function RunDetailMetricsAndSystemTab({
   isRunBatchLoading,
 }: IRunDetailMetricsAndSystemTabProps): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
-    if (!runBatch) {
+    if (!runBatch && !isNil(runTraces)) {
       const runsBatchRequestRef = runDetailAppModel.getRunMetricsBatch(
         runTraces.metric,
         runHash,

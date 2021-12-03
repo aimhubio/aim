@@ -43,7 +43,7 @@ function ImagesExploreRangePanel({
                 weight={600}
                 tint={80}
                 className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderValuesLabel'
-              >{`${recordSlice[0]} - ${recordSlice[1]}`}</Text>
+              >{`${stepRange[0]} - ${stepRange[1]}`}</Text>
             </div>
 
             <div className='ImagesExploreRangePanel__container__sliderContainer__sliderWrapper__sliderBox'>

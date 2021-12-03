@@ -1,5 +1,5 @@
 enum ImageRenderingEnum {
-  Optimize = 'optimize_quality',
+  Smooth = 'smooth',
   Pixelated = 'pixelated',
 }
 
