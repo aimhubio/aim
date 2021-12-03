@@ -1,3 +1,5 @@
+import { IImagesPanelProps } from 'components/ImagesPanel';
+
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IImageSetProps {
@@ -13,4 +15,9 @@ export interface IImageSetProps {
   imageHeight: number;
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
+  hoveredImageKey: string;
+  setImageFullMode: (v: boolean) => void;
+  setImageFullModeData: (v: string) => void;
+  imageProperties: IImagesPanelProps['imageProperties'];
+  tableHeight: IImagesPanelProps['tableHeight'];
 }

@@ -74,6 +74,29 @@ function getStream<ResponseDataType>(
   );
 }
 
+function getStream1<ResponseDataType>(
+  url: string,
+  params?: {},
+  options?: RequestInit,
+) {
+  return createAPIRequestWrapper<ResponseDataType>(
+    `${url}${
+      options?.method === 'POST' && params
+        ? '?' + new URLSearchParams(params).toString()
+        : ''
+    }`,
+    {
+      method: 'GET',
+      ...options,
+      ...(options?.method === 'POST' && {
+        body: JSON.stringify(options.body),
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    },
+    true,
+  );
+}
+
 function get<ResponseDataType>(
   url: string,
   params?: {},
@@ -128,6 +151,7 @@ function remove<ResponseDataType>(url: string, options?: RequestInit) {
 const API = {
   get,
   getStream,
+  getStream1,
   post,
   put,
   delete: remove,

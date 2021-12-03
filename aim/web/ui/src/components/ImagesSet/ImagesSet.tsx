@@ -22,7 +22,6 @@ const imageSetWrapperPaddingHeight = 6;
 
 const ImagesSet = ({
   data,
-  onScroll,
   onListScroll,
   addUriToList,
   index = 0,
@@ -33,6 +32,11 @@ const ImagesSet = ({
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
+  imageProperties,
+  tableHeight,
 }: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -78,7 +82,7 @@ const ImagesSet = ({
 
   return (
     <List
-      key={content.length}
+      key={content.length + tableHeight + imageProperties?.imageSize}
       height={imageSetWrapperHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}
@@ -86,7 +90,6 @@ const ImagesSet = ({
       onScroll={onListScroll}
       itemData={{
         data: content,
-        onScroll,
         addUriToList,
         imageSetWrapperHeight,
         imageSetWrapperWidth,
@@ -95,6 +98,10 @@ const ImagesSet = ({
         imageHeight,
         focusedState,
         syncHoverState,
+        hoveredImageKey,
+        setImageFullMode,
+        setImageFullModeData,
+        imageProperties,
       }}
     >
       {ImagesGroupedList}
@@ -108,11 +115,11 @@ function propsComparator(
 ): boolean {
   if (
     prevProps.imagesSetKey !== nextProps.imagesSetKey ||
-    prevProps.focusedState !== nextProps.focusedState
+    prevProps.focusedState !== nextProps.focusedState ||
+    prevProps.hoveredImageKey !== nextProps.hoveredImageKey
   ) {
     return false;
   }
-
   return true;
 }
 
@@ -143,7 +150,9 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           }}
         />
       ))}
-      <div className='ImagesSet__container'>
+      <div
+        className={`ImagesSet__container ${path.length > 2 ? 'withDash' : ''}`}
+      >
         {path.length > 1 && (
           <ControlPopover
             anchorOrigin={{
@@ -165,9 +174,6 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
                     `ImagesSet__container__title ${
                       isJson ? 'ImagesSet__container__title__pointer' : ''
                     }`,
-                    {
-                      withDash: path.length > 2,
-                    },
                   )}
                 >
                   {path[path.length - 1]}
@@ -181,12 +187,15 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           <div className='ImagesSet__container__imagesBox'>
             <ImagesList
               data={items}
-              onScroll={data.onScroll}
               addUriToList={data.addUriToList}
               imageSetWrapperWidth={data.imageSetWrapperWidth}
               imageHeight={data.imageHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
+              hoveredImageKey={data.hoveredImageKey}
+              setImageFullMode={data.setImageFullMode}
+              setImageFullModeData={data.setImageFullModeData}
+              imageProperties={data.imageProperties}
             />
           </div>
         )}

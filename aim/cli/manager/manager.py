@@ -38,17 +38,16 @@ def run_up(args):
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
     )
-
     # Runs `aim up <args>` command
     info = {
         "port": args["--port"],
         "host": 'http://' + args["--host"]
     }
+
     for line in child_process.stderr:
         # @TODO improve this solution
         #  The child process `aim cli` has an incompatible things inside
         #  that's the reason to find this way to get result from the process
-
         if ERROR_MSG_PREFIX in line.decode():
             return ManagerActionResult(
                 ManagerActionStatuses.Failed,

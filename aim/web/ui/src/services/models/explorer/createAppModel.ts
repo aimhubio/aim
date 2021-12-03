@@ -501,7 +501,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex: any) {
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -914,15 +914,16 @@ function createAppModel({
       const { data, params, highLevelParams, contexts } = processData(
         model.getState()?.rawData as ISequence<IMetricTrace>[],
       );
+      const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params: params.concat(highLevelParams).sort(),
+          params: sortedParams,
           contexts,
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -990,15 +991,16 @@ function createAppModel({
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
+      const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params: params.concat(highLevelParams).sort(),
+          params: sortedParams,
           contexts,
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -2049,7 +2051,7 @@ function createAppModel({
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
-                console.log('Unhandled error: ');
+                console.log('Unhandled error: ', ex);
               }
             }
           },
@@ -3247,16 +3249,16 @@ function createAppModel({
       ): void {
         const { data, params, highLevelParams, metricsColumns } =
           processData(rawData);
-
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
 
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -3629,14 +3631,15 @@ function createAppModel({
         const { data, params, highLevelParams, metricsColumns } = processData(
           model.getState()?.rawData as IRun<IParamTrace>[],
         );
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,

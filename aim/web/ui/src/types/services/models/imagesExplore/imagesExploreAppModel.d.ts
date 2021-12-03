@@ -26,6 +26,11 @@ export interface IImagesExploreAppConfig {
       key: string | null;
       active: boolean;
     };
+    imageProperties: {
+      alignmentType: string;
+      imageSize: number;
+      imageRendering: string;
+    };
   };
   select: {
     images: ISelectMetricsOption[];
@@ -87,6 +92,7 @@ export interface IImageData {
   height: number;
   index: number;
   key: string;
+  images_name: string;
   run: IImageRunData;
   step: number;
   width: number;

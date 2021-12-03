@@ -21,8 +21,16 @@ from aim.web.utils import ShellCommandException
                                                         writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
 @click.option('--dev', is_flag=True, default=False)
+@click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
+                                                               file_okay=True,
+                                                               dir_okay=False,
+                                                               readable=True))
+@click.option('--ssl-certfile', required=False, type=click.Path(exists=True,
+                                                                file_okay=True,
+                                                                dir_okay=False,
+                                                                readable=True))
 @click.option('--force-init', is_flag=True, default=False)
-def up(dev, host, port, workers, repo, tf_logs, force_init):
+def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, force_init):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
@@ -92,11 +100,13 @@ def up(dev, host, port, workers, repo, tf_logs, force_init):
         click.style('Running Aim UI on repo `{}`'.format(repo_inst),
                     fg='yellow'))
 
-    click.echo('Open http://{}:{}'.format(host, port), err=True)
+    scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
+
+    click.echo('Open {}://{}:{}'.format(scheme, host, port), err=True)
     click.echo('Press Ctrl+C to exit')
 
     try:
-        server_cmd = build_uvicorn_command(host, port, workers)
+        server_cmd = build_uvicorn_command(host, port, workers, ssl_keyfile, ssl_certfile)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. '

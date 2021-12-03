@@ -1,27 +1,33 @@
 import React from 'react';
 import { areEqual, VariableSizeList as List } from 'react-window';
 
+import { ImageAlignmentEnum } from 'config/enums/imageEnums';
+
 import ImageBox from './ImageBox';
 
 function ImagesList({
   data,
-  onScroll,
   imageSetWrapperWidth,
   addUriToList,
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
+  imageProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
       height={imageHeight}
       itemCount={data.length}
-      itemSize={(index: number) =>
-        (imageHeight / data[index].height) * data[index].width
-      }
+      itemSize={(index: number) => {
+        return imageProperties?.alignmentType === ImageAlignmentEnum.Width
+          ? (imageSetWrapperWidth * imageProperties?.imageSize) / 100
+          : (imageHeight / data[index].height) * data[index].width;
+      }}
       layout='horizontal'
-      width={imageSetWrapperWidth || 0}
-      onScroll={onScroll}
+      width={imageSetWrapperWidth}
       style={{ overflowY: 'hidden' }}
       itemData={{
         data,
@@ -29,6 +35,10 @@ function ImagesList({
         imageHeight,
         focusedState,
         syncHoverState,
+        hoveredImageKey,
+        setImageFullMode,
+        setImageFullModeData,
+        imageProperties,
       }}
     >
       {ImageBoxMemoized}
@@ -49,6 +59,10 @@ const ImageBoxMemoized = React.memo(function ImageBoxMemoized(props: any) {
       imageHeight={data.imageHeight}
       focusedState={data.focusedState}
       syncHoverState={data.syncHoverState}
+      hoveredImageKey={data.hoveredImageKey}
+      setImageFullMode={data.setImageFullMode}
+      setImageFullModeData={data.setImageFullModeData}
+      imageProperties={data.imageProperties}
     />
   );
 }, areEqual);
