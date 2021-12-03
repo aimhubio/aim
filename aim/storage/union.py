@@ -262,14 +262,10 @@ class RocksUnionContainer(RocksContainer):
 
 
 class RocksUnionSubContainer(RocksContainer):
+    # TODO: [MV, KH] restructure hierarchy of containers
     def __init__(self, container: 'RocksUnionContainer', domain: bytes):
         self._parent = container
         self.domain = domain
-
-        self._db = None
-        self._lock = None
-        self._lock_path: Optional[Path] = None
-        self._progress_path: Optional[Path] = None
 
     @property
     def writable_db(self) -> aimrocks.DB:
