@@ -189,7 +189,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onDensityChange={imagesExploreAppModel.onDensityChange}
               getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
-              imagesBlobs={imagesExploreData?.imagesBlobs}
               orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}

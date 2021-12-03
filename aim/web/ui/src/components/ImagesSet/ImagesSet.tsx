@@ -22,7 +22,6 @@ const imageSetWrapperPaddingHeight = 6;
 
 const ImagesSet = ({
   data,
-  imagesBlobs,
   onScroll,
   onListScroll,
   addUriToList,
@@ -89,7 +88,6 @@ const ImagesSet = ({
       onScroll={onListScroll}
       itemData={{
         data: content,
-        imagesBlobs,
         onScroll,
         addUriToList,
         imageSetWrapperHeight,
@@ -184,7 +182,6 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           <div className='ImagesSet__container__imagesBox'>
             <ImagesList
               data={items}
-              imagesBlobs={data.imagesBlobs}
               onScroll={data.onScroll}
               addUriToList={data.addUriToList}
               imageSetWrapperWidth={data.imageSetWrapperWidth}

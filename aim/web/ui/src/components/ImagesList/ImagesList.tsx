@@ -1,5 +1,5 @@
 import React from 'react';
-import { VariableSizeList as List } from 'react-window';
+import { areEqual, VariableSizeList as List } from 'react-window';
 
 import { ImageAlignmentEnum } from 'config/enums/imageEnums';
 
@@ -7,7 +7,6 @@ import ImageBox from './ImageBox';
 
 function ImagesList({
   data,
-  imagesBlobs,
   onScroll,
   imageSetWrapperWidth,
   addUriToList,
@@ -29,22 +28,34 @@ function ImagesList({
       width={imageSetWrapperWidth}
       onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
+      itemData={{
+        data,
+        addUriToList,
+        imageHeight,
+        focusedState,
+        syncHoverState,
+        imageProperties,
+      }}
     >
-      {({ style, index }) => (
-        <ImageBox
-          index={index}
-          style={style}
-          data={data[index]}
-          imagesBlobs={imagesBlobs}
-          addUriToList={addUriToList}
-          imageHeight={imageHeight}
-          focusedState={focusedState}
-          syncHoverState={syncHoverState}
-          imageProperties={imageProperties}
-        />
-      )}
+      {ImageBoxMemoized}
     </List>
   );
 }
 
 export default ImagesList;
+
+const ImageBoxMemoized = React.memo(function ImageBoxMemoized(props: any) {
+  const { index, style, data } = props;
+  return (
+    <ImageBox
+      index={index}
+      style={style}
+      data={data.data[index]}
+      addUriToList={data.addUriToList}
+      imageHeight={data.imageHeight}
+      focusedState={data.focusedState}
+      syncHoverState={data.syncHoverState}
+      imageProperties={data.imageProperties}
+    />
+  );
+}, areEqual);
