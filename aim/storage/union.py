@@ -3,7 +3,6 @@ import logging
 import os
 import aimrocks
 
-import cachetools
 import cachetools.func
 
 from pathlib import Path
@@ -13,7 +12,7 @@ from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
 from aim.storage.rockscontainer import RocksContainer
 
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import Dict, List, NamedTuple, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -262,7 +261,6 @@ class RocksUnionContainer(RocksContainer):
 
 
 class RocksUnionSubContainer(RocksContainer):
-    # TODO: [MV, KH] restructure hierarchy of containers
     def __init__(self, container: 'RocksUnionContainer', domain: bytes):
         self._parent = container
         self.domain = domain
