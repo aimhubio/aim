@@ -4,10 +4,10 @@ import { isNil, isEmpty } from 'lodash-es';
 import {
   IActivePoint,
   INearestCircle,
-  ISyncHoverStateParams,
+  ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import {
-  IDrawParallelHoverAttributesProps,
+  IDrawParallelHoverAttributesArgs,
   IParallelNearestCircle,
   IUpdateParallelFocusedChartProps,
 } from 'types/utils/d3/drawParallelHoverAttributes';
@@ -32,7 +32,7 @@ const drawParallelHoverAttributes = ({
   linesNodeRef,
   highlightedNodeRef,
   axesNodeRef,
-}: IDrawParallelHoverAttributesProps) => {
+}: IDrawParallelHoverAttributesArgs) => {
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   let rafID = 0;
 
@@ -149,8 +149,6 @@ const drawParallelHoverAttributes = ({
       );
     }
 
-    // TODO changed pageX and pageY to
-    //  topPos(bounded circle.y) and leftPos(bounded circle.x)
     return {
       key: circle.key,
       xValue: dimensionLabel,
@@ -158,8 +156,13 @@ const drawParallelHoverAttributes = ({
       xPos: circle.x,
       yPos: circle.y,
       chartIndex: index,
-      topPos: chartRect.top + circle.y + margin.top,
-      leftPos: chartRect.left + circle.x + margin.left,
+      pointRect: {
+        top: chartRect.top + margin.top + circle.y - CircleEnum.ActiveRadius,
+        bottom: chartRect.top + margin.top + circle.y + CircleEnum.ActiveRadius,
+        left: chartRect.left + margin.left + circle.x - CircleEnum.ActiveRadius,
+        right:
+          chartRect.left + margin.left + circle.x + CircleEnum.ActiveRadius,
+      },
     };
   }
 
@@ -480,9 +483,9 @@ const drawParallelHoverAttributes = ({
   }
 
   // Interactions
-  function safeSyncHoverState(params: ISyncHoverStateParams): void {
+  function safeSyncHoverState(args: ISyncHoverStateArgs): void {
     if (typeof syncHoverState === 'function') {
-      syncHoverState(params);
+      syncHoverState(args);
     }
   }
 

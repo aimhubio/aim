@@ -1,82 +1,125 @@
-import React, { memo, MouseEvent, useEffect, useRef } from 'react';
-import { isEqual } from 'lodash-es';
+import React from 'react';
+import classNames from 'classnames';
 
 import { Skeleton } from '@material-ui/lab';
 
+import { Button, Icon } from 'components/kit';
+
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+
+import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
 
 const ImageBox = ({
   index,
   style,
   data,
-  imagesBlobs,
   addUriToList,
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
+  imageProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
 
-  useEffect(() => {
-    let timeoutID = setTimeout(() => {
-      addUriToList(blob_uri);
-    }, batchCollectDelay);
+  let [blobData, setBlobData] = React.useState<string>(
+    imagesURIModel.getState()[blob_uri] ?? null,
+  );
+
+  React.useEffect(() => {
+    let timeoutID: number;
+    let subscription: any;
+
+    if (blobData === null) {
+      if (imagesURIModel.getState()[blob_uri]) {
+        setBlobData(imagesURIModel.getState()[blob_uri]);
+      } else {
+        subscription = imagesURIModel.subscribe(blob_uri, (data) => {
+          setBlobData(data[blob_uri]);
+          subscription.unsubscribe();
+        });
+        timeoutID = window.setTimeout(() => {
+          if (imagesURIModel.getState()[blob_uri]) {
+            setBlobData(imagesURIModel.getState()[blob_uri]);
+            subscription.unsubscribe();
+          } else {
+            addUriToList(blob_uri);
+          }
+        }, batchCollectDelay);
+      }
+    }
 
     return () => {
-      clearTimeout(timeoutID);
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
-  function safeSyncHoverState(args: any): void {
-    if (typeof syncHoverState === 'function') {
-      syncHoverState(args);
-    }
+  function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
+    e.stopPropagation();
+    setImageFullMode(true);
+    setImageFullModeData(data);
   }
-
-  function onClick(e: MouseEvent<HTMLDivElement>): void {
-    // TODO need to add focused image logic
-    // if (e?.currentTarget) {
-    //   e.stopPropagation();
-    //   const clientRect = e.currentTarget.getBoundingClientRect();
-    //   safeSyncHoverState({
-    //     activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-    //     focusedStateActive: true,
-    //   });
-    // }
-  }
-
-  function onMouseEnter(e: MouseEvent<HTMLDivElement>): void {
-    if (e?.currentTarget && !focusedState?.active) {
-      const clientRect = e.currentTarget.getBoundingClientRect();
-      safeSyncHoverState({
-        activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-      });
-    }
-  }
-
-  function onMouseLeave(e: MouseEvent<HTMLDivElement>): void {
-    if (!focusedState?.active) {
-      safeSyncHoverState({ activePoint: null });
-    }
-  }
+  // TODO need to add focused image logic
+  // function safeSyncHoverState(args: any): void {
+  //   if (typeof syncHoverState === 'function') {
+  //     syncHoverState(args);
+  //   }
+  // }
+  //
+  // function onClick(e: MouseEvent<HTMLDivElement>): void {
+  //   if (e?.currentTarget) {
+  //     e.stopPropagation();
+  //     const clientRect = e.currentTarget.getBoundingClientRect();
+  //     safeSyncHoverState({
+  //       activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
+  //       focusedStateActive: true,
+  //     });
+  //   }
+  // }
 
   return (
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
         style={style}
-        className={
-          focusedState?.active && focusedState.key === data.key ? 'active' : ''
-        }
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onClick={onClick}
+        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image--${
+          imageProperties.imageRendering
+        } ${
+          focusedState.key === data.key
+            ? focusedState?.active
+              ? ' focus'
+              : ' active'
+            : ''
+        }`}
+        data-key={`${data.key}`}
+        data-seqkey={`${data.seqKey}`}
+        // onClick={onClick}
       >
-        {imagesBlobs?.[blob_uri] ? (
-          <img
-            src={`data:image/${format};base64, ${imagesBlobs?.[blob_uri]}`}
-            alt=''
-          />
+        {blobData ? (
+          <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>
+            <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+            <Button
+              withOnlyIcon
+              size='small'
+              className={classNames(
+                'ImagesSet__container__imagesBox__imageBox__imageWrapper__zoomIconWrapper',
+                {
+                  isHidden: !(hoveredImageKey === data.key),
+                },
+              )}
+              onClick={onImageFullSizeModeButtonClick}
+              color='inherit'
+            >
+              <Icon name='zoom-in' fontSize={14} />
+            </Button>
+          </div>
         ) : (
           <Skeleton
             variant='rect'
@@ -89,4 +132,4 @@ const ImageBox = ({
   );
 };
 
-export default memo(ImageBox);
+export default ImageBox;
