@@ -14,6 +14,12 @@
     align-items: center;
     justify-content: center;
     background: $cuddle-10;
+    &--pixelated {
+      image-rendering: pixelated;
+    }
+    &--smooth {
+      image-rendering: auto;
+    }
     img {
       max-width: 100%;
       object-fit: fill;

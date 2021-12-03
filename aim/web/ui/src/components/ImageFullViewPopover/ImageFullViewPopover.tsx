@@ -14,6 +14,7 @@ import { IImageFullViewPopoverProps } from './types.d';
 import './styles.scss';
 
 function ImageFullViewPopover({
+  imageRendering,
   imageData,
   tooltipContent,
   handleClose,
@@ -35,7 +36,7 @@ function ImageFullViewPopover({
     <div className='ImageFullViewPopover'>
       <div
         ref={imageContainerRef}
-        className='ImageFullViewPopover__imageContainer'
+        className={`ImageFullViewPopover__imageContainer ImageFullViewPopover__imageContainer--${imageRendering}`}
       >
         <img
           src={`data:image/${imageData.format};base64, ${blobData}`}

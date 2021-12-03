@@ -4,4 +4,5 @@ export interface IImageFullViewPopoverProps {
   imageData: IImageData;
   tooltipContent: ITooltipContent;
   handleClose: () => void;
+  imageRendering: string;
 }

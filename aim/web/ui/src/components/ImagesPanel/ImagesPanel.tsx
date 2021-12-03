@@ -306,6 +306,7 @@ function ImagesPanel({
             open={imageFullMode}
           >
             <ImageFullViewPopover
+              imageRendering={imageProperties?.imageRendering}
               imageData={imageFullModeData}
               tooltipContent={tooltip?.content}
               handleClose={() => setImageFullMode(!imageFullMode)}

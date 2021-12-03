@@ -102,8 +102,8 @@
           &--pixelated {
             image-rendering: pixelated;
           }
-          &--optimize_quality {
-            image-rendering: optimizeQuality;
+          &--smooth {
+            image-rendering: auto;
           }
         }
       }
