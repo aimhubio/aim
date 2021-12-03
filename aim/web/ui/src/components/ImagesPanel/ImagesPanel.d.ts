@@ -18,7 +18,10 @@ export interface IImagesPanelProps {
   indexDensity: number;
   recordDensity: number;
   onSliceRangeChange: (key: string, newValue: number[] | number) => void;
-  onDensityChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onDensityChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string,
+  ) => void;
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   applyButtonDisabled: boolean;

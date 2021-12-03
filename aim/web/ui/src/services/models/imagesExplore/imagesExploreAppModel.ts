@@ -103,7 +103,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       imageProperties: {
         alignmentType: ImageAlignmentEnum.Height,
-        imageSize: 15,
+        imageSize: 25,
         imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
@@ -1769,9 +1769,8 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
+function onDensityChange(e: React.ChangeEvent<HTMLInputElement>, key: string) {
   let { value } = e.target;
-  let key: string = e.target.getAttribute('data-key') || '';
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
