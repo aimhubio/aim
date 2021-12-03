@@ -44,8 +44,8 @@ class Histogram extends Component {
     this.state = {
       options: {
         chart: {
-          marginTop: 40,
-          marginBottom: 100,
+          marginTop: 70,
+          marginBottom: 50,
           spacing: [10, 20, 10, 10],
           height: 250,
         },

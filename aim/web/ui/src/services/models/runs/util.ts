@@ -64,9 +64,15 @@ export function getMenuItemFromRawInfo(
         });*/
 
         menuItem.children = children;
+      } else {
+        menuItem.children = [
+          {
+            name: 'No context',
+            id: bs58check.encode(Buffer.from(JSON.stringify({}))),
+          },
+        ];
       }
     }
-
     /* Group children under the same id
      * Currently this function supports only the first layer of the array
      * To solve problem for nested items run recursively, not checked, that is not reliable right now
