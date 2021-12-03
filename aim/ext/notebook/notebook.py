@@ -95,7 +95,7 @@ def display_colab(port, display):
             iframe.setAttribute('height', '800');
             iframe.setAttribute('frameborder', 0);
             document.body.appendChild(iframe);
-        }}s)();
+        }})();
     """.format(port=port)
 
     script = IPython.display.Javascript(shell)
