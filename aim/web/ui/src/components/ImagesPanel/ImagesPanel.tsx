@@ -93,25 +93,32 @@ function ImagesPanel({
 
   function closePopover(): void {
     if (!focusedState?.active) {
-      setActivePointRect(null);
+      syncHoverState({ activePoint: null });
     }
   }
 
   function onMouseOver(e: React.MouseEvent<HTMLDivElement>): void {
-    if (e?.target && !focusedState?.active) {
+    if (e?.target) {
       e.stopPropagation();
-      const closestImageNode = (e.target as Element).closest(
+      const targetElem = e.target as Element;
+      const closestImageNode = targetElem.closest(
         '.ImagesSet__container__imagesBox__imageBox__image',
       );
       if (closestImageNode) {
         const imageKey = closestImageNode.getAttribute('data-key');
         const imageSeqKey = closestImageNode.getAttribute('data-seqkey');
         const pointRect = closestImageNode.getBoundingClientRect();
-        if (pointRect && focusedState.key !== imageKey) {
+        if (
+          pointRect &&
+          (focusedState.key !== imageKey || activePointRect === null) &&
+          !focusedState?.active
+        ) {
           syncHoverState({
             activePoint: { pointRect, key: imageKey, seqKey: imageSeqKey },
           });
         }
+      } else {
+        closePopover();
       }
     }
   }
@@ -144,6 +151,10 @@ function ImagesPanel({
       // on MouseLeave
       else {
         setActivePointRect(null);
+        // TODO remove after implementing active focusedState logic
+        if (onActivePointChange) {
+          onActivePointChange({ key: null }, focusedStateActive);
+        }
       }
     },
     [onActivePointChange, setActivePointRect, setActiveElemPos],

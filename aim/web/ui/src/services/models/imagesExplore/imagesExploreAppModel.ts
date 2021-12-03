@@ -951,7 +951,7 @@ function onActivePointChange(
   const { refs, config } = model.getState() as any;
   if (config.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
-    if (tableRef) {
+    if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
       tableRef.current?.setActiveRow?.(
         focusedStateActive ? activePoint.seqKey : null,
@@ -963,6 +963,12 @@ function onActivePointChange(
   }
   let configData = config;
   if (configData?.images) {
+    const tooltipContent = activePoint.key
+      ? filterTooltipContent(
+          tooltipData[activePoint.key],
+          configData?.images.tooltip.selectedParams,
+        )
+      : {};
     configData = {
       ...configData,
       images: {
@@ -973,10 +979,7 @@ function onActivePointChange(
         },
         tooltip: {
           ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[activePoint.key],
-            configData?.images.tooltip.selectedParams,
-          ),
+          content: tooltipContent,
         },
       },
     };
