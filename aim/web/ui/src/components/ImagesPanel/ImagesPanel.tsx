@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
 import { isEmpty } from 'lodash-es';
 
 import ImagesSet from 'components/ImagesSet/ImagesSet';
@@ -15,6 +15,8 @@ import {
   imageFixedHeight,
 } from 'config/imagesConfigs/imagesConfig';
 
+import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
+
 import { ChartTypeEnum } from 'utils/d3';
 
 import { IImagesPanelProps } from './ImagesPanel.d';
@@ -23,7 +25,6 @@ import './ImagesPanel.scss';
 
 function ImagesPanel({
   imagesData,
-  imagesBlobs,
   recordSlice,
   indexSlice,
   indexRange,
@@ -46,24 +47,22 @@ function ImagesPanel({
   focusedState,
   onActivePointChange,
 }: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  const [activePointRect, setActivePointRect] = useState<{
+  const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
     bottom: number;
     left: number;
     right: number;
   } | null>(null);
-  let blobUriArray = useRef<string[]>([]);
-  let timeoutID = useRef(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const activePointRef = useRef<any>(null);
-  const collectedURIs = useRef<{ [key: string]: boolean }>({});
+  let blobUriArray = React.useRef<string[]>([]);
+  let timeoutID = React.useRef(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const activePointRef = React.useRef<any>(null);
+  const requestRef = React.useRef<any>();
+  const scrollTopOffset = React.useRef<number>(0);
 
   function addUriToList(blobUrl: string) {
-    if (!imagesBlobs?.[blobUrl]) {
-      if (!collectedURIs.current[blobUrl]) {
-        collectedURIs.current[blobUrl] = true;
-        blobUriArray.current.push(blobUrl);
-      }
+    if (!imagesURIModel.getState()[blobUrl]) {
+      blobUriArray.current.push(blobUrl);
     }
   }
 
@@ -71,40 +70,55 @@ function ImagesPanel({
     if (timeoutID.current) {
       window.clearTimeout(timeoutID.current);
     }
+
     timeoutID.current = window.setTimeout(() => {
       if (!isEmpty(blobUriArray.current)) {
-        getImagesBlobsData(blobUriArray.current).then(() => {
+        requestRef.current = getImagesBlobsData(blobUriArray.current);
+        requestRef.current.call().then(() => {
           blobUriArray.current = [];
         });
       }
     }, batchSendDelay);
   }
 
-  function onListScroll(): void {
+  function onListScroll({ scrollOffset }: { scrollOffset: number }): void {
+    if (Math.abs(scrollOffset - scrollTopOffset.current) > window.innerHeight) {
+      if (requestRef.current) {
+        requestRef.current.abort();
+      }
+    }
+    scrollTopOffset.current = scrollOffset;
     closePopover();
   }
 
   function closePopover(): void {
     if (!focusedState?.active) {
-      setActivePointRect(null);
+      syncHoverState({ activePoint: null });
     }
   }
 
-  function onMouseOver(e: MouseEvent<HTMLDivElement>): void {
-    if (e?.target && !focusedState?.active) {
+  function onMouseOver(e: React.MouseEvent<HTMLDivElement>): void {
+    if (e?.target) {
       e.stopPropagation();
-      const closestImageNode = (e.target as Element).closest(
+      const targetElem = e.target as Element;
+      const closestImageNode = targetElem.closest(
         '.ImagesSet__container__imagesBox__imageBox__image',
       );
       if (closestImageNode) {
         const imageKey = closestImageNode.getAttribute('data-key');
         const imageSeqKey = closestImageNode.getAttribute('data-seqkey');
         const pointRect = closestImageNode.getBoundingClientRect();
-        if (pointRect && focusedState.key !== imageKey) {
+        if (
+          pointRect &&
+          (focusedState.key !== imageKey || activePointRect === null) &&
+          !focusedState?.active
+        ) {
           syncHoverState({
             activePoint: { pointRect, key: imageKey, seqKey: imageSeqKey },
           });
         }
+      } else {
+        closePopover();
       }
     }
   }
@@ -137,32 +151,41 @@ function ImagesPanel({
       // on MouseLeave
       else {
         setActivePointRect(null);
+        // TODO remove after implementing active focusedState logic
+        if (onActivePointChange) {
+          onActivePointChange({ key: null }, focusedStateActive);
+        }
       }
     },
     [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
-  const imagesSetKey = useMemo(
+  const imagesSetKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      imagesData,
-      imagesBlobs,
-      imageWrapperOffsetHeight,
-      imageWrapperOffsetWidth,
-    ],
+    [imagesData, imageWrapperOffsetHeight, imageWrapperOffsetWidth],
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     onScroll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blobUriArray.current]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
+
     return () => {
       document.removeEventListener('mouseover', closePopover);
-      timeoutID.current && window.clearTimeout(timeoutID.current);
+
+      if (timeoutID.current) {
+        window.clearTimeout(timeoutID.current);
+      }
+
+      if (requestRef.current) {
+        requestRef.current.abort();
+      }
+
+      imagesURIModel.init();
     };
   }, []);
 
@@ -199,7 +222,6 @@ function ImagesPanel({
                 >
                   <ImagesSet
                     data={imagesData}
-                    imagesBlobs={imagesBlobs}
                     onScroll={onScroll}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}

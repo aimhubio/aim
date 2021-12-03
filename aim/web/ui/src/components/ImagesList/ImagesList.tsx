@@ -1,11 +1,10 @@
 import React from 'react';
-import { VariableSizeList as List } from 'react-window';
+import { areEqual, VariableSizeList as List } from 'react-window';
 
 import ImageBox from './ImageBox';
 
 function ImagesList({
   data,
-  imagesBlobs,
   onScroll,
   imageSetWrapperWidth,
   addUriToList,
@@ -24,21 +23,32 @@ function ImagesList({
       width={imageSetWrapperWidth || 0}
       onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
+      itemData={{
+        data,
+        addUriToList,
+        imageHeight,
+        focusedState,
+        syncHoverState,
+      }}
     >
-      {({ style, index }) => (
-        <ImageBox
-          index={index}
-          style={style}
-          data={data[index]}
-          imagesBlobs={imagesBlobs}
-          addUriToList={addUriToList}
-          imageHeight={imageHeight}
-          focusedState={focusedState}
-          syncHoverState={syncHoverState}
-        />
-      )}
+      {ImageBoxMemoized}
     </List>
   );
 }
 
-export default React.memo(ImagesList);
+export default ImagesList;
+
+const ImageBoxMemoized = React.memo(function ImageBoxMemoized(props: any) {
+  const { index, style, data } = props;
+  return (
+    <ImageBox
+      index={index}
+      style={style}
+      data={data.data[index]}
+      addUriToList={data.addUriToList}
+      imageHeight={data.imageHeight}
+      focusedState={data.focusedState}
+      syncHoverState={data.syncHoverState}
+    />
+  );
+}, areEqual);
