@@ -95,7 +95,9 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile):
         click.style('Running Aim UI on repo `{}`'.format(repo_inst),
                     fg='yellow'))
 
-    click.echo('Open http://{}:{}'.format(host, port))
+    scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
+
+    click.echo('Open {}://{}:{}'.format(scheme, host, port))
     click.echo('Press Ctrl+C to exit')
 
     try:
