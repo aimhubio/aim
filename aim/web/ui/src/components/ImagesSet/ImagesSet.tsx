@@ -150,7 +150,9 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           }}
         />
       ))}
-      <div className='ImagesSet__container'>
+      <div
+        className={`ImagesSet__container ${path.length > 2 ? 'withDash' : ''}`}
+      >
         {path.length > 1 && (
           <ControlPopover
             anchorOrigin={{
@@ -172,9 +174,6 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
                     `ImagesSet__container__title ${
                       isJson ? 'ImagesSet__container__title__pointer' : ''
                     }`,
-                    {
-                      withDash: path.length > 2,
-                    },
                   )}
                 >
                   {path[path.length - 1]}

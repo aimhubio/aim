@@ -6,7 +6,10 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { blobsUpdateThrottleDelay } from 'config/imagesConfigs/imagesConfig';
+import {
+  blobsUpdateThrottleDelay,
+  IMAGE_SIZE_CHANGE_DELAY,
+} from 'config/imagesConfigs/imagesConfig';
 import {
   ImageAlignmentEnum,
   ImageRenderingEnum,
@@ -1854,7 +1857,7 @@ const onImageSizeChange = _.throttle((value: number) => {
       config,
     });
   }
-}, 200);
+}, IMAGE_SIZE_CHANGE_DELAY);
 
 function onImageRenderingChange(type: ImageRenderingEnum) {
   const configData: IImagesExploreAppConfig | undefined =
