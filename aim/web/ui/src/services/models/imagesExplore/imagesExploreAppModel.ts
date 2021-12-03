@@ -103,7 +103,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       imageProperties: {
         alignmentType: ImageAlignmentEnum.Height,
-        imageSize: 15,
+        imageSize: 25,
         imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {

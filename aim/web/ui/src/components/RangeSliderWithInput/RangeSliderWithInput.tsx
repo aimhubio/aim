@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Slider, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
-import { Text } from 'components/kit';
+import { Text, Slider } from 'components/kit';
 
 import { IRangeSliderWithInputProps } from './RangeSliderWithInput.d';
 
@@ -58,21 +58,19 @@ function RangeSliderWithInput({
           >{`${selectedRangeValue[0]} - ${selectedRangeValue[1]}`}</Text>
         </div>
 
-        <div className='RangeSliderWithInput__sliderWrapper__sliderBox'>
-          <Slider
-            value={selectedRangeValue}
-            onChange={(e, value) => onRangeChange(value)}
-            min={min}
-            max={max}
-            valueLabelDisplay='auto'
-            getAriaValueText={(value) => `${value}`}
-            onKeyPress={(e) => {
-              if (e.which === 13) {
-                onSearch();
-              }
-            }}
-          />
-        </div>
+        <Slider
+          value={selectedRangeValue}
+          onChange={((e: any, value: any) => onRangeChange(value)) as any}
+          min={min}
+          max={max}
+          valueLabelDisplay='auto'
+          getAriaValueText={(value) => `${value}`}
+          onKeyPress={(e) => {
+            if (e.which === 13) {
+              onSearch();
+            }
+          }}
+        />
       </div>
       <div className='RangeSliderWithInput__densityWrapper'>
         <div className='RangeSliderWithInput__densityWrapper__densityTitleBox'>
