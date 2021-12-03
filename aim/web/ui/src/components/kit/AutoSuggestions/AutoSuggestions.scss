@@ -15,8 +15,10 @@
     color: $pico-60;
     min-height: 1.5rem;
     cursor: pointer;
+    outline: unset !important;
     &:hover,
-    &:focus-visible {
+    &:focus-visible,
+    &:focus {
       background-color: #dceafb;
       outline: unset;
     }
@@ -24,4 +26,10 @@
       border-bottom: unset;
     }
   }
+}
+
+//for safari browsers
+.AutoSuggestions__item:focus {
+  background-color: #dceafb;
+  outline: unset;
 }

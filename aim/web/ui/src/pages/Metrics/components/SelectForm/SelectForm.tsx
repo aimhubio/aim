@@ -13,7 +13,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
-  SearchOutlined,
 } from '@material-ui/icons';
 
 import { Button, Icon, Badge, Text } from 'components/kit';
@@ -40,6 +39,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import './SelectForm.scss';
 
 function SelectForm({
+  requestIsPending,
   selectedMetricsData,
   onMetricsSelectChange,
   onSelectRunQueryChange,
@@ -63,8 +63,20 @@ function SelectForm({
 
   function handleMetricSearch(e: React.ChangeEvent<any>): void {
     e.preventDefault();
+    if (requestIsPending) {
+      return;
+    }
     searchMetricsRef.current = metricAppModel.getMetricsData(true);
     searchMetricsRef.current.call();
+  }
+
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!requestIsPending) {
+      return;
+    }
+    searchMetricsRef.current?.abort();
+    metricAppModel.abortRequest();
   }
 
   function onSelect(event: object, value: ISelectMetricsOption[]): void {
@@ -311,12 +323,17 @@ function SelectForm({
         <Button
           fullWidth
           color='primary'
-          variant='contained'
-          startIcon={<SearchOutlined />}
+          variant={requestIsPending ? 'outlined' : 'contained'}
+          startIcon={
+            <Icon
+              name={requestIsPending ? 'close' : 'search'}
+              fontSize={requestIsPending ? 12 : 14}
+            />
+          }
           className='SelectForm__search__button'
-          onClick={handleMetricSearch}
+          onClick={requestIsPending ? handleRequestAbort : handleMetricSearch}
         >
-          Search
+          {requestIsPending ? 'Cancel' : 'Search'}
         </Button>
         <div className='SelectForm__search__actions'>
           <Tooltip title='Reset query'>

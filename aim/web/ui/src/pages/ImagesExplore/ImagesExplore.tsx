@@ -136,6 +136,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={imagesExploreData?.requestIsPending}
               selectedImagesData={imagesExploreData?.config?.select}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
