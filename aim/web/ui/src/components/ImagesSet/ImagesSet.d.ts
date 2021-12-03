@@ -15,6 +15,9 @@ export interface IImageSetProps {
   imageHeight: number;
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
+  hoveredImageKey: string;
+  setImageFullMode: (v: boolean) => void;
+  setImageFullModeData: (v: string) => void;
   imageProperties: IImagesPanelProps['imageProperties'];
   tableHeight: IImagesPanelProps['tableHeight'];
 }

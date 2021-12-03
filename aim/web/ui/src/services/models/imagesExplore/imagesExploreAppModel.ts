@@ -6,10 +6,7 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import {
-  blobsUpdateThrottleDelay,
-  IMAGE_SIZE_CHANGE_DELAY,
-} from 'config/imagesConfigs/imagesConfig';
+import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
 import {
   ImageAlignmentEnum,
   ImageRenderingEnum,
@@ -400,9 +397,11 @@ function processData(data: any[]): {
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, contexts, highLevelParams } = processData(rawData);
+  const sortedParams = params.concat(highLevelParams).sort();
+
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: params.concat(highLevelParams).sort(),
+      params: sortedParams,
       contexts,
     }),
   ];
@@ -413,7 +412,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
 
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -503,9 +502,10 @@ function updateModelData(
   const { data, params, contexts, highLevelParams } = processData(
     model.getState()?.rawData as any[],
   );
+  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: params.concat(highLevelParams).sort(),
+      params: sortedParams,
       contexts,
     }),
   ];
@@ -515,7 +515,7 @@ function updateModelData(
   );
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -842,60 +842,6 @@ function getImagesBlobsData(uris: string[]) {
   };
 }
 
-function sortWithAllGroupFields(
-  a: IImageData,
-  b: IImageData,
-  groupFields: string[],
-  groupingSelectOptions: IGroupingSelectOption[],
-) {
-  const appropriationChecker = (list: any[]) => {
-    let isEqualValue = true;
-    const foundedItem = list.find((field) => {
-      const firstObjectValue = _.get(a, field);
-      const secondObjectValue = _.get(b, field);
-      isEqualValue = firstObjectValue === secondObjectValue;
-      //TODO  with Karen to avoid string type captions
-      if (
-        field === 'caption' &&
-        secondObjectValue[0] === '#' &&
-        firstObjectValue[0] === '#'
-      ) {
-        return (
-          +secondObjectValue.substring(1) - +firstObjectValue.substring(1) < 0
-        );
-      } else if (
-        typeof firstObjectValue === 'string' ||
-        (typeof secondObjectValue === 'string' &&
-          _.isNaN(+firstObjectValue) &&
-          _.isNaN(+secondObjectValue))
-      ) {
-        return firstObjectValue.localeCompare(secondObjectValue);
-      } else {
-        return +secondObjectValue - +firstObjectValue < 0;
-      }
-    });
-    return { isEqualValue, foundedItem };
-  };
-  const hasToSwitchPlace = appropriationChecker(groupFields.concat('caption'));
-  const sortWithTheOtherGroupFields = () =>
-    appropriationChecker(
-      groupingSelectOptions
-        .map((option: IGroupingSelectOption) => option.value)
-        .filter((field) => !groupFields.includes(field)),
-    );
-  if (hasToSwitchPlace.foundedItem) {
-    return 1;
-  } else if (!hasToSwitchPlace.foundedItem && !hasToSwitchPlace.isEqualValue) {
-    return -1;
-  } else {
-    if (sortWithTheOtherGroupFields().foundedItem) {
-      return 1;
-    } else {
-      return -1;
-    }
-  }
-}
-
 function getDataAsImageSet(
   data: any[],
   groupingSelectOptions: IGroupingSelectOption[],
@@ -942,9 +888,13 @@ function getDataAsImageSet(
       _.set(
         imageSetData,
         path,
-        group.data.sort((a: IImageData, b: IImageData) =>
-          sortWithAllGroupFields(a, b, groupFields, groupingSelectOptions),
-        ),
+        _.sortBy(group.data, [
+          ...groupFields,
+          ...groupingSelectOptions
+            .map((option: IGroupingSelectOption) => option.value)
+            .filter((field) => !groupFields.includes(field)),
+          'caption',
+        ]),
       );
     });
 
@@ -976,12 +926,6 @@ function onActivePointChange(
   }
   let configData = config;
   if (configData?.images) {
-    const tooltipContent = activePoint.key
-      ? filterTooltipContent(
-          tooltipData[activePoint.key],
-          configData?.images.tooltip.selectedParams,
-        )
-      : {};
     configData = {
       ...configData,
       images: {
@@ -990,10 +934,15 @@ function onActivePointChange(
           active: focusedStateActive,
           key: activePoint.key,
         },
-        tooltip: {
-          ...configData.images.tooltip,
-          content: tooltipContent,
-        },
+        tooltip: activePoint.key
+          ? {
+              ...configData.images.tooltip,
+              content: filterTooltipContent(
+                tooltipData[activePoint.key],
+                configData?.images.tooltip.selectedParams,
+              ),
+            }
+          : configData.images.tooltip,
       },
     };
 

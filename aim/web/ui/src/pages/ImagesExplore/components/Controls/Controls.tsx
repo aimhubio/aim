@@ -46,7 +46,7 @@ function Controls(
         <ControlPopover
           title='Image Properties'
           anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Tooltip Params'>
+            <Tooltip title='Image Properties'>
               <div
                 onClick={onAnchorClick}
                 className={`Controls__anchor ${opened ? 'active' : ''}`}
