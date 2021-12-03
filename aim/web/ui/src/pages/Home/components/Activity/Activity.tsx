@@ -29,7 +29,7 @@ function Activity({
             Experiments
           </Text>
           <Text component='strong' size={36} weight={600} color='secondary'>
-            {activityData?.num_experiments || (
+            {activityData?.num_experiments ?? (
               <CircularProgress className='Activity__loader' />
             )}
           </Text>
@@ -39,7 +39,7 @@ function Activity({
             Runs
           </Text>
           <Text component='strong' size={36} weight={600} color='secondary'>
-            {activityData?.num_runs || (
+            {activityData?.num_runs ?? (
               <CircularProgress className='Activity__loader' />
             )}
           </Text>
