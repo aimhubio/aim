@@ -5,3 +5,5 @@ export const batchCollectDelay = 200;
 export const batchSendDelay = 300;
 
 export const blobsUpdateThrottleDelay = 250;
+
+export const IMAGE_SIZE_CHANGE_DELAY = 200;

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add support for secure protocol for API calls (mihran113, roubkar)
+- Add ability to manipulate with image size and rendering type (arsengit)
 - Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
 - Add ability to track and visualize distributions (mihran113, rubenaprikyan)
 
