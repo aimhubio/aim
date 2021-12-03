@@ -4,6 +4,7 @@
 
 - Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
 - Add notebook extension support (rubenaprikyan)
+
 ## 3.1.1 Nov 25 2021
 
 - Apply default ordering on images set (VkoHov)

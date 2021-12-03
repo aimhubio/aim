@@ -44,11 +44,11 @@ def run_up(args):
         "port": args["--port"],
         "host": 'http://' + args["--host"]
     }
-
     for line in child_process.stderr:
         # @TODO improve this solution
         #  The child process `aim cli` has an incompatible things inside
         #  that's the reason to find this way to get result from the process
+
         if ERROR_MSG_PREFIX in line.decode():
             return ManagerActionResult(
                 ManagerActionStatuses.Failed,
@@ -62,7 +62,6 @@ def run_up(args):
                     info
                 )
             else:
-                print(line)
                 return ManagerActionResult(
                     ManagerActionStatuses.Failed,
                     {
@@ -70,7 +69,6 @@ def run_up(args):
                                      \nPlease open an issue https://github.com/aimhubio/aim/issues """
                     }
                 )
-
 
 def run_version(args):
     """Aim cli command runner to get aim current version

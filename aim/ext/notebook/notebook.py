@@ -87,7 +87,7 @@ def display_colab(port, display):
 
     shell = """
         (async () => {
-            const url = new URL(await google.colab.kernel.proxyPort({}, {'cache': true}));
+            const url = new URL(await google.colab.kernel.proxyPort(%PORT%, {'cache': true}));
             url.searchParams.set('aim', 'true');
             const iframe = document.createElement('iframe');
             iframe.src = url;
@@ -96,7 +96,13 @@ def display_colab(port, display):
             iframe.setAttribute('frameborder', 0);
             document.body.appendChild(iframe);
         })();
-    """.format(port)
+    """
+    replacements = [
+        ("%PORT%", "%s" % port),
+    ]
+    for (k, v) in replacements:
+        shell = shell.replace(k, v)
+
     script = IPython.display.Javascript(shell)
 
     if display:
@@ -177,8 +183,8 @@ def version(options, context):
 # This is why we are not using constants from aim.cli.commands
 # It is possible to add commands outside aim cli
 handlers = {
-    "up": UP_NAME,
-    "version": VERSION_NAME
+    UP_NAME: up,
+    VERSION_NAME: version
 }
 
 
