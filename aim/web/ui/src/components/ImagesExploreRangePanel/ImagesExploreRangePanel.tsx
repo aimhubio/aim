@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { Slider, Tooltip } from '@material-ui/core';
-
-import { Button, Text } from 'components/kit';
+import { Button } from 'components/kit';
 import RangeSliderWithInput from 'components/RangeSliderWithInput';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
@@ -44,7 +42,9 @@ function ImagesExploreRangePanel({
           onRangeChange={(value: number | number[]) =>
             onSliceRangeChange('recordSlice', value)
           }
-          onCountChange={onDensityChange}
+          onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onDensityChange(event, 'rangeDensity')
+          }
         />
         <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
         <RangeSliderWithInput
@@ -60,7 +60,9 @@ function ImagesExploreRangePanel({
           onRangeChange={(value: number | number[]) =>
             onSliceRangeChange('indexSlice', value)
           }
-          onCountChange={onDensityChange}
+          onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onDensityChange(event, 'indexDensity')
+          }
         />
         <div className='ImagesExploreRangePanel__container__searchButtonContainer'>
           <Button

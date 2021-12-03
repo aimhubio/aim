@@ -95,7 +95,6 @@ function RangeSliderWithInput({
         </div>
         <input
           type='number'
-          data-key='recordDensity'
           value={selectedCountValue}
           onChange={onCountChange}
           className={`RangeSliderWithInput__densityWrapper__densityField ${
