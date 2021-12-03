@@ -4,7 +4,7 @@
 
 - Add support for secure protocol for API calls (mihran113, roubkar)
 - Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
-- Add ability to visualize distributions (mihran113, rubenaprikyan)
+- Add ability to track and visualize distributions (mihran113, rubenaprikyan)
 
 ## 3.1.1 Nov 25 2021
 
