@@ -10,6 +10,7 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
+import { throttle } from 'components/Table/utils';
 import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -69,10 +70,11 @@ function ImagesPanel({
   function addUriToList(blobUrl: string) {
     if (!imagesURIModel.getState()[blobUrl]) {
       blobUriArray.current.push(blobUrl);
+      getBatch();
     }
   }
 
-  function onScroll() {
+  const getBatch = throttle(() => {
     if (timeoutID.current) {
       window.clearTimeout(timeoutID.current);
     }
@@ -85,7 +87,7 @@ function ImagesPanel({
         });
       }
     }, batchSendDelay);
-  }
+  }, batchSendDelay);
 
   function onListScroll({ scrollOffset }: { scrollOffset: number }): void {
     if (Math.abs(scrollOffset - scrollTopOffset.current) > window.innerHeight) {
@@ -175,11 +177,6 @@ function ImagesPanel({
   );
 
   React.useEffect(() => {
-    onScroll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blobUriArray.current]);
-
-  React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
 
     return () => {
@@ -231,7 +228,7 @@ function ImagesPanel({
                 >
                   <ImagesSet
                     data={imagesData}
-                    onScroll={onScroll}
+                    onScroll={() => null}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
                     imagesSetKey={imagesSetKey}
@@ -291,7 +288,7 @@ function ImagesPanel({
               tooltipContent={tooltip?.content}
               handleClose={() => setImageFullMode(!imageFullMode)}
             />
-          </Dialog>
+          </Dialog>{' '}
         </>
       )}
     </BusyLoaderWrapper>

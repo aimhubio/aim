@@ -5,7 +5,6 @@ import ImageBox from './ImageBox';
 
 function ImagesList({
   data,
-  onScroll,
   imageSetWrapperWidth,
   addUriToList,
   imageHeight,
@@ -24,7 +23,6 @@ function ImagesList({
       }
       layout='horizontal'
       width={imageSetWrapperWidth || 0}
-      onScroll={onScroll}
       style={{ overflowY: 'hidden' }}
       itemData={{
         data,
