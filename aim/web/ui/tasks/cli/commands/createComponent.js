@@ -63,7 +63,7 @@ const createFiles = (path, name) => {
       fullPath + '/' + name + '.tsx',
       getComponentBaseCode(name),
     );
-    fs.writeFileSync(fullPath + '/index.ts', getExportsBaseCode(name));
+    fs.writeFileSync(fullPath + '/index.tsx', getExportsBaseCode(name));
   } catch (err) {
     exitWithMessage(err);
   }

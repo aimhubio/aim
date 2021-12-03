@@ -22,10 +22,10 @@ function Menu({
     React.useState<string>(defaultActiveItemKey);
 
   const onClickItem = React.useCallback(
-    (key: string) => {
+    (key: string, name: string) => {
       setActiveItemKey(key);
       if (onChangeActiveItem) {
-        onChangeActiveItem(key);
+        onChangeActiveItem(key, name);
       }
     },
     [onChangeActiveItem, setActiveItemKey],

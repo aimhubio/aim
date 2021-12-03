@@ -1,3 +1,5 @@
+import { TraceRawDataItem, TraceType } from 'services/models/runs/types';
+
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
   isRunInfoLoading: boolean;
@@ -65,3 +67,19 @@ export interface IRunSelectRun {
   name: string;
   run_id: string;
 }
+
+export interface ITraceVisualizationContainerProps {
+  runHash: string;
+  traceInfo: Record<TraceType, TraceRawDataItem[]>;
+  traceType: TraceType;
+}
+
+export interface ITraceVisualizerProps {
+  isLoading?: boolean;
+  activeTraceContext?: string;
+  data: any;
+}
+
+export interface IImagesVisualizerProps extends ITraceVisualizerProps {}
+
+export interface IDistributionVisualizerProps extends ITraceVisualizerProps {}

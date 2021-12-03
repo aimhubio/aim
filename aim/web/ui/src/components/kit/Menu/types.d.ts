@@ -5,7 +5,7 @@ export type IMenuItem = {
 };
 
 export interface IMenuItemProps extends IMenuItem {
-  onClickOpen: (key: string) => void;
+  onClickOpen: (key: string, name: string) => void;
   activeItemKey: string | number;
   parentId?: string | number;
 }
@@ -13,7 +13,7 @@ export interface IMenuItemProps extends IMenuItem {
 export type MenuData = IMenuItem[];
 
 export type IMenuProps = {
-  onChangeActiveItem?: (key: string) => void;
+  onChangeActiveItem?: (key: string, name: string) => void;
   defaultActiveItemKey?: string;
   data: MenuData;
   title?: string;
