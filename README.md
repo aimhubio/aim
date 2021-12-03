@@ -358,7 +358,7 @@ The high-level features we are going to work on the next few months
 - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
 - [ ] Distributions tracking and visualization (Start: _Nov 10 2021_)
 
-### TODO: Nov 1 - Feb 1
+### TODO
 
 **Track and Explore:**
   - [ ] Transcripts tracking and visualization
@@ -377,6 +377,8 @@ The high-level features we are going to work on the next few months
   - [ ] Streamlit integration
   - [ ] Raytune integration
   - [ ] Google MLMD
+  - [ ] MLFlow adaptor (visualize MLflow logs with Aim)
+  - [ ] Tensorboard adaptor (visualize TensorBoard logs with Aim) 
 
 ## Community
 
