@@ -151,9 +151,10 @@ def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
         yield collect_run_streamable_data(encode_tree(it))
 
 
-def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
-                                   rec_num: int = 50, index_num: int = 5) -> List[dict]:
-    processed_traces_list = []
+def requested_image_traces_streamer(run: Run,
+                                    requested_traces: List[TraceBase],
+                                    rec_range, idx_range,
+                                    rec_num: int = 50, idx_num: int = 5) -> List[dict]:
     for requested_trace in requested_traces:
         trace_name = requested_trace.name
         context = Context(requested_trace.context)
@@ -161,13 +162,18 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
         if not trace:
             continue
 
-        rec_step = (trace.last_step() + 1 - trace.first_step()) // rec_num or 1
-        rec_length = trace.record_length() or 1
-        idx_step = rec_length // index_num or 1
-        rec_slice = slice(trace.first_step(), trace.last_step() + 1, rec_step)
-        idx_slice = slice(0, rec_length, idx_step)
+        record_range_missing = rec_range.start is None or rec_range.stop is None
+        if record_range_missing:
+            rec_range = IndexRange(trace.first_step(), trace.last_step() + 1)
+        index_range_missing = idx_range.start is None or idx_range.stop is None
+        if index_range_missing:
+            idx_range = IndexRange(0, trace.record_length() or 1)
 
-        steps_vals = trace.values.items_in_range(rec_slice.start, rec_slice.stop, rec_num)
+        rec_length = trace.record_length() or 1
+        idx_step = rec_length // idx_num or 1
+        idx_slice = slice(idx_range.start, idx_range.stop, idx_step)
+
+        steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
         steps = []
         values = []
         for step, val in steps_vals:
@@ -179,11 +185,13 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
             else:
                 values.append([])
 
-        processed_traces_list.append({
+        trace_dict = {
+            'record_range': (trace.first_step(), trace.last_step() + 1),
+            'index_range': (0, rec_length),
             'name': trace.name,
             'context': trace.context.to_dict(),
             'values': values,
             'iters': steps,
-        })
-
-    return processed_traces_list
+        }
+        encoded_tree = encode_tree(trace_dict)
+        yield collect_run_streamable_data(encoded_tree)
