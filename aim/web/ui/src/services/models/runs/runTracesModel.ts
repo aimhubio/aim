@@ -103,7 +103,7 @@ async function getRunTraceBatch() {
   getTraceBatchRequestRef = runsService.getBatch(
     state.runHash || '',
     state.traceType || 'distributions',
-    { record_density: 1 },
+    { record_density: 60 },
     [requestOptions?.trace],
   );
 

@@ -74,7 +74,7 @@ function deleteRunsTag(run_id: string, tag_id: string) {
 }
 
 function getBatch(run_id: string, trace: TraceType, params: any, body: any) {
-  return API.getStream<ReadableStream>(
+  return API.getStream1<ReadableStream>(
     endpoints.GET_BATCH(run_id, trace),
     params,
     {
