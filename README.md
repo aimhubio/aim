@@ -348,19 +348,20 @@ Aim package is available for Python 3.6+ on the following platforms
 The high-level features we are going to work on the next few months
 
 **Done**
-- [x] Live updates (Shipped: _Oct 18 2021_)
-- [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
+  - [x] Live updates (Shipped: _Oct 18 2021_)
+  - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
+  - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
+  - [x] Jupyter integration (Start: _Nov 18 2021_, Shipped: _Dec 3 2021_)
 
 **In progress:**
-- [ ] Centralized tracking server (Start: _Oct 18 2021_)
-- [ ] Colab integration (Start: _Nov 18 2021_)
-- [ ] Jupyter integration (Start: _Nov 18 2021_)
-- [ ] Scikit-learn integration (Start: _Nov 18 2021_)
-- [ ] Distributions tracking and visualization (Start: _Nov 10 2021_)
+  - [ ] Centralized tracking server (Start: _Oct 18 2021_)
+  - [ ] Colab integration (Start: _Nov 18 2021_)
+  - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
 
 ### TODO
 
 **Track and Explore:**
+  - [ ] Audio tracking and visualization
   - [ ] Transcripts tracking and visualization
   - [ ] Runs side-by-side comparison
 
