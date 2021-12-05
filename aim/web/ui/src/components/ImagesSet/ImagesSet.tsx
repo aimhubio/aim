@@ -171,7 +171,8 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
                 <span
                   onClick={isJson ? onAnchorClick : () => null}
                   className={classNames(
-                    `ImagesSet__container__title ${isJson ? 'ImagesSet__container__title__pointer' : ''
+                    `ImagesSet__container__title ${
+                      isJson ? 'ImagesSet__container__title__pointer' : ''
                     }`,
                   )}
                 >

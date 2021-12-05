@@ -89,16 +89,18 @@ const ImageBox = ({
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
         style={style}
-        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image--${imageProperties.imageRendering
-          } ${focusedState.key === data.key
+        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image--${
+          imageProperties.imageRendering
+        } ${
+          focusedState.key === data.key
             ? focusedState?.active
               ? ' focus'
               : ' active'
             : ''
-          }`}
+        }`}
         data-key={`${data.key}`}
         data-seqkey={`${data.seqKey}`}
-      // onClick={onClick}
+        // onClick={onClick}
       >
         {blobData ? (
           <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>

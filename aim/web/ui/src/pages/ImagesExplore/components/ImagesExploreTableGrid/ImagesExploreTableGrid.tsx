@@ -33,10 +33,10 @@ function getImagesExploreTableColumns(
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
-          ? null
-          : order?.right?.includes('experiment')
-            ? 'right'
-            : 'left',
+        ? null
+        : order?.right?.includes('experiment')
+        ? 'right'
+        : 'left',
     },
     {
       key: 'run',
@@ -45,8 +45,8 @@ function getImagesExploreTableColumns(
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.right?.includes('run')
-          ? 'right'
-          : null,
+        ? 'right'
+        : null,
     },
     {
       key: 'name',
@@ -55,8 +55,8 @@ function getImagesExploreTableColumns(
       pin: order?.left?.includes('name')
         ? 'left'
         : order?.right?.includes('name')
-          ? 'right'
-          : null,
+        ? 'right'
+        : null,
     },
     {
       key: 'context',
@@ -65,8 +65,8 @@ function getImagesExploreTableColumns(
       pin: order?.left?.includes('context')
         ? 'left'
         : order?.right?.includes('context')
-          ? 'right'
-          : null,
+        ? 'right'
+        : null,
     },
     {
       key: 'actions',
@@ -98,8 +98,8 @@ function getImagesExploreTableColumns(
         pin: order?.left?.includes(param)
           ? 'left'
           : order?.right?.includes(param)
-            ? 'right'
-            : null,
+          ? 'right'
+          : null,
       };
     }),
   );
@@ -139,8 +139,8 @@ function getImagesExploreTableColumns(
         pin: order?.left?.includes('groups')
           ? 'left'
           : order?.right?.includes('groups')
-            ? 'right'
-            : null,
+          ? 'right'
+          : null,
         topHeader: 'Groups',
       },
       ...columns,
@@ -209,15 +209,15 @@ function imagesExploreTableRowRenderer(
           rowData[col] === null
             ? '-'
             : Array.isArray(rowData[col])
-              ? ''
-              : rowData[col];
+            ? ''
+            : rowData[col];
       } else if (col === 'time') {
         row[col] =
           rowData.time === null
             ? '-'
             : Array.isArray(rowData.time)
-              ? ''
-              : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
+            ? ''
+            : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
       } else if (col === 'groups') {
         row.groups = {
           content: (

@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -169,8 +170,6 @@ import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
-
-import { IPoint } from 'components/ScatterPlot';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -613,7 +612,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               meta: {
                 chartIndex:
                   config?.grouping?.chart?.length ||
-                    config?.grouping?.reverseMode?.chart
+                  config?.grouping?.reverseMode?.chart
                     ? metricsCollection.chartIndex + 1
                     : null,
                 color: metricsCollection.color,
@@ -655,9 +654,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               xValue === null
                 ? null
                 : getClosestValue(
-                  metric.data.xValues as number[],
-                  xValue as number,
-                ).index;
+                    metric.data.xValues as number[],
+                    xValue as number,
+                  ).index;
             const rowValues: IMetricTableRowData = {
               rowMeta: {
                 color: metricsCollection.color ?? metric.color,
@@ -755,32 +754,32 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 isRowData
                   ? rowValues
                   : metricsTableRowRenderer(rowValues, {
-                    toggleVisibility: (e) => {
-                      e.stopPropagation();
-                      onRowVisibilityChange({
-                        metricKey: rowValues.key,
-                        model,
-                        appName,
-                        updateModelData,
-                      });
-                    },
-                  }),
+                      toggleVisibility: (e) => {
+                        e.stopPropagation();
+                        onRowVisibilityChange({
+                          metricKey: rowValues.key,
+                          model,
+                          appName,
+                          updateModelData,
+                        });
+                      },
+                    }),
               );
             } else {
               rows.push(
                 isRowData
                   ? rowValues
                   : metricsTableRowRenderer(rowValues, {
-                    toggleVisibility: (e) => {
-                      e.stopPropagation();
-                      onRowVisibilityChange({
-                        metricKey: rowValues.key,
-                        model,
-                        appName,
-                        updateModelData,
-                      });
-                    },
-                  }),
+                      toggleVisibility: (e) => {
+                        e.stopPropagation();
+                        onRowVisibilityChange({
+                          metricKey: rowValues.key,
+                          model,
+                          appName,
+                          updateModelData,
+                        });
+                      },
+                    }),
               );
             }
           });
@@ -1100,7 +1099,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       epoch +
                       (epochs[epoch].length > 1
                         ? (0.99 / epochs[epoch].length) *
-                        epochs[epoch].indexOf(metric.data.steps[i])
+                          epochs[epoch].indexOf(metric.data.steps[i])
                         : 0),
                   ),
                 ],
@@ -1133,7 +1132,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       firstDate +
                       (timestamps[timestamp].length > 1
                         ? (0.99 / timestamps[timestamp].length) *
-                        timestamps[timestamp].indexOf(metric.data.steps[i])
+                          timestamps[timestamp].indexOf(metric.data.steps[i])
                         : 0),
                   ),
                 ],
@@ -1336,12 +1335,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             groupValue.color =
               COLORS[paletteIndex][
-              Number(index % BigInt(COLORS[paletteIndex].length))
+                Number(index % BigInt(COLORS[paletteIndex].length))
               ];
           } else if (colorConfigsMap.hasOwnProperty(colorKey)) {
             groupValue.color =
               COLORS[paletteIndex][
-              colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+                colorConfigsMap[colorKey] % COLORS[paletteIndex].length
               ];
           } else {
             colorConfigsMap[colorKey] = colorIndex;
@@ -1365,7 +1364,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
             groupValue.dasharray =
               DASH_ARRAYS[
-              dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
+                dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
               ];
           } else {
             dasharrayConfigsMap[dasharrayKey] = dasharrayIndex;
@@ -1480,8 +1479,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const groupedRows: IMetricTableRowData[][] =
         data.length > 1
           ? Object.keys(tableData.rows).map(
-            (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-          )
+              (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+            )
           : [tableData.rows];
 
       const dataToExport: { [key: string]: string }[] = [];
@@ -1668,7 +1667,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       });
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
       analytics.trackEvent(
-        `[${appName}Explorer] Switch live-update ${config.enabled ? 'on' : 'off'
+        `[${appName}Explorer] Switch live-update ${
+          config.enabled ? 'on' : 'off'
         }`,
       );
     }
@@ -2254,12 +2254,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               groupValue.color =
                 COLORS[paletteIndex][
-                Number(index % BigInt(COLORS[paletteIndex].length))
+                  Number(index % BigInt(COLORS[paletteIndex].length))
                 ];
             } else if (colorConfigsMap.hasOwnProperty(colorKey)) {
               groupValue.color =
                 COLORS[paletteIndex][
-                colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+                  colorConfigsMap[colorKey] % COLORS[paletteIndex].length
                 ];
             } else {
               colorConfigsMap[colorKey] = colorIndex;
@@ -2283,7 +2283,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
               groupValue.dasharray =
                 DASH_ARRAYS[
-                dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
+                  dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
                 ];
             } else {
               dasharrayConfigsMap[dasharrayKey] = dasharrayIndex;
@@ -2376,9 +2376,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const metricsRowValues = { ...initialMetricsRowData };
             metric.run.traces.metric.forEach((trace: any) => {
               metricsRowValues[
-                `${isSystemMetric(trace.name)
-                  ? trace.name
-                  : `${trace.name}_${contextToString(trace.context)}`
+                `${
+                  isSystemMetric(trace.name)
+                    ? trace.name
+                    : `${trace.name}_${contextToString(trace.context)}`
                 }`
               ] = formatValue(trace.last_value.last);
             });
@@ -2527,8 +2528,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const groupedRows: IMetricTableRowData[][] =
           data.length > 1
             ? Object.keys(tableData.rows).map(
-              (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-            )
+                (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+              )
             : [tableData.rows];
 
         const dataToExport: { [key: string]: string }[] = [];
@@ -2639,7 +2640,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${config.enabled ? 'on' : 'off'
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
           }`,
         );
       }
@@ -2902,7 +2904,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 meta: {
                   chartIndex:
                     config.grouping?.chart?.length! > 0 ||
-                      config.grouping?.reverseMode?.chart
+                    config.grouping?.reverseMode?.chart
                       ? metricsCollection.chartIndex + 1
                       : null,
                   color: metricsCollection.color,
@@ -2934,9 +2936,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
                 metricsRowValues[
-                  `${isSystemMetric(trace.name)
-                    ? trace.name
-                    : `${trace.name}_${contextToString(trace.context)}`
+                  `${
+                    isSystemMetric(trace.name)
+                      ? trace.name
+                      : `${trace.name}_${contextToString(trace.context)}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -2998,32 +3001,32 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   isRowData
                     ? rowValues
                     : paramsTableRowRenderer(rowValues, {
-                      toggleVisibility: (e) => {
-                        e.stopPropagation();
-                        onRowVisibilityChange({
-                          metricKey: rowValues.key,
-                          model,
-                          appName,
-                          updateModelData,
-                        });
-                      },
-                    }),
+                        toggleVisibility: (e) => {
+                          e.stopPropagation();
+                          onRowVisibilityChange({
+                            metricKey: rowValues.key,
+                            model,
+                            appName,
+                            updateModelData,
+                          });
+                        },
+                      }),
                 );
               } else {
                 rows.push(
                   isRowData
                     ? rowValues
                     : paramsTableRowRenderer(rowValues, {
-                      toggleVisibility: (e) => {
-                        e.stopPropagation();
-                        onRowVisibilityChange({
-                          metricKey: rowValues.key,
-                          model,
-                          appName,
-                          updateModelData,
-                        });
-                      },
-                    }),
+                        toggleVisibility: (e) => {
+                          e.stopPropagation();
+                          onRowVisibilityChange({
+                            metricKey: rowValues.key,
+                            model,
+                            appName,
+                            updateModelData,
+                          });
+                        },
+                      }),
                 );
               }
             });
@@ -3092,8 +3095,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     }
                     if (type === 'metrics') {
                       run.run.traces.metric.forEach((trace: IParamTrace) => {
-                        const formattedContext = `${value?.option_name
-                          }-${contextToString(trace.context)}`;
+                        const formattedContext = `${
+                          value?.option_name
+                        }-${contextToString(trace.context)}`;
                         if (
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
@@ -3111,8 +3115,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                             dimension[formattedContext] = {
                               values: new Set().add(trace.last_value.last),
                               scaleType: ScaleEnum.Linear,
-                              displayName: `${value.option_name
-                                } ${contextToString(trace.context)}`,
+                              displayName: `${
+                                value.option_name
+                              } ${contextToString(trace.context)}`,
                               dimensionType: 'metric',
                             };
                           }
@@ -3342,12 +3347,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               groupValue.color =
                 COLORS[paletteIndex][
-                Number(index % BigInt(COLORS[paletteIndex].length))
+                  Number(index % BigInt(COLORS[paletteIndex].length))
                 ];
             } else if (colorConfigsMap.hasOwnProperty(colorKey)) {
               groupValue.color =
                 COLORS[paletteIndex][
-                colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+                  colorConfigsMap[colorKey] % COLORS[paletteIndex].length
                 ];
             } else {
               colorConfigsMap[colorKey] = colorIndex;
@@ -3371,7 +3376,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
               groupValue.dasharray =
                 DASH_ARRAYS[
-                dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
+                  dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
                 ];
             } else {
               dasharrayConfigsMap[dasharrayKey] = dasharrayIndex;
@@ -3543,8 +3548,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const groupedRows: IMetricTableRowData[][] =
           data.length > 1
             ? Object.keys(tableData.rows).map(
-              (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-            )
+                (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+              )
             : [tableData.rows];
 
         const dataToExport: { [key: string]: string }[] = [];
@@ -3721,7 +3726,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${config.enabled ? 'on' : 'off'
+          `[${appName}Explorer] Switch live-update ${
+            config.enabled ? 'on' : 'off'
           }`,
         );
       }
@@ -4063,8 +4069,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                             dimension[i] = {
                               values: [trace.last_value.last],
                               scaleType: ScaleEnum.Linear,
-                              displayName: `${value.option_name
-                                } ${contextToString(trace.context)}`,
+                              displayName: `${
+                                value.option_name
+                              } ${contextToString(trace.context)}`,
                               dimensionType: 'metric',
                             };
                           }
@@ -4184,7 +4191,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 meta: {
                   chartIndex:
                     config.grouping?.chart?.length! > 0 ||
-                      config.grouping?.reverseMode?.chart
+                    config.grouping?.reverseMode?.chart
                       ? metricsCollection.chartIndex + 1
                       : null,
                   color: metricsCollection.color,
@@ -4215,9 +4222,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
                 metricsRowValues[
-                  `${isSystemMetric(trace.name)
-                    ? trace.name
-                    : `${trace.name}_${contextToString(trace.context)}`
+                  `${
+                    isSystemMetric(trace.name)
+                      ? trace.name
+                      : `${trace.name}_${contextToString(trace.context)}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -4279,32 +4287,32 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   isRowData
                     ? rowValues
                     : paramsTableRowRenderer(rowValues, {
-                      toggleVisibility: (e) => {
-                        e.stopPropagation();
-                        onRowVisibilityChange({
-                          metricKey: rowValues.key,
-                          model,
-                          appName,
-                          updateModelData,
-                        });
-                      },
-                    }),
+                        toggleVisibility: (e) => {
+                          e.stopPropagation();
+                          onRowVisibilityChange({
+                            metricKey: rowValues.key,
+                            model,
+                            appName,
+                            updateModelData,
+                          });
+                        },
+                      }),
                 );
               } else {
                 rows.push(
                   isRowData
                     ? rowValues
                     : paramsTableRowRenderer(rowValues, {
-                      toggleVisibility: (e) => {
-                        e.stopPropagation();
-                        onRowVisibilityChange({
-                          metricKey: rowValues.key,
-                          model,
-                          appName,
-                          updateModelData,
-                        });
-                      },
-                    }),
+                        toggleVisibility: (e) => {
+                          e.stopPropagation();
+                          onRowVisibilityChange({
+                            metricKey: rowValues.key,
+                            model,
+                            appName,
+                            updateModelData,
+                          });
+                        },
+                      }),
                 );
               }
             });
@@ -4476,12 +4484,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               groupValue.color =
                 COLORS[paletteIndex][
-                Number(index % BigInt(COLORS[paletteIndex].length))
+                  Number(index % BigInt(COLORS[paletteIndex].length))
                 ];
             } else if (colorConfigsMap.hasOwnProperty(colorKey)) {
               groupValue.color =
                 COLORS[paletteIndex][
-                colorConfigsMap[colorKey] % COLORS[paletteIndex].length
+                  colorConfigsMap[colorKey] % COLORS[paletteIndex].length
                 ];
             } else {
               colorConfigsMap[colorKey] = colorIndex;
@@ -4505,7 +4513,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             } else if (dasharrayConfigsMap.hasOwnProperty(dasharrayKey)) {
               groupValue.dasharray =
                 DASH_ARRAYS[
-                dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
+                  dasharrayConfigsMap[dasharrayKey] % DASH_ARRAYS.length
                 ];
             } else {
               dasharrayConfigsMap[dasharrayKey] = dasharrayIndex;
