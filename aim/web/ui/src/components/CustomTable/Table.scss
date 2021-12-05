@@ -9,26 +9,6 @@ $border-radius: 0.2rem;
   --group-margin: 6px;
 }
 
-.Table__container {
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  background: #fff;
-  &--small {
-    --cell-height: 28px;
-    --group-margin: 4px;
-  }
-  &--medium {
-    --cell-height: 32px;
-    --group-margin: 6px;
-  }
-
-  &--large {
-    --cell-height: 36px;
-    --group-margin: 8px;
-  }
-}
-
 .Table {
   position: relative;
   display: flex;
@@ -38,6 +18,44 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
+  &__container {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    &--small {
+      --cell-height: 28px;
+      --group-margin: 4px;
+    }
+    &--medium {
+      --cell-height: 32px;
+      --group-margin: 6px;
+    }
+
+    &--large {
+      --cell-height: 36px;
+      --group-margin: 8px;
+    }
+  }
+  &__groupsColumn__cell {
+    span {
+      display: inline-block;
+      width: 120px;
+      min-width: 120px;
+      justify-content: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+      padding-right: 0.5rem;
+      border-right: 0.0625rem solid #ccc;
+      &:last-child {
+        margin-right: 0;
+        padding-right: 0;
+        border-right: unset;
+      }
+    }
+  }
 }
 
 .Table__pane {
@@ -82,6 +100,10 @@ $border-radius: 0.2rem;
   width: -moz-available;
   max-width: 500px;
   contain: content;
+
+  &--groups {
+    max-width: unset !important;
+  }
 
   &:last-of-type {
     flex: 1;

@@ -1,32 +1,72 @@
-import React, { memo, useEffect } from 'react';
+import React from 'react';
+import classNames from 'classnames';
 
 import { Skeleton } from '@material-ui/lab';
 
+import { Button, Icon } from 'components/kit';
+
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+
+import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
 
 const ImageBox = ({
   index,
   style,
   data,
-  imagesBlobs,
   addUriToList,
   imageHeight,
   focusedState,
   syncHoverState,
+  hoveredImageKey,
+  setImageFullMode,
+  setImageFullModeData,
+  imageProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
 
-  useEffect(() => {
-    let timeoutID = setTimeout(() => {
-      addUriToList(blob_uri);
-    }, batchCollectDelay);
+  let [blobData, setBlobData] = React.useState<string>(
+    imagesURIModel.getState()[blob_uri] ?? null,
+  );
+
+  React.useEffect(() => {
+    let timeoutID: number;
+    let subscription: any;
+
+    if (blobData === null) {
+      if (imagesURIModel.getState()[blob_uri]) {
+        setBlobData(imagesURIModel.getState()[blob_uri]);
+      } else {
+        subscription = imagesURIModel.subscribe(blob_uri, (data) => {
+          setBlobData(data[blob_uri]);
+          subscription.unsubscribe();
+        });
+        timeoutID = window.setTimeout(() => {
+          if (imagesURIModel.getState()[blob_uri]) {
+            setBlobData(imagesURIModel.getState()[blob_uri]);
+            subscription.unsubscribe();
+          } else {
+            addUriToList(blob_uri);
+          }
+        }, batchCollectDelay);
+      }
+    }
 
     return () => {
-      clearTimeout(timeoutID);
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
+  function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
+    e.stopPropagation();
+    setImageFullMode(true);
+    setImageFullModeData(data);
+  }
   // TODO need to add focused image logic
   // function safeSyncHoverState(args: any): void {
   //   if (typeof syncHoverState === 'function') {
@@ -49,22 +89,35 @@ const ImageBox = ({
     <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
       <div
         style={style}
-        className={`ImagesSet__container__imagesBox__imageBox__image ${
-          focusedState.key === data.key
+        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image--${imageProperties.imageRendering
+          } ${focusedState.key === data.key
             ? focusedState?.active
               ? ' focus'
               : ' active'
             : ''
-        }`}
+          }`}
         data-key={`${data.key}`}
         data-seqkey={`${data.seqKey}`}
-        // onClick={onClick}
+      // onClick={onClick}
       >
-        {imagesBlobs?.[blob_uri] ? (
-          <img
-            src={`data:image/${format};base64, ${imagesBlobs?.[blob_uri]}`}
-            alt=''
-          />
+        {blobData ? (
+          <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>
+            <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+            <Button
+              withOnlyIcon
+              size='small'
+              className={classNames(
+                'ImagesSet__container__imagesBox__imageBox__imageWrapper__zoomIconWrapper',
+                {
+                  isHidden: !(hoveredImageKey === data.key),
+                },
+              )}
+              onClick={onImageFullSizeModeButtonClick}
+              color='inherit'
+            >
+              <Icon name='zoom-in' fontSize={14} />
+            </Button>
+          </div>
         ) : (
           <Skeleton
             variant='rect'
@@ -77,4 +130,4 @@ const ImageBox = ({
   );
 };
 
-export default memo(ImageBox);
+export default ImageBox;

@@ -6,11 +6,11 @@ import {
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
+import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 export interface IImagesPanelProps {
   imagesData: any;
   orderedMap: { [key: string]: any };
-  imagesBlobs: { [key: string]: value };
   recordSlice: number[];
   indexSlice: number[];
   indexRange: number[];
@@ -18,7 +18,10 @@ export interface IImagesPanelProps {
   indexDensity: number;
   recordDensity: number;
   onSliceRangeChange: (key: string, newValue: number[] | number) => void;
-  onDensityChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onDensityChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string,
+  ) => void;
   getImagesBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   applyButtonDisabled: boolean;
@@ -30,5 +33,7 @@ export interface IImagesPanelProps {
   resizeMode: ResizeModeEnum;
   tooltip: ITooltipContent;
   focusedState: IFocusedState;
+  imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
+  tableHeight: string;
 }

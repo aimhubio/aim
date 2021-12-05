@@ -137,6 +137,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={imagesExploreData?.requestIsPending}
               selectedImagesData={imagesExploreData?.config?.select}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
@@ -192,12 +193,12 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onDensityChange={imagesExploreAppModel.onDensityChange}
               getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
               imagesData={imagesExploreData?.imagesData}
-              imagesBlobs={imagesExploreData?.imagesBlobs}
               orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
               applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
+              tableHeight={imagesExploreData?.config?.table?.height}
               imageWrapperOffsetHeight={offsetHeight || 0}
               imageWrapperOffsetWidth={offsetWidth || 0}
               isRangePanelShow={
@@ -212,6 +213,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               tooltip={
                 imagesExploreData?.config?.images?.tooltip as IPanelTooltip
               }
+              imageProperties={
+                imagesExploreData?.config?.images?.imageProperties
+              }
               onActivePointChange={imagesExploreAppModel.onActivePointChange}
               controls={
                 <Controls
@@ -221,7 +225,17 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
+                  imageProperties={
+                    imagesExploreData?.config?.images?.imageProperties
+                  }
                   onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
+                  onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
+                  onImageRenderingChange={
+                    imagesExploreAppModel.onImageRenderingChange
+                  }
+                  onImageAlignmentChange={
+                    imagesExploreAppModel.onImageAlignmentChange
+                  }
                 />
               }
             />

@@ -6,7 +6,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
-  SearchOutlined,
 } from '@material-ui/icons';
 
 import { Icon, Badge, Button } from 'components/kit';
@@ -31,6 +30,7 @@ import contextToString from 'utils/contextToString';
 import './SelectForm.scss';
 
 function SelectForm({
+  requestIsPending,
   selectedImagesData,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
@@ -54,9 +54,20 @@ function SelectForm({
 
   function handleSearch(e: React.ChangeEvent<any>): void {
     e.preventDefault();
-
+    if (requestIsPending) {
+      return;
+    }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
     searchMetricsRef.current.call();
+  }
+
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!requestIsPending) {
+      return;
+    }
+    searchMetricsRef.current?.abort();
+    imagesExploreAppModel.abortRequest();
   }
 
   function onSelect(event: object, value: ISelectMetricsOption[]): void {
@@ -295,13 +306,18 @@ function SelectForm({
         <Button
           fullWidth
           color='primary'
-          variant='contained'
-          startIcon={<SearchOutlined />}
+          variant={requestIsPending ? 'outlined' : 'contained'}
+          startIcon={
+            <Icon
+              name={requestIsPending ? 'close' : 'search'}
+              fontSize={requestIsPending ? 12 : 14}
+            />
+          }
           className='SelectForm__search__button'
-          onClick={handleSearch}
+          onClick={requestIsPending ? handleRequestAbort : handleSearch}
           disabled={searchButtonDisabled}
         >
-          Search
+          {requestIsPending ? 'Cancel' : 'Search'}
         </Button>
         <div className='SelectForm__search__actions'>
           <Button onClick={handleResetSelectForm} withOnlyIcon={true}>

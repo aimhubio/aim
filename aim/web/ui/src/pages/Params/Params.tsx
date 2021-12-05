@@ -116,6 +116,7 @@ const Params = ({
           </div>
           <div className='Params__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={requestIsPending}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}

@@ -1,0 +1,57 @@
+@use 'src/styles/abstracts' as *;
+
+.Slider {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .MuiSlider-root {
+    padding: 0;
+    height: 0.25rem;
+    margin-top: 0.125rem;
+    .MuiSlider-rail {
+      height: 0.25rem;
+      border-radius: $border-radius-sm;
+      opacity: 1;
+      background: $cuddle-50;
+    }
+    .MuiSlider-track {
+      height: 0.25rem;
+      border-radius: $border-radius-sm;
+      background: $primary-color;
+    }
+    .MuiSlider-thumb {
+      background: $white;
+      border: 0.09375rem solid $primary-color;
+      margin-top: -0.25rem;
+      margin-left: 0;
+      .MuiSlider-valueLabel {
+        left: calc(-50% - 0.625rem);
+        top: -1.0625rem;
+      }
+      .MuiSlider-valueLabel > span {
+        width: 2.3125rem;
+        height: 1.1875rem;
+        border: 0.0625rem solid $primary-color;
+        background: $white;
+        border-radius: 0.4375rem;
+        transform: unset;
+        span {
+          font-size: 0.625rem;
+          font-weight: 600;
+          color: $primary-color;
+          transform: unset;
+        }
+      }
+      &.Mui-focusVisible {
+        box-shadow: 0 0 0 0.125rem rgba(20, 115, 230, 0.2);
+      }
+      &:hover {
+        box-shadow: 0 0 0 0.125rem rgba(20, 115, 230, 0.2);
+      }
+      &.MuiSlider-active {
+        box-shadow: 0 0 0 0.125rem rgba(20, 115, 230, 0.2);
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@ import { BoxProps } from '@material-ui/core';
 
 export interface IIconProps
   extends React.BaseHTMLAttributes<any>,
-    Partial<React.ComponentType<BoxProps | any>> {
+  Partial<React.ComponentType<BoxProps | any>> {
   name: IconName;
   className?: string;
   style?: CSSProperties;
@@ -99,4 +99,6 @@ export type IconName =
   | 'co'
   | 'full-docs'
   | 'scatterplot'
-  | 'y-axis';
+  | 'y-axis'
+  | 'image-explorer'
+  | 'image-properties';

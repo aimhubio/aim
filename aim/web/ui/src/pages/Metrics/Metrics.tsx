@@ -75,6 +75,7 @@ function Metrics(
           />
           <div className='Metrics__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={props.requestIsPending}
               selectedMetricsData={props.selectedMetricsData}
               onMetricsSelectChange={props.onMetricsSelectChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
