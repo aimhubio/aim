@@ -29,16 +29,22 @@ from aim.web.api.runs.pydantic_models import (
     RunSearchApiOut,
     RunMetricsBatchApiOut,
     RunImagesBatchApiOut,
+    RunPlotlysBatchApiOut,
     RunDistributionsBatchApiOut,
     StructuredRunUpdateIn,
     StructuredRunUpdateOut,
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut,
-    URIBatchIn
+    URIBatchIn,
 )
 from aim.web.api.utils import object_factory
 from aim.storage.query import syntax_error_check
+from aim.web.api.runs.plotly_utils import (
+    requested_plotly_object_traces_streamer,
+    plotly_batch_result_streamer
+)
+
 runs_router = APIRouter()
 
 
@@ -157,6 +163,16 @@ def image_blobs_batch_api(uri_batch: URIBatchIn):
     return StreamingResponse(images_batch_result_streamer(uri_batch, project.repo))
 
 
+@runs_router.post('/plotly/get-batch/')
+def plotly_blobs_batch_api(uri_batch: URIBatchIn):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    return StreamingResponse(plotly_batch_result_streamer(uri_batch, project.repo))
+
+
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
 async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(())):
     # Get project
@@ -220,6 +236,32 @@ async def run_images_batch_api(run_id: str,
     traces_streamer = requested_image_traces_streamer(run, requested_traces,
                                                       record_range, index_range,
                                                       record_density, index_density)
+
+    return StreamingResponse(traces_streamer)
+
+
+@runs_router.post('/{run_id}/plotly/get-batch/', response_model=RunPlotlysBatchApiOut)
+async def run_images_batch_api(run_id: str,
+                               requested_traces: RunTracesBatchApiIn,
+                               record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                               index_range: Optional[str] = '', index_density: Optional[int] = 5):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)  # Get project
+
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    traces_streamer = requested_plotly_object_traces_streamer(run, requested_traces,
+                                                              record_range, index_range,
+                                                              record_density, index_density)
 
     return StreamingResponse(traces_streamer)
 

@@ -33,6 +33,7 @@ class DistributionsBaseView(TraceBaseView):
         data: EncodedNumpyArray
         bin_count: int
         range: Tuple[Union[int, float], Union[int, float]]
+
     trace_range: Tuple[int, int]
     values: List[Distribution]
 
@@ -154,6 +155,7 @@ class QuerySyntaxErrorOut(BaseModel):
         statement: str
         line: int
         offset: int
+
     detail: SE
 
 
@@ -196,5 +198,16 @@ class ImagesSearchRunView(BaseModel):
 
 RunImagesSearchApiOut = Dict[str, ImagesSearchRunView]
 
-
 URIBatchIn = List[str]
+
+
+class PlotlyInfo(BaseModel):
+    blob_uri: str
+    index: int
+
+
+class PlotlyBaseView(TraceBaseView):
+    values: List[List[PlotlyInfo]]
+
+
+RunPlotlysBatchApiOut = List[PlotlyBaseView]

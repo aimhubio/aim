@@ -27,7 +27,6 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from pandas import DataFrame
 
@@ -36,7 +35,6 @@ if TYPE_CHECKING:
     from aim.sdk.distribution_sequence import Distributions
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
-
 
 logger = logging.getLogger(__name__)
 
