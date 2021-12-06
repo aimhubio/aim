@@ -364,6 +364,7 @@ The high-level features we are going to work on the next few months
 ### TODO
 
 **Track and Explore:**
+  - [ ] Models tracking/versioning, model registry
   - [ ] Runs side-by-side comparison
 
 **Data Backup:**
