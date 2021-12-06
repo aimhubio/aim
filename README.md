@@ -355,14 +355,15 @@ The high-level features we are going to work on the next few months
 
 **In progress:**
   - [ ] Centralized tracking server (Start: _Oct 18 2021_)
+  - [ ] Audio tracking and visualization (Start: _Dec 6 2021_)
+  - [ ] Transcripts tracking and visualization (Start: _Dec 6 2021_)
+  - [ ] Plotly integration (Start: _Dec 1 2021_)
   - [ ] Colab integration (Start: _Nov 18 2021_)
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
 
 ### TODO
 
 **Track and Explore:**
-  - [ ] Audio tracking and visualization
-  - [ ] Transcripts tracking and visualization
   - [ ] Runs side-by-side comparison
 
 **Data Backup:**
@@ -373,7 +374,6 @@ The high-level features we are going to work on the next few months
   - [ ] Collect stdout, stderr logs
 
 **Integrations:**
-  - [ ] plotly integration
   - [ ] Kubeflow integration
   - [ ] Streamlit integration
   - [ ] Raytune integration
