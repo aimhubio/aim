@@ -569,6 +569,22 @@ class Run(StructuredRunMixin):
         """
         return self._get_sequence('images', name, context)
 
+    def get_plotly_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Plotlys']:
+        """Retrieve plotly sequence by its name and context.
+
+        Args:
+             name (str): Tracked image sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Plotly` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('plotlys', name, context)
+
     def get_distribution_sequence(
             self,
             name: str,
