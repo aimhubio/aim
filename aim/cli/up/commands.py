@@ -2,7 +2,7 @@ import os
 import click
 
 from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_ENV_MODE_KEY, \
-    AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY
+    AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY, AIM_UI_BASE_PATH
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
 from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
@@ -29,12 +29,16 @@ from aim.web.utils import ShellCommandException
                                                                 file_okay=True,
                                                                 dir_okay=False,
                                                                 readable=True))
+@click.option('--base-path', required=False, default='', type=str)
 @click.option('--force-init', is_flag=True, default=False)
-def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, force_init):
+def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, force_init):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
         os.environ[AIM_ENV_MODE_KEY] = 'prod'
+
+    if base_path:
+        os.environ[AIM_UI_BASE_PATH] = base_path
 
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
