@@ -356,8 +356,8 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for Plotly sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.plotly_sequence import Plotly
-        return QuerySequenceCollection(repo=self, seq_cls=Plotly, query=query)
+        from aim.sdk.plotly_sequence import Figures
+        return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query)
 
     def query_distributions(self, query: str = '') -> QuerySequenceCollection:
         """Get distribution collections satisfying query expression.

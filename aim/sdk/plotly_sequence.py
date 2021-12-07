@@ -4,8 +4,8 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.objects.plotly import Plotly
 
 
-class Plotlys(Sequence):
-    """Class representing series of Plotly objects or Plotly lists."""
+class Figures(Sequence):
+    """Class representing series of Plotly figure objects or Plotly lists."""
 
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
@@ -14,7 +14,7 @@ class Plotlys(Sequence):
 
     @classmethod
     def sequence_name(cls) -> str:
-        return 'plotlys'
+        return 'figures'
 
     def first_step(self):
         """Get sequence tracked first step.

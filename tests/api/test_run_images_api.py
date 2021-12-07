@@ -371,7 +371,7 @@ class TestRunInfoApi(ApiTestBase):
         self.assertEqual('single_images', response_data['traces']['images'][0]['name'])
 
     @parameterized.expand([
-        ({'sequence': ('metric', 'images', 'distributions', 'plotlys')},),  # explicit specification
+        ({'sequence': ('metric', 'images', 'distributions', 'figures')},),  # explicit specification
         (None,)  # default
     ])
     def test_run_info_get_all_sequences_api(self, qparams):
@@ -383,7 +383,7 @@ class TestRunInfoApi(ApiTestBase):
         self.assertIn('images', response_data['traces'])
         self.assertIn('metric', response_data['traces'])
         self.assertIn('distributions', response_data['traces'])
-        self.assertIn('plotlys', response_data['traces'])
+        self.assertIn('figures', response_data['traces'])
         self.assertDictEqual({'subset': 'train'}, response_data['traces']['images'][0]['context'])
         self.assertEqual('image_lists', response_data['traces']['images'][0]['name'])
         metrics_data = response_data['traces']['metric']
