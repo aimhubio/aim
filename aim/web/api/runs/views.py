@@ -278,7 +278,7 @@ async def run_images_batch_api(run_id: str,
 
 
 @runs_router.post('/{run_id}/plotly/get-batch/', response_model=RunPlotlysBatchApiOut)
-async def run_images_batch_api(run_id: str,
+async def run_plotlys_batch_api(run_id: str,
                                requested_traces: RunTracesBatchApiIn,
                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
                                index_range: Optional[str] = '', index_density: Optional[int] = 5):
