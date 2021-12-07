@@ -1,4 +1,4 @@
-import { API_HOST } from 'config/config';
+import { getAPIHost } from 'config/config';
 
 function createAPIRequestWrapper<ResponseDataType>(
   url: string,
@@ -11,7 +11,7 @@ function createAPIRequestWrapper<ResponseDataType>(
   return {
     call: (exceptionHandler?: (error: ResponseDataType) => any) =>
       new Promise((resolve: (data: ResponseDataType) => void, reject) => {
-        fetch(`${API_HOST}/${url}`, { ...options, signal })
+        fetch(`${getAPIHost()}/${url}`, { ...options, signal })
           .then(async (response) => {
             try {
               if (response.status >= 400) {
