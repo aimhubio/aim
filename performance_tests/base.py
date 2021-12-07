@@ -1,6 +1,7 @@
 import unittest
 import os
 
+from aim.sdk.configs import AIM_REPO_NAME
 from performance_tests.conftest import TEST_REPO_PATHS
 
 
@@ -17,11 +18,11 @@ class SDKTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATHS['real_life_repo']
+        os.environ[AIM_REPO_NAME] = TEST_REPO_PATHS['real_life_repo']
 
     @classmethod
     def tearDownClass(cls) -> None:
-        del os.environ['__AIM_REPO_NAME__']
+        del os.environ[AIM_REPO_NAME]
         super().tearDownClass()
 
 
@@ -29,9 +30,9 @@ class StorageTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATHS['generated_repo']
+        os.environ[AIM_REPO_NAME] = TEST_REPO_PATHS['generated_repo']
 
     @classmethod
     def tearDownClass(cls) -> None:
-        del os.environ['__AIM_REPO_NAME__']
+        del os.environ[AIM_REPO_NAME]
         super().tearDownClass()
