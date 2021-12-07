@@ -64,8 +64,8 @@ def run_up(args):
                 return ManagerActionResult(
                     ManagerActionStatuses.Failed,
                     {
-                       'message': """\nPerhaps this is a bug from aim side.
-                       \nPlease open an issue https://github.com/aimhubio/aim/issues """
+                       'message': "\nPerhaps this is a bug from aim side."
+                                  "\nPlease open an issue https://github.com/aimhubio/aim/issues."
                     }
                 )
 
