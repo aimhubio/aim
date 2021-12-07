@@ -9,23 +9,12 @@
     min-width: toRem(200px);
   }
   .VisualizerArea {
-    height: 100%;
+    max-height: toRem(900px);
     width: 100%;
-    padding: toRem(4px);
     border: toRem(1px) solid $grayish;
     border-left: none;
     border-top-right-radius: toRem(6px);
     border-bottom-right-radius: toRem(6px);
     min-height: toRem(500px);
-    .VisualizationName {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: toRem(10px);
-      margin-bottom: toRem(26px); // change once using getBoundingClientRect for thi vis area wrapper
-      > span {
-        max-width: 60%;
-      }
-    }
   }
 }
