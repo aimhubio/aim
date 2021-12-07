@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
     from aim.sdk.metric import Metric
     from aim.sdk.image_sequence import Images
+    from aim.sdk.plotly_sequence import Plotlys
     from aim.sdk.distribution_sequence import Distributions
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
