@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add ability to provide custom base path for API (mihran113, roubkar)
+
 ## 3.2.0 Dec 3 2021
 
 - Add ability to cancel pending request (roubkar, arsengit)
