@@ -30,6 +30,7 @@ from aim.web.api.runs.pydantic_models import (
     RunMetricsBatchApiOut,
     RunImagesBatchApiOut,
     RunPlotlysBatchApiOut,
+    RunPlotlysSearchApiOut,
     RunDistributionsBatchApiOut,
     StructuredRunUpdateIn,
     StructuredRunUpdateOut,
@@ -42,7 +43,8 @@ from aim.web.api.utils import object_factory
 from aim.storage.query import syntax_error_check
 from aim.web.api.runs.plotly_utils import (
     requested_plotly_object_traces_streamer,
-    plotly_batch_result_streamer
+    plotly_batch_result_streamer,
+    plotly_search_result_streamer
 )
 
 runs_router = APIRouter()
@@ -150,6 +152,41 @@ async def run_images_search_api(q: Optional[str] = '',
 
     streamer = image_search_result_streamer(traces, record_range, record_density,
                                             index_range, index_density, calc_ranges)
+    return StreamingResponse(streamer)
+
+
+@runs_router.get('/search/plotly/', response_model=RunPlotlysSearchApiOut,
+                 responses={400: {'model': QuerySyntaxErrorOut}})
+async def run_images_search_api(q: Optional[str] = '',
+                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                                index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                                calc_ranges: Optional[bool] = False):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    query = q.strip()
+    try:
+        syntax_error_check(query)
+    except SyntaxError as se:
+        raise HTTPException(status_code=400, detail={
+            "name": "SyntaxError",
+            "statement": se.text,
+            "line": se.lineno,
+            "offset": se.offset
+        })
+
+    traces = project.repo.query_plotly_objects(query=query)
+
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    streamer = plotly_search_result_streamer(traces, record_range, record_density,
+                                             index_range, index_density, calc_ranges)
     return StreamingResponse(streamer)
 
 

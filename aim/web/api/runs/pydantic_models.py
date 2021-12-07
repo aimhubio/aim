@@ -211,3 +211,20 @@ class PlotlyBaseView(TraceBaseView):
 
 
 RunPlotlysBatchApiOut = List[PlotlyBaseView]
+
+
+class PlotlySequenceFullView(TraceBase):
+    values: List[List[PlotlyInfo]]
+    iters: List[int]
+    epochs: List[int]
+    timestamps: List[float]
+
+
+class PlotlySearchRunView(BaseModel):
+    params: dict
+    traces: List[PlotlySequenceFullView]
+    ranges: RangeInfo
+    props: PropsView
+
+
+RunPlotlysSearchApiOut = Dict[str, PlotlySearchRunView]
