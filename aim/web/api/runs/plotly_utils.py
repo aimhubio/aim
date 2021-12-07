@@ -75,9 +75,9 @@ def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slic
 
 
 async def plotly_search_result_streamer(traces: SequenceCollection,
-                                       rec_range: IndexRange, rec_density: int,
-                                       idx_range: IndexRange, idx_density: int,
-                                       calc_total_ranges: bool):
+                                        rec_range: IndexRange, rec_density: int,
+                                        idx_range: IndexRange, idx_density: int,
+                                        calc_total_ranges: bool):
     record_range_missing = rec_range.start is None or rec_range.stop is None
     index_range_missing = idx_range.start is None or idx_range.stop is None
     run_traces = {}

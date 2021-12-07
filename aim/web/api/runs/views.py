@@ -157,10 +157,10 @@ async def run_images_search_api(q: Optional[str] = '',
 
 @runs_router.get('/search/plotly/', response_model=RunPlotlysSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-async def run_images_search_api(q: Optional[str] = '',
-                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                                index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                                calc_ranges: Optional[bool] = False):
+async def run_plotlys_search_api(q: Optional[str] = '',
+                                 record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                                 index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                                 calc_ranges: Optional[bool] = False):
     # Get project
     project = Project()
     if not project.exists():
@@ -279,9 +279,9 @@ async def run_images_batch_api(run_id: str,
 
 @runs_router.post('/{run_id}/plotly/get-batch/', response_model=RunPlotlysBatchApiOut)
 async def run_plotlys_batch_api(run_id: str,
-                               requested_traces: RunTracesBatchApiIn,
-                               record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                               index_range: Optional[str] = '', index_density: Optional[int] = 5):
+                                requested_traces: RunTracesBatchApiIn,
+                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                                index_range: Optional[str] = '', index_density: Optional[int] = 5):
     # Get project
     project = Project()
     if not project.exists():
