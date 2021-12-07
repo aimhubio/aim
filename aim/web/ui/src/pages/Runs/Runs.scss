@@ -82,7 +82,7 @@
       }
     }
     &__runListBox {
-      height: 90%;
+      height: calc(100% - #{toRem(102px)});
       position: relative;
       &__titleBox {
         position: relative;
