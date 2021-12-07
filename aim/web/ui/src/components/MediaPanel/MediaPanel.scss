@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.ImagesPanel__Container {
+.MediaPanel__Container {
   width: calc(100vw - 4.6875rem);
   height: 100%;
   display: flex;
@@ -25,11 +25,17 @@
     user-select: none;
   }
 
-  .ImagesPanel {
+  .MediaPanel {
     display: flex;
     flex: 1;
-    height: calc(100% - 2.75rem);
-    &__imagesSetContainer {
+    &__loader {
+      .ChartLoader {
+        span {
+          margin-left: 0;
+        }
+      }
+    }
+    &__mediaSetContainer {
       overflow-x: auto;
       padding-left: 1.25rem;
       padding-top: 0.25rem;

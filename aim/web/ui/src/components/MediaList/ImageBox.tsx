@@ -2,30 +2,31 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { Skeleton } from '@material-ui/lab';
+import { Dialog } from '@material-ui/core';
 
 import { Button, Icon } from 'components/kit';
+import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
-import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
+import blobsURIModel from 'services/models/media/blobsURIModel';
 
 const ImageBox = ({
   index,
   style,
   data,
   addUriToList,
-  imageHeight,
+  mediaItemHeight,
   focusedState,
+  tooltip,
   syncHoverState,
-  hoveredImageKey,
-  setImageFullMode,
-  setImageFullModeData,
-  imageProperties,
+  additionalProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
-
+  const [isImageFullViewPopupOpened, setIsImageFullViewPopupOpened] =
+    React.useState<boolean>(false);
   let [blobData, setBlobData] = React.useState<string>(
-    imagesURIModel.getState()[blob_uri] ?? null,
+    blobsURIModel.getState()[blob_uri] ?? null,
   );
 
   React.useEffect(() => {
@@ -33,16 +34,16 @@ const ImageBox = ({
     let subscription: any;
 
     if (blobData === null) {
-      if (imagesURIModel.getState()[blob_uri]) {
-        setBlobData(imagesURIModel.getState()[blob_uri]);
+      if (blobsURIModel.getState()[blob_uri]) {
+        setBlobData(blobsURIModel.getState()[blob_uri]);
       } else {
-        subscription = imagesURIModel.subscribe(blob_uri, (data) => {
+        subscription = blobsURIModel.subscribe(blob_uri, (data) => {
           setBlobData(data[blob_uri]);
           subscription.unsubscribe();
         });
         timeoutID = window.setTimeout(() => {
-          if (imagesURIModel.getState()[blob_uri]) {
-            setBlobData(imagesURIModel.getState()[blob_uri]);
+          if (blobsURIModel.getState()[blob_uri]) {
+            setBlobData(blobsURIModel.getState()[blob_uri]);
             subscription.unsubscribe();
           } else {
             addUriToList(blob_uri);
@@ -64,8 +65,7 @@ const ImageBox = ({
 
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();
-    setImageFullMode(true);
-    setImageFullModeData(data);
+    setIsImageFullViewPopupOpened(true);
   }
   // TODO need to add focused image logic
   // function safeSyncHoverState(args: any): void {
@@ -86,11 +86,11 @@ const ImageBox = ({
   // }
 
   return (
-    <div key={index} className='ImagesSet__container__imagesBox__imageBox'>
+    <div key={index} className='MediaSet__container__mediaItemsList__imageBox'>
       <div
         style={style}
-        className={`ImagesSet__container__imagesBox__imageBox__image ImagesSet__container__imagesBox__imageBox__image--${
-          imageProperties.imageRendering
+        className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
+          additionalProperties.imageRendering
         } ${
           focusedState.key === data.key
             ? focusedState?.active
@@ -100,18 +100,19 @@ const ImageBox = ({
         }`}
         data-key={`${data.key}`}
         data-seqkey={`${data.seqKey}`}
+        data-mediasetitem={'mediaSetItem'}
         // onClick={onClick}
       >
         {blobData ? (
-          <div className='ImagesSet__container__imagesBox__imageBox__imageWrapper'>
+          <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
             <img src={`data:image/${format};base64, ${blobData}`} alt='' />
             <Button
               withOnlyIcon
               size='small'
               className={classNames(
-                'ImagesSet__container__imagesBox__imageBox__imageWrapper__zoomIconWrapper',
+                'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
                 {
-                  isHidden: !(hoveredImageKey === data.key),
+                  isHidden: !(focusedState.key === data.key),
                 },
               )}
               onClick={onImageFullSizeModeButtonClick}
@@ -123,11 +124,24 @@ const ImageBox = ({
         ) : (
           <Skeleton
             variant='rect'
-            height={imageHeight - 10}
+            height={mediaItemHeight - 10}
             width={style.width - 10}
           />
         )}
       </div>
+      <Dialog
+        onClose={() => setIsImageFullViewPopupOpened(false)}
+        aria-labelledby='customized-dialog-title'
+        className='MediaPanel__Container__imageFullViewPopup'
+        open={isImageFullViewPopupOpened}
+      >
+        <ImageFullViewPopover
+          imageRendering={additionalProperties?.imageRendering}
+          tooltipContent={tooltip?.content}
+          imageData={data}
+          handleClose={() => setIsImageFullViewPopupOpened(false)}
+        />
+      </Dialog>
     </div>
   );
 };

@@ -1,9 +1,11 @@
+import { MutableRefObject } from 'react';
+
 import { IImageData } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
-export interface IImagesListProps {
+export interface IMediaListProps {
   data: IImageData[];
   onScroll: () => void;
-  imagesBoxRef: MutableRefObject<any>;
+  mediaItemsListRef: MutableRefObject<any>;
   addUriToList: (blobUrl: string) => void;
 }
 

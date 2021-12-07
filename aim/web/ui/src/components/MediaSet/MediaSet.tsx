@@ -5,39 +5,38 @@ import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
-import ImagesList from 'components/ImagesList';
+import MediaList from 'components/MediaList';
 import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
 
-import { IImageSetProps } from './ImagesSet.d';
+import { IMediaSetProps } from './MediaSet.d';
 
-import './ImageSet.scss';
+import './MediaSet.scss';
 
-const imageWrapperHeight = 33;
-const imageSetTitleHeight = 17;
-const imageSetWrapperPaddingHeight = 6;
+const itemWrapperHeight = 33;
+const setTitleHeight = 17;
+const setWrapperPaddingHeight = 6;
 
-const ImagesSet = ({
+const MediaSet = ({
   data,
   onListScroll,
   addUriToList,
   index = 0,
-  imagesSetKey,
-  imageSetWrapperHeight,
-  imageSetWrapperWidth,
+  setKey,
+  wrapperOffsetHeight,
+  wrapperOffsetWidth,
   orderedMap,
-  imageHeight,
+  mediaItemHeight,
   focusedState,
   syncHoverState,
-  hoveredImageKey,
-  setImageFullMode,
-  setImageFullModeData,
-  imageProperties,
+  additionalProperties,
   tableHeight,
-}: IImageSetProps): React.FunctionComponentElement<React.ReactNode> => {
+  tooltip,
+  mediaType,
+}: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
@@ -74,16 +73,16 @@ const ImagesSet = ({
     }
 
     if (items.length > 0) {
-      return imageHeight + imageWrapperHeight;
+      return mediaItemHeight + itemWrapperHeight;
     }
 
-    return imageSetTitleHeight + imageSetWrapperPaddingHeight;
+    return setTitleHeight + setWrapperPaddingHeight;
   }
 
   return (
     <List
-      key={content.length + tableHeight + imageProperties?.imageSize}
-      height={imageSetWrapperHeight || 0}
+      key={content.length + tableHeight + setKey}
+      height={wrapperOffsetHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}
       width={'100%'}
@@ -91,41 +90,38 @@ const ImagesSet = ({
       itemData={{
         data: content,
         addUriToList,
-        imageSetWrapperHeight,
-        imageSetWrapperWidth,
+        wrapperOffsetWidth,
         index,
-        imagesSetKey,
-        imageHeight,
+        setKey,
+        mediaItemHeight,
         focusedState,
         syncHoverState,
-        hoveredImageKey,
-        setImageFullMode,
-        setImageFullModeData,
-        imageProperties,
+        additionalProperties,
+        tooltip,
+        mediaType,
       }}
     >
-      {ImagesGroupedList}
+      {MediaGroupedList}
     </List>
   );
 };
 
 function propsComparator(
-  prevProps: IImageSetProps,
-  nextProps: IImageSetProps,
+  prevProps: IMediaSetProps,
+  nextProps: IMediaSetProps,
 ): boolean {
   if (
-    prevProps.imagesSetKey !== nextProps.imagesSetKey ||
-    prevProps.focusedState !== nextProps.focusedState ||
-    prevProps.hoveredImageKey !== nextProps.hoveredImageKey
+    prevProps.setKey !== nextProps.setKey ||
+    prevProps.focusedState !== nextProps.focusedState
   ) {
     return false;
   }
   return true;
 }
 
-export default React.memo(ImagesSet, propsComparator);
+export default React.memo(MediaSet, propsComparator);
 
-const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
+const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
   const { index, style, data } = props;
   const [path, items] = data.data[index];
   const json: string | object = jsonParse(
@@ -135,7 +131,7 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
 
   return (
     <div
-      className='ImagesSet'
+      className='MediaSet'
       style={{
         paddingLeft: `calc(0.625rem * ${path.length - 2})`,
         ...style,
@@ -144,14 +140,14 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
       {path.slice(2).map((key: string, i: number) => (
         <div
           key={key}
-          className='ImagesSet__connectorLine'
+          className='MediaSet__connectorLine'
           style={{
             left: `calc(0.625rem * ${i})`,
           }}
         />
       ))}
       <div
-        className={`ImagesSet__container ${path.length > 2 ? 'withDash' : ''}`}
+        className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
       >
         {path.length > 1 && (
           <ControlPopover
@@ -171,8 +167,8 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
                 <span
                   onClick={isJson ? onAnchorClick : () => null}
                   className={classNames(
-                    `ImagesSet__container__title ${
-                      isJson ? 'ImagesSet__container__title__pointer' : ''
+                    `MediaSet__container__title ${
+                      isJson ? 'MediaSet__container__title__pointer' : ''
                     }`,
                   )}
                 >
@@ -184,18 +180,17 @@ const ImagesGroupedList = React.memo(function ImagesGroupedList(props: any) {
           />
         )}
         {items.length > 0 && (
-          <div className='ImagesSet__container__imagesBox'>
-            <ImagesList
+          <div className='MediaSet__container__mediaItemsList'>
+            <MediaList
               data={items}
               addUriToList={data.addUriToList}
-              imageSetWrapperWidth={data.imageSetWrapperWidth}
-              imageHeight={data.imageHeight}
+              wrapperOffsetWidth={data.wrapperOffsetWidth}
+              mediaItemHeight={data.mediaItemHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
-              hoveredImageKey={data.hoveredImageKey}
-              setImageFullMode={data.setImageFullMode}
-              setImageFullModeData={data.setImageFullModeData}
-              imageProperties={data.imageProperties}
+              additionalProperties={data.additionalProperties}
+              tooltip={data.tooltip}
+              mediaType={data.mediaType}
             />
           </div>
         )}
