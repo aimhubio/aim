@@ -65,9 +65,10 @@ def run_up(args):
                     ManagerActionStatuses.Failed,
                     {
                        'message': """\nPerhaps this is a bug from aim side.
-                                     \nPlease open an issue https://github.com/aimhubio/aim/issues """
+                       \nPlease open an issue https://github.com/aimhubio/aim/issues """
                     }
                 )
+
 
 def run_version(args):
     """Aim cli command runner to get aim current version

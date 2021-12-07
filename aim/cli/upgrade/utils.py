@@ -1,4 +1,3 @@
-import atexit
 import os.path
 
 import click
@@ -10,7 +9,6 @@ from aim.cli.upgrade._legacy_repo import (
     deserialize_pb,
     AIM_MAP_METRICS_KEYWORD
 )
-from aim.ext.exception_resistant import exception_resistant
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.utils import clean_repo_path
 from aim.sdk.run import Run
