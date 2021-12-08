@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  ImageAlignmentEnum,
-  ImageRenderingEnum,
-} from 'config/enums/imageEnums';
+import { ImageRenderingEnum } from 'config/enums/imageEnums';
 
 import { IPanelTooltip } from 'services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExploreAppModel';
