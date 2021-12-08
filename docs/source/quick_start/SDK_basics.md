@@ -116,6 +116,28 @@ for step, (images, labels) in enumerate(train_loader):
 
 Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_track_images.py).
 
+### Track distributions with Run
+
+Track distributions to explore model gradients, weights, etc.
+To store a distribution pass an iterable of scalar values to the `Distribution` object.
+
+```python
+from aim import Distribution
+
+for step in range(1000):
+    my_run.track(
+        Distribution(tensor), # Pass distribution
+        name='gradients', # The name of distributions
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Context (optional)
+            'type': 'weights',
+        },
+    )
+
+```
+`Distribution` class full [spec](../refs/sdk.html#module-aim.sdk.objects.distribution).
+
 ### Query Runs and saved metadata
 
 Use `Repo` object to query and access saved `Run`s.
