@@ -3,10 +3,10 @@ enum ImageRenderingEnum {
   Pixelated = 'pixelated',
 }
 
-enum ImageAlignmentEnum {
+enum MediaItemAlignmentEnum {
   Original = 'Original',
   Width = 'Width',
   Height = 'Height',
 }
 
-export { ImageRenderingEnum, ImageAlignmentEnum };
+export { ImageRenderingEnum, MediaItemAlignmentEnum };

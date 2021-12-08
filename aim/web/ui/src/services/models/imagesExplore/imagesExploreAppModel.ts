@@ -8,7 +8,7 @@ import { BookmarkNotificationsEnum } from 'config/notification-messages/notifica
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
 import {
-  ImageAlignmentEnum,
+  MediaItemAlignmentEnum,
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
 
@@ -21,6 +21,7 @@ import * as analytics from 'services/analytics';
 import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
+import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import {
   GroupNameType,
@@ -67,8 +68,6 @@ import filterTooltipContent from 'utils/filterTooltipContent';
 
 import createModel from '../model';
 
-import imagesURIModel from './imagesURIModel';
-
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
@@ -101,9 +100,9 @@ function getConfig(): IImagesExploreAppConfig {
         display: true,
         selectedParams: [],
       },
-      imageProperties: {
-        alignmentType: ImageAlignmentEnum.Height,
-        imageSize: 25,
+      additionalProperties: {
+        alignmentType: MediaItemAlignmentEnum.Height,
+        mediaItemSize: 25,
         imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
@@ -293,7 +292,7 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           applyButtonDisabled: true,
         });
 
-        imagesURIModel.init();
+        blobsURIModel.init();
 
         try {
           const stream = await imagesRequestRef.call(exceptionHandler);
@@ -457,6 +456,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   );
   const config = configData;
   config.images = {
+    ...config.images,
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
       : !isEmpty(rawData)
@@ -487,7 +487,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       active: false,
       key: null,
     },
-    imageProperties: config.images.imageProperties,
+    additionalProperties: config.images.additionalProperties,
   };
   model.setState({
     requestIsPending: false,
@@ -842,7 +842,7 @@ function getImagesBlobsData(uris: string[]) {
 
           for await (let [keys, val] of objects) {
             const URI = keys[0];
-            imagesURIModel.emit(URI as string, {
+            blobsURIModel.emit(URI as string, {
               [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
             });
           }
@@ -1820,9 +1820,9 @@ const onImageSizeChange = _.throttle((value: number) => {
   if (configData?.images) {
     const images = {
       ...configData.images,
-      imageProperties: {
-        ...configData.images.imageProperties,
-        imageSize: value,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        mediaItemSize: value,
       },
     };
     const config = {
@@ -1842,8 +1842,8 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
   if (configData?.images) {
     const images = {
       ...configData.images,
-      imageProperties: {
-        ...configData.images.imageProperties,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
 
         imageRendering: type,
       },
@@ -1867,8 +1867,8 @@ function onImageAlignmentChange(
   if (configData?.images) {
     const images = {
       ...configData.images,
-      imageProperties: {
-        ...configData.images.imageProperties,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
         alignmentType: option?.value,
       },
     };
@@ -1881,6 +1881,15 @@ function onImageAlignmentChange(
       config,
     });
   }
+}
+
+function isRangePanelShow() {
+  return (
+    !!getStateFromUrl('select')?.query ||
+    !isEmpty(getStateFromUrl('select')?.images) ||
+    (!!getStateFromUrl('select')?.advancedQuery &&
+      !!getStateFromUrl('select')?.advancedMode)
+  );
 }
 
 const imagesExploreAppModel = {
@@ -1929,6 +1938,7 @@ const imagesExploreAppModel = {
   onImageSizeChange,
   onImageRenderingChange,
   onImageAlignmentChange,
+  isRangePanelShow,
 };
 
 export default imagesExploreAppModel;
