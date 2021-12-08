@@ -2,11 +2,10 @@ import os
 import shutil
 
 from aim.sdk.repo import Repo, _get_tracking_queue
-from aim.web.api.projects.project import Project
 from aim.web.utils import exec_cmd
 from aim.cli.up.utils import build_db_upgrade_command
 from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_REPO_NAME
 
 TEST_REPO_PATH = '.aim-test-repo'
 
@@ -30,7 +29,7 @@ def _upgrade_api_db():
 
 
 def pytest_sessionstart(session):
-    os.environ['__AIM_REPO_NAME__'] = TEST_REPO_PATH
+    os.environ[AIM_REPO_NAME] = TEST_REPO_PATH
     os.environ[AIM_ENV_MODE_KEY] = 'test'
 
     _init_test_repo()
@@ -39,4 +38,4 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     _cleanup_test_repo(TEST_REPO_PATH)
-    del os.environ['__AIM_REPO_NAME__']
+    del os.environ[AIM_REPO_NAME]

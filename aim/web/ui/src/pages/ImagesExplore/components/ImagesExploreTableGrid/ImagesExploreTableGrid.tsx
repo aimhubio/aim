@@ -156,11 +156,6 @@ function getImagesExploreTableColumns(
   columns.sort((a, b) => {
     if (a.key === '#') {
       return -1;
-    } else if (
-      groupFields?.hasOwnProperty(a.key) ||
-      groupFields?.hasOwnProperty(`run.params.${a.key}`)
-    ) {
-      return -1;
     } else if (a.key === 'actions') {
       return 1;
     }
