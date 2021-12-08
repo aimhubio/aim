@@ -26,9 +26,9 @@ export interface IImagesExploreAppConfig {
       key: string | null;
       active: boolean;
     };
-    imageProperties: {
+    additionalProperties: {
       alignmentType: string;
-      imageSize: number;
+      mediaItemSize: number;
       imageRendering: string;
     };
   };
@@ -92,6 +92,7 @@ export interface IImageData {
   height: number;
   index: number;
   key: string;
+  seqKey: string;
   images_name: string;
   run: IImageRunData;
   step: number;

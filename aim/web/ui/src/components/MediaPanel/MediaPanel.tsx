@@ -1,62 +1,47 @@
 import React from 'react';
 import { isEmpty } from 'lodash-es';
 
-import { Dialog } from '@material-ui/core';
-
-import ImagesSet from 'components/ImagesSet/ImagesSet';
+import MediaSet from 'components/MediaSet/MediaSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
-import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 import { throttle } from 'components/Table/utils';
-import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   batchSendDelay,
   imageFixedHeight,
 } from 'config/imagesConfigs/imagesConfig';
-import { ImageAlignmentEnum } from 'config/enums/imageEnums';
+import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
-import imagesURIModel from 'services/models/imagesExplore/imagesURIModel';
+import blobsURIModel from 'services/models/media/blobsURIModel';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { IMediaPanelProps } from './MediaPanel.d';
 
-import { IImagesPanelProps } from './ImagesPanel.d';
+import './MediaPanel.scss';
 
-import './ImagesPanel.scss';
-
-function ImagesPanel({
-  imagesData,
-  recordSlice,
-  indexSlice,
-  indexRange,
-  stepRange,
-  indexDensity,
-  recordDensity,
-  onSliceRangeChange,
-  onDensityChange,
-  getImagesBlobsData,
+function MediaPanel({
+  data,
+  getBlobsData,
   isLoading,
-  applyButtonDisabled,
   panelResizing,
-  imageWrapperOffsetHeight,
-  imageWrapperOffsetWidth,
-  isRangePanelShow,
+  wrapperOffsetHeight,
+  wrapperOffsetWidth,
   orderedMap,
-  controls,
   resizeMode,
   tooltip,
   focusedState,
-  imageProperties,
+  additionalProperties,
   onActivePointChange,
   tableHeight,
-}: IImagesPanelProps): React.FunctionComponentElement<React.ReactNode> {
-  const [hoveredImageKey, setHoveredImageKey] = React.useState<string>('');
-  const [imageFullMode, setImageFullMode] = React.useState<boolean>(false);
-  const [imageFullModeData, setImageFullModeData] = React.useState<any>('');
+  mediaType,
+  controls,
+  actionPanel,
+  actionPanelSize,
+  tooltipType,
+}: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
     bottom: number;
@@ -71,7 +56,7 @@ function ImagesPanel({
   const scrollTopOffset = React.useRef<number>(0);
 
   function addUriToList(blobUrl: string) {
-    if (!imagesURIModel.getState()[blobUrl]) {
+    if (!blobsURIModel.getState()[blobUrl]) {
       blobUriArray.current.push(blobUrl);
       getBatch();
     }
@@ -84,7 +69,7 @@ function ImagesPanel({
 
     timeoutID.current = window.setTimeout(() => {
       if (!isEmpty(blobUriArray.current)) {
-        requestRef.current = getImagesBlobsData(blobUriArray.current);
+        requestRef.current = getBlobsData(blobUriArray.current);
         requestRef.current.call().then(() => {
           blobUriArray.current = [];
         });
@@ -106,30 +91,28 @@ function ImagesPanel({
     if (!focusedState?.active) {
       syncHoverState({ activePoint: null });
     }
-    setHoveredImageKey('');
   }
 
   function onMouseOver(e: React.MouseEvent<HTMLDivElement>): void {
     if (e?.target) {
       e.stopPropagation();
       const targetElem = e.target as Element;
-      const closestImageNode = targetElem.closest(
-        '.ImagesSet__container__imagesBox__imageBox__image',
+      const closestNode = targetElem.closest(
+        '[data-mediasetitem="mediaSetItem"]',
       );
-      if (closestImageNode) {
-        const imageKey = closestImageNode.getAttribute('data-key');
-        const imageSeqKey = closestImageNode.getAttribute('data-seqkey');
-        const pointRect = closestImageNode.getBoundingClientRect();
+      if (closestNode) {
+        const key = closestNode.getAttribute('data-key');
+        const seqKey = closestNode.getAttribute('data-seqkey');
+        const pointRect = closestNode.getBoundingClientRect();
         if (
           pointRect &&
-          (focusedState.key !== imageKey || activePointRect === null) &&
+          (focusedState.key !== key || activePointRect === null) &&
           !focusedState?.active
         ) {
           syncHoverState({
-            activePoint: { pointRect, key: imageKey, seqKey: imageSeqKey },
+            activePoint: { pointRect, key, seqKey },
           });
         }
-        setHoveredImageKey(imageKey as string);
       } else {
         closePopover();
       }
@@ -173,15 +156,10 @@ function ImagesPanel({
     [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
-  const imagesSetKey = React.useMemo(
+  const setKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      imagesData,
-      imageWrapperOffsetHeight,
-      imageWrapperOffsetWidth,
-      imageProperties,
-    ],
+    [data, wrapperOffsetHeight, wrapperOffsetWidth, additionalProperties],
   );
 
   React.useEffect(() => {
@@ -198,7 +176,7 @@ function ImagesPanel({
         requestRef.current.abort();
       }
 
-      imagesURIModel.init();
+      blobsURIModel.init();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -206,24 +184,27 @@ function ImagesPanel({
   return (
     <BusyLoaderWrapper
       isLoading={isLoading}
-      className='ImagesExplore__loader'
+      className='MediaPanel__loader'
       height='100%'
       loaderComponent={<ChartLoader controlsCount={2} />}
     >
       {panelResizing ? (
-        <div className='ImagesPanel__Container__resizing'>
+        <div className='MediaPanel__Container__resizing'>
           <Text size={14} color='info'>
             Release to resize
           </Text>
         </div>
       ) : (
         <>
-          <div className='ImagesPanel__Container'>
-            {!isEmpty(imagesData) ? (
-              <div className='ImagesPanel'>
+          <div className='MediaPanel__Container'>
+            {!isEmpty(data) ? (
+              <div
+                className='MediaPanel'
+                style={{ height: `calc(100% - ${actionPanelSize || 0})` }}
+              >
                 <div
                   ref={containerRef}
-                  className='ImagesPanel__imagesSetContainer'
+                  className='MediaPanel__mediaSetContainer'
                   onMouseOver={onMouseOver}
                   // TODO
                   // onClick={(e) => {
@@ -234,35 +215,34 @@ function ImagesPanel({
                   //   });
                   // }}
                 >
-                  <ImagesSet
-                    data={imagesData}
+                  <MediaSet
+                    data={data}
                     onScroll={() => null}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
-                    imagesSetKey={imagesSetKey}
-                    imageSetWrapperHeight={imageWrapperOffsetHeight - 48}
-                    imageSetWrapperWidth={imageWrapperOffsetWidth}
-                    imageHeight={
-                      imageProperties?.alignmentType ===
-                      ImageAlignmentEnum.Height
-                        ? (imageWrapperOffsetHeight *
-                            imageProperties?.imageSize) /
+                    setKey={setKey}
+                    wrapperOffsetHeight={wrapperOffsetHeight - 48}
+                    wrapperOffsetWidth={wrapperOffsetWidth}
+                    mediaItemHeight={
+                      additionalProperties?.alignmentType ===
+                      MediaItemAlignmentEnum.Height
+                        ? (wrapperOffsetHeight *
+                            additionalProperties?.mediaItemSize) /
                           100
-                        : imageProperties?.alignmentType ===
-                          ImageAlignmentEnum.Width
-                        ? (imageWrapperOffsetWidth *
-                            imageProperties?.imageSize) /
+                        : additionalProperties?.alignmentType ===
+                          MediaItemAlignmentEnum.Width
+                        ? (wrapperOffsetWidth *
+                            additionalProperties?.mediaItemSize) /
                           100
                         : imageFixedHeight
                     }
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
-                    hoveredImageKey={hoveredImageKey}
-                    setImageFullMode={setImageFullMode}
-                    setImageFullModeData={setImageFullModeData}
-                    imageProperties={imageProperties}
+                    additionalProperties={additionalProperties}
                     tableHeight={tableHeight}
+                    tooltip={tooltip}
+                    mediaType={mediaType}
                   />
                 </div>
                 <ChartPopover
@@ -273,11 +253,11 @@ function ImagesPanel({
                     !panelResizing &&
                     (tooltip?.display || focusedState?.active)
                   }
-                  chartType={ChartTypeEnum.ImageSet}
+                  chartType={tooltipType}
                   tooltipContent={tooltip?.content}
                   focusedState={focusedState}
                 />
-                <div className='ImagesPanel__controls'>{controls}</div>
+                <div className='MediaPanel__controls'>{controls}</div>
               </div>
             ) : (
               <EmptyComponent
@@ -285,37 +265,12 @@ function ImagesPanel({
                 content="It's super easy to search Aim experiments. Lookup search docs to learn more."
               />
             )}
-            {stepRange && indexRange && isRangePanelShow && (
-              <ImagesExploreRangePanel
-                recordSlice={recordSlice}
-                indexSlice={indexSlice}
-                indexRange={indexRange}
-                stepRange={stepRange}
-                indexDensity={indexDensity}
-                recordDensity={recordDensity}
-                onSliceRangeChange={onSliceRangeChange}
-                onDensityChange={onDensityChange}
-                applyButtonDisabled={applyButtonDisabled}
-              />
-            )}
+            {actionPanel}
           </div>
-          <Dialog
-            onClose={() => setImageFullMode(!imageFullMode)}
-            aria-labelledby='customized-dialog-title'
-            className='ImagesPanel__Container__imageFullViewPopup'
-            open={imageFullMode}
-          >
-            <ImageFullViewPopover
-              imageRendering={imageProperties?.imageRendering}
-              imageData={imageFullModeData}
-              tooltipContent={tooltip?.content}
-              handleClose={() => setImageFullMode(!imageFullMode)}
-            />
-          </Dialog>{' '}
         </>
       )}
     </BusyLoaderWrapper>
   );
 }
 
-export default React.memo(ImagesPanel);
+export default React.memo(MediaPanel);

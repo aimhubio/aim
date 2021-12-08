@@ -5,6 +5,7 @@ import tarfile
 import time
 from pathlib import Path
 
+from aim.sdk.configs import AIM_REPO_NAME
 
 TEST_REPO_PATHS = {
     'real_life_repo': '.aim_performance_repo_1',
@@ -51,5 +52,5 @@ def pytest_sessionfinish(session, exitstatus):
     if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
         for path in TEST_REPO_PATHS.values():
             _cleanup_test_repo(path)
-    if os.environ.get('__AIM_REPO_NAME__'):
-        del os.environ['__AIM_REPO_NAME__']
+    if os.environ.get(AIM_REPO_NAME):
+        del os.environ[AIM_REPO_NAME]

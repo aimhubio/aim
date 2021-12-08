@@ -4,6 +4,12 @@
 
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
 
+## 3.2.1 Dec 8 2021
+
+- Add ability to provide custom base path for API (mihran113, roubkar)
+- Fix table groups column default order (arsengit)
+- Fix table panel height issue in runs explorer page (arsengit)
+
 ## 3.2.0 Dec 3 2021
 
 - Add ability to cancel pending request (roubkar, arsengit)

@@ -59,6 +59,10 @@ def is_pytorch_tensor(inst):
     return inst_has_typename(inst, ['torch', 'Tensor'])
 
 
+def is_tf_tensor(inst):
+    return inst_has_typename(inst, ['tensorflow', 'Tensor'])
+
+
 def is_numpy_array(inst):
     """
     Check whether `inst` is instance of numpy array
@@ -86,6 +90,9 @@ def is_number(value):
     if is_pytorch_tensor(value):
         return True
 
+    if is_tf_tensor(value):
+        return True
+
     return False
 
 
@@ -104,5 +111,8 @@ def convert_to_py_number(value) -> object:
 
     if is_pytorch_tensor(value):
         return value.item()
+
+    if is_tf_tensor(value):
+        return value.numpy().item()
 
     raise ValueError('not a number')

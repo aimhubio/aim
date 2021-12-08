@@ -31,7 +31,7 @@ def run_up(args):
     for p in args.keys():
         args_list.append(p + '=' + args[p])
 
-    success_msg = "Open http://{}:{}".format(args["--host"], args["--port"])
+    success_msg = 'Open http://{}:{}'.format(args['--host'], args['--port'])
 
     child_process = subprocess.Popen(
         ['aim', UP_NAME] + args_list + ['--force-init'],
@@ -40,8 +40,8 @@ def run_up(args):
     )
     # Runs `aim up <args>` command
     info = {
-        "port": args["--port"],
-        "host": 'http://' + args["--host"]
+        'port': args['--port'],
+        'host': 'http://' + args['--host']
     }
 
     for line in child_process.stderr:
@@ -64,10 +64,11 @@ def run_up(args):
                 return ManagerActionResult(
                     ManagerActionStatuses.Failed,
                     {
-                       'message': """\nPerhaps this is a bug from aim side.
-                                     \nPlease open an issue https://github.com/aimhubio/aim/issues """
+                        'message': '\nPerhaps this is a bug from aim side.'
+                                   '\nPlease open an issue https://github.com/aimhubio/aim/issues.'
                     }
                 )
+
 
 def run_version(args):
     """Aim cli command runner to get aim current version
@@ -107,7 +108,7 @@ def run_process(command, args):
     if validate_command(command) is not True:
         return ManagerActionResult(
             ManagerActionStatuses.Failed,
-            {"message": 'Invalid operation'}
+            {'message': 'Invalid operation'}
         )
 
     run = __get_command_runner(command)
