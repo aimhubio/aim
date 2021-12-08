@@ -23,7 +23,7 @@
     .RangePanel {
       display: flex;
       align-items: center;
-      height: 2.75rem;
+      padding-bottom: toRem(4px);
       width: 100%;
       margin-top: toRem(10px);
       justify-content: center;

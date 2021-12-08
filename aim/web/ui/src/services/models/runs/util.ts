@@ -156,7 +156,7 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
     audios: 'Audios',
     videos: 'Videos',
     texts: 'Texts',
-    plots: 'Plotlies',
+    plotly: 'Plotlies',
   };
 
   let title = VisualizationMenuTitles[traceType];

@@ -25,10 +25,12 @@ interface IRangeSliderPanelProps {
   onApply: () => void;
   onInputChange: (name: string, value: number) => void;
   onRangeSliderChange: (name: string, newValue: number[] | number) => void;
+  applyButtonDisabled: boolean;
 }
 
 function RangePanel({
   onApply,
+  applyButtonDisabled,
   onRangeSliderChange,
   onInputChange,
   items,
@@ -72,7 +74,7 @@ function RangePanel({
             variant='contained'
             type='submit'
             className='ApplyButton'
-            disabled={false}
+            disabled={applyButtonDisabled}
           >
             Apply
           </Button>
