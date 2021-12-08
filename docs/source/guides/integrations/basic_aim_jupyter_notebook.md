@@ -37,5 +37,4 @@ run the following commands in the notebook to run the Aim UI:
 %aim up
 ```
 
-
 <img style="border: 1px solid #1d2253" src="../../_static/images/guides/integrations/jupyter/image.png" />
