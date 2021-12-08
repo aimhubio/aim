@@ -92,6 +92,7 @@ export interface IImageData {
   height: number;
   index: number;
   key: string;
+  seqKey: string;
   images_name: string;
   run: IImageRunData;
   step: number;

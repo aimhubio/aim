@@ -16,9 +16,8 @@ import { ChartTypeEnum } from 'utils/d3';
 import { MediaTypeEnum } from './config';
 
 export interface IMediaPanelProps {
-  data: any;
+  data: { [key: string]: any };
   orderedMap: { [key: string]: any };
-  getBlobsData: (uris: string[]) => Promise;
   isLoading: boolean;
   panelResizing: boolean;
   wrapperOffsetHeight: number;
@@ -28,10 +27,11 @@ export interface IMediaPanelProps {
   tooltip: ITooltipContent;
   focusedState: IFocusedState;
   additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
-  onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
   tableHeight: string;
   mediaType: MediaTypeEnum;
   actionPanel?: React.ReactNode;
   actionPanelSize?: number;
   tooltipType: ChartTypeEnum;
+  onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
+  getBlobsData: (uris: string[]) => Promise;
 }

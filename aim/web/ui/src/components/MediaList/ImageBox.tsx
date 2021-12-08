@@ -11,6 +11,8 @@ import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
+import { IImageBoxProps } from './MediaList.d';
+
 const ImageBox = ({
   index,
   style,
@@ -21,7 +23,7 @@ const ImageBox = ({
   tooltip,
   syncHoverState,
   additionalProperties,
-}: any): React.FunctionComponentElement<React.ReactNode> => {
+}: IImageBoxProps): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
   const [isImageFullViewPopupOpened, setIsImageFullViewPopupOpened] =
     React.useState<boolean>(false);
@@ -87,6 +89,7 @@ const ImageBox = ({
 
   return (
     <div key={index} className='MediaSet__container__mediaItemsList__imageBox'>
+      {console.log(data)}
       <div
         style={style}
         className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
@@ -99,6 +102,7 @@ const ImageBox = ({
             : ''
         }`}
         data-key={`${data.key}`}
+        //@ts-ignore
         data-seqkey={`${data.seqKey}`}
         data-mediasetitem={'mediaSetItem'}
         // onClick={onClick}
@@ -125,7 +129,7 @@ const ImageBox = ({
           <Skeleton
             variant='rect'
             height={mediaItemHeight - 10}
-            width={style.width - 10}
+            width={style?.width - 10}
           />
         )}
       </div>

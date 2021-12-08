@@ -7,7 +7,7 @@ import {
 
 import { MediaTypeEnum } from './config';
 export interface IMediaSetProps {
-  data: any;
+  data: { [key: string]: any };
   orderedMap: { [key: string]: any };
   onScroll: () => void;
   onListScroll: ({ scrollOffset: number }) => void;
