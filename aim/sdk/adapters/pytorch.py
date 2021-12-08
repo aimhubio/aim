@@ -1,7 +1,5 @@
-from aim import Distribution
-
-
 def track_params_dists(model, run):
+    from aim import Distribution
     data_hist = get_model_layers(model, 'data')
 
     for name, params in data_hist.items():
@@ -22,6 +20,7 @@ def track_params_dists(model, run):
 
 
 def track_gradients_dists(model, run):
+    from aim import Distribution
     grad_hist = get_model_layers(model, 'grad')
 
     for name, params in grad_hist.items():
