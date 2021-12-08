@@ -118,7 +118,8 @@ Full example [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_t
 
 ### Track distributions with Run
 
-Track distributions to explore model gradients, weights, etc:
+Track distributions to explore model gradients, weights, etc.
+To store a distribution pass an iterable of scalar values to the `Distribution` object.
 
 ```python
 from aim import Distribution
