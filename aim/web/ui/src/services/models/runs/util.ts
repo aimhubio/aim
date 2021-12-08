@@ -153,6 +153,10 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
   const VisualizationMenuTitles = {
     images: 'Images',
     distributions: 'Distributions',
+    audios: 'Audios',
+    videos: 'Videos',
+    texts: 'Texts',
+    plots: 'Plotlies',
   };
 
   let title = VisualizationMenuTitles[traceType];
@@ -203,7 +207,12 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
     });
   }
 
-  return { iters, record_range, processedValues, originalValues };
+  return {
+    iters,
+    record_range,
+    processedValues,
+    originalValues,
+  };
 }
 
 /**
@@ -211,4 +220,16 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
  */
 export function processImagesData() {
   return {};
+}
+
+export function reformatArrayQueries(
+  queryObj: Record<string, [number, number]> = {},
+) {
+  const formattedQueryObject: Record<string, string> = {};
+  Object.keys(queryObj).forEach((key) => {
+    const item = queryObj[key];
+    formattedQueryObject[key] = `${item[0]}:${item[1]}`;
+  });
+
+  return formattedQueryObject;
 }
