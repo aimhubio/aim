@@ -1,3 +1,4 @@
+mistune==0.8.4
 sphinx
 sphinx_rtd_theme
 m2r2==0.3.1

@@ -55,7 +55,7 @@ def unfold_tree(
         # TODO we need to implement TreeView.traverse()
         raise NotImplementedError
     else:
-        raise NotImplementedError
+        raise TypeError(f'Not supported value `{obj}` of type `{type(obj)}`.')
 
 
 cpdef val_to_node(
