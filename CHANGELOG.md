@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+
 ## 3.2.1 Dec 8 2021
 
 - Add ability to provide custom base path for API (mihran113, roubkar)

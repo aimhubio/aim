@@ -75,7 +75,6 @@ class Heatmap extends React.Component {
           min: 0,
           max: 1,
         },
-
         series: [
           {
             name: this.props.name,
@@ -88,9 +87,6 @@ class Heatmap extends React.Component {
             },
             dataLabels: {
               enabled: false,
-            },
-            animation: {
-              duration: 800,
             },
           },
         ],

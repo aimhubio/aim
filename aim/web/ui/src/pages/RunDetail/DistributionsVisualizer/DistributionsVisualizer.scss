@@ -1,6 +1,10 @@
 @use 'src/styles/abstracts' as *;
 
 .DistributionsVisualizer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   .highcharts-subtitle {
     font-style: normal;
     font-weight: bold;
