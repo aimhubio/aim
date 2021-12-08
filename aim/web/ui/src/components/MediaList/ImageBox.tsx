@@ -89,7 +89,6 @@ const ImageBox = ({
 
   return (
     <div key={index} className='MediaSet__container__mediaItemsList__imageBox'>
-      {console.log(data)}
       <div
         style={style}
         className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
