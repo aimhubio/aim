@@ -157,10 +157,10 @@ async def run_images_search_api(q: Optional[str] = '',
 
 @runs_router.get('/search/plotly/', response_model=RunPlotlysSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-async def run_plotlys_search_api(q: Optional[str] = '',
-                                 record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                                 index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                                 calc_ranges: Optional[bool] = False):
+async def run_plotly_figures_search_api(q: Optional[str] = '',
+                                        record_range: Optional[str] = '',
+                                        record_density: Optional[int] = 50,
+                                        calc_ranges: Optional[bool] = False):
     # Get project
     project = Project()
     if not project.exists():
@@ -181,12 +181,10 @@ async def run_plotlys_search_api(q: Optional[str] = '',
 
     try:
         record_range = str_to_range(record_range)
-        index_range = str_to_range(index_range)
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    streamer = plotly_search_result_streamer(traces, record_range, record_density,
-                                             index_range, index_density, calc_ranges)
+    streamer = plotly_search_result_streamer(traces, record_range, record_density, calc_ranges)
     return StreamingResponse(streamer)
 
 
@@ -278,10 +276,10 @@ async def run_images_batch_api(run_id: str,
 
 
 @runs_router.post('/{run_id}/plotly/get-batch/', response_model=RunPlotlysBatchApiOut)
-async def run_plotlys_batch_api(run_id: str,
-                                requested_traces: RunTracesBatchApiIn,
-                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                                index_range: Optional[str] = '', index_density: Optional[int] = 5):
+async def run_plotly_figures_batch_api(run_id: str,
+                                       requested_traces: RunTracesBatchApiIn,
+                                       record_range: Optional[str] = '',
+                                       record_density: Optional[int] = 50):
     # Get project
     project = Project()
     if not project.exists():
@@ -292,13 +290,13 @@ async def run_plotlys_batch_api(run_id: str,
 
     try:
         record_range = str_to_range(record_range)
-        index_range = str_to_range(index_range)
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    traces_streamer = requested_plotly_object_traces_streamer(run, requested_traces,
-                                                              record_range, index_range,
-                                                              record_density, index_density)
+    traces_streamer = requested_plotly_object_traces_streamer(run,
+                                                              requested_traces,
+                                                              record_range,
+                                                              record_density)
 
     return StreamingResponse(traces_streamer)
 
