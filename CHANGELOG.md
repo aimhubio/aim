@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.2.1 Dec 8 2021
 
 - Add ability to provide custom base path for API (mihran113, roubkar)
 - Fix table groups column default order (arsengit)
