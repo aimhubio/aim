@@ -16,9 +16,15 @@ class Plotly(CustomObject):
             raise TypeError("Object is not a Plotly instance")
 
     def _prepare(self, obj):
+        try:
+            from plotly.version import __version__ as plotly_version
+        except ModuleNotFoundError:
+            plotly_version = "unknown"
+
         assert hasattr(obj, "to_json")
 
         self.storage["source"] = "plotly"
+        self.storage["version"] = plotly_version
         self.storage["format"] = "raw_json"
         self.storage["data"] = BLOB(data=obj.to_json())
 
