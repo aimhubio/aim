@@ -11,7 +11,9 @@ from aim.sdk.repo import Repo
 
 # pre-defined sequences and custom objects
 from aim.sdk.objects import Image
+from aim.sdk.objects import Plotly
 from aim.sdk.objects import Distribution
 from aim.sdk.metric import Metric
 from aim.sdk.image_sequence import Images
+from aim.sdk.plotly_sequence import Figures
 from aim.sdk.distribution_sequence import Distributions
