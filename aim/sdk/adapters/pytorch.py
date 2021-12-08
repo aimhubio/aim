@@ -4,19 +4,23 @@ def track_params_dists(model, run):
 
     for name, params in data_hist.items():
         if 'weight' in params:
-            run.track(Distribution(params['weight']),
-                      name=name,
-                      context={
-                          'type': 'data',
-                          'params': 'weights',
-                      })
+            run.track(
+                Distribution(params['weight']),
+                name=name,
+                context={
+                    'type': 'data',
+                    'params': 'weights',
+                }
+            )
         if 'bias' in params:
-            run.track(Distribution(params['bias']),
-                      name=name,
-                      context={
-                          'type': 'data',
-                          'params': 'biases',
-                      })
+            run.track(
+                Distribution(params['bias']),
+                name=name,
+                context={
+                    'type': 'data',
+                    'params': 'biases',
+                }
+            )
 
 
 def track_gradients_dists(model, run):
@@ -25,19 +29,23 @@ def track_gradients_dists(model, run):
 
     for name, params in grad_hist.items():
         if 'weight' in params:
-            run.track(Distribution(params['weight']),
-                      name=name,
-                      context={
-                          'type': 'gradients',
-                          'params': 'weights',
-                      })
+            run.track(
+                Distribution(params['weight']),
+                name=name,
+                context={
+                    'type': 'gradients',
+                    'params': 'weights',
+                }
+            )
         if 'bias' in params:
-            run.track(Distribution(params['bias']),
-                      name=name,
-                      context={
-                          'type': 'gradients',
-                          'params': 'biases',
-                      })
+            run.track(
+                Distribution(params['bias']),
+                name=name,
+                context={
+                    'type': 'gradients',
+                    'params': 'biases',
+                }
+            )
 
 
 def get_model_layers(model, dt, parent_name=None):
