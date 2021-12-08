@@ -4,6 +4,7 @@
   display: flex;
   align-items: center;
   height: 100%;
+  max-width: toRem(520px);
   width: 100%;
   &__densityWrapper {
     height: 100%;

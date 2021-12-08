@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+
 ## 3.2.0 Dec 3 2021
 
 - Add ability to cancel pending request (roubkar, arsengit)
