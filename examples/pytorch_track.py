@@ -112,6 +112,7 @@ for epoch in range(num_epochs):
             # aim - Track metrics
             aim_run.track(acc, name='accuracy', epoch=epoch, context={'subset': 'train'})
 
+            # aim - Track weights and gradients distributions
             track_params_dists(model, aim_run)
             track_gradients_dists(model, aim_run)
 
@@ -135,4 +136,3 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 
     print('Test Accuracy: {} %'.format(100 * correct / total))
-
