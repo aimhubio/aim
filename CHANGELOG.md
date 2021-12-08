@@ -3,6 +3,8 @@
 ## Unreleased
 
 - Add ability to provide custom base path for API (mihran113, roubkar)
+- Fix table groups column default order (arsengit)
+- Fix table panel height issue in runs explorer page (arsengit)
 
 ## 3.2.0 Dec 3 2021
 
