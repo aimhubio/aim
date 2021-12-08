@@ -1,4 +1,4 @@
-## Getting started in a notebook
+## Aim UI on Jupyter Notebook
 
 Start your notebook with the following code to install Aim:
 
