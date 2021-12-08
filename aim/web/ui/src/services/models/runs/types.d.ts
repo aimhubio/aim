@@ -27,7 +27,7 @@ export type TraceType =
   | 'audios'
   | 'texts'
   | 'videos'
-  | 'plots';
+  | 'plotly';
 
 /**
  * The context of info Raw data
