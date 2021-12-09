@@ -347,16 +347,16 @@ class Repo:
         from aim.sdk.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
 
-    def query_plotly_objects(self, query: str = '') -> QuerySequenceCollection:
-        """Get Plotly collections satisfying query expression.
+    def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
+        """Get Figures collections satisfying query expression.
 
         Args:
              query (str): query expression.
         Returns:
-            :obj:`SequenceCollection`: Iterable for Plotly sequences matching query expression.
+            :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.plotly_sequence import Figures
+        from aim.sdk.figure_sequence import Figures
         return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query)
 
     def query_distributions(self, query: str = '') -> QuerySequenceCollection:
