@@ -29,8 +29,8 @@ from aim.web.api.runs.pydantic_models import (
     RunSearchApiOut,
     RunMetricsBatchApiOut,
     RunImagesBatchApiOut,
-    RunPlotlysBatchApiOut,
-    RunPlotlysSearchApiOut,
+    RunFiguresBatchApiOut,
+    RunFiguresSearchApiOut,
     RunDistributionsBatchApiOut,
     StructuredRunUpdateIn,
     StructuredRunUpdateOut,
@@ -41,10 +41,10 @@ from aim.web.api.runs.pydantic_models import (
 )
 from aim.web.api.utils import object_factory
 from aim.storage.query import syntax_error_check
-from aim.web.api.runs.plotly_utils import (
-    requested_plotly_object_traces_streamer,
-    plotly_batch_result_streamer,
-    plotly_search_result_streamer
+from aim.web.api.runs.figure_utils import (
+    requested_figure_object_traces_streamer,
+    figure_batch_result_streamer,
+    figure_search_result_streamer
 )
 
 runs_router = APIRouter()
@@ -63,10 +63,10 @@ def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Opti
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=400, detail={
-            "name": "SyntaxError",
-            "statement": se.text,
-            "line": se.lineno,
-            "offset": se.offset
+            'name': 'SyntaxError',
+            'statement': se.text,
+            'line': se.lineno,
+            'offset': se.offset
         })
     runs = project.repo.query_runs(query=query, paginated=bool(limit), offset=offset)
 
@@ -108,10 +108,10 @@ async def run_metric_search_api(q: Optional[str] = '',
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=400, detail={
-            "name": "SyntaxError",
-            "statement": se.text,
-            "line": se.lineno,
-            "offset": se.offset
+            'name': 'SyntaxError',
+            'statement': se.text,
+            'line': se.lineno,
+            'offset': se.offset
         })
 
     traces = project.repo.query_metrics(query=query)
@@ -136,10 +136,10 @@ async def run_images_search_api(q: Optional[str] = '',
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=400, detail={
-            "name": "SyntaxError",
-            "statement": se.text,
-            "line": se.lineno,
-            "offset": se.offset
+            'name': 'SyntaxError',
+            'statement': se.text,
+            'line': se.lineno,
+            'offset': se.offset
         })
 
     traces = project.repo.query_images(query=query)
@@ -155,12 +155,12 @@ async def run_images_search_api(q: Optional[str] = '',
     return StreamingResponse(streamer)
 
 
-@runs_router.get('/search/plotly/', response_model=RunPlotlysSearchApiOut,
+@runs_router.get('/search/figures/', response_model=RunFiguresSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-async def run_plotly_figures_search_api(q: Optional[str] = '',
-                                        record_range: Optional[str] = '',
-                                        record_density: Optional[int] = 50,
-                                        calc_ranges: Optional[bool] = False):
+async def run_figures_search_api(q: Optional[str] = '',
+                                 record_range: Optional[str] = '',
+                                 record_density: Optional[int] = 50,
+                                 calc_ranges: Optional[bool] = False):
     # Get project
     project = Project()
     if not project.exists():
@@ -171,20 +171,20 @@ async def run_plotly_figures_search_api(q: Optional[str] = '',
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=400, detail={
-            "name": "SyntaxError",
-            "statement": se.text,
-            "line": se.lineno,
-            "offset": se.offset
+            'name': 'SyntaxError',
+            'statement': se.text,
+            'line': se.lineno,
+            'offset': se.offset
         })
 
-    traces = project.repo.query_plotly_objects(query=query)
+    traces = project.repo.query_figure_objects(query=query)
 
     try:
         record_range = str_to_range(record_range)
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    streamer = plotly_search_result_streamer(traces, record_range, record_density, calc_ranges)
+    streamer = figure_search_result_streamer(traces, record_range, record_density, calc_ranges)
     return StreamingResponse(streamer)
 
 
@@ -198,14 +198,14 @@ def image_blobs_batch_api(uri_batch: URIBatchIn):
     return StreamingResponse(images_batch_result_streamer(uri_batch, project.repo))
 
 
-@runs_router.post('/plotly/get-batch/')
-def plotly_blobs_batch_api(uri_batch: URIBatchIn):
+@runs_router.post('/figures/get-batch/')
+def figure_blobs_batch_api(uri_batch: URIBatchIn):
     # Get project
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return StreamingResponse(plotly_batch_result_streamer(uri_batch, project.repo))
+    return StreamingResponse(figure_batch_result_streamer(uri_batch, project.repo))
 
 
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
@@ -275,11 +275,11 @@ async def run_images_batch_api(run_id: str,
     return StreamingResponse(traces_streamer)
 
 
-@runs_router.post('/{run_id}/plotly/get-batch/', response_model=RunPlotlysBatchApiOut)
-async def run_plotly_figures_batch_api(run_id: str,
-                                       requested_traces: RunTracesBatchApiIn,
-                                       record_range: Optional[str] = '',
-                                       record_density: Optional[int] = 50):
+@runs_router.post('/{run_id}/figures/get-batch/', response_model=RunFiguresBatchApiOut)
+async def run_figures_batch_api(run_id: str,
+                                requested_traces: RunTracesBatchApiIn,
+                                record_range: Optional[str] = '',
+                                record_density: Optional[int] = 50):
     # Get project
     project = Project()
     if not project.exists():
@@ -293,7 +293,7 @@ async def run_plotly_figures_batch_api(run_id: str,
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
 
-    traces_streamer = requested_plotly_object_traces_streamer(run,
+    traces_streamer = requested_figure_object_traces_streamer(run,
                                                               requested_traces,
                                                               record_range,
                                                               record_density)

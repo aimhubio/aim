@@ -201,30 +201,29 @@ RunImagesSearchApiOut = Dict[str, ImagesSearchRunView]
 URIBatchIn = List[str]
 
 
-class PlotlyInfo(BaseModel):
+class FigureInfo(BaseModel):
     blob_uri: str
-    index: int
 
 
-class PlotlyBaseView(TraceBaseView):
-    values: List[List[PlotlyInfo]]
+class FigureBaseView(TraceBaseView):
+    values: List[FigureInfo]
 
 
-RunPlotlysBatchApiOut = List[PlotlyBaseView]
+RunFiguresBatchApiOut = List[FigureBaseView]
 
 
-class PlotlySequenceFullView(TraceBase):
-    values: List[List[PlotlyInfo]]
+class FigureSequenceFullView(TraceBase):
+    values: List[FigureInfo]
     iters: List[int]
     epochs: List[int]
     timestamps: List[float]
 
 
-class PlotlySearchRunView(BaseModel):
+class FigureSearchRunView(BaseModel):
     params: dict
-    traces: List[PlotlySequenceFullView]
+    traces: List[FigureSequenceFullView]
     ranges: RangeInfo
     props: PropsView
 
 
-RunPlotlysSearchApiOut = Dict[str, PlotlySearchRunView]
+RunFiguresSearchApiOut = Dict[str, FigureSearchRunView]

@@ -1,7 +1,7 @@
 from typing import Union, Tuple
 
 from aim.sdk.sequence import Sequence
-from aim.sdk.objects.plotly import Plotly
+from aim.sdk.objects.figure import Figure
 
 
 class Figures(Sequence):
@@ -9,8 +9,7 @@ class Figures(Sequence):
 
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
-        plotly_typename = Plotly.get_typename()
-        return (plotly_typename,)  # noqa : need a tuple for consitancy
+        return (Figure.get_typename(),)  # noqa : need a tuple for consitancy
 
     @classmethod
     def sequence_name(cls) -> str:
