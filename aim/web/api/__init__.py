@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+import os
 
 
 def create_app():
@@ -23,6 +24,7 @@ def create_app():
     from aim.web.api.dashboards.views import dashboards_router
     from aim.web.api.projects.views import projects_router
     from aim.web.api.views import statics_router
+    from aim.web.configs import AIM_UI_BASE_PATH
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware)
@@ -33,11 +35,13 @@ def create_app():
     api_app.include_router(projects_router, prefix='/projects')
     api_app.include_router(runs_router, prefix='/runs')
     api_app.include_router(tags_router, prefix='/tags')
-    app.mount('/api', api_app)
 
+    base_path = os.environ.get(AIM_UI_BASE_PATH, '')
+
+    app.mount(f'{base_path}/api', api_app)
     static_files_app = FastAPI()
 
     static_files_app.include_router(statics_router)
-    app.mount('/', static_files_app)
+    app.mount(f'{base_path}/', static_files_app)
 
     return app
