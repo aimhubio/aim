@@ -75,8 +75,8 @@ class ExperimentDistributionCharts extends Component {
         const xLen = xMax - xMin;
         const binSize = xLen / bins;
 
-        for (let i = 0; i <= this.props.data.length; i++) {
-          heatmapX.push(`${i}`);
+        for (let i = 0; i < this.props.data.length; i++) {
+          heatmapX.push(`${this.props.iters[i]}`);
         }
         for (let i = xMin; i <= xMax; i += binSize) {
           heatmapY.push(`${i}`);
@@ -174,7 +174,7 @@ class ExperimentDistributionCharts extends Component {
             key={this.state.cursor}
             data={this.state.histogram}
             line={this.state.histogramLine}
-            subtitle={`Step ${this.state.cursor}`}
+            subtitle={`Step ${this.props.iters[this.state.cursor]}`}
           />
           <Heatmap
             x={this.state.heatmapX}
@@ -184,6 +184,7 @@ class ExperimentDistributionCharts extends Component {
             cursor={this.state.cursor}
             name={'Frequency'}
             click={(e) => this.handleClick(e)}
+            iters={this.props.iters}
           />
         </div>
       )
@@ -194,6 +195,7 @@ class ExperimentDistributionCharts extends Component {
 ExperimentDistributionCharts.propTypes = {
   data: PropTypes.array,
   name: PropTypes.string,
+  iters: PropTypes.array,
 };
 
 export default ExperimentDistributionCharts;
