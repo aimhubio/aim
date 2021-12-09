@@ -1,13 +1,14 @@
 import React from 'react';
 
-import { Box, Divider, TextField, Tooltip } from '@material-ui/core';
-import { SearchOutlined } from '@material-ui/icons';
+import { Box, Divider } from '@material-ui/core';
 
-import { Button, Icon, Dropdown } from 'components/kit';
+import { Button, Dropdown, Icon } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
@@ -23,18 +24,16 @@ import getObjectPaths from 'utils/getObjectPaths';
 import './SelectForm.scss';
 
 function SelectForm({
+  requestIsPending,
   selectedOptionsData,
   onSelectOptionsChange,
   onSelectRunQueryChange,
-  onSelectAdvancedQueryChange,
-  toggleSelectAdvancedMode,
-  onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [open, setOpen] = React.useState({
     x: false,
     y: false,
   });
-
+  const paramsSuggestions = useParamsSuggestions();
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const searchRef = React.useRef<any>(null);
 
@@ -47,14 +46,22 @@ function SelectForm({
     };
   }, []);
 
-  function handleParamsSearch(e: React.ChangeEvent<any>): void {
+  function handleParamsSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
-    searchRef.current = scattersAppModel.getParamsData(true);
+    if (requestIsPending) {
+      return;
+    }
+    searchRef.current = scattersAppModel.getScattersData(true);
     searchRef.current.call();
   }
 
-  function toggleEditMode(): void {
-    toggleSelectAdvancedMode();
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!requestIsPending) {
+      return;
+    }
+    searchRef.current?.abort();
+    scattersAppModel.abortRequest();
   }
 
   const options: ISelectOption[] = React.useMemo(() => {
@@ -114,11 +121,6 @@ function SelectForm({
       return data;
     }, [options]);
 
-  function handleResetSelectForm(): void {
-    onSelectOptionsChange([]);
-    onSelectRunQueryChange('');
-  }
-
   function onChange(
     type: 'x' | 'y',
     option: { value: string; label: string } | null,
@@ -140,40 +142,15 @@ function SelectForm({
   }
 
   return (
-    <div className='SelectForm'>
-      <div className='SelectForm__container__options'>
-        <Box
-          width='100%'
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          {selectedOptionsData?.advancedMode ? (
-            <div className='SelectForm__textarea'>
-              <form onSubmit={handleParamsSearch}>
-                <TextField
-                  fullWidth
-                  multiline
-                  size='small'
-                  spellCheck={false}
-                  rows={3}
-                  variant='outlined'
-                  placeholder={
-                    'metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  }
-                  value={selectedOptionsData?.advancedQuery ?? ''}
-                  onChange={({ target }) =>
-                    onSelectAdvancedQueryChange(target.value)
-                  }
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      handleParamsSearch(e);
-                    }
-                  }}
-                />
-              </form>
-            </div>
-          ) : (
+    <div className='Scatters__SelectForm'>
+      <Box display='flex'>
+        <div className='Scatters__SelectForm__container__options'>
+          <Box
+            width='100%'
+            display='flex'
+            justifyContent='space-between'
+            alignItems='center'
+          >
             <Box display='flex' alignItems='center' flex={1}>
               <Dropdown
                 key='y-axis'
@@ -209,70 +186,38 @@ function SelectForm({
                 icon={{ name: 'x-axis' }}
               />
             </Box>
-          )}
-        </Box>
-        {selectedOptionsData?.advancedMode ? null : (
-          <div className='SelectForm__TextField'>
-            <form onSubmit={handleParamsSearch}>
-              <TextField
-                fullWidth
-                size='small'
-                variant='outlined'
-                spellCheck={false}
-                inputProps={{ style: { height: '0.687rem' } }}
-                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-                value={selectedOptionsData?.query ?? ''}
-                onChange={({ target }) => onSelectRunQueryChange(target.value)}
+          </Box>
+        </div>
+        <Divider style={{ margin: '0 1rem' }} orientation='vertical' flexItem />
+        <div className='Scatters__SelectForm__container__search'>
+          <Button
+            color='primary'
+            variant={requestIsPending ? 'outlined' : 'contained'}
+            startIcon={
+              <Icon
+                name={requestIsPending ? 'close' : 'search'}
+                fontSize={requestIsPending ? 12 : 14}
               />
-            </form>
-          </div>
-        )}
-      </div>
-      <Divider style={{ margin: '0 1rem' }} orientation='vertical' flexItem />
-      <div className='SelectForm__container__search'>
-        <Button
-          fullWidth
-          color='primary'
-          variant='contained'
-          startIcon={<SearchOutlined />}
-          className='SelectForm__search__button'
-          onClick={handleParamsSearch}
-        >
-          Search
-        </Button>
-        <div className='SelectForm__search__actions'>
-          <Tooltip title='Reset query'>
-            <div>
-              <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
-                <Icon name='reset' />
-              </Button>
-            </div>
-          </Tooltip>
-          <Tooltip
-            title={
-              selectedOptionsData?.advancedMode
-                ? 'Switch to default mode'
-                : 'Enable advanced search mode '
+            }
+            className='Scatters__SelectForm__search__button'
+            onClick={requestIsPending ? handleRequestAbort : handleParamsSearch}
+            disabled={
+              !selectedOptionsData?.options[0] ||
+              !selectedOptionsData?.options[1]
             }
           >
-            <div>
-              <Button
-                className={selectedOptionsData?.advancedMode ? 'active' : ''}
-                withOnlyIcon={true}
-                onClick={toggleEditMode}
-              >
-                <Icon name='edit' />
-              </Button>
-            </div>
-          </Tooltip>
-          <Tooltip title='Copy search query'>
-            <div>
-              <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
-                <Icon name='copy' />
-              </Button>
-            </div>
-          </Tooltip>
+            {requestIsPending ? 'Cancel' : 'Search'}
+          </Button>
         </div>
+      </Box>
+      <div className='Scatters__SelectForm__TextField'>
+        <ExpressionAutoComplete
+          onExpressionChange={onSelectRunQueryChange}
+          onSubmit={handleParamsSearch}
+          value={selectedOptionsData?.query}
+          options={paramsSuggestions}
+          placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+        />
       </div>
     </div>
   );

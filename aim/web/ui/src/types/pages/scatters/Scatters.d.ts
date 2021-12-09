@@ -45,11 +45,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   chartTitleData: IChartTitleData;
   tableData: IMetricTableRowData[];
   tableColumns: ITableColumn[];
-  ignoreOutliers: boolean;
-  zoom: IChartZoom;
-  axesScaleType: IAxesScaleState;
   focusedState: IFocusedState;
-  highlightMode: HighlightEnum;
   groupingData: IGroupingConfig;
   notifyData: IScatterAppModelState['notifyData'];
   tooltip: IChartTooltip;
@@ -63,16 +59,12 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
-  onIgnoreOutliersChange: () => void;
-  onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
-  onHighlightModeChange: (mode: HighlightEnum) => void;
   onTableRowHover: (rowKey?: string) => void;
   onTableRowClick: (rowKey?: string) => void;
-  onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
@@ -86,8 +78,6 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onResetConfigData: () => void;
   onSelectOptionsChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
-  onSelectAdvancedQueryChange: (query: string) => void;
-  toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;
   onSortReset: () => void;

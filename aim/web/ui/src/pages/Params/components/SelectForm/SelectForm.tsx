@@ -234,21 +234,24 @@ function SelectForm({
                     No params are selected
                   </Text>
                 )}
-                {selectedParamsData?.options.length > 0 && (
-                  <Box className='SelectForm__tags ScrollBar__hidden'>
-                    {selectedParamsData?.options?.map((tag: ISelectOption) => {
-                      return (
-                        <Badge
-                          size='large'
-                          key={tag.label}
-                          color={tag.color}
-                          label={tag.label}
-                          onDelete={handleDelete}
-                        />
-                      );
-                    })}
-                  </Box>
-                )}
+                {selectedParamsData?.options &&
+                  selectedParamsData.options.length > 0 && (
+                    <Box className='SelectForm__tags ScrollBar__hidden'>
+                      {selectedParamsData?.options?.map(
+                        (tag: ISelectOption) => {
+                          return (
+                            <Badge
+                              size='large'
+                              key={tag.label}
+                              color={tag.color}
+                              label={tag.label}
+                              onDelete={handleDelete}
+                            />
+                          );
+                        },
+                      )}
+                    </Box>
+                  )}
               </Box>
               {selectedParamsData?.options &&
                 selectedParamsData.options.length > 1 && (
@@ -276,7 +279,6 @@ function SelectForm({
             {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
         </Box>
-
         <div className='SelectForm__TextField'>
           <ExpressionAutoComplete
             onExpressionChange={onSelectRunQueryChange}

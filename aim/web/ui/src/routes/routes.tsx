@@ -88,13 +88,12 @@ const routes = {
     displayName: 'Scatters',
     icon: 'scatterplot',
   },
-  // TODO Add SCATTERS_EXPLORE_ID later
-  // SCATTERS_EXPLORE_ID: {
-  //   path: PathEnum.Scatters_Id,
-  //   component: ImagesExplore,
-  //   showInSidebar: false,
-  //   displayName: 'ScatterId',
-  // },
+  SCATTERS_EXPLORE_ID: {
+    path: PathEnum.Scatters_Id,
+    component: Scatters,
+    showInSidebar: false,
+    displayName: 'ScatterId',
+  },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
     component: Bookmarks,

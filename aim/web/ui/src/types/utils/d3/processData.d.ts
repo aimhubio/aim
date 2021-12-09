@@ -1,6 +1,8 @@
+import { IPoint } from 'components/ScatterPlot';
+
 import { ILine } from 'types/components/LineChart/LineChart';
 
-export interface IProcessedData extends ILine {
+export interface IProcessedData extends ILine, IPoint {
   color: string;
   dasharray: string;
 }

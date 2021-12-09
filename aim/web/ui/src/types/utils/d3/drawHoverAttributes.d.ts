@@ -8,12 +8,15 @@ import {
   IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 
+import { ScaleEnum } from 'utils/d3';
+
 import { IAxisScale } from './getAxisScale';
 import { IProcessedData } from './processData';
 
 export interface IDrawHoverAttributesArgs {
   index: number;
   data: IProcessedData[];
+  axesScaleType: { xAxis: ScaleEnum; yAxis: ScaleEnum };
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<IAttributesRef>;
@@ -26,7 +29,7 @@ export interface IDrawHoverAttributesArgs {
   linesNodeRef: React.MutableRefObject<>;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
-  highlightMode: HighlightEnum;
+  highlightMode?: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   humanizerConfigRef: React.MutableRefObject<{}>;
@@ -64,7 +67,7 @@ export interface INearestCircle {
 export interface IActivePoint {
   key: string;
   xValue: number | string;
-  yValue: number;
+  yValue: number | string;
   xPos: number;
   yPos: number;
   chartIndex: number;

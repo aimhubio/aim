@@ -1,9 +1,11 @@
 @use "src/styles/abstracts" as *;
 
-.SelectForm {
+.Scatters__SelectForm {
   flex: 1;
   padding: 0.725rem 1.5em;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   &__container__options {
     flex: 1;
@@ -48,9 +50,7 @@
   }
 
   &__TextField {
-    input {
-      font-family: monospace;
-    }
+    position: relative;
   }
 
   &__textarea {
@@ -121,20 +121,5 @@
 
   .Dropdown {
     flex: 1
-  }
-}
-
-.Options__SelectForm__tags {
-  display: flex;
-  align-items: center;
-  overflow: auto;
-  max-width: calc(100vw - 40rem);
-  min-width: 12rem;
-
-  .Badge {
-    margin-right: 0.5rem;
-    &:last-child {
-      margin-right: 20px;
-    }
   }
 }

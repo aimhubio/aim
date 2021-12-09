@@ -6,15 +6,7 @@ import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { CircleEnum } from './index';
 
 function drawPoints(args: IDrawPointsArgs): void {
-  const {
-    index,
-    data,
-    xScale,
-    yScale,
-    pointsRef,
-    pointsNodeRef,
-    highlightMode,
-  } = args;
+  const { index, data, xScale, yScale, pointsRef, pointsNodeRef } = args;
 
   if (!pointsNodeRef?.current) {
     return;
@@ -40,11 +32,6 @@ function drawPoints(args: IDrawPointsArgs): void {
       .attr('id', (p: IPoint) => `Circle-${p.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
       .attr('groupKey', (p: IPoint) => p.groupKey)
-      .attr(
-        'data-selector',
-        (p: IPoint) =>
-          `Circle-Sel-${highlightMode}-${p.selectors?.[highlightMode]}`,
-      )
       .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]))
       .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]))
       .attr('r', CircleEnum.Radius)

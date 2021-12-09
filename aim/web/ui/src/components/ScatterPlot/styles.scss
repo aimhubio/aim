@@ -94,12 +94,30 @@
   .yAxis, .xAxis {
     .tick {
       text {
+        display: none;
+      }
+      .yAxisTick, .xAxisTick {
         color: $text-color;
       }
     }
     .domain {
       stroke: $text-color;
       stroke-width: 0.4;
+    }
+    .xAxisTick {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .yAxisTick {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }

@@ -171,8 +171,8 @@ function SelectForm({
   const id = open ? 'select-metric' : undefined;
 
   return (
-    <div className='SelectForm'>
-      <div className='SelectForm__container__metrics'>
+    <div className='Metrics__SelectForm'>
+      <div className='Metrics__SelectForm__container__metrics'>
         <Box
           width='100%'
           display='flex'
@@ -180,7 +180,7 @@ function SelectForm({
           alignItems='center'
         >
           {selectedMetricsData?.advancedMode ? (
-            <div className='SelectForm__textarea'>
+            <div className='Metrics__SelectForm__textarea'>
               <ExpressionAutoComplete
                 isTextArea={true}
                 onExpressionChange={onSelectAdvancedQueryChange}
@@ -211,7 +211,7 @@ function SelectForm({
                   open={open}
                   anchorEl={anchorEl}
                   placement='bottom-start'
-                  className='SelectForm__Popper'
+                  className='Metrics__SelectForm__Popper'
                 >
                   <Autocomplete
                     open
@@ -240,7 +240,7 @@ function SelectForm({
                         spellCheck={false}
                         placeholder='Search'
                         autoFocus={true}
-                        className='SelectForm__metric__select'
+                        className='Metrics__SelectForm__metric__select'
                       />
                     )}
                     renderOption={(option) => {
@@ -293,7 +293,7 @@ function SelectForm({
                 selectedMetricsData.options.length > 1 && (
                   <span
                     onClick={() => onMetricsSelectChange([])}
-                    className='SelectForm__clearAll'
+                    className='Metrics__SelectForm__clearAll'
                   >
                     <Icon name='close' />
                   </span>
@@ -302,7 +302,7 @@ function SelectForm({
           )}
         </Box>
         {selectedMetricsData?.advancedMode ? null : (
-          <div className='SelectForm__TextField'>
+          <div className='Metrics__SelectForm__TextField'>
             <ExpressionAutoComplete
               onExpressionChange={onSelectRunQueryChange}
               onSubmit={handleMetricSearch}
@@ -313,8 +313,7 @@ function SelectForm({
           </div>
         )}
       </div>
-
-      <div className='SelectForm__container__search'>
+      <div className='Metrics__SelectForm__container__search'>
         <Button
           fullWidth
           color='primary'
@@ -325,12 +324,12 @@ function SelectForm({
               fontSize={requestIsPending ? 12 : 14}
             />
           }
-          className='SelectForm__search__button'
+          className='Metrics__SelectForm__search__button'
           onClick={requestIsPending ? handleRequestAbort : handleMetricSearch}
         >
           {requestIsPending ? 'Cancel' : 'Search'}
         </Button>
-        <div className='SelectForm__search__actions'>
+        <div className='Metrics__SelectForm__search__actions'>
           <Tooltip title='Reset query'>
             <div>
               <Button onClick={handleResetSelectForm} withOnlyIcon={true}>

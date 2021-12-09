@@ -23,6 +23,10 @@ const embeddedAppNames = {
     name: 'Params',
     endpoint: 'runs/search/run',
   },
+  scatters: {
+    name: 'Scatters',
+    endpoint: 'runs/search/run',
+  },
 };
 
 class UpdateService {

@@ -1,8 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
@@ -15,11 +13,9 @@ import * as analytics from 'services/analytics';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import {
   IAppData,
   IChartTitleData,
-  IChartZoom,
   IFocusedState,
   IGroupingSelectOption,
   IMetricTableRowData,
@@ -33,6 +29,7 @@ import {
 import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import {
   IGroupingConfig,
+  ILiveUpdateConfig,
   ISelectConfig,
 } from 'types/services/models/explorer/createAppModel';
 
@@ -84,12 +81,12 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     if (route.params.appId) {
       appRequestRef = scattersAppModel.getAppConfigData(route.params.appId);
       appRequestRef.call().then(() => {
-        scattersAppModel.getMetricsData().call();
+        scattersAppModel.getScattersData().call();
       });
     } else {
       scattersAppModel.setDefaultAppConfigData();
     }
-    const scattersRequestRef = scattersAppModel.getParamsData();
+    const scattersRequestRef = scattersAppModel.getScattersData();
     scattersRequestRef.call();
     analytics.pageView('[ScattersExplorer]');
 
@@ -130,22 +127,14 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       panelResizing={panelResizing}
       scatterPlotData={scattersData?.chartData as any[]}
       chartTitleData={scattersData?.chartTitleData as IChartTitleData}
-      ignoreOutliers={scattersData?.config?.chart?.ignoreOutliers as boolean}
-      tableData={scattersData?.tableData as IMetricTableRowData[]}
-      tableColumns={scattersData?.tableColumns as ITableColumn[]}
-      zoom={scattersData?.config?.chart?.zoom as IChartZoom}
-      highlightMode={
-        scattersData?.config?.chart?.highlightMode as HighlightEnum
-      }
-      axesScaleType={
-        scattersData?.config?.chart?.axesScaleType as IAxesScaleState
-      }
       focusedState={scattersData?.config?.chart?.focusedState as IFocusedState}
+      tooltip={scattersData?.config?.chart?.tooltip as IPanelTooltip}
+      selectedOptionsData={scattersData?.config?.select as ISelectConfig}
       notifyData={
         scattersData?.notifyData as IScatterAppModelState['notifyData']
       }
-      tooltip={scattersData?.config?.chart?.tooltip as IPanelTooltip}
-      selectedOptionsData={scattersData?.config?.select as ISelectConfig}
+      tableData={scattersData?.tableData as IMetricTableRowData[]}
+      tableColumns={scattersData?.tableColumns as ITableColumn[]}
       tableRowHeight={scattersData?.config?.table?.rowHeight as RowHeightSize}
       sortFields={scattersData?.config?.table?.sortFields!}
       hiddenMetrics={scattersData?.config?.table?.hiddenMetrics!}
@@ -161,13 +150,9 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       columnsWidths={scattersData?.config?.table?.columnsWidths!}
       // methods
       onChangeTooltip={scattersAppModel.onChangeTooltip}
-      onIgnoreOutliersChange={scattersAppModel.onIgnoreOutliersChange}
-      onZoomChange={scattersAppModel.onZoomChange}
-      onHighlightModeChange={scattersAppModel.onHighlightModeChange}
       onTableRowHover={scattersAppModel.onTableRowHover}
       onTableRowClick={scattersAppModel.onTableRowClick}
       updateColumnsWidths={scattersAppModel.updateColumnsWidths}
-      onAxesScaleTypeChange={scattersAppModel.onAxesScaleTypeChange}
       onGroupingSelectChange={scattersAppModel.onGroupingSelectChange}
       onGroupingModeChange={scattersAppModel.onGroupingModeChange}
       onGroupingPaletteChange={scattersAppModel.onGroupingPaletteChange}
@@ -182,8 +167,6 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       onResetConfigData={scattersAppModel.onResetConfigData}
       onSelectOptionsChange={scattersAppModel.onSelectOptionsChange}
       onSelectRunQueryChange={scattersAppModel.onSelectRunQueryChange}
-      onSelectAdvancedQueryChange={scattersAppModel.onSelectAdvancedQueryChange}
-      toggleSelectAdvancedMode={scattersAppModel.toggleSelectAdvancedMode}
       onExportTableData={scattersAppModel.onExportTableData}
       onRowHeightChange={scattersAppModel.onRowHeightChange}
       onSortChange={scattersAppModel.onSortChange}
@@ -194,7 +177,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={scattersAppModel.onTableDiffShow}
       onTableResizeModeChange={scattersAppModel.onTableResizeModeChange}
       // live update
-      liveUpdateConfig={scattersAppModel.config?.liveUpdate}
+      liveUpdateConfig={scattersData?.config?.liveUpdate as ILiveUpdateConfig}
       onLiveUpdateConfigChange={scattersAppModel.changeLiveUpdateConfig}
       onShuffleChange={scattersAppModel.onShuffleChange}
       onSearchQueryCopy={scattersAppModel.onSearchQueryCopy}

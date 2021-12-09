@@ -138,7 +138,7 @@ export interface IFocusedState {
   active: boolean;
   key: string | null;
   xValue?: number | string | null;
-  yValue?: number | null;
+  yValue?: number | string | null;
   chartIndex?: number | null;
 }
 

@@ -7,6 +7,7 @@ import { INotification } from 'components/NotificationContainer/NotificationCont
 import { ITableColumn } from 'pages/metrics/components/TableColumns/TableColumns';
 
 import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 import { IDimensionsType } from 'utils/d3/drawParallelAxes';
 
@@ -14,7 +15,6 @@ import {
   IChartTitleData,
   IMetricsCollection,
 } from '../metrics/metricsAppModel';
-import { IAppModelConfig } from '../explorer/createAppModel';
 
 export interface IParamsAppModelState {
   refs: {

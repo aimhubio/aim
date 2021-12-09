@@ -1,5 +1,5 @@
 import API from '../api';
-import { TraceRawDataItem, TraceType } from '../../models/runs/types';
+import { TraceType } from '../../models/runs/types';
 
 const endpoints = {
   GET_RUNS: 'runs/search/run',

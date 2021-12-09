@@ -1,4 +1,4 @@
-import { IconName, IIconProps } from 'components/kit/Icon';
+import { IIconProps } from 'components/kit/Icon';
 
 export interface IDropdownProps {
   placeholder?: string;

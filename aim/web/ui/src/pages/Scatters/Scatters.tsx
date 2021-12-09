@@ -29,25 +29,10 @@ function Scatters(
   props: IScattersProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const chartProps: any[] = React.useMemo(() => {
-    return (props.scatterPlotData || []).map(
-      (chartData: any, index: number) => ({
-        axesScaleType: props.axesScaleType,
-        ignoreOutliers: props.ignoreOutliers,
-        highlightMode: props.highlightMode,
-        zoom: props.zoom,
-        chartTitle: props.chartTitleData[index],
-        onZoomChange: props.onZoomChange,
-      }),
-    );
-  }, [
-    props.scatterPlotData,
-    props.axesScaleType,
-    props.ignoreOutliers,
-    props.highlightMode,
-    props.zoom,
-    props.chartTitleData,
-    props.onZoomChange,
-  ]);
+    return (props.scatterPlotData || []).map((data: any, index: number) => ({
+      chartTitle: props.chartTitleData[index],
+    }));
+  }, [props.scatterPlotData, props.chartTitleData]);
 
   return (
     <div ref={props.wrapperElemRef} className='Scatters__container'>
@@ -63,12 +48,10 @@ function Scatters(
           />
           <div className='Scatters__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={props.requestIsPending}
               selectedOptionsData={props.selectedOptionsData}
               onSelectOptionsChange={props.onSelectOptionsChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
-              onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
-              toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
-              onSearchQueryCopy={props.onSearchQueryCopy}
             />
             <Grouping
               groupingPopovers={GroupingPopovers.filter(
@@ -106,7 +89,6 @@ function Scatters(
                   data={props.scatterPlotData}
                   focusedState={props.focusedState}
                   tooltip={props.tooltip}
-                  zoom={props.zoom}
                   onActivePointChange={props.onActivePointChange}
                   chartProps={chartProps}
                   resizeMode={props.resizeMode}
@@ -114,15 +96,7 @@ function Scatters(
                     <Controls
                       selectOptions={props.groupingSelectOptions}
                       tooltip={props.tooltip}
-                      ignoreOutliers={props.ignoreOutliers}
-                      zoom={props.zoom}
-                      highlightMode={props.highlightMode}
-                      axesScaleType={props.axesScaleType}
                       onChangeTooltip={props.onChangeTooltip}
-                      onIgnoreOutliersChange={props.onIgnoreOutliersChange}
-                      onZoomChange={props.onZoomChange}
-                      onHighlightModeChange={props.onHighlightModeChange}
-                      onAxesScaleTypeChange={props.onAxesScaleTypeChange}
                       projectsDataMetrics={props.projectsDataMetrics}
                     />
                   }

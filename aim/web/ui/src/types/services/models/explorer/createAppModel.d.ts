@@ -144,10 +144,6 @@ export interface ILineChartConfig {
 
 export interface IScatterPlotConfig {
   highlightMode: HighlightEnum;
-  ignoreOutliers: boolean;
-  zoom: IChartZoom;
-  axesScaleType: IAxesScaleState;
-  curveInterpolation: CurveEnum;
   focusedState: IFocusedState;
   tooltip: IChartTooltip;
 }

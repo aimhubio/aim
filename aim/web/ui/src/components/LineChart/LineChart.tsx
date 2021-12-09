@@ -124,7 +124,6 @@ const LineChart = React.forwardRef(function LineChart(
       height,
       margin,
       alignmentConfig,
-      attributesRef,
       humanizerConfigRef,
       drawBgTickLines: { y: true },
     });
@@ -145,6 +144,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
+      axesScaleType,
       highlightMode,
       syncHoverState,
       visAreaRef,
