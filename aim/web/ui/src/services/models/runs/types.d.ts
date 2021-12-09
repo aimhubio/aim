@@ -12,6 +12,7 @@ export type IRunTraceModel = {
     defaultActiveItemKey: string;
     availableKeys: string[];
   };
+  runParams?: object;
   queryData: QueryData;
   batchRequestOptions: {
     trace: TraceRawDataItem;
@@ -57,7 +58,11 @@ export interface DistributionsData extends TraceRawDataItem {
  * Distributions api response
  * @TODO make compatible to images data
  */
-export interface ImagesData extends DistributionsData {}
+export interface ImagesData extends DistributionsData {
+  context: { [key: string]: any };
+  index_range: [number, number];
+  values: any;
+}
 
 /**
  * Distributions api response value type

@@ -45,9 +45,8 @@ function RangePanel({
     >
       <div className='RangePanelContainer'>
         {items?.map((item) => (
-          <>
+          <React.Fragment key={item.sliderName}>
             <RangeSliderWithInput
-              key={item.sliderName}
               sliderTitle={item.sliderTitle}
               countInputTitle={item.inputTitle}
               countTitleTooltip={item.inputTitleTooltip}
@@ -65,7 +64,7 @@ function RangePanel({
               }
             />
             <div className='VerticalDivider' />
-          </>
+          </React.Fragment>
         ))}
         <div className='ApplyButtonContainer'>
           <Button

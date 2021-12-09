@@ -861,19 +861,22 @@ function getImagesBlobsData(uris: string[]) {
 function getDataAsImageSet(
   data: any[],
   groupingSelectOptions: IGroupingSelectOption[],
+  defaultGroupFields?: string[],
 ) {
   if (!isEmpty(data)) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
     const group: string[] = [...(configData?.grouping?.group || [])];
-    const groupFields = configData?.grouping?.reverseMode?.group
-      ? groupingSelectOptions
-          .filter(
-            (option: IGroupingSelectOption) => !group.includes(option.label),
-          )
-          .map((option) => option.value)
-      : group;
+    const groupFields =
+      defaultGroupFields ||
+      (configData?.grouping?.reverseMode?.group
+        ? groupingSelectOptions
+            .filter(
+              (option: IGroupingSelectOption) => !group.includes(option.label),
+            )
+            .map((option) => option.value)
+        : group);
     const imagesDataForOrdering = {};
     data.forEach((group: any) => {
       const path = groupFields?.reduce(
@@ -1939,6 +1942,8 @@ const imagesExploreAppModel = {
   onImageRenderingChange,
   onImageAlignmentChange,
   isRangePanelShow,
+  getGroupingSelectOptions,
+  getDataAsImageSet,
 };
 
 export default imagesExploreAppModel;

@@ -6,6 +6,7 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import ImageBox from './ImageBox';
+import { IMediaListProps } from './MediaList.d';
 
 const mediaBoxType: any = {
   [MediaTypeEnum.IMAGE]: ImageBox,
@@ -21,7 +22,7 @@ function MediaList({
   additionalProperties,
   tooltip,
   mediaType,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <List
       height={mediaItemHeight}

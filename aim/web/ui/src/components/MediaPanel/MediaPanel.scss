@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .MediaPanel__Container {
-  width: calc(100vw - 4.6875rem);
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -39,10 +39,10 @@
       overflow-x: auto;
       padding-left: 1.25rem;
       padding-top: 0.25rem;
-      border-right: 0.0625rem solid #dceafb;
       flex: 1;
     }
     &__controls {
+      border-left: 0.0625rem solid #dceafb;
       width: 3.75rem;
       max-height: 100%;
       overflow-y: auto;
