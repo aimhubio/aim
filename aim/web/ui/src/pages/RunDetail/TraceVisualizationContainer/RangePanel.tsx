@@ -84,4 +84,6 @@ function RangePanel({
   );
 }
 
+RangePanel.displayName = 'RangePanel';
+
 export default React.memo<IRangeSliderPanelProps>(RangePanel);

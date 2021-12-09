@@ -184,7 +184,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
   const { record_range, iters, values } = data;
   const processedValues: any[] = [];
   const originalValues: TraceProcessedData[] = [];
-  console.log(iters);
+
   if (values) {
     values.forEach((value: DistributionValue) => {
       const parsedBlob: number[] = [...new Float64Array(value.data.blob)];
