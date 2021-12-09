@@ -12,7 +12,11 @@ function DistributionsVisualizer(
   return (
     <div className='DistributionsVisualizer'>
       {props.data?.processedValues && (
-        <Wrapper data={props.data?.processedValues} className='Visualizer' />
+        <Wrapper
+          data={props.data?.processedValues}
+          className='Visualizer'
+          iters={props.data.iters}
+        />
       )}
     </div>
   );

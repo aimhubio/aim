@@ -175,9 +175,11 @@ class Heatmap extends React.Component {
 
   tooltipFormatter = () => {
     const maxValue = this.props.max;
-
+    const self = this;
     return function (tooltip, x = this.x, value = this.value) {
-      return `Step ${x}: <b>${Math.round(value * maxValue)}</b>`;
+      return `Step ${self.props.iters[this.x]}: <b>${Math.round(
+        value * maxValue,
+      )}</b>`;
     };
   };
 
@@ -206,6 +208,7 @@ Heatmap.propTypes = {
   click: PropTypes.func,
   cursor: PropTypes.number,
   name: PropTypes.string,
+  iters: PropTypes.array,
 };
 
 export default Heatmap;
