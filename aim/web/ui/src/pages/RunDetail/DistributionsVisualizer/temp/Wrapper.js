@@ -76,7 +76,7 @@ class ExperimentDistributionCharts extends Component {
         const binSize = xLen / bins;
 
         for (let i = 0; i < this.props.data.length; i++) {
-          heatmapX.push(`${this.props.iters[i]}`); // here
+          heatmapX.push(`${this.props.iters[i]}`);
         }
         for (let i = xMin; i <= xMax; i += binSize) {
           heatmapY.push(`${i}`);
