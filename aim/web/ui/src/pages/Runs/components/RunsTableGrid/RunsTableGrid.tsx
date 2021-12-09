@@ -83,22 +83,6 @@ function getRunsTableColumns(
         : null,
     })),
   );
-  if (groupFields) {
-    columns.push({
-      key: '#',
-      content: '#',
-      topHeader: 'Grouping',
-      pin: 'left',
-    });
-    Object.keys(groupFields).forEach((field) => {
-      const key = field.replace('run.params.', '');
-      const column = columns.find((col) => col.key === key);
-      if (!!column) {
-        column.pin = 'left';
-        column.topHeader = 'Grouping';
-      }
-    });
-  }
 
   columns = columns.map((col) => ({
     ...col,
@@ -107,14 +91,7 @@ function getRunsTableColumns(
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === '#') {
-      return -1;
-    } else if (
-      groupFields?.hasOwnProperty(a.key) ||
-      groupFields?.hasOwnProperty(`run.params.${a.key}`)
-    ) {
-      return -1;
-    } else if (a.key === 'actions') {
+    if (a.key === 'actions') {
       return 1;
     }
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {

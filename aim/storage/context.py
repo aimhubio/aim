@@ -50,10 +50,10 @@ class Context:
         return self._context == other._context
 
 
-class MetricDescriptor:
+class SequenceDescriptor:
     Selector = Tuple[int, str]
 
-    __slots__ = ['_name', '_context', '_hash', '_metric_hash']
+    __slots__ = ['_name', '_context', '_hash', '_sequence_hash']
 
     def __init__(
         self,
@@ -63,7 +63,7 @@ class MetricDescriptor:
         self._name = name
         self._context = context
         self._hash = None
-        self._metric_hash = None
+        self._sequence_hash = None
 
     @property
     def selector(self) -> Selector:
@@ -74,20 +74,20 @@ class MetricDescriptor:
         return self._context.idx
 
     @property
-    def metric_idx(self) -> int:
-        if self._metric_hash is None:
-            self._metric_hash = hash_auto(self.name)
-        return self._metric_hash
+    def sequence_idx(self) -> int:
+        if self._sequence_hash is None:
+            self._sequence_hash = hash_auto(self._name)
+        return self._sequence_hash
 
     def _calc_hash(self) -> int:
-        return hash_auto((self.name, self.context))
+        return hash_auto((self._name, self._context))
 
     def __hash__(self) -> int:
         if self._hash is None:
             self._hash = self._calc_hash()
         return self._hash
 
-    def __eq__(self, other: 'MetricDescriptor') -> bool:
+    def __eq__(self, other: 'SequenceDescriptor') -> bool:
         if hash(self) != hash(other):
             return False
-        return (self._name == other.name and self._context == other._context)
+        return self._name == other._name and self._context == other._context

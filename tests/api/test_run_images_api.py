@@ -217,9 +217,7 @@ class TestRunImagesBatchApi(RunImagesTestBase):
         response = client.post(f'/api/runs/{self.run_hash}/images/get-batch/', json=requested_traces)
         self.assertEqual(200, response.status_code)
 
-        response_data = response.json()
-        self.assertEqual(1, len(response_data))
-        trace_data = response_data[0]
+        trace_data = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
         self.assertEqual('random_images', trace_data['name'])
         self.assertDictEqual({}, trace_data['context'])
         self.assertEqual(50, len(trace_data['values']))
@@ -373,17 +371,18 @@ class TestRunInfoApi(ApiTestBase):
         self.assertEqual('single_images', response_data['traces']['images'][0]['name'])
 
     @parameterized.expand([
-        ({'sequence': ('metric', 'images')},),  # metrics only
-        (None,)                                 # default
+        ({'sequence': ('metric', 'images', 'distributions')},),  # explicit specification
+        (None,)                                                  # default
     ])
-    def test_run_info_get_images_and_metrics_api(self, qparams):
+    def test_run_info_get_all_sequences_api(self, qparams):
         client = self.client
         response = client.get(f'api/runs/{self.run1_hash}/info', params=qparams)
         self.assertEqual(200, response.status_code)
         response_data = response.json()
-        self.assertEqual(2, len(response_data['traces']))
+        self.assertEqual(3, len(response_data['traces']))
         self.assertIn('images', response_data['traces'])
         self.assertIn('metric', response_data['traces'])
+        self.assertIn('distributions', response_data['traces'])
         self.assertDictEqual({'subset': 'train'}, response_data['traces']['images'][0]['context'])
         self.assertEqual('image_lists', response_data['traces']['images'][0]['name'])
         metrics_data = response_data['traces']['metric']

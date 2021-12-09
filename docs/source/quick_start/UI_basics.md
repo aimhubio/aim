@@ -27,6 +27,16 @@ Features:
 
 <img style="border: 1px solid #1d2253" src="../_static/images/ui_basics/metrics.png" />
 
+### Images explorer
+Track intermediate images and search, compare them on the Images Explorer.
+
+Features:
+- Easily query any image
+- Group by images by run parameters
+- Group images by step
+
+<img style="border: 1px solid #1d2253" src="../_static/images/ui_basics/images.png" />
+
 ### Params explorer
 Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
 
@@ -46,8 +56,3 @@ Features:
 - See all the tracked metrics(including system metrics)
 
 <img style="border: 1px solid #1d2253" src="../_static/images/ui_basics/single_run.png" />
-
-### Images explorer (coming soon...)
-Track intermediate images and search, compare them on the Images Explorer.
-
-<img style="border: 1px solid #1d2253" src="../_static/images/ui_basics/images.png" />

@@ -6,6 +6,8 @@
 
 import * as Comlink from 'comlink';
 
+import { setAPIBasePath } from 'config/config';
+
 import {
   adjustable_reader,
   decode_buffer_pairs,
@@ -142,7 +144,7 @@ async function stop(): Promise<any> {
       apiMethods = null;
     }
     invariantSuccess(`Stopped ${key.toString()} success`, logging);
-  } catch (e) {
+  } catch (e: Error | any) {
     invariantError(e, logging);
     throw e;
   }
@@ -228,15 +230,20 @@ export function errorHandler(error: ResponseType) {
   invariantError(error, logging);
 }
 
-const Worker = {
+function replaceBasePath(basePath: string) {
+  setAPIBasePath(basePath);
+}
+
+const WebWorker = {
   subscribeToApiCallResult,
   setConfig,
   start,
   close,
   stop,
+  replaceBasePath,
 };
 
-export type IWorker = typeof Worker;
+export type IWorker = typeof WebWorker;
 
 // @ts-ignore
-Comlink.expose(Worker);
+Comlink.expose(WebWorker);

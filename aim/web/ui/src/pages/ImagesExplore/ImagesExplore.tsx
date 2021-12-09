@@ -7,7 +7,9 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
-import ImagesPanel from 'components/ImagesPanel';
+import MediaPanel from 'components/MediaPanel';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
+import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -18,11 +20,19 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
-import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+import * as analytics from 'services/analytics';
+
+import {
+  IFocusedState,
+  IGroupingSelectOption,
+  IPanelTooltip,
+} from 'types/services/models/metrics/metricsAppModel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
+import { ChartTypeEnum } from 'utils/d3';
 
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
@@ -129,6 +139,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={imagesExploreData?.requestIsPending}
               selectedImagesData={imagesExploreData?.config?.select}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
@@ -171,28 +182,72 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 : ''
             }`}
           >
-            <ImagesPanel
-              recordSlice={imagesExploreData?.config?.images?.recordSlice}
-              indexSlice={imagesExploreData?.config?.images?.indexSlice}
-              indexRange={imagesExploreData?.config?.images?.indexRange}
-              indexDensity={imagesExploreData?.config?.images?.indexDensity}
-              recordDensity={imagesExploreData?.config?.images?.recordDensity}
-              stepRange={imagesExploreData?.config?.images?.stepRange}
-              onSliceRangeChange={imagesExploreAppModel.onSliceRangeChange}
-              onDensityChange={imagesExploreAppModel.onDensityChange}
-              getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
-              imagesData={imagesExploreData?.imagesData}
-              imagesBlobs={imagesExploreData?.imagesBlobs}
+            <MediaPanel
+              mediaType={MediaTypeEnum.IMAGE}
+              getBlobsData={imagesExploreAppModel.getImagesBlobsData}
+              data={imagesExploreData?.imagesData}
+              orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
-              applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               panelResizing={panelResizing}
-              imageWrapperOffsetHeight={offsetHeight || 0}
-              imageWrapperOffsetWidth={offsetWidth || 0}
-              isRangePanelShow={
-                !!getStateFromUrl('select')?.query ||
-                !isEmpty(getStateFromUrl('select')?.images) ||
-                (!!getStateFromUrl('select')?.advancedQuery &&
-                  !!getStateFromUrl('select')?.advancedMode)
+              resizeMode={imagesExploreData?.config?.table.resizeMode}
+              tableHeight={imagesExploreData?.config?.table?.height}
+              wrapperOffsetHeight={offsetHeight || 0}
+              wrapperOffsetWidth={offsetWidth || 0}
+              focusedState={
+                imagesExploreData?.config?.images?.focusedState as IFocusedState
+              }
+              tooltip={
+                imagesExploreData?.config?.images?.tooltip as IPanelTooltip
+              }
+              additionalProperties={
+                imagesExploreData?.config?.images?.additionalProperties
+              }
+              onActivePointChange={imagesExploreAppModel.onActivePointChange}
+              controls={
+                <Controls
+                  selectOptions={
+                    imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
+                  }
+                  tooltip={
+                    imagesExploreData?.config?.images?.tooltip as IPanelTooltip
+                  }
+                  imageProperties={
+                    imagesExploreData?.config?.images?.imageProperties
+                  }
+                  onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
+                  onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
+                  onImageRenderingChange={
+                    imagesExploreAppModel.onImageRenderingChange
+                  }
+                  onImageAlignmentChange={
+                    imagesExploreAppModel.onImageAlignmentChange
+                  }
+                />
+              }
+              tooltipType={ChartTypeEnum.ImageSet}
+              actionPanelSize={44}
+              actionPanel={
+                imagesExploreData?.config?.images?.stepRange &&
+                imagesExploreData?.config?.images?.indexRange &&
+                imagesExploreAppModel.isRangePanelShow() && (
+                  <ImagesExploreRangePanel
+                    recordSlice={imagesExploreData?.config?.images?.recordSlice}
+                    indexSlice={imagesExploreData?.config?.images?.indexSlice}
+                    indexRange={imagesExploreData?.config?.images?.indexRange}
+                    stepRange={imagesExploreData?.config?.images?.stepRange}
+                    applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
+                    indexDensity={
+                      imagesExploreData?.config?.images?.indexDensity
+                    }
+                    recordDensity={
+                      imagesExploreData?.config?.images?.recordDensity
+                    }
+                    onSliceRangeChange={
+                      imagesExploreAppModel.onSliceRangeChange
+                    }
+                    onDensityChange={imagesExploreAppModel.onDensityChange}
+                  />
+                )
               }
             />
           </div>

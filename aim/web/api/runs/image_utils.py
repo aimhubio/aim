@@ -1,6 +1,5 @@
 from typing import Iterable, Tuple, List
 from typing import TYPE_CHECKING
-from collections import namedtuple
 
 from aim.storage.treeutils import encode_tree
 
@@ -11,13 +10,11 @@ from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
 from aim.sdk.uri_service import URIService, generate_resource_path
 
-from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data
+from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data, IndexRange
 from aim.web.api.runs.pydantic_models import TraceBase
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
-
-IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 
 def sliced_img_record(values: Iterable[Image], _slice: slice) -> Iterable[Image]:
@@ -64,10 +61,10 @@ def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) ->
     return IndexRange(rec_start, rec_stop + 1), IndexRange(idx_start, idx_stop)
 
 
-def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
+def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slice: slice) -> dict:
     steps = []
     values = []
-    steps_vals = trace.values.items_slice(_slice=rec_slice)
+    steps_vals = trace.values.items_in_range(rec_slice.start, rec_slice.stop, rec_density)
     for step, val in steps_vals:
         steps.append(step)
         if isinstance(val, list):
@@ -82,15 +79,15 @@ def get_trace_info(trace: Sequence, rec_slice: slice, idx_slice: slice) -> dict:
         'context': trace.context.to_dict(),
         'values': values,
         'iters': steps,
-        'epochs': list(trace.epochs.values_slice(_slice=rec_slice)),
-        'timestamps': list(trace.timestamps.values_slice(_slice=rec_slice)),
+        'epochs': list(trace.epochs.values_in_range(rec_slice.start, rec_slice.stop, rec_density)),
+        'timestamps': list(trace.timestamps.values_in_range(rec_slice.start, rec_slice.stop, rec_density)),
     }
 
 
-def image_search_result_streamer(traces: SequenceCollection,
-                                 rec_range: IndexRange, rec_density: int,
-                                 idx_range: IndexRange, idx_density: int,
-                                 calc_total_ranges: bool):
+async def image_search_result_streamer(traces: SequenceCollection,
+                                       rec_range: IndexRange, rec_density: int,
+                                       idx_range: IndexRange, idx_density: int,
+                                       calc_total_ranges: bool):
     record_range_missing = rec_range.start is None or rec_range.stop is None
     index_range_missing = idx_range.start is None or idx_range.stop is None
     run_traces = {}
@@ -136,13 +133,13 @@ def image_search_result_streamer(traces: SequenceCollection,
         for run_info in run_traces.values():
             traces_list = []
             for trace in run_info['traces']:
-                traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
+                traces_list.append(get_trace_info(trace, rec_slice, rec_density, idx_slice))
             yield _pack_run_data(run_info['run'], traces_list)
     else:
         for run_trace_collection in traces.iter_runs():
             traces_list = []
             for trace in run_trace_collection.iter():
-                traces_list.append(get_trace_info(trace, rec_slice, idx_slice))
+                traces_list.append(get_trace_info(trace, rec_slice, rec_density, idx_slice))
             if traces_list:
                 yield _pack_run_data(run_trace_collection.run, traces_list)
 
@@ -154,9 +151,10 @@ def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
         yield collect_run_streamable_data(encode_tree(it))
 
 
-def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
-                                   rec_num: int = 50, index_num: int = 5) -> List[dict]:
-    processed_traces_list = []
+def requested_image_traces_streamer(run: Run,
+                                    requested_traces: List[TraceBase],
+                                    rec_range, idx_range,
+                                    rec_num: int = 50, idx_num: int = 5) -> List[dict]:
     for requested_trace in requested_traces:
         trace_name = requested_trace.name
         context = Context(requested_trace.context)
@@ -164,13 +162,18 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
         if not trace:
             continue
 
-        rec_step = (trace.last_step() + 1 - trace.first_step()) // rec_num or 1
-        rec_length = trace.record_length() or 1
-        idx_step = rec_length // index_num or 1
-        rec_slice = slice(trace.first_step(), trace.last_step() + 1, rec_step)
-        idx_slice = slice(0, rec_length, idx_step)
+        record_range_missing = rec_range.start is None or rec_range.stop is None
+        if record_range_missing:
+            rec_range = IndexRange(trace.first_step(), trace.last_step() + 1)
+        index_range_missing = idx_range.start is None or idx_range.stop is None
+        if index_range_missing:
+            idx_range = IndexRange(0, trace.record_length() or 1)
 
-        steps_vals = trace.values.items_slice(_slice=rec_slice)
+        rec_length = trace.record_length() or 1
+        idx_step = rec_length // idx_num or 1
+        idx_slice = slice(idx_range.start, idx_range.stop, idx_step)
+
+        steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
         steps = []
         values = []
         for step, val in steps_vals:
@@ -182,11 +185,13 @@ def collect_requested_image_traces(run: Run, requested_traces: List[TraceBase],
             else:
                 values.append([])
 
-        processed_traces_list.append({
+        trace_dict = {
+            'record_range': (trace.first_step(), trace.last_step() + 1),
+            'index_range': (0, rec_length),
             'name': trace.name,
             'context': trace.context.to_dict(),
             'values': values,
             'iters': steps,
-        })
-
-    return processed_traces_list
+        }
+        encoded_tree = encode_tree(trace_dict)
+        yield collect_run_streamable_data(encoded_tree)

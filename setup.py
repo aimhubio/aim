@@ -65,6 +65,7 @@ REQUIRED = [
     'async-exit-stack>=1.0.0',
     'async-generator>=1.0',
     'fastapi>=0.65.0,<0.68.0',
+    'jinja2>=2.10.0',
     'pytz>=2019.1',
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',

@@ -1,3 +1,5 @@
+from typing import Any, Iterator, Tuple, Union
+
 from aim.storage import encoding
 from aim.storage.encoding.encoding_native cimport decode_path
 
@@ -9,8 +11,6 @@ from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 from aim.storage.object import CustomObjectBase, CustomObject
 from aim.storage.treeview import TreeView
 from aim.storage.inmemorytreeview import InMemoryTreeView
-
-from typing import Any, Iterator, Tuple, Union
 
 
 def unfold_tree(
@@ -55,7 +55,7 @@ def unfold_tree(
         # TODO we need to implement TreeView.traverse()
         raise NotImplementedError
     else:
-        raise NotImplementedError
+        raise TypeError(f'Not supported value `{obj}` of type `{type(obj)}`.')
 
 
 cpdef val_to_node(
@@ -74,7 +74,7 @@ cpdef val_to_node(
     elif val == ArrayFlag:
         return []
     elif isinstance(val, CustomObjectFlagType):
-        return CustomObject._aim_decode(val.aim_name, InMemoryTreeView(container={}))
+        return CustomObject._aim_decode(val.aim_name, InMemoryTreeView(container={}, constructed=False))
     else:
         return val
 
@@ -119,6 +119,8 @@ def iter_fold_tree(
         while idx < len(path):
             last_state = stack.pop()
             if len(stack) == level:
+                if isinstance(last_state, CustomObject):
+                    last_state.storage._constructed = True
                 yield tuple(path), last_state
             path.pop()
 
@@ -152,8 +154,10 @@ def iter_fold_tree(
         stack.append(node)
 
     if level < len(stack):
-        yield tuple(path[:level]), stack[level]
-
+        val = stack[level]
+        if isinstance(val, CustomObject):
+            val.storage._constructed = True
+        yield tuple(path[:level]), val
 
 def encode_paths_vals(
     paths_vals: Iterator[Tuple[AimObjectPath, Any]]

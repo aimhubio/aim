@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 
-export interface IDrawAreaProps {
+export interface IDrawAreaArgs {
   index?: number;
   parentRef: React.MutableRefObject<>;
   visAreaRef: React.MutableRefObject<>;

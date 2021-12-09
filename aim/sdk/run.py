@@ -1,7 +1,8 @@
 import logging
 
-import datetime
 import os
+import datetime
+import json
 
 from collections import defaultdict
 from time import time
@@ -17,23 +18,76 @@ from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
 from aim.storage.hashing import hash_auto
-from aim.storage.context import Context, MetricDescriptor
+from aim.storage.context import Context, SequenceDescriptor
 from aim.storage.treeview import TreeView
+from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.cleanup import AutoClean
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
+    from pandas import DataFrame
+
     from aim.sdk.metric import Metric
     from aim.sdk.image_sequence import Images
+    from aim.sdk.distribution_sequence import Distributions
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
 
 logger = logging.getLogger(__name__)
+
+
+class RunAutoClean(AutoClean['Run']):
+    PRIORITY = 90
+
+    def __init__(self, instance: 'Run') -> None:
+        """
+        Prepare the `Run` for automatic cleanup.
+
+        Args:
+            instance: The `Run` instance to be cleaned up.
+        """
+        super().__init__(instance)
+
+        self.read_only = instance.read_only
+        self.name = instance.name
+        self.meta_run_tree = instance.meta_run_tree
+        self.repo = instance.repo
+        self._system_resource_tracker = instance._system_resource_tracker
+
+    def finalize_run(self):
+        """
+        Finalize the run by indexing all the data.
+        """
+        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
+        index = self.repo._get_container('meta/index',
+                                         read_only=False,
+                                         from_union=False).view(b'')
+        logger.debug(f'Indexing Run {self.name}...')
+        self.meta_run_tree.finalize(index=index)
+
+    def finalize_system_tracker(self):
+        """
+        Stop the system resource tracker before closing the run.
+        """
+        if self._system_resource_tracker is not None:
+            logger.debug('Stopping resource tracker')
+            self._system_resource_tracker.stop()
+
+    def _close(self) -> None:
+        """
+        Close the `Run` instance resources and trigger indexing.
+        """
+        if self.read_only:
+            logger.debug(f'Run {self.name} is read-only, skipping cleanup')
+            return
+        self.finalize_system_tracker()
+        self.finalize_run()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -187,7 +241,6 @@ class Run(StructuredRunMixin):
     """
 
     _idx_to_ctx: Dict[int, Context] = dict()
-    _finalize_message_shown = False
     _track_warning_shown = False
 
     track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
@@ -197,7 +250,7 @@ class Run(StructuredRunMixin):
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
-        self._constructed = False
+        self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
 
@@ -214,7 +267,7 @@ class Run(StructuredRunMixin):
         self._props = None
 
         self.contexts: Dict[Context, int] = dict()
-        self.sequence_info: Dict[MetricDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
+        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
         self.meta_tree: TreeView = self.repo.request(
             'meta', self.hash, read_only=read_only, from_union=True
@@ -241,7 +294,8 @@ class Run(StructuredRunMixin):
             self.props
         if experiment:
             self.experiment = experiment
-        self._constructed = True
+
+        self._resources = RunAutoClean(self)
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
@@ -370,7 +424,7 @@ class Run(StructuredRunMixin):
         dtype = get_object_typename(value)
 
         ctx = Context(context)
-        metric = MetricDescriptor(name, ctx)
+        sequence = SequenceDescriptor(name, ctx)
 
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = context
@@ -378,11 +432,11 @@ class Run(StructuredRunMixin):
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        val_view = self.series_run_tree.subtree(metric.selector).array('val').allocate()
-        epoch_view = self.series_run_tree.subtree(metric.selector).array('epoch').allocate()
-        time_view = self.series_run_tree.subtree(metric.selector).array('time').allocate()
+        val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
+        epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
+        time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
 
-        seq_info = self.sequence_info[metric.selector]
+        seq_info = self.sequence_info[sequence.selector]
         if not seq_info.initialized:
             seq_info.count = len(val_view)
             seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
@@ -519,6 +573,33 @@ class Run(StructuredRunMixin):
         """
         return self._get_sequence('images', name, context)
 
+    def get_distribution_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Distributions']:
+        """Retrieve distributions sequence by it's name and context.
+
+        Args:
+             name (str): Tracked distribution sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Distributions` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('distributions', name, context)
+
+    def _get_sequence_dtype(
+            self,
+            sequence_name: str,
+            context: Context
+    ) -> str:
+        try:
+            return self.meta_run_tree.subtree(('traces', hash(context), sequence_name, 'dtype')).collect()
+        except KeyError:
+            # fallback to `float`, cause in older versions there was no `dtype`
+            return 'float'
+
     def _get_sequence(
             self,
             seq_type: str,
@@ -529,6 +610,9 @@ class Run(StructuredRunMixin):
         if seq_cls is None:
             raise ValueError(f'\'{seq_type}\' is not a valid Sequence')
         assert issubclass(seq_cls, Sequence)
+        tracked_dtype = self._get_sequence_dtype(sequence_name, context)
+        if tracked_dtype not in seq_cls.allowed_dtypes():
+            return None
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
 
@@ -602,20 +686,10 @@ class Run(StructuredRunMixin):
             self._hash = self._calc_hash()
         return self._hash
 
-    def __del__(self):
-        if self.read_only or not self._constructed:
+    def close(self):
+        if self._resources is None:
             return
-        if self._system_resource_tracker:
-            self._system_resource_tracker.stop()
-
-        logger.debug(f'finalizing {self}')
-        self.finalize(skip_wait=True)
-
-    @classmethod
-    def finalize_msg(cls):
-        if not cls._finalize_message_shown:
-            logger.warning('Finalizing runs.')
-            cls._finalize_message_shown = True
+        self._resources.close()
 
     @classmethod
     def track_rate_warn(cls):
@@ -625,16 +699,58 @@ class Run(StructuredRunMixin):
                            'Consider tracking at lower pace.')
             cls._track_warning_shown = True
 
-    def finalize(self, skip_wait=False):
-        if self._finalized:
+    def finalize(self):
+        if self._resources is None:
             return
-        self._finalized = True
-        self.finalize_msg()
-        if not skip_wait and self.track_in_thread:
-            self.repo.tracking_queue.wait_for_finish()
 
-        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
-        index = self.repo._get_container('meta/index',
-                                         read_only=False,
-                                         from_union=False).view(b'')
-        self.meta_run_tree.finalize(index=index)
+        self._resources.finalize_run()
+
+    def dataframe(
+            self,
+            include_props: bool = True,
+            include_params: bool = True,
+    ) -> 'DataFrame':
+        """Get run properties and params as pandas DataFrame
+
+        Args:
+             include_props: (:obj:`int`, optional): If true, include run structured props
+             include_params: (:obj:`int`, optional): If true, include run parameters
+        """
+        data = {
+            'hash': self.hash,
+        }
+
+        if include_props:
+            # TODO [GA]: Auto collect props based on StructuredRunMixin:
+            #  - Exclude created_at, updated_at, finalized_at auto-populated fields
+            #  - Collect list of representations in case of ModelMappedCollection's
+            data['name'] = self.props.name
+            data['description'] = self.props.description
+            data['archived'] = self.props.archived
+            data['creation_time'] = self.props.creation_time
+            data['end_time'] = self.props.end_time
+            data['experiment'] = self.props.experiment.name
+            data['tags'] = json.dumps([t.name for t in self.props.tags])
+
+        if include_params:
+            # TODO [GA]:
+            #  - Move run params collection to utility function
+            #  - Remove code duplication from Metric.dataframe
+            for path, val in treeutils.unfold_tree(self[...],
+                                                   unfold_array=False,
+                                                   depth=3):
+                s = ''
+                for key in path:
+                    if isinstance(key, str):
+                        s += f'.{key}' if len(s) else f'{key}'
+                    else:
+                        s += f'[{key}]'
+
+                if isinstance(val, (tuple, list, dict)):
+                    val = json.dumps(val)
+                if s not in data.keys():
+                    data[s] = val
+
+        import pandas as pd
+        df = pd.DataFrame(data, index=[0])
+        return df

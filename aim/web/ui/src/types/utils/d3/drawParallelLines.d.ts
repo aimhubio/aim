@@ -24,7 +24,7 @@ export type InitialPathDataType = {
   isDotted: boolean;
 };
 
-export interface IDrawParallelLinesProps {
+export interface IDrawParallelLinesArgs {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
@@ -35,7 +35,7 @@ export interface IDrawParallelLinesProps {
   data: ILineDataType[];
 }
 
-export interface IDrawParallelLineProps {
+export interface IDrawParallelLineArgs {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   dasharray: string;
@@ -47,7 +47,7 @@ export interface IDrawParallelLineProps {
   color: string;
 }
 
-export interface ILineRendererProps {
+export interface ILineRendererArgs {
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   curveInterpolation: CurveEnum;
@@ -56,7 +56,7 @@ export interface ILineRendererProps {
   data: ILineDataType[];
 }
 
-export interface IGetColorIndicatorScaleValueProps {
+export interface IGetColorIndicatorScaleValueArgs {
   line: ILineValuesDataType;
   keysOfDimensions: string[];
   yColorIndicatorScale: d3.ScaleSequential;

@@ -33,7 +33,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     chartType,
     alignmentConfig,
   } = props;
-  const { params = {}, groupConfig = {}, runHash = '' } = tooltipContent;
+  const { params = {}, groupConfig = {}, run } = tooltipContent;
 
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -44,12 +44,12 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <Text>Y: </Text>
               <span className='PopoverContent__headerValue'>
                 <Text weight={400}>
-                  {isSystemMetric(tooltipContent.metricName)
-                    ? formatSystemMetricName(tooltipContent.metricName)
-                    : tooltipContent.metricName}
+                  {isSystemMetric(tooltipContent.name)
+                    ? formatSystemMetricName(tooltipContent.name)
+                    : tooltipContent.name}
                 </Text>
                 <Text className='PopoverContent__contextValue'>
-                  {contextToString(tooltipContent.metricContext)}
+                  {contextToString(tooltipContent.context)}
                 </Text>
                 <Text component='p' className='PopoverContent__axisValue'>
                   {focusedState?.yValue ?? '--'}
@@ -63,7 +63,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {alignmentConfig?.type ===
                   AlignmentOptionsEnum.CUSTOM_METRIC && (
                   <Text className='PopoverContent__contextValue'>
-                    {contextToString(tooltipContent.metricContext)}
+                    {contextToString(tooltipContent.context)}
                   </Text>
                 )}
                 <Text component='p' className='PopoverContent__axisValue'>
@@ -95,6 +95,25 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             </div>
           </div>
         );
+      case ChartTypeEnum.ImageSet:
+        return (
+          <div className='PopoverContent__box PopoverContent__imageSetBox'>
+            <strong>{tooltipContent.caption}</strong>
+            <div className='PopoverContent__value'>
+              <strong>{tooltipContent.images_name}</strong>
+              <Text className='PopoverContent__contextValue'>
+                {contextToString(tooltipContent.context)}
+              </Text>
+            </div>
+            <div className='PopoverContent__value'>
+              Step: <strong>{tooltipContent.step}</strong>
+              <Text className='PopoverContent__contextValue'>
+                Index: <strong>{tooltipContent.index}</strong>
+              </Text>
+            </div>
+          </div>
+        );
+        break;
       default:
         return null;
     }
@@ -129,7 +148,8 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                         : groupConfig[groupConfigKey][item];
                       return (
                         <div key={item} className='PopoverContent__value'>
-                          {item}: {formatValue(val)}
+                          <Text size={12} tint={50}>{`${item}: `}</Text>
+                          <Text size={12}>{formatValue(val)}</Text>
                         </div>
                       );
                     })}
@@ -146,19 +166,20 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
-                  {`run.${paramKey}`}: {formatValue(params[paramKey])}
+                  <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
+                  <Text size={12}>{formatValue(params[paramKey])}</Text>
                 </div>
               ))}
             </div>
           </div>
         )}
-        {focusedState?.active && runHash ? (
+        {focusedState?.active && run?.hash ? (
           <>
             <div>
               <Divider />
               <div className='PopoverContent__box'>
                 <Link
-                  to={PathEnum.Run_Detail.replace(':runHash', runHash)}
+                  to={PathEnum.Run_Detail.replace(':runHash', run.hash)}
                   component={RouteLink}
                   className='PopoverContent__runDetails'
                   underline='none'
@@ -171,7 +192,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             <div>
               <Divider />
               <div className='PopoverContent__box'>
-                <AttachedTagsList runHash={runHash} />
+                <AttachedTagsList runHash={run.hash} />
               </div>
             </div>
           </>

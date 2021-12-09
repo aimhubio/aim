@@ -14,7 +14,7 @@ When iterating over entities the python expression is evaluated in a Boolean con
 .. note::
    Currently, AimQL is only used for filtering data, and has no role in sorting or aggregating the data.
 
-### Searching runs and metrics
+### Searching runs
 
 Let's track several [Runs](./SDK_basics.html#create-a-run) via [Aim SDK](./SDK_basics.html):
 
@@ -52,8 +52,6 @@ Aim SDK will collect and store the above metadata in `.aim` repo.
 | `run_1 <hash=a32c910>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.001</th><th>32</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
 | `run_2 <hash=a32c911>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.0007</th><th>64</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
 | `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
-
-#### Searching runs
 
 When searching runs, use the `run` keyword which represents the [Run](./SDK_basics.html#create-a-run) object. It has the following properties:
 
@@ -109,6 +107,8 @@ run.learning_rate in [0.0001, 0.005]
 |-----|------------|
 | `run_1 <hash=a32c910>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.001</th><th>32</th> </tr> </tbody></table> |
 | `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> |
+
+### Searching metrics and images
 
 #### Searching metrics
 
@@ -168,6 +168,23 @@ metric.name == "loss" and run.learning_rate >= 0.001
 | `loss { "subset":"test" }` | `run_1 <hash=a32c910>` |
 | `loss { "subset":"train" }` | `run_3 <hash=a32c912>` |
 | `loss { "subset":"test" }` | `run_3 <hash=a32c912>` |
+
+#### Searching images
+
+Images search works in the same way as metrics.
+When iterating over images, use the `images` keyword which represents the tracked [images sequence](./SDK_basics.html#track-images-with-run). 
+While searching images, you can also refer to the related runs via the `run` keyword.
+
+`images` keyword has the following default properties.
+
+| Property | Description |
+| -------- | ----------- |
+| `name` | Image sequence name |
+| `context` | Image sequence context dictionary |
+
+*Query examples:*
+- images.name == "generated" and run.learning_rate >= 0.001
+- images.name == "generated" and images.context.ema == 0
 
 ### Security restrictions
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+- Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+
+## 3.2.1 Dec 8 2021
+
+- Add ability to provide custom base path for API (mihran113, roubkar)
+- Fix table groups column default order (arsengit)
+- Fix table panel height issue in runs explorer page (arsengit)
+
+## 3.2.0 Dec 3 2021
+
+- Add ability to cancel pending request (roubkar, arsengit)
+- Add support for secure protocol for API calls (mihran113, roubkar)
+- Implement image full size view (VkoHov)
+- Add ability to manipulate with image size and rendering type (arsengit)
+- Enhance Table column for selected grouping config options (arsengit)
+- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+- Add ability to track and visualize distributions (mihran113, rubenaprikyan)
+- Add notebook extension, magic functions (rubenaprikyan)
+
+## 3.1.1 Nov 25 2021
+
+- Apply default ordering on images set (VkoHov)
+- Ability to show image data in a tooltip on hover (KaroMourad)
+- Support of Image input additional data sources (alberttorosyan)
+- Ability to export run props as pandas dataframe (gorarakelyan)
+- Slice image sequence by index for the given steps range (alberttorosyan)
+- Improve Images Explorer rendering performance through better images list virtualization (roubkar)
+
 ## 3.1.0 Nov 20 2021
 
 - Add ability to explore tracked images (VkoHov)

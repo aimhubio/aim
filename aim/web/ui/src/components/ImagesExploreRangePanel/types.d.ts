@@ -1,4 +1,4 @@
-import { IImagesPanelProps } from '../ImagesPanel';
+import { IMediaPanelProps } from '../MediaPanel';
 
 export interface IImagesExploreRangePanelProps {
   recordSlice: number[];
@@ -8,6 +8,6 @@ export interface IImagesExploreRangePanelProps {
   indexDensity: number;
   recordDensity: number;
   applyButtonDisabled: boolean;
-  onSliceRangeChange: IImagesPanelProps['onSliceRangeChange'];
-  onDensityChange: IImagesPanelProps['onDensityChange'];
+  onSliceRangeChange: IMediaPanelProps['onSliceRangeChange'];
+  onDensityChange: IMediaPanelProps['onDensityChange'];
 }

@@ -27,6 +27,15 @@ aim.sdk.objects.image
 .. autoclass:: Image
    :members:
 
+aim.sdk.objects.distribution
+---------------------
+
+.. automodule:: aim.sdk.objects.distribution
+.. currentmodule:: aim.sdk.objects.distribution
+
+.. autoclass:: Distribution
+   :members:
+
 aim.sdk.sequence module
 -----------------------
 
@@ -53,6 +62,16 @@ aim.sdk.image_sequence module
 .. currentmodule:: aim.sdk.image_sequence
 
 .. autoclass:: Images
+   :exclude-members: allowed_dtypes
+   :members:
+
+aim.sdk.distribution_sequence module
+-----------------------------
+
+.. automodule:: aim.sdk.distribution_sequence
+.. currentmodule:: aim.sdk.distribution_sequence
+
+.. autoclass:: Distributions
    :exclude-members: allowed_dtypes
    :members:
 

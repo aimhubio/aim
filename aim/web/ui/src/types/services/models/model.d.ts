@@ -18,8 +18,12 @@ export interface IModel<StateType extends Partial<State>> {
   destroy: () => void;
   getState: () => StateType;
   setState: (data: Partial<StateType> | StateType | unknown | any) => void;
+  emit: (
+    evt: string,
+    data: Partial<StateType> | StateType | unknown | any,
+  ) => void;
   subscribe: (
-    evt: 'INIT' | 'UPDATE',
+    evt: string,
     fn: (data: StateType) => void,
   ) => { unsubscribe: () => void };
 }
