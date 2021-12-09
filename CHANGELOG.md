@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
-- Implement images virtualization tab in run detail page (VkoHov, KaroMourad)
+- Implement images visualization tab in run detail page (VkoHov, KaroMourad)
 
 ## 3.2.1 Dec 8 2021
 
