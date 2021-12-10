@@ -57,7 +57,7 @@ function TraceVisualizationContainer({
       </div>
       <div className='VisualizerArea'>
         <BusyLoaderWrapper
-          height={'30rem'}
+          className='VisualizationLoader'
           isLoading={!!runTracesModelData?.isTraceBatchLoading}
         >
           <Visualizer

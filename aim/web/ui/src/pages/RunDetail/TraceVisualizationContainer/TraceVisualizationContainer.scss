@@ -1,15 +1,20 @@
 @use 'src/styles/abstracts' as *;
 
+$vis-area-max-height: toRem(900px);
+
 .TraceVisualizationWrapper {
   display: flex;
   width: 100%;
   max-height: toRem(510px);
+  .VisualizationLoader {
+    height: $vis-area-max-height;
+  }
   .MenuArea {
     max-width: toRem(380px);
-    min-width: toRem(200px);
+    min-width: toRem(320px);
   }
   .VisualizerArea {
-    max-height: toRem(900px);
+    max-height: $vis-area-max-height;
     width: 100%;
     border: toRem(1px) solid $grayish;
     border-left: none;
