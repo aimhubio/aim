@@ -3,6 +3,7 @@ import bs58check from 'bs58check';
 import { IMenuItem } from 'components/kit/Menu';
 
 import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import {
   DistributionsData,
@@ -31,26 +32,21 @@ export function getMenuItemFromRawInfo(
   data: IMenuItem[];
   availableIds: string[];
 } {
-  function sortOrder(a: IMenuItem, b: IMenuItem) {
-    const name1 = a.name.toUpperCase();
-    const name2 = b.name.toUpperCase();
-    if (name2 === 'EMPTY CONTEXT') {
-      return 0;
-    }
-    if (name1 < name2) {
-      return -1;
-    }
-    if (name1 > name2) {
-      return 1;
-    }
-
-    return 0;
-  }
   // for checking duplications
   const checkedItemIds: string[] = [];
 
   const data: IMenuItem[] = [];
 
+  const sortOrder = alphabeticalSortComparator({
+    orderBy: 'name',
+    additionalCompare: (name1: string, name2: string) => {
+      if (name2 === 'EMPTY CONTEXT') {
+        return 0;
+      }
+
+      return null;
+    },
+  });
   // doesn't destructuring item, because we are not sure it has context
   info.forEach((item: TraceRawDataItem) => {
     const id: string = bs58check.encode(Buffer.from(`${item.name}`));
