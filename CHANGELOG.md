@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix boolean values encoding (mahnerak)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
 
 ## 3.2.1 Dec 8 2021
