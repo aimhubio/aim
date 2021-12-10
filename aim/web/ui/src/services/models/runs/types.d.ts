@@ -59,7 +59,7 @@ export interface DistributionsData extends TraceRawDataItem {
  * @TODO make compatible to images data
  */
 export interface ImagesData extends DistributionsData {
-  context: { [key: string]: any };
+  context: object;
   index_range: [number, number];
   values: any;
 }

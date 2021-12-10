@@ -3,7 +3,10 @@ import _ from 'lodash';
 
 import { IMenuItem } from 'components/kit/Menu';
 
-import { IImageData } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import {
+  IImageData,
+  IProcessedImageData,
+} from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import contextToString from 'utils/contextToString';
 import { encode } from 'utils/encoder/encoder';
@@ -226,14 +229,17 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 /**
  * process distributions data
  */
-export function processImagesData(data: Partial<ImagesData>, params?: object) {
+export function processImagesData(
+  data: Partial<ImagesData>,
+  params?: { [key: string]: unknown },
+) {
   const { record_range, iters, values, index_range, context, name } = data;
   const groupingSelectOptions = params
     ? imagesExploreAppModel.getGroupingSelectOptions({
-        params: getObjectPaths(params as any, params as any),
+        params: getObjectPaths(params, params),
       })
     : [];
-  let metrics: any[] = [];
+  let images: IProcessedImageData[] = [];
   values?.forEach((stepData: IImageData[], stepIndex: number) => {
     stepData.forEach((image: IImageData) => {
       const imageKey = encode({
@@ -247,27 +253,36 @@ export function processImagesData(data: Partial<ImagesData>, params?: object) {
         name,
         traceContext: context,
       });
-      metrics.push({
+      images.push({
         ...image,
         images_name: name,
         step: iters?.[stepIndex],
         context: context,
-        // run: _.omit(run, 'traces'),
         key: imageKey,
         seqKey: seqKey,
       });
     });
   });
   const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
-    groupData(_.orderBy(metrics)),
+    groupData(_.orderBy(images)),
     groupingSelectOptions,
     ['step'],
   );
   return { imageSetData, orderedMap, record_range, index_range };
 }
 
-function groupData(data: any[]): any {
-  const groupValues: { [key: string]: any } = {};
+function groupData(data: IProcessedImageData[]): {
+  key: string;
+  config: { [key: string]: string };
+  data: IProcessedImageData[];
+}[] {
+  const groupValues: {
+    [key: string]: {
+      key: string;
+      config: { [key: string]: string };
+      data: IProcessedImageData[];
+    };
+  } = {};
 
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};

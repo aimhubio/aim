@@ -134,7 +134,10 @@ function MediaPanel({
   }, [setActivePointRect]);
 
   const syncHoverState = React.useCallback(
-    (args: any): void => {
+    (args: {
+      activePoint: object | null;
+      focusedStateActive?: boolean;
+    }): void => {
       const { activePoint, focusedStateActive = false } = args;
       activePointRef.current = activePoint;
       // on MouseEnter

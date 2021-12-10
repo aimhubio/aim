@@ -211,8 +211,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
-                  imageProperties={
-                    imagesExploreData?.config?.images?.imageProperties
+                  additionalProperties={
+                    imagesExploreData?.config?.images?.additionalProperties
                   }
                   onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
                   onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
