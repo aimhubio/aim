@@ -99,4 +99,8 @@ export type IconName =
   | 'co'
   | 'full-docs'
   | 'image-explorer'
-  | 'image-properties';
+  | 'image-properties'
+  | 'play'
+  | 'pause'
+  | 'voice-on'
+  | 'voice-off';

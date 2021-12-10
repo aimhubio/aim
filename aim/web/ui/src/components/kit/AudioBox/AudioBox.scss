@@ -1,0 +1,92 @@
+@use 'src/styles/abstracts' as *;
+
+.AudioBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: $space-xs;
+  background-color: $pico-5;
+  border-radius: $border-radius-main;
+  width: fit-content;
+  height: toRem(40px);
+  &__timer {
+    display: flex;
+    span {
+      min-width: 2rem;
+      display: inline-block;
+    }
+    &-long {
+      span {
+        min-width: 3.125rem;
+      }
+    }
+  }
+  .Slider {
+    .MuiSlider-thumb {
+      box-shadow: unset;
+      background-color: $primary-color;
+      &:hover {
+        box-shadow: unset;
+      }
+      &::after {
+        display: none;
+      }
+    }
+  }
+  &__progressSlider {
+    width: toRem(74px);
+    margin: 0 $space-sm;
+  }
+  &__volume {
+    margin: 0 $space-xxs;
+    position: relative;
+    &:hover {
+      .AudioBox__volume__Slider {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+    &__Slider {
+      background-color: $pico-5;
+      border: $border-main;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.18s ease-out;
+      top: toRem(4px);
+      left: 1.5rem;
+      width: auto;
+      position: absolute;
+      width: toRem(56px);
+      border-radius: $radius-main;
+      height: 1rem;
+      display: flex;
+      justify-content: center;
+      z-index: 2;
+      .Slider {
+        width: 2rem;
+        .MuiSlider {
+          &-rail,
+          &-root,
+          &-track {
+            height: 0.125rem;
+          }
+          &-root {
+            color: $pico-80;
+          }
+          &-track {
+            background-color: $pico-80;
+          }
+          &-thumb {
+            height: 10px;
+            width: 10px;
+            background-color: $pico-80;
+            border-color: $pico-80;
+            &:hover {
+              box-shadow: unset;
+            }
+          }
+        }
+      }
+    }
+  }
+}

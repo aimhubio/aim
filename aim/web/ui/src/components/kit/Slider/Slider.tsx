@@ -10,7 +10,7 @@ function Slider(
   props: ISliderProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='Slider'>
+    <div className={`Slider ${props.containerClassName || ''}`}>
       <MaterialSlider {...props} />
     </div>
   );
