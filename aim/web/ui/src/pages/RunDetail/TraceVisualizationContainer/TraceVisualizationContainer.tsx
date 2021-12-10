@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import Menu from 'components/kit/Menu/Menu';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -11,6 +11,7 @@ import DistributionsVisualizer from '../DistributionsVisualizer';
 import ImagesVisualizer from '../ImagesVisualizer/ImagesVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
 
+import RangePanel from './RangePanel';
 import widthEmptyTraceCheck from './widthEmptyTraceCheck';
 
 import './TraceVisualizationContainer.scss';
@@ -18,16 +19,26 @@ import './TraceVisualizationContainer.scss';
 const traceTypeVisualization = {
   images: ImagesVisualizer,
   distributions: DistributionsVisualizer,
+  audios: () => null,
+  videos: () => null,
+  texts: () => null,
+  plotly: () => null,
 };
 
 function TraceVisualizationContainer({
   traceInfo,
   traceType,
   runHash,
+  runParams,
 }: ITraceVisualizationContainerProps) {
   const runTracesModelData = useModel(runTracesModel);
   useEffect(() => {
-    runTracesModel.initialize(runHash, traceType, traceInfo[traceType]);
+    runTracesModel.initialize(
+      runHash,
+      traceType,
+      traceInfo[traceType],
+      runParams,
+    );
 
     return () => {
       runTracesModel.destroy();
@@ -61,6 +72,31 @@ function TraceVisualizationContainer({
             activeTraceContext={runTracesModelData?.menu?.activeItemName}
           />
         </BusyLoaderWrapper>
+        {runTracesModelData?.data &&
+          runTracesModelData?.config &&
+          runTracesModelData?.queryData && (
+            <RangePanel
+              items={runTracesModelData?.config?.rangePanel.map((item) => ({
+                key: item.sliderName,
+                sliderName: item.sliderName,
+                inputName: item.inputName,
+                sliderTitle: item.sliderTitle,
+                inputTitle: item.inputTitle,
+                sliderTitleTooltip: item.sliderTitleTooltip,
+                inputTitleTooltip: item.inputTitleTooltip,
+                rangeEndpoints: runTracesModelData?.data[item.sliderName],
+                selectedRangeValue: runTracesModelData?.queryData?.sliders[
+                  item.sliderName
+                ] || [0, 50],
+                inputValue:
+                  runTracesModelData?.queryData?.inputs[item.inputName] || 50,
+              }))}
+              onApply={runTracesModel.onApply}
+              onInputChange={runTracesModel.onInputChange}
+              onRangeSliderChange={runTracesModel.onRangeChange}
+              applyButtonDisabled={!!runTracesModelData?.isTraceBatchLoading}
+            />
+          )}
       </div>
     </div>
   );
@@ -68,4 +104,4 @@ function TraceVisualizationContainer({
 
 TraceVisualizationContainer.displayName = 'TraceVisualizationContainer';
 
-export default widthEmptyTraceCheck(TraceVisualizationContainer);
+export default memo(widthEmptyTraceCheck(TraceVisualizationContainer));

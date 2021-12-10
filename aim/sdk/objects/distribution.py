@@ -11,7 +11,7 @@ class Distribution(CustomObject):
     """Distribution object used to store distribution objects in Aim repository.
 
     Args:
-         distribution (:obj:): array-like object  used to construct `aim.Distribution`.
+         distribution (:obj:): array-like object used to construct `aim.Distribution`.
          bin_count (:obj:`int`, optional): Optional distribution bin count. 64 by default, max 512.
     """
 

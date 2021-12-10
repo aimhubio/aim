@@ -1,7 +1,5 @@
 import React, { memo } from 'react';
 
-import { Text } from 'components/kit';
-
 import { IDistributionVisualizerProps } from '../types';
 
 import Wrapper from './temp/Wrapper';
@@ -14,14 +12,11 @@ function DistributionsVisualizer(
   return (
     <div className='DistributionsVisualizer'>
       {props.data?.processedValues && (
-        <>
-          <Wrapper data={props.data?.processedValues} />
-          <div className='VisualizationName'>
-            <Text size={14} tint={80} weight={500}>
-              {props.activeTraceContext}
-            </Text>
-          </div>
-        </>
+        <Wrapper
+          data={props.data?.processedValues}
+          className='Visualizer'
+          iters={props.data.iters}
+        />
       )}
     </div>
   );

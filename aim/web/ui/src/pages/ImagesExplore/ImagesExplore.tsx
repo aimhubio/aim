@@ -7,7 +7,9 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
-import ImagesPanel from 'components/ImagesPanel';
+import MediaPanel from 'components/MediaPanel';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
+import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -20,8 +22,8 @@ import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
-import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+import * as analytics from 'services/analytics';
 
 import {
   IFocusedState,
@@ -30,6 +32,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
+import { ChartTypeEnum } from 'utils/d3';
 
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
@@ -179,39 +182,25 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 : ''
             }`}
           >
-            <ImagesPanel
-              recordSlice={imagesExploreData?.config?.images?.recordSlice}
-              indexSlice={imagesExploreData?.config?.images?.indexSlice}
-              indexRange={imagesExploreData?.config?.images?.indexRange}
-              indexDensity={imagesExploreData?.config?.images?.indexDensity}
-              recordDensity={imagesExploreData?.config?.images?.recordDensity}
-              stepRange={imagesExploreData?.config?.images?.stepRange}
-              onSliceRangeChange={imagesExploreAppModel.onSliceRangeChange}
-              onDensityChange={imagesExploreAppModel.onDensityChange}
-              getImagesBlobsData={imagesExploreAppModel.getImagesBlobsData}
-              imagesData={imagesExploreData?.imagesData}
+            <MediaPanel
+              mediaType={MediaTypeEnum.IMAGE}
+              getBlobsData={imagesExploreAppModel.getImagesBlobsData}
+              data={imagesExploreData?.imagesData}
               orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
-              applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
               tableHeight={imagesExploreData?.config?.table?.height}
-              imageWrapperOffsetHeight={offsetHeight || 0}
-              imageWrapperOffsetWidth={offsetWidth || 0}
-              isRangePanelShow={
-                !!getStateFromUrl('select')?.query ||
-                !isEmpty(getStateFromUrl('select')?.images) ||
-                (!!getStateFromUrl('select')?.advancedQuery &&
-                  !!getStateFromUrl('select')?.advancedMode)
-              }
+              wrapperOffsetHeight={offsetHeight || 0}
+              wrapperOffsetWidth={offsetWidth || 0}
               focusedState={
                 imagesExploreData?.config?.images?.focusedState as IFocusedState
               }
               tooltip={
                 imagesExploreData?.config?.images?.tooltip as IPanelTooltip
               }
-              imageProperties={
-                imagesExploreData?.config?.images?.imageProperties
+              additionalProperties={
+                imagesExploreData?.config?.images?.additionalProperties
               }
               onActivePointChange={imagesExploreAppModel.onActivePointChange}
               controls={
@@ -222,8 +211,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
-                  imageProperties={
-                    imagesExploreData?.config?.images?.imageProperties
+                  additionalProperties={
+                    imagesExploreData?.config?.images?.additionalProperties
                   }
                   onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
                   onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
@@ -234,6 +223,31 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                     imagesExploreAppModel.onImageAlignmentChange
                   }
                 />
+              }
+              tooltipType={ChartTypeEnum.ImageSet}
+              actionPanelSize={44}
+              actionPanel={
+                imagesExploreData?.config?.images?.stepRange &&
+                imagesExploreData?.config?.images?.indexRange &&
+                imagesExploreAppModel.isRangePanelShow() && (
+                  <ImagesExploreRangePanel
+                    recordSlice={imagesExploreData?.config?.images?.recordSlice}
+                    indexSlice={imagesExploreData?.config?.images?.indexSlice}
+                    indexRange={imagesExploreData?.config?.images?.indexRange}
+                    stepRange={imagesExploreData?.config?.images?.stepRange}
+                    applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
+                    indexDensity={
+                      imagesExploreData?.config?.images?.indexDensity
+                    }
+                    recordDensity={
+                      imagesExploreData?.config?.images?.recordDensity
+                    }
+                    onSliceRangeChange={
+                      imagesExploreAppModel.onSliceRangeChange
+                    }
+                    onDensityChange={imagesExploreAppModel.onDensityChange}
+                  />
+                )
               }
             />
           </div>

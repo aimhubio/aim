@@ -17,7 +17,14 @@ model = tf.keras.models.Sequential([
 
 loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
-model.compile(optimizer='adam',
+lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+    initial_learning_rate=1e-2,
+    decay_steps=10000,
+    decay_rate=0.9)
+
+optimizer = tf.keras.optimizers.SGD(learning_rate=lr_schedule)
+
+model.compile(optimizer=optimizer,
               loss=loss_fn,
               metrics=['accuracy'])
 

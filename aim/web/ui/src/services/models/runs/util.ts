@@ -1,12 +1,23 @@
 import bs58check from 'bs58check';
+import _ from 'lodash';
 
 import { IMenuItem } from 'components/kit/Menu';
 
+import {
+  IImageData,
+  IProcessedImageData,
+} from 'types/services/models/imagesExplore/imagesExploreAppModel';
+
 import contextToString from 'utils/contextToString';
+import { encode } from 'utils/encoder/encoder';
+import getObjectPaths from 'utils/getObjectPaths';
+
+import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
 import {
   DistributionsData,
   DistributionValue,
+  ImagesData,
   TraceProcessedData,
   TraceRawDataItem,
   TraceType,
@@ -153,6 +164,10 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
   const VisualizationMenuTitles = {
     images: 'Images',
     distributions: 'Distributions',
+    audios: 'Audios',
+    videos: 'Videos',
+    texts: 'Texts',
+    plotly: 'Plotlies',
   };
 
   let title = VisualizationMenuTitles[traceType];
@@ -203,12 +218,99 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
     });
   }
 
-  return { iters, record_range, processedValues, originalValues };
+  return {
+    iters,
+    record_range,
+    processedValues,
+    originalValues,
+  };
 }
 
 /**
  * process distributions data
  */
-export function processImagesData() {
-  return {};
+export function processImagesData(
+  data: Partial<ImagesData>,
+  params?: { [key: string]: unknown },
+) {
+  const { record_range, iters, values, index_range, context, name } = data;
+  const groupingSelectOptions = params
+    ? imagesExploreAppModel.getGroupingSelectOptions({
+        params: getObjectPaths(params, params),
+      })
+    : [];
+  let images: IProcessedImageData[] = [];
+  values?.forEach((stepData: IImageData[], stepIndex: number) => {
+    stepData.forEach((image: IImageData) => {
+      const imageKey = encode({
+        name,
+        traceContext: context,
+        index: image.index,
+        step: iters?.[stepIndex],
+        caption: image.caption,
+      });
+      const seqKey = encode({
+        name,
+        traceContext: context,
+      });
+      images.push({
+        ...image,
+        images_name: name,
+        step: iters?.[stepIndex],
+        context: context,
+        key: imageKey,
+        seqKey: seqKey,
+      });
+    });
+  });
+  const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
+    groupData(_.orderBy(images)),
+    groupingSelectOptions,
+    ['step'],
+  );
+  return { imageSetData, orderedMap, record_range, index_range };
+}
+
+function groupData(data: IProcessedImageData[]): {
+  key: string;
+  config: { [key: string]: string };
+  data: IProcessedImageData[];
+}[] {
+  const groupValues: {
+    [key: string]: {
+      key: string;
+      config: { [key: string]: string };
+      data: IProcessedImageData[];
+    };
+  } = {};
+
+  for (let i = 0; i < data.length; i++) {
+    const groupValue: { [key: string]: string } = {};
+    ['step'].forEach((field) => {
+      groupValue[field] = _.get(data[i], field);
+    });
+    const groupKey = encode(groupValue);
+    if (groupValues.hasOwnProperty(groupKey)) {
+      groupValues[groupKey].data.push(data[i]);
+    } else {
+      groupValues[groupKey] = {
+        key: groupKey,
+        config: groupValue,
+        data: [data[i]],
+      };
+    }
+  }
+  return Object.values(groupValues);
+}
+
+export function reformatArrayQueries(
+  queryObj: Record<string, [number, number]> = {},
+) {
+  const formattedQueryObject: Record<string, string> = {};
+  Object.keys(queryObj).forEach((key) => {
+    const item = queryObj[key];
+    formattedQueryObject[key] = `${item[0]}:${item[1]}`;
+  });
+
+  return formattedQueryObject;
 }

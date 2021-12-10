@@ -1,15 +1,19 @@
+import os
+
 import click
 
 from aim.cli.upgrade.utils import convert_2to3
 
 
 @click.group()
-@click.option('--repo', required=False, type=click.Path(
-    exists=True,
-    file_okay=False,
-    dir_okay=True,
-    writable=True
-))
+@click.option('--repo', required=False,
+              default=os.getcwd(),
+              type=click.Path(
+                  exists=True,
+                  file_okay=False,
+                  dir_okay=True,
+                  writable=True
+              ))
 @click.pass_context
 def upgrade(ctx, repo):
     ctx.ensure_object(dict)

@@ -78,9 +78,7 @@ class Histogram extends Component {
         legend: {
           enabled: false,
         },
-
         series: series,
-
         plotOptions: {
           series: {
             states: {
