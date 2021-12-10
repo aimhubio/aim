@@ -98,6 +98,14 @@ export interface IImageData {
   step: number;
   width: number;
 }
+
+export interface IProcessedImageData extends IImageData {
+  seqKey?: string;
+  images_name?: string;
+  step?: number;
+  context?: object;
+}
+
 export interface IImageRunData {
   hash: string;
   params: { [key: string]: unknown };

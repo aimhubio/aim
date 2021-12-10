@@ -28,14 +28,14 @@ const sizeProps = {
 // ];
 
 function ImagePropertiesPopover({
-  imageProperties,
+  additionalProperties,
   onImageSizeChange,
   onImageRenderingChange,
 }: // onImageAlignmentChange,
 IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   // const [open, setOpen] = React.useState<boolean>(false);
   const [sizeValue, setSizeValue] = React.useState<number>(
-    imageProperties.mediaItemSize,
+    additionalProperties.mediaItemSize,
   );
 
   function onSizeValueChange(
@@ -57,7 +57,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
             Image Size:
           </Text>
           <Text className='ImagePropertiesPopover__sizePercent'>
-            {imageProperties.mediaItemSize}%
+            {additionalProperties.mediaItemSize}%
           </Text>
         </div>
         {/* <div>
@@ -116,7 +116,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
           leftLabel='Pixelated'
           leftValue={ImageRenderingEnum.Pixelated}
           rightValue={ImageRenderingEnum.Smooth}
-          value={imageProperties.imageRendering}
+          value={additionalProperties.imageRendering}
         />
       </div>
     </div>

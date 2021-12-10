@@ -4,9 +4,12 @@
   display: flex;
   width: 100%;
   max-height: toRem(510px);
+  .VisualizationLoader {
+    height: 100% !important;
+  }
   .MenuArea {
     max-width: toRem(380px);
-    min-width: toRem(200px);
+    min-width: toRem(320px);
   }
   .VisualizerArea {
     max-height: toRem(900px);
