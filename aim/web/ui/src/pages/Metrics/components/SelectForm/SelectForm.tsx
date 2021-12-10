@@ -35,6 +35,7 @@ import {
 import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
@@ -144,7 +145,13 @@ function SelectForm({
         }
       }
     }
-    return data.concat(systemOptions);
+    return data
+      .sort(
+        alphabeticalSortComparator<ISelectMetricsOption>({
+          orderBy: 'label',
+        }),
+      )
+      .concat(systemOptions);
   }, [projectsData]);
 
   function getOption(

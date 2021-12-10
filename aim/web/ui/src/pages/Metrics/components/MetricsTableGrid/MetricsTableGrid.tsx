@@ -359,7 +359,7 @@ function metricsTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context[0] || 'No Context'}
+                label={rowData.context[0] || 'Empty Context'}
               />
             ),
         };
@@ -460,7 +460,7 @@ function metricsTableRowRenderer(
             key={item}
             size='small'
             color={COLORS[0][0]}
-            label={item || 'No Context'}
+            label={item || 'Empty Context'}
           />
         )),
       },

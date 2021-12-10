@@ -24,10 +24,11 @@ import {
   ISelectParamsOption,
 } from 'types/pages/params/components/SelectForm/SelectForm';
 
-import getObjectPaths from 'utils/getObjectPaths';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
+import getObjectPaths from 'utils/getObjectPaths';
 
 import './SelectForm.scss';
 
@@ -144,7 +145,13 @@ function SelectForm({
         });
       });
     }
-    return data.concat(systemOptions);
+    return data
+      .sort(
+        alphabeticalSortComparator<ISelectParamsOption>({
+          orderBy: 'label',
+        }),
+      )
+      .concat(systemOptions);
   }, [projectsData]);
 
   const open: boolean = !!anchorEl;

@@ -114,7 +114,7 @@ function getParamsTableColumns(
             <Badge
               size='small'
               color={COLORS[0][0]}
-              label={metricContext === '' ? 'No context' : metricContext}
+              label={metricContext === '' ? 'Empty context' : metricContext}
             />
           ),
           topHeader: isSystemMetric(key) ? 'System Metrics' : key,
