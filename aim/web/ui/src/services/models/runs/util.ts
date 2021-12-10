@@ -31,6 +31,18 @@ export function getMenuItemFromRawInfo(
   data: IMenuItem[];
   availableIds: string[];
 } {
+  function sortOrder(a: IMenuItem, b: IMenuItem) {
+    const name1 = a.name.toUpperCase();
+    const name2 = b.name.toUpperCase();
+    if (name1 < name2) {
+      return -1;
+    }
+    if (name1 > name2) {
+      return 1;
+    }
+
+    return 0;
+  }
   // for checking duplications
   const checkedItemIds: string[] = [];
 
@@ -83,7 +95,9 @@ export function getMenuItemFromRawInfo(
         if (it.id === id) {
           const itemChildren = data[index].children || [];
           const currentChildren = menuItem.children || [];
-          data[index].children = [...itemChildren, ...currentChildren];
+          data[index].children = [...itemChildren, ...currentChildren].sort(
+            sortOrder,
+          );
 
           // clear empty array
           // @ts-ignore because we already set it minimum empty array
@@ -97,6 +111,8 @@ export function getMenuItemFromRawInfo(
       checkedItemIds.push(id);
     }
   });
+
+  data.sort(sortOrder);
 
   return {
     availableIds: checkedItemIds,
@@ -174,6 +190,7 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
     defaultActiveName = data[0].name;
   }
 
+  console.log('data ---> ', data);
   return { data, defaultActiveKey, availableIds, title, defaultActiveName };
 }
 
