@@ -25,12 +25,10 @@ interface IRangeSliderPanelProps {
   onApply: () => void;
   onInputChange: (name: string, value: number) => void;
   onRangeSliderChange: (name: string, newValue: number[] | number) => void;
-  applyButtonDisabled: boolean;
 }
 
 function RangePanel({
   onApply,
-  applyButtonDisabled,
   onRangeSliderChange,
   onInputChange,
   items,
@@ -45,8 +43,9 @@ function RangePanel({
     >
       <div className='RangePanelContainer'>
         {items?.map((item) => (
-          <React.Fragment key={item.sliderName}>
+          <>
             <RangeSliderWithInput
+              key={item.sliderName}
               sliderTitle={item.sliderTitle}
               countInputTitle={item.inputTitle}
               countTitleTooltip={item.inputTitleTooltip}
@@ -64,7 +63,7 @@ function RangePanel({
               }
             />
             <div className='VerticalDivider' />
-          </React.Fragment>
+          </>
         ))}
         <div className='ApplyButtonContainer'>
           <Button
@@ -73,7 +72,7 @@ function RangePanel({
             variant='contained'
             type='submit'
             className='ApplyButton'
-            disabled={applyButtonDisabled}
+            disabled={false}
           >
             Apply
           </Button>
@@ -82,7 +81,5 @@ function RangePanel({
     </form>
   );
 }
-
-RangePanel.displayName = 'RangePanel';
 
 export default React.memo<IRangeSliderPanelProps>(RangePanel);

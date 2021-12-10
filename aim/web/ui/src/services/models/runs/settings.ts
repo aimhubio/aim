@@ -41,25 +41,25 @@ const settings: Record<string, SettingItem> = {
     sliders: {
       record_range: {
         defaultValue: [0, 50],
-        tooltip: '',
-        title: '',
+        tooltip: 'Training step. Increments every time track() is called',
+        title: 'Steps',
       },
       index_range: {
         defaultValue: [0, 50],
-        tooltip: '',
-        title: '',
+        tooltip: 'Index in the list of images passed to track() call',
+        title: 'Indices',
       },
     },
     inputs: {
       record_density: {
         defaultValue: 50,
-        title: '',
-        tooltip: '',
+        title: 'Steps count',
+        tooltip: 'Number of steps to display',
       },
       index_density: {
         defaultValue: 5,
-        title: '',
-        tooltip: '',
+        title: 'Indices count',
+        tooltip: 'Number of images per step',
       },
     },
   },
